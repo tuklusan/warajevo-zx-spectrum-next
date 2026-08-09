@@ -142,6 +142,10 @@ def choose_windows_sdk_tool(tool_name: str) -> str | None:
     return None
 
 
+def cmake_path_string(path: str) -> str:
+    return path.replace("\\", "/")
+
+
 def command_text(command: list[str]) -> str:
     return shlex.join(command)
 
@@ -297,11 +301,11 @@ def main() -> int:
     if system_name == "Windows" and compiler_path:
         compiler_name = Path(compiler_path).name.lower()
         if compiler_name in ("clang.exe", "clang-cl.exe"):
-            configure_command.append(f"-DCMAKE_C_COMPILER={compiler_path}")
+            configure_command.append(f"-DCMAKE_C_COMPILER={cmake_path_string(compiler_path)}")
             if tools["rc"]["path"]:
-                configure_command.append(f"-DCMAKE_RC_COMPILER={tools['rc']['path']}")
+                configure_command.append(f"-DCMAKE_RC_COMPILER={cmake_path_string(tools['rc']['path'])}")
             if tools["mt"]["path"]:
-                configure_command.append(f"-DCMAKE_MT={tools['mt']['path']}")
+                configure_command.append(f"-DCMAKE_MT={cmake_path_string(tools['mt']['path'])}")
 
     if tools["ninja"]["path"]:
         configure_command.extend(["-G", "Ninja"])
