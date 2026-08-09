@@ -50,6 +50,8 @@ $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
 try {
     $graphics.CopyFromScreen($bounds.X, $bounds.Y, 0, 0, $bitmap.Size)
     $bitmap.Save($resolvedOutput, [System.Drawing.Imaging.ImageFormat]::Png)
+} catch {
+    throw "interactive desktop screenshot capture failed in the current session: $($_.Exception.Message)"
 } finally {
     $graphics.Dispose()
     $bitmap.Dispose()

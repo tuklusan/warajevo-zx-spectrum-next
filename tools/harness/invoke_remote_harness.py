@@ -22,7 +22,7 @@ REMOTE_MACHINES = {
     "linux-x64-lxqt": {
         "kind": "linux",
         "ssh_target": "sanyalnet@192.168.4.76",
-        "project_dir": "~/SOFTWARE-DEVELOPMENT/Warajevo-Spectrum-Next",
+        "project_dir": "/home/sanyalnet/SOFTWARE-DEVELOPMENT/Warajevo-Spectrum-Next",
         "python_command": "python3",
     },
     "windows-10-reference": {
@@ -111,7 +111,7 @@ def run_windows(machine: dict[str, str], script_text: str, root: Path) -> subpro
         [
             *ssh_base(root),
             machine["ssh_target"],
-            f"powershell -NoProfile -NonInteractive -OutputFormat Text -EncodedCommand {encoded}",
+            f"powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -OutputFormat Text -EncodedCommand {encoded}",
         ],
         cwd=root,
         check=False,

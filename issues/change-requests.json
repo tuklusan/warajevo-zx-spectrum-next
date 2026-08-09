@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 14,
+  "next_cr_number": 15,
   "status_values": [
     "open",
     "in_progress",
@@ -137,6 +137,16 @@
         "design/wzsn-architectures-1-2-developer-tasks.md task 017"
       ],
       "notes": "The tracked tools/harness baseline, remote screenshot capture entry points, hosted GitHub Actions smoke matrix, and public workflow documentation were added on 2026-08-09."
+    },
+    {
+      "cr_number": "CR-0014",
+      "title": "Add an interactive-session bridge for Windows remote screenshot capture over SSH",
+      "status": "open",
+      "source_authority": [
+        "project workflow rule",
+        "design/warajevo-zx-spectrum-next-architecture.md section 19.6"
+      ],
+      "notes": "On 2026-08-09, the hosted build smoke matrix passed on all five targeted GitHub runner labels, but direct screenshot capture from the Windows SSH sessions still failed because the SSH process was not attached to the interactive desktop."
     }
   ]
 }

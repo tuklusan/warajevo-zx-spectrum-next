@@ -85,3 +85,8 @@ Linux screenshot capture depends on access to an active X11 desktop session.
 The current Linux remote already has capture tools installed, but successful
 capture still depends on `DISPLAY` and `XAUTHORITY` resolving to the live
 desktop session.
+
+As of 2026-08-09, the plain SSH screenshot path is confirmed to need one more
+Windows-specific step on the tested remotes: an interactive-session bridge.
+The current tracked Windows script is still the correct capture primitive, but
+the SSH-launched process is not yet attached to the logged-in desktop session.
