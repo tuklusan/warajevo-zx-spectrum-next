@@ -7,6 +7,7 @@
 
 from __future__ import annotations
 
+import ast
 import json
 import re
 import subprocess
@@ -78,6 +79,11 @@ TEST_ARTIFACTS_PUBLIC_FILES = {
 }
 
 STATUS_VALUES = {"open", "in_progress", "closed", "blocked"}
+
+CANONICAL_REPOSITORY_URLS = {
+    "origin": "https://github.com/tuklusan/warajevo-zx-spectrum-next.git",
+    "upstream": "https://github.com/tuklusan/warajevo-spectrum-2.50.git",
+}
 
 BANNED_TERMS = tuple(
     "".join(chr(code) for code in codes)
@@ -175,6 +181,9 @@ def validate_change_requests(path: Path) -> list[str]:
         problems.append(f"{path}: change_requests must be a JSON array")
         return problems
 
+    seen_numbers: set[str] = set()
+    ordered_numbers: list[int] = []
+
     for entry in change_requests:
         if not isinstance(entry, dict):
             problems.append(f"{path}: every change request entry must be an object")
@@ -185,11 +194,43 @@ def validate_change_requests(path: Path) -> list[str]:
 
         if not re.fullmatch(r"CR-\d{4}", cr_number):
             problems.append(f"{path}: invalid CR number {cr_number!r}")
+        else:
+            if cr_number in seen_numbers:
+                problems.append(f"{path}: duplicate CR number {cr_number!r}")
+            seen_numbers.add(cr_number)
+            ordered_numbers.append(int(cr_number.split("-", 1)[1]))
 
         if status not in STATUS_VALUES:
             problems.append(f"{path}: invalid status {status!r} for {cr_number!r}")
 
+    if ordered_numbers and ordered_numbers != sorted(ordered_numbers):
+        problems.append(f"{path}: change_requests must stay ordered by ascending CR number")
+
+    next_cr_number = data.get("next_cr_number")
+    expected_next = (max(ordered_numbers) + 1) if ordered_numbers else 1
+    if next_cr_number != expected_next:
+        problems.append(
+            f"{path}: next_cr_number must be {expected_next}, but is {next_cr_number!r}"
+        )
+
     return problems
+
+
+def load_remote_machines(path: Path) -> dict[str, dict[str, str]]:
+    module = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+
+    for node in module.body:
+        if not isinstance(node, ast.Assign):
+            continue
+
+        for target in node.targets:
+            if isinstance(target, ast.Name) and target.id == "REMOTE_MACHINES":
+                value = ast.literal_eval(node.value)
+                if not isinstance(value, dict):
+                    raise ValueError("REMOTE_MACHINES must be a dictionary")
+                return value
+
+    raise ValueError("REMOTE_MACHINES definition is missing")
 
 
 def git_tracked_paths(root: Path, relative_path: str) -> list[str]:
@@ -229,6 +270,102 @@ def validate_private_directories(root: Path) -> list[str]:
                 problems.append(
                     f"{tracked}: private media directory may only publish README.md and .gitignore"
                 )
+
+    return problems
+
+
+def validate_repository_identity_documents(root: Path) -> list[str]:
+    problems: list[str] = []
+
+    required_urls = {
+        "README-GIT-GITHUB.md": (
+            CANONICAL_REPOSITORY_URLS["origin"],
+            CANONICAL_REPOSITORY_URLS["upstream"],
+        ),
+        "NOTICE.md": (
+            CANONICAL_REPOSITORY_URLS["origin"],
+            CANONICAL_REPOSITORY_URLS["upstream"],
+        ),
+        "reference/original-warajevo/README.md": (
+            CANONICAL_REPOSITORY_URLS["upstream"],
+        ),
+        "design/warajevo-zx-spectrum-next-architecture.md": (
+            CANONICAL_REPOSITORY_URLS["origin"],
+            CANONICAL_REPOSITORY_URLS["upstream"],
+        ),
+    }
+
+    for relative_name, urls in required_urls.items():
+        path = root / relative_name
+        if not path.exists():
+            problems.append(f"{relative_name}: required repository-identity document is missing")
+            continue
+
+        content = path.read_text(encoding="utf-8")
+        for url in urls:
+            if url not in content:
+                problems.append(
+                    f"{relative_name}: missing canonical repository URL {url!r}"
+                )
+
+    return problems
+
+
+def validate_remote_machine_documents(root: Path) -> list[str]:
+    problems: list[str] = []
+
+    harness_path = root / "tools" / "harness" / "invoke_remote_harness.py"
+    if not harness_path.exists():
+        problems.append("tools/harness/invoke_remote_harness.py: missing remote machine authority")
+        return problems
+
+    try:
+        remote_machines = load_remote_machines(harness_path)
+    except (SyntaxError, ValueError) as exc:
+        problems.append(f"{harness_path.relative_to(root)}: {exc}")
+        return problems
+
+    required_docs = {
+        "test-artefacts/README.md": ("name", "ssh_target", "project_dir"),
+        "README-GIT-GITHUB.md": ("name",),
+        "tools/harness/README.md": ("name",),
+    }
+
+    for relative_name, required_fields in required_docs.items():
+        path = root / relative_name
+        if not path.exists():
+            problems.append(f"{relative_name}: required remote-machine document is missing")
+            continue
+
+        content = path.read_text(encoding="utf-8")
+        for machine_name, machine in remote_machines.items():
+            project_dir = machine.get("project_dir", "")
+            project_dir_aliases = [project_dir] if project_dir else []
+            if machine.get("kind") == "linux" and project_dir.startswith("/home/"):
+                project_dir_aliases.append(
+                    "~/" + project_dir.split("/home/", 1)[1].split("/", 1)[1]
+                )
+
+            field_values = {
+                "name": machine_name,
+                "ssh_target": machine.get("ssh_target", ""),
+                "project_dir": " || ".join(project_dir_aliases),
+            }
+
+            for field_name in required_fields:
+                value = field_values[field_name]
+                if not value:
+                    continue
+
+                if field_name == "project_dir":
+                    accepted_values = project_dir_aliases
+                else:
+                    accepted_values = [value]
+
+                if not any(candidate in content for candidate in accepted_values):
+                    problems.append(
+                        f"{relative_name}: missing {field_name} {value!r} for remote machine {machine_name!r}"
+                    )
 
     return problems
 
@@ -419,6 +556,8 @@ def main() -> int:
     problems.extend(validate_forbidden_local_build_outputs(root))
     problems.extend(validate_remote_only_ci_policy(root))
     problems.extend(validate_platform_smoke_workflow(root))
+    problems.extend(validate_repository_identity_documents(root))
+    problems.extend(validate_remote_machine_documents(root))
     problems.extend(validate_required_workflow_documents(root))
 
     if problems:

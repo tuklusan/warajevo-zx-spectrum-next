@@ -15,6 +15,8 @@ The local issue-tracking system is the machine-readable file:
 ## Conventions
 
 - Every item uses a stable `CR-####` identifier.
+- `next_cr_number` must always be exactly one greater than the highest
+  allocated CR number in the file.
 - `status` is one of `open`, `in_progress`, `closed`, or `blocked`.
 - `source_authority` should point back to the architecture or backlog document
   that justifies the work.

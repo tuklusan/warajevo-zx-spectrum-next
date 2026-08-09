@@ -15,11 +15,11 @@ Warajevo Spectrum emulator.
 
 Current project repository:
 
-`https://github.com/tuklusan/warajevo-zx-spectrum-next`
+`https://github.com/tuklusan/warajevo-zx-spectrum-next.git`
 
 Preserved Warajevo 2.50 source reference:
 
-`https://github.com/tuklusan/warajevo-spectrum-2.50`
+`https://github.com/tuklusan/warajevo-spectrum-2.50.git`
 
 Official historical Warajevo source/download page:
 

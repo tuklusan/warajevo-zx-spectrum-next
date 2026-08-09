@@ -98,3 +98,4 @@ As of 2026-08-09, the plain SSH screenshot path is confirmed to need one more
 Windows-specific step on the tested remotes: an interactive-session bridge.
 The current tracked Windows script is still the correct capture primitive, but
 the SSH-launched process is not yet attached to the logged-in desktop session.
+That remaining gap is tracked as `CR-0014` in `issues/change-requests.json`.

@@ -58,7 +58,7 @@ different authority.
 Upstream legacy source repository:
 
 ```text
-https://github.com/tuklusan/warajevo-spectrum-2.50
+https://github.com/tuklusan/warajevo-spectrum-2.50.git
 ```
 
 ### 2.1.1 Surviving-source provenance boundary

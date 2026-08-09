@@ -45,6 +45,9 @@ Run the repository gates locally:
 python tools/validate_project_gates.py
 ```
 
+Those gates also verify CR numbering and the public remote-machine workflow
+contract across the repository documents and harness metadata.
+
 Do not build or test on this local machine. Remote build and test harness rules
 are documented in `test-artefacts/README.md`.
 

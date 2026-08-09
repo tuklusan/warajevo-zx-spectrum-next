@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 15,
+  "next_cr_number": 17,
   "status_values": [
     "open",
     "in_progress",
@@ -157,6 +157,16 @@
         "design/wzsn-architectures-1-2-developer-tasks.md task 017"
       ],
       "notes": "On 2026-08-09, tools/harness/invoke_remote_windows_powershell.py and the tracked windows-toolchain PowerShell scripts were added so Windows remote maintenance can stay inside the parser-first SSH workflow while recording runs under test-artefacts/remote-runs/."
+    },
+    {
+      "cr_number": "CR-0016",
+      "title": "Tighten cross-document sanity gates for CR sequencing and workflow metadata",
+      "status": "closed",
+      "source_authority": [
+        "project repository governance",
+        "project workflow rule"
+      ],
+      "notes": "On 2026-08-09, repository validation was extended to catch CR next-number drift and remote-machine contract/documentation drift, and the affected public docs were reconciled to the canonical repository URLs and current workflow metadata."
     }
   ]
 }

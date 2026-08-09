@@ -58,5 +58,5 @@ same CMake smoke entry point used by the GitHub Actions platform matrix.
 ## Governance
 
 Every new source or document artifact must carry the project notice header.
-Repository validation also enforces the reserved banned-term rule and the CR
-tracker structure.
+Repository validation also enforces the reserved banned-term rule, CR tracker
+sequencing, and the published remote-harness workflow contract.
