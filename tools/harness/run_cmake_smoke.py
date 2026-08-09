@@ -121,6 +121,27 @@ def choose_build_helper(system_name: str) -> str | None:
     return None
 
 
+def choose_windows_sdk_tool(tool_name: str) -> str | None:
+    tool_path = shutil.which(tool_name)
+    if tool_path:
+        return tool_path
+
+    kits_root = Path(os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)")) / "Windows Kits" / "10" / "bin"
+    if not kits_root.exists():
+        return None
+
+    version_dirs = sorted(
+        (path for path in kits_root.iterdir() if path.is_dir()),
+        reverse=True,
+    )
+    for version_dir in version_dirs:
+        candidate = version_dir / "x64" / tool_name
+        if candidate.exists():
+            return str(candidate)
+
+    return None
+
+
 def command_text(command: list[str]) -> str:
     return shlex.join(command)
 
@@ -208,6 +229,8 @@ def main() -> int:
         "ninja": tool_record("ninja"),
         "make": tool_record("make"),
         "msbuild": tool_record("msbuild"),
+        "mt": tool_record(choose_windows_sdk_tool("mt.exe")) if system_name == "Windows" else tool_record(None),
+        "rc": tool_record(choose_windows_sdk_tool("rc.exe")) if system_name == "Windows" else tool_record(None),
         "xcodebuild": tool_record("xcodebuild"),
     }
 
@@ -275,6 +298,10 @@ def main() -> int:
         compiler_name = Path(compiler_path).name.lower()
         if compiler_name in ("clang.exe", "clang-cl.exe"):
             configure_command.append(f"-DCMAKE_C_COMPILER={compiler_path}")
+            if tools["rc"]["path"]:
+                configure_command.append(f"-DCMAKE_RC_COMPILER={tools['rc']['path']}")
+            if tools["mt"]["path"]:
+                configure_command.append(f"-DCMAKE_MT={tools['mt']['path']}")
 
     if tools["ninja"]["path"]:
         configure_command.extend(["-G", "Ninja"])
