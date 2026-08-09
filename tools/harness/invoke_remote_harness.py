@@ -10,9 +10,12 @@ from __future__ import annotations
 import argparse
 import base64
 import json
+import os
 import shlex
+import shutil
 import subprocess
 import sys
+import tempfile
 import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
@@ -73,22 +76,53 @@ def write_text(path: Path, content: str) -> None:
     path.write_text(content, encoding="utf-8")
 
 
+def powershell_executable() -> str:
+    system_root = os.environ.get("SystemRoot")
+    if system_root:
+        candidate = Path(system_root) / "System32" / "WindowsPowerShell" / "v1.0" / "powershell.exe"
+        if candidate.exists():
+            return str(candidate)
+
+    for executable in ("powershell", "pwsh"):
+        resolved = shutil.which(executable)
+        if resolved:
+            return resolved
+
+    return "powershell"
+
+
 def validate_powershell(root: Path, script_text: str) -> None:
     parser_script = root / "tools" / "Test-PowerShellSyntax.ps1"
-    result = subprocess.run(
-        [
-            "powershell",
-            "-NoProfile",
-            "-File",
-            str(parser_script),
-            "-CommandText",
-            script_text,
-        ],
-        cwd=root,
-        check=False,
-        capture_output=True,
-        text=True,
-    )
+    temp_dir = root / "test-artefacts" / ".parser-tmp"
+    temp_dir.mkdir(parents=True, exist_ok=True)
+
+    with tempfile.NamedTemporaryFile(
+        mode="w",
+        encoding="utf-8",
+        suffix=".ps1",
+        dir=temp_dir,
+        delete=False,
+    ) as handle:
+        handle.write(script_text)
+        temp_path = Path(handle.name)
+
+    try:
+        result = subprocess.run(
+            [
+                powershell_executable(),
+                "-NoProfile",
+                "-File",
+                str(parser_script),
+                "-FilePath",
+                str(temp_path),
+            ],
+            cwd=root,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+    finally:
+        temp_path.unlink(missing_ok=True)
 
     if result.returncode != 0:
         raise RuntimeError(result.stderr.strip() or result.stdout.strip() or "PowerShell parser validation failed")

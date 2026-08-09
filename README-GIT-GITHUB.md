@@ -66,6 +66,12 @@ python tools/harness/invoke_remote_harness.py smoke windows-10-reference
 python tools/harness/invoke_remote_harness.py screenshot windows-11-laptop
 ```
 
+For parser-first Windows maintenance or verification scripts, use:
+
+```text
+python tools/harness/invoke_remote_windows_powershell.py windows-11-laptop tools/harness/windows-toolchain/verify-toolchain.ps1
+```
+
 Pulled-back outputs are stored only under:
 
 ```text

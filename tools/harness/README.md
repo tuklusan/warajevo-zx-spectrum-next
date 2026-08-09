@@ -18,6 +18,10 @@ This directory contains the tracked baseline harness entry points for:
 
 - `invoke_remote_harness.py`
   Local orchestrator for the approved SSH remotes
+- `invoke_remote_windows_powershell.py`
+  Runs a repository-local PowerShell script on an approved Windows SSH remote
+  through the parser-first path and records the session under
+  `test-artefacts/remote-runs/`
 - `run_cmake_smoke.py`
   Shared probe and CMake smoke-build entry point used both remotely and by
   GitHub Actions
@@ -27,6 +31,9 @@ This directory contains the tracked baseline harness entry points for:
   Captures the active Linux desktop when X11 session access is available
 - `Capture-WindowsDesktopScreenshot.ps1`
   Captures the active Windows desktop through the screen API
+- `windows-toolchain/*.ps1`
+  Reusable Windows toolchain maintenance and verification scripts for the
+  approved remotes
 
 ## Local usage
 
@@ -36,6 +43,7 @@ Run the orchestrator from the repository root:
 python tools/harness/invoke_remote_harness.py probe linux-x64-lxqt
 python tools/harness/invoke_remote_harness.py smoke windows-10-reference
 python tools/harness/invoke_remote_harness.py screenshot windows-11-laptop
+python tools/harness/invoke_remote_windows_powershell.py windows-11-laptop tools/harness/windows-toolchain/verify-toolchain.ps1
 ```
 
 The local orchestrator always pulls back into:

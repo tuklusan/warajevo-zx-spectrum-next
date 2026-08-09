@@ -94,10 +94,22 @@ def choose_python_command() -> str | None:
 
 
 def choose_compiler(system_name: str) -> str | None:
-    candidates = ["cl", "clang-cl"] if system_name == "Windows" else ["cc", "gcc", "clang"]
+    if system_name == "Windows":
+        candidates = ["cl", "clang-cl", "clang"]
+    else:
+        candidates = ["cc", "gcc", "clang"]
+
     for candidate in candidates:
         if shutil.which(candidate):
             return candidate
+
+    if system_name == "Windows":
+        llvm_bin = Path(os.environ.get("ProgramFiles", r"C:\Program Files")) / "LLVM" / "bin"
+        for candidate in ("clang.exe", "clang-cl.exe"):
+            compiler_path = llvm_bin / candidate
+            if compiler_path.exists():
+                return str(compiler_path)
+
     return None
 
 
@@ -257,6 +269,12 @@ def main() -> int:
         "-DWZSN_ENABLE_WARNINGS=ON",
         "-DWZSN_ENABLE_SANITIZERS=OFF",
     ]
+
+    compiler_path = tools["compiler"]["path"]
+    if system_name == "Windows" and compiler_path:
+        compiler_name = Path(compiler_path).name.lower()
+        if compiler_name in ("clang.exe", "clang-cl.exe"):
+            configure_command.append(f"-DCMAKE_C_COMPILER={compiler_path}")
 
     if tools["ninja"]["path"]:
         configure_command.extend(["-G", "Ninja"])
