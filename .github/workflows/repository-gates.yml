@@ -27,12 +27,3 @@ jobs:
 
       - name: Validate repository gates
         run: python tools/validate_project_gates.py
-
-      - name: Configure CMake
-        run: cmake -S . -B build
-
-      - name: Build bootstrap targets
-        run: cmake --build build --config Release
-
-      - name: Run placeholder tests
-        run: ctest --test-dir build --output-on-failure --build-config Release

@@ -4,28 +4,6 @@
 # Upstream Warajevo and third-party material retain their applicable copyrights and licenses.
 # See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
-build/
-cmake-build-*/
-out/
-dist/
-.vs/
-.idea/
-__pycache__/
-*.pyc
-*.pyo
-*.obj
-*.o
-*.ilk
-*.pdb
-*.exe
-*.user
-*.suo
-*.log
-WZSN-PRIVATE-TEST-MEDIA/*
-!WZSN-PRIVATE-TEST-MEDIA/.gitignore
-!WZSN-PRIVATE-TEST-MEDIA/README.md
-WZSN_PRIVATE_TEST_MEDIA/
-test-artefacts/*
-!test-artefacts/README.md
-.env.local
-.wzsn-private-test-media.local
+*
+!.gitignore
+!README.md

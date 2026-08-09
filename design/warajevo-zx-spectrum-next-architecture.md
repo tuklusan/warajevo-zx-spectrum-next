@@ -2827,8 +2827,9 @@ https://sourceforge.net/projects/fuse-emulator/
 ### 36.2 Private difficult-media regression directory
 
 Difficult real-world media used only for development compatibility testing lives
-outside the public repository and outside every source or binary distribution.
-The architecture names one optional private development location:
+under the project root in a dedicated directory whose private contents are
+ignored by Git and excluded from every source or binary distribution. The
+architecture names one optional private development location:
 
 ```text
 WZSN-PRIVATE-TEST-MEDIA/
@@ -2841,18 +2842,20 @@ file naming convention, COMPAT identifier, manifest, hash, provenance record,
 copyright/license record, source URL, media-type grouping, or mandatory per-file
 description.
 
-The directory path is supplied only by the local development/test environment,
+The directory path may be supplied by the local development/test environment,
 for example through:
 
 ```text
-WZSN_PRIVATE_TEST_MEDIA=<local-path>
+WZSN_PRIVATE_TEST_MEDIA=./WZSN-PRIVATE-TEST-MEDIA
 ```
 
 No developer-specific absolute path is committed to the public repository. The
-private directory itself is never committed, packaged, copied into release
-artifacts, or required to be redistributable. Public builds and public CI must
-work when the directory is absent; private difficult-media tests are then
-reported as unavailable/skipped rather than as product failures.
+directory name and its public guidance files may be committed, but the private
+media files inside it are never committed, packaged, copied into release
+artifacts, or required to be redistributable. Public repository validation and
+metadata-only automation must work when the private media files are absent;
+private difficult-media tests are then reported as unavailable/skipped rather
+than as product failures.
 
 When the private directory is present, private test code may use its files in any
 way useful to development. The architecture does not require a manifest or a

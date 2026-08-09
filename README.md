@@ -17,8 +17,10 @@ continuation of Warajevo guided by the architecture authorities in
 - The core and UI architecture authorities live in `design/`.
 - The bootstrap C11 build lives in `CMakeLists.txt`.
 - Repository gates live in `tools/validate_project_gates.py`.
+- PowerShell parser-first validation lives in `tools/Test-PowerShellSyntax.ps1`.
 - Local change tracking lives in `issues/change-requests.json`.
 - Git and GitHub workflow notes live in `README-GIT-GITHUB.md`.
+- Project workflow rules live in `WORKFLOW.md`.
 
 ## Initial tree
 
@@ -28,9 +30,11 @@ design/
 issues/
 reference/
 src/
+test-artefacts/
 tests/
 third_party/
 tools/
+WZSN-PRIVATE-TEST-MEDIA/
 ```
 
 The detailed source-tree intent comes from
@@ -38,15 +42,12 @@ The detailed source-tree intent comes from
 repository is the initial Phase-0 scaffold that preserves those module
 boundaries while the implementation is still a bootstrap.
 
-## Build bootstrap
+## Build definition
 
-Configure and build the current bootstrap with:
-
-```text
-cmake -S . -B build
-cmake --build build
-ctest --test-dir build --output-on-failure
-```
+The bootstrap build definition lives in `CMakeLists.txt`, but local build or
+test execution on this machine is prohibited by `WORKFLOW.md`. All build, test,
+log, trace, and artefact activity must run on the approved remote test
+machines, with returned outputs stored under `test-artefacts/`.
 
 ## Governance
 

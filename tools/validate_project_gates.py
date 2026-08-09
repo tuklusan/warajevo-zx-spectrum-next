@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -60,6 +61,22 @@ SKIP_DIRS = {
     "out",
 }
 
+PRIVATE_MEDIA_DIR_NAMES = {
+    "WZSN-PRIVATE-TEST-MEDIA",
+    "WZSN_PRIVATE_TEST_MEDIA",
+}
+
+PRIVATE_MEDIA_PUBLIC_FILES = {
+    ".gitignore",
+    "README.md",
+}
+
+TEST_ARTIFACTS_DIR_NAME = "test-artefacts"
+
+TEST_ARTIFACTS_PUBLIC_FILES = {
+    "README.md",
+}
+
 STATUS_VALUES = {"open", "in_progress", "closed", "blocked"}
 
 BANNED_TERMS = tuple(
@@ -73,6 +90,15 @@ BANNED_TERMS = tuple(
 
 
 def should_skip(path: Path) -> bool:
+    for index, part in enumerate(path.parts):
+        if part in PRIVATE_MEDIA_DIR_NAMES:
+            tail = path.parts[index + 1 :]
+            return len(tail) != 1 or tail[0] not in PRIVATE_MEDIA_PUBLIC_FILES
+
+        if part == TEST_ARTIFACTS_DIR_NAME:
+            tail = path.parts[index + 1 :]
+            return len(tail) != 1 or tail[0] not in TEST_ARTIFACTS_PUBLIC_FILES
+
     return any(part in SKIP_DIRS for part in path.parts)
 
 
@@ -166,6 +192,159 @@ def validate_change_requests(path: Path) -> list[str]:
     return problems
 
 
+def git_tracked_paths(root: Path, relative_path: str) -> list[str]:
+    result = subprocess.run(
+        ["git", "ls-files", "--", relative_path],
+        cwd=root,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    if result.returncode != 0:
+        return []
+
+    return [line.strip() for line in result.stdout.splitlines() if line.strip()]
+
+
+def validate_private_directories(root: Path) -> list[str]:
+    problems: list[str] = []
+
+    tracked_test_artefacts = git_tracked_paths(root, TEST_ARTIFACTS_DIR_NAME)
+    allowed_test_artefacts = {f"{TEST_ARTIFACTS_DIR_NAME}/README.md"}
+    for tracked in tracked_test_artefacts:
+        if tracked not in allowed_test_artefacts:
+            problems.append(
+                f"{tracked}: test-artefacts may only publish README.md; all other contents must remain private"
+            )
+
+    for directory_name in PRIVATE_MEDIA_DIR_NAMES:
+        tracked_private_media = git_tracked_paths(root, directory_name)
+        allowed_private_media = {
+            f"{directory_name}/README.md",
+            f"{directory_name}/.gitignore",
+        }
+        for tracked in tracked_private_media:
+            if tracked not in allowed_private_media:
+                problems.append(
+                    f"{tracked}: private media directory may only publish README.md and .gitignore"
+                )
+
+    return problems
+
+
+def validate_forbidden_local_build_outputs(root: Path) -> list[str]:
+    problems: list[str] = []
+
+    forbidden_dirs = [
+        root / "build",
+        root / "Testing",
+    ]
+    forbidden_dirs.extend(root.glob("cmake-build-*"))
+
+    for path in forbidden_dirs:
+        if path.exists():
+            problems.append(
+                f"{path.relative_to(root)}: local build/test output directory exists, but local build/test execution is forbidden"
+            )
+
+    return problems
+
+
+def validate_remote_only_ci_policy(root: Path) -> list[str]:
+    problems: list[str] = []
+
+    workflow_path = root / ".github" / "workflows" / "repository-gates.yml"
+    if not workflow_path.exists():
+        return problems
+
+    content = workflow_path.read_text(encoding="utf-8")
+    forbidden_patterns = (
+        r"\bcmake\b",
+        r"\bctest\b",
+        r"\bmeson\b",
+        r"\bninja\b",
+        r"(^|\s)make(\s|$)",
+        r"\bmsbuild\b",
+        r"\bdevenv\b",
+        r"\bpytest\b",
+        r"\bcargo\s+build\b",
+        r"\bcargo\s+test\b",
+        r"\bdotnet\s+build\b",
+        r"\bdotnet\s+test\b",
+        r"\bgo\s+test\b",
+        r"\bnpm\s+test\b",
+        r"\bpnpm\s+test\b",
+        r"\byarn\s+test\b",
+    )
+
+    for pattern in forbidden_patterns:
+        if re.search(pattern, content, flags=re.MULTILINE):
+            problems.append(
+                f".github/workflows/repository-gates.yml: contains forbidden non-remote build/test command pattern {pattern!r}"
+            )
+
+    return problems
+
+
+def validate_required_workflow_documents(root: Path) -> list[str]:
+    problems: list[str] = []
+
+    required_files = {
+        "WORKFLOW.md": (
+            "Never create any project item or artifact above the project directory.",
+            "Never build or test on this local machine.",
+            "test-artefacts/",
+            "Whenever a PowerShell command is about to be executed on the local machine or",
+            "tools/Test-PowerShellSyntax.ps1",
+        ),
+        "test-artefacts/README.md": (
+            "linux-x64-lxqt",
+            "sanyalnet@192.168.4.76",
+            "~/SOFTWARE-DEVELOPMENT/Warajevo-Spectrum-Next",
+            "windows-10-reference",
+            "sanyalnet@192.168.4.75",
+            r"D:\WarajevoSpectrum.Next",
+            "windows-11-laptop",
+            "vagab@192.168.4.35",
+            r"C:\Users\vagab\WarajevoSpectrum.Next",
+            "Never build or test on this local machine.",
+            "Before executing any PowerShell command locally or on either remote Windows",
+            "powershell -NoProfile -File tools/Test-PowerShellSyntax.ps1 -CommandText '<command>'",
+        ),
+    }
+
+    tracked_files = set(git_tracked_paths(root, "."))
+    required_tracked_files = {
+        "WORKFLOW.md",
+        "tools/Test-PowerShellSyntax.ps1",
+        "test-artefacts/README.md",
+        "WZSN-PRIVATE-TEST-MEDIA/README.md",
+        "WZSN-PRIVATE-TEST-MEDIA/.gitignore",
+    }
+
+    for relative_name, required_snippets in required_files.items():
+        path = root / relative_name
+        if not path.exists():
+            problems.append(f"{relative_name}: required workflow document is missing")
+            continue
+
+        content = path.read_text(encoding="utf-8")
+        for snippet in required_snippets:
+            if snippet not in content:
+                problems.append(
+                    f"{relative_name}: missing required workflow snippet {snippet!r}"
+                )
+
+    for tracked_name in sorted(required_tracked_files):
+        if tracked_name not in tracked_files:
+            problems.append(
+                f"{tracked_name}: required public workflow file exists but is not tracked by git"
+            )
+
+    return problems
+
+
 def main() -> int:
     root = Path(__file__).resolve().parents[1]
     problems: list[str] = []
@@ -188,6 +367,11 @@ def main() -> int:
         problems.extend(validate_change_requests(issues_path))
     else:
         problems.append("issues/change-requests.json: missing change-request tracker")
+
+    problems.extend(validate_private_directories(root))
+    problems.extend(validate_forbidden_local_build_outputs(root))
+    problems.extend(validate_remote_only_ci_policy(root))
+    problems.extend(validate_required_workflow_documents(root))
 
     if problems:
         for problem in problems:
