@@ -1,0 +1,95 @@
+{
+  "project_notice": [
+    "Warajevo ZX Spectrum Next",
+    "Copyright (c) 2026 Supratim Sanyal, SANYALnet Labs, for new original project material.",
+    "New original material is licensed under GNU GPL v2 or later (GPL-2.0-or-later), as stated in LICENSE.txt.",
+    "Upstream Warajevo and third-party material retain their applicable copyrights and licenses.",
+    "See LICENSE.txt and NOTICE.md for complete terms and provenance."
+  ],
+  "schema_version": 1,
+  "generated_on": "2026-08-09",
+  "next_cr_number": 9,
+  "status_values": [
+    "open",
+    "in_progress",
+    "closed",
+    "blocked"
+  ],
+  "change_requests": [
+    {
+      "cr_number": "CR-0001",
+      "title": "Create canonical repository skeleton and bootstrap build",
+      "status": "closed",
+      "source_authority": [
+        "design/warajevo-zx-spectrum-next-architecture.md",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 001"
+      ],
+      "notes": "Initial directory tree, C11 bootstrap target, and test placeholder added on 2026-08-09."
+    },
+    {
+      "cr_number": "CR-0002",
+      "title": "Install repository gates for notice headers and reserved banned terms",
+      "status": "closed",
+      "source_authority": [
+        "project repository governance",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 004"
+      ],
+      "notes": "Local hooks, a validation script, and a remote workflow gate were added on 2026-08-09."
+    },
+    {
+      "cr_number": "CR-0003",
+      "title": "Create Phase-0 design scaffold files missing from the initial drop",
+      "status": "closed",
+      "source_authority": [
+        "design/warajevo-zx-spectrum-next-architecture.md section 4",
+        "design/wzsn-architectures-1-2-developer-tasks.md tasks 006 and 009"
+      ],
+      "notes": "Migration ledger, timing-evidence scaffold, media-format support, and Interface-1 notes added on 2026-08-09."
+    },
+    {
+      "cr_number": "CR-0004",
+      "title": "Record upstream reference identity for preserved Warajevo material",
+      "status": "closed",
+      "source_authority": [
+        "design/wzsn-architectures-1-2-developer-tasks.md task 005"
+      ],
+      "notes": "The upstream remote and current HEAD reference were recorded on 2026-08-09."
+    },
+    {
+      "cr_number": "CR-0005",
+      "title": "Pin toolchain files for the full cross-platform matrix",
+      "status": "open",
+      "source_authority": [
+        "design/wzsn-architectures-1-2-developer-tasks.md task 017"
+      ],
+      "notes": "Directory and matrix notes exist; concrete toolchain files remain to be added."
+    },
+    {
+      "cr_number": "CR-0006",
+      "title": "Import preserved Warajevo 2.50 source under reference/original-warajevo",
+      "status": "open",
+      "source_authority": [
+        "design/wzsn-architectures-1-2-developer-tasks.md task 005"
+      ],
+      "notes": "The upstream remote is configured, but the read-only imported source tree is still pending."
+    },
+    {
+      "cr_number": "CR-0007",
+      "title": "Freeze timing constants and evidence links for the deterministic 48K baseline",
+      "status": "open",
+      "source_authority": [
+        "design/wzsn-architectures-1-2-developer-tasks.md tasks 009 and 010"
+      ],
+      "notes": "The evidence scaffold exists, but the timing authority set is not frozen yet."
+    },
+    {
+      "cr_number": "CR-0008",
+      "title": "Pin the Fuse Z80 test-suite revision and acquisition instructions",
+      "status": "open",
+      "source_authority": [
+        "design/wzsn-architectures-1-2-developer-tasks.md task 012"
+      ],
+      "notes": "Still pending and intentionally tracked explicitly before CPU implementation begins."
+    }
+  ]
+}

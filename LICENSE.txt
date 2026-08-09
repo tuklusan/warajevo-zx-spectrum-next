@@ -1,0 +1,149 @@
+Warajevo ZX Spectrum Next
+Copyright (c) 2026 Supratim Sanyal, SANYALnet Labs, for new original project material.
+New original material is licensed under GNU GPL v2 or later (GPL-2.0-or-later), as stated in LICENSE.txt.
+Upstream Warajevo and third-party material retain their applicable copyrights and licenses.
+See LICENSE.txt and NOTICE.md for complete terms and provenance.
+
+WARAJEVO ZX SPECTRUM NEXT
+LICENSING NOTICE
+
+Copyright (c) 2026 Supratim Sanyal, SANYALnet Labs, for new original
+Warajevo ZX Spectrum Next contributions.
+
+Original Warajevo code and other upstream Warajevo material remain copyright
+their respective original authors, including Željko Jurić and Samir Ribić.
+
+Third-party material remains copyright its respective owners.
+
+1. UPSTREAM WARAJEVO LICENSING STATUS
+
+Warajevo ZX Spectrum Next is a modern continuation of, and may contain code
+derived from or adapted from, the classic Warajevo Spectrum emulator.
+
+The official Warajevo release history states that Warajevo release 2.52,
+dated February 2006, changed the Warajevo license to the GNU General Public
+License ("GPL") and made source code available.
+
+The official Warajevo download page likewise states that Warajevo has been
+open source under the GPL since February 2006 and that the available source
+code is from Warajevo 2.50.
+
+The available upstream statement and the inspected Warajevo 2.50 source
+archives do not identify an exact GNU GPL version, and do not establish
+whether the upstream grant is limited to one GPL version or permits later
+versions.
+
+Accordingly, this file does not assign a historical version number to the
+upstream Warajevo GPL grant.
+
+Published GNU GPL versions 1, 2, and 3 each provide that, when a Program does
+not specify a GPL version number, a recipient may choose any GNU GPL version
+published by the Free Software Foundation. That rule is relevant to the
+unnumbered upstream Warajevo GPL statement. However, the historical Warajevo
+release did not bundle an obvious GPL text or per-file GPL version notice, and
+some archived files carry separate third-party notices. This project therefore
+records the historical upstream statement exactly as found: GNU GPL, with no
+version number stated.
+
+Nothing in this file purports to decide, on behalf of an upstream or
+third-party copyright holder, whether the unnumbered GPL statement covers a
+particular disputed historical file.
+
+2. NEW WARAJEVO ZX SPECTRUM NEXT CONTRIBUTIONS
+
+Except where a file or directory carries a different compatible notice, new
+original code, documentation, tests, build files, and other copyrightable
+material created for Warajevo ZX Spectrum Next by Supratim Sanyal,
+SANYALnet Labs, are licensed under the GNU General Public License, version 2,
+or (at your option) any later version ("GPL-2.0-or-later").
+
+In addition, if reliable upstream evidence establishes that a Warajevo-derived
+portion incorporated into Warajevo ZX Spectrum Next is validly governed only
+by a different specific version of the GNU General Public License, Supratim
+Sanyal grants permission for his new original Warajevo ZX Spectrum Next
+contributions, when combined with that portion, to be used, modified, copied,
+and distributed under that same GNU GPL version to the extent necessary to
+permit lawful combination and distribution of the resulting work.
+
+This additional compatibility grant applies only to copyrightable material
+owned by Supratim Sanyal. It does not purport to change, expand, narrow, or
+reinterpret the license granted by any upstream or third-party copyright
+holder.
+
+No non-commercial restriction, field-of-use restriction, artificial-
+intelligence or machine-learning restriction, mandatory advertising
+attribution, or other additional restriction is imposed by SANYALnet Labs on
+material distributed under the GNU GPL through this project.
+
+3. WARAJEVO-DERIVED MATERIAL
+
+Any source code or other copyrightable material copied from, translated from,
+adapted from, or otherwise derived from upstream Warajevo remains subject to
+the copyright and license rights applicable to that upstream material.
+
+Changing implementation language does not remove upstream copyright or
+license obligations.
+
+Original upstream copyright, authorship, license, and warranty notices must be
+preserved where required by the applicable license and by law.
+
+A distributor of a combined Warajevo ZX Spectrum Next work containing
+Warajevo-derived material is responsible for complying with the GNU GPL
+version or versions that validly govern that upstream material.
+
+4. SEPARATELY LICENSED AND EXCLUDED MATERIAL
+
+This licensing notice does not replace or override a separate license that
+applies to a third-party file, library, asset, archive, ROM image, firmware
+image, media file, font, tool, or other component.
+
+Material under a third_party/ directory, if present, remains governed by the
+license and notices supplied with that material.
+
+Copies of historical Warajevo source, historical utilities, or preserved
+upstream archives, if ever included in this repository, retain their original
+copyrights, notices, and licensing conditions.
+
+ZX Spectrum ROM images and other firmware are not licensed merely because
+Warajevo ZX Spectrum Next is licensed. No right to copy or redistribute ROM
+images, firmware, games, tape images, snapshots, fonts, manuals, artwork, or
+other third-party content is granted by this file.
+
+See NOTICE.md for project provenance, known legacy third-party issues, and
+additional attribution information.
+
+5. GNU GPL LICENSE TEXT
+
+This file records the project-specific licensing status and the license grant
+for new Warajevo ZX Spectrum Next contributions. It is not a replacement for
+the text of the GNU General Public License.
+
+A distribution containing GPL-covered code must include the applicable GNU GPL
+license text as required by that license.
+
+For new Warajevo ZX Spectrum Next contributions licensed
+GPL-2.0-or-later, release packaging should include the verbatim GNU GPL text
+for the version relied upon.
+
+For Warajevo-derived material, a distributor should include the verbatim GNU
+GPL text for the GPL version under which that material is actually being
+distributed. The upstream Warajevo history should continue to be described as
+an unnumbered GPL grant unless stronger historical evidence establishes a
+specific version.
+
+Official GNU license texts are published by the Free Software Foundation at:
+
+https://www.gnu.org/licenses/
+
+6. NO WARRANTY
+
+TO THE EXTENT PERMITTED BY APPLICABLE LAW, WARAJEVO ZX SPECTRUM NEXT AND THE
+NEW MATERIAL COVERED BY THIS NOTICE ARE PROVIDED "AS IS", WITHOUT WARRANTY OF
+ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT.
+
+FOR GPL-COVERED MATERIAL, THE WARRANTY AND LIABILITY TERMS OF THE APPLICABLE
+GNU GENERAL PUBLIC LICENSE AND ANY PRESERVED UPSTREAM NOTICE ALSO APPLY.
+
+Nothing in this licensing notice is intended to impose an additional
+restriction on rights granted by the GNU General Public License.
