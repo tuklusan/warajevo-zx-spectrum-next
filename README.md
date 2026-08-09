@@ -18,6 +18,7 @@ continuation of Warajevo guided by the architecture authorities in
 - The bootstrap C11 build lives in `CMakeLists.txt`.
 - Repository gates live in `tools/validate_project_gates.py`.
 - PowerShell parser-first validation lives in `tools/Test-PowerShellSyntax.ps1`.
+- Remote harness entry points live in `tools/harness/`.
 - Local change tracking lives in `issues/change-requests.json`.
 - Git and GitHub workflow notes live in `README-GIT-GITHUB.md`.
 - Project workflow rules live in `WORKFLOW.md`.
@@ -47,7 +48,12 @@ boundaries while the implementation is still a bootstrap.
 The bootstrap build definition lives in `CMakeLists.txt`, but local build or
 test execution on this machine is prohibited by `WORKFLOW.md`. All build, test,
 log, trace, and artefact activity must run on the approved remote test
-machines, with returned outputs stored under `test-artefacts/`.
+machines or on approved GitHub-hosted runners, with returned outputs stored
+under `test-artefacts/` when they are pulled back to this machine.
+
+The baseline shared harness lives in `tools/harness/`. It drives the SSH
+remotes, packages pulled artefacts into `test-artefacts/`, and provides the
+same CMake smoke entry point used by the GitHub Actions platform matrix.
 
 ## Governance
 

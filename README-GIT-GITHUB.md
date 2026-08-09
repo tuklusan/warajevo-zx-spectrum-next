@@ -48,6 +48,42 @@ python tools/validate_project_gates.py
 Do not build or test on this local machine. Remote build and test harness rules
 are documented in `test-artefacts/README.md`.
 
+## Remote harness baseline
+
+The tracked remote harness entry points live in:
+
+```text
+tools/harness/
+```
+
+Use the local orchestrator to run a remote probe, smoke build, or screenshot
+capture without leaving the approved project directories on the remote
+machines:
+
+```text
+python tools/harness/invoke_remote_harness.py probe linux-x64-lxqt
+python tools/harness/invoke_remote_harness.py smoke windows-10-reference
+python tools/harness/invoke_remote_harness.py screenshot windows-11-laptop
+```
+
+Pulled-back outputs are stored only under:
+
+```text
+test-artefacts/remote-runs/
+```
+
+The harness also defines the shared CMake smoke entry point used by the GitHub
+Actions workflow:
+
+```text
+.github/workflows/platform-smoke.yml
+```
+
+As of 2026-08-09, the baseline GitHub-hosted runner matrix is pinned to the
+current standard labels verified from the official GitHub Actions runner
+reference: `ubuntu-24.04`, `ubuntu-24.04-arm`, `windows-2025`, `macos-15`, and
+`macos-15-intel`.
+
 ## Private Difficult Media
 
 The architecture's difficult TAP, TZX, SNA, Z80, MDR, and related regression
@@ -82,7 +118,11 @@ git push
 ```
 
 After a push, run build and test work only on the approved remote machines, and
-pull back logs, traces, and other outputs into `test-artefacts/`.
+pull back logs, traces, screenshots, and other outputs into `test-artefacts/`.
+
+Pushes and pull requests also trigger the hosted smoke matrix in
+`.github/workflows/platform-smoke.yml`. Those jobs are remote CI execution and
+are allowed by the project workflow rules.
 
 ## Reference sync
 

@@ -21,6 +21,7 @@ __pycache__/
 *.user
 *.suo
 *.log
+.wzsn-harness/
 WZSN-PRIVATE-TEST-MEDIA/*
 !WZSN-PRIVATE-TEST-MEDIA/.gitignore
 !WZSN-PRIVATE-TEST-MEDIA/README.md

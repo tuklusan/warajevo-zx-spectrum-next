@@ -1,0 +1,58 @@
+# Warajevo ZX Spectrum Next
+# Copyright (c) 2026 Supratim Sanyal, SANYALnet Labs, for new original project material.
+# New original material is licensed under GNU GPL v2 or later (GPL-2.0-or-later), as stated in LICENSE.txt.
+# Upstream Warajevo and third-party material retain their applicable copyrights and licenses.
+# See LICENSE.txt and NOTICE.md for complete terms and provenance.
+
+name: platform-smoke
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: linux-x64
+            label: ubuntu-24.04
+          - id: linux-arm64
+            label: ubuntu-24.04-arm
+          - id: windows-x64
+            label: windows-2025
+          - id: macos-arm64
+            label: macos-15
+          - id: macos-intel-x64
+            label: macos-15-intel
+
+    name: ${{ matrix.id }}
+    runs-on: ${{ matrix.label }}
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Run shared CMake smoke harness
+        run: python tools/harness/run_cmake_smoke.py --artifact-dir .wzsn-harness/github/${{ matrix.id }}
+
+      - name: Upload smoke artefacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: platform-smoke-${{ matrix.id }}
+          path: .wzsn-harness/github/${{ matrix.id }}
+          if-no-files-found: error

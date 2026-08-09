@@ -287,6 +287,34 @@ def validate_remote_only_ci_policy(root: Path) -> list[str]:
     return problems
 
 
+def validate_platform_smoke_workflow(root: Path) -> list[str]:
+    problems: list[str] = []
+
+    workflow_path = root / ".github" / "workflows" / "platform-smoke.yml"
+    if not workflow_path.exists():
+        problems.append(".github/workflows/platform-smoke.yml: hosted platform smoke workflow is missing")
+        return problems
+
+    content = workflow_path.read_text(encoding="utf-8")
+    required_snippets = (
+        "ubuntu-24.04",
+        "ubuntu-24.04-arm",
+        "windows-2025",
+        "macos-15",
+        "macos-15-intel",
+        "python tools/harness/run_cmake_smoke.py",
+        "actions/upload-artifact",
+    )
+
+    for snippet in required_snippets:
+        if snippet not in content:
+            problems.append(
+                f".github/workflows/platform-smoke.yml: missing required hosted smoke snippet {snippet!r}"
+            )
+
+    return problems
+
+
 def validate_required_workflow_documents(root: Path) -> list[str]:
     problems: list[str] = []
 
@@ -294,6 +322,7 @@ def validate_required_workflow_documents(root: Path) -> list[str]:
         "WORKFLOW.md": (
             "Never create any project item or artifact above the project directory.",
             "Never build or test on this local machine.",
+            "GitHub-hosted runners used by this repository's tracked workflows are approved",
             "test-artefacts/",
             "Whenever a PowerShell command is about to be executed on the local machine or",
             "tools/Test-PowerShellSyntax.ps1",
@@ -309,15 +338,33 @@ def validate_required_workflow_documents(root: Path) -> list[str]:
             "vagab@192.168.4.35",
             r"C:\Users\vagab\WarajevoSpectrum.Next",
             "Never build or test on this local machine.",
+            "test-artefacts/remote-runs/<machine>/<run-id>/",
+            ".github/workflows/platform-smoke.yml",
             "Before executing any PowerShell command locally or on either remote Windows",
             "powershell -NoProfile -File tools/Test-PowerShellSyntax.ps1 -CommandText '<command>'",
+        ),
+        "README-GIT-GITHUB.md": (
+            "tools/harness/invoke_remote_harness.py",
+            ".github/workflows/platform-smoke.yml",
+            "ubuntu-24.04",
+            "ubuntu-24.04-arm",
+            "windows-2025",
+            "macos-15",
+            "macos-15-intel",
         ),
     }
 
     tracked_files = set(git_tracked_paths(root, "."))
     required_tracked_files = {
+        ".github/workflows/platform-smoke.yml",
         "WORKFLOW.md",
         "tools/Test-PowerShellSyntax.ps1",
+        "tools/harness/README.md",
+        "tools/harness/run_cmake_smoke.py",
+        "tools/harness/stream_zip_tree.py",
+        "tools/harness/invoke_remote_harness.py",
+        "tools/harness/capture-linux-active-display.sh",
+        "tools/harness/Capture-WindowsDesktopScreenshot.ps1",
         "test-artefacts/README.md",
         "WZSN-PRIVATE-TEST-MEDIA/README.md",
         "WZSN-PRIVATE-TEST-MEDIA/.gitignore",
@@ -371,6 +418,7 @@ def main() -> int:
     problems.extend(validate_private_directories(root))
     problems.extend(validate_forbidden_local_build_outputs(root))
     problems.extend(validate_remote_only_ci_policy(root))
+    problems.extend(validate_platform_smoke_workflow(root))
     problems.extend(validate_required_workflow_documents(root))
 
     if problems:

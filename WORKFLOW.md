@@ -27,6 +27,9 @@ records, and other development artifacts only.
 All build, test, log-capture, trace-capture, and similar execution activity
 must run only on the approved remote test machines.
 
+GitHub-hosted runners used by this repository's tracked workflows are approved
+remote build and test machines.
+
 All pulled-back logs, traces, test results, screenshots, and similar outputs
 must be stored under:
 
@@ -35,7 +38,8 @@ test-artefacts/
 ```
 
 The public harness contract for those machines lives in
-`test-artefacts/README.md`.
+`test-artefacts/README.md`, and the tracked shared harness entry points live in
+`tools/harness/`.
 
 ## Private Local Artifacts
 

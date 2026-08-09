@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 13,
+  "next_cr_number": 14,
   "status_values": [
     "open",
     "in_progress",
@@ -127,6 +127,16 @@
         "project workflow rule"
       ],
       "notes": "The tracked helper tools/Test-PowerShellSyntax.ps1 was added, workflow docs now require parser-first validation for local and remote Windows PowerShell commands, and repository gates now require that public rule surface on 2026-08-09."
+    },
+    {
+      "cr_number": "CR-0013",
+      "title": "Establish the shared remote and hosted-runner harness baseline",
+      "status": "closed",
+      "source_authority": [
+        "project workflow rule",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 017"
+      ],
+      "notes": "The tracked tools/harness baseline, remote screenshot capture entry points, hosted GitHub Actions smoke matrix, and public workflow documentation were added on 2026-08-09."
     }
   ]
 }

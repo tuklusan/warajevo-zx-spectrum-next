@@ -106,3 +106,30 @@ ssh vagab@192.168.4.35 "powershell -NoProfile -Command \"Set-Location 'C:\\Users
 
 Any logs, traces, screenshots, packaged builds, or other remote outputs copied
 back to this local machine must be stored only under `test-artefacts/`.
+
+The baseline harness stores pulled outputs under:
+
+```text
+test-artefacts/remote-runs/<machine>/<run-id>/
+```
+
+The tracked harness entry points that produce those pull-backs live under:
+
+```text
+tools/harness/
+```
+
+## Hosted runner rule
+
+GitHub-hosted runners used by this repository's tracked workflows are approved
+remote build and test machines.
+
+The current hosted smoke matrix is defined in:
+
+```text
+.github/workflows/platform-smoke.yml
+```
+
+When hosted-runner logs, screenshots, or packaged artefacts are pulled back to
+this machine for inspection, they must also be stored only under
+`test-artefacts/`.
