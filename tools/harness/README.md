@@ -50,7 +50,9 @@ python tools/harness/invoke_remote_harness.py screenshot windows-11-laptop
 python tools/harness/invoke_remote_windows_powershell.py windows-11-laptop tools/harness/windows-toolchain/verify-toolchain.ps1
 ```
 
-The local orchestrator always pulls back into:
+Before probes and tests, the orchestrator updates the approved remote checkout
+with `git pull --ff-only origin main`; it refuses to proceed if the checkout
+cannot be advanced safely. The orchestrator always pulls results back into:
 
 ```text
 test-artefacts/remote-runs/<machine>/<run-id>/

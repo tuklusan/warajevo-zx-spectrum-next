@@ -138,6 +138,22 @@ def run_linux(machine: dict[str, str], shell_command: str, root: Path) -> subpro
     )
 
 
+def sync_linux(machine: dict[str, str], root: Path) -> subprocess.CompletedProcess[bytes]:
+    return run_linux(machine, "git pull --ff-only origin main", root)
+
+
+def sync_windows(machine: dict[str, str], root: Path) -> subprocess.CompletedProcess[bytes]:
+    script_text = "\n".join(
+        [
+            "$ErrorActionPreference = 'Stop'",
+            f"Set-Location '{machine['project_dir']}'",
+            "& git pull --ff-only origin main",
+            "exit $LASTEXITCODE",
+        ]
+    )
+    return run_windows(machine, script_text, root)
+
+
 def run_windows(machine: dict[str, str], script_text: str, root: Path) -> subprocess.CompletedProcess[bytes]:
     validate_powershell(root, script_text)
     encoded = base64.b64encode(script_text.encode("utf-16le")).decode("ascii")
@@ -238,6 +254,18 @@ def main() -> int:
     remote_dir_windows = windows_relative_path(remote_dir)
     local_dir = root / "test-artefacts" / "remote-runs" / args.machine / args.run_id
     local_dir.mkdir(parents=True, exist_ok=True)
+
+    sync = sync_linux(machine, root) if machine["kind"] == "linux" else sync_windows(machine, root)
+    write_text(local_dir / "sync-stdout.txt", decode_output(sync.stdout))
+    write_text(local_dir / "sync-stderr.txt", decode_output(sync.stderr))
+    if sync.returncode != 0:
+        write_text(
+            local_dir / "session.json",
+            json.dumps({"action": args.action, "machine": args.machine,
+                        "run_id": args.run_id, "sync_returncode": sync.returncode},
+                       indent=2, sort_keys=True) + "\n",
+        )
+        return sync.returncode
 
     if machine["kind"] == "linux":
         if args.action == "probe":
