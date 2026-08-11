@@ -149,6 +149,12 @@ class GateTests(unittest.TestCase):
         self.assertFalse(gate.final_schema_valid({"review_type": "CODE", "snapshot_id": "snap",
                                                   "verdict": "FAIL", "review_complete": True,
                                                   "blocking_findings": ["malformed"]}, "CODE", "snap"))
+        incomplete_finding = {"id": "A", "severity": "HIGH", "category": "correctness",
+                              "requirement": "AC", "location": "file:1", "problem": "defect",
+                              "evidence": "proof", "required_outcome": "fix"}
+        self.assertFalse(gate.final_schema_valid({"review_type": "CODE", "snapshot_id": "snap",
+                                                  "verdict": "FAIL", "review_complete": False,
+                                                  "blocking_findings": [incomplete_finding]}, "CODE", "snap"))
         self.assertFalse(gate.specialist_schema_valid(
             {"pass": "CODE-A", "review_complete": True,
              "findings": [{"severity": "HIGH"}], "uncertainties": []}, "CODE-A"
@@ -164,6 +170,23 @@ class GateTests(unittest.TestCase):
         gate.perform_review(client, "CODE", "snap", "requirements", ["material"], [], telemetry)
         self.assertTrue(telemetry.adjudication)
         self.assertEqual(len(client.calls), 6)
+
+    def test_subsequent_round_preserves_prior_finding_metadata(self):
+        prior = [{"id": "OLD-1", "status": "RESOLVED", "evidence": "fixed in current snapshot"}]
+        reviewed_final = final()
+        reviewed_final["prior_findings"] = [{"id": "OLD-1", "status": "RESOLVED"}]
+        client = FakeClient([
+            specialist("CODE-A"), specialist("CODE-B"), specialist("CODE-C"),
+            specialist("MATERIAL-VERIFICATION-1"), reviewed_final,
+        ])
+
+        result = gate.perform_review(
+            client, "CODE", "snap", "requirements", ["material"], prior, gate.Telemetry("CODE", "snap")
+        )
+
+        self.assertEqual(result["prior_findings"], [{"id": "OLD-1", "status": "RESOLVED"}])
+        self.assertIn("fixed in current snapshot", client.calls[-2][1])
+        self.assertIn("fixed in current snapshot", client.calls[-1][1])
 
     def test_sharding_never_drops_material(self):
         content = "x" * (gate.SHARD_BYTES * 2 + 17)
