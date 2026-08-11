@@ -54,6 +54,7 @@ int main(void)
     wz_trace_file_t duplicate;
     wz_qword_t recovered_last = 0u;
     size_t recovered_count = 0u;
+    FILE* trace_stream;
     const char* trace_path = "wz-trace-regression.bin";
 
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
@@ -136,6 +137,25 @@ int main(void)
                               &recovered_count) != WZ_RESULT_OK ||
         recovered_count < (8u * 69888u) || recovered_last != 799999u) {
         fputs("trace wrap recovery failed\n", stderr);
+        return 1;
+    }
+    trace_stream = fopen(trace_path, "r+b");
+    if (trace_stream == NULL || fseek(trace_stream, 0, SEEK_END) != 0 ||
+        ftell(trace_stream) != (long)WZ_TRACE_FILE_SIZE ||
+        fseek(trace_stream,
+              (long)(WZ_TRACE_HEADER_SIZE +
+                     (799999u % ((WZ_TRACE_FILE_SIZE - WZ_TRACE_HEADER_SIZE) /
+                                  WZ_TRACE_RECORD_SIZE)) * WZ_TRACE_RECORD_SIZE + 20u),
+              SEEK_SET) != 0 || fputc(0, trace_stream) == EOF ||
+        fclose(trace_stream) != 0) {
+        fputs("trace size or truncation fixture failed\n", stderr);
+        return 1;
+    }
+    recovered_last = 0u;
+    if (wz_trace_file_recover(trace_path, recover_trace, &recovered_last,
+                              &recovered_count) != WZ_RESULT_OK ||
+        recovered_last != 799998u) {
+        fputs("incomplete trace record was not rejected\n", stderr);
         return 1;
     }
     remove(trace_path);

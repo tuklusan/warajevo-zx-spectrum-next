@@ -191,12 +191,12 @@
     {
       "cr_number": "CR-0019",
       "title": "Implement the bounded circular trace backend and close the Phase-1 gate",
-      "status": "open",
+      "status": "closed",
       "source_authority": [
         "design/warajevo-zx-spectrum-next-architecture.md sections 44 and 45",
         "design/wzsn-architectures-1-2-developer-tasks.md tasks 033-040"
       ],
-      "notes": "Tracks the 16 MiB per-process circular trace file, binary record/header codec, freeze/recovery behavior, trace-dump utility, sanitizer and cross-build evidence, and the Phase-1 gate."
+      "notes": "Closed on 2026-08-11 after implementing the exclusive fixed 16 MiB circular trace backend, compact committed-record codec, identity/mask/synchronization metadata, freeze and post-mortem recovery, standalone dump utility, state round trips, and wrap/density/incomplete-record tests. Evidence passed on both Windows remotes, Linux with GCC and Clang sanitizers, and the five-platform hosted matrix; design/phase-1-reconciliation.md records the two-pass pre-Phase-2 review."
     }
   ]
 }
