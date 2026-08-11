@@ -114,7 +114,12 @@ class GateTests(unittest.TestCase):
         self.assertEqual(len(client.calls), 3)
 
     def test_serious_finding_is_not_capped(self):
-        findings = [{"severity": "HIGH", "id": str(i)} for i in range(100)]
+        findings = [
+            {"severity": "HIGH", "id": str(i), "category": "correctness",
+             "requirement": "AC-1", "location": "file:1", "problem": "defect",
+             "evidence": "proof", "required_outcome": "correction"}
+            for i in range(100)
+        ]
         self.assertTrue(gate.specialist_schema_valid(specialist("CODE-A", findings)))
 
     def test_invalid_and_incomplete_outputs_cannot_pass(self):
@@ -124,6 +129,10 @@ class GateTests(unittest.TestCase):
                                                   "blocking_findings": []}, "CODE", "snap"))
         self.assertFalse(gate.final_schema_valid({"review_type": "CODE", "snapshot_id": "snap",
                                                   "verdict": "MAYBE"}, "CODE", "snap"))
+        self.assertFalse(gate.specialist_schema_valid(
+            {"pass": "CODE-A", "review_complete": True,
+             "findings": [{"severity": "HIGH"}], "uncertainties": []}, "CODE-A"
+        ))
 
     def test_adjudication_only_for_ambiguity(self):
         inconclusive = {"review_type": "CODE", "snapshot_id": "snap", "verdict": "INCONCLUSIVE",

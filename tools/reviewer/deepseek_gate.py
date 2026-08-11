@@ -27,7 +27,7 @@ from typing import Any
 API_URL = "https://api.deepseek.com/chat/completions"
 MODEL = "deepseek-v4-pro"
 KEY_NAME = "DeepSeek_API_key"
-MAX_OUTPUT_TOKENS = 16384
+MAX_OUTPUT_TOKENS = 384000
 SHARD_BYTES = 280_000
 RETRY_DELAYS = (1, 3)
 VERDICTS = {"PASS", "FAIL", "INCONCLUSIVE", "REVIEW_UNAVAILABLE"}
@@ -250,7 +250,13 @@ def specialist_schema_valid(value: Any, expected_pass: str | None = None) -> boo
         return False
     if not isinstance(value.get("findings"), list) or not isinstance(value.get("uncertainties", []), list):
         return False
-    return all(isinstance(f, dict) and f.get("severity") in SEVERITIES for f in value["findings"])
+    required = ("id", "severity", "category", "requirement", "location",
+                "problem", "evidence", "required_outcome")
+    return all(
+        isinstance(f, dict) and f.get("severity") in SEVERITIES
+        and all(isinstance(f.get(field), str) and f[field].strip() for field in required)
+        for f in value["findings"]
+    )
 
 
 def request_validated(client: DeepSeekClient, system: str, prompt: str,
@@ -331,6 +337,47 @@ def perform_review(client: DeepSeekClient, review_type: str, snapshot_id: str,
                         f"{pass_name} requirement {requirement_index + 1} material "
                         f"{shard_index + 1}: {type(exc).__name__}"
                     )
+    global_requirements = requirements
+    if len(requirement_shards) > 1:
+        requirement_summaries: list[str] = []
+        for index, requirement_material in enumerate(requirement_shards):
+            summary_prompt = (
+                "Return JSON only. Extract every mandatory rule, relationship, acceptance criterion, conflict, "
+                "and cross-reference from this requirement shard without commentary or omission.\n"
+                + requirement_material
+                + '\nReturn {"review_complete":true,"requirements":["complete rule"]} as JSON.'
+            )
+            telemetry.passes.append(f"REQUIREMENT-SUMMARY-{index + 1}")
+            summary = request_validated(
+                client, "You preserve controlling requirements losslessly for cross-shard review. JSON only.",
+                summary_prompt, telemetry,
+                lambda candidate: candidate.get("review_complete") is True
+                and isinstance(candidate.get("requirements"), list)
+                and all(isinstance(item, str) and item.strip() for item in candidate["requirements"]),
+                f"REQUIREMENT-SUMMARY-{index + 1}",
+            )
+            requirement_summaries.extend(summary["requirements"])
+        global_requirements = canonical_json({"all_requirement_shard_rules": requirement_summaries})
+        if len(global_requirements.encode()) > SHARD_BYTES:
+            raise OutputError("requirement summaries exceed safe global integration bounds")
+        for shard_index, material in enumerate(shards):
+            common = common_prompt(review_type, snapshot_id, global_requirements, material)
+            for pass_name, scope in SPECIALISTS[review_type]:
+                global_pass = f"{pass_name}-GLOBAL"
+                telemetry.passes.append(global_pass)
+                try:
+                    specialist_results.append(request_validated(
+                        client, "You are a strict cross-shard software review gate. Return JSON only.",
+                        common + f"Assigned pass {global_pass}; review cross-requirement {scope}. "
+                        f"Material shard {shard_index + 1}/{len(shards)}. Return pass exactly as {global_pass}.",
+                        telemetry,
+                        lambda candidate, expected=global_pass: specialist_schema_valid(candidate, expected),
+                        global_pass,
+                    ))
+                except ReviewError as exc:
+                    specialist_failures.append(
+                        f"{global_pass} material {shard_index + 1}: {type(exc).__name__}"
+                    )
     if specialist_failures:
         return {
             "schema_version": 1,
@@ -377,12 +424,7 @@ def perform_review(client: DeepSeekClient, review_type: str, snapshot_id: str,
         "requirement_shard_count": len(requirement_shards),
         "material_shard_count": len(shards),
     }
-    consolidation_requirements = requirements
-    if len(requirements.encode()) > SHARD_BYTES:
-        consolidation_requirements = canonical_json({
-            "requirement_shards_reviewed": len(requirement_shards),
-            "requirement_sha256": hashlib.sha256(requirements.encode()).hexdigest(),
-        })
+    consolidation_requirements = global_requirements
     while len(canonical_json(consolidation).encode()) > SHARD_BYTES:
         previous_size = len(canonical_json(consolidation).encode())
         batches: list[list[dict[str, Any]]] = []
