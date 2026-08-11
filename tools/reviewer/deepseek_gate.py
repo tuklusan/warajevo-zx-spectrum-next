@@ -13,6 +13,7 @@ import argparse
 import hashlib
 import json
 import os
+import ssl
 import subprocess
 import sys
 import time
@@ -160,7 +161,16 @@ class DeepSeekClient:
         self._key = key if key is not None else os.environ.get(KEY_NAME, "")
         if not self._key.strip():
             raise ConfigurationError(f"required environment variable {KEY_NAME} is missing or empty")
-        self._opener = opener or urllib.request.urlopen
+        self._opener = opener
+
+    @staticmethod
+    def _open(request: urllib.request.Request, timeout: int):
+        try:
+            import certifi
+            context = ssl.create_default_context(cafile=certifi.where())
+        except ImportError:
+            context = ssl.create_default_context()
+        return urllib.request.urlopen(request, timeout=timeout, context=context)
 
     def request(self, system: str, user: str, telemetry: Telemetry) -> dict[str, Any]:
         payload = {
@@ -180,7 +190,8 @@ class DeepSeekClient:
         for attempt in range(len(RETRY_DELAYS) + 1):
             telemetry.calls += 1
             try:
-                with self._opener(request, timeout=180) as response:
+                opener = self._opener or self._open
+                with opener(request, timeout=180) as response:
                     envelope = json.loads(response.read().decode())
                 choice = envelope["choices"][0]
                 if choice.get("finish_reason") == "length":
