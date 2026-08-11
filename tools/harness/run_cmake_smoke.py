@@ -315,10 +315,10 @@ def main() -> int:
         str(build_dir),
         "-DWZSN_ENABLE_WARNINGS=ON",
         f"-DWZSN_ENABLE_SANITIZERS={'ON' if args.sanitizers else 'OFF'}",
-        "-DWZSN_ENABLE_REVIEW_GATE_TESTS=ON",
     ]
 
     if tools["python"]["path"]:
+        configure_command.append("-DWZSN_ENABLE_REVIEW_GATE_TESTS=ON")
         configure_command.append(python_cmake_definition(tools["python"]["path"]))
 
     if compiler_path:
