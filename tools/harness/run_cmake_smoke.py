@@ -93,7 +93,9 @@ def choose_python_command() -> str | None:
     return None
 
 
-def choose_compiler(system_name: str) -> str | None:
+def choose_compiler(system_name: str, requested: str | None = None) -> str | None:
+    if requested:
+        return requested if shutil.which(requested) else None
     if system_name == "Windows":
         candidates = ["cl", "clang-cl", "clang"]
     else:
@@ -206,6 +208,8 @@ def main() -> int:
         default="Debug",
         help="Multi-config build configuration name. Defaults to Debug.",
     )
+    parser.add_argument("--compiler", help="Require and use this C compiler executable.")
+    parser.add_argument("--sanitizers", action="store_true", help="Enable address and undefined-behavior sanitizers.")
     parser.add_argument(
         "--probe-only",
         action="store_true",
@@ -220,7 +224,7 @@ def main() -> int:
 
     system_name = platform.system()
     python_command = choose_python_command()
-    compiler_command = choose_compiler(system_name)
+    compiler_command = choose_compiler(system_name, args.compiler)
     build_helper = choose_build_helper(system_name)
 
     tools = {
@@ -287,6 +291,7 @@ def main() -> int:
         )
         return 2
 
+    compiler_path = tools["compiler"]["path"]
     configure_command = [
         "cmake",
         "-S",
@@ -294,14 +299,15 @@ def main() -> int:
         "-B",
         str(build_dir),
         "-DWZSN_ENABLE_WARNINGS=ON",
-        "-DWZSN_ENABLE_SANITIZERS=OFF",
+        f"-DWZSN_ENABLE_SANITIZERS={'ON' if args.sanitizers else 'OFF'}",
     ]
 
-    compiler_path = tools["compiler"]["path"]
+    if compiler_path:
+        configure_command.append(f"-DCMAKE_C_COMPILER={cmake_path_string(compiler_path)}")
+
     if system_name == "Windows" and compiler_path:
         compiler_name = Path(compiler_path).name.lower()
         if compiler_name in ("clang.exe", "clang-cl.exe"):
-            configure_command.append(f"-DCMAKE_C_COMPILER={cmake_path_string(compiler_path)}")
             if tools["rc"]["path"]:
                 configure_command.append(f"-DCMAKE_RC_COMPILER={cmake_path_string(tools['rc']['path'])}")
             if tools["mt"]["path"]:

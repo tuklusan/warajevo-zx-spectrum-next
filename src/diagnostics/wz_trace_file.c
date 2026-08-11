@@ -12,11 +12,30 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #define WZ_TRACE_FORMAT_VERSION 1u
 #define WZ_TRACE_COMMIT UINT32_C(0x57415a43)
 
-static void put32(wz_byte_t* p, wz_dword_t v) { for (size_t i=0;i<4u;++i) p[i]=(wz_byte_t)(v>>(8u*i)); }
-static void put64(wz_byte_t* p, wz_qword_t v) { for (size_t i=0;i<8u;++i) p[i]=(wz_byte_t)(v>>(8u*i)); }
-static wz_dword_t get32(const wz_byte_t* p) { wz_dword_t v=0u; for(size_t i=0;i<4u;++i)v|=(wz_dword_t)p[i]<<(8u*i); return v; }
-static wz_qword_t get64(const wz_byte_t* p) { wz_qword_t v=0u; for(size_t i=0;i<8u;++i)v|=(wz_qword_t)p[i]<<(8u*i); return v; }
-static wz_qword_t slot_count(void) { return (WZ_TRACE_FILE_SIZE-WZ_TRACE_HEADER_SIZE)/WZ_TRACE_RECORD_SIZE; }
+static void put32(wz_byte_t* p, wz_dword_t v)
+{
+    for (size_t i = 0u; i < 4u; ++i) p[i] = (wz_byte_t)(v >> (8u * i));
+}
+static void put64(wz_byte_t* p, wz_qword_t v)
+{
+    for (size_t i = 0u; i < 8u; ++i) p[i] = (wz_byte_t)(v >> (8u * i));
+}
+static wz_dword_t get32(const wz_byte_t* p)
+{
+    wz_dword_t v = 0u;
+    for (size_t i = 0u; i < 4u; ++i) v |= (wz_dword_t)p[i] << (8u * i);
+    return v;
+}
+static wz_qword_t get64(const wz_byte_t* p)
+{
+    wz_qword_t v = 0u;
+    for (size_t i = 0u; i < 8u; ++i) v |= (wz_qword_t)p[i] << (8u * i);
+    return v;
+}
+static wz_qword_t slot_count(void)
+{
+    return (WZ_TRACE_FILE_SIZE - WZ_TRACE_HEADER_SIZE) / WZ_TRACE_RECORD_SIZE;
+}
 
 static bool write_header(wz_trace_file_t* t)
 {
@@ -62,7 +81,10 @@ void wz_trace_file_close(wz_trace_file_t* t){if(t&&t->file){fclose(t->file);t->f
 wz_result_t wz_trace_file_recover(const char* path,wz_trace_recover_fn fn,void* context,size_t* count)
 {
     FILE* f;wz_byte_t h[WZ_TRACE_HEADER_SIZE],r[WZ_TRACE_RECORD_SIZE];wz_qword_t first,last;size_t n=0u;
-    if(!path||!fn||!count)return WZ_RESULT_INVALID_ARGUMENT;*count=0u;f=fopen(path,"rb");if(!f)return WZ_RESULT_TRACE_FAILURE;
+    if (!path || !fn || !count) return WZ_RESULT_INVALID_ARGUMENT;
+    *count = 0u;
+    f = fopen(path, "rb");
+    if (!f) return WZ_RESULT_TRACE_FAILURE;
     if(fread(h,1u,sizeof(h),f)!=sizeof(h)||memcmp(h,"WZSNTRC",7u)!=0||get32(h+8u)!=WZ_TRACE_FORMAT_VERSION){fclose(f);return WZ_RESULT_INVALID_STATE;}
     first=get64(h+56u);last=get64(h+64u);
     if(first!=UINT64_MAX)for(wz_qword_t seq=first;seq<=last;++seq){
