@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 17,
+  "next_cr_number": 18,
   "status_values": [
     "open",
     "in_progress",
@@ -167,6 +167,16 @@
         "project workflow rule"
       ],
       "notes": "On 2026-08-09, repository validation was extended to catch CR next-number drift and remote-machine contract/documentation drift, and the affected public docs were reconciled to the canonical repository URLs and current workflow metadata."
+    },
+    {
+      "cr_number": "CR-0017",
+      "title": "Implement the Phase-1 portable core foundation",
+      "status": "in_progress",
+      "source_authority": [
+        "design/warajevo-zx-spectrum-next-architecture.md sections 7-10",
+        "design/wzsn-architectures-1-2-developer-tasks.md tasks 021-027"
+      ],
+      "notes": "Added fixed-width core types, profile data, canonical master-tick conversion, initial machine ownership, and deterministic same-tick scheduler primitives on 2026-08-11. Serialization, hashing, trace, and CPU implementation remain separate Phase-1 work."
     }
   ]
 }

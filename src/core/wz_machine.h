@@ -9,6 +9,27 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #ifndef WZ_CORE_WZ_MACHINE_H
 #define WZ_CORE_WZ_MACHINE_H
 
+#include <stddef.h>
+
+#include "core/wz_machine_profile.h"
+#include "core/wz_types.h"
+
+typedef struct {
+    wz_word_t program_counter;
+    wz_word_t stack_pointer;
+    wz_byte_t interrupt_enabled;
+} wz_cpu_state_t;
+
+typedef struct {
+    const wz_machine_profile_t* profile;
+    wz_cpu_state_t cpu;
+    wz_byte_t memory[65536u];
+    wz_master_tick_t master_tick;
+} wz_machine_t;
+
+wz_result_t wz_machine_init(wz_machine_t* machine,
+                            const wz_machine_profile_t* profile);
+void wz_machine_destroy(wz_machine_t* machine);
 const char* wz_machine_boot_message(void);
 
 #endif

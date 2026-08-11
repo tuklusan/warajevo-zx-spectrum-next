@@ -6,6 +6,10 @@ Upstream Warajevo and third-party material retain their applicable copyrights an
 See LICENSE.txt and NOTICE.md for complete terms and provenance.
 -->
 
+> **UNDER DEVELOPMENT**: this project is an active implementation effort. The
+> architecture and source tree are incomplete, and no release or compatibility
+> claim should be inferred from the current bootstrap build.
+
 # Warajevo ZX Spectrum Next
 
 Warajevo ZX Spectrum Next is the working repository for a modern, portable

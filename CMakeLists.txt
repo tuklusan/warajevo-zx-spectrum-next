@@ -39,7 +39,9 @@ endif()
 add_library(
     wz_core
     STATIC
+    src/core/wz_machine_profile.c
     src/core/wz_machine.c
+    src/core/wz_scheduler.c
 )
 
 target_include_directories(wz_core PUBLIC src)
