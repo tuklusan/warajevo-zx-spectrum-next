@@ -66,7 +66,7 @@ class HarnessGateTests(unittest.TestCase):
         with patch.object(Path, "is_file", return_value=True), \
              patch.object(Path, "read_text", return_value=receipt), \
              patch.object(remote.subprocess, "run", side_effect=[
-                 Result(text_stdout="head\n"), Result(text_stdout="head\n"),
+                 Result(text_stdout="head\n"), Result(text_stdout="head\trefs/heads/main\n"),
                  Result(stdout=b"diff")
              ]):
             with self.assertRaises(SystemExit):
@@ -77,7 +77,7 @@ class HarnessGateTests(unittest.TestCase):
         with patch.object(Path, "is_file", return_value=True), \
              patch.object(Path, "read_text", return_value=receipt), \
              patch.object(remote.subprocess, "run", side_effect=[
-                 Result(text_stdout="head\n"), Result(text_stdout="older\n")
+                 Result(text_stdout="head\n"), Result(text_stdout="older\trefs/heads/main\n")
              ]):
             with self.assertRaises(SystemExit):
                 remote.require_code_review_pass(ROOT)

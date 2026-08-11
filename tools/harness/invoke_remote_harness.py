@@ -68,12 +68,16 @@ def require_code_review_pass(root: Path) -> None:
     except (subprocess.CalledProcessError, OSError) as exc:
         raise SystemExit("remote smoke blocked: current commit identity unavailable") from exc
     try:
-        published_head = subprocess.run(
-            ["git", "rev-parse", "origin/main"], cwd=root, check=True,
-            capture_output=True, text=True,
+        remote_output = subprocess.run(
+            ["git", "ls-remote", "--heads", "origin", "main"], cwd=root, check=True,
+            capture_output=True, text=True, timeout=30,
         ).stdout.strip()
-    except (subprocess.CalledProcessError, OSError) as exc:
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired, OSError) as exc:
         raise SystemExit("remote smoke blocked: published commit identity unavailable") from exc
+    fields = remote_output.split()
+    if len(fields) != 2 or fields[1] != "refs/heads/main":
+        raise SystemExit("remote smoke blocked: authoritative origin/main identity is malformed")
+    published_head = fields[0]
     if published_head != head:
         raise SystemExit("remote smoke blocked: reviewed commit is not published on origin/main")
     snapshot = receipt.get("snapshot_id", "")
