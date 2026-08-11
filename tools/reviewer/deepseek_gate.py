@@ -408,15 +408,19 @@ def perform_review(client: DeepSeekClient, review_type: str, snapshot_id: str,
     final = request_validated(
         client, "You are the adversarial final review authority. Return JSON only.",
         consolidation_prompt, telemetry,
-        lambda value: value.get("review_type") == review_type and value.get("snapshot_id") == snapshot_id
-        and value.get("verdict") in VERDICTS,
+        lambda value: final_schema_valid(value, review_type, snapshot_id),
         "CONSOLIDATION",
     )
     if final.get("verdict") == "INCONCLUSIVE" or final.get("uncertainties"):
         telemetry.adjudication = True
         telemetry.passes.append("ADJUDICATION")
         adjudication_prompt = consolidation_prompt + "\nResolve only the material ambiguity and return a complete final result."
-        final = client.request("You are the independent review adjudicator. Return JSON only.", adjudication_prompt, telemetry)
+        final = request_validated(
+            client, "You are the independent review adjudicator. Return JSON only.",
+            adjudication_prompt, telemetry,
+            lambda value: final_schema_valid(value, review_type, snapshot_id),
+            "ADJUDICATION",
+        )
     if not final_schema_valid(final, review_type, snapshot_id):
         raise OutputError("schema-invalid consolidated response")
     final["schema_version"] = 1
