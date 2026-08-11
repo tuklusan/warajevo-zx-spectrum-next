@@ -41,6 +41,16 @@ class HarnessGateTests(unittest.TestCase):
              patch.object(smoke.subprocess, "run", side_effect=results):
             self.assertEqual(smoke.choose_python_command(), r"C:\Python311\python.exe")
 
+    def test_python_selection_falls_back_after_execution_error(self):
+        def available(command):
+            return command if command in {"python3", "python"} else None
+
+        fallback = Result(text_stdout="/usr/bin/python3\n")
+        fallback.returncode = 0
+        with patch.object(smoke.shutil, "which", side_effect=available), \
+             patch.object(smoke.subprocess, "run", side_effect=[OSError("blocked"), fallback]):
+            self.assertEqual(smoke.choose_python_command(), "/usr/bin/python3")
+
     def test_python_path_is_pinned_for_cmake(self):
         self.assertEqual(smoke.python_cmake_definition(r"C:\Python\python.exe"),
                          "-DPython3_EXECUTABLE=C:/Python/python.exe")

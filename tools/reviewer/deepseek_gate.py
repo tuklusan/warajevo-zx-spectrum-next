@@ -471,6 +471,12 @@ def perform_review(client: DeepSeekClient, review_type: str, snapshot_id: str,
         "Return compact final JSON with schema_version=1, review_type, snapshot_id, verdict, review_complete, "
         "blocking_findings, root_cause_groups, prior_findings. Use INCONCLUSIVE if material uncertainty remains."
     )
+    if len(requirement_shards) > 1:
+        consolidation_prompt += (
+            " Requirements were size-sharded. Summaries may discover cross-shard defects but are not authoritative "
+            "grounds to reject a specialist finding. Preserve every unique BLOCKER/HIGH specialist finding based on "
+            "an original requirement shard; only merge exact duplicates."
+        )
     telemetry.passes.append("CONSOLIDATION")
     final = request_validated(
         client, "You are the adversarial final review authority. Return JSON only.",
