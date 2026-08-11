@@ -16,7 +16,6 @@ from pathlib import Path
 
 from deepseek_gate import (
     FALSIFICATION_OUTPUT_TOKENS,
-    INPUT_BUDGET_BYTES,
     DeepSeekClient,
     ReviewError,
     Telemetry,
@@ -27,6 +26,8 @@ from deepseek_gate import (
     require_universal_authority,
     requirement_records,
 )
+
+BOOTSTRAP_INPUT_BUDGET_BYTES = 2_000_000
 
 
 def bootstrap_result_valid(result: object, requirements: list[dict[str, str]],
@@ -63,12 +64,6 @@ def main() -> int:
     requirements = requirement_records(root, args.requirements)
     require_universal_authority(requirements)
     complete_packet = canonical_json({"manifest": packet.manifest, "records": packet.records})
-    if len(complete_packet.encode()) > INPUT_BUDGET_BYTES:
-        result = {"review_complete": False, "verdict": "INCONCLUSIVE",
-                  "reason": "complete bootstrap packet exceeds safe independent-review budget"}
-        print(json.dumps({"review_type": "CODE", "snapshot_id": packet.snapshot_id, **result},
-                         separators=(",", ":"), sort_keys=True))
-        return 2
     prompt = (
         "Return JSON only. Exhaustively review the complete immutable change for high-confidence BLOCKER/HIGH "
         "correctness, security, reliability, integration, and test-validity defects. Continue after each finding "
@@ -82,6 +77,12 @@ def main() -> int:
         "\"location\":\"path:line\",\"failure_scenario\":\"concrete failure\",\"evidence\":\"proof\","
         "\"negative_check\":\"counter-evidence checked\",\"required_outcome\":\"correction\"}]} as JSON."
     )
+    if len(prompt.encode()) > BOOTSTRAP_INPUT_BUDGET_BYTES:
+        result = {"review_complete": False, "verdict": "INCONCLUSIVE",
+                  "reason": "complete bootstrap prompt exceeds safe independent-review budget"}
+        print(json.dumps({"review_type": "CODE", "snapshot_id": packet.snapshot_id, **result},
+                         separators=(",", ":"), sort_keys=True))
+        return 2
     telemetry = Telemetry("CODE", packet.snapshot_id, packet_manifest_hash=packet.packet_manifest_hash)
     try:
         result = DeepSeekClient().request(

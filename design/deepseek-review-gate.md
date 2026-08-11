@@ -184,7 +184,9 @@ python tools/reviewer/deepseek_gate.py health-check --requirements design/deepse
 
 The retained bootstrap gate is an architecturally independent one-pass audit
 path for maintenance of the normal gate. It consumes the complete bounded
-immutable packet and remains available after cutover.
+immutable packet and remains available after cutover. Its full prompt has a
+separate conservative 2 MB input ceiling so a complete gate-maintenance change
+is not silently reduced to the normal per-unit budget.
 
 ## Verdict Contract
 
