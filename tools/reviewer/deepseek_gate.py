@@ -330,6 +330,37 @@ def perform_review(client: DeepSeekClient, review_type: str, snapshot_id: str,
             "review_complete": False,
             "missing_context": specialist_failures,
         }
+    while len(canonical_json(prior).encode()) > SHARD_BYTES:
+        prior_batches: list[list[dict[str, Any]]] = []
+        current_prior: list[dict[str, Any]] = []
+        for item in prior:
+            candidate = current_prior + [item]
+            if current_prior and len(canonical_json(candidate).encode()) > SHARD_BYTES:
+                prior_batches.append(current_prior)
+                current_prior = [item]
+            else:
+                current_prior = candidate
+        if current_prior:
+            prior_batches.append(current_prior)
+        reduced_prior: list[dict[str, Any]] = []
+        for index, batch in enumerate(prior_batches):
+            prompt = (
+                "Return JSON only. Compact this prior-finding metadata by merging duplicate IDs while preserving "
+                "every unique ID, status, dispute evidence, and unresolved serious issue. Do not add findings.\n"
+                + canonical_json(batch)
+                + '\nReturn {"prior_findings":[]} as JSON.'
+            )
+            telemetry.passes.append(f"PRIOR-CONSOLIDATION-{index + 1}")
+            value = request_validated(
+                client, "You compact prior review metadata without losing unique records. Return JSON only.",
+                prompt, telemetry,
+                lambda candidate: isinstance(candidate.get("prior_findings"), list),
+                f"PRIOR-CONSOLIDATION-{index + 1}",
+            )
+            reduced_prior.extend(value["prior_findings"])
+        if len(canonical_json(reduced_prior).encode()) >= len(canonical_json(prior).encode()):
+            raise OutputError("prior-finding metadata cannot be reduced within safe input bounds")
+        prior = reduced_prior
     consolidation = {
         "specialists": specialist_results,
         "prior_findings": prior,
@@ -464,7 +495,10 @@ def main() -> int:
         final = compact_failure(args.type, locals().get("snapshot_id", "unavailable"), "INCONCLUSIVE", str(exc))
         telemetry = locals().get("telemetry")
     if telemetry is not None:
-        write_telemetry(root, telemetry, final)
+        try:
+            write_telemetry(root, telemetry, final)
+        except OSError:
+            final["telemetry_status"] = "unavailable"
     print(json.dumps(final, separators=(",", ":"), sort_keys=True))
     return 0 if final.get("verdict") == "PASS" else 2
 

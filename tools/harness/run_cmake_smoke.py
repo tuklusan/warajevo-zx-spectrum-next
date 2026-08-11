@@ -148,6 +148,10 @@ def cmake_path_string(path: str) -> str:
     return path.replace("\\", "/")
 
 
+def python_cmake_definition(path: str) -> str:
+    return f"-DPython3_EXECUTABLE={cmake_path_string(path)}"
+
+
 def command_text(command: list[str]) -> str:
     return shlex.join(command)
 
@@ -303,9 +307,7 @@ def main() -> int:
     ]
 
     if tools["python"]["path"]:
-        configure_command.append(
-            f"-DPython3_EXECUTABLE={cmake_path_string(tools['python']['path'])}"
-        )
+        configure_command.append(python_cmake_definition(tools["python"]["path"]))
 
     if compiler_path:
         configure_command.append(f"-DCMAKE_C_COMPILER={cmake_path_string(compiler_path)}")
