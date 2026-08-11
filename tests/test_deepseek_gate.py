@@ -78,13 +78,15 @@ class GateTests(unittest.TestCase):
             gate.DeepSeekClient("")
 
     def test_all_specialists_and_consolidation_run(self):
-        responses = [specialist("CODE-A"), specialist("CODE-B"), specialist("CODE-C"), final()]
+        responses = [specialist("CODE-A"), specialist("CODE-B"), specialist("CODE-C"),
+                     specialist("MATERIAL-VERIFICATION-1"), final()]
         client = FakeClient(responses)
         telemetry = gate.Telemetry("CODE", "snap")
         result = gate.perform_review(client, "CODE", "snap", "requirements", ["material"], [], telemetry)
         self.assertEqual(result["verdict"], "PASS")
-        self.assertEqual(len(client.calls), 4)
-        self.assertEqual(telemetry.passes, ["CODE-A", "CODE-B", "CODE-C", "CONSOLIDATION"])
+        self.assertEqual(len(client.calls), 5)
+        self.assertEqual(telemetry.passes, ["CODE-A", "CODE-B", "CODE-C",
+                                            "MATERIAL-VERIFICATION-1", "CONSOLIDATION"])
 
     def test_all_review_types_execute_three_specialists(self):
         for review_type, passes in gate.SPECIALISTS.items():
@@ -92,10 +94,10 @@ class GateTests(unittest.TestCase):
             result = {"schema_version": 1, "review_type": review_type, "snapshot_id": "snap",
                       "verdict": "PASS", "review_complete": True, "blocking_findings": [],
                       "root_cause_groups": [], "prior_findings": []}
-            client = FakeClient(responses + [result])
+            client = FakeClient(responses + [specialist("MATERIAL-VERIFICATION-1"), result])
             gate.perform_review(client, review_type, "snap", "requirements", ["material"], [],
                                 gate.Telemetry(review_type, "snap"))
-            self.assertEqual(len(client.calls), 4)
+            self.assertEqual(len(client.calls), 5)
 
     def test_schema_repair_is_bounded_and_succeeds(self):
         client = FakeClient([{"wrong": True}, {"still_wrong": True}, specialist("CODE-A")])
@@ -155,12 +157,13 @@ class GateTests(unittest.TestCase):
     def test_adjudication_only_for_ambiguity(self):
         inconclusive = {"review_type": "CODE", "snapshot_id": "snap", "verdict": "INCONCLUSIVE",
                         "review_complete": False, "reason": "ambiguity"}
-        responses = [specialist("A"), specialist("B"), specialist("C"), inconclusive, final()]
+        responses = [specialist("A"), specialist("B"), specialist("C"),
+                     specialist("MATERIAL-VERIFICATION-1"), inconclusive, final()]
         client = FakeClient(responses)
         telemetry = gate.Telemetry("CODE", "snap")
         gate.perform_review(client, "CODE", "snap", "requirements", ["material"], [], telemetry)
         self.assertTrue(telemetry.adjudication)
-        self.assertEqual(len(client.calls), 5)
+        self.assertEqual(len(client.calls), 6)
 
     def test_sharding_never_drops_material(self):
         content = "x" * (gate.SHARD_BYTES * 2 + 17)
@@ -181,6 +184,8 @@ class GateTests(unittest.TestCase):
         responses = []
         for _ in shards:
             responses.extend(specialist(name) for name, _ in gate.SPECIALISTS["CODE"])
+        responses.extend(specialist(f"MATERIAL-VERIFICATION-{index + 1}")
+                         for index in range(len(shards)))
         responses.append(final())
         client = FakeClient(responses)
         telemetry = gate.Telemetry("CODE", "snap")
@@ -188,12 +193,12 @@ class GateTests(unittest.TestCase):
         result = gate.perform_review(client, "CODE", "snap", "requirements", shards, [], telemetry)
 
         self.assertEqual(result["verdict"], "PASS")
-        self.assertEqual(len(client.calls), len(shards) * 3 + 1)
+        self.assertEqual(len(client.calls), len(shards) * 4 + 1)
         consolidation_prompt = client.calls[-1][1]
-        self.assertEqual(consolidation_prompt.count('"review_complete":true'), len(shards) * 3)
-        self.assertIn("Original immutable review material follows", consolidation_prompt)
-        self.assertIn(shards[0], consolidation_prompt)
-        self.assertIn(shards[-1], consolidation_prompt)
+        self.assertEqual(consolidation_prompt.count('"review_complete":true'), len(shards) * 4)
+        self.assertIn("Hierarchical verification results", consolidation_prompt)
+        verification_prompts = [prompt for _, prompt in client.calls if "Re-check each finding" in prompt]
+        self.assertTrue(all(any(shard in prompt for prompt in verification_prompts) for shard in shards))
         for index in range(1, len(shards) + 1):
             self.assertTrue(any(f"material shard {index}/{len(shards)}" in prompt
                                 for _, prompt in client.calls[:-1]))

@@ -395,10 +395,13 @@ def perform_review(client: DeepSeekClient, review_type: str, snapshot_id: str,
             "review_complete": False,
             "missing_context": specialist_failures,
         }
-    while len(canonical_json(prior).encode()) > SHARD_BYTES:
+    prior_for_consolidation: Any = prior
+    if len(canonical_json(prior).encode()) > SHARD_BYTES:
         prior_batches: list[list[dict[str, Any]]] = []
         current_prior: list[dict[str, Any]] = []
         for item in prior:
+            if len(canonical_json([item]).encode()) > SHARD_BYTES:
+                raise OutputError("single prior-finding record exceeds safe input bounds")
             candidate = current_prior + [item]
             if current_prior and len(canonical_json(candidate).encode()) > SHARD_BYTES:
                 prior_batches.append(current_prior)
@@ -407,28 +410,38 @@ def perform_review(client: DeepSeekClient, review_type: str, snapshot_id: str,
                 current_prior = candidate
         if current_prior:
             prior_batches.append(current_prior)
-        reduced_prior: list[dict[str, Any]] = []
+        reviewed_prior: list[dict[str, Any]] = []
         for index, batch in enumerate(prior_batches):
+            expected_ids = sorted(str(item.get("id", "")) for item in batch)
             prompt = (
-                "Return JSON only. Compact this prior-finding metadata by merging duplicate IDs while preserving "
-                "every unique ID, status, dispute evidence, and unresolved serious issue. Do not add findings.\n"
+                "Return JSON only. Review every prior-finding record in this exact batch. Preserve every unique ID "
+                "and return one concise current disposition per ID; do not add or omit IDs.\n"
                 + canonical_json(batch)
-                + '\nReturn {"prior_findings":[]} as JSON.'
+                + '\nReturn {"review_complete":true,"prior_findings":[{"id":"ID","status":"STATUS",'
+                  '"evidence_summary":"concise factual disposition"}]} as JSON.'
             )
-            telemetry.passes.append(f"PRIOR-CONSOLIDATION-{index + 1}")
+            telemetry.passes.append(f"PRIOR-REVIEW-{index + 1}")
             value = request_validated(
-                client, "You compact prior review metadata without losing unique records. Return JSON only.",
+                client, "You review prior metadata without losing unique records. Return JSON only.",
                 prompt, telemetry,
-                lambda candidate: isinstance(candidate.get("prior_findings"), list),
-                f"PRIOR-CONSOLIDATION-{index + 1}",
+                lambda candidate, ids=expected_ids: candidate.get("review_complete") is True
+                and isinstance(candidate.get("prior_findings"), list)
+                and sorted(str(item.get("id", "")) for item in candidate["prior_findings"]
+                           if isinstance(item, dict)) == ids,
+                f"PRIOR-REVIEW-{index + 1}",
             )
-            reduced_prior.extend(value["prior_findings"])
-        if len(canonical_json(reduced_prior).encode()) >= len(canonical_json(prior).encode()):
-            raise OutputError("prior-finding metadata cannot be reduced within safe input bounds")
-        prior = reduced_prior
+            reviewed_prior.extend(value["prior_findings"])
+        prior_for_consolidation = {
+            "exact_index": [
+                {"id": item.get("id"), "status": item.get("status"),
+                 "sha256": hashlib.sha256(canonical_json(item).encode()).hexdigest()}
+                for item in prior
+            ],
+            "reviewed_dispositions": reviewed_prior,
+        }
     consolidation = {
         "specialists": specialist_results,
-        "prior_findings": prior,
+        "prior_findings": prior_for_consolidation,
         "requirement_shard_count": len(requirement_shards),
         "material_shard_count": len(shards),
     }
@@ -463,12 +476,57 @@ def perform_review(client: DeepSeekClient, review_type: str, snapshot_id: str,
         consolidation["specialists"] = reduced
         if len(canonical_json(consolidation).encode()) >= previous_size:
             raise OutputError("consolidation findings cannot be reduced within safe input bounds")
+    material_verifications: list[dict[str, Any]] = []
+    for index, material in enumerate(shards):
+        pass_name = f"MATERIAL-VERIFICATION-{index + 1}"
+        verification_prompt = common_prompt(
+            review_type, snapshot_id, consolidation_requirements,
+            material + "\nStructured consolidated findings follow. Re-check each finding against this original "
+            "material shard. Preserve supported findings, report contradictions, and do not reject a finding merely "
+            "because its evidence belongs to another shard.\n" + canonical_json(consolidation),
+        ) + f"Return the specialist JSON shape with pass {pass_name}."
+        telemetry.passes.append(pass_name)
+        material_verifications.append(request_validated(
+            client, "You verify consolidated findings against original immutable material. Return JSON only.",
+            verification_prompt, telemetry,
+            lambda candidate, expected=pass_name: specialist_schema_valid(candidate, expected), pass_name,
+        ))
+    while len(canonical_json(material_verifications).encode()) > SHARD_BYTES:
+        verification_batches: list[list[dict[str, Any]]] = []
+        current_verifications: list[dict[str, Any]] = []
+        for verification in material_verifications:
+            candidate = current_verifications + [verification]
+            if current_verifications and len(canonical_json(candidate).encode()) > SHARD_BYTES:
+                verification_batches.append(current_verifications)
+                current_verifications = [verification]
+            else:
+                current_verifications = candidate
+        if current_verifications:
+            verification_batches.append(current_verifications)
+        reduced_verifications: list[dict[str, Any]] = []
+        previous_size = len(canonical_json(material_verifications).encode())
+        for index, batch in enumerate(verification_batches):
+            pass_name = "MATERIAL-VERIFICATION-SHARD"
+            prompt = common_prompt(
+                review_type, snapshot_id, consolidation_requirements,
+                "Merge these material-verification results without dropping any unique serious finding:\n"
+                + canonical_json(batch),
+            ) + f"Return the specialist JSON shape with pass {pass_name}."
+            telemetry.passes.append(f"{pass_name}-{index + 1}")
+            reduced_verifications.append(request_validated(
+                client, "You losslessly merge verified serious findings. Return JSON only.", prompt, telemetry,
+                lambda candidate, expected=pass_name: specialist_schema_valid(candidate, expected), pass_name,
+            ))
+        material_verifications = reduced_verifications
+        if len(canonical_json(material_verifications).encode()) >= previous_size:
+            raise OutputError("material verifications cannot be reduced within safe input bounds")
     consolidation_prompt = common_prompt(
         review_type, snapshot_id, consolidation_requirements,
-        "Original immutable review material follows. Re-check every finding against it.\n"
-        + "\n".join(shards)
-        + "\nStructured specialist findings follow. Preserve every valid unique serious finding.\n"
-        + canonical_json(consolidation),
+        "Hierarchical verification results produced directly against every original material shard follow. "
+        "Preserve every valid unique serious finding.\n" + canonical_json({
+            "consolidated_findings": consolidation,
+            "material_verifications": material_verifications,
+        }),
     ) + (
         "Adversarially consolidate. No majority voting. Reject only unsupported/stale findings; merge duplicates and root causes. "
         "Return compact final JSON with schema_version=1, review_type, snapshot_id, verdict, review_complete, "
