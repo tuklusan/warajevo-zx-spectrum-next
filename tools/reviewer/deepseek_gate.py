@@ -240,8 +240,10 @@ class DeepSeekClient:
         raise ReviewError(last_error)
 
 
-def specialist_schema_valid(value: Any) -> bool:
+def specialist_schema_valid(value: Any, expected_pass: str | None = None) -> bool:
     if not isinstance(value, dict) or value.get("review_complete") is not True:
+        return False
+    if expected_pass is not None and value.get("pass") != expected_pass:
         return False
     if not isinstance(value.get("findings"), list) or not isinstance(value.get("uncertainties", []), list):
         return False
@@ -284,7 +286,7 @@ def common_prompt(review_type: str, snapshot_id: str, requirements: str, materia
         "serious defects, false positives, and shared root causes. Never emit hidden reasoning.\n"
         f"REVIEW_TYPE={review_type}\nSNAPSHOT_ID={snapshot_id}\n"
         f"CONTROLLING_REQUIREMENTS\n{requirements}\nIMMUTABLE_REVIEW_MATERIAL\n{material}\n"
-        "Required JSON shape: {\"pass\":\"CODE-A\",\"review_complete\":true,\"findings\":["
+        "Required JSON shape: {\"pass\":\"<ASSIGNED_PASS>\",\"review_complete\":true,\"findings\":["
         "{\"id\":\"A-001\",\"severity\":\"HIGH\",\"category\":\"correctness\","
         "\"requirement\":\"AC-1\",\"location\":\"file:line\",\"problem\":\"defect\","
         "\"evidence\":\"proof\",\"required_outcome\":\"correction\"}],\"uncertainties\":[]} "
@@ -310,7 +312,8 @@ def perform_review(client: DeepSeekClient, review_type: str, snapshot_id: str,
             try:
                 value = request_validated(
                     client, "You are a strict software review gate. Return JSON only.",
-                    common + instruction, telemetry, specialist_schema_valid, pass_name,
+                common + instruction + f" Return pass exactly as {pass_name}.", telemetry,
+                lambda candidate, expected=pass_name: specialist_schema_valid(candidate, expected), pass_name,
                 )
                 specialist_results.append(value)
             except ReviewError as exc:
@@ -351,7 +354,9 @@ def perform_review(client: DeepSeekClient, review_type: str, snapshot_id: str,
             telemetry.passes.append(f"CONSOLIDATION-SHARD-{index + 1}")
             reduced.append(request_validated(
                 client, "You are a strict hierarchical review consolidator. Return JSON only.",
-                prompt, telemetry, specialist_schema_valid, f"CONSOLIDATION-SHARD-{index + 1}",
+                prompt, telemetry,
+                lambda candidate: specialist_schema_valid(candidate, "CONSOLIDATION-SHARD"),
+                f"CONSOLIDATION-SHARD-{index + 1}",
             ))
         if len(reduced) >= len(consolidation["specialists"]):
             raise OutputError("consolidation findings cannot be reduced within safe input bounds")
