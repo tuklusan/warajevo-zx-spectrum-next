@@ -168,6 +168,26 @@ class GateTests(unittest.TestCase):
         self.assertNotIn("\ufffd", "".join(shards))
         self.assertTrue(all("unicode.txt (part " in shard for shard in shards))
 
+    def test_multi_shard_review_reaches_one_final_consolidation(self):
+        shards = gate.shard_records([("large.log", "x" * (gate.SHARD_BYTES + 1))])
+        self.assertGreater(len(shards), 1)
+        responses = []
+        for _ in shards:
+            responses.extend(specialist(name) for name, _ in gate.SPECIALISTS["CODE"])
+        responses.append(final())
+        client = FakeClient(responses)
+        telemetry = gate.Telemetry("CODE", "snap")
+
+        result = gate.perform_review(client, "CODE", "snap", "requirements", shards, [], telemetry)
+
+        self.assertEqual(result["verdict"], "PASS")
+        self.assertEqual(len(client.calls), len(shards) * 3 + 1)
+        consolidation_prompt = client.calls[-1][1]
+        self.assertEqual(consolidation_prompt.count('"review_complete":true'), len(shards) * 3)
+        for index in range(1, len(shards) + 1):
+            self.assertTrue(any(f"material shard {index}/{len(shards)}" in prompt
+                                for _, prompt in client.calls[:-1]))
+
     def test_api_key_not_present_in_payload_content(self):
         key = "do-not-leak-this-value"
         captured = {}
