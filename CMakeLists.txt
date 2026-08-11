@@ -14,6 +14,7 @@ set(CMAKE_C_EXTENSIONS OFF)
 
 option(WZSN_ENABLE_WARNINGS "Enable the default developer warning set." ON)
 option(WZSN_ENABLE_SANITIZERS "Enable sanitizer flags when supported." OFF)
+option(WZSN_ENABLE_REVIEW_GATE_TESTS "Require Python and run reviewer-gate tests." OFF)
 
 add_library(wz_warnings INTERFACE)
 
@@ -74,8 +75,8 @@ target_link_libraries(wz_tests PRIVATE wz_core wz_diagnostics)
 enable_testing()
 add_test(NAME wz_tests_placeholder COMMAND wz_tests)
 
-find_package(Python3 COMPONENTS Interpreter QUIET)
-if(Python3_FOUND)
+if(WZSN_ENABLE_REVIEW_GATE_TESTS)
+    find_package(Python3 COMPONENTS Interpreter REQUIRED)
     add_test(
         NAME deepseek_gate_tests
         COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tests/test_deepseek_gate.py

@@ -307,20 +307,30 @@ def perform_review(client: DeepSeekClient, review_type: str, snapshot_id: str,
                    telemetry: Telemetry) -> dict[str, Any]:
     specialist_results: list[dict[str, Any]] = []
     specialist_failures: list[str] = []
-    for shard_index, material in enumerate(shards):
-        common = common_prompt(review_type, snapshot_id, requirements, material)
-        for pass_name, scope in SPECIALISTS[review_type]:
-            telemetry.passes.append(pass_name)
-            instruction = f"Assigned pass {pass_name}; review {scope}. This is shard {shard_index + 1}/{len(shards)}."
-            try:
-                value = request_validated(
-                    client, "You are a strict software review gate. Return JSON only.",
-                common + instruction + f" Return pass exactly as {pass_name}.", telemetry,
-                lambda candidate, expected=pass_name: specialist_schema_valid(candidate, expected), pass_name,
+    requirement_shards = shard_records([("controlling-requirements", requirements)])
+    for requirement_index, requirement_material in enumerate(requirement_shards):
+        for shard_index, material in enumerate(shards):
+            common = common_prompt(review_type, snapshot_id, requirement_material, material)
+            for pass_name, scope in SPECIALISTS[review_type]:
+                telemetry.passes.append(pass_name)
+                instruction = (
+                    f"Assigned pass {pass_name}; review {scope}. Requirement shard "
+                    f"{requirement_index + 1}/{len(requirement_shards)}; material shard "
+                    f"{shard_index + 1}/{len(shards)}."
                 )
-                specialist_results.append(value)
-            except ReviewError as exc:
-                specialist_failures.append(f"{pass_name} shard {shard_index + 1}: {type(exc).__name__}")
+                try:
+                    value = request_validated(
+                        client, "You are a strict software review gate. Return JSON only.",
+                        common + instruction + f" Return pass exactly as {pass_name}.", telemetry,
+                        lambda candidate, expected=pass_name: specialist_schema_valid(candidate, expected),
+                        pass_name,
+                    )
+                    specialist_results.append(value)
+                except ReviewError as exc:
+                    specialist_failures.append(
+                        f"{pass_name} requirement {requirement_index + 1} material "
+                        f"{shard_index + 1}: {type(exc).__name__}"
+                    )
     if specialist_failures:
         return {
             "schema_version": 1,
@@ -364,8 +374,15 @@ def perform_review(client: DeepSeekClient, review_type: str, snapshot_id: str,
     consolidation = {
         "specialists": specialist_results,
         "prior_findings": prior,
-        "shard_count": len(shards),
+        "requirement_shard_count": len(requirement_shards),
+        "material_shard_count": len(shards),
     }
+    consolidation_requirements = requirements
+    if len(requirements.encode()) > SHARD_BYTES:
+        consolidation_requirements = canonical_json({
+            "requirement_shards_reviewed": len(requirement_shards),
+            "requirement_sha256": hashlib.sha256(requirements.encode()).hexdigest(),
+        })
     while len(canonical_json(consolidation).encode()) > SHARD_BYTES:
         previous_size = len(canonical_json(consolidation).encode())
         batches: list[list[dict[str, Any]]] = []
@@ -382,7 +399,7 @@ def perform_review(client: DeepSeekClient, review_type: str, snapshot_id: str,
         reduced: list[dict[str, Any]] = []
         for index, batch in enumerate(batches):
             prompt = common_prompt(
-                review_type, snapshot_id, requirements,
+                review_type, snapshot_id, consolidation_requirements,
                 "Consolidate this structured finding batch without dropping any valid unique serious finding:\n"
                 + canonical_json(batch),
             ) + "Return the specialist JSON shape with pass CONSOLIDATION-SHARD."
@@ -397,7 +414,7 @@ def perform_review(client: DeepSeekClient, review_type: str, snapshot_id: str,
         if len(canonical_json(consolidation).encode()) >= previous_size:
             raise OutputError("consolidation findings cannot be reduced within safe input bounds")
     consolidation_prompt = common_prompt(
-        review_type, snapshot_id, requirements,
+        review_type, snapshot_id, consolidation_requirements,
         "Structured specialist findings follow. Re-check against requirements and preserve every valid unique serious finding.\n" + canonical_json(consolidation),
     ) + (
         "Adversarially consolidate. No majority voting. Reject only unsupported/stale findings; merge duplicates and root causes. "
