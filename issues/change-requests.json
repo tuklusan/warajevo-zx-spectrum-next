@@ -204,10 +204,11 @@
       "status": "in_progress",
       "source_authority": [
         "DeepSeek-Review-Gate-Efficient-Harness.txt supplied 2026-08-11",
+        "Private precision-hardening scope supplied 2026-08-11",
         "design/deepseek-review-gate.md",
         "project workflow rule"
       ],
-      "notes": "Bootstrap implementation before Phase 2. The repository had no prior DeepSeek harness, so a retained one-pass legacy gate will independently review the batched gate before remote execution and cutover."
+      "notes": "Bootstrap implementation before Phase 2 remains in progress. Precision hardening binds review to the active CR, exact requirement provenance, complete immutable changed-file evidence, candidate discovery, hostile falsification, deterministic blocker synthesis, truthful binary handling, and receipt invalidation. The retained independent one-pass gate remains the temporary authorization authority until remote precision fixtures and final normal-gate review are clean."
     }
   ]
 }

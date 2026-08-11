@@ -52,6 +52,88 @@ def repo_root() -> Path:
     return Path(__file__).resolve().parents[2]
 
 
+def canonical_json(value) -> str:
+    return json.dumps(value, ensure_ascii=True, separators=(",", ":"), sort_keys=True)
+
+
+def _bound_file(root: Path, value: str) -> Path:
+    path = (root / value).resolve()
+    try:
+        path.relative_to(root.resolve())
+    except ValueError as exc:
+        raise SystemExit("remote smoke blocked: receipt authority path escapes project") from exc
+    if not path.is_file():
+        raise SystemExit("remote smoke blocked: receipt authority source is missing")
+    return path
+
+
+def validate_review_authority(root: Path, receipt: dict) -> None:
+    protocol_version = receipt.get("review_protocol_version", 0)
+    if not isinstance(protocol_version, int):
+        raise SystemExit("remote smoke blocked: malformed review protocol version")
+    if protocol_version < 2:
+        return
+    cr_number = receipt.get("cr_number")
+    sources = receipt.get("requirement_sources")
+    if not isinstance(cr_number, str) or not cr_number or not isinstance(sources, list) or not sources:
+        raise SystemExit("remote smoke blocked: protocol-v2 authority binding is incomplete")
+    requirement_identity = []
+    seen_sources = set()
+    for source in sources:
+        if (not isinstance(source, dict) or not isinstance(source.get("source"), str)
+                or not isinstance(source.get("sha256"), str)):
+            raise SystemExit("remote smoke blocked: malformed requirement authority binding")
+        if source["source"] in seen_sources:
+            raise SystemExit("remote smoke blocked: duplicate requirement authority binding")
+        seen_sources.add(source["source"])
+        data = _bound_file(root, source["source"]).read_bytes()
+        digest = hashlib.sha256(data).hexdigest()
+        if digest != source["sha256"]:
+            raise SystemExit("remote smoke blocked: requirement authority changed after review")
+        requirement_identity.append({"source": source["source"], "sha256": digest})
+    requirements_hash = hashlib.sha256(canonical_json(requirement_identity).encode()).hexdigest()
+    if requirements_hash != receipt.get("requirements_manifest_hash"):
+        raise SystemExit("remote smoke blocked: requirement manifest identity mismatch")
+
+    tracker_path = _bound_file(root, "issues/change-requests.json")
+    tracker_data = tracker_path.read_bytes()
+    try:
+        tracker = json.loads(tracker_data.decode("utf-8", errors="strict"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise SystemExit("remote smoke blocked: CR tracker is invalid") from exc
+    items = tracker.get("change_requests", []) if isinstance(tracker, dict) else tracker if isinstance(tracker, list) else []
+    if not isinstance(items, list):
+        raise SystemExit("remote smoke blocked: CR tracker change_requests is not an array")
+    matches = [item for item in items if isinstance(item, dict) and item.get("cr_number") == cr_number]
+    if len(matches) != 1 or matches[0].get("status") != "in_progress":
+        raise SystemExit("remote smoke blocked: reviewed CR is not uniquely active")
+    item = matches[0]
+    scope = {
+        "cr_number": cr_number,
+        "title": item.get("title"),
+        "status": item.get("status"),
+        "source_authority": item.get("source_authority", []),
+        "notes": item.get("notes", ""),
+        "tracker_source": "issues/change-requests.json",
+        "tracker_sha256": hashlib.sha256(tracker_data).hexdigest(),
+        "record_sha256": hashlib.sha256(canonical_json(item).encode()).hexdigest(),
+    }
+    private_source = receipt.get("scope_private_source")
+    if private_source is not None:
+        if not isinstance(private_source, str) or not private_source:
+            raise SystemExit("remote smoke blocked: malformed private scope binding")
+        if private_source not in seen_sources:
+            raise SystemExit("remote smoke blocked: private scope is absent from requirement authority")
+        private_data = _bound_file(root, private_source).read_bytes()
+        scope["private_scope"] = {
+            "source": private_source,
+            "sha256": hashlib.sha256(private_data).hexdigest(),
+            "content": private_data.decode("utf-8", errors="strict"),
+        }
+    if hashlib.sha256(canonical_json(scope).encode()).hexdigest() != receipt.get("scope_manifest_hash"):
+        raise SystemExit("remote smoke blocked: CR scope changed after review")
+
+
 def require_code_review_pass(root: Path) -> None:
     receipt_path = root / "test-artefacts" / "reviewer" / "code-pass.json"
     if not receipt_path.is_file():
@@ -83,6 +165,7 @@ def require_code_review_pass(root: Path) -> None:
     snapshot = receipt.get("snapshot_id", "")
     if receipt.get("verdict") != "PASS" or receipt.get("review_complete") is not True:
         raise SystemExit("remote smoke blocked: reviewer verdict is not PASS")
+    validate_review_authority(root, receipt)
     try:
         without_scheme = snapshot[4:] if snapshot.startswith("git:") else snapshot
         commit_range, marker, recorded_digest = without_scheme.rpartition(":sha256:")

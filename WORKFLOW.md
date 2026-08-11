@@ -17,6 +17,13 @@ reviews are also mandatory. Serious findings are advisory to the developer but
 may not be silently ignored; corrections or evidence-backed disputed
 dispositions require a complete new review.
 
+Normal CODE review is bound to the active CR, a clean committed current head,
+exact requirement sources, and immutable Git-object evidence. Reviewer passes
+discover candidates; only candidates that survive deterministic provenance
+checks and hostile falsification become blockers. A new CODE attempt
+invalidates the prior private receipt before review begins, and unresolved or
+ambiguous authority remains fail-closed.
+
 ## Root Rule
 
 Never create any project item or artifact above the project directory.

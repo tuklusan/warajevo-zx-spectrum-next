@@ -6,6 +6,8 @@
 # See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 import importlib.util
+import hashlib
+import json
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -89,6 +91,57 @@ class HarnessGateTests(unittest.TestCase):
              patch.object(remote.subprocess, "run", side_effect=FileNotFoundError()):
             with self.assertRaises(SystemExit):
                 remote.require_code_review_pass(ROOT)
+
+    def test_extended_precision_receipt_remains_compatible(self):
+        diff = b"reviewed diff"
+        digest = hashlib.sha256(diff).hexdigest()
+        tracker_data = (ROOT / "issues" / "change-requests.json").read_bytes()
+        tracker = json.loads(tracker_data)
+        cr = next(item for item in tracker["change_requests"] if item["cr_number"] == "CR-0020")
+        scope = {
+            "cr_number": "CR-0020", "title": cr.get("title"), "status": cr.get("status"),
+            "source_authority": cr.get("source_authority", []), "notes": cr.get("notes", ""),
+            "tracker_source": "issues/change-requests.json",
+            "tracker_sha256": hashlib.sha256(tracker_data).hexdigest(),
+            "record_sha256": hashlib.sha256(remote.canonical_json(cr).encode()).hexdigest(),
+        }
+        requirement_path = "design/deepseek-review-gate.md"
+        requirement_digest = hashlib.sha256((ROOT / requirement_path).read_bytes()).hexdigest()
+        requirement_sources = [{"source": requirement_path, "sha256": requirement_digest}]
+        receipt = json.dumps({
+            "schema_version": 2,
+            "review_protocol_version": 2,
+            "cr_number": "CR-0020",
+            "packet_manifest_hash": "packet",
+            "requirements_manifest_hash": hashlib.sha256(
+                remote.canonical_json(requirement_sources).encode()
+            ).hexdigest(),
+            "scope_manifest_hash": hashlib.sha256(remote.canonical_json(scope).encode()).hexdigest(),
+            "requirement_sources": requirement_sources,
+            "scope_private_source": None,
+            "verdict": "PASS",
+            "review_complete": True,
+            "snapshot_id": f"git:base..head:sha256:{digest}",
+        })
+        with patch.object(Path, "is_file", return_value=True), \
+             patch.object(Path, "read_text", return_value=receipt), \
+             patch.object(remote.subprocess, "run", side_effect=[
+                 Result(text_stdout="head\n"), Result(text_stdout="head\trefs/heads/main\n"),
+                 Result(stdout=diff),
+             ]):
+            remote.require_code_review_pass(ROOT)
+
+    def test_protocol_two_authority_change_blocks_remote_execution(self):
+        receipt = {
+            "review_protocol_version": 2,
+            "cr_number": "CR-0020",
+            "requirement_sources": [{"source": "design/deepseek-review-gate.md", "sha256": "stale"}],
+            "requirements_manifest_hash": "stale",
+            "scope_manifest_hash": "stale",
+            "scope_private_source": None,
+        }
+        with self.assertRaises(SystemExit):
+            remote.validate_review_authority(ROOT, receipt)
 
 
 if __name__ == "__main__":

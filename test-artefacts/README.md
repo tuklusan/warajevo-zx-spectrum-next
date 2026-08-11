@@ -25,6 +25,13 @@ default, including:
 - screenshots
 - packaged binaries
 - crash dumps
+- private review scope and requirement inputs
+- review receipts and precision telemetry
+
+Detailed private acceptance material used by the external review gate belongs
+under `test-artefacts/reviewer/requirements/`. It remains ignored, but its
+project-relative path and SHA-256 identity are bound into the review packet and
+PASS receipt when supplied.
 
 ## Local secrets file
 
