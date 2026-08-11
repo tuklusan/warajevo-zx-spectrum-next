@@ -116,25 +116,25 @@ int main(void)
 
     remove(trace_path);
     if (wz_trace_file_create(&trace_file, trace_path, 1u,
-                             (wz_dword_t)profile->kind, UINT32_MAX) != WZ_RESULT_OK ||
+                             (wz_dword_t)profile->kind, 0x1234u, UINT32_MAX) != WZ_RESULT_OK ||
         wz_trace_file_create(&duplicate, trace_path, 2u,
-                             (wz_dword_t)profile->kind, UINT32_MAX) == WZ_RESULT_OK) {
+                             (wz_dword_t)profile->kind, 0x1234u, UINT32_MAX) == WZ_RESULT_OK) {
         fputs("exclusive trace creation failed\n", stderr);
         return 1;
     }
     wz_trace_sink_init(&trace_sink, wz_trace_file_emit, &trace_file);
-    for (wz_qword_t index = 0u; index < 400000u; ++index) {
+    for (wz_qword_t index = 0u; index < 800000u; ++index) {
         wz_trace_emit(&trace_sink, WZ_TRACE_MASTER_TICK_ADVANCED, index);
     }
     if (wz_trace_file_freeze(&trace_file) != WZ_RESULT_OK) {
         fputs("trace freeze failed\n", stderr);
         return 1;
     }
-    wz_trace_emit(&trace_sink, WZ_TRACE_MASTER_TICK_ADVANCED, 400001u);
+    wz_trace_emit(&trace_sink, WZ_TRACE_MASTER_TICK_ADVANCED, 800001u);
     wz_trace_file_close(&trace_file);
     if (wz_trace_file_recover(trace_path, recover_trace, &recovered_last,
                               &recovered_count) != WZ_RESULT_OK ||
-        recovered_count == 0u || recovered_last != 399999u) {
+        recovered_count < (8u * 69888u) || recovered_last != 799999u) {
         fputs("trace wrap recovery failed\n", stderr);
         return 1;
     }

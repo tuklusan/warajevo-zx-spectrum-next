@@ -14,11 +14,13 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #define WZ_TRACE_FILE_SIZE 16777216u
 #define WZ_TRACE_HEADER_SIZE 256u
-#define WZ_TRACE_RECORD_SIZE 48u
+#define WZ_TRACE_RECORD_SIZE 24u
+#define WZ_TRACE_SYNC_INTERVAL 4096u
 
 typedef struct {
     FILE* file;
     wz_qword_t session_id;
+    wz_qword_t rom_identity;
     wz_qword_t next_slot;
     wz_qword_t generation;
     wz_qword_t first_sequence;
@@ -33,7 +35,7 @@ typedef bool (*wz_trace_recover_fn)(const wz_trace_event_t* event, void* context
 
 wz_result_t wz_trace_file_create(wz_trace_file_t* trace, const char* path,
                                  wz_qword_t session_id, wz_dword_t profile_kind,
-                                 wz_dword_t event_mask);
+                                 wz_qword_t rom_identity, wz_dword_t event_mask);
 void wz_trace_file_emit(const wz_trace_event_t* event, void* context);
 wz_result_t wz_trace_file_freeze(wz_trace_file_t* trace);
 void wz_trace_file_close(wz_trace_file_t* trace);

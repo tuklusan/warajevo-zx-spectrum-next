@@ -12,7 +12,9 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "core/wz_types.h"
 
 typedef enum {
-    WZ_TRACE_MASTER_TICK_ADVANCED = 0
+    WZ_TRACE_MASTER_TICK_ADVANCED = 0,
+    WZ_TRACE_TIMING_FULL = 1,
+    WZ_TRACE_DEVELOPER_MARKER = 2
 } wz_trace_event_kind_t;
 
 typedef struct {
