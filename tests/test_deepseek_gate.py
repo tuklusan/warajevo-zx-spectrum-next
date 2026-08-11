@@ -25,6 +25,16 @@ class FakeClient:
         return next(self.responses)
 
 
+class FailingThenPassingClient(FakeClient):
+    def request(self, system, user, telemetry):
+        self.calls.append((system, user))
+        telemetry.calls += 1
+        value = next(self.responses)
+        if isinstance(value, Exception):
+            raise value
+        return value
+
+
 def specialist(name, findings=None, uncertainties=None):
     return {"pass": name, "review_complete": True, "findings": findings or [],
             "uncertainties": uncertainties or []}
@@ -72,6 +82,37 @@ class GateTests(unittest.TestCase):
         self.assertEqual(len(client.calls), 4)
         self.assertEqual(telemetry.passes, ["CODE-A", "CODE-B", "CODE-C", "CONSOLIDATION"])
 
+    def test_all_review_types_execute_three_specialists(self):
+        for review_type, passes in gate.SPECIALISTS.items():
+            responses = [specialist(name) for name, _ in passes]
+            result = {"schema_version": 1, "review_type": review_type, "snapshot_id": "snap",
+                      "verdict": "PASS", "review_complete": True, "blocking_findings": [],
+                      "root_cause_groups": [], "prior_findings": []}
+            client = FakeClient(responses + [result])
+            gate.perform_review(client, review_type, "snap", "requirements", ["material"], [],
+                                gate.Telemetry(review_type, "snap"))
+            self.assertEqual(len(client.calls), 4)
+
+    def test_schema_repair_is_bounded_and_succeeds(self):
+        client = FakeClient([{"wrong": True}, specialist("CODE-A")])
+        telemetry = gate.Telemetry("CODE", "snap")
+        value = gate.request_validated(
+            client, "system", "prompt", telemetry,
+            lambda candidate: gate.specialist_schema_valid(candidate, "CODE-A"), "CODE-A",
+        )
+        self.assertEqual(value["pass"], "CODE-A")
+        self.assertEqual(len(client.calls), 2)
+        self.assertEqual(telemetry.retries, 1)
+
+    def test_failed_specialist_does_not_skip_remaining_passes(self):
+        client = FailingThenPassingClient([
+            gate.ReviewError("failed"), specialist("CODE-B"), specialist("CODE-C")
+        ])
+        result = gate.perform_review(client, "CODE", "snap", "requirements", ["material"], [],
+                                     gate.Telemetry("CODE", "snap"))
+        self.assertEqual(result["verdict"], "INCONCLUSIVE")
+        self.assertEqual(len(client.calls), 3)
+
     def test_serious_finding_is_not_capped(self):
         findings = [{"severity": "HIGH", "id": str(i)} for i in range(100)]
         self.assertTrue(gate.specialist_schema_valid(specialist("CODE-A", findings)))
@@ -99,6 +140,13 @@ class GateTests(unittest.TestCase):
         shards = gate.shard_records([("large.log", content)])
         self.assertGreaterEqual(len(shards), 3)
         self.assertGreaterEqual(sum(len(s) for s in shards), len(content))
+
+    def test_sharding_preserves_unicode_and_part_identity(self):
+        content = "\u20ac" * gate.SHARD_BYTES
+        shards = gate.shard_records([("unicode.txt", content)])
+        self.assertGreater(len(shards), 1)
+        self.assertNotIn("\ufffd", "".join(shards))
+        self.assertTrue(all("unicode.txt (part " in shard for shard in shards))
 
     def test_api_key_not_present_in_payload_content(self):
         key = "do-not-leak-this-value"

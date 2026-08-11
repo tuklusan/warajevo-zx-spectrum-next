@@ -65,13 +65,14 @@ def require_code_review_pass(root: Path) -> None:
             ["git", "rev-parse", "HEAD"], cwd=root, check=True,
             capture_output=True, text=True,
         ).stdout.strip()
-    except subprocess.CalledProcessError as exc:
+    except (subprocess.CalledProcessError, OSError) as exc:
         raise SystemExit("remote smoke blocked: current commit identity unavailable") from exc
     snapshot = receipt.get("snapshot_id", "")
     if receipt.get("verdict") != "PASS" or receipt.get("review_complete") is not True:
         raise SystemExit("remote smoke blocked: reviewer verdict is not PASS")
     try:
-        commit_range, marker, recorded_digest = snapshot.removeprefix("git:").rpartition(":sha256:")
+        without_scheme = snapshot[4:] if snapshot.startswith("git:") else snapshot
+        commit_range, marker, recorded_digest = without_scheme.rpartition(":sha256:")
         base, separator, reviewed_head = commit_range.partition("..")
     except (AttributeError, ValueError) as exc:
         raise SystemExit("remote smoke blocked: malformed CODE PASS snapshot") from exc
@@ -82,7 +83,7 @@ def require_code_review_pass(root: Path) -> None:
             ["git", "diff", "--no-ext-diff", "--unified=80", base, reviewed_head],
             cwd=root, check=True, capture_output=True,
         ).stdout
-    except subprocess.CalledProcessError as exc:
+    except (subprocess.CalledProcessError, OSError) as exc:
         raise SystemExit("remote smoke blocked: reviewed diff identity unavailable") from exc
     if hashlib.sha256(diff).hexdigest() != recorded_digest:
         raise SystemExit("remote smoke blocked: CODE PASS diff identity mismatch")

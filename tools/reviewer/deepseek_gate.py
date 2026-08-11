@@ -93,7 +93,10 @@ def canonical_json(value: Any) -> str:
 
 
 def run_git(root: Path, *args: str) -> str:
-    result = subprocess.run(["git", *args], cwd=root, check=False, capture_output=True, text=True)
+    try:
+        result = subprocess.run(["git", *args], cwd=root, check=False, capture_output=True, text=True)
+    except OSError as exc:
+        raise ReviewError(f"git is unavailable: {type(exc).__name__}") from exc
     if result.returncode != 0:
         raise ReviewError(result.stderr.strip() or "git operation failed")
     return result.stdout
