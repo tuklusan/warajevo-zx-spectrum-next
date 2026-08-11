@@ -44,7 +44,18 @@ class HarnessGateTests(unittest.TestCase):
         with patch.object(Path, "is_file", return_value=True), \
              patch.object(Path, "read_text", return_value=receipt), \
              patch.object(remote.subprocess, "run", side_effect=[
-                 Result(text_stdout="head\n"), Result(stdout=b"diff")
+                 Result(text_stdout="head\n"), Result(text_stdout="head\n"),
+                 Result(stdout=b"diff")
+             ]):
+            with self.assertRaises(SystemExit):
+                remote.require_code_review_pass(ROOT)
+
+    def test_unpublished_reviewed_head_blocks(self):
+        receipt = '{"verdict":"PASS","review_complete":true,"snapshot_id":"git:base..head:sha256:bad"}'
+        with patch.object(Path, "is_file", return_value=True), \
+             patch.object(Path, "read_text", return_value=receipt), \
+             patch.object(remote.subprocess, "run", side_effect=[
+                 Result(text_stdout="head\n"), Result(text_stdout="older\n")
              ]):
             with self.assertRaises(SystemExit):
                 remote.require_code_review_pass(ROOT)
