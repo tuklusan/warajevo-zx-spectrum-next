@@ -194,8 +194,11 @@ class DeepSeekClient:
                 with opener(request, timeout=180) as response:
                     envelope = json.loads(response.read().decode())
                 choice = envelope["choices"][0]
-                if choice.get("finish_reason") == "length":
-                    raise OutputError("review response was truncated")
+                finish_reason = choice.get("finish_reason")
+                if finish_reason == "insufficient_system_resource":
+                    raise urllib.error.URLError("inference resources unavailable")
+                if finish_reason != "stop":
+                    raise OutputError(f"review response did not finish normally: {finish_reason}")
                 content = choice.get("message", {}).get("content")
                 if not content:
                     raise OutputError("review response content was empty")
@@ -203,8 +206,7 @@ class DeepSeekClient:
                 usage = envelope.get("usage", {})
                 telemetry.prompt_tokens += int(usage.get("prompt_tokens", 0))
                 telemetry.completion_tokens += int(usage.get("completion_tokens", 0))
-                details = usage.get("prompt_tokens_details", {})
-                telemetry.cache_hit_tokens += int(details.get("cached_tokens", usage.get("prompt_cache_hit_tokens", 0)))
+                telemetry.cache_hit_tokens += int(usage.get("prompt_cache_hit_tokens", 0))
                 telemetry.cache_miss_tokens += int(usage.get("prompt_cache_miss_tokens", 0))
                 telemetry.api_status = "success"
                 return result
@@ -232,6 +234,22 @@ def specialist_schema_valid(value: Any) -> bool:
     return all(isinstance(f, dict) and f.get("severity") in SEVERITIES for f in value["findings"])
 
 
+def request_validated(client: DeepSeekClient, system: str, prompt: str,
+                      telemetry: Telemetry, validator: Any, label: str) -> dict[str, Any]:
+    value = client.request(system, prompt, telemetry)
+    if validator(value):
+        return value
+    telemetry.retries += 1
+    repair = (
+        prompt + "\nYour previous JSON did not match the required schema. Return a fresh complete JSON object only; "
+        "do not discuss or quote the prior response. Follow every field and enum exactly."
+    )
+    value = client.request(system, repair, telemetry)
+    if not validator(value):
+        raise OutputError(f"schema-invalid response after repair: {label}")
+    return value
+
+
 def final_schema_valid(value: Any, review_type: str, snapshot_id: str) -> bool:
     if not isinstance(value, dict) or value.get("verdict") not in VERDICTS:
         return False
@@ -252,7 +270,11 @@ def common_prompt(review_type: str, snapshot_id: str, requirements: str, materia
         "serious defects, false positives, and shared root causes. Never emit hidden reasoning.\n"
         f"REVIEW_TYPE={review_type}\nSNAPSHOT_ID={snapshot_id}\n"
         f"CONTROLLING_REQUIREMENTS\n{requirements}\nIMMUTABLE_REVIEW_MATERIAL\n{material}\n"
-        "JSON example: {\"pass\":\"CODE-A\",\"review_complete\":true,\"findings\":[],\"uncertainties\":[]}\n"
+        "Required JSON shape: {\"pass\":\"CODE-A\",\"review_complete\":true,\"findings\":["
+        "{\"id\":\"A-001\",\"severity\":\"HIGH\",\"category\":\"correctness\","
+        "\"requirement\":\"AC-1\",\"location\":\"file:line\",\"problem\":\"defect\","
+        "\"evidence\":\"proof\",\"required_outcome\":\"correction\"}],\"uncertainties\":[]} "
+        "findings must contain only BLOCKER or HIGH; use an empty array when none.\n"
     )
 
 
@@ -270,9 +292,10 @@ def perform_review(client: DeepSeekClient, review_type: str, snapshot_id: str,
         for pass_name, scope in SPECIALISTS[review_type]:
             telemetry.passes.append(pass_name)
             instruction = f"Assigned pass {pass_name}; review {scope}. This is shard {shard_index + 1}/{len(shards)}."
-            value = client.request("You are a strict software review gate. Return JSON only.", common + instruction, telemetry)
-            if not specialist_schema_valid(value):
-                raise OutputError(f"schema-invalid specialist response for {pass_name}")
+            value = request_validated(
+                client, "You are a strict software review gate. Return JSON only.",
+                common + instruction, telemetry, specialist_schema_valid, pass_name,
+            )
             specialist_results.append(value)
     consolidation = {
         "specialists": specialist_results,
@@ -288,7 +311,13 @@ def perform_review(client: DeepSeekClient, review_type: str, snapshot_id: str,
         "blocking_findings, root_cause_groups, prior_findings. Use INCONCLUSIVE if material uncertainty remains."
     )
     telemetry.passes.append("CONSOLIDATION")
-    final = client.request("You are the adversarial final review authority. Return JSON only.", consolidation_prompt, telemetry)
+    final = request_validated(
+        client, "You are the adversarial final review authority. Return JSON only.",
+        consolidation_prompt, telemetry,
+        lambda value: value.get("review_type") == review_type and value.get("snapshot_id") == snapshot_id
+        and value.get("verdict") in VERDICTS,
+        "CONSOLIDATION",
+    )
     if final.get("verdict") == "INCONCLUSIVE" or final.get("uncertainties"):
         telemetry.adjudication = True
         telemetry.passes.append("ADJUDICATION")
