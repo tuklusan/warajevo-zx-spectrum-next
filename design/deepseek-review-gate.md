@@ -22,9 +22,14 @@ review of the corrected snapshot.
 2. Commit the immutable candidate snapshot locally.
 3. Run one `CODE` review invocation over the complete CR range.
 4. Batch-correct all valid serious findings and repeat the complete review.
-5. After `PASS`, run required documentation review and then remote/hosted tests.
-6. Analyze the private artifacts and obtain a `TEST_ARTIFACT` second opinion.
-7. Any resulting code correction invalidates the earlier code pass.
+5. After `PASS`, run required documentation review.
+6. Publish the exact reviewed commit to `origin/main`; no later code change is
+   permitted before execution.
+7. Run remote and hosted tests. The SSH orchestrator verifies local `HEAD`, the
+   CODE receipt, its recomputed diff hash, and `origin/main` are identical
+   before each smoke launch.
+8. Analyze the private artifacts and obtain a `TEST_ARTIFACT` second opinion.
+9. Any resulting code correction invalidates the earlier code pass.
 
 The SSH smoke orchestrator enforces a private CODE PASS receipt bound to the
 current commit. Receipts, telemetry, raw artifacts, and secrets remain under
