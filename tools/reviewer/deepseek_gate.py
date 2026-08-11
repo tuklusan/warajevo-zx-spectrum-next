@@ -286,7 +286,13 @@ def final_schema_valid(value: Any, review_type: str, snapshot_id: str) -> bool:
         return value.get("review_complete") is True and value.get("blocking_findings") == []
     if value["verdict"] == "FAIL":
         findings = value.get("blocking_findings")
-        return isinstance(findings, list) and bool(findings) and all(f.get("severity") in SEVERITIES for f in findings)
+        required = ("id", "severity", "category", "requirement", "location",
+                    "problem", "evidence", "required_outcome")
+        return isinstance(findings, list) and bool(findings) and all(
+            isinstance(finding, dict) and finding.get("severity") in SEVERITIES
+            and all(isinstance(finding.get(field), str) and finding[field].strip() for field in required)
+            for finding in findings
+        )
     return value.get("review_complete") is False
 
 

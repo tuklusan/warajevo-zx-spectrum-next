@@ -144,6 +144,9 @@ class GateTests(unittest.TestCase):
                                                   "blocking_findings": []}, "CODE", "snap"))
         self.assertFalse(gate.final_schema_valid({"review_type": "CODE", "snapshot_id": "snap",
                                                   "verdict": "MAYBE"}, "CODE", "snap"))
+        self.assertFalse(gate.final_schema_valid({"review_type": "CODE", "snapshot_id": "snap",
+                                                  "verdict": "FAIL", "review_complete": True,
+                                                  "blocking_findings": ["malformed"]}, "CODE", "snap"))
         self.assertFalse(gate.specialist_schema_valid(
             {"pass": "CODE-A", "review_complete": True,
              "findings": [{"severity": "HIGH"}], "uncertainties": []}, "CODE-A"
