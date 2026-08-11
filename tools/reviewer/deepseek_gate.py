@@ -367,6 +367,7 @@ def perform_review(client: DeepSeekClient, review_type: str, snapshot_id: str,
         "shard_count": len(shards),
     }
     while len(canonical_json(consolidation).encode()) > SHARD_BYTES:
+        previous_size = len(canonical_json(consolidation).encode())
         batches: list[list[dict[str, Any]]] = []
         current: list[dict[str, Any]] = []
         for result in consolidation["specialists"]:
@@ -392,9 +393,9 @@ def perform_review(client: DeepSeekClient, review_type: str, snapshot_id: str,
                 lambda candidate: specialist_schema_valid(candidate, "CONSOLIDATION-SHARD"),
                 f"CONSOLIDATION-SHARD-{index + 1}",
             ))
-        if len(reduced) >= len(consolidation["specialists"]):
-            raise OutputError("consolidation findings cannot be reduced within safe input bounds")
         consolidation["specialists"] = reduced
+        if len(canonical_json(consolidation).encode()) >= previous_size:
+            raise OutputError("consolidation findings cannot be reduced within safe input bounds")
     consolidation_prompt = common_prompt(
         review_type, snapshot_id, requirements,
         "Structured specialist findings follow. Re-check against requirements and preserve every valid unique serious finding.\n" + canonical_json(consolidation),
