@@ -143,9 +143,19 @@ def shard_records(records: list[tuple[str, str]]) -> list[str]:
             if current:
                 shards.append(current)
                 current = ""
-            encoded = block.encode()
-            for offset in range(0, len(encoded), SHARD_BYTES):
-                shards.append(encoded[offset:offset + SHARD_BYTES].decode("utf-8", errors="replace"))
+            remainder = block
+            while remainder:
+                low, high = 1, len(remainder)
+                while low < high:
+                    middle = (low + high + 1) // 2
+                    if len(remainder[:middle].encode()) <= SHARD_BYTES:
+                        low = middle
+                    else:
+                        high = middle - 1
+                if len(remainder[:low].encode()) > SHARD_BYTES:
+                    raise ReviewError("single character exceeds shard byte limit")
+                shards.append(remainder[:low])
+                remainder = remainder[low:]
         elif current and len((current + block).encode()) > SHARD_BYTES:
             shards.append(current)
             current = block
@@ -302,6 +312,33 @@ def perform_review(client: DeepSeekClient, review_type: str, snapshot_id: str,
         "prior_findings": prior,
         "shard_count": len(shards),
     }
+    while len(canonical_json(consolidation).encode()) > SHARD_BYTES:
+        batches: list[list[dict[str, Any]]] = []
+        current: list[dict[str, Any]] = []
+        for result in consolidation["specialists"]:
+            candidate = current + [result]
+            if current and len(canonical_json(candidate).encode()) > SHARD_BYTES:
+                batches.append(current)
+                current = [result]
+            else:
+                current = candidate
+        if current:
+            batches.append(current)
+        reduced: list[dict[str, Any]] = []
+        for index, batch in enumerate(batches):
+            prompt = common_prompt(
+                review_type, snapshot_id, requirements,
+                "Consolidate this structured finding batch without dropping any valid unique serious finding:\n"
+                + canonical_json(batch),
+            ) + "Return the specialist JSON shape with pass CONSOLIDATION-SHARD."
+            telemetry.passes.append(f"CONSOLIDATION-SHARD-{index + 1}")
+            reduced.append(request_validated(
+                client, "You are a strict hierarchical review consolidator. Return JSON only.",
+                prompt, telemetry, specialist_schema_valid, f"CONSOLIDATION-SHARD-{index + 1}",
+            ))
+        if len(reduced) >= len(consolidation["specialists"]):
+            raise OutputError("consolidation findings cannot be reduced within safe input bounds")
+        consolidation["specialists"] = reduced
     consolidation_prompt = common_prompt(
         review_type, snapshot_id, requirements,
         "Structured specialist findings follow. Re-check against requirements and preserve every valid unique serious finding.\n" + canonical_json(consolidation),
