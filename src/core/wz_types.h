@@ -21,7 +21,8 @@ typedef uint64_t wz_master_tick_t;
 typedef enum {
     WZ_RESULT_OK = 0,
     WZ_RESULT_INVALID_ARGUMENT,
-    WZ_RESULT_INVALID_PROFILE
+    WZ_RESULT_INVALID_PROFILE,
+    WZ_RESULT_SERIALIZATION_FAILURE
 } wz_result_t;
 
 _Static_assert(sizeof(wz_byte_t) == 1u, "wz_byte_t must be 8 bits");

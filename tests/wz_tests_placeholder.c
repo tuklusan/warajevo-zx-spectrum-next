@@ -11,6 +11,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "core/wz_machine.h"
 #include "core/wz_scheduler.h"
+#include "core/wz_state.h"
 
 static void record_event(void* context)
 {
@@ -23,6 +24,10 @@ int main(void)
     const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
     wz_machine_t machine;
     wz_scheduler_t scheduler;
+    wz_byte_t serialized[65568u];
+    wz_state_writer_t writer;
+    wz_qword_t first_hash;
+    wz_qword_t second_hash;
     unsigned dispatched = 0u;
 
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
@@ -36,6 +41,20 @@ int main(void)
     if (wz_profile_cpu_tstate(5u, profile) != 2u ||
         wz_profile_cpu_phase(5u, profile) != 1u) {
         fputs("master-tick conversion failed\n", stderr);
+        return 1;
+    }
+
+    wz_state_writer_init(&writer, serialized, sizeof(serialized));
+    if (wz_state_serialize_machine(&machine, &writer) != WZ_RESULT_OK ||
+        writer.length != 65551u ||
+        wz_state_hash_machine(&machine, &first_hash) != WZ_RESULT_OK) {
+        fputs("canonical state serialization failed\n", stderr);
+        return 1;
+    }
+    machine.memory[0] = 0x42u;
+    if (wz_state_hash_machine(&machine, &second_hash) != WZ_RESULT_OK ||
+        first_hash == second_hash) {
+        fputs("canonical state hash did not reflect machine state\n", stderr);
         return 1;
     }
 

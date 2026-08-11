@@ -181,12 +181,12 @@
     {
       "cr_number": "CR-0018",
       "title": "Complete the remaining Phase-1 canonical state and headless-core contracts",
-      "status": "open",
+      "status": "in_progress",
       "source_authority": [
         "design/warajevo-zx-spectrum-next-architecture.md sections 8, 10, 44, and 45",
         "design/wzsn-architectures-1-2-developer-tasks.md tasks 028-040"
       ],
-      "notes": "Tracks canonical state serialization, deterministic hashing, host-state exclusion, the headless runner, trace sink, circular trace format, error/result categories, and the Phase-1 gate."
+      "notes": "Added explicit little-endian machine-state serialization and FNV-1a hashing over selected deterministic fields on 2026-08-11. Headless runner, trace sink/format, cross-build evidence, and the Phase-1 gate remain open."
     }
   ]
 }

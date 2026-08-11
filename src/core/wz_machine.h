@@ -20,7 +20,7 @@ typedef struct {
     wz_byte_t interrupt_enabled;
 } wz_cpu_state_t;
 
-typedef struct {
+typedef struct wz_machine {
     const wz_machine_profile_t* profile;
     wz_cpu_state_t cpu;
     wz_byte_t memory[65536u];
