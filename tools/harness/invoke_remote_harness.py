@@ -153,6 +153,48 @@ def run_windows(machine: dict[str, str], script_text: str, root: Path) -> subpro
     )
 
 
+def run_windows_with_input(
+    machine: dict[str, str],
+    script_text: str,
+    stdin_text: str,
+    root: Path,
+) -> subprocess.CompletedProcess[bytes]:
+    validate_powershell(root, script_text)
+    encoded = base64.b64encode(script_text.encode("utf-16le")).decode("ascii")
+    return subprocess.run(
+        [
+            *ssh_base(root),
+            machine["ssh_target"],
+            f"powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -OutputFormat Text -EncodedCommand {encoded}",
+        ],
+        cwd=root,
+        check=False,
+        capture_output=True,
+        input=stdin_text.encode("utf-8"),
+    )
+
+
+def stage_windows_file(
+    machine: dict[str, str],
+    remote_path: str,
+    content: str,
+    root: Path,
+) -> subprocess.CompletedProcess[bytes]:
+    escaped_remote_path = remote_path.replace("'", "''")
+    stage_wrapper = "\n".join(
+        [
+            "$ErrorActionPreference = 'Stop'",
+            f"$target = '{escaped_remote_path}'",
+            "$parent = Split-Path -Parent $target",
+            "$null = New-Item -ItemType Directory -Force -Path $parent",
+            "$body = [Console]::In.ReadToEnd()",
+            "[System.IO.File]::WriteAllText($target, $body, [System.Text.UTF8Encoding]::new($false))",
+            "exit 0",
+        ]
+    )
+    return run_windows_with_input(machine, stage_wrapper, content, root)
+
+
 def windows_relative_path(remote_dir: str) -> str:
     return remote_dir.replace("/", "\\")
 
@@ -222,6 +264,7 @@ def main() -> int:
 
         pulled = pull_linux(machine, remote_dir, root)
     else:
+        script_text = ""
         if args.action == "probe":
             script_text = "\n".join(
                 [
@@ -243,19 +286,44 @@ def main() -> int:
                 ]
             )
         else:
-            script_text = "\n".join(
-                [
-                    "$ErrorActionPreference = 'Stop'",
-                    "$ProgressPreference = 'SilentlyContinue'",
-                    f"Set-Location '{machine['project_dir']}'",
-                    "& '.\\tools\\Test-PowerShellSyntax.ps1' -FilePath '.\\tools\\harness\\Invoke-WindowsInteractiveScreenshot.ps1'",
-                    "if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }",
-                    f"& '.\\tools\\harness\\Invoke-WindowsInteractiveScreenshot.ps1' -OutputPath '.\\{remote_dir_windows}\\desktop-screenshot.png'",
-                    "exit $LASTEXITCODE",
-                ]
-            )
-
-        primary = run_windows(machine, script_text, root)
+            bridge_path = root / "tools" / "harness" / "Invoke-WindowsInteractiveScreenshot.ps1"
+            capture_path = root / "tools" / "harness" / "Capture-WindowsDesktopScreenshot.ps1"
+            bridge_source = bridge_path.read_text(encoding="utf-8")
+            capture_source = capture_path.read_text(encoding="utf-8")
+            validate_powershell(root, bridge_source)
+            validate_powershell(root, capture_source)
+            remote_bridge = str(Path(machine["project_dir"]) / remote_dir_windows / bridge_path.name).replace("/", "\\")
+            remote_capture = str(Path(machine["project_dir"]) / remote_dir_windows / capture_path.name).replace("/", "\\")
+            remote_output = str(Path(machine["project_dir"]) / remote_dir_windows / "desktop-screenshot.png").replace("/", "\\")
+            stage_bridge = stage_windows_file(machine, remote_bridge, bridge_source, root)
+            stage_capture = stage_windows_file(machine, remote_capture, capture_source, root)
+            if stage_bridge.returncode != 0:
+                primary = stage_bridge
+            elif stage_capture.returncode != 0:
+                primary = stage_capture
+            else:
+                script_text = "\n".join(
+                    [
+                        "$ErrorActionPreference = 'Stop'",
+                        "$ProgressPreference = 'SilentlyContinue'",
+                        f"Set-Location '{machine['project_dir']}'",
+                        f"& '.\\tools\\Test-PowerShellSyntax.ps1' -FilePath '{remote_dir_windows}\\{bridge_path.name}'",
+                        "if (-not $?) { exit 1 }",
+                        f"& '.\\tools\\Test-PowerShellSyntax.ps1' -FilePath '{remote_dir_windows}\\{capture_path.name}'",
+                        "if (-not $?) { exit 1 }",
+                        "try {",
+                        f"    & '{remote_bridge}' -CaptureScriptPath '{remote_capture}' -OutputPath '{remote_output}'",
+                        "    if (-not $?) { exit 1 }",
+                        "} catch {",
+                        "    Write-Error $_",
+                        "    exit 1",
+                        "}",
+                        "exit 0",
+                    ]
+                )
+                primary = run_windows(machine, script_text, root)
+        if args.action != "screenshot":
+            primary = run_windows(machine, script_text, root)
         command_text = script_text
         pulled = pull_windows(machine, remote_dir, root)
 

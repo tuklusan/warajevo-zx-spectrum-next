@@ -9,6 +9,8 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$OutputPath,
 
+    [string]$CaptureScriptPath,
+
     [int]$TimeoutSeconds = 30
 )
 
@@ -34,21 +36,35 @@ if ([string]::IsNullOrWhiteSpace($interactiveUser)) {
     throw "no active interactive desktop user was detected"
 }
 
-$captureScript = Join-Path $projectRoot 'tools\harness\Capture-WindowsDesktopScreenshot.ps1'
+$captureScript = if ([string]::IsNullOrWhiteSpace($CaptureScriptPath)) {
+    Join-Path $projectRoot 'tools\harness\Capture-WindowsDesktopScreenshot.ps1'
+} else {
+    [System.IO.Path]::GetFullPath($CaptureScriptPath)
+}
+if (
+    $captureScript -eq $projectRoot -or
+    -not $captureScript.StartsWith($projectRootPrefix, [System.StringComparison]::OrdinalIgnoreCase) -or
+    -not (Test-Path -LiteralPath $captureScript)
+) {
+    throw "capture script must exist below the project directory"
+}
 $taskName = "WZSN-InteractiveScreenshot-$([guid]::NewGuid().ToString('N'))"
 $outputParent = Split-Path -Parent $resolvedOutput
 if (-not (Test-Path -LiteralPath $outputParent)) {
     New-Item -ItemType Directory -Force -Path $outputParent | Out-Null
 }
+Set-Content -LiteralPath (Join-Path $outputParent 'interactive-bridge-started.txt') -Value (Get-Date).ToString('o')
 
 $action = New-ScheduledTaskAction `
     -Execute 'powershell.exe' `
-    -Argument "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File `"$captureScript`" -OutputPath `"$resolvedOutput`""
-$principal = New-ScheduledTaskPrincipal -UserId $interactiveUser -LogonType InteractiveToken -RunLevel Limited
+    -Argument "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File `"$captureScript`" -ProjectRoot `"$projectRoot`" -OutputPath `"$resolvedOutput`""
+$principal = New-ScheduledTaskPrincipal -UserId $interactiveUser -LogonType Interactive -RunLevel Limited
 
 try {
     Register-ScheduledTask -TaskName $taskName -Action $action -Principal $principal -Force | Out-Null
     Start-ScheduledTask -TaskName $taskName
+    $task = Get-ScheduledTask -TaskName $taskName
+    Set-Content -LiteralPath (Join-Path $outputParent 'interactive-bridge-task.txt') -Value ("State=$($task.State)")
 
     $deadline = (Get-Date).AddSeconds($TimeoutSeconds)
     do {

@@ -141,12 +141,12 @@
     {
       "cr_number": "CR-0014",
       "title": "Add an interactive-session bridge for Windows remote screenshot capture over SSH",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "project workflow rule",
         "design/warajevo-zx-spectrum-next-architecture.md section 19.6"
       ],
-      "notes": "Added Invoke-WindowsInteractiveScreenshot.ps1 and updated the Windows remote harness to use it. Remote verification is pending after the checkpoint is pushed; the first pre-deployment attempt correctly failed at the remote parser because the new file was not yet present."
+      "notes": "Added Invoke-WindowsInteractiveScreenshot.ps1, staged both Windows capture scripts into each run-local remote artefact directory, enforced remote parser-first validation, and verified a 393040-byte interactive desktop PNG on windows-11-laptop under run 20260811T185128Z on 2026-08-11."
     },
     {
       "cr_number": "CR-0015",

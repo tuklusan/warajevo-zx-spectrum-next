@@ -7,7 +7,9 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
-    [string]$OutputPath
+    [string]$OutputPath,
+
+    [string]$ProjectRoot
 )
 
 Set-StrictMode -Version Latest
@@ -16,7 +18,11 @@ $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
-$projectRoot = (Get-Location).Path
+$projectRoot = if ([string]::IsNullOrWhiteSpace($ProjectRoot)) {
+    (Get-Location).Path
+} else {
+    [System.IO.Path]::GetFullPath($ProjectRoot)
+}
 $normalizedProjectRoot = [System.IO.Path]::GetFullPath($projectRoot)
 $projectRootPrefix = if ($normalizedProjectRoot.EndsWith('\')) {
     $normalizedProjectRoot
