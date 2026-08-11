@@ -38,8 +38,9 @@ class HarnessGateTests(unittest.TestCase):
         results[0].returncode = 0
         results[1].returncode = 0
         with patch.object(smoke.shutil, "which", side_effect=available), \
-             patch.object(smoke.subprocess, "run", side_effect=results):
+             patch.object(smoke.subprocess, "run", side_effect=results) as run_mock:
             self.assertEqual(smoke.choose_python_command(), r"C:\Python311\python.exe")
+        self.assertTrue(all(call.kwargs["timeout"] == 30 for call in run_mock.call_args_list))
 
     def test_python_selection_falls_back_after_execution_error(self):
         def available(command):

@@ -90,7 +90,7 @@ def choose_python_command() -> str | None:
         try:
             result = subprocess.run(
                 [candidate, "-c", "import sys; print(sys.executable if sys.version_info.major == 3 else '')"],
-                check=False, capture_output=True, text=True,
+                check=False, capture_output=True, text=True, timeout=30,
             )
         except (OSError, subprocess.SubprocessError):
             continue
@@ -101,7 +101,7 @@ def choose_python_command() -> str | None:
         try:
             result = subprocess.run(
                 [launcher, "-3", "-c", "import sys; print(sys.executable)"],
-                check=False, capture_output=True, text=True,
+                check=False, capture_output=True, text=True, timeout=30,
             )
         except (OSError, subprocess.SubprocessError):
             return None

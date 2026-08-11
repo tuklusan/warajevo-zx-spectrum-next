@@ -191,6 +191,9 @@ class GateTests(unittest.TestCase):
         self.assertEqual(len(client.calls), len(shards) * 3 + 1)
         consolidation_prompt = client.calls[-1][1]
         self.assertEqual(consolidation_prompt.count('"review_complete":true'), len(shards) * 3)
+        self.assertIn("Original immutable review material follows", consolidation_prompt)
+        self.assertIn(shards[0], consolidation_prompt)
+        self.assertIn(shards[-1], consolidation_prompt)
         for index in range(1, len(shards) + 1):
             self.assertTrue(any(f"material shard {index}/{len(shards)}" in prompt
                                 for _, prompt in client.calls[:-1]))

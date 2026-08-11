@@ -465,7 +465,10 @@ def perform_review(client: DeepSeekClient, review_type: str, snapshot_id: str,
             raise OutputError("consolidation findings cannot be reduced within safe input bounds")
     consolidation_prompt = common_prompt(
         review_type, snapshot_id, consolidation_requirements,
-        "Structured specialist findings follow. Re-check against requirements and preserve every valid unique serious finding.\n" + canonical_json(consolidation),
+        "Original immutable review material follows. Re-check every finding against it.\n"
+        + "\n".join(shards)
+        + "\nStructured specialist findings follow. Preserve every valid unique serious finding.\n"
+        + canonical_json(consolidation),
     ) + (
         "Adversarially consolidate. No majority voting. Reject only unsupported/stale findings; merge duplicates and root causes. "
         "Return compact final JSON with schema_version=1, review_type, snapshot_id, verdict, review_complete, "
