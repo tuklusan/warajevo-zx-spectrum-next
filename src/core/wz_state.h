@@ -26,6 +26,9 @@ void wz_state_writer_init(wz_state_writer_t* writer,
                           size_t capacity);
 wz_result_t wz_state_serialize_machine(const wz_machine_t* machine,
                                        wz_state_writer_t* writer);
+wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
+                                         const wz_byte_t* data,
+                                         size_t length);
 wz_result_t wz_state_hash_machine(const wz_machine_t* machine,
                                   wz_qword_t* hash);
 

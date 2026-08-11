@@ -104,3 +104,40 @@ wz_result_t wz_state_hash_machine(const wz_machine_t* machine,
     }
     return WZ_RESULT_OK;
 }
+
+wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
+                                         const wz_byte_t* data,
+                                         size_t length)
+{
+    const wz_machine_profile_t* profile;
+    wz_qword_t tick = 0u;
+
+    if (machine == 0 || data == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (length != 65551u || data[0] != 1u) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    if (data[1] == (wz_byte_t)WZ_MACHINE_48K_PAL) {
+        profile = wz_machine_profile_48k_pal();
+    } else if (data[1] == (wz_byte_t)WZ_MACHINE_128K_PAL) {
+        profile = wz_machine_profile_128k_pal();
+    } else {
+        profile = 0;
+    }
+    if (profile == 0) {
+        return WZ_RESULT_INVALID_PROFILE;
+    }
+    for (size_t index = 0u; index < 8u; ++index) {
+        tick |= (wz_qword_t)data[7u + index] << (index * 8u);
+    }
+    machine->profile = profile;
+    machine->cpu.program_counter = wz_read_le16(data + 2u);
+    machine->cpu.stack_pointer = wz_read_le16(data + 4u);
+    machine->cpu.interrupt_enabled = data[6];
+    machine->master_tick = tick;
+    for (size_t index = 0u; index < sizeof(machine->memory); ++index) {
+        machine->memory[index] = data[15u + index];
+    }
+    return WZ_RESULT_OK;
+}

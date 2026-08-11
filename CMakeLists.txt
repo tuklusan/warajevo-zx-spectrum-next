@@ -50,6 +50,10 @@ add_library(
 target_include_directories(wz_core PUBLIC src)
 target_link_libraries(wz_core PUBLIC wz_warnings)
 
+add_library(wz_diagnostics STATIC src/diagnostics/wz_trace_file.c)
+target_include_directories(wz_diagnostics PUBLIC src)
+target_link_libraries(wz_diagnostics PUBLIC wz_core wz_warnings)
+
 add_executable(
     wz_headless
     src/app/wz_headless_main.c
@@ -57,12 +61,15 @@ add_executable(
 
 target_link_libraries(wz_headless PRIVATE wz_core)
 
+add_executable(wz_trace_dump src/diagnostics/wz_trace_dump_main.c)
+target_link_libraries(wz_trace_dump PRIVATE wz_diagnostics)
+
 add_executable(
     wz_tests
     tests/wz_tests_placeholder.c
 )
 
-target_link_libraries(wz_tests PRIVATE wz_core)
+target_link_libraries(wz_tests PRIVATE wz_core wz_diagnostics)
 
 enable_testing()
 add_test(NAME wz_tests_placeholder COMMAND wz_tests)

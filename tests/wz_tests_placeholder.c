@@ -13,6 +13,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "core/wz_scheduler.h"
 #include "core/wz_state.h"
 #include "core/wz_runner.h"
+#include "diagnostics/wz_trace_file.h"
 
 static void record_event(void* context)
 {
@@ -28,10 +29,18 @@ static void record_trace(const wz_trace_event_t* event, void* context)
     }
 }
 
+static bool recover_trace(const wz_trace_event_t* event, void* context)
+{
+    wz_qword_t* last_sequence = (wz_qword_t*)context;
+    *last_sequence = event->sequence;
+    return true;
+}
+
 int main(void)
 {
     const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
     wz_machine_t machine;
+    wz_machine_t restored;
     wz_scheduler_t scheduler;
     wz_byte_t serialized[65568u];
     wz_state_writer_t writer;
@@ -41,6 +50,11 @@ int main(void)
     wz_headless_runner_t runner;
     unsigned trace_count = 0u;
     unsigned dispatched = 0u;
+    wz_trace_file_t trace_file;
+    wz_trace_file_t duplicate;
+    wz_qword_t recovered_last = 0u;
+    size_t recovered_count = 0u;
+    const char* trace_path = "wz-trace-regression.bin";
 
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
         fputs("machine initialization failed\n", stderr);
@@ -69,6 +83,12 @@ int main(void)
         fputs("canonical state hash did not reflect machine state\n", stderr);
         return 1;
     }
+    if (wz_state_deserialize_machine(&restored, serialized, writer.length) != WZ_RESULT_OK ||
+        wz_state_hash_machine(&restored, &second_hash) != WZ_RESULT_OK ||
+        first_hash != second_hash) {
+        fputs("canonical state round trip failed\n", stderr);
+        return 1;
+    }
 
     wz_trace_sink_init(&trace_sink, record_trace, &trace_count);
     if (wz_headless_runner_init(&runner, &machine, &trace_sink) != WZ_RESULT_OK ||
@@ -94,6 +114,33 @@ int main(void)
         return 1;
     }
 
+    remove(trace_path);
+    if (wz_trace_file_create(&trace_file, trace_path, 1u,
+                             (wz_dword_t)profile->kind, UINT32_MAX) != WZ_RESULT_OK ||
+        wz_trace_file_create(&duplicate, trace_path, 2u,
+                             (wz_dword_t)profile->kind, UINT32_MAX) == WZ_RESULT_OK) {
+        fputs("exclusive trace creation failed\n", stderr);
+        return 1;
+    }
+    wz_trace_sink_init(&trace_sink, wz_trace_file_emit, &trace_file);
+    for (wz_qword_t index = 0u; index < 400000u; ++index) {
+        wz_trace_emit(&trace_sink, WZ_TRACE_MASTER_TICK_ADVANCED, index);
+    }
+    if (wz_trace_file_freeze(&trace_file) != WZ_RESULT_OK) {
+        fputs("trace freeze failed\n", stderr);
+        return 1;
+    }
+    wz_trace_emit(&trace_sink, WZ_TRACE_MASTER_TICK_ADVANCED, 400001u);
+    wz_trace_file_close(&trace_file);
+    if (wz_trace_file_recover(trace_path, recover_trace, &recovered_last,
+                              &recovered_count) != WZ_RESULT_OK ||
+        recovered_count == 0u || recovered_last != 399999u) {
+        fputs("trace wrap recovery failed\n", stderr);
+        return 1;
+    }
+    remove(trace_path);
+
     wz_machine_destroy(&machine);
+    wz_machine_destroy(&restored);
     return 0;
 }

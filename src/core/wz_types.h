@@ -22,7 +22,10 @@ typedef enum {
     WZ_RESULT_OK = 0,
     WZ_RESULT_INVALID_ARGUMENT,
     WZ_RESULT_INVALID_PROFILE,
-    WZ_RESULT_SERIALIZATION_FAILURE
+    WZ_RESULT_SERIALIZATION_FAILURE,
+    WZ_RESULT_INVALID_STATE,
+    WZ_RESULT_UNSUPPORTED_OPERATION,
+    WZ_RESULT_TRACE_FAILURE
 } wz_result_t;
 
 _Static_assert(sizeof(wz_byte_t) == 1u, "wz_byte_t must be 8 bits");
