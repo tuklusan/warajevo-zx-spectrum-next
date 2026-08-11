@@ -84,12 +84,23 @@ def tool_record(command: str | None) -> dict[str, str | None]:
 
 
 def choose_python_command() -> str | None:
-    if shutil.which("python3"):
-        return "python3"
-    if shutil.which("python"):
-        return "python"
-    if shutil.which("py"):
-        return "py"
+    for candidate in ("python3", "python"):
+        if not shutil.which(candidate):
+            continue
+        result = subprocess.run(
+            [candidate, "-c", "import sys; print(sys.executable if sys.version_info.major == 3 else '')"],
+            check=False, capture_output=True, text=True,
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            return result.stdout.strip()
+    launcher = shutil.which("py")
+    if launcher:
+        result = subprocess.run(
+            [launcher, "-3", "-c", "import sys; print(sys.executable)"],
+            check=False, capture_output=True, text=True,
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            return result.stdout.strip()
     return None
 
 

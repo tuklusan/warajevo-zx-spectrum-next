@@ -231,6 +231,15 @@ class GateTests(unittest.TestCase):
         self.assertNotIn(key, console.getvalue())
         self.assertNotIn(key, persisted)
 
+    def test_telemetry_writes_are_collision_resistant(self):
+        telemetry = gate.Telemetry("CODE", "snap")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            gate.write_telemetry(root, telemetry, final("FAIL", [{"severity": "HIGH"}]))
+            gate.write_telemetry(root, telemetry, final("FAIL", [{"severity": "HIGH"}]))
+            files = list((root / "test-artefacts" / "reviewer").glob("telemetry-*.json"))
+        self.assertEqual(len(files), 2)
+
 
 if __name__ == "__main__":
     unittest.main()

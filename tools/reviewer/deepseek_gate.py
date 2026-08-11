@@ -19,6 +19,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
+import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -500,7 +501,8 @@ def write_telemetry(root: Path, telemetry: Telemetry, final: dict[str, Any]) -> 
               "prompt_cache_miss_tokens": telemetry.cache_miss_tokens,
               "serious_findings": len(final.get("blocking_findings", [])),
               "verdict": final.get("verdict"), "elapsed_seconds": round(time.monotonic() - telemetry.started, 3)}
-    path = directory / f"telemetry-{int(time.time())}.json"
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S.%fZ")
+    path = directory / f"telemetry-{timestamp}-{uuid.uuid4().hex}.json"
     path.write_text(json.dumps(record, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     files = sorted(directory.glob("telemetry-*.json"), key=lambda p: p.stat().st_mtime, reverse=True)
     for old in files[50:]:

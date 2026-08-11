@@ -30,6 +30,17 @@ class Result:
 
 
 class HarnessGateTests(unittest.TestCase):
+    def test_python_selection_rejects_python_two_and_resolves_python_three(self):
+        def available(command):
+            return command if command in {"python3", "python"} else None
+
+        results = [Result(text_stdout=""), Result(text_stdout="C:\\Python311\\python.exe\n")]
+        results[0].returncode = 0
+        results[1].returncode = 0
+        with patch.object(smoke.shutil, "which", side_effect=available), \
+             patch.object(smoke.subprocess, "run", side_effect=results):
+            self.assertEqual(smoke.choose_python_command(), r"C:\Python311\python.exe")
+
     def test_python_path_is_pinned_for_cmake(self):
         self.assertEqual(smoke.python_cmake_definition(r"C:\Python\python.exe"),
                          "-DPython3_EXECUTABLE=C:/Python/python.exe")
