@@ -297,16 +297,29 @@ def perform_review(client: DeepSeekClient, review_type: str, snapshot_id: str,
                    requirements: str, shards: list[str], prior: list[dict[str, Any]],
                    telemetry: Telemetry) -> dict[str, Any]:
     specialist_results: list[dict[str, Any]] = []
+    specialist_failures: list[str] = []
     for shard_index, material in enumerate(shards):
         common = common_prompt(review_type, snapshot_id, requirements, material)
         for pass_name, scope in SPECIALISTS[review_type]:
             telemetry.passes.append(pass_name)
             instruction = f"Assigned pass {pass_name}; review {scope}. This is shard {shard_index + 1}/{len(shards)}."
-            value = request_validated(
-                client, "You are a strict software review gate. Return JSON only.",
-                common + instruction, telemetry, specialist_schema_valid, pass_name,
-            )
-            specialist_results.append(value)
+            try:
+                value = request_validated(
+                    client, "You are a strict software review gate. Return JSON only.",
+                    common + instruction, telemetry, specialist_schema_valid, pass_name,
+                )
+                specialist_results.append(value)
+            except ReviewError as exc:
+                specialist_failures.append(f"{pass_name} shard {shard_index + 1}: {type(exc).__name__}")
+    if specialist_failures:
+        return {
+            "schema_version": 1,
+            "review_type": review_type,
+            "snapshot_id": snapshot_id,
+            "verdict": "INCONCLUSIVE",
+            "review_complete": False,
+            "missing_context": specialist_failures,
+        }
     consolidation = {
         "specialists": specialist_results,
         "prior_findings": prior,
