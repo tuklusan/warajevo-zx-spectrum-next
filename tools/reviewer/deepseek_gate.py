@@ -143,19 +143,23 @@ def shard_records(records: list[tuple[str, str]]) -> list[str]:
             if current:
                 shards.append(current)
                 current = ""
-            remainder = block
+            remainder = content
+            part = 1
             while remainder:
+                header = f"\n===== {path} (part {part}) =====\n"
+                capacity = SHARD_BYTES - len(header.encode()) - 1
                 low, high = 1, len(remainder)
                 while low < high:
                     middle = (low + high + 1) // 2
-                    if len(remainder[:middle].encode()) <= SHARD_BYTES:
+                    if len(remainder[:middle].encode()) <= capacity:
                         low = middle
                     else:
                         high = middle - 1
-                if len(remainder[:low].encode()) > SHARD_BYTES:
+                if len(remainder[:low].encode()) > capacity:
                     raise ReviewError("single character exceeds shard byte limit")
-                shards.append(remainder[:low])
+                shards.append(header + remainder[:low] + "\n")
                 remainder = remainder[low:]
+                part += 1
         elif current and len((current + block).encode()) > SHARD_BYTES:
             shards.append(current)
             current = block

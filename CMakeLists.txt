@@ -74,10 +74,12 @@ target_link_libraries(wz_tests PRIVATE wz_core wz_diagnostics)
 enable_testing()
 add_test(NAME wz_tests_placeholder COMMAND wz_tests)
 
-find_package(Python3 COMPONENTS Interpreter REQUIRED)
-add_test(
-    NAME deepseek_gate_tests
-    COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tests/test_deepseek_gate.py
-)
+find_package(Python3 COMPONENTS Interpreter QUIET)
+if(Python3_FOUND)
+    add_test(
+        NAME deepseek_gate_tests
+        COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tests/test_deepseek_gate.py
+    )
+endif()
 
 add_custom_target(wz_gui_stub)
