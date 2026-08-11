@@ -25,10 +25,22 @@ As checked on 2026-08-09, `upstream` resolved to:
 94f69bd8f4acb6c0c320ae34f9b1c3ee29bc5545
 ```
 
+## Imported source
+
+The source-only tree from that exact commit is imported read-only under:
+
+```text
+reference/original-warajevo/source/src/
+```
+
+The import contains the preserved Pascal, assembly, batch, object, executable,
+and related source-era files. Upstream ROM images and upstream documentation
+are intentionally not redistributed in this project import. The imported tree
+is reference material only and is excluded from all WZSN build targets.
+
 ## Current policy
 
 - The upstream reference is not compiled into WZSN.
-- The imported read-only source tree is still a tracked follow-up in
-  `issues/change-requests.json`.
+- The imported read-only source tree is tracked at the path documented above.
 - Provenance-sensitive migration work must update
   `design/migration-ledger.md` before implementation code lands.

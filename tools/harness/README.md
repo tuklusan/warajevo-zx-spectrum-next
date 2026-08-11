@@ -31,6 +31,10 @@ This directory contains the tracked baseline harness entry points for:
   Captures the active Linux desktop when X11 session access is available
 - `Capture-WindowsDesktopScreenshot.ps1`
   Captures the active Windows desktop through the screen API
+- `Invoke-WindowsInteractiveScreenshot.ps1`
+  Bridges an SSH-created noninteractive process into the active Windows
+  desktop through a short-lived interactive Task Scheduler action, then
+  removes the action after the screenshot is written
 - `windows-toolchain/*.ps1`
   Reusable Windows toolchain maintenance and verification scripts for the
   approved remotes

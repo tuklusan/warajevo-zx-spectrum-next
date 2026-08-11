@@ -58,38 +58,38 @@
     {
       "cr_number": "CR-0005",
       "title": "Pin toolchain files for the full cross-platform matrix",
-      "status": "open",
+      "status": "closed",
       "source_authority": [
         "design/wzsn-architectures-1-2-developer-tasks.md task 017"
       ],
-      "notes": "Directory and matrix notes exist; concrete toolchain files remain to be added."
+      "notes": "Added explicit Windows x86-64, Linux x86-64, Linux AArch64, macOS AArch64, and macOS x86-64 CMake toolchain files plus configure examples on 2026-08-11."
     },
     {
       "cr_number": "CR-0006",
       "title": "Import preserved Warajevo 2.50 source under reference/original-warajevo",
-      "status": "open",
+      "status": "closed",
       "source_authority": [
         "design/wzsn-architectures-1-2-developer-tasks.md task 005"
       ],
-      "notes": "The upstream remote is configured, but the read-only imported source tree is still pending."
+      "notes": "Imported the source-only tree from upstream HEAD 94f69bd8f4acb6c0c320ae34f9b1c3ee29bc5545 under reference/original-warajevo/source/src/ on 2026-08-11. ROM images and upstream documentation were excluded, and the WZSN build does not reference the import."
     },
     {
       "cr_number": "CR-0007",
       "title": "Freeze timing constants and evidence links for the deterministic 48K baseline",
-      "status": "open",
+      "status": "closed",
       "source_authority": [
         "design/wzsn-architectures-1-2-developer-tasks.md tasks 009 and 010"
       ],
-      "notes": "The evidence scaffold exists, but the timing authority set is not frozen yet."
+      "notes": "Frozen the Phase-1 48K PAL integer timing baseline, derived 7 MHz master domain, 224/312/69888 geometry, 448 raster clocks per line, and Phase-1 scheduler ordering with named World of Spectrum evidence on 2026-08-11. ULA-specific contention, interrupt-edge, floating-bus, and raster-fetch evidence remain later phase gates."
     },
     {
       "cr_number": "CR-0008",
       "title": "Pin the Fuse Z80 test-suite revision and acquisition instructions",
-      "status": "open",
+      "status": "closed",
       "source_authority": [
         "design/wzsn-architectures-1-2-developer-tasks.md task 012"
       ],
-      "notes": "Still pending and intentionally tracked explicitly before CPU implementation begins."
+      "notes": "Pinned the Fuse source repository master commit 9cbab635f5c9dfdfc5cb769aa89048c7e624d6b7, documented remote acquisition and provenance rules, and added the public corpus placeholder on 2026-08-11. CPU integration and pass/fail evidence remain later implementation work."
     },
     {
       "cr_number": "CR-0009",
@@ -141,12 +141,12 @@
     {
       "cr_number": "CR-0014",
       "title": "Add an interactive-session bridge for Windows remote screenshot capture over SSH",
-      "status": "open",
+      "status": "in_progress",
       "source_authority": [
         "project workflow rule",
         "design/warajevo-zx-spectrum-next-architecture.md section 19.6"
       ],
-      "notes": "On 2026-08-09, the hosted build smoke matrix passed on all five targeted GitHub runner labels, but direct screenshot capture from the Windows SSH sessions still failed because the SSH process was not attached to the interactive desktop."
+      "notes": "Added Invoke-WindowsInteractiveScreenshot.ps1 and updated the Windows remote harness to use it. Remote verification is pending after the checkpoint is pushed; the first pre-deployment attempt correctly failed at the remote parser because the new file was not yet present."
     },
     {
       "cr_number": "CR-0015",

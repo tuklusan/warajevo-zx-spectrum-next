@@ -248,7 +248,9 @@ def main() -> int:
                     "$ErrorActionPreference = 'Stop'",
                     "$ProgressPreference = 'SilentlyContinue'",
                     f"Set-Location '{machine['project_dir']}'",
-                    f"& '.\\tools\\harness\\Capture-WindowsDesktopScreenshot.ps1' -OutputPath '.\\{remote_dir_windows}\\desktop-screenshot.png'",
+                    "& '.\\tools\\Test-PowerShellSyntax.ps1' -FilePath '.\\tools\\harness\\Invoke-WindowsInteractiveScreenshot.ps1'",
+                    "if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }",
+                    f"& '.\\tools\\harness\\Invoke-WindowsInteractiveScreenshot.ps1' -OutputPath '.\\{remote_dir_windows}\\desktop-screenshot.png'",
                     "exit $LASTEXITCODE",
                 ]
             )
