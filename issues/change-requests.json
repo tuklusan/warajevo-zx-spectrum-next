@@ -186,7 +186,7 @@
         "design/warajevo-zx-spectrum-next-architecture.md sections 8, 10, 44, and 45",
         "design/wzsn-architectures-1-2-developer-tasks.md tasks 028-040"
       ],
-      "notes": "Added explicit little-endian machine-state serialization and FNV-1a hashing over selected deterministic fields on 2026-08-11. Headless runner, trace sink/format, cross-build evidence, and the Phase-1 gate remain open."
+      "notes": "Added explicit little-endian machine-state serialization and FNV-1a hashing over selected deterministic fields, then added the host-independent headless runner and narrow trace-sink interface on 2026-08-11. Circular trace format, cross-build evidence, and the Phase-1 gate remain open."
     }
   ]
 }

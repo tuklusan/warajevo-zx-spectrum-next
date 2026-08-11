@@ -12,11 +12,20 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "core/wz_machine.h"
 #include "core/wz_scheduler.h"
 #include "core/wz_state.h"
+#include "core/wz_runner.h"
 
 static void record_event(void* context)
 {
     unsigned* value = (unsigned*)context;
     *value += 1u;
+}
+
+static void record_trace(const wz_trace_event_t* event, void* context)
+{
+    unsigned* count = (unsigned*)context;
+    if (event->kind == WZ_TRACE_MASTER_TICK_ADVANCED) {
+        *count += 1u;
+    }
 }
 
 int main(void)
@@ -28,6 +37,9 @@ int main(void)
     wz_state_writer_t writer;
     wz_qword_t first_hash;
     wz_qword_t second_hash;
+    wz_trace_sink_t trace_sink;
+    wz_headless_runner_t runner;
+    unsigned trace_count = 0u;
     unsigned dispatched = 0u;
 
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
@@ -55,6 +67,14 @@ int main(void)
     if (wz_state_hash_machine(&machine, &second_hash) != WZ_RESULT_OK ||
         first_hash == second_hash) {
         fputs("canonical state hash did not reflect machine state\n", stderr);
+        return 1;
+    }
+
+    wz_trace_sink_init(&trace_sink, record_trace, &trace_count);
+    if (wz_headless_runner_init(&runner, &machine, &trace_sink) != WZ_RESULT_OK ||
+        wz_headless_runner_advance(&runner, 3u) != WZ_RESULT_OK ||
+        machine.master_tick != 3u || trace_count != 3u) {
+        fputs("headless runner or trace sink failed\n", stderr);
         return 1;
     }
 

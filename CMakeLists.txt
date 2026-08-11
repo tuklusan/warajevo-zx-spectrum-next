@@ -41,8 +41,10 @@ add_library(
     STATIC
     src/core/wz_machine_profile.c
     src/core/wz_machine.c
+    src/core/wz_runner.c
     src/core/wz_scheduler.c
     src/core/wz_state.c
+    src/core/wz_trace.c
 )
 
 target_include_directories(wz_core PUBLIC src)
