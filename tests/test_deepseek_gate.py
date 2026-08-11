@@ -6,8 +6,12 @@
 # See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 import json
+import io
 import sys
+import tempfile
 import unittest
+import urllib.error
+from contextlib import redirect_stdout
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools" / "reviewer"))
@@ -204,6 +208,28 @@ class GateTests(unittest.TestCase):
 
         gate.DeepSeekClient(key, opener).request("s", "u", gate.Telemetry("CODE", "x"))
         self.assertNotIn(key, captured["data"])
+
+    def test_api_key_not_present_in_telemetry_or_error_output(self):
+        key = "do-not-leak-this-value"
+
+        def rejected(request, timeout):
+            raise urllib.error.HTTPError(request.full_url, 401, "unauthorized", {}, None)
+
+        telemetry = gate.Telemetry("CODE", "snap")
+        with self.assertRaises(gate.ConfigurationError) as raised:
+            gate.DeepSeekClient(key, rejected).request("system", "review", telemetry)
+        failure = gate.compact_failure("CODE", "snap", "REVIEW_UNAVAILABLE", str(raised.exception))
+        console = io.StringIO()
+        with redirect_stdout(console):
+            print(json.dumps(failure))
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            gate.write_telemetry(root, telemetry, failure)
+            persisted = "".join(path.read_text(encoding="utf-8")
+                                for path in (root / "test-artefacts" / "reviewer").iterdir())
+        self.assertNotIn(key, str(raised.exception))
+        self.assertNotIn(key, console.getvalue())
+        self.assertNotIn(key, persisted)
 
 
 if __name__ == "__main__":
