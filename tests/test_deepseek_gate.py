@@ -94,15 +94,26 @@ class GateTests(unittest.TestCase):
             self.assertEqual(len(client.calls), 4)
 
     def test_schema_repair_is_bounded_and_succeeds(self):
-        client = FakeClient([{"wrong": True}, specialist("CODE-A")])
+        client = FakeClient([{"wrong": True}, {"still_wrong": True}, specialist("CODE-A")])
         telemetry = gate.Telemetry("CODE", "snap")
         value = gate.request_validated(
             client, "system", "prompt", telemetry,
             lambda candidate: gate.specialist_schema_valid(candidate, "CODE-A"), "CODE-A",
         )
         self.assertEqual(value["pass"], "CODE-A")
-        self.assertEqual(len(client.calls), 2)
-        self.assertEqual(telemetry.retries, 1)
+        self.assertEqual(len(client.calls), 3)
+        self.assertEqual(telemetry.retries, 2)
+
+    def test_schema_repair_exhaustion_fails_closed(self):
+        client = FakeClient([{"wrong": True}, {"still_wrong": True}, {"wrong_again": True}])
+        telemetry = gate.Telemetry("CODE", "snap")
+        with self.assertRaises(gate.OutputError):
+            gate.request_validated(
+                client, "system", "prompt", telemetry,
+                lambda candidate: gate.specialist_schema_valid(candidate, "CODE-A"), "CODE-A",
+            )
+        self.assertEqual(len(client.calls), 3)
+        self.assertEqual(telemetry.retries, 2)
 
     def test_failed_specialist_does_not_skip_remaining_passes(self):
         client = FailingThenPassingClient([

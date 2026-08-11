@@ -261,18 +261,19 @@ def specialist_schema_valid(value: Any, expected_pass: str | None = None) -> boo
 
 def request_validated(client: DeepSeekClient, system: str, prompt: str,
                       telemetry: Telemetry, validator: Any, label: str) -> dict[str, Any]:
-    value = client.request(system, prompt, telemetry)
-    if validator(value):
-        return value
-    telemetry.retries += 1
-    repair = (
-        prompt + "\nYour previous JSON did not match the required schema. Return a fresh complete JSON object only; "
-        "do not discuss or quote the prior response. Follow every field and enum exactly."
-    )
-    value = client.request(system, repair, telemetry)
-    if not validator(value):
-        raise OutputError(f"schema-invalid response after repair: {label}")
-    return value
+    request_prompt = prompt
+    for repair_attempt in range(3):
+        value = client.request(system, request_prompt, telemetry)
+        if validator(value):
+            return value
+        if repair_attempt < 2:
+            telemetry.retries += 1
+            request_prompt = (
+                prompt + "\nYour previous JSON did not match the required schema. Return a fresh complete JSON "
+                "object only; do not discuss or quote the prior response. Follow every field and enum exactly. "
+                f"Schema repair attempt {repair_attempt + 1} of 2."
+            )
+    raise OutputError(f"schema-invalid response after bounded repairs: {label}")
 
 
 def final_schema_valid(value: Any, review_type: str, snapshot_id: str) -> bool:
