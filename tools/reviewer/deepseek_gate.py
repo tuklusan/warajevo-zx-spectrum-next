@@ -29,7 +29,10 @@ API_URL = "https://api.deepseek.com/chat/completions"
 MODEL = "deepseek-v4-pro"
 KEY_NAME = "DeepSeek_API_key"
 MAX_OUTPUT_TOKENS = 384000
-SHARD_BYTES = 280_000
+MAX_CONTEXT_TOKENS = 1_000_000
+# UTF-8/BPE token counts cannot exceed input bytes; this leaves room for three
+# bounded prompt components, JSON framing, and the maximum configured output.
+SHARD_BYTES = min(160_000, (MAX_CONTEXT_TOKENS - MAX_OUTPUT_TOKENS) // 3 - 32_000)
 RETRY_DELAYS = (1, 3)
 VERDICTS = {"PASS", "FAIL", "INCONCLUSIVE", "REVIEW_UNAVAILABLE"}
 SEVERITIES = {"BLOCKER", "HIGH"}
@@ -410,7 +413,7 @@ def perform_review(client: DeepSeekClient, review_type: str, snapshot_id: str,
                 current_prior = candidate
         if current_prior:
             prior_batches.append(current_prior)
-        reviewed_prior: list[dict[str, Any]] = []
+        prior_receipts: list[dict[str, Any]] = []
         for index, batch in enumerate(prior_batches):
             expected_ids = sorted(str(item.get("id", "")) for item in batch)
             prompt = (
@@ -430,14 +433,19 @@ def perform_review(client: DeepSeekClient, review_type: str, snapshot_id: str,
                            if isinstance(item, dict)) == ids,
                 f"PRIOR-REVIEW-{index + 1}",
             )
-            reviewed_prior.extend(value["prior_findings"])
+            prior_receipts.append({
+                "batch": index + 1,
+                "record_count": len(batch),
+                "source_sha256": hashlib.sha256(canonical_json(batch).encode()).hexdigest(),
+                "review_sha256": hashlib.sha256(canonical_json(value).encode()).hexdigest(),
+                "review_complete": True,
+            })
         prior_for_consolidation = {
-            "exact_index": [
-                {"id": item.get("id"), "status": item.get("status"),
-                 "sha256": hashlib.sha256(canonical_json(item).encode()).hexdigest()}
-                for item in prior
-            ],
-            "reviewed_dispositions": reviewed_prior,
+            "record_count": len(prior),
+            "exact_id_set_sha256": hashlib.sha256(canonical_json(
+                sorted(str(item.get("id", "")) for item in prior)
+            ).encode()).hexdigest(),
+            "batch_receipts": prior_receipts,
         }
     consolidation = {
         "specialists": specialist_results,

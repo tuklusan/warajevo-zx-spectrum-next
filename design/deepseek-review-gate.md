@@ -86,6 +86,11 @@ calls, retries, pass names, adjudication, token usage, verdict, finding count,
 snapshot, and duration are recorded in bounded private telemetry without
 prompts, source, reasoning, authorization data, or the key.
 
+Input packets use a conservative 160,000-byte shard ceiling. Since the UTF-8
+byte count is an upper bound on BPE input tokens, three bounded prompt
+components plus framing and the configured output allowance remain below the
+documented one-million-token context limit.
+
 Code snapshots bind base commit, head commit, and diff hash. Documentation and
 artifact snapshots bind sorted paths and SHA-256 hashes. Every internal pass
 uses identical snapshot material. Oversized material is detected and reviewed
