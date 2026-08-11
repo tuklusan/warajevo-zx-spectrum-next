@@ -8,6 +8,15 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 # Project Workflow
 
+## External Review Gate
+
+Before any CR code is executed on a designated remote or hosted test system,
+the exact committed snapshot must pass the independent CODE gate documented in
+`design/deepseek-review-gate.md`. Required documentation and post-test artifact
+reviews are also mandatory. Serious findings are advisory to the developer but
+may not be silently ignored; corrections or evidence-backed disputed
+dispositions require a complete new review.
+
 ## Root Rule
 
 Never create any project item or artifact above the project directory.

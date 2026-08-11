@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 20,
+  "next_cr_number": 21,
   "status_values": [
     "open",
     "in_progress",
@@ -197,6 +197,17 @@
         "design/wzsn-architectures-1-2-developer-tasks.md tasks 033-040"
       ],
       "notes": "Closed on 2026-08-11 after implementing the exclusive fixed 16 MiB circular trace backend, compact committed-record codec, identity/mask/synchronization metadata, freeze and post-mortem recovery, standalone dump utility, state round trips, and wrap/density/incomplete-record tests. Evidence passed on both Windows remotes, Linux with GCC and Clang sanitizers, and the five-platform hosted matrix; design/phase-1-reconciliation.md records the two-pass pre-Phase-2 review."
+    },
+    {
+      "cr_number": "CR-0020",
+      "title": "Deploy the exhaustive batched DeepSeek advisory review gate",
+      "status": "in_progress",
+      "source_authority": [
+        "DeepSeek-Review-Gate-Efficient-Harness.txt supplied 2026-08-11",
+        "design/deepseek-review-gate.md",
+        "project workflow rule"
+      ],
+      "notes": "Bootstrap implementation before Phase 2. The repository had no prior DeepSeek harness, so a retained one-pass legacy gate will independently review the batched gate before remote execution and cutover."
     }
   ]
 }

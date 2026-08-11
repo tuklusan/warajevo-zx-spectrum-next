@@ -51,6 +51,24 @@ def repo_root() -> Path:
     return Path(__file__).resolve().parents[2]
 
 
+def require_code_review_pass(root: Path) -> None:
+    receipt_path = root / "test-artefacts" / "reviewer" / "code-pass.json"
+    if not receipt_path.is_file():
+        raise SystemExit("remote smoke blocked: no private CODE PASS receipt")
+    try:
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise SystemExit("remote smoke blocked: invalid CODE PASS receipt") from exc
+    head = subprocess.run(
+        ["git", "rev-parse", "HEAD"], cwd=root, check=True, capture_output=True, text=True
+    ).stdout.strip()
+    snapshot = receipt.get("snapshot_id", "")
+    if receipt.get("verdict") != "PASS" or receipt.get("review_complete") is not True:
+        raise SystemExit("remote smoke blocked: reviewer verdict is not PASS")
+    if not snapshot.startswith("git:") or f"..{head}:" not in snapshot:
+        raise SystemExit("remote smoke blocked: CODE PASS does not match current commit")
+
+
 def known_hosts_option(root: Path) -> list[str]:
     path = root / "test-artefacts" / "ssh-known-hosts.local"
     if not path.exists():
@@ -249,6 +267,8 @@ def main() -> int:
     args = parser.parse_args()
 
     root = repo_root()
+    if args.action == "smoke":
+        require_code_review_pass(root)
     machine = REMOTE_MACHINES[args.machine]
     remote_dir = f".wzsn-harness/{args.run_id}"
     remote_dir_windows = windows_relative_path(remote_dir)
