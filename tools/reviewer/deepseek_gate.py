@@ -747,7 +747,7 @@ def discovery_schema_valid(value: Any, expected_pass: str | None = None) -> bool
         and value.get("review_complete") is True
         and (expected_pass is None or value.get("pass") == expected_pass)
         and isinstance(value.get("candidates"), list)
-        and all(candidate_schema_valid(candidate) for candidate in value["candidates"])
+        and all(isinstance(candidate, dict) for candidate in value["candidates"])
         and isinstance(value.get("uncertainties", []), list)
     )
 
@@ -773,9 +773,8 @@ def decision_schema_valid(value: Any, expected_ids: set[str]) -> bool:
         for item in decisions
     ):
         return False
-    return isinstance(value.get("new_candidates", []), list) and all(
-        candidate_schema_valid(candidate) for candidate in value.get("new_candidates", [])
-    )
+    return (isinstance(value.get("new_candidates", []), list)
+            and all(isinstance(candidate, dict) for candidate in value.get("new_candidates", [])))
 
 
 def bounded_source_context(content: str, location: str, radius: int = 200) -> str:
@@ -1146,6 +1145,7 @@ def perform_review(client: DeepSeekClient, root: Path, review_type: str, packet:
         if truncated:
             continue
         discovered.extend(unit_candidates)
+        telemetry.discovery_candidate_count = len(discovered)
         unit_index += 1
     integration_unit = build_integration_unit(packet) if review_type == "CODE" else None
     integration_units = [integration_unit] if integration_unit else []
@@ -1167,6 +1167,7 @@ def perform_review(client: DeepSeekClient, root: Path, review_type: str, packet:
                 normalized = dict(candidate)
                 normalized["candidate_id"] = f"{pass_name}-P{integration_index + 1}-C{candidate_index + 1}"
                 discovered.append(normalized)
+            telemetry.discovery_candidate_count = len(discovered)
             integration_index += 1
         except TruncationError:
             if len(current_integration.encode()) <= 8192:

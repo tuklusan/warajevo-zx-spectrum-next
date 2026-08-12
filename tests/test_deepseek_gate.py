@@ -240,6 +240,14 @@ class GateTests(unittest.TestCase):
         self.assertFalse(gate.candidate_schema_valid(malformed_assumption))
         self.assertTrue(gate.candidate_schema_valid(candidate(requests=[{"type": "PATH", "path": "src/other.c"}])))
 
+    def test_malformed_candidate_is_deterministically_rejected_without_losing_complete_pass(self):
+        malformed = {"candidate_id": "incomplete"}
+        self.assertTrue(gate.discovery_schema_valid(discovery("CODE-A", [malformed]), "CODE-A"))
+        telemetry = gate.Telemetry("CODE", "snap")
+        accepted, rejected = gate.deterministic_filter([malformed], requirement(), packet(), telemetry)
+        self.assertEqual(accepted, [])
+        self.assertEqual(rejected[0]["reason"], "malformed candidate")
+
     def test_nul_status_parser_handles_spaces_and_renames(self):
         changes = gate.parse_name_status_z(b"M\0space name.c\0R100\0old name.c\0new name.c\0")
         self.assertEqual(changes[0]["head_path"], "space name.c")
