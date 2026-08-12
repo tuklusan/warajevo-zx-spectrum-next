@@ -508,8 +508,8 @@ class GateTests(unittest.TestCase):
     def test_truncated_discovery_retries_smaller_material_units(self):
         large_packet = packet(records=[("head/src/item.c", "x\n" * 10000)])
         responses = [gate.TruncationError("length")]
-        responses.extend(empty_review_responses())
-        responses.extend(empty_review_responses())
+        for _ in range(10):
+            responses.extend(empty_review_responses())
         telemetry = gate.Telemetry("CODE", "snap")
         result = gate.perform_review(FakeClient(responses), ROOT, "CODE", large_packet,
                                      scope(), requirement(), [], telemetry)
