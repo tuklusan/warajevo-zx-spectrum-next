@@ -201,14 +201,14 @@
     {
       "cr_number": "CR-0020",
       "title": "Deploy the exhaustive batched DeepSeek advisory review gate",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "DeepSeek-Review-Gate-Efficient-Harness.txt supplied 2026-08-11",
         "Private precision-hardening scope supplied 2026-08-11",
         "design/deepseek-review-gate.md",
         "project workflow rule"
       ],
-      "notes": "Bootstrap implementation before Phase 2 remains in progress. Precision hardening binds review to the active CR, exact requirement provenance, complete immutable changed-file evidence, candidate discovery, hostile falsification, deterministic blocker synthesis, truthful binary handling, and receipt invalidation. The retained independent one-pass gate remains the temporary authorization authority until remote precision fixtures and final normal-gate review are clean."
+      "notes": "Closed on 2026-08-12. The final f3d7056 fixture correction and fea9492 diagnostic hardening were independently bootstrap-reviewed; the production CODE gate passed fea9492 with zero confirmed findings. The complete reviewer and remote-harness suites passed on windows-11-laptop and the five-platform hosted matrix (Linux x64/ARM64, Windows x64, macOS ARM64/Intel). TEST_ARTIFACT and cross-document DOCUMENTATION reviews passed with zero confirmed findings. linux-x64-lxqt and windows-10-reference were unreachable during final retries at SSH transport, before execution; their earlier run reproduced the corrected fixture-only failure, while equivalent final Linux/Windows hosted suites passed. The deployed gate now binds active CR scope and exact requirement provenance to immutable evidence and protected receipts; uses candidate discovery, hostile falsification, independent severity confirmation, deterministic blocker synthesis, truthful artifact handling, bounded retries, private telemetry, and stale-receipt invalidation; and retains the independent bootstrap path."
     }
   ]
 }
