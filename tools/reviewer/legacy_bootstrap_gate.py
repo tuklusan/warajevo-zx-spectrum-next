@@ -30,27 +30,50 @@ from deepseek_gate import (
 BOOTSTRAP_INPUT_BUDGET_BYTES = 2_000_000
 
 
-def bootstrap_result_valid(result: object, requirements: list[dict[str, str]],
-                           packet: ReviewPacket | None = None) -> bool:
-    if not isinstance(result, dict) or result.get("review_complete") is not True:
-        return False
+def bootstrap_result_errors(result: object, requirements: list[dict[str, str]],
+                            packet: ReviewPacket | None = None) -> list[str]:
+    errors: list[str] = []
+    if not isinstance(result, dict):
+        return ["response is not an object"]
+    if result.get("review_complete") is not True:
+        errors.append("review_complete is not true")
     verdict = result.get("verdict")
     findings = result.get("findings")
-    if verdict not in {"PASS", "FAIL"} or not isinstance(findings, list):
-        return False
+    if verdict not in {"PASS", "FAIL"}:
+        errors.append("verdict is not PASS or FAIL")
+    if not isinstance(findings, list):
+        errors.append("findings is not an array")
+        return errors
     if (verdict == "PASS") != (len(findings) == 0):
-        return False
+        errors.append("verdict and finding count are inconsistent")
     sources = {item["source"]: item["content"] for item in requirements}
     required = ("id", "requirement_source", "requirement_quote", "location", "failure_scenario",
                 "evidence", "negative_check", "required_outcome")
-    return all(
-        isinstance(finding, dict) and finding.get("severity") in {"BLOCKER", "HIGH"}
-        and all(isinstance(finding.get(field), str) and finding[field].strip() for field in required)
-        and finding["requirement_source"] in sources
-        and finding["requirement_quote"] in sources[finding["requirement_source"]]
-        and (packet is None or candidate_location_valid(packet, finding["location"]))
-        for finding in findings
-    )
+    for index, finding in enumerate(findings):
+        prefix = f"finding[{index}]"
+        if not isinstance(finding, dict):
+            errors.append(f"{prefix} is not an object")
+            continue
+        if finding.get("severity") not in {"BLOCKER", "HIGH"}:
+            errors.append(f"{prefix} severity is not BLOCKER or HIGH")
+        missing = [field for field in required
+                   if not isinstance(finding.get(field), str) or not finding[field].strip()]
+        if missing:
+            errors.append(f"{prefix} missing text fields: {','.join(missing)}")
+            continue
+        source = finding["requirement_source"]
+        if source not in sources:
+            errors.append(f"{prefix} requirement source is not authoritative input")
+        elif finding["requirement_quote"] not in sources[source]:
+            errors.append(f"{prefix} requirement quote is absent from source")
+        if packet is not None and not candidate_location_valid(packet, finding["location"]):
+            errors.append(f"{prefix} location is absent from immutable packet")
+    return errors
+
+
+def bootstrap_result_valid(result: object, requirements: list[dict[str, str]],
+                           packet: ReviewPacket | None = None) -> bool:
+    return not bootstrap_result_errors(result, requirements, packet)
 
 
 def main() -> int:
@@ -102,7 +125,8 @@ def main() -> int:
         result = {"review_complete": False, "verdict": "INCONCLUSIVE",
                   "reason": f"bootstrap review unavailable: {type(exc).__name__}"}
     if result.get("verdict") != "INCONCLUSIVE" and not bootstrap_result_valid(result, requirements, packet):
-        result = {"review_complete": False, "verdict": "INCONCLUSIVE", "reason": "invalid bootstrap response"}
+        result = {"review_complete": False, "verdict": "INCONCLUSIVE",
+                  "reason": {"invalid_bootstrap_response": bootstrap_result_errors(result, requirements, packet)}}
     print(json.dumps({"review_type": "CODE", "snapshot_id": packet.snapshot_id, **result},
                      separators=(",", ":"), sort_keys=True))
     return 0 if result.get("verdict") == "PASS" else 2

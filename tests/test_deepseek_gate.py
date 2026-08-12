@@ -160,6 +160,11 @@ class GateTests(unittest.TestCase):
         self.assertFalse(bootstrap_gate.bootstrap_result_valid(
             {"review_complete": True, "verdict": "PASS", "findings": [finding]}, requirements
         ))
+        errors = bootstrap_gate.bootstrap_result_errors(
+            {"review_complete": True, "verdict": "FAIL", "findings": [{**finding, "severity": "MEDIUM"}]},
+            requirements,
+        )
+        self.assertIn("finding[0] severity is not BLOCKER or HIGH", errors)
 
     def test_payload_supports_phase_budgets_without_sampling_controls(self):
         captured = {}
