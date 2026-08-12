@@ -32,6 +32,12 @@ class Result:
 
 
 class HarnessGateTests(unittest.TestCase):
+    def test_run_id_rejects_local_traversal_and_remote_shell_metacharacters(self):
+        for value in ("../escape", "name'; Write-Output injected; '", "with space", "a" * 65):
+            with self.subTest(value=value), self.assertRaises(SystemExit):
+                remote.validate_run_id(value)
+        self.assertEqual(remote.validate_run_id("20260811T120000Z-smoke_1"), "20260811T120000Z-smoke_1")
+
     def test_python_selection_rejects_python_two_and_resolves_python_three(self):
         def available(command):
             return command if command in {"python3", "python"} else None

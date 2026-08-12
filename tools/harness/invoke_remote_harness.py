@@ -12,6 +12,7 @@ import base64
 import hashlib
 import json
 import os
+import re
 import shlex
 import shutil
 import subprocess
@@ -42,10 +43,17 @@ REMOTE_MACHINES = {
         "python_command": "py -3",
     },
 }
+SAFE_RUN_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}\Z")
 
 
 def utc_stamp() -> str:
     return datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+
+
+def validate_run_id(value: str) -> str:
+    if not SAFE_RUN_ID.fullmatch(value) or value in {".", ".."} or ".." in value:
+        raise SystemExit("run-id must be 1-64 ASCII letters, digits, dots, underscores, or hyphens without '..'")
+    return value
 
 
 def repo_root() -> Path:
@@ -381,6 +389,7 @@ def main() -> int:
     parser.add_argument("machine", choices=sorted(REMOTE_MACHINES))
     parser.add_argument("--run-id", default=utc_stamp())
     args = parser.parse_args()
+    args.run_id = validate_run_id(args.run_id)
 
     root = repo_root()
     if args.action == "smoke":
