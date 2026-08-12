@@ -547,6 +547,26 @@ class GateTests(unittest.TestCase):
         self.assertEqual(result["verdict"], "INCONCLUSIVE")
         self.assertEqual(result["confirmed_findings"], [])
 
+    def test_missing_candidate_context_does_not_resurrect_rejected_allegation(self):
+        allegation = candidate(requests=[{"type": "PATH", "path": "missing.c"}])
+        responses = [discovery("CODE-A", [allegation]), discovery("CODE-B"), discovery("CODE-C"),
+                     falsification(candidate_id(), "REJECTED")]
+        resolution = {"status": "UNRESOLVED", "reason": "tracked head path not found"}
+        with patch.object(gate, "resolve_context_request", return_value=resolution):
+            result = gate.perform_review(FakeClient(responses), ROOT, "CODE", packet(), scope(), requirement(), [],
+                                         gate.Telemetry("CODE", "snap"))
+        self.assertEqual(result["verdict"], "PASS")
+
+    def test_unresolved_result_contains_exact_candidate_evidence(self):
+        responses = [discovery("CODE-A", [candidate()]), discovery("CODE-B"), discovery("CODE-C"),
+                     falsification(candidate_id(), "UNRESOLVED")]
+        result = gate.perform_review(FakeClient(responses), ROOT, "CODE", packet(), scope(), requirement(), [],
+                                     gate.Telemetry("CODE", "snap"))
+        detail = result["reason"]["unresolved_candidates"][0]
+        self.assertEqual(detail["candidate_id"], candidate_id())
+        self.assertEqual(detail["location"], "src/item.c:1")
+        self.assertIn("decision_reason", detail)
+
     def test_authority_conflict_requires_human_decision(self):
         responses = [discovery("CODE-A", [candidate()]), discovery("CODE-B"), discovery("CODE-C"),
                      falsification(candidate_id(), "UNRESOLVED", conflict=True)]

@@ -1239,7 +1239,10 @@ def perform_review(client: DeepSeekClient, root: Path, review_type: str, packet:
         identifier for identifier, decision in decisions.items() if decision["decision"] == "NON_BLOCKING"
     }
     unresolved_ids = {identifier for identifier, decision in decisions.items() if decision["decision"] == "UNRESOLVED"}
-    unresolved_ids.update(unresolved_context)
+    unresolved_ids.update(
+        identifier for identifier in unresolved_context
+        if identifier not in rejected_ids and identifier not in non_blocking_ids
+    )
     telemetry.falsifier_confirmed_count = len(confirmed_ids)
     telemetry.falsifier_rejected_count = len(rejected_ids)
     telemetry.falsifier_non_blocking_count = len(non_blocking_ids)
@@ -1324,8 +1327,24 @@ def perform_review(client: DeepSeekClient, root: Path, review_type: str, packet:
                                       "HUMAN_DECISION_REQUIRED", False,
                                       reason={"candidate_id": identifier, "ambiguity": adjudication["reason"]}, prior=prior)
     if unresolved_ids:
+        unresolved_details = []
+        for identifier in sorted(unresolved_ids):
+            candidate = candidate_by_id.get(identifier, {})
+            decision = decisions.get(identifier, {})
+            unresolved_details.append({
+                "candidate_id": identifier,
+                "requirement_source": candidate.get("requirement_source"),
+                "requirement_quote": candidate.get("requirement_quote"),
+                "scope_link": candidate.get("scope_link"),
+                "location": candidate.get("location"),
+                "claim": candidate.get("claim"),
+                "failure_scenario": candidate.get("failure_scenario"),
+                "decision_reason": decision.get("reason"),
+                "negative_check": decision.get("negative_check"),
+                "resolved_context": candidate.get("resolved_context", []),
+            })
         return compact_result(review_type, scope.get("cr_number", ""), packet, "INCONCLUSIVE", False,
-                              reason={"unresolved_candidate_ids": sorted(unresolved_ids)}, prior=prior)
+                              reason={"unresolved_candidates": unresolved_details}, prior=prior)
     blockers = [make_blocker(candidate_by_id[identifier], decisions[identifier]) for identifier in sorted(confirmed_ids)]
     return compact_result(review_type, scope.get("cr_number", ""), packet,
                           "FAIL" if blockers else "PASS", True, blockers, prior=prior)

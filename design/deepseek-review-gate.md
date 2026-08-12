@@ -94,6 +94,10 @@ A real issue below HIGH is `NON_BLOCKING`, not falsely labeled `REJECTED`. A
 falsifier-discovered suspicion re-enters the same validation and proof path.
 No majority vote, grouping helper, or final model may add, drop, resurrect, or
 promote an ID. `UNRESOLVED` cannot become HIGH and prevents PASS when material.
+A falsifier-rejected or non-blocking allegation is not resurrected merely
+because its own requested proof was unavailable. Material unresolved results
+include the exact candidate claim, authority, location, decision reason, and
+resolved-context record rather than only an opaque ID.
 
 ## Disputes And Ambiguity
 
