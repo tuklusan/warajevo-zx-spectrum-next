@@ -13,16 +13,11 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "core/wz_machine_profile.h"
 #include "core/wz_types.h"
-
-typedef struct {
-    wz_word_t program_counter;
-    wz_word_t stack_pointer;
-    wz_byte_t interrupt_enabled;
-} wz_cpu_state_t;
+#include "core/wz_z80.h"
 
 typedef struct wz_machine {
     const wz_machine_profile_t* profile;
-    wz_cpu_state_t cpu;
+    wz_z80_state_t cpu;
     wz_byte_t memory[65536u];
     wz_master_tick_t master_tick;
 } wz_machine_t;

@@ -46,6 +46,7 @@ add_library(
     src/core/wz_scheduler.c
     src/core/wz_state.c
     src/core/wz_trace.c
+    src/core/wz_z80.c
 )
 
 target_include_directories(wz_core PUBLIC src)

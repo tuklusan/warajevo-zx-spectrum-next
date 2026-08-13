@@ -42,7 +42,7 @@ int main(void)
     wz_machine_t machine;
     wz_machine_t restored;
     wz_scheduler_t scheduler;
-    wz_byte_t serialized[65568u];
+    wz_byte_t serialized[65584u];
     wz_state_writer_t writer;
     wz_qword_t first_hash;
     wz_qword_t second_hash;
@@ -73,9 +73,45 @@ int main(void)
 
     wz_state_writer_init(&writer, serialized, sizeof(serialized));
     if (wz_state_serialize_machine(&machine, &writer) != WZ_RESULT_OK ||
-        writer.length != 65551u ||
+        writer.length != 65576u ||
         wz_state_hash_machine(&machine, &first_hash) != WZ_RESULT_OK) {
         fputs("canonical state serialization failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.main.a = 0x12u;
+    machine.cpu.alternate.f = 0x34u;
+    machine.cpu.ix = 0xabcdu;
+    machine.cpu.iy = 0x2345u;
+    machine.cpu.i = 0x56u;
+    machine.cpu.r = 0x78u;
+    machine.cpu.iff1 = 1u;
+    machine.cpu.iff2 = 1u;
+    machine.cpu.interrupt_mode = (wz_byte_t)WZ_Z80_INTERRUPT_MODE_2;
+    machine.cpu.halted = 1u;
+    wz_state_writer_init(&writer, serialized, sizeof(serialized));
+    if (wz_state_serialize_machine(&machine, &writer) != WZ_RESULT_OK ||
+        wz_state_deserialize_machine(&restored, serialized, writer.length) != WZ_RESULT_OK ||
+        restored.cpu.main.a != 0x12u ||
+        restored.cpu.alternate.f != 0x34u ||
+        restored.cpu.ix != 0xabcdu ||
+        restored.cpu.iy != 0x2345u ||
+        restored.cpu.i != 0x56u ||
+        restored.cpu.r != 0x78u ||
+        restored.cpu.iff1 != 1u ||
+        restored.cpu.iff2 != 1u ||
+        restored.cpu.interrupt_mode != (wz_byte_t)WZ_Z80_INTERRUPT_MODE_2 ||
+        restored.cpu.halted != 1u) {
+        fputs("Z80 state round trip failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reinitialization failed\n", stderr);
+        return 1;
+    }
+    wz_state_writer_init(&writer, serialized, sizeof(serialized));
+    if (wz_state_serialize_machine(&machine, &writer) != WZ_RESULT_OK ||
+        wz_state_hash_machine(&machine, &first_hash) != WZ_RESULT_OK) {
+        fputs("canonical state baseline refresh failed\n", stderr);
         return 1;
     }
     machine.memory[0] = 0x42u;

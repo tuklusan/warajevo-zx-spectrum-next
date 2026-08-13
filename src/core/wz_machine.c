@@ -19,9 +19,7 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     }
 
     machine->profile = profile;
-    machine->cpu.program_counter = 0u;
-    machine->cpu.stack_pointer = 0xffffu;
-    machine->cpu.interrupt_enabled = 0u;
+    wz_z80_state_init(&machine->cpu);
     machine->master_tick = 0u;
     for (size_t index = 0u; index < sizeof(machine->memory); ++index) {
         machine->memory[index] = 0u;
