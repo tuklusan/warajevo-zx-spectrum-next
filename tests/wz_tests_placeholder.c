@@ -137,6 +137,72 @@ int main(void)
         fputs("bus observer removal failed\n", stderr);
         return 1;
     }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 skeleton test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.program_counter != 1u ||
+        machine.master_tick != 8u ||
+        bus_log.count != 1u ||
+        bus_log.requests[0].cycle != WZ_BUS_M1_OPCODE_FETCH ||
+        bus_log.requests[0].master_tick != 0u ||
+        bus_log.requests[0].address != 0u ||
+        bus_log.requests[0].value != 0u) {
+        fputs("Z80 NOP fetch trace failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 load test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    machine.memory[0u] = 0x3eu;
+    machine.memory[1u] = 0x77u;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.a != 0x77u ||
+        machine.cpu.program_counter != 2u ||
+        machine.master_tick != 14u ||
+        bus_log.count != 2u ||
+        bus_log.requests[0].cycle != WZ_BUS_M1_OPCODE_FETCH ||
+        bus_log.requests[1].cycle != WZ_BUS_MEMORY_READ ||
+        bus_log.requests[1].master_tick != 8u ||
+        bus_log.requests[1].address != 1u ||
+        bus_log.requests[1].value != 0x77u) {
+        fputs("Z80 immediate load trace failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 store test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    machine.cpu.main.a = 0x22u;
+    machine.memory[0u] = 0x32u;
+    machine.memory[1u] = 0x00u;
+    machine.memory[2u] = 0x40u;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.memory[0x4000u] != 0x22u ||
+        machine.cpu.program_counter != 3u ||
+        machine.master_tick != 26u ||
+        bus_log.count != 4u ||
+        bus_log.requests[0].cycle != WZ_BUS_M1_OPCODE_FETCH ||
+        bus_log.requests[1].cycle != WZ_BUS_MEMORY_READ ||
+        bus_log.requests[2].cycle != WZ_BUS_MEMORY_READ ||
+        bus_log.requests[3].cycle != WZ_BUS_MEMORY_WRITE ||
+        bus_log.requests[3].master_tick != 20u ||
+        bus_log.requests[3].address != 0x4000u ||
+        bus_log.requests[3].value != 0x22u) {
+        fputs("Z80 absolute store trace failed\n", stderr);
+        return 1;
+    }
 
     wz_state_writer_init(&writer, serialized, sizeof(serialized));
     if (wz_state_serialize_machine(&machine, &writer) != WZ_RESULT_OK ||

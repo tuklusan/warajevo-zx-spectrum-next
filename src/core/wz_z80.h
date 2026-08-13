@@ -11,6 +11,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "core/wz_types.h"
 
+typedef struct wz_machine wz_machine_t;
+
 typedef enum {
     WZ_Z80_INTERRUPT_MODE_0 = 0,
     WZ_Z80_INTERRUPT_MODE_1 = 1,
@@ -45,5 +47,6 @@ typedef struct {
 
 void wz_z80_state_init(wz_z80_state_t* state);
 wz_result_t wz_z80_state_validate(const wz_z80_state_t* state);
+wz_result_t wz_z80_step(wz_machine_t* machine);
 
 #endif

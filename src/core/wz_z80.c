@@ -8,6 +8,33 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "core/wz_z80.h"
 
+#include "core/wz_bus.h"
+#include "core/wz_machine.h"
+
+static wz_word_t wz_z80_add16(wz_word_t value, wz_word_t amount)
+{
+    return (wz_word_t)(value + amount);
+}
+
+static wz_result_t wz_z80_bus(wz_machine_t* machine,
+                              wz_bus_cycle_t cycle,
+                              wz_master_tick_t offset,
+                              wz_word_t address,
+                              wz_byte_t* value,
+                              wz_byte_t t_states)
+{
+    wz_bus_request_t request;
+    wz_bus_request_init(&request, cycle, machine->master_tick + offset, address,
+                        value == 0 ? 0u : *value, t_states);
+    if (wz_machine_bus_request(machine, &request) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    if (value != 0) {
+        *value = request.value;
+    }
+    return WZ_RESULT_OK;
+}
+
 void wz_z80_state_init(wz_z80_state_t* state)
 {
     if (state == 0) {
@@ -54,4 +81,62 @@ wz_result_t wz_z80_state_validate(const wz_z80_state_t* state)
         return WZ_RESULT_INVALID_STATE;
     }
     return WZ_RESULT_OK;
+}
+
+wz_result_t wz_z80_step(wz_machine_t* machine)
+{
+    wz_byte_t opcode = 0u;
+    wz_byte_t value = 0u;
+    wz_byte_t low = 0u;
+    wz_byte_t high = 0u;
+    wz_word_t pc;
+    wz_word_t address;
+
+    if (machine == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (wz_z80_state_validate(&machine->cpu) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+
+    pc = machine->cpu.program_counter;
+    if (wz_z80_bus(machine, WZ_BUS_M1_OPCODE_FETCH, 0u, pc, &opcode, 4u) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    machine->cpu.program_counter = wz_z80_add16(pc, 1u);
+
+    switch (opcode) {
+    case 0x00u:
+        machine->master_tick += 8u;
+        return WZ_RESULT_OK;
+    case 0x3eu:
+        if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,
+                       machine->cpu.program_counter, &value, 3u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
+        machine->cpu.main.a = value;
+        machine->master_tick += 14u;
+        return WZ_RESULT_OK;
+    case 0x32u:
+        if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,
+                       machine->cpu.program_counter, &low, 3u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
+        if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 14u,
+                       machine->cpu.program_counter, &high, 3u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
+        address = (wz_word_t)low | ((wz_word_t)high << 8u);
+        value = machine->cpu.main.a;
+        if (wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 20u, address, &value, 3u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->master_tick += 26u;
+        return WZ_RESULT_OK;
+    default:
+        return WZ_RESULT_UNSUPPORTED_OPERATION;
+    }
 }
