@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 21,
+  "next_cr_number": 22,
   "status_values": [
     "open",
     "in_progress",
@@ -209,6 +209,34 @@
         "project workflow rule"
       ],
       "notes": "Closed on 2026-08-12. The final f3d7056 fixture correction and fea9492 diagnostic hardening were independently bootstrap-reviewed; the production CODE gate passed fea9492 with zero confirmed findings. The complete reviewer and remote-harness suites passed on windows-11-laptop and the five-platform hosted matrix (Linux x64/ARM64, Windows x64, macOS ARM64/Intel). TEST_ARTIFACT and cross-document DOCUMENTATION reviews passed with zero confirmed findings. linux-x64-lxqt and windows-10-reference were unreachable during final retries at SSH transport, before execution; their earlier run reproduced the corrected fixture-only failure, while equivalent final Linux/Windows hosted suites passed. The deployed gate now binds active CR scope and exact requirement provenance to immutable evidence and protected receipts; uses candidate discovery, hostile falsification, independent severity confirmation, deterministic blocker synthesis, truthful artifact handling, bounded retries, private telemetry, and stale-receipt invalidation; and retains the independent bootstrap path."
+    },
+    {
+      "cr_number": "CR-0021",
+      "title": "Repair review-gate latency without weakening evidence protections",
+      "status": "in_progress",
+      "source_authority": [
+        "attached gate-maintenance request supplied 2026-08-13",
+        "design/deepseek-review-gate.md",
+        "design/FRESH-PROJECT-DEEPSEEK-REVIEW-GATE.md",
+        "project workflow rule"
+      ],
+      "acceptance_criteria": [
+        "Pause feature development, including the preserved Z80 state candidate, until this repair is validated.",
+        "Normal one-unit clean review performs exactly one external discovery call.",
+        "Discovery uses deepseek-v4-pro with thinking disabled and no reasoning_effort field.",
+        "The combined discovery prompt covers requirements/functional correctness, runtime/safety/lifecycle/concurrency/recovery, and integration/regression/compatibility/test adequacy.",
+        "Falsification runs only for candidates that survive schema, requirement, scope, deterministic, context, and deduplication filtering.",
+        "Ordinary falsification uses thinking enabled with reasoning_effort high, not max.",
+        "Max reasoning is reserved for genuine evidence-backed adjudication.",
+        "A one-unit multi-file CODE packet does not automatically invoke a separate CODE-INTEGRATION call.",
+        "Dynamic review-unit sizing uses the actual stable prefix and fails closed when requirement scope is too broad.",
+        "Private active-review lock/status prevents duplicate live reviews of the same snapshot and recovers stale locks.",
+        "Overall review deadline fails closed instead of hanging or passing early.",
+        "Private telemetry records per-call phase, thinking mode, reasoning effort, token usage, elapsed time, retries, and final review-level counts.",
+        "Full changed-file immutable evidence, CR scope, requirement provenance, falsification, NON_BLOCKING, UNRESOLVED, HUMAN_DECISION_REQUIRED, secret exclusion, and receipt binding remain intact.",
+        "The retained legacy bootstrap gate is used as temporary authority for this repair before designated remote execution."
+      ],
+      "notes": "Opened on 2026-08-13 after preserving paused feature commit 08162870ecf37759e886a738cd8f72a82e35f580 on a project-safe paused-feature branch. This CR repairs review-gate latency only and must not include Phase-2 feature implementation."
     }
   ]
 }

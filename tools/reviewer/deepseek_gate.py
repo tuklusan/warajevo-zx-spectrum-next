@@ -33,10 +33,17 @@ UNIVERSAL_REQUIREMENT_SOURCE = "design/deepseek-review-gate.md"
 PROTOCOL_VERSION = 2
 MAX_CONTEXT_TOKENS = 1_000_000
 INPUT_BUDGET_BYTES = 520_000
-UNIT_BYTES = 150_000
-DISCOVERY_OUTPUT_TOKENS = 24_000
-FALSIFICATION_OUTPUT_TOKENS = 32_000
-ADJUDICATION_OUTPUT_TOKENS = 24_000
+TARGET_UNIT_BYTES = 340_000
+MIN_UNIT_BYTES = 64_000
+PROTOCOL_OVERHEAD_BYTES = 16_384
+SAFETY_MARGIN_BYTES = 32_768
+CONTEXT_BYTES = 340_000
+DISCOVERY_OUTPUT_TOKENS = 8_192
+FALSIFICATION_OUTPUT_TOKENS = 12_288
+ADJUDICATION_OUTPUT_TOKENS = 12_288
+DEFAULT_REVIEW_DEADLINE_SECONDS = 480.0
+STALE_LOCK_SECONDS = 900.0
+REQUEST_TIMEOUT_SECONDS = 180
 RETRY_DELAYS = (1, 3)
 MAX_CONTEXT_CYCLES = 2
 MAX_NEW_CANDIDATE_CYCLES = 1
@@ -76,22 +83,28 @@ NOTICE = [
     "See LICENSE.txt and NOTICE.md for complete terms and provenance.",
 ]
 
-SPECIALISTS = {
+DISCOVERY_LENSES = {
     "CODE": (
-        ("CODE-A", "current-scope requirements and functional correctness"),
-        ("CODE-B", "runtime, failure paths, safety, hostile input, and recovery"),
-        ("CODE-C", "integration, regression, compatibility, and test adequacy"),
+        "requirements and functional correctness",
+        "runtime, failure paths, safety, hostile input, lifecycle, ownership, concurrency, and recovery",
+        "integration, regression, compatibility, and test adequacy",
     ),
     "DOCUMENTATION": (
-        ("DOCUMENTATION-A", "technical and factual correctness"),
-        ("DOCUMENTATION-B", "current-scope consistency and completeness"),
-        ("DOCUMENTATION-C", "implementation and test readiness"),
+        "technical and factual correctness",
+        "current-scope consistency and completeness",
+        "implementation and test readiness",
     ),
     "TEST_ARTIFACT": (
-        ("TEST-A", "direct textual evidence and explicit failure signals"),
-        ("TEST-B", "masked, contradictory, or misinterpreted signals"),
-        ("TEST-C", "current acceptance-criteria correlation and proof sufficiency"),
+        "direct textual evidence and explicit failure signals",
+        "masked, contradictory, or misinterpreted signals",
+        "current acceptance-criteria correlation and proof sufficiency",
     ),
+}
+
+DISCOVERY_PASSES = {
+    "CODE": "CODE-DISCOVERY",
+    "DOCUMENTATION": "DOCUMENTATION-DISCOVERY",
+    "TEST_ARTIFACT": "TEST-DISCOVERY",
 }
 
 
@@ -141,6 +154,28 @@ class Telemetry:
     adjudication_count: int = 0
     human_decision_required_count: int = 0
     api_status: str = "pending"
+    api_call_records: list[dict[str, Any]] = field(default_factory=list)
+    discovery_unit_count: int = 0
+    cross_unit_integration_required: bool = False
+    falsification_batch_count: int = 0
+    final_verdict: str = ""
+    status_path: Path | None = None
+
+
+@dataclass
+class ReviewDeadline:
+    seconds: float
+    started: float = field(default_factory=time.monotonic)
+
+    def remaining(self) -> float:
+        return max(0.0, self.seconds - (time.monotonic() - self.started))
+
+    def ensure(self, phase: str) -> None:
+        if self.remaining() <= 0.0:
+            raise ReviewError(f"REVIEW_DEADLINE_EXCEEDED before {phase}")
+
+    def timeout(self) -> int:
+        return max(1, min(REQUEST_TIMEOUT_SECONDS, int(self.remaining())))
 
 
 @dataclass
@@ -503,7 +538,15 @@ def scope_manifest_hash(scope: dict[str, Any]) -> str:
     return sha256_bytes(canonical_json(scope).encode())
 
 
-def shard_records(records: list[tuple[str, str]], limit: int = UNIT_BYTES) -> list[str]:
+def review_unit_limit(prefix: str) -> int:
+    prefix_bytes = len(prefix.encode())
+    available = INPUT_BUDGET_BYTES - prefix_bytes - PROTOCOL_OVERHEAD_BYTES - SAFETY_MARGIN_BYTES
+    if available < MIN_UNIT_BYTES:
+        raise OutputError("REQUIREMENT_SCOPE_TOO_BROAD")
+    return min(TARGET_UNIT_BYTES, available)
+
+
+def shard_records(records: list[tuple[str, str]], limit: int) -> list[str]:
     shards: list[str] = []
     current = ""
     for path, content in records:
@@ -539,13 +582,14 @@ def shard_records(records: list[tuple[str, str]], limit: int = UNIT_BYTES) -> li
     return shards
 
 
-def build_review_units(packet: ReviewPacket) -> list[str]:
+def build_review_units(packet: ReviewPacket, prefix: str) -> list[str]:
+    unit_limit = review_unit_limit(prefix)
     manifest = canonical_json({
         "packet_manifest_hash": packet.packet_manifest_hash,
         "change_manifest": packet.manifest,
     })
     manifest_block = f"\n===== immutable-change-manifest.json =====\n{manifest}\n"
-    remaining_budget = UNIT_BYTES - len(manifest_block.encode())
+    remaining_budget = unit_limit - len(manifest_block.encode())
     if remaining_budget < 4096:
         raise OutputError("change manifest leaves insufficient review-unit budget")
     source_records = [(path, content) for path, content in packet.records if path != "change-manifest.json"]
@@ -553,7 +597,8 @@ def build_review_units(packet: ReviewPacket) -> list[str]:
     return units or [manifest_block]
 
 
-def build_integration_unit(packet: ReviewPacket) -> str | None:
+def build_integration_unit(packet: ReviewPacket, prefix: str) -> str | None:
+    unit_limit = review_unit_limit(prefix)
     source_records = [
         (path, content) for path, content in packet.records
         if path.startswith(("head/", "base-deleted/"))
@@ -569,24 +614,25 @@ def build_integration_unit(packet: ReviewPacket) -> str | None:
     }) + "\n"
     for path, content in source_records:
         block = "\nINTEGRATION_DATA_RECORD\n" + canonical_json({"path": path, "content": content}) + "\n"
-        if len((unit + block).encode()) <= UNIT_BYTES:
+        if len((unit + block).encode()) <= unit_limit:
             unit += block
         else:
             excerpt = bounded_source_context(content, f"{path}:1", radius=100)
             marker = "\nINTEGRATION_DATA_RECORD\n" + canonical_json({
                 "path": path, "bounded_excerpt": excerpt
             }) + "\n"
-            if len((unit + marker).encode()) <= UNIT_BYTES:
+            if len((unit + marker).encode()) <= unit_limit:
                 unit += marker
     return unit
 
 
-def split_review_unit(packet: ReviewPacket, unit: str) -> list[str]:
+def split_review_unit(packet: ReviewPacket, unit: str, prefix: str) -> list[str]:
+    unit_limit = review_unit_limit(prefix)
     manifest = "===== split-unit-manifest.json =====\n" + canonical_json({
         "packet_manifest_hash": packet.packet_manifest_hash,
         "changes": packet.manifest,
     }) + "\n"
-    capacity = UNIT_BYTES - len(manifest.encode())
+    capacity = unit_limit - len(manifest.encode())
     unit_size = len(unit.encode())
     if capacity < 4096 or unit_size < 2:
         raise OutputError("review unit cannot be reduced after output truncation")
@@ -633,30 +679,51 @@ class DeepSeekClient:
         return urllib.request.urlopen(request, timeout=timeout, context=context)
 
     def request(self, system: str, user: str, telemetry: Telemetry,
-                reasoning_effort: str = "high", max_tokens: int = DISCOVERY_OUTPUT_TOKENS) -> dict[str, Any]:
-        if reasoning_effort not in {"high", "max"}:
+                thinking: str = "enabled", reasoning_effort: str | None = "high",
+                max_tokens: int = DISCOVERY_OUTPUT_TOKENS, phase: str = "UNSPECIFIED",
+                deadline: ReviewDeadline | None = None) -> dict[str, Any]:
+        if thinking not in {"enabled", "disabled"}:
+            raise ConfigurationError("unsupported thinking setting")
+        if thinking == "disabled" and reasoning_effort is not None:
+            raise ConfigurationError("reasoning effort must be omitted when thinking is disabled")
+        if thinking == "enabled" and reasoning_effort not in {"high", "max"}:
             raise ConfigurationError("unsupported reasoning effort")
         if self._key in system or self._key in user:
             raise ConfigurationError("review payload contains the configured API key")
         payload = {
             "model": MODEL,
             "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
-            "thinking": {"type": "enabled"},
-            "reasoning_effort": reasoning_effort,
+            "thinking": {"type": thinking},
             "stream": False,
             "response_format": {"type": "json_object"},
             "max_tokens": max_tokens,
         }
+        if reasoning_effort is not None:
+            payload["reasoning_effort"] = reasoning_effort
         request = urllib.request.Request(
             API_URL, data=canonical_json(payload).encode(), method="POST",
             headers={"Authorization": f"Bearer {self._key}", "Content-Type": "application/json"},
         )
         last_error = "request failed"
         for attempt in range(len(RETRY_DELAYS) + 1):
+            if deadline is not None:
+                deadline.ensure(phase)
             telemetry.calls += 1
+            call_started = time.monotonic()
+            call_record: dict[str, Any] = {
+                "sequence": telemetry.calls,
+                "phase": phase,
+                "thinking": thinking,
+                "reasoning_effort": reasoning_effort,
+                "input_bytes": len((system + user).encode()),
+                "max_tokens": max_tokens,
+                "retry_index": attempt,
+                "result_class": "pending",
+            }
             try:
                 opener = self._opener or self._open
-                with opener(request, timeout=180) as response:
+                timeout = deadline.timeout() if deadline is not None else REQUEST_TIMEOUT_SECONDS
+                with opener(request, timeout=timeout) as response:
                     envelope = json.loads(response.read().decode())
                 choice = envelope["choices"][0]
                 finish_reason = choice.get("finish_reason")
@@ -671,23 +738,49 @@ class DeepSeekClient:
                     raise OutputError("review response content was empty")
                 result = json.loads(content)
                 usage = envelope.get("usage", {})
-                telemetry.prompt_tokens += int(usage.get("prompt_tokens", 0))
-                telemetry.completion_tokens += int(usage.get("completion_tokens", 0))
-                telemetry.cache_hit_tokens += int(usage.get("prompt_cache_hit_tokens", 0))
-                telemetry.cache_miss_tokens += int(usage.get("prompt_cache_miss_tokens", 0))
+                prompt_tokens = int(usage.get("prompt_tokens", 0))
+                completion_tokens = int(usage.get("completion_tokens", 0))
+                cache_hit_tokens = int(usage.get("prompt_cache_hit_tokens", 0))
+                cache_miss_tokens = int(usage.get("prompt_cache_miss_tokens", 0))
+                telemetry.prompt_tokens += prompt_tokens
+                telemetry.completion_tokens += completion_tokens
+                telemetry.cache_hit_tokens += cache_hit_tokens
+                telemetry.cache_miss_tokens += cache_miss_tokens
                 telemetry.api_status = "success"
+                call_record.update({
+                    "prompt_tokens": prompt_tokens,
+                    "completion_tokens": completion_tokens,
+                    "cache_hit_tokens": cache_hit_tokens,
+                    "cache_miss_tokens": cache_miss_tokens,
+                    "elapsed_seconds": round(time.monotonic() - call_started, 3),
+                    "result_class": "success",
+                })
+                telemetry.api_call_records.append(call_record)
+                if telemetry.status_path is not None:
+                    update_review_lock(telemetry.status_path, telemetry, phase, "RUNNING")
                 return result
             except urllib.error.HTTPError as exc:
                 last_error = f"API HTTP {exc.code}"
                 if exc.code not in {408, 429, 500, 502, 503, 504}:
                     telemetry.api_status = "configuration_or_permanent_failure"
+                    call_record["result_class"] = "permanent_failure"
+                    call_record["elapsed_seconds"] = round(time.monotonic() - call_started, 3)
+                    telemetry.api_call_records.append(call_record)
                     raise ConfigurationError(last_error) from None
             except (urllib.error.URLError, TimeoutError) as exc:
                 last_error = f"transport failure: {type(exc).__name__}"
             except TruncationError:
+                call_record["result_class"] = "truncated"
+                call_record["elapsed_seconds"] = round(time.monotonic() - call_started, 3)
+                telemetry.api_call_records.append(call_record)
                 raise
             except (KeyError, IndexError, json.JSONDecodeError, OutputError) as exc:
                 last_error = f"invalid review output: {type(exc).__name__}"
+            call_record["result_class"] = "retryable_failure"
+            call_record["elapsed_seconds"] = round(time.monotonic() - call_started, 3)
+            telemetry.api_call_records.append(call_record)
+            if telemetry.status_path is not None:
+                update_review_lock(telemetry.status_path, telemetry, phase, "RUNNING")
             if attempt < len(RETRY_DELAYS):
                 telemetry.retries += 1
                 time.sleep(RETRY_DELAYS[attempt])
@@ -696,11 +789,14 @@ class DeepSeekClient:
 
 
 def request_validated(client: DeepSeekClient, system: str, prompt: str, telemetry: Telemetry,
-                      validator: Any, label: str, reasoning_effort: str = "high",
-                      max_tokens: int = DISCOVERY_OUTPUT_TOKENS) -> dict[str, Any]:
+                      validator: Any, label: str, thinking: str = "enabled",
+                      reasoning_effort: str | None = "high",
+                      max_tokens: int = DISCOVERY_OUTPUT_TOKENS,
+                      deadline: ReviewDeadline | None = None) -> dict[str, Any]:
     request_prompt = prompt
     for repair_attempt in range(3):
-        value = client.request(system, request_prompt, telemetry, reasoning_effort, max_tokens)
+        value = client.request(system, request_prompt, telemetry, thinking, reasoning_effort,
+                               max_tokens, label, deadline)
         if validator(value):
             return value
         if repair_attempt < 2:
@@ -889,7 +985,7 @@ def resolve_context_request(root: Path, packet: ReviewPacket, request: dict[str,
         classification, text = classify_bytes(path, data, entry["mode"])
         if text is None:
             return {"request": request, "status": "UNRESOLVED", "reason": f"path is {classification}"}
-        if len(text.encode()) > UNIT_BYTES:
+        if len(text.encode()) > CONTEXT_BYTES:
             return {"request": request, "status": "UNRESOLVED",
                     "reason": "full path exceeds bounded context budget", "path": path,
                     "sha256": sha256_bytes(data)}
@@ -919,7 +1015,7 @@ def resolve_context_request(root: Path, packet: ReviewPacket, request: dict[str,
             data = git_object(root, packet.head_sha, path)
             classification, text = classify_bytes(path, data, tree_entry(root, packet.head_sha, path)["mode"])
             text_size = len(text.encode()) if text is not None else 0
-            if text is not None and text_size <= UNIT_BYTES and context_bytes + text_size <= UNIT_BYTES:
+            if text is not None and text_size <= CONTEXT_BYTES and context_bytes + text_size <= CONTEXT_BYTES:
                 contexts.append({"path": path, "sha256": sha256_bytes(data), "content": text})
                 context_bytes += text_size
         return {"request": request, "status": "RESOLVED" if contexts else "UNRESOLVED",
@@ -1002,15 +1098,18 @@ def stable_prefix(review_type: str, snapshot_id: str, scope: dict[str, Any],
     )
 
 
-def discovery_prompt(prefix: str, unit: str, pass_name: str, scope: str) -> str:
+def discovery_prompt(prefix: str, unit: str, pass_name: str, lenses: tuple[str, ...]) -> str:
+    lens_text = "\n".join(f"{index + 1}. {lens}" for index, lens in enumerate(lenses))
     return prefix + "IMMUTABLE_REVIEW_UNIT\n" + unit + (
-        "\nDiscover serious candidates for " + scope + ". Review the entire assigned unit and continue after a candidate. "
+        "\nDiscover serious candidates by completing all review lenses before returning:\n" + lens_text +
+        "\nReview the entire assigned unit and continue after each candidate. "
         "A candidate is not a blocker. Cite an exact requirement source and exact quote, explain why it applies now, "
         "state a concrete failure scenario, causal path, evidence, assumptions, and bounded PATH/SYMBOL context requests. "
         "Missing context is a request, never a HIGH. Exclude future work, style, cleanup, and speculative redesign. "
         "For TEST_ARTIFACT use category PRODUCT_DEFECT, TEST_DEFECT, EVIDENCE_INSUFFICIENT, or INTERPRETATION_ERROR; "
         "missing evidence is never a product defect. "
-        "Silently challenge each suspicion before returning JSON. "
+        "For CODE, include per-file, caller/callee, cross-file integration, regression, compatibility, and test-adequacy analysis "
+        "inside this one discovery pass. Silently challenge each suspicion before returning JSON. "
         "Return {\"pass\":\"" + pass_name + "\",\"review_complete\":true,\"candidates\":[{\"candidate_id\":\""
         + pass_name + "-001\",\"proposed_severity\":\"HIGH\",\"category\":\"correctness\","
         "\"requirement_source\":\"path\",\"requirement_quote\":\"exact quote\",\"scope_link\":\"applies now\","
@@ -1102,52 +1201,61 @@ def compact_result(review_type: str, cr_number: str, packet: ReviewPacket, verdi
 
 def perform_review(client: DeepSeekClient, root: Path, review_type: str, packet: ReviewPacket,
                    scope: dict[str, Any], requirements: list[dict[str, str]], prior: list[dict[str, Any]],
-                   telemetry: Telemetry) -> dict[str, Any]:
+                   telemetry: Telemetry, deadline: ReviewDeadline | None = None) -> dict[str, Any]:
     if packet.insufficient_evidence:
         return compact_result(review_type, scope.get("cr_number", ""), packet, "INCONCLUSIVE", False,
                               reason={"evidence_insufficient": packet.insufficient_evidence}, prior=prior)
     prefix = stable_prefix(review_type, packet.snapshot_id, scope, requirements, packet.packet_manifest_hash)
-    units = build_review_units(packet)
+    units = build_review_units(packet, prefix)
     discovered: list[dict[str, Any]] = []
     failures: list[str] = []
     unit_index = 0
     while unit_index < len(units):
+        if deadline is not None:
+            try:
+                deadline.ensure("DISCOVERY")
+            except ReviewError as exc:
+                return compact_result(review_type, scope.get("cr_number", ""), packet, "REVIEW_UNAVAILABLE", False,
+                                      reason=str(exc), prior=prior)
         unit = units[unit_index]
         if len((prefix + unit).encode()) > INPUT_BUDGET_BYTES:
             return compact_result(review_type, scope.get("cr_number", ""), packet, "INCONCLUSIVE", False,
                                   reason="current scope and authoritative sources exceed discovery input budget",
                                   prior=prior)
         unit_candidates: list[dict[str, Any]] = []
-        truncated = False
-        for pass_name, pass_scope in SPECIALISTS[review_type]:
-            telemetry.passes.append(pass_name)
-            try:
-                value = request_validated(
-                    client, SYSTEM_DATA_BOUNDARY +
-                    "You are an independent skeptical candidate-discovery reviewer. Return JSON only.",
-                    discovery_prompt(prefix, unit, pass_name, pass_scope) + f" Unit {unit_index + 1}/{len(units)}.",
-                    telemetry, lambda item, expected=pass_name: discovery_schema_valid(item, expected), pass_name,
-                    "high", DISCOVERY_OUTPUT_TOKENS,
-                )
-                for candidate_index, candidate in enumerate(value["candidates"]):
-                    normalized = dict(candidate)
-                    normalized["candidate_id"] = f"{pass_name}-U{unit_index + 1}-C{candidate_index + 1}"
-                    unit_candidates.append(normalized)
-            except TruncationError:
-                if len(unit.encode()) <= 8192:
-                    failures.append(f"{pass_name} unit {unit_index + 1}: irreducible output truncation")
-                else:
-                    units[unit_index:unit_index + 1] = split_review_unit(packet, unit)
-                    truncated = True
-                break
-            except ReviewError as exc:
-                failures.append(f"{pass_name} unit {unit_index + 1}: {type(exc).__name__}")
-        if truncated:
-            continue
+        pass_name = DISCOVERY_PASSES[review_type]
+        telemetry.passes.append(pass_name)
+        try:
+            value = request_validated(
+                client, SYSTEM_DATA_BOUNDARY +
+                "You are an independent skeptical combined candidate-discovery reviewer. Return JSON only.",
+                discovery_prompt(prefix, unit, pass_name, DISCOVERY_LENSES[review_type])
+                + f" Unit {unit_index + 1}/{len(units)}.",
+                telemetry, lambda item, expected=pass_name: discovery_schema_valid(item, expected), pass_name,
+                "disabled", None, DISCOVERY_OUTPUT_TOKENS, deadline,
+            )
+            for candidate_index, candidate in enumerate(value["candidates"]):
+                normalized = dict(candidate)
+                normalized["candidate_id"] = f"{pass_name}-U{unit_index + 1}-C{candidate_index + 1}"
+                unit_candidates.append(normalized)
+        except TruncationError:
+            if len(unit.encode()) <= 8192:
+                failures.append(f"{pass_name} unit {unit_index + 1}: irreducible output truncation")
+            else:
+                units[unit_index:unit_index + 1] = split_review_unit(packet, unit, prefix)
+                telemetry.discovery_unit_count = len(units)
+                continue
+        except ReviewError as exc:
+            failures.append(f"{pass_name} unit {unit_index + 1}: {type(exc).__name__}")
+        if failures:
+            break
         discovered.extend(unit_candidates)
         telemetry.discovery_candidate_count = len(discovered)
         unit_index += 1
-    integration_unit = build_integration_unit(packet) if review_type == "CODE" else None
+    if len(units) > 1 and review_type == "CODE":
+        telemetry.cross_unit_integration_required = True
+    telemetry.discovery_unit_count = len(units)
+    integration_unit = build_integration_unit(packet, prefix) if review_type == "CODE" and len(units) > 1 else None
     integration_units = [integration_unit] if integration_unit else []
     integration_index = 0
     while integration_index < len(integration_units):
@@ -1155,13 +1263,19 @@ def perform_review(client: DeepSeekClient, root: Path, review_type: str, packet:
         pass_name = "CODE-INTEGRATION"
         telemetry.passes.append(pass_name)
         try:
+            if deadline is not None:
+                try:
+                    deadline.ensure(pass_name)
+                except ReviewError as exc:
+                    return compact_result(review_type, scope.get("cr_number", ""), packet, "REVIEW_UNAVAILABLE",
+                                          False, reason=str(exc), prior=prior)
             value = request_validated(
                 client, SYSTEM_DATA_BOUNDARY +
                 "You are an independent cross-file integration candidate reviewer. Return JSON only.",
                 discovery_prompt(prefix, current_integration, pass_name,
-                                 "cross-file, cross-rule, caller/callee, and integration correctness"),
+                                 ("cross-unit integration, cross-rule, caller/callee, and regression correctness",)),
                 telemetry, lambda item: discovery_schema_valid(item, pass_name), pass_name,
-                "high", DISCOVERY_OUTPUT_TOKENS,
+                "disabled", None, DISCOVERY_OUTPUT_TOKENS, deadline,
             )
             for candidate_index, candidate in enumerate(value["candidates"]):
                 normalized = dict(candidate)
@@ -1174,7 +1288,7 @@ def perform_review(client: DeepSeekClient, root: Path, review_type: str, packet:
                 failures.append(f"{pass_name}: irreducible output truncation")
                 break
             integration_units[integration_index:integration_index + 1] = split_review_unit(
-                packet, current_integration
+                packet, current_integration, prefix
             )
         except ReviewError as exc:
             failures.append(f"{pass_name}: {type(exc).__name__}")
@@ -1193,6 +1307,7 @@ def perform_review(client: DeepSeekClient, root: Path, review_type: str, packet:
     pending = candidates
     while pending:
         batches = candidate_batches(prefix, packet, pending, prior)
+        telemetry.falsification_batch_count += len(batches)
         newly_discovered: list[dict[str, Any]] = []
         batch_index = 0
         while batch_index < len(batches):
@@ -1200,11 +1315,17 @@ def perform_review(client: DeepSeekClient, root: Path, review_type: str, packet:
             expected_ids = {candidate["candidate_id"] for candidate in batch}
             telemetry.passes.append(f"FALSIFICATION-{batch_index + 1}")
             try:
+                if deadline is not None:
+                    try:
+                        deadline.ensure(f"FALSIFICATION-{batch_index + 1}")
+                    except ReviewError as exc:
+                        return compact_result(review_type, scope.get("cr_number", ""), packet,
+                                              "REVIEW_UNAVAILABLE", False, reason=str(exc), prior=prior)
                 value = request_validated(
                     client, SYSTEM_DATA_BOUNDARY + "You are a hostile independent falsifier. Return JSON only.",
                     falsification_prompt(prefix, packet, batch, prior), telemetry,
                     lambda item, ids=expected_ids: decision_schema_valid(item, ids), "FALSIFICATION",
-                    "max", FALSIFICATION_OUTPUT_TOKENS,
+                    "enabled", "high", FALSIFICATION_OUTPUT_TOKENS, deadline,
                 )
             except TruncationError:
                 if len(batch) == 1:
@@ -1291,6 +1412,12 @@ def perform_review(client: DeepSeekClient, root: Path, review_type: str, packet:
                 "\"negative_check\":\"attempt made to disprove\"}. "
                 "If authority conflicts or the same evidence cannot decide, require a human decision."
             )
+            if deadline is not None:
+                try:
+                    deadline.ensure("ADJUDICATION")
+                except ReviewError as exc:
+                    return compact_result(review_type, scope.get("cr_number", ""), packet,
+                                          "REVIEW_UNAVAILABLE", False, reason=str(exc), prior=prior)
             adjudication = request_validated(
                 client, SYSTEM_DATA_BOUNDARY +
                 "You adjudicate one evidence-backed dispute without guessing. Return JSON only.", prompt,
@@ -1304,7 +1431,7 @@ def perform_review(client: DeepSeekClient, root: Path, review_type: str, packet:
                      else item.get("confirmed_severity") is None)
                 and (item["decision"] == "HUMAN_DECISION_REQUIRED"
                      or bool(item["proof"].strip()) and bool(item["negative_check"].strip())),
-                "ADJUDICATION", "max", ADJUDICATION_OUTPUT_TOKENS,
+                "ADJUDICATION", "enabled", "max", ADJUDICATION_OUTPUT_TOKENS, deadline,
             )
             if adjudication["decision"] in {"REJECTED", "NON_BLOCKING"}:
                 confirmed_ids.discard(identifier)
@@ -1356,6 +1483,7 @@ def write_telemetry(root: Path, telemetry: Telemetry, final: dict[str, Any],
                     scope: dict[str, Any] | None = None) -> None:
     directory = root / "test-artefacts" / "reviewer"
     directory.mkdir(parents=True, exist_ok=True)
+    telemetry.final_verdict = str(final.get("verdict", ""))
     record = {
         "project_notice": NOTICE,
         "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -1366,6 +1494,7 @@ def write_telemetry(root: Path, telemetry: Telemetry, final: dict[str, Any],
         "requirements_manifest_hash": requirements_hash,
         "scope_manifest_hash": scope_hash,
         "api_calls": telemetry.calls,
+        "api_call_records": telemetry.api_call_records,
         "passes": telemetry.passes,
         "retry_count": telemetry.retries,
         "api_status": telemetry.api_status,
@@ -1374,6 +1503,8 @@ def write_telemetry(root: Path, telemetry: Telemetry, final: dict[str, Any],
         "prompt_cache_hit_tokens": telemetry.cache_hit_tokens,
         "prompt_cache_miss_tokens": telemetry.cache_miss_tokens,
         "discovery_candidate_count": telemetry.discovery_candidate_count,
+        "discovery_unit_count": telemetry.discovery_unit_count,
+        "cross_unit_integration_required": telemetry.cross_unit_integration_required,
         "deterministic_reject_count": telemetry.deterministic_reject_count,
         "context_request_count": telemetry.context_request_count,
         "context_request_resolved_count": telemetry.context_request_resolved_count,
@@ -1381,6 +1512,7 @@ def write_telemetry(root: Path, telemetry: Telemetry, final: dict[str, Any],
         "falsifier_rejected_count": telemetry.falsifier_rejected_count,
         "falsifier_non_blocking_count": telemetry.falsifier_non_blocking_count,
         "falsifier_unresolved_count": telemetry.falsifier_unresolved_count,
+        "falsification_batch_count": telemetry.falsification_batch_count,
         "new_candidate_count": telemetry.new_candidate_count,
         "adjudication_count": telemetry.adjudication_count,
         "human_decision_required_count": telemetry.human_decision_required_count,
@@ -1433,11 +1565,88 @@ def failure_result(review_type: str, cr_number: str, snapshot_id: str, verdict: 
     }
 
 
+def review_status_path(root: Path, snapshot_id: str, review_type: str, cr_number: str) -> Path:
+    directory = root / "test-artefacts" / "reviewer"
+    digest = sha256_bytes(f"{review_type}\0{cr_number}\0{snapshot_id}".encode())
+    return directory / f"active-review-{digest[:24]}.json"
+
+
+def process_is_active(pid: int) -> bool:
+    if pid <= 0:
+        return False
+    try:
+        os.kill(pid, 0)
+    except OSError:
+        return False
+    return True
+
+
+def active_review_is_stale(record: dict[str, Any], path: Path, now: float) -> bool:
+    started = float(record.get("started_monotonic", 0.0) or 0.0)
+    pid = int(record.get("process_id", 0) or 0)
+    age = now - started if started > 0 else now - path.stat().st_mtime
+    return age > STALE_LOCK_SECONDS or (pid > 0 and not process_is_active(pid))
+
+
+def acquire_review_lock(root: Path, snapshot_id: str, review_type: str, cr_number: str,
+                        deadline_seconds: float) -> Path:
+    path = review_status_path(root, snapshot_id, review_type, cr_number)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    now = time.monotonic()
+    if path.exists():
+        try:
+            existing = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            existing = {}
+        if not active_review_is_stale(existing, path, now) and existing.get("status") == "RUNNING":
+            raise ReviewError("ACTIVE_REVIEW_ALREADY_RUNNING")
+        try:
+            path.unlink()
+        except OSError as exc:
+            raise ReviewError("cannot clear stale review lock") from exc
+    record = {
+        "project_notice": NOTICE,
+        "snapshot_id": snapshot_id,
+        "review_type": review_type,
+        "cr_number": cr_number,
+        "process_id": os.getpid(),
+        "started_utc": datetime.now(timezone.utc).isoformat(),
+        "started_monotonic": now,
+        "deadline_seconds": deadline_seconds,
+        "current_phase": "starting",
+        "api_call_number": 0,
+        "last_completed_phase": "",
+        "status": "RUNNING",
+    }
+    try:
+        with path.open("x", encoding="utf-8") as handle:
+            json.dump(record, handle, indent=2, sort_keys=True)
+            handle.write("\n")
+    except FileExistsError as exc:
+        raise ReviewError("ACTIVE_REVIEW_ALREADY_RUNNING") from exc
+    return path
+
+
+def update_review_lock(path: Path, telemetry: Telemetry, phase: str, status: str) -> None:
+    try:
+        record = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+    except (OSError, json.JSONDecodeError):
+        record = {}
+    record.update({
+        "current_phase": phase,
+        "api_call_number": telemetry.calls,
+        "last_completed_phase": telemetry.passes[-1] if telemetry.passes else "",
+        "status": status,
+        "updated_utc": datetime.now(timezone.utc).isoformat(),
+    })
+    path.write_text(json.dumps(record, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run the evidence-bound external review gate.")
     sub = parser.add_subparsers(dest="command", required=True)
     review = sub.add_parser("review")
-    review.add_argument("--type", choices=sorted(SPECIALISTS), required=True)
+    review.add_argument("--type", choices=sorted(DISCOVERY_LENSES), required=True)
     review.add_argument("--requirements", action="append", default=[], required=True)
     review.add_argument("--path", action="append", default=[])
     review.add_argument("--cr")
@@ -1448,6 +1657,7 @@ def main() -> int:
     review.add_argument("--extraction-manifest")
     review.add_argument("--run-id")
     review.add_argument("--build-id")
+    review.add_argument("--deadline-seconds", type=float, default=DEFAULT_REVIEW_DEADLINE_SECONDS)
     health = sub.add_parser("health-check")
     health.add_argument("--requirements", required=True)
     args = parser.parse_args()
@@ -1456,13 +1666,15 @@ def main() -> int:
         try:
             client = DeepSeekClient()
             telemetry = Telemetry("DOCUMENTATION", "manual-health-check")
-            result = client.request("Return JSON only.", "Return {\"status\":\"available\"} as JSON.", telemetry)
+            result = client.request("Return JSON only.", "Return {\"status\":\"available\"} as JSON.", telemetry,
+                                    "disabled", None, DISCOVERY_OUTPUT_TOKENS, "HEALTH-CHECK")
             print(canonical_json({"status": "available" if result.get("status") == "available" else "inconclusive"}))
             return 0 if result.get("status") == "available" else 2
         except ReviewError as exc:
             print(canonical_json({"status": "unavailable", "reason": str(exc)}))
             return 3
     telemetry: Telemetry | None = None
+    lock_path: Path | None = None
     requirements_hash = ""
     scope_hash = ""
     cr_number = args.cr or ""
@@ -1503,8 +1715,12 @@ def main() -> int:
         if args.prior_findings:
             prior = validate_prior(json.loads(resolve_inside(root, args.prior_findings).read_text(encoding="utf-8")))
         telemetry = Telemetry(args.type, packet.snapshot_id, scope.get("cr_number", ""), packet.packet_manifest_hash)
+        lock_path = acquire_review_lock(root, packet.snapshot_id, args.type, telemetry.cr_number, args.deadline_seconds)
+        telemetry.status_path = lock_path
+        update_review_lock(lock_path, telemetry, "packet-prepared", "RUNNING")
         client = DeepSeekClient()
-        final = perform_review(client, root, args.type, packet, scope, requirements, prior, telemetry)
+        deadline = ReviewDeadline(args.deadline_seconds)
+        final = perform_review(client, root, args.type, packet, scope, requirements, prior, telemetry, deadline)
         final["requirements_manifest_hash"] = requirements_hash
         final["scope_manifest_hash"] = scope_hash
     except ConfigurationError as exc:
@@ -1517,12 +1733,19 @@ def main() -> int:
             write_telemetry(
                 root, telemetry, final, requirements_hash, scope_hash, expected_head, requirements, scope
             )
+            if lock_path is not None:
+                update_review_lock(lock_path, telemetry, "complete", str(final.get("verdict", "INCONCLUSIVE")))
         except (OSError, ReviewError) as exc:
             final["telemetry_status"] = "unavailable"
             if args.type == "CODE":
                 invalidate_code_receipt(root)
             if isinstance(exc, ReviewError):
                 final = failure_result(args.type, cr_number, snapshot_id, "INCONCLUSIVE", str(exc))
+            if lock_path is not None:
+                try:
+                    update_review_lock(lock_path, telemetry, "telemetry-failed", "INCONCLUSIVE")
+                except OSError:
+                    pass
     elif args.type == "CODE":
         invalidate_code_receipt(root)
     print(json.dumps(final, separators=(",", ":"), sort_keys=True))

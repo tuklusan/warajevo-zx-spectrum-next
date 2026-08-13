@@ -117,18 +117,18 @@ As verified on 2026-08-11, the reference integration uses:
 Base URL:           https://api.deepseek.com
 Endpoint:           POST /chat/completions
 Model:              deepseek-v4-pro
-Thinking:           enabled
-Discovery effort:   high
-Falsification:      max
+Discovery:         thinking disabled, no reasoning_effort
+Falsification:     thinking enabled, reasoning_effort=high
+Adjudication:      thinking enabled, reasoning_effort=max only for evidence-backed ambiguity
 Streaming:          false
 Output format:      JSON object
 ```
 
-DeepSeek currently documents `deepseek-v4-pro` and `deepseek-v4-flash` for the Chat Completions endpoint. Thinking mode supports `reasoning_effort` values `high` and `max`. JSON Output requires both `response_format={"type":"json_object"}` and an instruction to produce JSON. Thinking mode does not use the usual sampling controls such as `temperature` or `top_p`.
+DeepSeek currently documents `deepseek-v4-pro` and `deepseek-v4-flash` for the Chat Completions endpoint. Thinking mode supports `reasoning_effort` values `high` and `max`; when thinking is disabled, omit `reasoning_effort`. JSON Output requires both `response_format={"type":"json_object"}` and an instruction to produce JSON. Thinking mode does not use the usual sampling controls such as `temperature` or `top_p`.
 
 Do **not** set the model's maximum possible output allowance as the routine default. Use bounded per-phase output budgets and shard work when necessary. A huge output allowance reduces available context headroom and encourages unnecessarily large responses.
 
-DeepSeek's context cache is automatic. Cache hits depend on matching previously persisted prefixes, so put stable common material before pass-specific instructions.
+DeepSeek's context cache is automatic. Cache hits depend on matching previously persisted prefixes, so put stable common material before pass-specific instructions. The normal path is one combined non-thinking discovery call, deterministic candidate/evidence processing, high-thinking falsification only if candidates survive, and max-thinking adjudication only for genuine evidence-backed ambiguity.
 
 ### Official source URLs
 
@@ -449,11 +449,11 @@ When the exact packet is too large:
 
 1. Partition by coherent deterministic units such as files, components, document sections, or test runs.
 2. Preserve the same task scope and exact authoritative requirement records needed by each shard.
-3. Run the relevant discovery passes over every shard.
+3. Run one combined discovery pass over every shard.
 4. Union candidate allegations deterministically.
 5. Satisfy candidate context requests from the same immutable global snapshot, even when evidence crosses shard boundaries.
 6. Falsify candidates only after they have access to the exact cross-shard evidence they request.
-7. If sharding itself could hide integration defects, run a separate **integration discovery** pass over the change manifest plus exact interface/header/contract material. Any model-generated navigation summary used for this pass is non-authoritative; an integration candidate must still acquire exact source evidence and survive falsification.
+7. If the complete CODE packet fits one review unit, perform per-file, caller/callee, cross-file integration, regression, and test-adequacy analysis inside that one combined discovery inference. If genuine multi-unit sharding itself could hide integration defects, run a separate **integration discovery** pass over the change manifest plus exact interface/header/contract material. Any model-generated navigation summary used for this pass is non-authoritative; an integration candidate must still acquire exact source evidence and survive falsification.
 8. If a single indivisible evidence item is too large for the configured safe budget, return `INCONCLUSIVE` unless a deterministic approved extractor/partitioner can preserve its semantics.
 
 Sharding may increase DeepSeek API calls. That is acceptable when required for correctness because those calls remain inside the harness rather than becoming developer/reviewer dialogue.
@@ -490,11 +490,14 @@ Load tracked authority sources from the immutable reviewed commit (for example w
 
 ---
 
-## 10. Discovery passes
+## 10. Combined discovery pass
 
-Use three independent discovery calls by default. Here `independent` means fresh review executions that do not inherit another specialist's conclusions. They still use the same model family by default, so their errors can be correlated. Agreement among specialists is not proof and never replaces falsification.
+Use one combined discovery call per review unit by default. The conceptual
+review lenses remain mandatory, but they run inside one inference rather than as
+three serial external requests. Discovery proposes candidates only; agreement,
+disagreement, or silence inside discovery never replaces falsification.
 
-### CODE-A - requirements and functional correctness
+### CODE-DISCOVERY lenses
 
 Review:
 
@@ -505,11 +508,6 @@ Review:
 - incomplete implementation;
 - interface/contract behavior;
 - persistence/state semantics when applicable.
-
-### CODE-B - runtime and adversarial behavior
-
-Review:
-
 - invalid state;
 - exceptional/failure paths;
 - initialization/shutdown;
@@ -518,11 +516,6 @@ Review:
 - malformed input;
 - recovery/idempotency where applicable;
 - security-relevant failure modes.
-
-### CODE-C - integration, regression, compatibility, tests
-
-Review:
-
 - changed behavior outside the immediate function;
 - callers/callees;
 - API/serialization/platform compatibility;
@@ -530,7 +523,7 @@ Review:
 - weak assertions;
 - tests that can pass without proving the acceptance criterion.
 
-### DOCUMENTATION-A - technical/factual correctness
+### DOCUMENTATION-DISCOVERY lenses
 
 Review:
 
@@ -539,39 +532,29 @@ Review:
 - behavior claims;
 - obsolete assumptions;
 - factual contradictions that materially affect implementation or operation.
-
-### DOCUMENTATION-B - consistency and completeness
-
-Review:
-
 - contradictions between sections;
 - missing mandatory behavior;
 - undefined critical terms;
 - broken semantic cross-references;
 - requirements that force implementers to invent material behavior.
+- implementation and test readiness, especially lifecycle, errors,
+  compatibility, observability, testability, and acceptance criteria.
 
-### DOCUMENTATION-C - implementation and test readiness
+### TEST-DISCOVERY lenses
 
-Review whether a competent implementation/test team can act without inventing material requirements, especially lifecycle, errors, compatibility, observability, testability, and acceptance criteria.
-
-### TEST-A - direct evidence
-
-Review explicit failures, warnings with correctness impact, crashes, assertions, unexpected output, incomplete execution, and missing expected evidence.
-
-### TEST-B - hidden/misinterpreted evidence
-
-Review false-success conditions, contradictory logs, flaky/incomplete execution, wrong-build evidence, masked failures, and tests that ran without proving what they claim.
-
-### TEST-C - acceptance correlation
-
-Map exact test evidence to current acceptance criteria and distinguish product defects, test defects, interpretation errors, and evidence insufficiency.
+Review explicit failures, warnings with correctness impact, crashes, assertions,
+unexpected output, incomplete execution, missing expected evidence,
+false-success conditions, contradictory logs, flaky or wrong-build evidence,
+masked failures, and tests that ran without proving what they claim. Map exact
+test evidence to current acceptance criteria and distinguish product defects,
+test defects, interpretation errors, and evidence insufficiency.
 
 ### Discovery rules
 
 Every discovery pass must:
 
 - review its entire assigned scope even after finding candidates;
-- use pass-prefixed candidate IDs that are unique within the review invocation;
+- use discovery-prefixed candidate IDs that are unique within the review invocation;
 - emit **candidates**, not blockers;
 - state assumptions;
 - request missing context rather than converting absence of context into a defect;
@@ -582,7 +565,7 @@ Recommended candidate shape:
 
 ```json
 {
-  "candidate_id": "CODE-A-001",
+  "candidate_id": "CODE-DISCOVERY-001",
   "proposed_severity": "HIGH",
   "category": "correctness",
   "requirement_source": "docs/architecture.md",
@@ -655,9 +638,9 @@ Rules:
 
 ## 13. Hostile falsification
 
-After discovery, validation, deduplication, and context completion, submit the candidate batch to an independent DeepSeek falsification call. If every mandatory discovery pass completes successfully and the validated candidate set is empty, no falsification call is needed; the harness may proceed to final PASS checks.
+After discovery, validation, deduplication, and context completion, submit the candidate batch to an independent DeepSeek falsification call. If the combined mandatory discovery pass completes successfully and the validated candidate set is empty, no falsification call is needed; the harness may proceed to final PASS checks.
 
-Use `reasoning_effort=max` for this phase by default.
+Use thinking enabled with `reasoning_effort=high` for this phase by default. Use `reasoning_effort=max` only for later adjudication when a genuine evidence-backed ambiguity or dispute remains.
 
 The primary instruction is:
 
@@ -696,7 +679,7 @@ Recommended decision shape:
 
 ```json
 {
-  "candidate_id": "CODE-A-001",
+  "candidate_id": "CODE-DISCOVERY-001",
   "decision": "REJECTED",
   "confirmed_severity": null,
   "reason": "The caller rejects oversized records before append executes.",
@@ -1570,10 +1553,15 @@ class DeepSeekClient:
         *,
         system: str,
         user: str,
-        reasoning_effort: str,
+        thinking: str,
+        reasoning_effort: str | None,
         max_tokens: int,
     ) -> dict[str, Any]:
-        if reasoning_effort not in {"high", "max"}:
+        if thinking not in {"enabled", "disabled"}:
+            raise ValueError("thinking must be enabled or disabled")
+        if thinking == "disabled" and reasoning_effort is not None:
+            raise ValueError("reasoning_effort must be omitted when thinking is disabled")
+        if thinking == "enabled" and reasoning_effort not in {"high", "max"}:
             raise ValueError("reasoning_effort must be high or max")
 
         payload = {
@@ -1582,12 +1570,13 @@ class DeepSeekClient:
                 {"role": "system", "content": system},
                 {"role": "user", "content": user},
             ],
-            "thinking": {"type": "enabled"},
-            "reasoning_effort": reasoning_effort,
+            "thinking": {"type": thinking},
             "stream": False,
             "response_format": {"type": "json_object"},
             "max_tokens": max_tokens,
         }
+        if reasoning_effort is not None:
+            payload["reasoning_effort"] = reasoning_effort
         body = canonical_json(payload).encode("utf-8")
         request = urllib.request.Request(
             API_URL,
@@ -1790,15 +1779,15 @@ IMMUTABLE_REVIEW_PACKET
 <stable snapshot manifest, diff, full changed text, relevant context>
 
 PASS_INSTRUCTION
-<CODE-A, CODE-B, CODE-C, DOCUMENTATION-A, etc.>
+<CODE-DISCOVERY, DOCUMENTATION-DISCOVERY, TEST-DISCOVERY, or needed cross-unit integration>
 
 Return JSON matching this shape:
 {
-  "pass":"CODE-A",
+  "pass":"CODE-DISCOVERY",
   "review_complete":true,
   "candidates":[
     {
-      "candidate_id":"CODE-A-001",
+      "candidate_id":"CODE-DISCOVERY-001",
       "proposed_severity":"HIGH",
       "category":"correctness",
       "requirement_source":"docs/REVIEW-GATE.md",
@@ -1888,7 +1877,7 @@ A minimal bootstrap script may:
 
 1. validate a clean committed candidate;
 2. construct its own simple diff + full changed-file packet;
-3. call `deepseek-v4-pro` once at `reasoning_effort=max`;
+3. call `deepseek-v4-pro` once with thinking enabled at `reasoning_effort=high`;
 4. require exact requirement evidence and concrete failure scenarios;
 5. return `PASS`, `FAIL`, or `INCONCLUSIVE`;
 6. fail closed on API/output error.

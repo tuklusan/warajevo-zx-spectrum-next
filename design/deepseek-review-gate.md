@@ -74,18 +74,22 @@ rejects a quote that does not occur in that source before another model call.
 
 ## Candidate And Proof Pipeline
 
-The three independent passes for each review type discover candidates, not
-findings. Candidates state current-scope applicability, a concrete failure
-scenario, causal path, evidence, assumptions, and bounded context requests.
-Missing context is never promoted to HIGH.
+One combined discovery pass per review unit discovers candidates, not findings.
+For CODE, that single pass must explicitly cover requirements and functional
+correctness; runtime, failure paths, safety, hostile input, lifecycle,
+ownership, concurrency, and recovery; and integration, regression,
+compatibility, and test adequacy. DOCUMENTATION and TEST_ARTIFACT use equivalent
+combined lenses. Candidates state current-scope applicability, a concrete
+failure scenario, causal path, evidence, assumptions, and bounded context
+requests. Missing context is never promoted to HIGH.
 
 The harness then:
 
 1. validates candidate structure, requirement provenance, current paths, and
    duplicates deterministically;
 2. resolves bounded exact PATH or SYMBOL evidence from the same immutable head;
-3. sends remaining candidates to a max-effort hostile falsifier instructed to
-   assume each allegation is false;
+3. sends remaining candidates to a high-effort hostile falsifier instructed to
+    assume each allegation is false;
 4. requires one `CONFIRMED`, `REJECTED`, `NON_BLOCKING`, or `UNRESOLVED`
    decision per ID, with independently confirmed BLOCKER/HIGH severity; and
 5. synthesizes blockers in Python from the exact confirmed candidate IDs.
@@ -105,11 +109,11 @@ Prior records use `OPEN`, `RESOLVED`, or `DISPUTED` and retain exact evidence.
 They do not bias independent discovery; only matching candidates receive the
 relevant evidence during falsification or adjudication.
 
-One structured dispute may provide decisive source evidence. Adjudication is
-bounded to that candidate, exact requirement, original evidence, falsifier
-decision, newly acquired context, and dispute. Conflicting authoritative
-sources return `HUMAN_DECISION_REQUIRED`; the same ambiguous evidence is not
-forced into a model-generated answer.
+One structured dispute may provide decisive source evidence. Max-effort
+adjudication is exceptional and is bounded to that candidate, exact requirement,
+original evidence, falsifier decision, newly acquired context, and dispute.
+Conflicting authoritative sources return `HUMAN_DECISION_REQUIRED`; the same
+ambiguous evidence is not forced into a model-generated answer.
 
 ## Review Types And Artifacts
 
@@ -162,20 +166,33 @@ behavior.
 
 ## API And Budgets
 
-The adapter uses `deepseek-v4-pro`, thinking enabled, non-streaming JSON output,
-and no unsupported sampling controls. Discovery uses high effort;
-falsification and material adjudication use max effort. Per-phase output
-budgets replace a single maximum allowance, while deterministic input and
-candidate sharding prevent silent truncation. A length finish, malformed JSON,
-incomplete pass, missing mandatory context, retry exhaustion, or API failure
+The adapter uses `deepseek-v4-pro`, non-streaming JSON output, and no unsupported
+sampling controls. Normal discovery explicitly disables thinking and omits
+`reasoning_effort`, with an initial compact output budget near 8192 tokens.
+Falsification runs only when candidates survive deterministic filtering and uses
+thinking enabled with `reasoning_effort=high`, with an initial budget near 12288
+tokens. `reasoning_effort=max` is reserved for genuine evidence-backed
+adjudication. Per-phase output budgets replace a single maximum allowance, while
+dynamic input budgeting and candidate sharding prevent silent truncation. A
+length finish, malformed JSON, incomplete pass, missing mandatory context, retry
+exhaustion, API failure, duplicate active review, or overall deadline exhaustion
 fails closed. Normal review has no separate liveness call.
 
 Stable scope, requirement, and immutable evidence prefixes are ordered before
-pass-specific instructions for cache reuse. Telemetry records calls, retries,
-tokens, cache usage, candidates, deterministic rejection, context resolution,
-falsification outcomes, new candidates, adjudication, human decisions, final
-confirmed count, snapshot and manifests, and elapsed time. It never records
-the key, authorization data, prompts, source, or hidden reasoning.
+pass-specific instructions for cache reuse. The review-unit budget is calculated
+after the stable prefix and fails closed as `REQUIREMENT_SCOPE_TOO_BROAD` when
+the selected requirements leave too little useful source-evidence space. A
+one-unit multi-file CODE packet performs per-file and cross-file analysis inside
+the combined discovery pass; a separate integration discovery call is used only
+when genuine multi-unit splitting requires it.
+
+Telemetry records every API call's phase, thinking setting, reasoning effort,
+input bytes, tokens, cache usage, elapsed time, retry index, and result class,
+plus review-level call count, discovery units, integration need, candidate
+count, falsification batches, adjudications, final verdict, snapshot, manifests,
+and elapsed time. It never records the key, authorization data, prompts, source,
+or hidden reasoning. A private active-review status file prevents duplicate
+normal reviews of the same snapshot while safely recovering stale locks.
 
 ## Commands
 

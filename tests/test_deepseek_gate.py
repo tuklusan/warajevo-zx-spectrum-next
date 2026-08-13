@@ -62,9 +62,11 @@ class FakeClient:
         self.responses = iter(responses)
         self.calls = []
 
-    def request(self, system, user, telemetry, reasoning_effort="high", max_tokens=0):
-        self.calls.append({"system": system, "user": user, "effort": reasoning_effort,
-                           "max_tokens": max_tokens})
+    def request(self, system, user, telemetry, thinking="enabled", reasoning_effort="high",
+                max_tokens=0, phase="UNSPECIFIED", deadline=None):
+        self.calls.append({"system": system, "user": user, "thinking": thinking,
+                           "effort": reasoning_effort, "max_tokens": max_tokens,
+                           "phase": phase})
         telemetry.calls += 1
         value = next(self.responses)
         if isinstance(value, Exception):
@@ -138,7 +140,7 @@ def falsification(identifier, decision, conflict=False, new_candidates=None):
 
 
 def empty_review_responses(review_type="CODE"):
-    return [discovery(name) for name, _ in gate.SPECIALISTS[review_type]]
+    return [discovery(gate.DISCOVERY_PASSES[review_type])]
 
 
 class GateTests(unittest.TestCase):
@@ -180,7 +182,8 @@ class GateTests(unittest.TestCase):
             return Response()
 
         gate.DeepSeekClient("secret", opener).request(
-            "system", "review", gate.Telemetry("CODE", "x"), "max", 12345
+            "system", "review", gate.Telemetry("CODE", "x"),
+            thinking="enabled", reasoning_effort="max", max_tokens=12345
         )
         self.assertEqual(captured["model"], "deepseek-v4-pro")
         self.assertEqual(captured["thinking"], {"type": "enabled"})
@@ -189,6 +192,13 @@ class GateTests(unittest.TestCase):
         self.assertEqual(captured["response_format"], {"type": "json_object"})
         self.assertNotIn("temperature", captured)
         self.assertNotIn("top_p", captured)
+        captured.clear()
+        gate.DeepSeekClient("secret", opener).request(
+            "system", "review", gate.Telemetry("CODE", "x"),
+            thinking="disabled", reasoning_effort=None, max_tokens=8192
+        )
+        self.assertEqual(captured["thinking"], {"type": "disabled"})
+        self.assertNotIn("reasoning_effort", captured)
 
     def test_missing_key_fails_configuration(self):
         with self.assertRaises(gate.ConfigurationError):
@@ -217,11 +227,12 @@ class GateTests(unittest.TestCase):
                     client.request("system", "substantive review", gate.Telemetry("CODE", "snap"))
 
     def test_schema_repair_is_bounded(self):
-        client = FakeClient([{}, {}, discovery("CODE-A")])
+        client = FakeClient([{}, {}, discovery("CODE-DISCOVERY")])
         telemetry = gate.Telemetry("CODE", "snap")
         value = gate.request_validated(client, "s", "p", telemetry,
-                                       lambda item: gate.discovery_schema_valid(item, "CODE-A"), "CODE-A")
-        self.assertEqual(value["pass"], "CODE-A")
+                                       lambda item: gate.discovery_schema_valid(item, "CODE-DISCOVERY"),
+                                       "CODE-DISCOVERY")
+        self.assertEqual(value["pass"], "CODE-DISCOVERY")
         self.assertEqual(telemetry.retries, 2)
         with self.assertRaises(gate.OutputError):
             gate.request_validated(FakeClient([{}, {}, {}]), "s", "p", telemetry,
@@ -247,7 +258,7 @@ class GateTests(unittest.TestCase):
 
     def test_malformed_candidate_is_deterministically_rejected_without_losing_complete_pass(self):
         malformed = {"candidate_id": "incomplete"}
-        self.assertTrue(gate.discovery_schema_valid(discovery("CODE-A", [malformed]), "CODE-A"))
+        self.assertTrue(gate.discovery_schema_valid(discovery("CODE-DISCOVERY", [malformed]), "CODE-DISCOVERY"))
         telemetry = gate.Telemetry("CODE", "snap")
         accepted, rejected = gate.deterministic_filter([malformed], requirement(), packet(), telemetry)
         self.assertEqual(accepted, [])
@@ -422,8 +433,13 @@ class GateTests(unittest.TestCase):
                                      gate.Telemetry("CODE", "snap"))
         self.assertEqual(result["verdict"], "PASS")
         discovery_passes = [call for call in client.calls if "candidate-discovery" in call["system"]]
-        self.assertEqual({call["user"].split('with pass exactly ')[-1].split('.')[0]
-                          for call in discovery_passes}, {"CODE-A", "CODE-B", "CODE-C"})
+        self.assertEqual(len(discovery_passes), 1)
+        self.assertEqual(discovery_passes[0]["phase"], "CODE-DISCOVERY")
+        self.assertEqual(discovery_passes[0]["thinking"], "disabled")
+        self.assertIsNone(discovery_passes[0]["effort"])
+        self.assertIn("requirements and functional correctness", discovery_passes[0]["user"])
+        self.assertIn("runtime, failure paths, safety", discovery_passes[0]["user"])
+        self.assertIn("integration, regression, compatibility", discovery_passes[0]["user"])
 
     def test_integration_pass_can_confirm_cross_file_defect(self):
         review_packet = gate.ReviewPacket(
@@ -434,8 +450,7 @@ class GateTests(unittest.TestCase):
             "head", "base", {"a.c", "b.c"}, [],
         )
         cross = candidate(claim="cross-file result violates the current constraint", location="a.c:1")
-        responses = empty_review_responses()
-        responses += [discovery("CODE-INTEGRATION", [cross]), falsification(candidate_id(cross), "CONFIRMED")]
+        responses = [discovery("CODE-DISCOVERY", [cross]), falsification(candidate_id(cross), "CONFIRMED")]
         result = gate.perform_review(FakeClient(responses), ROOT, "CODE", review_packet, scope(), requirement(), [],
                                      gate.Telemetry("CODE", "snap"))
         self.assertEqual(result["verdict"], "FAIL")
@@ -490,7 +505,7 @@ class GateTests(unittest.TestCase):
 
     def test_false_allegation_is_rejected_after_hostile_falsification(self):
         allegation = candidate(requests=[{"type": "PATH", "path": "src/other.c"}])
-        responses = [discovery("CODE-A", [allegation]), discovery("CODE-B"), discovery("CODE-C"),
+        responses = [discovery("CODE-DISCOVERY", [allegation]),
                      falsification(candidate_id(), "REJECTED")]
         client = FakeClient(responses)
         resolution = {"status": "RESOLVED", "path": "src/other.c", "sha256": "guard",
@@ -500,15 +515,17 @@ class GateTests(unittest.TestCase):
                                          gate.Telemetry("CODE", "snap"))
         self.assertEqual(result["verdict"], "PASS")
         self.assertEqual(result["confirmed_findings"], [])
-        self.assertEqual(client.calls[-1]["effort"], "max")
+        self.assertEqual(len(client.calls), 2)
+        self.assertEqual(client.calls[-1]["thinking"], "enabled")
+        self.assertEqual(client.calls[-1]["effort"], "high")
         self.assertIn("int validate", client.calls[-1]["user"])
 
-    def test_failed_discovery_pass_does_not_skip_other_mandatory_passes(self):
-        client = FakeClient([gate.ReviewError("unavailable"), discovery("CODE-B"), discovery("CODE-C")])
+    def test_failed_combined_discovery_fails_closed(self):
+        client = FakeClient([gate.ReviewError("unavailable")])
         telemetry = gate.Telemetry("CODE", "snap")
         result = gate.perform_review(client, ROOT, "CODE", packet(), scope(), requirement(), [], telemetry)
-        self.assertEqual(result["verdict"], "INCONCLUSIVE")
-        self.assertEqual(telemetry.passes[:3], ["CODE-A", "CODE-B", "CODE-C"])
+        self.assertEqual(result["verdict"], "REVIEW_UNAVAILABLE")
+        self.assertEqual(telemetry.passes[:1], ["CODE-DISCOVERY"])
 
     def test_truncated_discovery_retries_smaller_material_units(self):
         large_packet = packet(records=[("head/src/item.c", "x\n" * 10000)])
@@ -519,10 +536,10 @@ class GateTests(unittest.TestCase):
         result = gate.perform_review(FakeClient(responses), ROOT, "CODE", large_packet,
                                      scope(), requirement(), [], telemetry)
         self.assertEqual(result["verdict"], "PASS")
-        self.assertGreater(telemetry.passes.count("CODE-A"), 1)
+        self.assertGreater(telemetry.passes.count("CODE-DISCOVERY"), 1)
 
     def test_real_defect_is_confirmed_with_complete_evidence_chain(self):
-        responses = [discovery("CODE-A", [candidate()]), discovery("CODE-B"), discovery("CODE-C"),
+        responses = [discovery("CODE-DISCOVERY", [candidate()]),
                      falsification(candidate_id(), "CONFIRMED")]
         result = gate.perform_review(FakeClient(responses), ROOT, "CODE", packet(), scope(), requirement(), [],
                                      gate.Telemetry("CODE", "snap"))
@@ -534,7 +551,7 @@ class GateTests(unittest.TestCase):
             self.assertIn(field, finding)
 
     def test_unresolved_candidate_never_becomes_high(self):
-        responses = [discovery("CODE-A", [candidate()]), discovery("CODE-B"), discovery("CODE-C"),
+        responses = [discovery("CODE-DISCOVERY", [candidate()]),
                      falsification(candidate_id(), "UNRESOLVED")]
         result = gate.perform_review(FakeClient(responses), ROOT, "CODE", packet(), scope(), requirement(), [],
                                      gate.Telemetry("CODE", "snap"))
@@ -543,7 +560,7 @@ class GateTests(unittest.TestCase):
 
     def test_missing_requested_context_prevents_confirmed_blocker(self):
         allegation = candidate(requests=[{"type": "PATH", "path": "missing.c"}])
-        responses = [discovery("CODE-A", [allegation]), discovery("CODE-B"), discovery("CODE-C"),
+        responses = [discovery("CODE-DISCOVERY", [allegation]),
                      falsification(candidate_id(), "CONFIRMED")]
         resolution = {"status": "UNRESOLVED", "reason": "tracked head path not found"}
         with patch.object(gate, "resolve_context_request", return_value=resolution):
@@ -554,7 +571,7 @@ class GateTests(unittest.TestCase):
 
     def test_missing_candidate_context_does_not_resurrect_rejected_allegation(self):
         allegation = candidate(requests=[{"type": "PATH", "path": "missing.c"}])
-        responses = [discovery("CODE-A", [allegation]), discovery("CODE-B"), discovery("CODE-C"),
+        responses = [discovery("CODE-DISCOVERY", [allegation]),
                      falsification(candidate_id(), "REJECTED")]
         resolution = {"status": "UNRESOLVED", "reason": "tracked head path not found"}
         with patch.object(gate, "resolve_context_request", return_value=resolution):
@@ -563,7 +580,7 @@ class GateTests(unittest.TestCase):
         self.assertEqual(result["verdict"], "PASS")
 
     def test_unresolved_result_contains_exact_candidate_evidence(self):
-        responses = [discovery("CODE-A", [candidate()]), discovery("CODE-B"), discovery("CODE-C"),
+        responses = [discovery("CODE-DISCOVERY", [candidate()]),
                      falsification(candidate_id(), "UNRESOLVED")]
         result = gate.perform_review(FakeClient(responses), ROOT, "CODE", packet(), scope(), requirement(), [],
                                      gate.Telemetry("CODE", "snap"))
@@ -573,7 +590,7 @@ class GateTests(unittest.TestCase):
         self.assertIn("decision_reason", detail)
 
     def test_authority_conflict_requires_human_decision(self):
-        responses = [discovery("CODE-A", [candidate()]), discovery("CODE-B"), discovery("CODE-C"),
+        responses = [discovery("CODE-DISCOVERY", [candidate()]),
                      falsification(candidate_id(), "UNRESOLVED", conflict=True)]
         result = gate.perform_review(FakeClient(responses), ROOT, "CODE", packet(), scope(), requirement(), [],
                                      gate.Telemetry("CODE", "snap"))
@@ -585,7 +602,7 @@ class GateTests(unittest.TestCase):
         real = candidate(claim="invalid state is dereferenced")
         future_id = candidate_id(future)
         real_id = candidate_id(real)
-        responses = [discovery("CODE-A", [future, real]), discovery("CODE-B"), discovery("CODE-C"),
+        responses = [discovery("CODE-DISCOVERY", [future, real]),
                      {"review_complete": True, "decisions": [
                          {"candidate_id": future_id, "decision": "REJECTED", "reason": "Future work",
                           "proof": "CR scope", "negative_check": "Checked current scope",
@@ -601,7 +618,7 @@ class GateTests(unittest.TestCase):
 
     def test_falsifier_new_candidate_reenters_proof_pipeline(self):
         new = candidate(claim="new serious defect")
-        responses = [discovery("CODE-A", [candidate()]), discovery("CODE-B"), discovery("CODE-C"),
+        responses = [discovery("CODE-DISCOVERY", [candidate()]),
                      falsification(candidate_id(), "REJECTED", new_candidates=[new]),
                      falsification(candidate_id(new), "CONFIRMED")]
         result = gate.perform_review(FakeClient(responses), ROOT, "CODE", packet(), scope(), requirement(), [],
@@ -609,7 +626,7 @@ class GateTests(unittest.TestCase):
         self.assertEqual(result["verdict"], "FAIL")
 
     def test_real_below_high_issue_is_non_blocking_not_rejected(self):
-        responses = [discovery("CODE-A", [candidate()]), discovery("CODE-B"), discovery("CODE-C"),
+        responses = [discovery("CODE-DISCOVERY", [candidate()]),
                      falsification(candidate_id(), "NON_BLOCKING")]
         telemetry = gate.Telemetry("CODE", "snap")
         result = gate.perform_review(FakeClient(responses), ROOT, "CODE", packet(), scope(), requirement(), [], telemetry)
@@ -617,10 +634,12 @@ class GateTests(unittest.TestCase):
         self.assertEqual(telemetry.falsifier_non_blocking_count, 1)
 
     def test_documentation_uses_candidate_and_falsification_pipeline(self):
-        responses = [discovery(name) for name, _ in gate.SPECIALISTS["DOCUMENTATION"]]
-        result = gate.perform_review(FakeClient(responses), ROOT, "DOCUMENTATION", packet(), scope(), requirement(), [],
+        client = FakeClient([discovery("DOCUMENTATION-DISCOVERY")])
+        result = gate.perform_review(client, ROOT, "DOCUMENTATION", packet(), scope(), requirement(), [],
                                      gate.Telemetry("DOCUMENTATION", "snap"))
         self.assertEqual(result["verdict"], "PASS")
+        self.assertEqual(len(client.calls), 1)
+        self.assertEqual(client.calls[0]["thinking"], "disabled")
 
     def test_exact_document_contradiction_can_be_confirmed(self):
         document_packet = gate.ReviewPacket(
@@ -628,8 +647,7 @@ class GateTests(unittest.TestCase):
             [{"path": "design/current.md", "classification": "text"}], insufficient_evidence=[]
         )
         contradiction = candidate(location="design/current.md:1")
-        responses = [discovery("DOCUMENTATION-A", [contradiction]),
-                     discovery("DOCUMENTATION-B"), discovery("DOCUMENTATION-C"),
+        responses = [discovery("DOCUMENTATION-DISCOVERY", [contradiction]),
                      falsification(candidate_id(contradiction), "CONFIRMED")]
         result = gate.perform_review(FakeClient(responses), ROOT, "DOCUMENTATION", document_packet,
                                      scope(), requirement(), [], gate.Telemetry("DOCUMENTATION", "snap"))
@@ -640,11 +658,14 @@ class GateTests(unittest.TestCase):
             root = Path(directory)
             (root / "run.log").write_text("all checks completed\n", encoding="utf-8")
             review_packet = gate.file_packet(root, ["run.log"])
-            responses = [discovery(name) for name, _ in gate.SPECIALISTS["TEST_ARTIFACT"]]
-            result = gate.perform_review(FakeClient(responses), root, "TEST_ARTIFACT", review_packet,
+            responses = [discovery("TEST-DISCOVERY")]
+            client = FakeClient(responses)
+            result = gate.perform_review(client, root, "TEST_ARTIFACT", review_packet,
                                          scope(), requirement(), [], gate.Telemetry("TEST_ARTIFACT", "snap"))
             self.assertEqual(result["verdict"], "PASS")
             self.assertEqual(review_packet.manifest[0]["classification"], "text")
+            self.assertEqual(len(client.calls), 1)
+            self.assertEqual(client.calls[0]["phase"], "TEST-DISCOVERY")
 
     def test_test_artifact_snapshot_binds_run_and_build_identity(self):
         with private_tempdir() as directory:
@@ -724,7 +745,7 @@ class GateTests(unittest.TestCase):
         prior = gate.validate_prior([{"id": candidate_id(), "status": "RESOLVED",
                                       "evidence": [{"source": "src/other.c", "location": "1",
                                                     "claim": "guard exists"}]}])
-        responses = [discovery("CODE-A", [candidate()]), discovery("CODE-B"), discovery("CODE-C"),
+        responses = [discovery("CODE-DISCOVERY", [candidate()]),
                      falsification(candidate_id(), "REJECTED")]
         client = FakeClient(responses)
         gate.perform_review(client, ROOT, "CODE", packet(), scope(), requirement(), prior,
@@ -733,6 +754,119 @@ class GateTests(unittest.TestCase):
         self.assertIn("guard exists", client.calls[-1]["user"])
         self.assertEqual(prior[0]["evidence"][0]["claim"], "guard exists")
 
+    def test_one_unit_clean_code_review_makes_one_non_thinking_call(self):
+        client = FakeClient([discovery("CODE-DISCOVERY")])
+        telemetry = gate.Telemetry("CODE", "snap")
+        result = gate.perform_review(client, ROOT, "CODE", packet(), scope(), requirement(), [], telemetry)
+        self.assertEqual(result["verdict"], "PASS")
+        self.assertEqual(len(client.calls), 1)
+        self.assertEqual(client.calls[0]["phase"], "CODE-DISCOVERY")
+        self.assertEqual(client.calls[0]["thinking"], "disabled")
+        self.assertIsNone(client.calls[0]["effort"])
+        self.assertEqual(telemetry.falsification_batch_count, 0)
+
+    def test_one_unit_candidate_review_makes_two_calls_without_max(self):
+        responses = [discovery("CODE-DISCOVERY", [candidate()]), falsification(candidate_id(), "CONFIRMED")]
+        client = FakeClient(responses)
+        result = gate.perform_review(client, ROOT, "CODE", packet(), scope(), requirement(), [],
+                                     gate.Telemetry("CODE", "snap"))
+        self.assertEqual(result["verdict"], "FAIL")
+        self.assertEqual(len(client.calls), 2)
+        self.assertEqual([call["phase"] for call in client.calls], ["CODE-DISCOVERY", "FALSIFICATION"])
+        self.assertNotIn("max", [call["effort"] for call in client.calls])
+
+    def test_adjudication_is_only_routine_max_reasoning_path(self):
+        prior = gate.validate_prior([{"id": candidate_id(), "status": "DISPUTED", "evidence": [{
+            "source": "src/other.c", "location": "1", "claim": "guard exists"
+        }]}])
+        adjudicated = {"review_complete": True, "candidate_id": candidate_id(),
+                       "decision": "REJECTED", "reason": "Decisive guard", "proof": "src/other.c:1",
+                       "negative_check": "Checked current guard path", "confirmed_severity": None}
+        responses = [discovery("CODE-DISCOVERY", [candidate()]),
+                     falsification(candidate_id(), "CONFIRMED"), adjudicated]
+        resolution = {"status": "RESOLVED", "path": "src/other.c", "sha256": "guard",
+                      "content": "int guard(void) { return 1; }"}
+        client = FakeClient(responses)
+        with patch.object(gate, "resolve_context_request", return_value=resolution):
+            result = gate.perform_review(client, ROOT, "CODE", packet(), scope(), requirement(), prior,
+                                         gate.Telemetry("CODE", "snap"))
+        self.assertEqual(result["verdict"], "PASS")
+        self.assertEqual(client.calls[-1]["phase"], "ADJUDICATION")
+        self.assertEqual(client.calls[-1]["effort"], "max")
+
+    def test_multi_file_one_unit_does_not_trigger_integration_call(self):
+        review_packet = gate.ReviewPacket(
+            "git:base..head:sha256:digest", "manifest",
+            [("head/a.c", "int a(void) { return 1; }"), ("head/b.c", "int b(void) { return 2; }")],
+            [{"head_path": "a.c", "classification": "text"},
+             {"head_path": "b.c", "classification": "text"}],
+            "head", "base", {"a.c", "b.c"}, [],
+        )
+        client = FakeClient([discovery("CODE-DISCOVERY")])
+        telemetry = gate.Telemetry("CODE", "snap")
+        result = gate.perform_review(client, ROOT, "CODE", review_packet, scope(), requirement(), [], telemetry)
+        self.assertEqual(result["verdict"], "PASS")
+        self.assertNotIn("CODE-INTEGRATION", telemetry.passes)
+        self.assertFalse(telemetry.cross_unit_integration_required)
+
+    def test_multi_unit_code_review_may_add_one_integration_discovery(self):
+        with patch.object(gate, "TARGET_UNIT_BYTES", 64000):
+            review_packet = gate.ReviewPacket(
+                "git:base..head:sha256:digest", "manifest",
+                [("head/a.c", "a\n" * 40000), ("head/b.c", "b\n" * 40000)],
+                [{"head_path": "a.c", "classification": "text"},
+                 {"head_path": "b.c", "classification": "text"}],
+                "head", "base", {"a.c", "b.c"}, [],
+            )
+            client = FakeClient([discovery("CODE-DISCOVERY"), discovery("CODE-DISCOVERY"),
+                                 discovery("CODE-INTEGRATION")])
+            telemetry = gate.Telemetry("CODE", "snap")
+            result = gate.perform_review(client, ROOT, "CODE", review_packet, scope(), requirement(), [], telemetry)
+        self.assertEqual(result["verdict"], "PASS")
+        self.assertEqual(telemetry.passes.count("CODE-INTEGRATION"), 1)
+        self.assertTrue(telemetry.cross_unit_integration_required)
+
+    def test_dynamic_unit_sizing_and_broad_requirements_fail_closed(self):
+        prefix = gate.stable_prefix("CODE", "snap", scope(), requirement("tiny"), "packet")
+        self.assertGreater(gate.review_unit_limit(prefix), 150000)
+        broad = requirement("x" * gate.INPUT_BUDGET_BYTES)
+        with self.assertRaises(gate.OutputError):
+            gate.build_review_units(packet(), gate.stable_prefix("CODE", "snap", scope(), broad, "packet"))
+
+    def test_review_deadline_exhaustion_cannot_pass(self):
+        deadline = gate.ReviewDeadline(0.0)
+        result = gate.perform_review(FakeClient([discovery("CODE-DISCOVERY")]), ROOT, "CODE",
+                                     packet(), scope(), requirement(), [], gate.Telemetry("CODE", "snap"),
+                                     deadline)
+        self.assertEqual(result["verdict"], "INCONCLUSIVE")
+
+    def test_duplicate_active_review_lock_and_stale_recovery(self):
+        with private_tempdir() as directory:
+            root = Path(directory)
+            first = gate.acquire_review_lock(root, "snap", "CODE", "CR-0021", 480.0)
+            with self.assertRaises(gate.ReviewError):
+                gate.acquire_review_lock(root, "snap", "CODE", "CR-0021", 480.0)
+            data = json.loads(first.read_text(encoding="utf-8"))
+            data["started_monotonic"] = 1.0
+            first.write_text(json.dumps(data), encoding="utf-8")
+            recovered = gate.acquire_review_lock(root, "snap", "CODE", "CR-0021", 480.0)
+            self.assertEqual(recovered, first)
+
+    def test_telemetry_records_phase_elapsed_and_review_counts(self):
+        with private_tempdir() as directory:
+            root = Path(directory)
+            telemetry = gate.Telemetry("CODE", "snap", "CR-0021", "packet")
+            telemetry.api_call_records.append({
+                "phase": "CODE-DISCOVERY", "elapsed_seconds": 0.1,
+                "thinking": "disabled", "reasoning_effort": None,
+            })
+            telemetry.discovery_unit_count = 1
+            final = gate.compact_result("CODE", "CR-0021", packet(), "INCONCLUSIVE", False)
+            gate.write_telemetry(root, telemetry, final)
+            record = json.loads(next((root / "test-artefacts" / "reviewer").glob("telemetry-*.json")).read_text())
+            self.assertEqual(record["api_call_records"][0]["phase"], "CODE-DISCOVERY")
+            self.assertEqual(record["discovery_unit_count"], 1)
+
     def test_dispute_adjudication_can_reject_or_require_human(self):
         prior = gate.validate_prior([{"id": candidate_id(), "status": "DISPUTED", "evidence": [{
             "source": "src/other.c", "location": "1", "claim": "guard exists"
@@ -740,7 +874,7 @@ class GateTests(unittest.TestCase):
         adjudicated = {"review_complete": True, "candidate_id": candidate_id(),
                        "decision": "REJECTED", "reason": "Decisive guard", "proof": "src/other.c:1",
                        "negative_check": "Checked current guard path", "confirmed_severity": None}
-        responses = [discovery("CODE-A", [candidate()]), discovery("CODE-B"), discovery("CODE-C"),
+        responses = [discovery("CODE-DISCOVERY", [candidate()]),
                      falsification(candidate_id(), "CONFIRMED"), adjudicated]
         resolution = {"status": "RESOLVED", "path": "src/other.c", "sha256": "guard",
                       "content": "int guard(void) { return 1; }"}
