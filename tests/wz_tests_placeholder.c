@@ -256,6 +256,8 @@ int main(void)
         wz_z80_ed_opcode_decode(0x4du).operation != WZ_Z80_ED_OP_RETI ||
         wz_z80_ed_opcode_decode(0x70u).operation != WZ_Z80_ED_OP_IN_R_C ||
         wz_z80_ed_opcode_decode(0x70u).status != WZ_Z80_OPCODE_UNDOCUMENTED ||
+        wz_z80_ed_opcode_decode(0x43u).operation != WZ_Z80_ED_OP_LD_NN_RR ||
+        wz_z80_ed_opcode_decode(0x4bu).operation != WZ_Z80_ED_OP_LD_RR_NN ||
         wz_z80_ed_opcode_decode(0xa0u).operation != WZ_Z80_ED_OP_LDI ||
         wz_z80_ed_opcode_decode(0xbbu).operation != WZ_Z80_ED_OP_OTDR ||
         wz_z80_ed_opcode_decode(0xffu).operation != WZ_Z80_ED_OP_UNSUPPORTED ||
@@ -448,6 +450,75 @@ int main(void)
         machine.cpu.program_counter != 4u ||
         machine.master_tick != 36u) {
         fputs("Z80 ED LD A,I failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 CB memory rotate test failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 ED store pair test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    machine.cpu.main.b = 0x12u;
+    machine.cpu.main.c = 0x34u;
+    machine.memory[0u] = 0xedu;
+    machine.memory[1u] = 0x43u;
+    machine.memory[2u] = 0xfeu;
+    machine.memory[3u] = 0xffu;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.memory[0xfffeu] != 0x34u ||
+        machine.memory[0xffffu] != 0x12u ||
+        machine.cpu.program_counter != 4u ||
+        machine.master_tick != 40u ||
+        bus_log.count != 6u ||
+        bus_log.requests[2].cycle != WZ_BUS_MEMORY_READ ||
+        bus_log.requests[2].master_tick != 8u ||
+        bus_log.requests[2].address != 2u ||
+        bus_log.requests[3].cycle != WZ_BUS_MEMORY_READ ||
+        bus_log.requests[3].master_tick != 14u ||
+        bus_log.requests[3].address != 3u ||
+        bus_log.requests[4].cycle != WZ_BUS_MEMORY_WRITE ||
+        bus_log.requests[4].master_tick != 20u ||
+        bus_log.requests[4].address != 0xfffeu ||
+        bus_log.requests[4].value != 0x34u ||
+        bus_log.requests[5].cycle != WZ_BUS_MEMORY_WRITE ||
+        bus_log.requests[5].master_tick != 26u ||
+        bus_log.requests[5].address != 0xffffu ||
+        bus_log.requests[5].value != 0x12u) {
+        fputs("Z80 ED store pair trace failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 ED load pair test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    machine.memory[0u] = 0xedu;
+    machine.memory[1u] = 0x7bu;
+    machine.memory[2u] = 0x00u;
+    machine.memory[3u] = 0x40u;
+    machine.memory[0x4000u] = 0x78u;
+    machine.memory[0x4001u] = 0x56u;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.stack_pointer != 0x5678u ||
+        machine.cpu.program_counter != 4u ||
+        machine.master_tick != 40u ||
+        bus_log.count != 6u ||
+        bus_log.requests[4].cycle != WZ_BUS_MEMORY_READ ||
+        bus_log.requests[4].master_tick != 20u ||
+        bus_log.requests[4].address != 0x4000u ||
+        bus_log.requests[4].value != 0x78u ||
+        bus_log.requests[5].cycle != WZ_BUS_MEMORY_READ ||
+        bus_log.requests[5].master_tick != 26u ||
+        bus_log.requests[5].address != 0x4001u ||
+        bus_log.requests[5].value != 0x56u) {
+        fputs("Z80 ED load pair trace failed\n", stderr);
         return 1;
     }
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
