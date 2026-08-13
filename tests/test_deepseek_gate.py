@@ -168,6 +168,17 @@ class GateTests(unittest.TestCase):
         )
         self.assertIn("finding[0] severity is not BLOCKER or HIGH", errors)
 
+    def test_bootstrap_path_filter_preserves_manifest_and_selected_files(self):
+        review_packet = gate.ReviewPacket(
+            "git:base..head:sha256:digest", "manifest",
+            [("change-manifest.json", "{}"), ("head/a.c", "a"), ("head/b.c", "b")],
+            [{"head_path": "a.c", "classification": "text"},
+             {"head_path": "b.c", "classification": "text"}],
+            "head", "base", {"a.c", "b.c"}, [],
+        )
+        scoped = bootstrap_gate.scoped_bootstrap_packet(review_packet, ["a.c"])
+        self.assertEqual([path for path, _ in scoped.records], ["change-manifest.json", "head/a.c"])
+
     def test_payload_supports_phase_budgets_without_sampling_controls(self):
         captured = {}
 

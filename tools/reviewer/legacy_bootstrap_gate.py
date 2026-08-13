@@ -30,6 +30,18 @@ BOOTSTRAP_INPUT_BUDGET_BYTES = 2_000_000
 BOOTSTRAP_OUTPUT_TOKENS = 24_000
 
 
+def scoped_bootstrap_packet(packet: ReviewPacket, paths: list[str]) -> ReviewPacket:
+    if not paths:
+        return packet
+    allowed = {path.replace("\\", "/") for path in paths}
+    packet.records = [
+        (path, content) for path, content in packet.records
+        if path == "change-manifest.json"
+        or path.removeprefix("head/").removeprefix("base-deleted/") in allowed
+    ]
+    return packet
+
+
 def bootstrap_result_errors(result: object, requirements: list[dict[str, str]],
                             packet: ReviewPacket | None = None) -> list[str]:
     errors: list[str] = []
@@ -81,9 +93,10 @@ def main() -> int:
     parser.add_argument("--base", required=True)
     parser.add_argument("--head", required=True)
     parser.add_argument("--requirements", action="append", required=True)
+    parser.add_argument("--path", action="append", default=[])
     args = parser.parse_args()
     root = Path.cwd().resolve()
-    packet = code_packet(root, args.base, args.head)
+    packet = scoped_bootstrap_packet(code_packet(root, args.base, args.head), args.path)
     requirements = requirement_records(root, args.requirements)
     require_universal_authority(requirements)
     complete_packet = canonical_json({"manifest": packet.manifest, "records": packet.records})
