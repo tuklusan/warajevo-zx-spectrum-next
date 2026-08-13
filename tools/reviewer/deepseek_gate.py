@@ -1622,7 +1622,10 @@ def process_is_active(pid: int) -> bool:
 def active_review_is_stale(record: dict[str, Any], path: Path, now: float) -> bool:
     started = float(record.get("started_monotonic", 0.0) or 0.0)
     pid = int(record.get("process_id", 0) or 0)
-    age = now - started if started > 0 else now - path.stat().st_mtime
+    if started > 0:
+        age = now - started
+    else:
+        age = time.time() - path.stat().st_mtime
     return age > STALE_LOCK_SECONDS or (pid > 0 and not process_is_active(pid))
 
 
