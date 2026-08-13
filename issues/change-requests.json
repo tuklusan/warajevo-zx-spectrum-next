@@ -261,12 +261,12 @@
     {
       "cr_number": "CR-0024",
       "title": "Implement the initial Z80 fetch/decode skeleton",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/warajevo-zx-spectrum-next-architecture.md sections 11.2 and 11.3",
         "design/wzsn-architectures-1-2-developer-tasks.md task 043"
       ],
-      "notes": "Opened on 2026-08-13 for Phase-2 task 043: introduce a bus-visible Z80 step skeleton where NOP and simple load/store opcodes expose M1 fetch, memory read, and memory write requests at explicit intra-instruction master ticks."
+      "notes": "Opened on 2026-08-13 for Phase-2 task 043: introduce a bus-visible Z80 step skeleton where NOP and simple load/store opcodes expose M1 fetch, memory read, and memory write requests at explicit intra-instruction master ticks. Closed on 2026-08-13 at commit 027dc858fd37ea98da8fd6cf54d0cc8ef3b62069 after CODE review for f0a8e85ac6acdfd890c680eb8ed2418f3387b5d2..027dc858fd37ea98da8fd6cf54d0cc8ef3b62069, TEST_ARTIFACT review, SSH smoke runs on linux-x64-lxqt/windows-10-reference/windows-11-laptop, and hosted platform-smoke run 31739744784 across linux-x64, linux-arm64, windows-x64, macos-arm64, and macos-intel-x64."
     }
   ]
 }
