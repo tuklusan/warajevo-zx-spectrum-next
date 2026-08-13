@@ -11,10 +11,13 @@ import argparse
 import json
 import os
 import platform
+import queue
 import shlex
 import shutil
 import subprocess
 import sys
+import threading
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -176,16 +179,42 @@ def command_text(command: list[str]) -> str:
 def run_logged(command: list[str], log_path: Path) -> subprocess.CompletedProcess[str]:
     log_path.parent.mkdir(parents=True, exist_ok=True)
     with log_path.open("w", encoding="utf-8") as log:
-        log.write(f"$ {command_text(command)}\n\n")
+        header = f"$ {command_text(command)}"
+        print(header, flush=True)
+        log.write(header + "\n\n")
         log.flush()
-        result = subprocess.run(
+        process = subprocess.Popen(
             command,
-            check=False,
-            stdout=log,
+            stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
         )
-    return result
+        lines: queue.Queue[str | None] = queue.Queue()
+
+        def read_output() -> None:
+            assert process.stdout is not None
+            for line in process.stdout:
+                lines.put(line)
+            lines.put(None)
+
+        reader = threading.Thread(target=read_output, daemon=True)
+        reader.start()
+        reader_done = False
+        while not reader_done:
+            try:
+                line = lines.get(timeout=15)
+            except queue.Empty:
+                print(f"[wzsn-smoke] still running: {command[0]}", flush=True)
+                continue
+            if line is None:
+                reader_done = True
+                continue
+            print(line, end="", flush=True)
+            log.write(line)
+            log.flush()
+        returncode = process.wait()
+        reader.join(timeout=5)
+    return subprocess.CompletedProcess(command, returncode)
 
 
 def load_generator_name(build_dir: Path) -> str:
