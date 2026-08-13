@@ -27,7 +27,7 @@ from deepseek_gate import (
 )
 
 BOOTSTRAP_INPUT_BUDGET_BYTES = 2_000_000
-BOOTSTRAP_OUTPUT_TOKENS = 16_384
+BOOTSTRAP_OUTPUT_TOKENS = 8_192
 
 
 def bootstrap_result_errors(result: object, requirements: list[dict[str, str]],
@@ -93,9 +93,9 @@ def main() -> int:
         "and silently self-challenge before final output. A blocker requires an exact applicable original requirement, "
         "exact current source evidence, and a concrete reachable failure. Search the supplied complete changed-file "
         "context for counter-evidence. Missing context and uncertainty are not blockers. Never emit hidden reasoning. "
+        "Return at most one finding: choose the single highest-confidence decisive current-scope serious defect. "
         "Keep each finding field concise: cite only the decisive source pointer and do not include long excerpts. "
-        "If any serious finding exists, FAIL with the highest-confidence decisive findings; if none exists, PASS with "
-        "an empty findings array.\n"
+        "If any serious finding exists, FAIL with that one finding; if none exists, PASS with an empty findings array.\n"
         f"SNAPSHOT={packet.snapshot_id}\nPACKET_MANIFEST_HASH={packet.packet_manifest_hash}\n"
         f"REQUIREMENTS={canonical_json(requirements)}\nCOMPLETE_CHANGE_PACKET={complete_packet}\n"
         "Return {\"review_complete\":true,\"verdict\":\"PASS|FAIL\",\"findings\":[{\"id\":\"F-001\","
