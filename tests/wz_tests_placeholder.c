@@ -369,21 +369,21 @@ int main(void)
     }
     memset(&bus_log, 0, sizeof(bus_log));
     wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
-    machine.cpu.main.h = 0x40u;
+    machine.cpu.main.h = 0x28u;
     machine.cpu.main.l = 0x00u;
     machine.cpu.main.f = 0x01u;
     machine.memory[0u] = 0xcbu;
     machine.memory[1u] = 0x7eu;
-    machine.memory[0x4000u] = 0x80u;
+    machine.memory[0x2800u] = 0x80u;
     if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
         wz_z80_step(&machine) != WZ_RESULT_OK ||
-        machine.memory[0x4000u] != 0x80u ||
-        machine.cpu.main.f != 0x91u ||
+        machine.memory[0x2800u] != 0x80u ||
+        machine.cpu.main.f != 0xb9u ||
         machine.cpu.program_counter != 2u ||
         machine.master_tick != 24u ||
         bus_log.count != 3u ||
         bus_log.requests[2].cycle != WZ_BUS_MEMORY_READ ||
-        bus_log.requests[2].address != 0x4000u ||
+        bus_log.requests[2].address != 0x2800u ||
         bus_log.requests[2].value != 0x80u) {
         fputs("Z80 CB bit trace failed\n", stderr);
         return 1;

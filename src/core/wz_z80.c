@@ -275,6 +275,7 @@ static wz_result_t wz_z80_execute_cb(wz_machine_t* machine,
     wz_byte_t value = 0u;
     wz_byte_t result = 0u;
     wz_byte_t carry = 0u;
+    wz_byte_t bit_flag_source = 0u;
     wz_byte_t old_carry = (wz_byte_t)(machine->cpu.main.f & WZ_Z80_FLAG_C);
 
     if (wz_z80_cb_load_target(machine, decode, &value) != WZ_RESULT_OK) {
@@ -324,9 +325,11 @@ static wz_result_t wz_z80_execute_cb(wz_machine_t* machine,
         break;
     case WZ_Z80_CB_OP_BIT:
         result = (wz_byte_t)(value & (wz_byte_t)(1u << decode->bit));
+        bit_flag_source = decode->target == WZ_Z80_TARGET_HL_INDIRECT ?
+            (wz_byte_t)(wz_z80_hl(&machine->cpu) >> 8u) : value;
         machine->cpu.main.f = (wz_byte_t)((machine->cpu.main.f & WZ_Z80_FLAG_C) |
                                           WZ_Z80_FLAG_H |
-                                          (value & (WZ_Z80_FLAG_Y | WZ_Z80_FLAG_X)));
+                                          (bit_flag_source & (WZ_Z80_FLAG_Y | WZ_Z80_FLAG_X)));
         if (result == 0u) {
             machine->cpu.main.f |= (WZ_Z80_FLAG_Z | WZ_Z80_FLAG_PV);
         }
