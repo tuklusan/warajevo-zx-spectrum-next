@@ -98,6 +98,53 @@ static const wz_z80_opcode_decode_t wz_z80_primary_opcode_table[256] = {
     WZ_Z80_UN(0xfeu), WZ_Z80_UN(0xffu)
 };
 
+#define WZ_Z80_CB_ROW(base_value, operation_value, status_value, bit_value) \
+    { (wz_byte_t)((base_value) + 0u), (operation_value), 0u, (bit_value), (status_value) }, \
+    { (wz_byte_t)((base_value) + 1u), (operation_value), 1u, (bit_value), (status_value) }, \
+    { (wz_byte_t)((base_value) + 2u), (operation_value), 2u, (bit_value), (status_value) }, \
+    { (wz_byte_t)((base_value) + 3u), (operation_value), 3u, (bit_value), (status_value) }, \
+    { (wz_byte_t)((base_value) + 4u), (operation_value), 4u, (bit_value), (status_value) }, \
+    { (wz_byte_t)((base_value) + 5u), (operation_value), 5u, (bit_value), (status_value) }, \
+    { (wz_byte_t)((base_value) + 6u), (operation_value), 6u, (bit_value), (status_value) }, \
+    { (wz_byte_t)((base_value) + 7u), (operation_value), 7u, (bit_value), (status_value) }
+
+static const wz_z80_cb_opcode_decode_t wz_z80_cb_opcode_table[256] = {
+    WZ_Z80_CB_ROW(0x00u, WZ_Z80_CB_OP_RLC, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 0u),
+    WZ_Z80_CB_ROW(0x08u, WZ_Z80_CB_OP_RRC, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 0u),
+    WZ_Z80_CB_ROW(0x10u, WZ_Z80_CB_OP_RL, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 0u),
+    WZ_Z80_CB_ROW(0x18u, WZ_Z80_CB_OP_RR, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 0u),
+    WZ_Z80_CB_ROW(0x20u, WZ_Z80_CB_OP_SLA, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 0u),
+    WZ_Z80_CB_ROW(0x28u, WZ_Z80_CB_OP_SRA, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 0u),
+    WZ_Z80_CB_ROW(0x30u, WZ_Z80_CB_OP_SLL, WZ_Z80_OPCODE_UNDOCUMENTED, 0u),
+    WZ_Z80_CB_ROW(0x38u, WZ_Z80_CB_OP_SRL, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 0u),
+    WZ_Z80_CB_ROW(0x40u, WZ_Z80_CB_OP_BIT, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 0u),
+    WZ_Z80_CB_ROW(0x48u, WZ_Z80_CB_OP_BIT, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 1u),
+    WZ_Z80_CB_ROW(0x50u, WZ_Z80_CB_OP_BIT, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 2u),
+    WZ_Z80_CB_ROW(0x58u, WZ_Z80_CB_OP_BIT, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 3u),
+    WZ_Z80_CB_ROW(0x60u, WZ_Z80_CB_OP_BIT, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 4u),
+    WZ_Z80_CB_ROW(0x68u, WZ_Z80_CB_OP_BIT, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 5u),
+    WZ_Z80_CB_ROW(0x70u, WZ_Z80_CB_OP_BIT, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 6u),
+    WZ_Z80_CB_ROW(0x78u, WZ_Z80_CB_OP_BIT, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 7u),
+    WZ_Z80_CB_ROW(0x80u, WZ_Z80_CB_OP_RES, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 0u),
+    WZ_Z80_CB_ROW(0x88u, WZ_Z80_CB_OP_RES, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 1u),
+    WZ_Z80_CB_ROW(0x90u, WZ_Z80_CB_OP_RES, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 2u),
+    WZ_Z80_CB_ROW(0x98u, WZ_Z80_CB_OP_RES, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 3u),
+    WZ_Z80_CB_ROW(0xa0u, WZ_Z80_CB_OP_RES, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 4u),
+    WZ_Z80_CB_ROW(0xa8u, WZ_Z80_CB_OP_RES, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 5u),
+    WZ_Z80_CB_ROW(0xb0u, WZ_Z80_CB_OP_RES, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 6u),
+    WZ_Z80_CB_ROW(0xb8u, WZ_Z80_CB_OP_RES, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 7u),
+    WZ_Z80_CB_ROW(0xc0u, WZ_Z80_CB_OP_SET, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 0u),
+    WZ_Z80_CB_ROW(0xc8u, WZ_Z80_CB_OP_SET, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 1u),
+    WZ_Z80_CB_ROW(0xd0u, WZ_Z80_CB_OP_SET, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 2u),
+    WZ_Z80_CB_ROW(0xd8u, WZ_Z80_CB_OP_SET, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 3u),
+    WZ_Z80_CB_ROW(0xe0u, WZ_Z80_CB_OP_SET, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 4u),
+    WZ_Z80_CB_ROW(0xe8u, WZ_Z80_CB_OP_SET, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 5u),
+    WZ_Z80_CB_ROW(0xf0u, WZ_Z80_CB_OP_SET, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 6u),
+    WZ_Z80_CB_ROW(0xf8u, WZ_Z80_CB_OP_SET, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 7u)
+};
+
+#undef WZ_Z80_CB_ROW
+
 #undef WZ_Z80_PREFIX
 #undef WZ_Z80_IMPL
 #undef WZ_Z80_UN
@@ -110,6 +157,16 @@ size_t wz_z80_primary_opcode_count(void)
 const wz_z80_opcode_decode_t* wz_z80_primary_opcode_decode(wz_byte_t opcode)
 {
     return &wz_z80_primary_opcode_table[opcode];
+}
+
+size_t wz_z80_cb_opcode_count(void)
+{
+    return sizeof(wz_z80_cb_opcode_table) / sizeof(wz_z80_cb_opcode_table[0]);
+}
+
+const wz_z80_cb_opcode_decode_t* wz_z80_cb_opcode_decode(wz_byte_t opcode)
+{
+    return &wz_z80_cb_opcode_table[opcode];
 }
 
 static wz_result_t wz_z80_bus(wz_machine_t* machine,
@@ -185,6 +242,7 @@ wz_result_t wz_z80_step(wz_machine_t* machine)
     wz_byte_t value = 0u;
     wz_byte_t low = 0u;
     wz_byte_t high = 0u;
+    wz_byte_t cb_opcode = 0u;
     const wz_z80_opcode_decode_t* decode;
     wz_word_t pc;
     wz_word_t address;
@@ -235,6 +293,13 @@ wz_result_t wz_z80_step(wz_machine_t* machine)
         machine->master_tick += 26u;
         return WZ_RESULT_OK;
     case WZ_Z80_PRIMARY_OP_PREFIX_CB:
+        if (wz_z80_bus(machine, WZ_BUS_M1_OPCODE_FETCH, 4u,
+                       machine->cpu.program_counter, &cb_opcode, 4u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
+        (void)wz_z80_cb_opcode_decode(cb_opcode);
+        return WZ_RESULT_UNSUPPORTED_OPERATION;
     case WZ_Z80_PRIMARY_OP_PREFIX_DD:
     case WZ_Z80_PRIMARY_OP_PREFIX_ED:
     case WZ_Z80_PRIMARY_OP_PREFIX_FD:

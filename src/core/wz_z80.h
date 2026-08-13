@@ -66,16 +66,40 @@ typedef enum {
     WZ_Z80_PRIMARY_OP_PREFIX_FD
 } wz_z80_primary_operation_t;
 
+typedef enum {
+    WZ_Z80_CB_OP_RLC = 0,
+    WZ_Z80_CB_OP_RRC,
+    WZ_Z80_CB_OP_RL,
+    WZ_Z80_CB_OP_RR,
+    WZ_Z80_CB_OP_SLA,
+    WZ_Z80_CB_OP_SRA,
+    WZ_Z80_CB_OP_SLL,
+    WZ_Z80_CB_OP_SRL,
+    WZ_Z80_CB_OP_BIT,
+    WZ_Z80_CB_OP_RES,
+    WZ_Z80_CB_OP_SET
+} wz_z80_cb_operation_t;
+
 typedef struct {
     wz_byte_t opcode;
     wz_z80_primary_operation_t operation;
     wz_z80_opcode_status_t status;
 } wz_z80_opcode_decode_t;
 
+typedef struct {
+    wz_byte_t opcode;
+    wz_z80_cb_operation_t operation;
+    wz_byte_t target;
+    wz_byte_t bit;
+    wz_z80_opcode_status_t status;
+} wz_z80_cb_opcode_decode_t;
+
 void wz_z80_state_init(wz_z80_state_t* state);
 wz_result_t wz_z80_state_validate(const wz_z80_state_t* state);
 size_t wz_z80_primary_opcode_count(void);
 const wz_z80_opcode_decode_t* wz_z80_primary_opcode_decode(wz_byte_t opcode);
+size_t wz_z80_cb_opcode_count(void);
+const wz_z80_cb_opcode_decode_t* wz_z80_cb_opcode_decode(wz_byte_t opcode);
 wz_result_t wz_z80_step(wz_machine_t* machine);
 
 #endif
