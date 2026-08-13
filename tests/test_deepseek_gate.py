@@ -845,10 +845,10 @@ class GateTests(unittest.TestCase):
         self.assertFalse(telemetry.cross_unit_integration_required)
 
     def test_multi_unit_code_review_may_add_one_integration_discovery(self):
-        with patch.object(gate, "TARGET_UNIT_BYTES", 64000):
+        with patch.object(gate, "TARGET_UNIT_BYTES", 100000):
             review_packet = gate.ReviewPacket(
                 "git:base..head:sha256:digest", "manifest",
-                [("head/a.c", "a\n" * 40000), ("head/b.c", "b\n" * 40000)],
+                [("head/a.c", "a\n" * 20000), ("head/b.c", "b\n" * 20000)],
                 [{"head_path": "a.c", "classification": "text"},
                  {"head_path": "b.c", "classification": "text"}],
                 "head", "base", {"a.c", "b.c"}, [],

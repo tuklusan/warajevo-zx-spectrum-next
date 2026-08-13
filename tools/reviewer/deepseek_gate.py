@@ -1235,6 +1235,7 @@ def perform_review(client: DeepSeekClient, root: Path, review_type: str, packet:
     units = build_review_units(packet, prefix)
     discovered: list[dict[str, Any]] = []
     failures: list[str] = []
+    unavailable_failures: list[str] = []
     unit_index = 0
     while unit_index < len(units):
         if deadline is not None:
@@ -1272,7 +1273,9 @@ def perform_review(client: DeepSeekClient, root: Path, review_type: str, packet:
                 telemetry.discovery_unit_count = len(units)
                 continue
         except ReviewError as exc:
-            failures.append(f"{pass_name} unit {unit_index + 1}: {type(exc).__name__}")
+            failure = f"{pass_name} unit {unit_index + 1}: {type(exc).__name__}"
+            failures.append(failure)
+            unavailable_failures.append(failure)
         if failures:
             break
         discovered.extend(unit_candidates)
@@ -1317,10 +1320,13 @@ def perform_review(client: DeepSeekClient, root: Path, review_type: str, packet:
                 packet, current_integration, prefix
             )
         except ReviewError as exc:
-            failures.append(f"{pass_name}: {type(exc).__name__}")
+            failure = f"{pass_name}: {type(exc).__name__}"
+            failures.append(failure)
+            unavailable_failures.append(failure)
             break
     if failures:
-        return compact_result(review_type, scope.get("cr_number", ""), packet, "INCONCLUSIVE", False,
+        verdict = "REVIEW_UNAVAILABLE" if unavailable_failures else "INCONCLUSIVE"
+        return compact_result(review_type, scope.get("cr_number", ""), packet, verdict, False,
                               reason={"incomplete_mandatory_passes": failures}, prior=prior)
     telemetry.discovery_candidate_count = len(discovered)
     known_fingerprints: set[str] = set()
