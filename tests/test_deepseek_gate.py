@@ -179,6 +179,10 @@ class GateTests(unittest.TestCase):
         scoped = bootstrap_gate.scoped_bootstrap_packet(review_packet, ["a.c"])
         self.assertEqual([path for path, _ in scoped.records], ["change-manifest.json", "head/a.c"])
 
+    def test_bootstrap_line_slice_preserves_original_numbering(self):
+        sliced = bootstrap_gate.line_slice_content("one\ntwo\nthree\n", 2, 2)
+        self.assertEqual(sliced.splitlines(), ["", "two", ""])
+
     def test_payload_supports_phase_budgets_without_sampling_controls(self):
         captured = {}
 

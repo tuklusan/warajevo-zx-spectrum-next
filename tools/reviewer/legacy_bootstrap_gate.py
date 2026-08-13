@@ -32,12 +32,29 @@ BOOTSTRAP_INPUT_BUDGET_BYTES = 2_000_000
 BOOTSTRAP_OUTPUT_TOKENS = 32_768
 
 
-def scoped_bootstrap_packet(packet: ReviewPacket, paths: list[str]) -> ReviewPacket:
+def line_slice_content(content: str, line_start: int | None, line_end: int | None) -> str:
+    if line_start is None and line_end is None:
+        return content
+    start = line_start if line_start is not None else 1
+    end = line_end if line_end is not None else 2_147_483_647
+    if start < 1 or end < start:
+        raise ReviewError("invalid bootstrap line slice")
+    lines = content.splitlines(keepends=True)
+    sliced = [
+        line if start <= index <= end else ("\n" if line.endswith("\n") else "")
+        for index, line in enumerate(lines, 1)
+    ]
+    return "".join(sliced)
+
+
+def scoped_bootstrap_packet(packet: ReviewPacket, paths: list[str],
+                            line_start: int | None = None,
+                            line_end: int | None = None) -> ReviewPacket:
     if not paths:
         return packet
     allowed = {path.replace("\\", "/") for path in paths}
     packet.records = [
-        (path, content) for path, content in packet.records
+        (path, line_slice_content(content, line_start, line_end)) for path, content in packet.records
         if path == "change-manifest.json"
         or path.removeprefix("head/").removeprefix("base-deleted/") in allowed
     ]
@@ -96,10 +113,13 @@ def main() -> int:
     parser.add_argument("--head", required=True)
     parser.add_argument("--requirements", action="append", required=True)
     parser.add_argument("--path", action="append", default=[])
+    parser.add_argument("--line-start", type=int)
+    parser.add_argument("--line-end", type=int)
     parser.add_argument("--deadline-seconds", type=float, default=DEFAULT_REVIEW_DEADLINE_SECONDS)
     args = parser.parse_args()
     root = Path.cwd().resolve()
-    packet = scoped_bootstrap_packet(code_packet(root, args.base, args.head), args.path)
+    packet = scoped_bootstrap_packet(code_packet(root, args.base, args.head),
+                                     args.path, args.line_start, args.line_end)
     requirements = requirement_records(root, args.requirements)
     require_universal_authority(requirements)
     complete_packet = canonical_json({"manifest": packet.manifest, "records": packet.records})
