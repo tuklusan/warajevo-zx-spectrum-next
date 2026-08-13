@@ -10,6 +10,7 @@ import json
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 import urllib.error
 from contextlib import redirect_stdout
@@ -897,7 +898,7 @@ class GateTests(unittest.TestCase):
             with self.assertRaises(gate.ReviewError):
                 gate.acquire_review_lock(root, "snap", "CODE", "CR-0021", 480.0)
             data = json.loads(first.read_text(encoding="utf-8"))
-            data["started_monotonic"] = 1.0
+            data["started_monotonic"] = time.monotonic() - gate.STALE_LOCK_SECONDS - 1.0
             first.write_text(json.dumps(data), encoding="utf-8")
             recovered = gate.acquire_review_lock(root, "snap", "CODE", "CR-0021", 480.0)
             self.assertEqual(recovered, first)
