@@ -27,7 +27,7 @@ from deepseek_gate import (
 )
 
 BOOTSTRAP_INPUT_BUDGET_BYTES = 2_000_000
-BOOTSTRAP_OUTPUT_TOKENS = 8_192
+BOOTSTRAP_OUTPUT_TOKENS = 24_000
 
 
 def bootstrap_result_errors(result: object, requirements: list[dict[str, str]],
