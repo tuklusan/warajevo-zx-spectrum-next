@@ -27,7 +27,7 @@ from deepseek_gate import (
 )
 
 BOOTSTRAP_INPUT_BUDGET_BYTES = 2_000_000
-BOOTSTRAP_OUTPUT_TOKENS = 24_000
+BOOTSTRAP_OUTPUT_TOKENS = 32_768
 
 
 def scoped_bootstrap_packet(packet: ReviewPacket, paths: list[str]) -> ReviewPacket:
