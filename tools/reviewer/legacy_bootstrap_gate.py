@@ -123,8 +123,11 @@ def main() -> int:
                 prompt + repair, telemetry, thinking="enabled", reasoning_effort="high",
                 max_tokens=BOOTSTRAP_OUTPUT_TOKENS, phase="BOOTSTRAP-REVIEW",
             )
-            if bootstrap_result_valid(result, requirements, packet):
+            errors = bootstrap_result_errors(result, requirements, packet)
+            if not errors:
                 break
+            result = {"review_complete": False, "verdict": "INCONCLUSIVE",
+                      "reason": {"invalid_bootstrap_response": errors}}
     except ReviewError as exc:
         result = {"review_complete": False, "verdict": "INCONCLUSIVE",
                   "reason": f"bootstrap review unavailable: {type(exc).__name__}"}
