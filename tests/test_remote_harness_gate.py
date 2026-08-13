@@ -103,9 +103,9 @@ class HarnessGateTests(unittest.TestCase):
         digest = hashlib.sha256(diff).hexdigest()
         tracker_data = (ROOT / "issues" / "change-requests.json").read_bytes()
         tracker = json.loads(tracker_data)
-        cr = next(item for item in tracker["change_requests"] if item["cr_number"] == "CR-0021")
+        cr = next(item for item in tracker["change_requests"] if item["cr_number"] == "CR-0022")
         scope = {
-            "cr_number": "CR-0021", "title": cr.get("title"), "status": cr.get("status"),
+            "cr_number": "CR-0022", "title": cr.get("title"), "status": cr.get("status"),
             "source_authority": cr.get("source_authority", []), "notes": cr.get("notes", ""),
             "tracker_source": "issues/change-requests.json",
             "tracker_sha256": hashlib.sha256(tracker_data).hexdigest(),
@@ -117,7 +117,7 @@ class HarnessGateTests(unittest.TestCase):
         receipt = json.dumps({
             "schema_version": 2,
             "review_protocol_version": 2,
-            "cr_number": "CR-0021",
+            "cr_number": "CR-0022",
             "packet_manifest_hash": "packet",
             "requirements_manifest_hash": hashlib.sha256(
                 remote.canonical_json(requirement_sources).encode()
