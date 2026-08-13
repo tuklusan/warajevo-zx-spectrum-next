@@ -81,6 +81,8 @@ int main(void)
     size_t cb_documented_unimplemented = 0u;
     size_t cb_implemented = 0u;
     size_t cb_undocumented = 0u;
+    size_t ed_documented_unimplemented = 0u;
+    size_t ed_undocumented = 0u;
     FILE* trace_stream;
     const char* trace_path = "wz-trace-regression.bin";
 
@@ -222,6 +224,41 @@ int main(void)
         fputs("CB opcode table contents failed\n", stderr);
         return 1;
     }
+    if (wz_z80_ed_opcode_count() != 256u) {
+        fputs("ED opcode table size failed\n", stderr);
+        return 1;
+    }
+    for (opcode_index = 0u; opcode_index < wz_z80_ed_opcode_count(); ++opcode_index) {
+        wz_z80_ed_opcode_decode_t decode =
+            wz_z80_ed_opcode_decode((wz_byte_t)opcode_index);
+        if (decode.opcode != (wz_byte_t)opcode_index) {
+            fputs("ED opcode table identity failed\n", stderr);
+            return 1;
+        }
+        if (decode.status == WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED) {
+            ed_documented_unimplemented += 1u;
+        } else if (decode.status == WZ_Z80_OPCODE_UNDOCUMENTED) {
+            ed_undocumented += 1u;
+        } else {
+            fputs("ED opcode table classification failed\n", stderr);
+            return 1;
+        }
+    }
+    if (ed_documented_unimplemented == 0u ||
+        ed_documented_unimplemented + ed_undocumented != 256u ||
+        wz_z80_ed_opcode_decode(0x44u).operation != WZ_Z80_ED_OP_NEG ||
+        wz_z80_ed_opcode_decode(0x4cu).operation != WZ_Z80_ED_OP_NEG ||
+        wz_z80_ed_opcode_decode(0x4cu).status != WZ_Z80_OPCODE_UNDOCUMENTED ||
+        wz_z80_ed_opcode_decode(0x4du).operation != WZ_Z80_ED_OP_RETI ||
+        wz_z80_ed_opcode_decode(0x70u).operation != WZ_Z80_ED_OP_IN_R_C ||
+        wz_z80_ed_opcode_decode(0x70u).status != WZ_Z80_OPCODE_UNDOCUMENTED ||
+        wz_z80_ed_opcode_decode(0xa0u).operation != WZ_Z80_ED_OP_LDI ||
+        wz_z80_ed_opcode_decode(0xbbu).operation != WZ_Z80_ED_OP_OTDR ||
+        wz_z80_ed_opcode_decode(0xffu).operation != WZ_Z80_ED_OP_UNSUPPORTED ||
+        wz_z80_ed_opcode_decode(0xffu).status != WZ_Z80_OPCODE_UNDOCUMENTED) {
+        fputs("ED opcode table contents failed\n", stderr);
+        return 1;
+    }
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
         fputs("machine reset before Z80 skeleton test failed\n", stderr);
         return 1;
@@ -330,6 +367,29 @@ int main(void)
         bus_log.requests[1].address != 1u ||
         bus_log.requests[1].value != 0x11u) {
         fputs("Z80 CB-prefix fetch trace failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 ED-prefix test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    machine.memory[0u] = 0xedu;
+    machine.memory[1u] = 0x44u;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_UNSUPPORTED_OPERATION ||
+        machine.cpu.program_counter != 2u ||
+        machine.master_tick != 0u ||
+        bus_log.count != 2u ||
+        bus_log.requests[0].cycle != WZ_BUS_M1_OPCODE_FETCH ||
+        bus_log.requests[0].address != 0u ||
+        bus_log.requests[0].value != 0xedu ||
+        bus_log.requests[1].cycle != WZ_BUS_M1_OPCODE_FETCH ||
+        bus_log.requests[1].master_tick != 4u ||
+        bus_log.requests[1].address != 1u ||
+        bus_log.requests[1].value != 0x44u) {
+        fputs("Z80 ED-prefix fetch trace failed\n", stderr);
         return 1;
     }
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {

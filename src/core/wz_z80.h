@@ -80,6 +80,42 @@ typedef enum {
     WZ_Z80_CB_OP_SET
 } wz_z80_cb_operation_t;
 
+typedef enum {
+    WZ_Z80_ED_OP_UNSUPPORTED = 0,
+    WZ_Z80_ED_OP_IN_R_C,
+    WZ_Z80_ED_OP_OUT_C_R,
+    WZ_Z80_ED_OP_SBC_HL_RR,
+    WZ_Z80_ED_OP_ADC_HL_RR,
+    WZ_Z80_ED_OP_LD_NN_RR,
+    WZ_Z80_ED_OP_LD_RR_NN,
+    WZ_Z80_ED_OP_NEG,
+    WZ_Z80_ED_OP_RETN,
+    WZ_Z80_ED_OP_RETI,
+    WZ_Z80_ED_OP_IM,
+    WZ_Z80_ED_OP_LD_I_A,
+    WZ_Z80_ED_OP_LD_R_A,
+    WZ_Z80_ED_OP_LD_A_I,
+    WZ_Z80_ED_OP_LD_A_R,
+    WZ_Z80_ED_OP_RRD,
+    WZ_Z80_ED_OP_RLD,
+    WZ_Z80_ED_OP_LDI,
+    WZ_Z80_ED_OP_CPI,
+    WZ_Z80_ED_OP_INI,
+    WZ_Z80_ED_OP_OUTI,
+    WZ_Z80_ED_OP_LDD,
+    WZ_Z80_ED_OP_CPD,
+    WZ_Z80_ED_OP_IND,
+    WZ_Z80_ED_OP_OUTD,
+    WZ_Z80_ED_OP_LDIR,
+    WZ_Z80_ED_OP_CPIR,
+    WZ_Z80_ED_OP_INIR,
+    WZ_Z80_ED_OP_OTIR,
+    WZ_Z80_ED_OP_LDDR,
+    WZ_Z80_ED_OP_CPDR,
+    WZ_Z80_ED_OP_INDR,
+    WZ_Z80_ED_OP_OTDR
+} wz_z80_ed_operation_t;
+
 typedef struct {
     wz_byte_t opcode;
     wz_z80_primary_operation_t operation;
@@ -94,12 +130,21 @@ typedef struct {
     wz_z80_opcode_status_t status;
 } wz_z80_cb_opcode_decode_t;
 
+typedef struct {
+    wz_byte_t opcode;
+    wz_z80_ed_operation_t operation;
+    wz_byte_t operand;
+    wz_z80_opcode_status_t status;
+} wz_z80_ed_opcode_decode_t;
+
 void wz_z80_state_init(wz_z80_state_t* state);
 wz_result_t wz_z80_state_validate(const wz_z80_state_t* state);
 size_t wz_z80_primary_opcode_count(void);
 const wz_z80_opcode_decode_t* wz_z80_primary_opcode_decode(wz_byte_t opcode);
 size_t wz_z80_cb_opcode_count(void);
 const wz_z80_cb_opcode_decode_t* wz_z80_cb_opcode_decode(wz_byte_t opcode);
+size_t wz_z80_ed_opcode_count(void);
+wz_z80_ed_opcode_decode_t wz_z80_ed_opcode_decode(wz_byte_t opcode);
 wz_result_t wz_z80_step(wz_machine_t* machine);
 
 #endif
