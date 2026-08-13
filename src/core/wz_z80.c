@@ -275,11 +275,9 @@ wz_z80_ed_opcode_decode_t wz_z80_ed_opcode_decode(wz_byte_t opcode)
     case 0x5fu:
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_LD_A_R, 0u, WZ_Z80_OPCODE_IMPLEMENTED);
     case 0x67u:
-        return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_RRD, 0u,
-                              WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED);
+        return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_RRD, 0u, WZ_Z80_OPCODE_IMPLEMENTED);
     case 0x6fu:
-        return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_RLD, 0u,
-                              WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED);
+        return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_RLD, 0u, WZ_Z80_OPCODE_IMPLEMENTED);
     case 0xa0u:
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_LDI, 0u,
                               WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED);
@@ -709,6 +707,36 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         wz_z80_set_rr(&machine->cpu, 2u, result16);
         machine->cpu.main.f = wz_z80_sub16_flags(hl, pair_value, carry_in, result16);
         machine->master_tick += 30u;
+        return WZ_RESULT_OK;
+    case WZ_Z80_ED_OP_RRD:
+        address = wz_z80_hl(&machine->cpu);
+        if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u, address, &value, 3u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        low = (wz_byte_t)(machine->cpu.main.a & 0x0fu);
+        machine->cpu.main.a = (wz_byte_t)((machine->cpu.main.a & 0xf0u) | (value & 0x0fu));
+        value = (wz_byte_t)((low << 4u) | (value >> 4u));
+        if (wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 14u, address, &value, 3u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->cpu.main.f = (wz_byte_t)((machine->cpu.main.f & WZ_Z80_FLAG_C) |
+                                          wz_z80_sz53p_flags(machine->cpu.main.a));
+        machine->master_tick += 36u;
+        return WZ_RESULT_OK;
+    case WZ_Z80_ED_OP_RLD:
+        address = wz_z80_hl(&machine->cpu);
+        if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u, address, &value, 3u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        low = (wz_byte_t)(machine->cpu.main.a & 0x0fu);
+        machine->cpu.main.a = (wz_byte_t)((machine->cpu.main.a & 0xf0u) | (value >> 4u));
+        value = (wz_byte_t)((value << 4u) | low);
+        if (wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 14u, address, &value, 3u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->cpu.main.f = (wz_byte_t)((machine->cpu.main.f & WZ_Z80_FLAG_C) |
+                                          wz_z80_sz53p_flags(machine->cpu.main.a));
+        machine->master_tick += 36u;
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_LD_NN_RR:
         if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,

@@ -558,6 +558,58 @@ int main(void)
         return 1;
     }
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 ED RRD test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    machine.cpu.main.a = 0x84u;
+    machine.cpu.main.f = 0x01u;
+    machine.cpu.main.h = 0x40u;
+    machine.cpu.main.l = 0x00u;
+    machine.memory[0u] = 0xedu;
+    machine.memory[1u] = 0x67u;
+    machine.memory[0x4000u] = 0x31u;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.a != 0x81u ||
+        machine.cpu.main.f != 0x85u ||
+        machine.memory[0x4000u] != 0x43u ||
+        machine.cpu.program_counter != 2u ||
+        machine.master_tick != 36u ||
+        bus_log.count != 4u ||
+        bus_log.requests[2].cycle != WZ_BUS_MEMORY_READ ||
+        bus_log.requests[2].master_tick != 8u ||
+        bus_log.requests[2].address != 0x4000u ||
+        bus_log.requests[2].value != 0x31u ||
+        bus_log.requests[3].cycle != WZ_BUS_MEMORY_WRITE ||
+        bus_log.requests[3].master_tick != 14u ||
+        bus_log.requests[3].address != 0x4000u ||
+        bus_log.requests[3].value != 0x43u) {
+        fputs("Z80 ED RRD trace failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 ED RLD test failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.main.a = 0x25u;
+    machine.cpu.main.f = 0x01u;
+    machine.cpu.main.h = 0x40u;
+    machine.cpu.main.l = 0x00u;
+    machine.memory[0u] = 0xedu;
+    machine.memory[1u] = 0x6fu;
+    machine.memory[0x4000u] = 0x96u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.a != 0x29u ||
+        machine.cpu.main.f != 0x29u ||
+        machine.memory[0x4000u] != 0x65u ||
+        machine.cpu.program_counter != 2u ||
+        machine.master_tick != 36u) {
+        fputs("Z80 ED RLD failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
         fputs("machine reset before Z80 ED store pair test failed\n", stderr);
         return 1;
     }
