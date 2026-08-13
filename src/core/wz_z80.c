@@ -88,12 +88,12 @@ static const wz_z80_opcode_decode_t wz_z80_primary_opcode_table[256] = {
     WZ_Z80_UN(0xdeu), WZ_Z80_UN(0xdfu), WZ_Z80_UN(0xe0u), WZ_Z80_UN(0xe1u),
     WZ_Z80_UN(0xe2u), WZ_Z80_UN(0xe3u), WZ_Z80_UN(0xe4u), WZ_Z80_UN(0xe5u),
     WZ_Z80_UN(0xe6u), WZ_Z80_UN(0xe7u), WZ_Z80_UN(0xe8u), WZ_Z80_UN(0xe9u),
-    WZ_Z80_UN(0xeau),
+    WZ_Z80_UN(0xeau), WZ_Z80_UN(0xebu), WZ_Z80_UN(0xecu),
     WZ_Z80_PREFIX(0xedu, WZ_Z80_PRIMARY_OP_PREFIX_ED),
     WZ_Z80_UN(0xeeu), WZ_Z80_UN(0xefu), WZ_Z80_UN(0xf0u), WZ_Z80_UN(0xf1u),
     WZ_Z80_UN(0xf2u), WZ_Z80_UN(0xf3u), WZ_Z80_UN(0xf4u), WZ_Z80_UN(0xf5u),
     WZ_Z80_UN(0xf6u), WZ_Z80_UN(0xf7u), WZ_Z80_UN(0xf8u), WZ_Z80_UN(0xf9u),
-    WZ_Z80_UN(0xfau),
+    WZ_Z80_UN(0xfau), WZ_Z80_UN(0xfbu), WZ_Z80_UN(0xfcu),
     WZ_Z80_PREFIX(0xfdu, WZ_Z80_PRIMARY_OP_PREFIX_FD),
     WZ_Z80_UN(0xfeu), WZ_Z80_UN(0xffu)
 };
