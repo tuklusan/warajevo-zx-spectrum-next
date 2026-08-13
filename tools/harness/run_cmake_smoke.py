@@ -174,22 +174,17 @@ def command_text(command: list[str]) -> str:
 
 
 def run_logged(command: list[str], log_path: Path) -> subprocess.CompletedProcess[str]:
-    result = subprocess.run(
-        command,
-        check=False,
-        capture_output=True,
-        text=True,
-    )
-
-    content = "\n".join(
-        [
-            f"$ {command_text(command)}",
-            "",
-            result.stdout,
-            result.stderr,
-        ]
-    ).rstrip() + "\n"
-    safe_write_text(log_path, content)
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    with log_path.open("w", encoding="utf-8") as log:
+        log.write(f"$ {command_text(command)}\n\n")
+        log.flush()
+        result = subprocess.run(
+            command,
+            check=False,
+            stdout=log,
+            stderr=subprocess.STDOUT,
+            text=True,
+        )
     return result
 
 
