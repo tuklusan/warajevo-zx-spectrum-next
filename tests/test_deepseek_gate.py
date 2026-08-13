@@ -7,6 +7,7 @@
 
 import io
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -898,8 +899,11 @@ class GateTests(unittest.TestCase):
             with self.assertRaises(gate.ReviewError):
                 gate.acquire_review_lock(root, "snap", "CODE", "CR-0021", 480.0)
             data = json.loads(first.read_text(encoding="utf-8"))
-            data["started_monotonic"] = time.monotonic() - gate.STALE_LOCK_SECONDS - 1.0
+            data["process_id"] = 0
+            data["started_monotonic"] = 0.0
             first.write_text(json.dumps(data), encoding="utf-8")
+            stale_mtime = time.time() - gate.STALE_LOCK_SECONDS - 1.0
+            os.utime(first, (stale_mtime, stale_mtime))
             recovered = gate.acquire_review_lock(root, "snap", "CODE", "CR-0021", 480.0)
             self.assertEqual(recovered, first)
 
