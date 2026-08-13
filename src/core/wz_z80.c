@@ -241,7 +241,7 @@ wz_z80_ed_opcode_decode_t wz_z80_ed_opcode_decode(wz_byte_t opcode)
                               WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED);
     case 0x44u:
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_NEG, 0u,
-                              WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED);
+                              WZ_Z80_OPCODE_IMPLEMENTED);
     case 0x4cu: case 0x54u: case 0x5cu:
     case 0x64u: case 0x6cu: case 0x74u: case 0x7cu:
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_NEG, 0u, WZ_Z80_OPCODE_UNDOCUMENTED);
@@ -255,14 +255,11 @@ wz_z80_ed_opcode_decode_t wz_z80_ed_opcode_decode(wz_byte_t opcode)
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_RETI, 0u,
                               WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED);
     case 0x46u:
-        return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_IM, 0u,
-                              WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED);
+        return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_IM, 0u, WZ_Z80_OPCODE_IMPLEMENTED);
     case 0x56u:
-        return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_IM, 1u,
-                              WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED);
+        return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_IM, 1u, WZ_Z80_OPCODE_IMPLEMENTED);
     case 0x5eu:
-        return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_IM, 2u,
-                              WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED);
+        return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_IM, 2u, WZ_Z80_OPCODE_IMPLEMENTED);
     case 0x4eu: case 0x66u: case 0x6eu:
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_IM, 0u, WZ_Z80_OPCODE_UNDOCUMENTED);
     case 0x76u:
@@ -270,17 +267,13 @@ wz_z80_ed_opcode_decode_t wz_z80_ed_opcode_decode(wz_byte_t opcode)
     case 0x7eu:
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_IM, 2u, WZ_Z80_OPCODE_UNDOCUMENTED);
     case 0x47u:
-        return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_LD_I_A, 0u,
-                              WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED);
+        return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_LD_I_A, 0u, WZ_Z80_OPCODE_IMPLEMENTED);
     case 0x4fu:
-        return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_LD_R_A, 0u,
-                              WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED);
+        return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_LD_R_A, 0u, WZ_Z80_OPCODE_IMPLEMENTED);
     case 0x57u:
-        return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_LD_A_I, 0u,
-                              WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED);
+        return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_LD_A_I, 0u, WZ_Z80_OPCODE_IMPLEMENTED);
     case 0x5fu:
-        return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_LD_A_R, 0u,
-                              WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED);
+        return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_LD_A_R, 0u, WZ_Z80_OPCODE_IMPLEMENTED);
     case 0x67u:
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_RRD, 0u,
                               WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED);
@@ -510,6 +503,80 @@ static wz_result_t wz_z80_execute_cb(wz_machine_t* machine,
     return WZ_RESULT_OK;
 }
 
+static wz_byte_t wz_z80_neg_flags(wz_byte_t value, wz_byte_t result)
+{
+    wz_byte_t flags = (wz_byte_t)(result & (WZ_Z80_FLAG_S | WZ_Z80_FLAG_Y | WZ_Z80_FLAG_X));
+    flags |= WZ_Z80_FLAG_N;
+    if (result == 0u) {
+        flags |= WZ_Z80_FLAG_Z;
+    }
+    if ((value & 0x0fu) != 0u) {
+        flags |= WZ_Z80_FLAG_H;
+    }
+    if (value == 0x80u) {
+        flags |= WZ_Z80_FLAG_PV;
+    }
+    if (value != 0u) {
+        flags |= WZ_Z80_FLAG_C;
+    }
+    return flags;
+}
+
+static wz_byte_t wz_z80_ld_a_ir_flags(const wz_machine_t* machine, wz_byte_t value)
+{
+    wz_byte_t flags = (wz_byte_t)((machine->cpu.main.f & WZ_Z80_FLAG_C) |
+                                  (value & (WZ_Z80_FLAG_S | WZ_Z80_FLAG_Y | WZ_Z80_FLAG_X)));
+    if (value == 0u) {
+        flags |= WZ_Z80_FLAG_Z;
+    }
+    if (machine->cpu.iff2 != 0u) {
+        flags |= WZ_Z80_FLAG_PV;
+    }
+    return flags;
+}
+
+static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
+                                     wz_z80_ed_opcode_decode_t decode)
+{
+    wz_byte_t value;
+
+    switch (decode.operation) {
+    case WZ_Z80_ED_OP_NEG:
+        value = machine->cpu.main.a;
+        machine->cpu.main.a = (wz_byte_t)(0u - value);
+        machine->cpu.main.f = wz_z80_neg_flags(value, machine->cpu.main.a);
+        machine->master_tick += 16u;
+        return WZ_RESULT_OK;
+    case WZ_Z80_ED_OP_IM:
+        if (decode.operand > (wz_byte_t)WZ_Z80_INTERRUPT_MODE_2) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->cpu.interrupt_mode = decode.operand;
+        machine->master_tick += 16u;
+        return WZ_RESULT_OK;
+    case WZ_Z80_ED_OP_LD_I_A:
+        machine->cpu.i = machine->cpu.main.a;
+        machine->master_tick += 18u;
+        return WZ_RESULT_OK;
+    case WZ_Z80_ED_OP_LD_R_A:
+        machine->cpu.r = machine->cpu.main.a;
+        machine->master_tick += 18u;
+        return WZ_RESULT_OK;
+    case WZ_Z80_ED_OP_LD_A_I:
+        machine->cpu.main.a = machine->cpu.i;
+        machine->cpu.main.f = wz_z80_ld_a_ir_flags(machine, machine->cpu.main.a);
+        machine->master_tick += 18u;
+        return WZ_RESULT_OK;
+    case WZ_Z80_ED_OP_LD_A_R:
+        machine->cpu.main.a = machine->cpu.r;
+        machine->cpu.main.f = wz_z80_ld_a_ir_flags(machine, machine->cpu.main.a);
+        machine->master_tick += 18u;
+        return WZ_RESULT_OK;
+    default:
+        return WZ_RESULT_UNSUPPORTED_OPERATION;
+    }
+}
+
 static wz_result_t wz_z80_bus(wz_machine_t* machine,
                               wz_bus_cycle_t cycle,
                               wz_master_tick_t offset,
@@ -646,8 +713,7 @@ wz_result_t wz_z80_step(wz_machine_t* machine)
             return WZ_RESULT_INVALID_STATE;
         }
         machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
-        (void)wz_z80_ed_opcode_decode(value);
-        return WZ_RESULT_UNSUPPORTED_OPERATION;
+        return wz_z80_execute_ed(machine, wz_z80_ed_opcode_decode(value));
     case WZ_Z80_PRIMARY_OP_PREFIX_DD:
     case WZ_Z80_PRIMARY_OP_PREFIX_FD:
     case WZ_Z80_PRIMARY_OP_UNSUPPORTED:
