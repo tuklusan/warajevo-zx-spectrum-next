@@ -265,7 +265,12 @@ def main() -> int:
     project_root = Path.cwd().resolve()
     artifact_dir = resolve_within_project(project_root, args.artifact_dir)
     build_dir = artifact_dir / "build"
+    temp_dir = artifact_dir / "tmp"
     artifact_dir.mkdir(parents=True, exist_ok=True)
+    temp_dir.mkdir(parents=True, exist_ok=True)
+    os.environ["TMPDIR"] = str(temp_dir)
+    os.environ["TEMP"] = str(temp_dir)
+    os.environ["TMP"] = str(temp_dir)
 
     system_name = platform.system()
     python_command = choose_python_command()
@@ -306,6 +311,7 @@ def main() -> int:
         },
         "project_root": str(project_root),
         "artifact_dir": str(artifact_dir),
+        "temp_dir": str(temp_dir),
         "tools": tools,
         "missing_tools": missing_tools,
         "environment": {
@@ -319,6 +325,7 @@ def main() -> int:
         "status": "probe_only" if args.probe_only else "pending",
         "artifact_dir": str(artifact_dir),
         "build_dir": str(build_dir),
+        "temp_dir": str(temp_dir),
         "missing_tools": missing_tools,
         "commands": [],
     }
