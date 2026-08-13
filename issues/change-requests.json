@@ -271,12 +271,12 @@
     {
       "cr_number": "CR-0025",
       "title": "Implement the primary Z80 opcode decode table",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/warajevo-zx-spectrum-next-architecture.md section 11",
         "design/wzsn-architectures-1-2-developer-tasks.md task 044"
       ],
-      "notes": "Opened on 2026-08-13 for Phase-2 task 044: add deterministic metadata for every 0x00-0xff primary opcode, including explicit undocumented and unsupported classifications, and route the existing step skeleton through the table."
+      "notes": "Opened on 2026-08-13 for Phase-2 task 044: add deterministic metadata for every 0x00-0xff primary opcode, including explicit undocumented and unsupported classifications, and route the existing step skeleton through the table. Closed on 2026-08-13 at commit 646c2913959d49944fd7efd1510479d98d1d14ff after CODE review for 50dd2e90dfa73b7c7ca9ffd033786c75fdd556c4..646c2913959d49944fd7efd1510479d98d1d14ff, TEST_ARTIFACT review, SSH smoke runs on linux-x64-lxqt/windows-10-reference/windows-11-laptop, and hosted platform-smoke run 31741044153 across linux-x64, linux-arm64, windows-x64, macos-arm64, and macos-intel-x64. The earlier CR0025-e63a5fd SSH runs failed the table identity test; the follow-up coverage fix corrected missing entries 0xeb, 0xec, 0xfb, and 0xfc before closure evidence was collected."
     }
   ]
 }
