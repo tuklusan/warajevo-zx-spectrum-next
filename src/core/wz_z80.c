@@ -246,14 +246,12 @@ wz_z80_ed_opcode_decode_t wz_z80_ed_opcode_decode(wz_byte_t opcode)
     case 0x64u: case 0x6cu: case 0x74u: case 0x7cu:
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_NEG, 0u, WZ_Z80_OPCODE_UNDOCUMENTED);
     case 0x45u:
-        return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_RETN, 0u,
-                              WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED);
+        return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_RETN, 0u, WZ_Z80_OPCODE_IMPLEMENTED);
     case 0x55u: case 0x5du: case 0x65u: case 0x6du:
     case 0x75u: case 0x7du:
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_RETN, 0u, WZ_Z80_OPCODE_UNDOCUMENTED);
     case 0x4du:
-        return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_RETI, 0u,
-                              WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED);
+        return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_RETI, 0u, WZ_Z80_OPCODE_IMPLEMENTED);
     case 0x46u:
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_IM, 0u, WZ_Z80_OPCODE_IMPLEMENTED);
     case 0x56u:
@@ -737,6 +735,22 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         machine->cpu.main.f = (wz_byte_t)((machine->cpu.main.f & WZ_Z80_FLAG_C) |
                                           wz_z80_sz53p_flags(machine->cpu.main.a));
         machine->master_tick += 36u;
+        return WZ_RESULT_OK;
+    case WZ_Z80_ED_OP_RETN:
+    case WZ_Z80_ED_OP_RETI:
+        if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,
+                       machine->cpu.stack_pointer, &low, 3u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->cpu.stack_pointer = wz_z80_add16(machine->cpu.stack_pointer, 1u);
+        if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 14u,
+                       machine->cpu.stack_pointer, &high, 3u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->cpu.stack_pointer = wz_z80_add16(machine->cpu.stack_pointer, 1u);
+        machine->cpu.program_counter = (wz_word_t)low | ((wz_word_t)high << 8u);
+        machine->cpu.iff1 = machine->cpu.iff2;
+        machine->master_tick += 28u;
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_LD_NN_RR:
         if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,

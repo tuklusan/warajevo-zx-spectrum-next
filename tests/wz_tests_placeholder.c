@@ -253,7 +253,10 @@ int main(void)
         wz_z80_ed_opcode_decode(0x44u).status != WZ_Z80_OPCODE_IMPLEMENTED ||
         wz_z80_ed_opcode_decode(0x4cu).operation != WZ_Z80_ED_OP_NEG ||
         wz_z80_ed_opcode_decode(0x4cu).status != WZ_Z80_OPCODE_UNDOCUMENTED ||
+        wz_z80_ed_opcode_decode(0x45u).operation != WZ_Z80_ED_OP_RETN ||
+        wz_z80_ed_opcode_decode(0x45u).status != WZ_Z80_OPCODE_IMPLEMENTED ||
         wz_z80_ed_opcode_decode(0x4du).operation != WZ_Z80_ED_OP_RETI ||
+        wz_z80_ed_opcode_decode(0x4du).status != WZ_Z80_OPCODE_IMPLEMENTED ||
         wz_z80_ed_opcode_decode(0x70u).operation != WZ_Z80_ED_OP_IN_R_C ||
         wz_z80_ed_opcode_decode(0x70u).status != WZ_Z80_OPCODE_UNDOCUMENTED ||
         wz_z80_ed_opcode_decode(0x43u).operation != WZ_Z80_ED_OP_LD_NN_RR ||
@@ -607,6 +610,59 @@ int main(void)
         machine.cpu.program_counter != 2u ||
         machine.master_tick != 36u) {
         fputs("Z80 ED RLD failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 ED RETN test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    machine.cpu.stack_pointer = 0xfffeu;
+    machine.cpu.iff1 = 0u;
+    machine.cpu.iff2 = 1u;
+    machine.cpu.main.f = 0xa5u;
+    machine.memory[0u] = 0xedu;
+    machine.memory[1u] = 0x45u;
+    machine.memory[0xfffeu] = 0x34u;
+    machine.memory[0xffffu] = 0x12u;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.program_counter != 0x1234u ||
+        machine.cpu.stack_pointer != 0u ||
+        machine.cpu.iff1 != 1u ||
+        machine.cpu.iff2 != 1u ||
+        machine.cpu.main.f != 0xa5u ||
+        machine.master_tick != 28u ||
+        bus_log.count != 4u ||
+        bus_log.requests[2].cycle != WZ_BUS_MEMORY_READ ||
+        bus_log.requests[2].master_tick != 8u ||
+        bus_log.requests[2].address != 0xfffeu ||
+        bus_log.requests[2].value != 0x34u ||
+        bus_log.requests[3].cycle != WZ_BUS_MEMORY_READ ||
+        bus_log.requests[3].master_tick != 14u ||
+        bus_log.requests[3].address != 0xffffu ||
+        bus_log.requests[3].value != 0x12u) {
+        fputs("Z80 ED RETN trace failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 ED RETI test failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.stack_pointer = 0x4000u;
+    machine.cpu.iff1 = 1u;
+    machine.cpu.iff2 = 0u;
+    machine.memory[0u] = 0xedu;
+    machine.memory[1u] = 0x4du;
+    machine.memory[0x4000u] = 0x78u;
+    machine.memory[0x4001u] = 0x56u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.program_counter != 0x5678u ||
+        machine.cpu.stack_pointer != 0x4002u ||
+        machine.cpu.iff1 != 0u ||
+        machine.master_tick != 28u) {
+        fputs("Z80 ED RETI failed\n", stderr);
         return 1;
     }
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
