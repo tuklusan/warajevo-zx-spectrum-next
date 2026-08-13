@@ -11,6 +11,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include <stddef.h>
 
+#include "core/wz_bus.h"
 #include "core/wz_machine_profile.h"
 #include "core/wz_types.h"
 #include "core/wz_z80.h"
@@ -18,6 +19,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 typedef struct wz_machine {
     const wz_machine_profile_t* profile;
     wz_z80_state_t cpu;
+    wz_bus_observer_t bus_observer;
     wz_byte_t memory[65536u];
     wz_master_tick_t master_tick;
 } wz_machine_t;

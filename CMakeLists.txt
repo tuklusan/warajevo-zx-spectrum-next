@@ -41,6 +41,7 @@ add_library(
     wz_core
     STATIC
     src/core/wz_machine_profile.c
+    src/core/wz_bus.c
     src/core/wz_machine.c
     src/core/wz_runner.c
     src/core/wz_scheduler.c

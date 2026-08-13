@@ -10,6 +10,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include <string.h>
 
 #include "core/wz_machine.h"
+#include "core/wz_bus.h"
 #include "core/wz_scheduler.h"
 #include "core/wz_state.h"
 #include "core/wz_runner.h"
@@ -36,6 +37,20 @@ static bool recover_trace(const wz_trace_event_t* event, void* context)
     return true;
 }
 
+typedef struct {
+    wz_bus_request_t requests[8];
+    size_t count;
+} bus_log_t;
+
+static void record_bus_request(const wz_bus_request_t* request, void* context)
+{
+    bus_log_t* log = (bus_log_t*)context;
+    if (log->count < (sizeof(log->requests) / sizeof(log->requests[0]))) {
+        log->requests[log->count] = *request;
+    }
+    log->count += 1u;
+}
+
 int main(void)
 {
     const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
@@ -52,6 +67,9 @@ int main(void)
     unsigned dispatched = 0u;
     wz_trace_file_t trace_file;
     wz_trace_file_t duplicate;
+    wz_bus_observer_t bus_observer;
+    wz_bus_request_t bus_request;
+    bus_log_t bus_log;
     wz_qword_t recovered_last = 0u;
     size_t recovered_count = 0u;
     FILE* trace_stream;
@@ -68,6 +86,55 @@ int main(void)
     if (wz_profile_cpu_tstate(5u, profile) != 2u ||
         wz_profile_cpu_phase(5u, profile) != 1u) {
         fputs("master-tick conversion failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK) {
+        fputs("bus observer installation failed\n", stderr);
+        return 1;
+    }
+    machine.memory[0x1234u] = 0x9au;
+    wz_bus_request_init(&bus_request, WZ_BUS_M1_OPCODE_FETCH, 4u, 0x1234u, 0u, 4u);
+    if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
+        bus_request.value != 0x9au) {
+        fputs("bus opcode fetch failed\n", stderr);
+        return 1;
+    }
+    wz_bus_request_init(&bus_request, WZ_BUS_MEMORY_WRITE, 8u, 0x4000u, 0x5cu, 3u);
+    if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
+        machine.memory[0x4000u] != 0x5cu) {
+        fputs("bus memory write failed\n", stderr);
+        return 1;
+    }
+    wz_bus_request_init(&bus_request, WZ_BUS_IO_READ, 12u, 0x00feu, 0u, 4u);
+    if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
+        bus_request.value != 0xffu) {
+        fputs("bus I/O read failed\n", stderr);
+        return 1;
+    }
+    wz_bus_request_init(&bus_request, WZ_BUS_INTERRUPT_ACKNOWLEDGE, 16u, 0xffffu, 0u, 7u);
+    if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
+        bus_request.value != 0xffu) {
+        fputs("bus interrupt acknowledge failed\n", stderr);
+        return 1;
+    }
+    wz_bus_request_init(&bus_request, WZ_BUS_INTERNAL, 20u, 0u, 0u, 1u);
+    if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
+        bus_log.count != 5u ||
+        bus_log.requests[0].cycle != WZ_BUS_M1_OPCODE_FETCH ||
+        bus_log.requests[1].cycle != WZ_BUS_MEMORY_WRITE ||
+        bus_log.requests[2].cycle != WZ_BUS_IO_READ ||
+        bus_log.requests[3].cycle != WZ_BUS_INTERRUPT_ACKNOWLEDGE ||
+        bus_log.requests[4].cycle != WZ_BUS_INTERNAL ||
+        bus_log.requests[1].master_tick != 8u ||
+        bus_log.requests[1].address != 0x4000u ||
+        bus_log.requests[1].value != 0x5cu) {
+        fputs("mock bus did not record exact requests\n", stderr);
+        return 1;
+    }
+    if (wz_machine_set_bus_observer(&machine, 0) != WZ_RESULT_OK) {
+        fputs("bus observer removal failed\n", stderr);
         return 1;
     }
 

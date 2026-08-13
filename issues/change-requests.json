@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 23,
+  "next_cr_number": 24,
   "status_values": [
     "open",
     "in_progress",
@@ -247,6 +247,16 @@
         "design/wzsn-architectures-1-2-developer-tasks.md task 041"
       ],
       "notes": "Opened on 2026-08-13 for Phase-2 task 041: explicit Z80 primary and alternate register banks, IX/IY, SP, PC, I/R, IFF state, interrupt mode, HALT state, initialization, validation, and canonical serialization/hash participation. Closed on 2026-08-13 at commit 3d6eb5b29a59d9a88069351a733333d895c8fa28 after full-range CODE review for 97fb488359bb53203f56ac63b2d475b999851894..3d6eb5b29a59d9a88069351a733333d895c8fa28, TEST_ARTIFACT review, SSH smoke runs on linux-x64-lxqt/windows-10-reference/windows-11-laptop, and hosted platform-smoke run 31738408580 across linux-x64, linux-arm64, windows-x64, macos-arm64, and macos-intel-x64."
+    },
+    {
+      "cr_number": "CR-0023",
+      "title": "Define the CPU-to-bus request interface",
+      "status": "in_progress",
+      "source_authority": [
+        "design/warajevo-zx-spectrum-next-architecture.md sections 11.3 and 12",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 042"
+      ],
+      "notes": "Opened on 2026-08-13 for Phase-2 task 042: typed bus-cycle requests for memory read/write, I/O read/write, interrupt acknowledge, and timing-visible internal phases, with a mock observer capable of recording exact request order and fields."
     }
   ]
 }
