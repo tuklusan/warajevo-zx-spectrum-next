@@ -570,9 +570,15 @@ static wz_byte_t wz_z80_ld_a_ir_flags(const wz_machine_t* machine, wz_byte_t val
     return flags;
 }
 
+static wz_byte_t wz_z80_in_flags(const wz_machine_t* machine, wz_byte_t value)
+{
+    return (wz_byte_t)((machine->cpu.main.f & WZ_Z80_FLAG_C) | wz_z80_sz53p_flags(value));
+}
+
 static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
                                      wz_z80_ed_opcode_decode_t decode)
 {
+    wz_byte_t* target;
     wz_byte_t value;
     wz_byte_t low = 0u;
     wz_byte_t high = 0u;
@@ -610,6 +616,36 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         machine->cpu.main.a = machine->cpu.r;
         machine->cpu.main.f = wz_z80_ld_a_ir_flags(machine, machine->cpu.main.a);
         machine->master_tick += 18u;
+        return WZ_RESULT_OK;
+    case WZ_Z80_ED_OP_IN_R_C:
+        address = wz_z80_get_rr(&machine->cpu, 0u);
+        value = 0u;
+        if (wz_z80_bus(machine, WZ_BUS_IO_READ, 8u, address, &value, 4u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        target = wz_z80_target_register(&machine->cpu, decode.operand);
+        if (target != 0) {
+            *target = value;
+        } else if (decode.operand != WZ_Z80_TARGET_HL_INDIRECT) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->cpu.main.f = wz_z80_in_flags(machine, value);
+        machine->master_tick += 24u;
+        return WZ_RESULT_OK;
+    case WZ_Z80_ED_OP_OUT_C_R:
+        address = wz_z80_get_rr(&machine->cpu, 0u);
+        target = wz_z80_target_register(&machine->cpu, decode.operand);
+        if (target != 0) {
+            value = *target;
+        } else if (decode.operand == WZ_Z80_TARGET_HL_INDIRECT) {
+            value = 0u;
+        } else {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        if (wz_z80_bus(machine, WZ_BUS_IO_WRITE, 8u, address, &value, 4u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->master_tick += 24u;
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_LD_NN_RR:
         if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,
