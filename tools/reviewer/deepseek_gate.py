@@ -1472,6 +1472,12 @@ def perform_review(client: DeepSeekClient, root: Path, review_type: str, packet:
             })
         return compact_result(review_type, scope.get("cr_number", ""), packet, "INCONCLUSIVE", False,
                               reason={"unresolved_candidates": unresolved_details}, prior=prior)
+    if deadline is not None:
+        try:
+            deadline.ensure("FINALIZE")
+        except ReviewError as exc:
+            return compact_result(review_type, scope.get("cr_number", ""), packet,
+                                  "REVIEW_UNAVAILABLE", False, reason=str(exc), prior=prior)
     blockers = [make_blocker(candidate_by_id[identifier], decisions[identifier]) for identifier in sorted(confirmed_ids)]
     return compact_result(review_type, scope.get("cr_number", ""), packet,
                           "FAIL" if blockers else "PASS", True, blockers, prior=prior)

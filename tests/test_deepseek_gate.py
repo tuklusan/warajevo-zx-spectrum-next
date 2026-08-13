@@ -852,7 +852,22 @@ class GateTests(unittest.TestCase):
         result = gate.perform_review(FakeClient([discovery("CODE-DISCOVERY")]), ROOT, "CODE",
                                      packet(), scope(), requirement(), [], gate.Telemetry("CODE", "snap"),
                                      deadline)
-        self.assertEqual(result["verdict"], "INCONCLUSIVE")
+        self.assertEqual(result["verdict"], "REVIEW_UNAVAILABLE")
+
+    def test_deadline_exhaustion_after_clean_discovery_cannot_pass(self):
+        class ExpiringClient(FakeClient):
+            def request(self, system, user, telemetry, thinking="enabled", reasoning_effort="high",
+                        max_tokens=0, phase="UNSPECIFIED", deadline=None):
+                value = super().request(system, user, telemetry, thinking, reasoning_effort,
+                                        max_tokens, phase, deadline)
+                if deadline is not None:
+                    deadline.started -= deadline.seconds + 1.0
+                return value
+
+        result = gate.perform_review(ExpiringClient([discovery("CODE-DISCOVERY")]), ROOT, "CODE",
+                                     packet(), scope(), requirement(), [], gate.Telemetry("CODE", "snap"),
+                                     gate.ReviewDeadline(480.0))
+        self.assertEqual(result["verdict"], "REVIEW_UNAVAILABLE")
 
     def test_duplicate_active_review_lock_and_stale_recovery(self):
         with private_tempdir() as directory:
