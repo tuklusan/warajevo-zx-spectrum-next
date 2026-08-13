@@ -575,15 +575,60 @@ static wz_byte_t wz_z80_in_flags(const wz_machine_t* machine, wz_byte_t value)
     return (wz_byte_t)((machine->cpu.main.f & WZ_Z80_FLAG_C) | wz_z80_sz53p_flags(value));
 }
 
+static wz_byte_t wz_z80_add16_flags(wz_word_t left, wz_word_t right, wz_byte_t carry, wz_word_t result)
+{
+    wz_dword_t wide = (wz_dword_t)left + (wz_dword_t)right + (wz_dword_t)carry;
+    wz_byte_t high = (wz_byte_t)(result >> 8u);
+    wz_byte_t flags = (wz_byte_t)(high & (WZ_Z80_FLAG_S | WZ_Z80_FLAG_Y | WZ_Z80_FLAG_X));
+
+    if (result == 0u) {
+        flags |= WZ_Z80_FLAG_Z;
+    }
+    if (((left ^ right ^ result) & 0x1000u) != 0u) {
+        flags |= WZ_Z80_FLAG_H;
+    }
+    if (((~(left ^ right) & (left ^ result)) & 0x8000u) != 0u) {
+        flags |= WZ_Z80_FLAG_PV;
+    }
+    if ((wide & 0x10000u) != 0u) {
+        flags |= WZ_Z80_FLAG_C;
+    }
+    return flags;
+}
+
+static wz_byte_t wz_z80_sub16_flags(wz_word_t left, wz_word_t right, wz_byte_t carry, wz_word_t result)
+{
+    wz_byte_t high = (wz_byte_t)(result >> 8u);
+    wz_byte_t flags = (wz_byte_t)(WZ_Z80_FLAG_N |
+                                  (high & (WZ_Z80_FLAG_S | WZ_Z80_FLAG_Y | WZ_Z80_FLAG_X)));
+
+    if (result == 0u) {
+        flags |= WZ_Z80_FLAG_Z;
+    }
+    if (((left ^ right ^ result) & 0x1000u) != 0u) {
+        flags |= WZ_Z80_FLAG_H;
+    }
+    if (((left ^ right) & (left ^ result) & 0x8000u) != 0u) {
+        flags |= WZ_Z80_FLAG_PV;
+    }
+    if ((wz_dword_t)left < ((wz_dword_t)right + (wz_dword_t)carry)) {
+        flags |= WZ_Z80_FLAG_C;
+    }
+    return flags;
+}
+
 static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
                                      wz_z80_ed_opcode_decode_t decode)
 {
     wz_byte_t* target;
+    wz_byte_t carry_in;
     wz_byte_t value;
     wz_byte_t low = 0u;
     wz_byte_t high = 0u;
     wz_word_t address;
+    wz_word_t hl;
     wz_word_t pair_value;
+    wz_word_t result16;
 
     switch (decode.operation) {
     case WZ_Z80_ED_OP_NEG:
@@ -646,6 +691,24 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
             return WZ_RESULT_INVALID_STATE;
         }
         machine->master_tick += 24u;
+        return WZ_RESULT_OK;
+    case WZ_Z80_ED_OP_ADC_HL_RR:
+        hl = wz_z80_hl(&machine->cpu);
+        pair_value = wz_z80_get_rr(&machine->cpu, decode.operand);
+        carry_in = (wz_byte_t)(machine->cpu.main.f & WZ_Z80_FLAG_C);
+        result16 = (wz_word_t)(hl + pair_value + carry_in);
+        wz_z80_set_rr(&machine->cpu, 2u, result16);
+        machine->cpu.main.f = wz_z80_add16_flags(hl, pair_value, carry_in, result16);
+        machine->master_tick += 30u;
+        return WZ_RESULT_OK;
+    case WZ_Z80_ED_OP_SBC_HL_RR:
+        hl = wz_z80_hl(&machine->cpu);
+        pair_value = wz_z80_get_rr(&machine->cpu, decode.operand);
+        carry_in = (wz_byte_t)(machine->cpu.main.f & WZ_Z80_FLAG_C);
+        result16 = (wz_word_t)(hl - pair_value - carry_in);
+        wz_z80_set_rr(&machine->cpu, 2u, result16);
+        machine->cpu.main.f = wz_z80_sub16_flags(hl, pair_value, carry_in, result16);
+        machine->master_tick += 30u;
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_LD_NN_RR:
         if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,

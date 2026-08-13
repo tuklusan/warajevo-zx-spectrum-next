@@ -519,6 +519,45 @@ int main(void)
         return 1;
     }
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 ED ADC HL,rr test failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.main.h = 0x7fu;
+    machine.cpu.main.l = 0xffu;
+    machine.cpu.main.d = 0x00u;
+    machine.cpu.main.e = 0x01u;
+    machine.cpu.main.f = 0u;
+    machine.memory[0u] = 0xedu;
+    machine.memory[1u] = 0x5au;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.h != 0x80u ||
+        machine.cpu.main.l != 0x00u ||
+        machine.cpu.main.f != 0x94u ||
+        machine.cpu.program_counter != 2u ||
+        machine.master_tick != 30u) {
+        fputs("Z80 ED ADC HL,rr failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 ED SBC HL,rr test failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.main.h = 0x00u;
+    machine.cpu.main.l = 0x00u;
+    machine.cpu.stack_pointer = 0x0001u;
+    machine.cpu.main.f = 0x01u;
+    machine.memory[0u] = 0xedu;
+    machine.memory[1u] = 0x72u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.h != 0xffu ||
+        machine.cpu.main.l != 0xfeu ||
+        machine.cpu.main.f != 0xbbu ||
+        machine.cpu.program_counter != 2u ||
+        machine.master_tick != 30u) {
+        fputs("Z80 ED SBC HL,rr failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
         fputs("machine reset before Z80 ED store pair test failed\n", stderr);
         return 1;
     }
