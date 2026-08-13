@@ -11,6 +11,16 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "core/wz_bus.h"
 #include "core/wz_machine.h"
 
+#define WZ_Z80_FLAG_C 0x01u
+#define WZ_Z80_FLAG_N 0x02u
+#define WZ_Z80_FLAG_PV 0x04u
+#define WZ_Z80_FLAG_X 0x08u
+#define WZ_Z80_FLAG_H 0x10u
+#define WZ_Z80_FLAG_Y 0x20u
+#define WZ_Z80_FLAG_Z 0x40u
+#define WZ_Z80_FLAG_S 0x80u
+#define WZ_Z80_TARGET_HL_INDIRECT 6u
+
 static wz_word_t wz_z80_add16(wz_word_t value, wz_word_t amount)
 {
     return (wz_word_t)(value + amount);
@@ -109,38 +119,38 @@ static const wz_z80_opcode_decode_t wz_z80_primary_opcode_table[256] = {
     { (wz_byte_t)((base_value) + 7u), (operation_value), 7u, (bit_value), (status_value) }
 
 static const wz_z80_cb_opcode_decode_t wz_z80_cb_opcode_table[256] = {
-    WZ_Z80_CB_ROW(0x00u, WZ_Z80_CB_OP_RLC, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 0u),
-    WZ_Z80_CB_ROW(0x08u, WZ_Z80_CB_OP_RRC, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 0u),
-    WZ_Z80_CB_ROW(0x10u, WZ_Z80_CB_OP_RL, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 0u),
-    WZ_Z80_CB_ROW(0x18u, WZ_Z80_CB_OP_RR, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 0u),
-    WZ_Z80_CB_ROW(0x20u, WZ_Z80_CB_OP_SLA, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 0u),
-    WZ_Z80_CB_ROW(0x28u, WZ_Z80_CB_OP_SRA, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 0u),
+    WZ_Z80_CB_ROW(0x00u, WZ_Z80_CB_OP_RLC, WZ_Z80_OPCODE_IMPLEMENTED, 0u),
+    WZ_Z80_CB_ROW(0x08u, WZ_Z80_CB_OP_RRC, WZ_Z80_OPCODE_IMPLEMENTED, 0u),
+    WZ_Z80_CB_ROW(0x10u, WZ_Z80_CB_OP_RL, WZ_Z80_OPCODE_IMPLEMENTED, 0u),
+    WZ_Z80_CB_ROW(0x18u, WZ_Z80_CB_OP_RR, WZ_Z80_OPCODE_IMPLEMENTED, 0u),
+    WZ_Z80_CB_ROW(0x20u, WZ_Z80_CB_OP_SLA, WZ_Z80_OPCODE_IMPLEMENTED, 0u),
+    WZ_Z80_CB_ROW(0x28u, WZ_Z80_CB_OP_SRA, WZ_Z80_OPCODE_IMPLEMENTED, 0u),
     WZ_Z80_CB_ROW(0x30u, WZ_Z80_CB_OP_SLL, WZ_Z80_OPCODE_UNDOCUMENTED, 0u),
-    WZ_Z80_CB_ROW(0x38u, WZ_Z80_CB_OP_SRL, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 0u),
-    WZ_Z80_CB_ROW(0x40u, WZ_Z80_CB_OP_BIT, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 0u),
-    WZ_Z80_CB_ROW(0x48u, WZ_Z80_CB_OP_BIT, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 1u),
-    WZ_Z80_CB_ROW(0x50u, WZ_Z80_CB_OP_BIT, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 2u),
-    WZ_Z80_CB_ROW(0x58u, WZ_Z80_CB_OP_BIT, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 3u),
-    WZ_Z80_CB_ROW(0x60u, WZ_Z80_CB_OP_BIT, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 4u),
-    WZ_Z80_CB_ROW(0x68u, WZ_Z80_CB_OP_BIT, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 5u),
-    WZ_Z80_CB_ROW(0x70u, WZ_Z80_CB_OP_BIT, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 6u),
-    WZ_Z80_CB_ROW(0x78u, WZ_Z80_CB_OP_BIT, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 7u),
-    WZ_Z80_CB_ROW(0x80u, WZ_Z80_CB_OP_RES, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 0u),
-    WZ_Z80_CB_ROW(0x88u, WZ_Z80_CB_OP_RES, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 1u),
-    WZ_Z80_CB_ROW(0x90u, WZ_Z80_CB_OP_RES, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 2u),
-    WZ_Z80_CB_ROW(0x98u, WZ_Z80_CB_OP_RES, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 3u),
-    WZ_Z80_CB_ROW(0xa0u, WZ_Z80_CB_OP_RES, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 4u),
-    WZ_Z80_CB_ROW(0xa8u, WZ_Z80_CB_OP_RES, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 5u),
-    WZ_Z80_CB_ROW(0xb0u, WZ_Z80_CB_OP_RES, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 6u),
-    WZ_Z80_CB_ROW(0xb8u, WZ_Z80_CB_OP_RES, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 7u),
-    WZ_Z80_CB_ROW(0xc0u, WZ_Z80_CB_OP_SET, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 0u),
-    WZ_Z80_CB_ROW(0xc8u, WZ_Z80_CB_OP_SET, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 1u),
-    WZ_Z80_CB_ROW(0xd0u, WZ_Z80_CB_OP_SET, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 2u),
-    WZ_Z80_CB_ROW(0xd8u, WZ_Z80_CB_OP_SET, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 3u),
-    WZ_Z80_CB_ROW(0xe0u, WZ_Z80_CB_OP_SET, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 4u),
-    WZ_Z80_CB_ROW(0xe8u, WZ_Z80_CB_OP_SET, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 5u),
-    WZ_Z80_CB_ROW(0xf0u, WZ_Z80_CB_OP_SET, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 6u),
-    WZ_Z80_CB_ROW(0xf8u, WZ_Z80_CB_OP_SET, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED, 7u)
+    WZ_Z80_CB_ROW(0x38u, WZ_Z80_CB_OP_SRL, WZ_Z80_OPCODE_IMPLEMENTED, 0u),
+    WZ_Z80_CB_ROW(0x40u, WZ_Z80_CB_OP_BIT, WZ_Z80_OPCODE_IMPLEMENTED, 0u),
+    WZ_Z80_CB_ROW(0x48u, WZ_Z80_CB_OP_BIT, WZ_Z80_OPCODE_IMPLEMENTED, 1u),
+    WZ_Z80_CB_ROW(0x50u, WZ_Z80_CB_OP_BIT, WZ_Z80_OPCODE_IMPLEMENTED, 2u),
+    WZ_Z80_CB_ROW(0x58u, WZ_Z80_CB_OP_BIT, WZ_Z80_OPCODE_IMPLEMENTED, 3u),
+    WZ_Z80_CB_ROW(0x60u, WZ_Z80_CB_OP_BIT, WZ_Z80_OPCODE_IMPLEMENTED, 4u),
+    WZ_Z80_CB_ROW(0x68u, WZ_Z80_CB_OP_BIT, WZ_Z80_OPCODE_IMPLEMENTED, 5u),
+    WZ_Z80_CB_ROW(0x70u, WZ_Z80_CB_OP_BIT, WZ_Z80_OPCODE_IMPLEMENTED, 6u),
+    WZ_Z80_CB_ROW(0x78u, WZ_Z80_CB_OP_BIT, WZ_Z80_OPCODE_IMPLEMENTED, 7u),
+    WZ_Z80_CB_ROW(0x80u, WZ_Z80_CB_OP_RES, WZ_Z80_OPCODE_IMPLEMENTED, 0u),
+    WZ_Z80_CB_ROW(0x88u, WZ_Z80_CB_OP_RES, WZ_Z80_OPCODE_IMPLEMENTED, 1u),
+    WZ_Z80_CB_ROW(0x90u, WZ_Z80_CB_OP_RES, WZ_Z80_OPCODE_IMPLEMENTED, 2u),
+    WZ_Z80_CB_ROW(0x98u, WZ_Z80_CB_OP_RES, WZ_Z80_OPCODE_IMPLEMENTED, 3u),
+    WZ_Z80_CB_ROW(0xa0u, WZ_Z80_CB_OP_RES, WZ_Z80_OPCODE_IMPLEMENTED, 4u),
+    WZ_Z80_CB_ROW(0xa8u, WZ_Z80_CB_OP_RES, WZ_Z80_OPCODE_IMPLEMENTED, 5u),
+    WZ_Z80_CB_ROW(0xb0u, WZ_Z80_CB_OP_RES, WZ_Z80_OPCODE_IMPLEMENTED, 6u),
+    WZ_Z80_CB_ROW(0xb8u, WZ_Z80_CB_OP_RES, WZ_Z80_OPCODE_IMPLEMENTED, 7u),
+    WZ_Z80_CB_ROW(0xc0u, WZ_Z80_CB_OP_SET, WZ_Z80_OPCODE_IMPLEMENTED, 0u),
+    WZ_Z80_CB_ROW(0xc8u, WZ_Z80_CB_OP_SET, WZ_Z80_OPCODE_IMPLEMENTED, 1u),
+    WZ_Z80_CB_ROW(0xd0u, WZ_Z80_CB_OP_SET, WZ_Z80_OPCODE_IMPLEMENTED, 2u),
+    WZ_Z80_CB_ROW(0xd8u, WZ_Z80_CB_OP_SET, WZ_Z80_OPCODE_IMPLEMENTED, 3u),
+    WZ_Z80_CB_ROW(0xe0u, WZ_Z80_CB_OP_SET, WZ_Z80_OPCODE_IMPLEMENTED, 4u),
+    WZ_Z80_CB_ROW(0xe8u, WZ_Z80_CB_OP_SET, WZ_Z80_OPCODE_IMPLEMENTED, 5u),
+    WZ_Z80_CB_ROW(0xf0u, WZ_Z80_CB_OP_SET, WZ_Z80_OPCODE_IMPLEMENTED, 6u),
+    WZ_Z80_CB_ROW(0xf8u, WZ_Z80_CB_OP_SET, WZ_Z80_OPCODE_IMPLEMENTED, 7u)
 };
 
 #undef WZ_Z80_CB_ROW
@@ -148,6 +158,13 @@ static const wz_z80_cb_opcode_decode_t wz_z80_cb_opcode_table[256] = {
 #undef WZ_Z80_PREFIX
 #undef WZ_Z80_IMPL
 #undef WZ_Z80_UN
+
+static wz_result_t wz_z80_bus(wz_machine_t* machine,
+                              wz_bus_cycle_t cycle,
+                              wz_master_tick_t offset,
+                              wz_word_t address,
+                              wz_byte_t* value,
+                              wz_byte_t t_states);
 
 size_t wz_z80_primary_opcode_count(void)
 {
@@ -167,6 +184,172 @@ size_t wz_z80_cb_opcode_count(void)
 const wz_z80_cb_opcode_decode_t* wz_z80_cb_opcode_decode(wz_byte_t opcode)
 {
     return &wz_z80_cb_opcode_table[opcode];
+}
+
+static wz_word_t wz_z80_hl(const wz_z80_state_t* state)
+{
+    return (wz_word_t)state->main.l | ((wz_word_t)state->main.h << 8u);
+}
+
+static wz_byte_t* wz_z80_target_register(wz_z80_state_t* state, wz_byte_t target)
+{
+    switch (target) {
+    case 0u:
+        return &state->main.b;
+    case 1u:
+        return &state->main.c;
+    case 2u:
+        return &state->main.d;
+    case 3u:
+        return &state->main.e;
+    case 4u:
+        return &state->main.h;
+    case 5u:
+        return &state->main.l;
+    case 7u:
+        return &state->main.a;
+    default:
+        return 0;
+    }
+}
+
+static bool wz_z80_parity_even(wz_byte_t value)
+{
+    value ^= (wz_byte_t)(value >> 4u);
+    value ^= (wz_byte_t)(value >> 2u);
+    value ^= (wz_byte_t)(value >> 1u);
+    return (value & 1u) == 0u;
+}
+
+static wz_byte_t wz_z80_sz53p_flags(wz_byte_t value)
+{
+    wz_byte_t flags = (wz_byte_t)(value & (WZ_Z80_FLAG_S | WZ_Z80_FLAG_Y | WZ_Z80_FLAG_X));
+    if (value == 0u) {
+        flags |= WZ_Z80_FLAG_Z;
+    }
+    if (wz_z80_parity_even(value)) {
+        flags |= WZ_Z80_FLAG_PV;
+    }
+    return flags;
+}
+
+static wz_result_t wz_z80_cb_load_target(wz_machine_t* machine,
+                                         const wz_z80_cb_opcode_decode_t* decode,
+                                         wz_byte_t* value)
+{
+    wz_byte_t* reg;
+
+    if (decode->target == WZ_Z80_TARGET_HL_INDIRECT) {
+        return wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u, wz_z80_hl(&machine->cpu), value, 3u);
+    }
+
+    reg = wz_z80_target_register(&machine->cpu, decode->target);
+    if (reg == 0) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    *value = *reg;
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_z80_cb_store_target(wz_machine_t* machine,
+                                          const wz_z80_cb_opcode_decode_t* decode,
+                                          wz_byte_t value)
+{
+    wz_byte_t* reg;
+
+    if (decode->target == WZ_Z80_TARGET_HL_INDIRECT) {
+        return wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 14u, wz_z80_hl(&machine->cpu), &value, 3u);
+    }
+
+    reg = wz_z80_target_register(&machine->cpu, decode->target);
+    if (reg == 0) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    *reg = value;
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_z80_execute_cb(wz_machine_t* machine,
+                                     const wz_z80_cb_opcode_decode_t* decode)
+{
+    wz_byte_t value = 0u;
+    wz_byte_t result = 0u;
+    wz_byte_t carry = 0u;
+    wz_byte_t old_carry = (wz_byte_t)(machine->cpu.main.f & WZ_Z80_FLAG_C);
+
+    if (wz_z80_cb_load_target(machine, decode, &value) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+
+    switch (decode->operation) {
+    case WZ_Z80_CB_OP_RLC:
+        carry = (wz_byte_t)((value >> 7u) & 1u);
+        result = (wz_byte_t)((value << 1u) | carry);
+        machine->cpu.main.f = (wz_byte_t)(wz_z80_sz53p_flags(result) | carry);
+        break;
+    case WZ_Z80_CB_OP_RRC:
+        carry = (wz_byte_t)(value & 1u);
+        result = (wz_byte_t)((value >> 1u) | (carry << 7u));
+        machine->cpu.main.f = (wz_byte_t)(wz_z80_sz53p_flags(result) | carry);
+        break;
+    case WZ_Z80_CB_OP_RL:
+        carry = (wz_byte_t)((value >> 7u) & 1u);
+        result = (wz_byte_t)((value << 1u) | old_carry);
+        machine->cpu.main.f = (wz_byte_t)(wz_z80_sz53p_flags(result) | carry);
+        break;
+    case WZ_Z80_CB_OP_RR:
+        carry = (wz_byte_t)(value & 1u);
+        result = (wz_byte_t)((value >> 1u) | (old_carry << 7u));
+        machine->cpu.main.f = (wz_byte_t)(wz_z80_sz53p_flags(result) | carry);
+        break;
+    case WZ_Z80_CB_OP_SLA:
+        carry = (wz_byte_t)((value >> 7u) & 1u);
+        result = (wz_byte_t)(value << 1u);
+        machine->cpu.main.f = (wz_byte_t)(wz_z80_sz53p_flags(result) | carry);
+        break;
+    case WZ_Z80_CB_OP_SRA:
+        carry = (wz_byte_t)(value & 1u);
+        result = (wz_byte_t)((value >> 1u) | (value & WZ_Z80_FLAG_S));
+        machine->cpu.main.f = (wz_byte_t)(wz_z80_sz53p_flags(result) | carry);
+        break;
+    case WZ_Z80_CB_OP_SLL:
+        carry = (wz_byte_t)((value >> 7u) & 1u);
+        result = (wz_byte_t)((value << 1u) | 1u);
+        machine->cpu.main.f = (wz_byte_t)(wz_z80_sz53p_flags(result) | carry);
+        break;
+    case WZ_Z80_CB_OP_SRL:
+        carry = (wz_byte_t)(value & 1u);
+        result = (wz_byte_t)(value >> 1u);
+        machine->cpu.main.f = (wz_byte_t)(wz_z80_sz53p_flags(result) | carry);
+        break;
+    case WZ_Z80_CB_OP_BIT:
+        result = (wz_byte_t)(value & (wz_byte_t)(1u << decode->bit));
+        machine->cpu.main.f = (wz_byte_t)((machine->cpu.main.f & WZ_Z80_FLAG_C) |
+                                          WZ_Z80_FLAG_H |
+                                          (value & (WZ_Z80_FLAG_Y | WZ_Z80_FLAG_X)));
+        if (result == 0u) {
+            machine->cpu.main.f |= (WZ_Z80_FLAG_Z | WZ_Z80_FLAG_PV);
+        }
+        if (decode->bit == 7u && result != 0u) {
+            machine->cpu.main.f |= WZ_Z80_FLAG_S;
+        }
+        machine->master_tick += decode->target == WZ_Z80_TARGET_HL_INDIRECT ? 24u : 16u;
+        return WZ_RESULT_OK;
+    case WZ_Z80_CB_OP_RES:
+        result = (wz_byte_t)(value & (wz_byte_t)~(wz_byte_t)(1u << decode->bit));
+        break;
+    case WZ_Z80_CB_OP_SET:
+        result = (wz_byte_t)(value | (wz_byte_t)(1u << decode->bit));
+        break;
+    default:
+        return WZ_RESULT_UNSUPPORTED_OPERATION;
+    }
+
+    if (wz_z80_cb_store_target(machine, decode, result) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    machine->master_tick += decode->target == WZ_Z80_TARGET_HL_INDIRECT ? 30u : 16u;
+    return WZ_RESULT_OK;
 }
 
 static wz_result_t wz_z80_bus(wz_machine_t* machine,
@@ -298,8 +481,7 @@ wz_result_t wz_z80_step(wz_machine_t* machine)
             return WZ_RESULT_INVALID_STATE;
         }
         machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
-        (void)wz_z80_cb_opcode_decode(cb_opcode);
-        return WZ_RESULT_UNSUPPORTED_OPERATION;
+        return wz_z80_execute_cb(machine, wz_z80_cb_opcode_decode(cb_opcode));
     case WZ_Z80_PRIMARY_OP_PREFIX_DD:
     case WZ_Z80_PRIMARY_OP_PREFIX_ED:
     case WZ_Z80_PRIMARY_OP_PREFIX_FD:

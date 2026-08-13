@@ -79,6 +79,7 @@ int main(void)
     size_t undocumented = 0u;
     size_t illegal = 0u;
     size_t cb_documented_unimplemented = 0u;
+    size_t cb_implemented = 0u;
     size_t cb_undocumented = 0u;
     FILE* trace_stream;
     const char* trace_path = "wz-trace-regression.bin";
@@ -197,6 +198,8 @@ int main(void)
         }
         if (decode->status == WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED) {
             cb_documented_unimplemented += 1u;
+        } else if (decode->status == WZ_Z80_OPCODE_IMPLEMENTED) {
+            cb_implemented += 1u;
         } else if (decode->status == WZ_Z80_OPCODE_UNDOCUMENTED) {
             cb_undocumented += 1u;
         } else {
@@ -204,7 +207,7 @@ int main(void)
             return 1;
         }
     }
-    if (cb_documented_unimplemented != 248u || cb_undocumented != 8u ||
+    if (cb_documented_unimplemented != 0u || cb_implemented != 248u || cb_undocumented != 8u ||
         wz_z80_cb_opcode_decode(0x00u)->operation != WZ_Z80_CB_OP_RLC ||
         wz_z80_cb_opcode_decode(0x30u)->operation != WZ_Z80_CB_OP_SLL ||
         wz_z80_cb_opcode_decode(0x30u)->status != WZ_Z80_OPCODE_UNDOCUMENTED ||
@@ -311,10 +314,13 @@ int main(void)
     wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
     machine.memory[0u] = 0xcbu;
     machine.memory[1u] = 0x11u;
+    machine.cpu.main.c = 0x80u;
     if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
-        wz_z80_step(&machine) != WZ_RESULT_UNSUPPORTED_OPERATION ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.c != 0x00u ||
+        machine.cpu.main.f != 0x45u ||
         machine.cpu.program_counter != 2u ||
-        machine.master_tick != 0u ||
+        machine.master_tick != 16u ||
         bus_log.count != 2u ||
         bus_log.requests[0].cycle != WZ_BUS_M1_OPCODE_FETCH ||
         bus_log.requests[0].address != 0u ||
@@ -324,6 +330,88 @@ int main(void)
         bus_log.requests[1].address != 1u ||
         bus_log.requests[1].value != 0x11u) {
         fputs("Z80 CB-prefix fetch trace failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 CB memory rotate test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    machine.cpu.main.h = 0x40u;
+    machine.cpu.main.l = 0x00u;
+    machine.memory[0u] = 0xcbu;
+    machine.memory[1u] = 0x36u;
+    machine.memory[0x4000u] = 0x80u;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.memory[0x4000u] != 0x01u ||
+        machine.cpu.main.f != 0x01u ||
+        machine.cpu.program_counter != 2u ||
+        machine.master_tick != 30u ||
+        bus_log.count != 4u ||
+        bus_log.requests[0].cycle != WZ_BUS_M1_OPCODE_FETCH ||
+        bus_log.requests[1].cycle != WZ_BUS_M1_OPCODE_FETCH ||
+        bus_log.requests[2].cycle != WZ_BUS_MEMORY_READ ||
+        bus_log.requests[2].master_tick != 8u ||
+        bus_log.requests[2].address != 0x4000u ||
+        bus_log.requests[2].value != 0x80u ||
+        bus_log.requests[3].cycle != WZ_BUS_MEMORY_WRITE ||
+        bus_log.requests[3].master_tick != 14u ||
+        bus_log.requests[3].address != 0x4000u ||
+        bus_log.requests[3].value != 0x01u) {
+        fputs("Z80 CB memory rotate trace failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 CB bit test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    machine.cpu.main.h = 0x40u;
+    machine.cpu.main.l = 0x00u;
+    machine.cpu.main.f = 0x01u;
+    machine.memory[0u] = 0xcbu;
+    machine.memory[1u] = 0x7eu;
+    machine.memory[0x4000u] = 0x80u;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.memory[0x4000u] != 0x80u ||
+        machine.cpu.main.f != 0x91u ||
+        machine.cpu.program_counter != 2u ||
+        machine.master_tick != 24u ||
+        bus_log.count != 3u ||
+        bus_log.requests[2].cycle != WZ_BUS_MEMORY_READ ||
+        bus_log.requests[2].address != 0x4000u ||
+        bus_log.requests[2].value != 0x80u) {
+        fputs("Z80 CB bit trace failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 CB set/res test failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.main.b = 0x80u;
+    machine.cpu.main.f = 0xa5u;
+    machine.memory[0u] = 0xcbu;
+    machine.memory[1u] = 0xd8u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.b != 0x88u ||
+        machine.cpu.main.f != 0xa5u ||
+        machine.cpu.program_counter != 2u ||
+        machine.master_tick != 16u) {
+        fputs("Z80 CB set register failed\n", stderr);
+        return 1;
+    }
+    machine.memory[2u] = 0xcbu;
+    machine.memory[3u] = 0x80u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.b != 0x88u ||
+        machine.cpu.main.f != 0xa5u ||
+        machine.cpu.program_counter != 4u ||
+        machine.master_tick != 32u) {
+        fputs("Z80 CB res register failed\n", stderr);
         return 1;
     }
 
