@@ -72,6 +72,12 @@ int main(void)
     bus_log_t bus_log;
     wz_qword_t recovered_last = 0u;
     size_t recovered_count = 0u;
+    size_t opcode_index;
+    size_t documented_unimplemented = 0u;
+    size_t implemented = 0u;
+    size_t prefix = 0u;
+    size_t undocumented = 0u;
+    size_t illegal = 0u;
     FILE* trace_stream;
     const char* trace_path = "wz-trace-regression.bin";
 
@@ -135,6 +141,44 @@ int main(void)
     }
     if (wz_machine_set_bus_observer(&machine, 0) != WZ_RESULT_OK) {
         fputs("bus observer removal failed\n", stderr);
+        return 1;
+    }
+    if (wz_z80_primary_opcode_count() != 256u) {
+        fputs("primary opcode table size failed\n", stderr);
+        return 1;
+    }
+    for (opcode_index = 0u; opcode_index < wz_z80_primary_opcode_count(); ++opcode_index) {
+        const wz_z80_opcode_decode_t* decode =
+            wz_z80_primary_opcode_decode((wz_byte_t)opcode_index);
+        if (decode == 0 || decode->opcode != (wz_byte_t)opcode_index) {
+            fputs("primary opcode table identity failed\n", stderr);
+            return 1;
+        }
+        if (decode->status == WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED) {
+            documented_unimplemented += 1u;
+        } else if (decode->status == WZ_Z80_OPCODE_IMPLEMENTED) {
+            implemented += 1u;
+        } else if (decode->status == WZ_Z80_OPCODE_PREFIX) {
+            prefix += 1u;
+        } else if (decode->status == WZ_Z80_OPCODE_UNDOCUMENTED) {
+            undocumented += 1u;
+        } else if (decode->status == WZ_Z80_OPCODE_ILLEGAL) {
+            illegal += 1u;
+        } else {
+            fputs("primary opcode table classification failed\n", stderr);
+            return 1;
+        }
+    }
+    if (implemented != 3u || prefix != 4u || documented_unimplemented != 249u ||
+        undocumented != 0u || illegal != 0u ||
+        wz_z80_primary_opcode_decode(0x00u)->operation != WZ_Z80_PRIMARY_OP_NOP ||
+        wz_z80_primary_opcode_decode(0x32u)->operation != WZ_Z80_PRIMARY_OP_LD_NN_A ||
+        wz_z80_primary_opcode_decode(0x3eu)->operation != WZ_Z80_PRIMARY_OP_LD_A_N ||
+        wz_z80_primary_opcode_decode(0xcbu)->operation != WZ_Z80_PRIMARY_OP_PREFIX_CB ||
+        wz_z80_primary_opcode_decode(0xddu)->operation != WZ_Z80_PRIMARY_OP_PREFIX_DD ||
+        wz_z80_primary_opcode_decode(0xedu)->operation != WZ_Z80_PRIMARY_OP_PREFIX_ED ||
+        wz_z80_primary_opcode_decode(0xfdu)->operation != WZ_Z80_PRIMARY_OP_PREFIX_FD) {
+        fputs("primary opcode table contents failed\n", stderr);
         return 1;
     }
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
@@ -201,6 +245,24 @@ int main(void)
         bus_log.requests[3].address != 0x4000u ||
         bus_log.requests[3].value != 0x22u) {
         fputs("Z80 absolute store trace failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 unsupported-opcode test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    machine.memory[0u] = 0x01u;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_UNSUPPORTED_OPERATION ||
+        machine.cpu.program_counter != 1u ||
+        machine.master_tick != 0u ||
+        bus_log.count != 1u ||
+        bus_log.requests[0].cycle != WZ_BUS_M1_OPCODE_FETCH ||
+        bus_log.requests[0].address != 0u ||
+        bus_log.requests[0].value != 0x01u) {
+        fputs("Z80 unsupported opcode trace failed\n", stderr);
         return 1;
     }
 

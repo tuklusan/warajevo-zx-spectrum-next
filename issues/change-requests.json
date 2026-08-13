@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 25,
+  "next_cr_number": 26,
   "status_values": [
     "open",
     "in_progress",
@@ -267,6 +267,16 @@
         "design/wzsn-architectures-1-2-developer-tasks.md task 043"
       ],
       "notes": "Opened on 2026-08-13 for Phase-2 task 043: introduce a bus-visible Z80 step skeleton where NOP and simple load/store opcodes expose M1 fetch, memory read, and memory write requests at explicit intra-instruction master ticks. Closed on 2026-08-13 at commit 027dc858fd37ea98da8fd6cf54d0cc8ef3b62069 after CODE review for f0a8e85ac6acdfd890c680eb8ed2418f3387b5d2..027dc858fd37ea98da8fd6cf54d0cc8ef3b62069, TEST_ARTIFACT review, SSH smoke runs on linux-x64-lxqt/windows-10-reference/windows-11-laptop, and hosted platform-smoke run 31739744784 across linux-x64, linux-arm64, windows-x64, macos-arm64, and macos-intel-x64."
+    },
+    {
+      "cr_number": "CR-0025",
+      "title": "Implement the primary Z80 opcode decode table",
+      "status": "in_progress",
+      "source_authority": [
+        "design/warajevo-zx-spectrum-next-architecture.md section 11",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 044"
+      ],
+      "notes": "Opened on 2026-08-13 for Phase-2 task 044: add deterministic metadata for every 0x00-0xff primary opcode, including explicit undocumented and unsupported classifications, and route the existing step skeleton through the table."
     }
   ]
 }
