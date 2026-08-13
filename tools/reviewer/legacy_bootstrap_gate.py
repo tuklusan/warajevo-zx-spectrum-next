@@ -27,7 +27,7 @@ from deepseek_gate import (
 )
 
 BOOTSTRAP_INPUT_BUDGET_BYTES = 2_000_000
-BOOTSTRAP_OUTPUT_TOKENS = 12_288
+BOOTSTRAP_OUTPUT_TOKENS = 16_384
 
 
 def bootstrap_result_errors(result: object, requirements: list[dict[str, str]],
@@ -88,11 +88,14 @@ def main() -> int:
     require_universal_authority(requirements)
     complete_packet = canonical_json({"manifest": packet.manifest, "records": packet.records})
     prompt = (
-        "Return JSON only. Exhaustively review the complete immutable change for high-confidence BLOCKER/HIGH "
+        "Return compact JSON only. Exhaustively review the complete immutable change for high-confidence BLOCKER/HIGH "
         "correctness, security, reliability, integration, and test-validity defects. Continue after each finding "
         "and silently self-challenge before final output. A blocker requires an exact applicable original requirement, "
         "exact current source evidence, and a concrete reachable failure. Search the supplied complete changed-file "
-        "context for counter-evidence. Missing context and uncertainty are not blockers. Never emit hidden reasoning.\n"
+        "context for counter-evidence. Missing context and uncertainty are not blockers. Never emit hidden reasoning. "
+        "Keep each finding field concise: cite only the decisive source pointer and do not include long excerpts. "
+        "If any serious finding exists, FAIL with the highest-confidence decisive findings; if none exists, PASS with "
+        "an empty findings array.\n"
         f"SNAPSHOT={packet.snapshot_id}\nPACKET_MANIFEST_HASH={packet.packet_manifest_hash}\n"
         f"REQUIREMENTS={canonical_json(requirements)}\nCOMPLETE_CHANGE_PACKET={complete_packet}\n"
         "Return {\"review_complete\":true,\"verdict\":\"PASS|FAIL\",\"findings\":[{\"id\":\"F-001\","
