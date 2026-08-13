@@ -517,6 +517,23 @@ class GateTests(unittest.TestCase):
         finally:
             repo.close()
 
+    def test_file_packet_context_uses_immutable_packet_records(self):
+        review_packet = gate.ReviewPacket(
+            "files:doc", "doc",
+            [("design/current.md", "The documented token appears here.\n")],
+            [{"path": "design/current.md", "classification": "text"}],
+            insufficient_evidence=[],
+        )
+        path_result = gate.resolve_context_request(
+            ROOT, review_packet, {"type": "PATH", "path": "design/current.md"}
+        )
+        symbol_result = gate.resolve_context_request(
+            ROOT, review_packet, {"type": "SYMBOL", "symbol": "documented token"}
+        )
+        self.assertEqual(path_result["status"], "RESOLVED")
+        self.assertEqual(symbol_result["status"], "RESOLVED")
+        self.assertIn("design/current.md", symbol_result["matches"][0])
+
     def test_false_allegation_is_rejected_after_hostile_falsification(self):
         allegation = candidate(requests=[{"type": "PATH", "path": "src/other.c"}])
         responses = [discovery("CODE-DISCOVERY", [allegation]),

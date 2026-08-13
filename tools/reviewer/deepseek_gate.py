@@ -978,6 +978,13 @@ def resolve_context_request(root: Path, packet: ReviewPacket, request: dict[str,
     request_type = request.get("type")
     if request_type == "PATH":
         path = str(request.get("path", ""))
+        records = dict(packet.records)
+        if not packet.head_sha:
+            content = records.get(path)
+            if content is None:
+                return {"request": request, "status": "UNRESOLVED", "reason": "packet path not found"}
+            return {"request": request, "status": "RESOLVED", "path": path,
+                    "sha256": sha256_bytes(content.encode()), "content": content}
         if path not in packet.tracked_paths:
             return {"request": request, "status": "UNRESOLVED", "reason": "tracked head path not found"}
         entry = tree_entry(root, packet.head_sha, path)
@@ -995,6 +1002,25 @@ def resolve_context_request(root: Path, packet: ReviewPacket, request: dict[str,
         symbol = str(request.get("symbol", ""))
         if not symbol or "\n" in symbol:
             return {"request": request, "status": "UNRESOLVED", "reason": "invalid symbol request"}
+        if not packet.head_sha:
+            contexts = []
+            matches = []
+            context_bytes = 0
+            for path, content in packet.records:
+                if request.get("path") and path != request.get("path"):
+                    continue
+                for line_number, line in enumerate(content.splitlines(), 1):
+                    if symbol in line:
+                        matches.append(f"{path}:{line_number}:{line}")
+                        if context_bytes + len(content.encode()) <= CONTEXT_BYTES:
+                            contexts.append({"path": path, "sha256": sha256_bytes(content.encode()),
+                                             "content": content})
+                            context_bytes += len(content.encode())
+                        break
+                if len(matches) >= 50:
+                    break
+            return {"request": request, "status": "RESOLVED" if contexts else "UNRESOLVED",
+                    "matches": matches[:50], "contexts": contexts[:5]}
         args = ["grep", "-n", "-I", "-F", symbol, packet.head_sha, "--"]
         path_scope = request.get("path")
         if path_scope:
