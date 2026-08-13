@@ -281,12 +281,12 @@
     {
       "cr_number": "CR-0026",
       "title": "Implement CB-prefixed Z80 decode and execution",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/warajevo-zx-spectrum-next-architecture.md section 11",
         "design/wzsn-architectures-1-2-developer-tasks.md task 045"
       ],
-      "notes": "Opened on 2026-08-13 for Phase-2 task 045. First implementation slice added at commit 0c07ce7660e48e3c5eaef2740d34ec405210368d: deterministic metadata for every 0x00-0xff CB-prefixed opcode, explicit undocumented status for CB SLL operations, 0xcb second-opcode fetch routing, and remote smoke harness temp files confined to run-local project artifacts. Interim evidence passed CODE review for e97c9c10980c45cfeb1b4f33b87df4fbe13d885d..0c07ce7660e48e3c5eaef2740d34ec405210368d, TEST_ARTIFACT review, SSH smoke runs on linux-x64-lxqt/windows-10-reference/windows-11-laptop, and hosted platform-smoke run 31741697041 across linux-x64, linux-arm64, windows-x64, macos-arm64, and macos-intel-x64. CR closure remains blocked until CB-prefixed execution and flag behavior are implemented and proven."
+      "notes": "Opened on 2026-08-13 for Phase-2 task 045. First implementation slice added at commit 0c07ce7660e48e3c5eaef2740d34ec405210368d: deterministic metadata for every 0x00-0xff CB-prefixed opcode, explicit undocumented status for CB SLL operations, 0xcb second-opcode fetch routing, and remote smoke harness temp files confined to run-local project artifacts. Closed on 2026-08-13 at commit 4864447e240e86fb211cd475c0f4a26d15e33a00 after implementing CB-prefixed register and (HL) execution for rotate, shift, BIT, RES, and SET operations, including representative project-owned flag and bus-cycle tests. CODE review passed for e97c9c10980c45cfeb1b4f33b87df4fbe13d885d..4864447e240e86fb211cd475c0f4a26d15e33a00; TEST_ARTIFACT review passed; SSH smoke runs passed on linux-x64-lxqt/windows-10-reference/windows-11-laptop; hosted platform-smoke run 31742816669 passed across linux-x64, linux-arm64, windows-x64, macos-arm64, and macos-intel-x64. Full Fuse-suite integration remains separately tracked by Phase-2 task 060."
     }
   ]
 }
