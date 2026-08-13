@@ -296,7 +296,7 @@
         "design/warajevo-zx-spectrum-next-architecture.md section 11",
         "design/wzsn-architectures-1-2-developer-tasks.md task 046"
       ],
-      "notes": "Opened on 2026-08-13 for Phase-2 task 046. First implementation slice: add deterministic metadata for every 0x00-0xff ED-prefixed opcode, explicitly classify unsupported and undocumented ED slots, and route the 0xed primary prefix through a second opcode fetch. CR closure remains blocked until applicable ED-prefixed execution behavior is implemented and proven."
+      "notes": "Opened on 2026-08-13 for Phase-2 task 046. First implementation slice added at commit cb6e2b1f1282ebac19af9edc3d2d9c85744c5196: deterministic metadata for every 0x00-0xff ED-prefixed opcode, explicit classification of unsupported and undocumented ED slots and aliases, and 0xed second-opcode fetch routing. Interim evidence passed CODE review for d28e1e45dd02e779c6613104ba80f6c79ffb82bc..cb6e2b1f1282ebac19af9edc3d2d9c85744c5196, TEST_ARTIFACT review, SSH smoke runs on linux-x64-lxqt/windows-10-reference/windows-11-laptop, and hosted platform-smoke run 31743409233 across linux-x64, linux-arm64, windows-x64, macos-arm64, and macos-intel-x64. CR closure remains blocked until applicable ED-prefixed execution behavior is implemented and proven."
     }
   ]
 }
