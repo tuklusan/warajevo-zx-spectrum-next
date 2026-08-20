@@ -26,19 +26,19 @@ from pathlib import Path
 REMOTE_MACHINES = {
     "linux-x64-lxqt": {
         "kind": "linux",
-        "ssh_target": "sanyalnet@192.168.4.76",
+        "ssh_target": "sanyalnet@10.0.0.161",
         "project_dir": "/home/sanyalnet/SOFTWARE-DEVELOPMENT/Warajevo-Spectrum-Next",
         "python_command": "python3",
     },
     "windows-10-reference": {
         "kind": "windows",
-        "ssh_target": "sanyalnet@192.168.4.75",
+        "ssh_target": "sanyalnet@10.0.0.106",
         "project_dir": r"D:\WarajevoSpectrum.Next",
         "python_command": "py -3",
     },
     "windows-11-laptop": {
         "kind": "windows",
-        "ssh_target": "vagab@192.168.4.35",
+        "ssh_target": "vagab@10.0.0.133",
         "project_dir": r"C:\Users\vagab\WarajevoSpectrum.Next",
         "python_command": "py -3",
     },
