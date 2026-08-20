@@ -5,7 +5,7 @@
 # Upstream Warajevo and third-party material retain their applicable copyrights and licenses.
 # See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
-"""Acquire the pinned Fuse source privately and run ED conformance."""
+"""Acquire the pinned Fuse source privately and run canonical conformance."""
 
 from __future__ import annotations
 
@@ -67,6 +67,12 @@ def main() -> int:
         "--commit", PINNED_COMMIT,
     ]
     run(command, project)
+    indexed_command = command.copy()
+    indexed_command[indexed_command.index(str(args.manifest.resolve()))] = str(
+        args.manifest.resolve().with_name("fuse-indexed-cb-manifest.json")
+    )
+    indexed_command.extend(["--selection", "indexed-cb"])
+    run(indexed_command, project)
     return 0
 
 

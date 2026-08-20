@@ -5,7 +5,7 @@
 # Upstream Warajevo and third-party material retain their applicable copyrights and licenses.
 # See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
-"""Run every pinned Fuse ED vector through the project-owned case runner."""
+"""Run a selected pinned Fuse vector family through the project-owned runner."""
 
 from __future__ import annotations
 
@@ -139,15 +139,24 @@ def main() -> int:
     parser.add_argument("--corpus", required=True, type=Path)
     parser.add_argument("--manifest", required=True, type=Path)
     parser.add_argument("--commit", required=True)
+    parser.add_argument("--selection", choices=("ed", "indexed-cb"), default="ed")
     args = parser.parse_args()
     if args.commit != PINNED_COMMIT:
         parser.error("corpus commit does not match the pinned identity")
 
     inputs = parse_inputs(args.corpus / "tests.in")
     expected = parse_expected(args.corpus / "tests.expected")
-    names = sorted(name for name in inputs if name.startswith("ed"))
+    if args.selection == "ed":
+        names = sorted(name for name in inputs if name.startswith("ed"))
+        expected_count = 109
+        selection_description = "all case names beginning with ed"
+    else:
+        names = sorted(name for name in inputs
+                       if name.startswith("ddcb") or name.startswith("fdcb"))
+        expected_count = 512
+        selection_description = "all case names beginning with ddcb or fdcb"
     results: list[dict[str, object]] = []
-    with tempfile.TemporaryDirectory(prefix="wzsn-fuse-ed-") as temporary:
+    with tempfile.TemporaryDirectory(prefix=f"wzsn-fuse-{args.selection}-") as temporary:
         case_path = Path(temporary) / "case.in"
         for name in names:
             item: dict[str, object] = {
@@ -188,7 +197,7 @@ def main() -> int:
         "corpus": "Fuse Z80",
         "commit": PINNED_COMMIT,
         "suite_path": "z80/tests",
-        "selection": "all case names beginning with ed",
+        "selection": selection_description,
         "total": len(results),
         "passed": passed,
         "failed": len(results) - passed,
@@ -199,7 +208,7 @@ def main() -> int:
     args.manifest.write_text(json.dumps(manifest, indent=2) + "\n", encoding="ascii")
     print(json.dumps({key: manifest[key] for key in
                       ("commit", "total", "passed", "failed", "silent_skips")}))
-    return 0 if len(results) == 109 and passed == len(results) else 1
+    return 0 if len(results) == expected_count and passed == len(results) else 1
 
 
 if __name__ == "__main__":
