@@ -38,6 +38,17 @@ void wz_bus_observer_init(wz_bus_observer_t* observer,
     observer->context = context;
 }
 
+void wz_bus_input_init(wz_bus_input_t* input,
+                       wz_bus_input_fn read,
+                       void* context)
+{
+    if (input == 0) {
+        return;
+    }
+    input->read = read;
+    input->context = context;
+}
+
 wz_result_t wz_machine_set_bus_observer(wz_machine_t* machine,
                                         const wz_bus_observer_t* observer)
 {
@@ -50,6 +61,20 @@ wz_result_t wz_machine_set_bus_observer(wz_machine_t* machine,
         return WZ_RESULT_OK;
     }
     machine->bus_observer = *observer;
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_machine_set_bus_input(wz_machine_t* machine,
+                                     const wz_bus_input_t* input)
+{
+    if (machine == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (input == 0) {
+        wz_bus_input_init(&machine->bus_input, 0, 0);
+    } else {
+        machine->bus_input = *input;
+    }
     return WZ_RESULT_OK;
 }
 
@@ -70,7 +95,12 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
         break;
     case WZ_BUS_IO_READ:
     case WZ_BUS_INTERRUPT_ACKNOWLEDGE:
-        request->value = 0xffu;
+        if (machine->bus_input.read != 0) {
+            request->value = machine->bus_input.read(
+                request->cycle, request->address, machine->bus_input.context);
+        } else {
+            request->value = 0xffu;
+        }
         break;
     case WZ_BUS_IO_WRITE:
     case WZ_BUS_INTERNAL:

@@ -36,6 +36,15 @@ typedef struct {
     void* context;
 } wz_bus_observer_t;
 
+typedef wz_byte_t (*wz_bus_input_fn)(wz_bus_cycle_t cycle,
+                                     wz_word_t address,
+                                     void* context);
+
+typedef struct {
+    wz_bus_input_fn read;
+    void* context;
+} wz_bus_input_t;
+
 typedef struct wz_machine wz_machine_t;
 
 void wz_bus_request_init(wz_bus_request_t* request,
@@ -47,8 +56,13 @@ void wz_bus_request_init(wz_bus_request_t* request,
 void wz_bus_observer_init(wz_bus_observer_t* observer,
                           wz_bus_observer_fn record,
                           void* context);
+void wz_bus_input_init(wz_bus_input_t* input,
+                       wz_bus_input_fn read,
+                       void* context);
 wz_result_t wz_machine_set_bus_observer(wz_machine_t* machine,
                                         const wz_bus_observer_t* observer);
+wz_result_t wz_machine_set_bus_input(wz_machine_t* machine,
+                                     const wz_bus_input_t* input);
 wz_result_t wz_machine_bus_request(wz_machine_t* machine,
                                    wz_bus_request_t* request);
 

@@ -26,6 +26,11 @@ static wz_word_t wz_z80_add16(wz_word_t value, wz_word_t amount)
     return (wz_word_t)(value + amount);
 }
 
+static void wz_z80_increment_r(wz_z80_state_t* state)
+{
+    state->r = (wz_byte_t)((state->r & 0x80u) | ((state->r + 1u) & 0x7fu));
+}
+
 #define WZ_Z80_UN(opcode_value) \
     { (wz_byte_t)(opcode_value), WZ_Z80_PRIMARY_OP_UNSUPPORTED, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED }
 #define WZ_Z80_IMPL(opcode_value, operation_value) \
@@ -1106,6 +1111,7 @@ wz_result_t wz_z80_step(wz_machine_t* machine)
         return WZ_RESULT_INVALID_STATE;
     }
     machine->cpu.program_counter = wz_z80_add16(pc, 1u);
+    wz_z80_increment_r(&machine->cpu);
 
     decode = wz_z80_primary_opcode_decode(opcode);
     switch (decode->operation) {
@@ -1145,6 +1151,7 @@ wz_result_t wz_z80_step(wz_machine_t* machine)
             return WZ_RESULT_INVALID_STATE;
         }
         machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
+        wz_z80_increment_r(&machine->cpu);
         return wz_z80_execute_cb(machine, wz_z80_cb_opcode_decode(cb_opcode));
     case WZ_Z80_PRIMARY_OP_PREFIX_ED:
         if (wz_z80_bus(machine, WZ_BUS_M1_OPCODE_FETCH, 4u,
@@ -1152,6 +1159,7 @@ wz_result_t wz_z80_step(wz_machine_t* machine)
             return WZ_RESULT_INVALID_STATE;
         }
         machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
+        wz_z80_increment_r(&machine->cpu);
         return wz_z80_execute_ed(machine, wz_z80_ed_opcode_decode(value));
     case WZ_Z80_PRIMARY_OP_PREFIX_DD:
     case WZ_Z80_PRIMARY_OP_PREFIX_FD:

@@ -51,6 +51,17 @@ static void record_bus_request(const wz_bus_request_t* request, void* context)
     log->count += 1u;
 }
 
+static wz_byte_t read_bus_input(wz_bus_cycle_t cycle,
+                                wz_word_t address,
+                                void* context)
+{
+    const wz_byte_t* interrupt_value = (const wz_byte_t*)context;
+    if (cycle == WZ_BUS_IO_READ) {
+        return (wz_byte_t)(address >> 8u);
+    }
+    return *interrupt_value;
+}
+
 int main(void)
 {
     const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
@@ -68,6 +79,7 @@ int main(void)
     wz_trace_file_t trace_file;
     wz_trace_file_t duplicate;
     wz_bus_observer_t bus_observer;
+    wz_bus_input_t bus_input;
     wz_bus_request_t bus_request;
     bus_log_t bus_log;
     wz_qword_t recovered_last = 0u;
@@ -84,6 +96,7 @@ int main(void)
     size_t ed_documented_unimplemented = 0u;
     size_t ed_implemented = 0u;
     size_t ed_undocumented = 0u;
+    const wz_byte_t interrupt_value = 0x5au;
     FILE* trace_stream;
     const char* trace_path = "wz-trace-regression.bin";
 
@@ -147,6 +160,22 @@ int main(void)
     }
     if (wz_machine_set_bus_observer(&machine, 0) != WZ_RESULT_OK) {
         fputs("bus observer removal failed\n", stderr);
+        return 1;
+    }
+    wz_bus_input_init(&bus_input, read_bus_input, (void*)&interrupt_value);
+    wz_bus_request_init(&bus_request, WZ_BUS_IO_READ, 24u, 0x34feu, 0u, 4u);
+    if (wz_machine_set_bus_input(&machine, &bus_input) != WZ_RESULT_OK ||
+        wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
+        bus_request.value != 0x34u) {
+        fputs("bus input provider failed\n", stderr);
+        return 1;
+    }
+    wz_bus_request_init(&bus_request, WZ_BUS_INTERRUPT_ACKNOWLEDGE,
+                        28u, 0xffffu, 0u, 7u);
+    if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
+        bus_request.value != interrupt_value ||
+        wz_machine_set_bus_input(&machine, 0) != WZ_RESULT_OK) {
+        fputs("bus input interrupt or removal failed\n", stderr);
         return 1;
     }
     if (wz_z80_primary_opcode_count() != 256u) {
@@ -292,6 +321,7 @@ int main(void)
     wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
     if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
         wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.r != 1u ||
         machine.cpu.program_counter != 1u ||
         machine.master_tick != 8u ||
         bus_log.count != 1u ||
@@ -381,6 +411,7 @@ int main(void)
         wz_z80_step(&machine) != WZ_RESULT_OK ||
         machine.cpu.main.c != 0x00u ||
         machine.cpu.main.f != 0x45u ||
+        machine.cpu.r != 2u ||
         machine.cpu.program_counter != 2u ||
         machine.master_tick != 16u ||
         bus_log.count != 2u ||
@@ -427,6 +458,7 @@ int main(void)
     if (wz_z80_step(&machine) != WZ_RESULT_OK ||
         machine.cpu.main.a != 0xebu ||
         machine.cpu.main.f != 0xbbu ||
+        machine.cpu.r != 2u ||
         machine.cpu.program_counter != 2u ||
         machine.master_tick != 16u) {
         fputs("Z80 ED NEG failed\n", stderr);

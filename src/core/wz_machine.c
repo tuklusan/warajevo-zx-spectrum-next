@@ -21,6 +21,7 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     machine->profile = profile;
     wz_z80_state_init(&machine->cpu);
     wz_bus_observer_init(&machine->bus_observer, 0, 0);
+    wz_bus_input_init(&machine->bus_input, 0, 0);
     machine->master_tick = 0u;
     for (size_t index = 0u; index < sizeof(machine->memory); ++index) {
         machine->memory[index] = 0u;
@@ -33,6 +34,7 @@ void wz_machine_destroy(wz_machine_t* machine)
     if (machine != 0) {
         machine->profile = 0;
         wz_bus_observer_init(&machine->bus_observer, 0, 0);
+        wz_bus_input_init(&machine->bus_input, 0, 0);
         machine->master_tick = 0u;
     }
 }

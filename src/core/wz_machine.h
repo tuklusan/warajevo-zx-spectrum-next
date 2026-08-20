@@ -20,6 +20,7 @@ typedef struct wz_machine {
     const wz_machine_profile_t* profile;
     wz_z80_state_t cpu;
     wz_bus_observer_t bus_observer;
+    wz_bus_input_t bus_input;
     wz_byte_t memory[65536u];
     wz_master_tick_t master_tick;
 } wz_machine_t;
