@@ -284,10 +284,10 @@ wz_z80_ed_opcode_decode_t wz_z80_ed_opcode_decode(wz_byte_t opcode)
                               WZ_Z80_OPCODE_IMPLEMENTED);
     case 0xa2u:
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_INI, 0u,
-                              WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED);
+                              WZ_Z80_OPCODE_IMPLEMENTED);
     case 0xa3u:
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_OUTI, 0u,
-                              WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED);
+                              WZ_Z80_OPCODE_IMPLEMENTED);
     case 0xa8u:
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_LDD, 0u,
                               WZ_Z80_OPCODE_IMPLEMENTED);
@@ -296,10 +296,10 @@ wz_z80_ed_opcode_decode_t wz_z80_ed_opcode_decode(wz_byte_t opcode)
                               WZ_Z80_OPCODE_IMPLEMENTED);
     case 0xaau:
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_IND, 0u,
-                              WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED);
+                              WZ_Z80_OPCODE_IMPLEMENTED);
     case 0xabu:
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_OUTD, 0u,
-                              WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED);
+                              WZ_Z80_OPCODE_IMPLEMENTED);
     case 0xb0u:
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_LDIR, 0u,
                               WZ_Z80_OPCODE_IMPLEMENTED);
@@ -308,10 +308,10 @@ wz_z80_ed_opcode_decode_t wz_z80_ed_opcode_decode(wz_byte_t opcode)
                               WZ_Z80_OPCODE_IMPLEMENTED);
     case 0xb2u:
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_INIR, 0u,
-                              WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED);
+                              WZ_Z80_OPCODE_IMPLEMENTED);
     case 0xb3u:
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_OTIR, 0u,
-                              WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED);
+                              WZ_Z80_OPCODE_IMPLEMENTED);
     case 0xb8u:
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_LDDR, 0u,
                               WZ_Z80_OPCODE_IMPLEMENTED);
@@ -320,10 +320,10 @@ wz_z80_ed_opcode_decode_t wz_z80_ed_opcode_decode(wz_byte_t opcode)
                               WZ_Z80_OPCODE_IMPLEMENTED);
     case 0xbau:
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_INDR, 0u,
-                              WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED);
+                              WZ_Z80_OPCODE_IMPLEMENTED);
     case 0xbbu:
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_OTDR, 0u,
-                              WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED);
+                              WZ_Z80_OPCODE_IMPLEMENTED);
     default:
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_UNSUPPORTED, 0u,
                               WZ_Z80_OPCODE_UNDOCUMENTED);
@@ -700,6 +700,84 @@ static wz_result_t wz_z80_execute_cp_block(wz_machine_t* machine,
     return WZ_RESULT_OK;
 }
 
+static wz_byte_t wz_z80_block_io_flags(wz_byte_t counter, wz_byte_t value, wz_word_t sum)
+{
+    wz_byte_t flags = (wz_byte_t)(counter & (WZ_Z80_FLAG_S | WZ_Z80_FLAG_Y | WZ_Z80_FLAG_X));
+    if (counter == 0u) {
+        flags |= WZ_Z80_FLAG_Z;
+    }
+    if (wz_z80_parity_even((wz_byte_t)(((wz_byte_t)sum & 0x07u) ^ counter))) {
+        flags |= WZ_Z80_FLAG_PV;
+    }
+    if (sum > 0xffu) {
+        flags |= (WZ_Z80_FLAG_H | WZ_Z80_FLAG_C);
+    }
+    if ((value & 0x80u) != 0u) {
+        flags |= WZ_Z80_FLAG_N;
+    }
+    return flags;
+}
+
+static wz_result_t wz_z80_execute_in_block(wz_machine_t* machine,
+                                           bool decrement,
+                                           bool repeat)
+{
+    wz_word_t address = wz_z80_hl(&machine->cpu);
+    wz_word_t port = wz_z80_get_rr(&machine->cpu, 0u);
+    wz_word_t sum;
+    wz_byte_t value = 0u;
+
+    if (wz_z80_bus(machine, WZ_BUS_IO_READ, 8u, port, &value, 4u) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    if (wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 16u, address, &value, 3u) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+
+    machine->cpu.main.b = (wz_byte_t)(machine->cpu.main.b - 1u);
+    wz_z80_set_rr(&machine->cpu, 2u, wz_z80_add16(address, decrement ? 0xffffu : 1u));
+    sum = (wz_word_t)value + (wz_byte_t)(machine->cpu.main.c + (decrement ? 0xffu : 1u));
+    machine->cpu.main.f = wz_z80_block_io_flags(machine->cpu.main.b, value, sum);
+
+    if (repeat && machine->cpu.main.b != 0u) {
+        machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 0xfffeu);
+        machine->master_tick += 42u;
+    } else {
+        machine->master_tick += 32u;
+    }
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_z80_execute_out_block(wz_machine_t* machine,
+                                            bool decrement,
+                                            bool repeat)
+{
+    wz_word_t address = wz_z80_hl(&machine->cpu);
+    wz_word_t port;
+    wz_word_t sum;
+    wz_byte_t value = 0u;
+
+    if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u, address, &value, 3u) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    machine->cpu.main.b = (wz_byte_t)(machine->cpu.main.b - 1u);
+    wz_z80_set_rr(&machine->cpu, 2u, wz_z80_add16(address, decrement ? 0xffffu : 1u));
+    port = wz_z80_get_rr(&machine->cpu, 0u);
+    if (wz_z80_bus(machine, WZ_BUS_IO_WRITE, 14u, port, &value, 4u) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+
+    sum = (wz_word_t)value + machine->cpu.main.l;
+    machine->cpu.main.f = wz_z80_block_io_flags(machine->cpu.main.b, value, sum);
+    if (repeat && machine->cpu.main.b != 0u) {
+        machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 0xfffeu);
+        machine->master_tick += 42u;
+    } else {
+        machine->master_tick += 32u;
+    }
+    return WZ_RESULT_OK;
+}
+
 static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
                                      wz_z80_ed_opcode_decode_t decode)
 {
@@ -839,6 +917,22 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         return wz_z80_execute_cp_block(machine, false, true);
     case WZ_Z80_ED_OP_CPDR:
         return wz_z80_execute_cp_block(machine, true, true);
+    case WZ_Z80_ED_OP_INI:
+        return wz_z80_execute_in_block(machine, false, false);
+    case WZ_Z80_ED_OP_IND:
+        return wz_z80_execute_in_block(machine, true, false);
+    case WZ_Z80_ED_OP_INIR:
+        return wz_z80_execute_in_block(machine, false, true);
+    case WZ_Z80_ED_OP_INDR:
+        return wz_z80_execute_in_block(machine, true, true);
+    case WZ_Z80_ED_OP_OUTI:
+        return wz_z80_execute_out_block(machine, false, false);
+    case WZ_Z80_ED_OP_OUTD:
+        return wz_z80_execute_out_block(machine, true, false);
+    case WZ_Z80_ED_OP_OTIR:
+        return wz_z80_execute_out_block(machine, false, true);
+    case WZ_Z80_ED_OP_OTDR:
+        return wz_z80_execute_out_block(machine, true, true);
     case WZ_Z80_ED_OP_RETN:
     case WZ_Z80_ED_OP_RETI:
         if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,

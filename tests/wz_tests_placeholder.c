@@ -270,6 +270,14 @@ int main(void)
         wz_z80_ed_opcode_decode(0xa9u).status != WZ_Z80_OPCODE_IMPLEMENTED ||
         wz_z80_ed_opcode_decode(0xb1u).status != WZ_Z80_OPCODE_IMPLEMENTED ||
         wz_z80_ed_opcode_decode(0xb9u).status != WZ_Z80_OPCODE_IMPLEMENTED ||
+        wz_z80_ed_opcode_decode(0xa2u).status != WZ_Z80_OPCODE_IMPLEMENTED ||
+        wz_z80_ed_opcode_decode(0xa3u).status != WZ_Z80_OPCODE_IMPLEMENTED ||
+        wz_z80_ed_opcode_decode(0xaau).status != WZ_Z80_OPCODE_IMPLEMENTED ||
+        wz_z80_ed_opcode_decode(0xabu).status != WZ_Z80_OPCODE_IMPLEMENTED ||
+        wz_z80_ed_opcode_decode(0xb2u).status != WZ_Z80_OPCODE_IMPLEMENTED ||
+        wz_z80_ed_opcode_decode(0xb3u).status != WZ_Z80_OPCODE_IMPLEMENTED ||
+        wz_z80_ed_opcode_decode(0xbau).status != WZ_Z80_OPCODE_IMPLEMENTED ||
+        wz_z80_ed_opcode_decode(0xbbu).status != WZ_Z80_OPCODE_IMPLEMENTED ||
         wz_z80_ed_opcode_decode(0xbbu).operation != WZ_Z80_ED_OP_OTDR ||
         wz_z80_ed_opcode_decode(0xffu).operation != WZ_Z80_ED_OP_UNSUPPORTED ||
         wz_z80_ed_opcode_decode(0xffu).status != WZ_Z80_OPCODE_UNDOCUMENTED) {
@@ -766,6 +774,73 @@ int main(void)
         machine.cpu.main.l != 0xfeu ||
         machine.cpu.main.f != 0x43u) {
         fputs("Z80 ED CPDR repeat failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 ED block I/O test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    machine.cpu.main.b = 0x02u;
+    machine.cpu.main.c = 0x00u;
+    machine.cpu.main.h = 0x40u;
+    machine.cpu.main.l = 0x00u;
+    machine.memory[0u] = 0xedu;
+    machine.memory[1u] = 0xb2u;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.program_counter != 0u ||
+        machine.master_tick != 42u ||
+        machine.cpu.main.b != 0x01u ||
+        machine.cpu.main.h != 0x40u ||
+        machine.cpu.main.l != 0x01u ||
+        machine.cpu.main.f != 0x13u ||
+        machine.memory[0x4000u] != 0xffu ||
+        bus_log.count != 4u ||
+        bus_log.requests[2].cycle != WZ_BUS_IO_READ ||
+        bus_log.requests[2].address != 0x0200u ||
+        bus_log.requests[3].cycle != WZ_BUS_MEMORY_WRITE ||
+        bus_log.requests[3].address != 0x4000u ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.program_counter != 2u ||
+        machine.master_tick != 74u ||
+        machine.cpu.main.b != 0x00u ||
+        machine.cpu.main.h != 0x40u ||
+        machine.cpu.main.l != 0x02u ||
+        machine.cpu.main.f != 0x57u ||
+        machine.memory[0x4001u] != 0xffu) {
+        fputs("Z80 ED INIR repeat failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 ED OUTD test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    machine.cpu.main.b = 0x02u;
+    machine.cpu.main.c = 0x10u;
+    machine.cpu.main.h = 0x40u;
+    machine.cpu.main.l = 0x00u;
+    machine.memory[0u] = 0xedu;
+    machine.memory[1u] = 0xabu;
+    machine.memory[0x4000u] = 0x80u;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.b != 0x01u ||
+        machine.cpu.main.h != 0x3fu ||
+        machine.cpu.main.l != 0xffu ||
+        machine.cpu.main.f != 0x17u ||
+        machine.cpu.program_counter != 2u ||
+        machine.master_tick != 32u ||
+        bus_log.count != 4u ||
+        bus_log.requests[2].cycle != WZ_BUS_MEMORY_READ ||
+        bus_log.requests[2].address != 0x4000u ||
+        bus_log.requests[3].cycle != WZ_BUS_IO_WRITE ||
+        bus_log.requests[3].address != 0x0110u ||
+        bus_log.requests[3].value != 0x80u) {
+        fputs("Z80 ED OUTD trace failed\n", stderr);
         return 1;
     }
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
