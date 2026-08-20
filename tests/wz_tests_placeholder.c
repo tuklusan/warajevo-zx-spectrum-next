@@ -204,7 +204,7 @@ int main(void)
             return 1;
         }
     }
-    if (implemented != 79u || prefix != 4u || documented_unimplemented != 173u ||
+    if (implemented != 87u || prefix != 4u || documented_unimplemented != 165u ||
         undocumented != 0u || illegal != 0u ||
         wz_z80_primary_opcode_decode(0x00u)->operation != WZ_Z80_PRIMARY_OP_NOP ||
         wz_z80_primary_opcode_decode(0x32u)->operation != WZ_Z80_PRIMARY_OP_LD_NN_A ||
@@ -215,6 +215,8 @@ int main(void)
         wz_z80_primary_opcode_decode(0xfeu)->operation != WZ_Z80_PRIMARY_OP_ALU ||
         wz_z80_primary_opcode_decode(0x09u)->operation != WZ_Z80_PRIMARY_OP_ADD_HL_RR ||
         wz_z80_primary_opcode_decode(0x39u)->operation != WZ_Z80_PRIMARY_OP_ADD_HL_RR ||
+        wz_z80_primary_opcode_decode(0x07u)->operation != WZ_Z80_PRIMARY_OP_SPECIAL_FLAGS ||
+        wz_z80_primary_opcode_decode(0x3fu)->operation != WZ_Z80_PRIMARY_OP_SPECIAL_FLAGS ||
         wz_z80_primary_opcode_decode(0xcbu)->operation != WZ_Z80_PRIMARY_OP_PREFIX_CB ||
         wz_z80_primary_opcode_decode(0xddu)->operation != WZ_Z80_PRIMARY_OP_PREFIX_DD ||
         wz_z80_primary_opcode_decode(0xedu)->operation != WZ_Z80_PRIMARY_OP_PREFIX_ED ||
@@ -431,6 +433,54 @@ int main(void)
         machine.cpu.main.f != 0x6cu || machine.cpu.memptr != 0x2001u ||
         machine.cpu.program_counter != 2u || machine.master_tick != 44u) {
         fputs("Z80 ADD HL,SP preserved/undocumented flags failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before special flag vectors failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.main.a = 0x9au;
+    machine.memory[0u] = 0x27u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.a != 0x00u || machine.cpu.main.f != 0x55u) {
+        fputs("Z80 DAA addition correction failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.main.a = 0x0fu;
+    machine.cpu.main.f = 0x12u;
+    machine.memory[1u] = 0x27u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.a != 0x09u || machine.cpu.main.f != 0x0eu) {
+        fputs("Z80 DAA subtraction correction failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.main.a = 0x55u;
+    machine.cpu.main.f = 0x45u;
+    machine.memory[2u] = 0x2fu;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.a != 0xaau || machine.cpu.main.f != 0x7fu) {
+        fputs("Z80 CPL flags failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.main.a = 0x28u;
+    machine.cpu.main.f = 0x44u;
+    machine.memory[3u] = 0x37u;
+    machine.memory[4u] = 0x3fu;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.main.f != 0x6du ||
+        wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.main.f != 0x7cu) {
+        fputs("Z80 SCF/CCF flags failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.main.a = 0x81u;
+    machine.cpu.main.f = 0x44u;
+    machine.memory[5u] = 0x07u;
+    machine.memory[6u] = 0x1fu;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.a != 0x03u || machine.cpu.main.f != 0x45u ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.a != 0x81u || machine.cpu.main.f != 0x45u ||
+        machine.cpu.program_counter != 7u || machine.master_tick != 56u) {
+        fputs("Z80 accumulator rotate flags failed\n", stderr);
         return 1;
     }
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
