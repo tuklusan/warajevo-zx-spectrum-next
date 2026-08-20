@@ -628,6 +628,88 @@ int main(void)
     }
 
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before ALU edge vectors failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.main.a = 0x7fu;
+    machine.memory[0u] = 0xc6u; machine.memory[1u] = 0x01u;
+    machine.memory[2u] = 0xceu; machine.memory[3u] = 0x00u;
+    machine.memory[4u] = 0xd6u; machine.memory[5u] = 0x01u;
+    machine.memory[6u] = 0xdeu; machine.memory[7u] = 0x7fu;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.a != 0x80u || machine.cpu.main.f != 0x94u ||
+        machine.cpu.program_counter != 2u || machine.master_tick != 14u) {
+        fputs("Z80 ADD immediate flags failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.main.a = 0xffu; machine.cpu.main.f = 0x01u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.a != 0x00u || machine.cpu.main.f != 0x51u) {
+        fputs("Z80 ADC immediate flags failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.main.a = 0x00u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.a != 0xffu || machine.cpu.main.f != 0xbbu) {
+        fputs("Z80 SUB immediate flags failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.main.a = 0x80u; machine.cpu.main.f = 0x01u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.a != 0x00u || machine.cpu.main.f != 0x56u) {
+        fputs("Z80 SBC immediate flags failed\n", stderr);
+        return 1;
+    }
+
+    machine.memory[8u] = 0xe6u; machine.memory[9u] = 0x3cu;
+    machine.memory[10u] = 0xeeu; machine.memory[11u] = 0xffu;
+    machine.memory[12u] = 0xf6u; machine.memory[13u] = 0x08u;
+    machine.memory[14u] = 0xfeu; machine.memory[15u] = 0x28u;
+    machine.cpu.main.a = 0xf0u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.a != 0x30u || machine.cpu.main.f != 0x34u ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.a != 0xcfu || machine.cpu.main.f != 0x8cu) {
+        fputs("Z80 AND/XOR immediate flags failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.main.a = 0x80u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.a != 0x88u || machine.cpu.main.f != 0x8cu) {
+        fputs("Z80 OR immediate flags failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.main.a = 0x10u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.a != 0x10u || machine.cpu.main.f != 0xbbu ||
+        machine.cpu.program_counter != 16u || machine.master_tick != 112u) {
+        fputs("Z80 CP immediate flags/writeback failed\n", stderr);
+        return 1;
+    }
+
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before ALU operand-path test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    machine.cpu.main.a = 1u; machine.cpu.main.b = 2u;
+    machine.cpu.main.h = 0x40u; machine.cpu.main.l = 0x00u;
+    machine.memory[0u] = 0x80u; machine.memory[1u] = 0x86u;
+    machine.memory[0x4000u] = 3u;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.main.a != 3u ||
+        machine.master_tick != 8u ||
+        wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.main.a != 6u ||
+        machine.master_tick != 22u || bus_log.count != 3u ||
+        bus_log.requests[2].cycle != WZ_BUS_MEMORY_READ ||
+        bus_log.requests[2].master_tick != 16u ||
+        bus_log.requests[2].address != 0x4000u) {
+        fputs("Z80 ALU register/memory operand trace failed\n", stderr);
+        return 1;
+    }
+
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
         fputs("machine reset before Z80 unsupported ED-prefix test failed\n", stderr);
         return 1;
     }
