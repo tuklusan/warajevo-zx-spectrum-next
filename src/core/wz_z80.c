@@ -439,6 +439,16 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
                                                wz_byte_t initial_prefix)
 {
     wz_byte_t active_prefix = initial_prefix;
+    wz_byte_t opcode = 0u;
+    wz_byte_t low = 0u;
+    wz_byte_t high = 0u;
+    wz_byte_t value;
+    wz_byte_t flags;
+    wz_word_t* index;
+    wz_word_t address;
+    wz_word_t operand;
+    wz_word_t result;
+    wz_dword_t wide;
     size_t prefix_count = 1u;
 
     machine->master_tick += 8u;
@@ -460,8 +470,116 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
     if (machine->memory[machine->cpu.program_counter] == 0xcbu) {
         return WZ_RESULT_UNSUPPORTED_OPERATION;
     }
-    (void)active_prefix;
-    return wz_z80_step(machine);
+
+    opcode = machine->memory[machine->cpu.program_counter];
+    switch (opcode) {
+    case 0x09u: case 0x19u: case 0x21u: case 0x22u: case 0x23u:
+    case 0x29u: case 0x2au: case 0x2bu: case 0x39u: case 0xe9u: case 0xf9u:
+        break;
+    default:
+        return wz_z80_step(machine);
+    }
+
+    if (wz_z80_bus(machine, WZ_BUS_M1_OPCODE_FETCH, 0u,
+                   machine->cpu.program_counter, &opcode, 4u) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
+    wz_z80_increment_r(&machine->cpu);
+    index = active_prefix == 0xddu ? &machine->cpu.ix : &machine->cpu.iy;
+
+    switch (opcode) {
+    case 0x21u:
+        if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,
+                       machine->cpu.program_counter, &low, 3u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
+        if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 14u,
+                       machine->cpu.program_counter, &high, 3u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
+        *index = (wz_word_t)low | ((wz_word_t)high << 8u);
+        machine->master_tick += 20u;
+        return WZ_RESULT_OK;
+    case 0x22u:
+    case 0x2au:
+        if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,
+                       machine->cpu.program_counter, &low, 3u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
+        if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 14u,
+                       machine->cpu.program_counter, &high, 3u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
+        address = (wz_word_t)low | ((wz_word_t)high << 8u);
+        machine->cpu.memptr = wz_z80_add16(address, 1u);
+        if (opcode == 0x22u) {
+            value = (wz_byte_t)(*index & 0xffu);
+            if (wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 20u,
+                           address, &value, 3u) != WZ_RESULT_OK) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+            value = (wz_byte_t)(*index >> 8u);
+            if (wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 26u,
+                           wz_z80_add16(address, 1u), &value, 3u) != WZ_RESULT_OK) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+        } else {
+            if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 20u,
+                           address, &low, 3u) != WZ_RESULT_OK ||
+                wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 26u,
+                           wz_z80_add16(address, 1u), &high, 3u) != WZ_RESULT_OK) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+            *index = (wz_word_t)low | ((wz_word_t)high << 8u);
+        }
+        machine->master_tick += 32u;
+        return WZ_RESULT_OK;
+    case 0x23u:
+        *index = wz_z80_add16(*index, 1u);
+        machine->master_tick += 12u;
+        return WZ_RESULT_OK;
+    case 0x2bu:
+        *index = wz_z80_add16(*index, 0xffffu);
+        machine->master_tick += 12u;
+        return WZ_RESULT_OK;
+    case 0x09u:
+    case 0x19u:
+    case 0x29u:
+    case 0x39u:
+        operand = opcode == 0x29u ? *index :
+            wz_z80_get_rr(&machine->cpu, (wz_byte_t)(opcode >> 4u));
+        result = (wz_word_t)(*index + operand);
+        wide = (wz_dword_t)*index + (wz_dword_t)operand;
+        flags = (wz_byte_t)(machine->cpu.main.f &
+                            (WZ_Z80_FLAG_S | WZ_Z80_FLAG_Z | WZ_Z80_FLAG_PV));
+        flags |= (wz_byte_t)((result >> 8u) & (WZ_Z80_FLAG_Y | WZ_Z80_FLAG_X));
+        if (((*index ^ operand ^ result) & 0x1000u) != 0u) {
+            flags |= WZ_Z80_FLAG_H;
+        }
+        if ((wide & 0x10000u) != 0u) {
+            flags |= WZ_Z80_FLAG_C;
+        }
+        machine->cpu.memptr = wz_z80_add16(*index, 1u);
+        *index = result;
+        machine->cpu.main.f = flags;
+        machine->master_tick += 22u;
+        return WZ_RESULT_OK;
+    case 0xe9u:
+        machine->cpu.program_counter = *index;
+        machine->master_tick += 8u;
+        return WZ_RESULT_OK;
+    case 0xf9u:
+        machine->cpu.stack_pointer = *index;
+        machine->master_tick += 12u;
+        return WZ_RESULT_OK;
+    default:
+        return WZ_RESULT_UNSUPPORTED_OPERATION;
+    }
 }
 
 static wz_result_t wz_z80_cb_store_target(wz_machine_t* machine,

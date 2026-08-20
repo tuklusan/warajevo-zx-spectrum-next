@@ -466,6 +466,103 @@ int main(void)
     }
 
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before index register load test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    machine.memory[0u] = 0xddu;
+    machine.memory[1u] = 0x21u;
+    machine.memory[2u] = 0x34u;
+    machine.memory[3u] = 0x12u;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.ix != 0x1234u || machine.cpu.iy != 0u ||
+        machine.cpu.program_counter != 4u || machine.cpu.r != 2u ||
+        machine.master_tick != 28u || bus_log.count != 4u ||
+        bus_log.requests[1].cycle != WZ_BUS_M1_OPCODE_FETCH ||
+        bus_log.requests[1].address != 1u ||
+        bus_log.requests[2].cycle != WZ_BUS_MEMORY_READ ||
+        bus_log.requests[2].master_tick != 16u ||
+        bus_log.requests[3].master_tick != 22u) {
+        fputs("Z80 DD LD IX,nn trace failed\n", stderr);
+        return 1;
+    }
+
+    machine.memory[4u] = 0xfdu;
+    machine.memory[5u] = 0x21u;
+    machine.memory[6u] = 0x78u;
+    machine.memory[7u] = 0x56u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.ix != 0x1234u || machine.cpu.iy != 0x5678u ||
+        machine.cpu.program_counter != 8u || machine.cpu.r != 4u ||
+        machine.master_tick != 56u) {
+        fputs("Z80 FD LD IY,nn failed\n", stderr);
+        return 1;
+    }
+
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before index memory transfer test failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.ix = 0xabcdu;
+    machine.memory[0u] = 0xddu;
+    machine.memory[1u] = 0x22u;
+    machine.memory[2u] = 0x00u;
+    machine.memory[3u] = 0x40u;
+    machine.memory[4u] = 0xfdu;
+    machine.memory[5u] = 0x2au;
+    machine.memory[6u] = 0x00u;
+    machine.memory[7u] = 0x40u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.memory[0x4000u] != 0xcdu || machine.memory[0x4001u] != 0xabu ||
+        machine.cpu.memptr != 0x4001u || machine.master_tick != 40u ||
+        wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.iy != 0xabcdu ||
+        machine.cpu.program_counter != 8u || machine.cpu.memptr != 0x4001u ||
+        machine.master_tick != 80u) {
+        fputs("Z80 DD/FD index memory transfer failed\n", stderr);
+        return 1;
+    }
+
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before index arithmetic test failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.ix = 0x0fffu;
+    machine.cpu.main.b = 0x00u;
+    machine.cpu.main.c = 0x01u;
+    machine.cpu.main.f = 0xc5u;
+    machine.memory[0u] = 0xddu;
+    machine.memory[1u] = 0x09u;
+    machine.memory[2u] = 0xddu;
+    machine.memory[3u] = 0x23u;
+    machine.memory[4u] = 0xddu;
+    machine.memory[5u] = 0x2bu;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.ix != 0x1000u ||
+        machine.cpu.main.f != 0xd4u || machine.cpu.memptr != 0x1000u ||
+        machine.master_tick != 30u ||
+        wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.ix != 0x1001u ||
+        machine.cpu.main.f != 0xd4u || machine.master_tick != 50u ||
+        wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.ix != 0x1000u ||
+        machine.cpu.main.f != 0xd4u || machine.master_tick != 70u) {
+        fputs("Z80 index add/inc/dec failed\n", stderr);
+        return 1;
+    }
+
+    machine.cpu.iy = 0x3456u;
+    machine.memory[6u] = 0xfdu;
+    machine.memory[7u] = 0xf9u;
+    machine.memory[8u] = 0xfdu;
+    machine.memory[9u] = 0xe9u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.stack_pointer != 0x3456u || machine.master_tick != 90u ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.program_counter != 0x3456u || machine.master_tick != 106u) {
+        fputs("Z80 index stack-pointer/jump transfer failed\n", stderr);
+        return 1;
+    }
+
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
         fputs("machine reset before Z80 unsupported ED-prefix test failed\n", stderr);
         return 1;
     }
