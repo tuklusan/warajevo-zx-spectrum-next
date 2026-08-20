@@ -1046,7 +1046,7 @@ int main(void)
 
     wz_state_writer_init(&writer, serialized, sizeof(serialized));
     if (wz_state_serialize_machine(&machine, &writer) != WZ_RESULT_OK ||
-        writer.length != 65576u ||
+        writer.length != 65578u ||
         wz_state_hash_machine(&machine, &first_hash) != WZ_RESULT_OK) {
         fputs("canonical state serialization failed\n", stderr);
         return 1;
@@ -1055,6 +1055,7 @@ int main(void)
     machine.cpu.alternate.f = 0x34u;
     machine.cpu.ix = 0xabcdu;
     machine.cpu.iy = 0x2345u;
+    machine.cpu.memptr = 0x6789u;
     machine.cpu.i = 0x56u;
     machine.cpu.r = 0x78u;
     machine.cpu.iff1 = 1u;
@@ -1068,6 +1069,7 @@ int main(void)
         restored.cpu.alternate.f != 0x34u ||
         restored.cpu.ix != 0xabcdu ||
         restored.cpu.iy != 0x2345u ||
+        restored.cpu.memptr != 0x6789u ||
         restored.cpu.i != 0x56u ||
         restored.cpu.r != 0x78u ||
         restored.cpu.iff1 != 1u ||

@@ -39,6 +39,7 @@ typedef struct {
     wz_word_t iy;
     wz_word_t stack_pointer;
     wz_word_t program_counter;
+    wz_word_t memptr;
     wz_byte_t i;
     wz_byte_t r;
     wz_byte_t iff1;
