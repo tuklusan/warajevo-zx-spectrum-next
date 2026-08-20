@@ -18,6 +18,12 @@ from pathlib import Path
 
 PINNED_COMMIT = "9cbab635f5c9dfdfc5cb769aa89048c7e624d6b7"
 REGISTER_COUNT = 13
+STACK_SUBROUTINE_OPCODES = frozenset({
+    "c0", "c1", "c4", "c5", "c7", "c8", "c9", "cc", "cd", "cf",
+    "d0", "d1", "d4", "d5", "d7", "d8", "dc", "df",
+    "e0", "e1", "e4", "e5", "e7", "e8", "ec", "ef",
+    "f0", "f1", "f4", "f5", "f7", "f8", "fc", "ff",
+})
 
 
 @dataclass
@@ -139,7 +145,9 @@ def main() -> int:
     parser.add_argument("--corpus", required=True, type=Path)
     parser.add_argument("--manifest", required=True, type=Path)
     parser.add_argument("--commit", required=True)
-    parser.add_argument("--selection", choices=("ed", "indexed-cb", "cb-rotate-shift"),
+    parser.add_argument("--selection", choices=(
+        "ed", "indexed-cb", "cb-rotate-shift", "stack-subroutine"
+    ),
                         default="ed")
     args = parser.parse_args()
     if args.commit != PINNED_COMMIT:
@@ -156,12 +164,19 @@ def main() -> int:
                        if name.startswith("ddcb") or name.startswith("fdcb"))
         expected_count = 512
         selection_description = "all case names beginning with ddcb or fdcb"
-    else:
+    elif args.selection == "cb-rotate-shift":
         names = sorted(name for name in inputs
                        if len(name) == 4 and name.startswith("cb") and
                        int(name[2:], 16) < 0x40)
         expected_count = 64
         selection_description = "all CB rotate/shift cases from cb00 through cb3f"
+    else:
+        names = sorted(name for name in inputs
+                       if name.split("_", 1)[0] in STACK_SUBROUTINE_OPCODES)
+        expected_count = 50
+        selection_description = (
+            "all CALL, RET, RST, PUSH, and POP cases including conditional paths"
+        )
     results: list[dict[str, object]] = []
     with tempfile.TemporaryDirectory(prefix=f"wzsn-fuse-{args.selection}-") as temporary:
         case_path = Path(temporary) / "case.in"

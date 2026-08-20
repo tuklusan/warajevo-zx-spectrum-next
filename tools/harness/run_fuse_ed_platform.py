@@ -79,6 +79,12 @@ def main() -> int:
     )
     cb_command.extend(["--selection", "cb-rotate-shift"])
     run(cb_command, project)
+    stack_command = command.copy()
+    stack_command[stack_command.index(str(args.manifest.resolve()))] = str(
+        args.manifest.resolve().with_name("fuse-stack-subroutine-manifest.json")
+    )
+    stack_command.extend(["--selection", "stack-subroutine"])
+    run(stack_command, project)
     return 0
 
 

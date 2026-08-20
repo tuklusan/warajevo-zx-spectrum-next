@@ -26,9 +26,10 @@ This directory contains the tracked baseline harness entry points for:
   Shared probe and CMake smoke-build entry point used both remotely and by
   GitHub Actions
 - `run_fuse_ed_platform.py`
-  Acquires the pinned Fuse source privately and gates every platform on both
-  the complete ED corpus, the complete DDCB/FDCB indexed-bit corpus, and all
-  ordinary CB rotate/shift vectors including undocumented SLL.
+  Acquires the pinned Fuse source privately and gates every platform on the
+  complete ED corpus, the complete DDCB/FDCB indexed-bit corpus, all ordinary
+  CB rotate/shift vectors including undocumented SLL, and all CALL/RET/RST/
+  PUSH/POP vectors including conditional paths.
   Acquires the pinned Fuse revision into private project-local test artifacts,
   verifies its identity, and runs every ED vector without silent skips
 - `stream_zip_tree.py`
