@@ -170,6 +170,8 @@ static wz_result_t wz_z80_bus(wz_machine_t* machine,
                               wz_word_t address,
                               wz_byte_t* value,
                               wz_byte_t t_states);
+static wz_result_t wz_z80_execute_indexed_cb(wz_machine_t* machine,
+                                             wz_word_t index);
 
 size_t wz_z80_primary_opcode_count(void)
 {
@@ -468,7 +470,8 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
     }
 
     if (machine->memory[machine->cpu.program_counter] == 0xcbu) {
-        return WZ_RESULT_UNSUPPORTED_OPERATION;
+        index = active_prefix == 0xddu ? &machine->cpu.ix : &machine->cpu.iy;
+        return wz_z80_execute_indexed_cb(machine, *index);
     }
 
     opcode = machine->memory[machine->cpu.program_counter];
@@ -683,6 +686,130 @@ static wz_result_t wz_z80_execute_cb(wz_machine_t* machine,
         return WZ_RESULT_INVALID_STATE;
     }
     machine->master_tick += decode->target == WZ_Z80_TARGET_HL_INDIRECT ? 30u : 16u;
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_z80_execute_indexed_cb(wz_machine_t* machine,
+                                             wz_word_t index)
+{
+    wz_byte_t prefix = 0u;
+    wz_byte_t displacement = 0u;
+    wz_byte_t opcode = 0u;
+    wz_byte_t value = 0u;
+    wz_byte_t result = 0u;
+    wz_byte_t carry = 0u;
+    wz_byte_t old_carry = (wz_byte_t)(machine->cpu.main.f & WZ_Z80_FLAG_C);
+    wz_byte_t* target;
+    wz_word_t address;
+    const wz_z80_cb_opcode_decode_t* decode;
+
+    if (wz_z80_bus(machine, WZ_BUS_M1_OPCODE_FETCH, 0u,
+                   machine->cpu.program_counter, &prefix, 4u) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
+    wz_z80_increment_r(&machine->cpu);
+    if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,
+                   machine->cpu.program_counter, &displacement, 3u) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
+    if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 14u,
+                   machine->cpu.program_counter, &opcode, 3u) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
+    address = (wz_word_t)(index + (wz_word_t)(int16_t)(int8_t)displacement);
+    machine->cpu.memptr = address;
+    if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 20u,
+                   address, &value, 3u) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    decode = wz_z80_cb_opcode_decode(opcode);
+
+    switch (decode->operation) {
+    case WZ_Z80_CB_OP_RLC:
+        carry = (wz_byte_t)((value >> 7u) & 1u);
+        result = (wz_byte_t)((value << 1u) | carry);
+        machine->cpu.main.f = (wz_byte_t)(wz_z80_sz53p_flags(result) | carry);
+        break;
+    case WZ_Z80_CB_OP_RRC:
+        carry = (wz_byte_t)(value & 1u);
+        result = (wz_byte_t)((value >> 1u) | (carry << 7u));
+        machine->cpu.main.f = (wz_byte_t)(wz_z80_sz53p_flags(result) | carry);
+        break;
+    case WZ_Z80_CB_OP_RL:
+        carry = (wz_byte_t)((value >> 7u) & 1u);
+        result = (wz_byte_t)((value << 1u) | old_carry);
+        machine->cpu.main.f = (wz_byte_t)(wz_z80_sz53p_flags(result) | carry);
+        break;
+    case WZ_Z80_CB_OP_RR:
+        carry = (wz_byte_t)(value & 1u);
+        result = (wz_byte_t)((value >> 1u) | (old_carry << 7u));
+        machine->cpu.main.f = (wz_byte_t)(wz_z80_sz53p_flags(result) | carry);
+        break;
+    case WZ_Z80_CB_OP_SLA:
+        carry = (wz_byte_t)((value >> 7u) & 1u);
+        result = (wz_byte_t)(value << 1u);
+        machine->cpu.main.f = (wz_byte_t)(wz_z80_sz53p_flags(result) | carry);
+        break;
+    case WZ_Z80_CB_OP_SRA:
+        carry = (wz_byte_t)(value & 1u);
+        result = (wz_byte_t)((value >> 1u) | (value & WZ_Z80_FLAG_S));
+        machine->cpu.main.f = (wz_byte_t)(wz_z80_sz53p_flags(result) | carry);
+        break;
+    case WZ_Z80_CB_OP_SLL:
+        carry = (wz_byte_t)((value >> 7u) & 1u);
+        result = (wz_byte_t)((value << 1u) | 1u);
+        machine->cpu.main.f = (wz_byte_t)(wz_z80_sz53p_flags(result) | carry);
+        break;
+    case WZ_Z80_CB_OP_SRL:
+        carry = (wz_byte_t)(value & 1u);
+        result = (wz_byte_t)(value >> 1u);
+        machine->cpu.main.f = (wz_byte_t)(wz_z80_sz53p_flags(result) | carry);
+        break;
+    case WZ_Z80_CB_OP_BIT:
+        result = (wz_byte_t)(value & (wz_byte_t)(1u << decode->bit));
+        machine->cpu.main.f = (wz_byte_t)((machine->cpu.main.f & WZ_Z80_FLAG_C) |
+                                          WZ_Z80_FLAG_H |
+                                          ((address >> 8u) &
+                                           (WZ_Z80_FLAG_Y | WZ_Z80_FLAG_X)));
+        if (result == 0u) {
+            machine->cpu.main.f |= (WZ_Z80_FLAG_Z | WZ_Z80_FLAG_PV);
+        }
+        if (decode->bit == 7u && result != 0u) {
+            machine->cpu.main.f |= WZ_Z80_FLAG_S;
+        }
+        if (wz_z80_bus(machine, WZ_BUS_INTERNAL, 26u,
+                       address, 0, 3u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->master_tick += 32u;
+        return WZ_RESULT_OK;
+    case WZ_Z80_CB_OP_RES:
+        result = (wz_byte_t)(value & (wz_byte_t)~(wz_byte_t)(1u << decode->bit));
+        break;
+    case WZ_Z80_CB_OP_SET:
+        result = (wz_byte_t)(value | (wz_byte_t)(1u << decode->bit));
+        break;
+    default:
+        return WZ_RESULT_UNSUPPORTED_OPERATION;
+    }
+
+    if (wz_z80_bus(machine, WZ_BUS_INTERNAL, 26u,
+                   address, 0, 3u) != WZ_RESULT_OK ||
+        wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 32u,
+                   address, &result, 3u) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    if (decode->target != WZ_Z80_TARGET_HL_INDIRECT) {
+        target = wz_z80_target_register(&machine->cpu, decode->target);
+        if (target == 0) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        *target = result;
+    }
+    machine->master_tick += 38u;
     return WZ_RESULT_OK;
 }
 

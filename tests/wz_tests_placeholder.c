@@ -563,6 +563,71 @@ int main(void)
     }
 
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before indexed CB rotate test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    machine.cpu.ix = 0x4002u;
+    machine.memory[0u] = 0xddu;
+    machine.memory[1u] = 0xcbu;
+    machine.memory[2u] = 0xfeu;
+    machine.memory[3u] = 0x00u;
+    machine.memory[0x4000u] = 0x80u;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.memory[0x4000u] != 0x01u || machine.cpu.main.b != 0x01u ||
+        machine.cpu.main.f != 0x01u || machine.cpu.memptr != 0x4000u ||
+        machine.cpu.program_counter != 4u || machine.cpu.r != 2u ||
+        machine.master_tick != 46u || bus_log.count != 7u ||
+        bus_log.requests[1].cycle != WZ_BUS_M1_OPCODE_FETCH ||
+        bus_log.requests[1].master_tick != 8u ||
+        bus_log.requests[2].cycle != WZ_BUS_MEMORY_READ ||
+        bus_log.requests[2].master_tick != 16u ||
+        bus_log.requests[3].master_tick != 22u ||
+        bus_log.requests[4].address != 0x4000u ||
+        bus_log.requests[5].cycle != WZ_BUS_INTERNAL ||
+        bus_log.requests[5].master_tick != 34u ||
+        bus_log.requests[6].cycle != WZ_BUS_MEMORY_WRITE ||
+        bus_log.requests[6].master_tick != 40u) {
+        fputs("Z80 DDCB rotate/writeback trace failed\n", stderr);
+        return 1;
+    }
+
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before indexed CB bit test failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.iy = 0x27ffu;
+    machine.cpu.main.b = 0x55u;
+    machine.cpu.main.f = 0x01u;
+    machine.memory[0u] = 0xfdu;
+    machine.memory[1u] = 0xcbu;
+    machine.memory[2u] = 0x01u;
+    machine.memory[3u] = 0x78u;
+    machine.memory[0x2800u] = 0x80u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.memory[0x2800u] != 0x80u || machine.cpu.main.b != 0x55u ||
+        machine.cpu.main.f != 0xb9u || machine.cpu.memptr != 0x2800u ||
+        machine.cpu.program_counter != 4u || machine.cpu.r != 2u ||
+        machine.master_tick != 40u) {
+        fputs("Z80 FDCB BIT memory-only behavior failed\n", stderr);
+        return 1;
+    }
+
+    machine.cpu.program_counter = 4u;
+    machine.memory[4u] = 0xfdu;
+    machine.memory[5u] = 0xcbu;
+    machine.memory[6u] = 0x01u;
+    machine.memory[7u] = 0xdeu;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.memory[0x2800u] != 0x88u || machine.cpu.main.f != 0xb9u ||
+        machine.cpu.program_counter != 8u || machine.master_tick != 86u) {
+        fputs("Z80 FDCB SET memory-only behavior failed\n", stderr);
+        return 1;
+    }
+
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
         fputs("machine reset before Z80 unsupported ED-prefix test failed\n", stderr);
         return 1;
     }
