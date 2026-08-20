@@ -262,6 +262,10 @@ int main(void)
         wz_z80_ed_opcode_decode(0x43u).operation != WZ_Z80_ED_OP_LD_NN_RR ||
         wz_z80_ed_opcode_decode(0x4bu).operation != WZ_Z80_ED_OP_LD_RR_NN ||
         wz_z80_ed_opcode_decode(0xa0u).operation != WZ_Z80_ED_OP_LDI ||
+        wz_z80_ed_opcode_decode(0xa0u).status != WZ_Z80_OPCODE_IMPLEMENTED ||
+        wz_z80_ed_opcode_decode(0xa8u).status != WZ_Z80_OPCODE_IMPLEMENTED ||
+        wz_z80_ed_opcode_decode(0xb0u).status != WZ_Z80_OPCODE_IMPLEMENTED ||
+        wz_z80_ed_opcode_decode(0xb8u).status != WZ_Z80_OPCODE_IMPLEMENTED ||
         wz_z80_ed_opcode_decode(0xbbu).operation != WZ_Z80_ED_OP_OTDR ||
         wz_z80_ed_opcode_decode(0xffu).operation != WZ_Z80_ED_OP_UNSUPPORTED ||
         wz_z80_ed_opcode_decode(0xffu).status != WZ_Z80_OPCODE_UNDOCUMENTED) {
@@ -610,6 +614,88 @@ int main(void)
         machine.cpu.program_counter != 2u ||
         machine.master_tick != 36u) {
         fputs("Z80 ED RLD failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 ED LDI test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    machine.cpu.main.a = 0x10u;
+    machine.cpu.main.b = 0x00u;
+    machine.cpu.main.c = 0x02u;
+    machine.cpu.main.d = 0x50u;
+    machine.cpu.main.e = 0x00u;
+    machine.cpu.main.h = 0x40u;
+    machine.cpu.main.l = 0x00u;
+    machine.cpu.main.f = 0xd3u;
+    machine.memory[0u] = 0xedu;
+    machine.memory[1u] = 0xa0u;
+    machine.memory[0x4000u] = 0x22u;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.memory[0x5000u] != 0x22u ||
+        machine.cpu.main.b != 0x00u ||
+        machine.cpu.main.c != 0x01u ||
+        machine.cpu.main.d != 0x50u ||
+        machine.cpu.main.e != 0x01u ||
+        machine.cpu.main.h != 0x40u ||
+        machine.cpu.main.l != 0x01u ||
+        machine.cpu.main.f != 0xe5u ||
+        machine.cpu.program_counter != 2u ||
+        machine.master_tick != 32u ||
+        bus_log.count != 4u ||
+        bus_log.requests[2].cycle != WZ_BUS_MEMORY_READ ||
+        bus_log.requests[2].master_tick != 8u ||
+        bus_log.requests[2].address != 0x4000u ||
+        bus_log.requests[2].value != 0x22u ||
+        bus_log.requests[3].cycle != WZ_BUS_MEMORY_WRITE ||
+        bus_log.requests[3].master_tick != 14u ||
+        bus_log.requests[3].address != 0x5000u ||
+        bus_log.requests[3].value != 0x22u) {
+        fputs("Z80 ED LDI trace failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 ED LDDR test failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.main.a = 0x01u;
+    machine.cpu.main.b = 0x00u;
+    machine.cpu.main.c = 0x02u;
+    machine.cpu.main.d = 0x50u;
+    machine.cpu.main.e = 0x00u;
+    machine.cpu.main.h = 0x40u;
+    machine.cpu.main.l = 0x00u;
+    machine.cpu.main.f = 0xc1u;
+    machine.memory[0u] = 0xedu;
+    machine.memory[1u] = 0xb8u;
+    machine.memory[0x4000u] = 0x01u;
+    machine.memory[0x3fffu] = 0x07u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.program_counter != 0u ||
+        machine.master_tick != 42u ||
+        machine.cpu.main.b != 0x00u ||
+        machine.cpu.main.c != 0x01u ||
+        machine.cpu.main.d != 0x4fu ||
+        machine.cpu.main.e != 0xffu ||
+        machine.cpu.main.h != 0x3fu ||
+        machine.cpu.main.l != 0xffu ||
+        machine.cpu.main.f != 0xe5u ||
+        machine.memory[0x5000u] != 0x01u ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.program_counter != 2u ||
+        machine.master_tick != 74u ||
+        machine.cpu.main.b != 0x00u ||
+        machine.cpu.main.c != 0x00u ||
+        machine.cpu.main.d != 0x4fu ||
+        machine.cpu.main.e != 0xfeu ||
+        machine.cpu.main.h != 0x3fu ||
+        machine.cpu.main.l != 0xfeu ||
+        machine.cpu.main.f != 0xc9u ||
+        machine.memory[0x4fffu] != 0x07u) {
+        fputs("Z80 ED LDDR repeat failed\n", stderr);
         return 1;
     }
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
