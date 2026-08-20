@@ -73,6 +73,12 @@ def main() -> int:
     )
     indexed_command.extend(["--selection", "indexed-cb"])
     run(indexed_command, project)
+    cb_command = command.copy()
+    cb_command[cb_command.index(str(args.manifest.resolve()))] = str(
+        args.manifest.resolve().with_name("fuse-cb-rotate-shift-manifest.json")
+    )
+    cb_command.extend(["--selection", "cb-rotate-shift"])
+    run(cb_command, project)
     return 0
 
 

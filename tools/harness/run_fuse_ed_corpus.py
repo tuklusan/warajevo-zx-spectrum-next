@@ -139,7 +139,8 @@ def main() -> int:
     parser.add_argument("--corpus", required=True, type=Path)
     parser.add_argument("--manifest", required=True, type=Path)
     parser.add_argument("--commit", required=True)
-    parser.add_argument("--selection", choices=("ed", "indexed-cb"), default="ed")
+    parser.add_argument("--selection", choices=("ed", "indexed-cb", "cb-rotate-shift"),
+                        default="ed")
     args = parser.parse_args()
     if args.commit != PINNED_COMMIT:
         parser.error("corpus commit does not match the pinned identity")
@@ -150,11 +151,17 @@ def main() -> int:
         names = sorted(name for name in inputs if name.startswith("ed"))
         expected_count = 109
         selection_description = "all case names beginning with ed"
-    else:
+    elif args.selection == "indexed-cb":
         names = sorted(name for name in inputs
                        if name.startswith("ddcb") or name.startswith("fdcb"))
         expected_count = 512
         selection_description = "all case names beginning with ddcb or fdcb"
+    else:
+        names = sorted(name for name in inputs
+                       if len(name) == 4 and name.startswith("cb") and
+                       int(name[2:], 16) < 0x40)
+        expected_count = 64
+        selection_description = "all CB rotate/shift cases from cb00 through cb3f"
     results: list[dict[str, object]] = []
     with tempfile.TemporaryDirectory(prefix=f"wzsn-fuse-{args.selection}-") as temporary:
         case_path = Path(temporary) / "case.in"
