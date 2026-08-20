@@ -18,11 +18,12 @@ source control.
 Repository: https://git.code.sf.net/p/fuse-emulator/fuse
 Reference: refs/heads/master
 Commit: 9cbab635f5c9dfdfc5cb769aa89048c7e624d6b7
-Suite path: unitz80/
+Suite path: z80/tests/
 ```
 
-The pinned source commit was resolved on 2026-08-11. The suite includes the
-Fuse Z80 core tests and opcode test data under `unitz80/`. The commit identity,
+The pinned source commit was resolved on 2026-08-11 and its tree was verified
+again on 2026-08-20. The suite includes the Fuse Z80 core test vectors under
+`z80/tests/`. The commit identity,
 not a moving download URL, is the certification input.
 
 ## Acquisition
