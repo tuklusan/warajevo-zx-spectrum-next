@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 33,
+  "next_cr_number": 34,
   "status_values": [
     "open",
     "in_progress",
@@ -432,12 +432,31 @@
     {
       "cr_number": "CR-0032",
       "title": "Implement error-prone Z80 flag instructions",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/warajevo-zx-spectrum-next-architecture.md section 11",
         "design/wzsn-architectures-1-2-developer-tasks.md task 051"
       ],
-      "notes": "Opened on 2026-08-20 for Phase-2 task 051. Scope includes DAA, CPL, SCF, CCF, accumulator rotates, and dedicated differential/reference regression vectors for historically error-prone flag behavior."
+      "latest_evidence": {
+        "implementation_commit": "57ffd35f5c0eae828187bc6b5a5dca8e1f1e8270",
+        "code_review_range": "944f1ff8a66c1986ab26afba3b3014721f4fd91e..57ffd35f5c0eae828187bc6b5a5dca8e1f1e8270",
+        "code_review": "PASS",
+        "test_artifact_review": "PASS",
+        "ssh_runs": ["CR0032-FLAGS-LINUX", "CR0032-FLAGS-WIN10", "CR0032-FLAGS-WIN11"],
+        "hosted_run": "32429229094",
+        "hosted_platforms": ["linux-x64", "linux-arm64", "windows-x64", "macos-arm64", "macos-intel-x64"]
+      },
+      "notes": "Opened and closed on 2026-08-20 for Phase-2 task 051. Implemented DAA add/subtract correction, CPL, SCF, CCF, RLCA, RRCA, RLA, and RRA with precise preserved/recomputed and undocumented flag bits. The first CODE review attempt timed out before falsification; reviewer health passed and the unchanged bounded retry passed. Dedicated vectors, three SSH machines, five hosted platforms, and TEST_ARTIFACT review passed with zero findings."
+    },
+    {
+      "cr_number": "CR-0033",
+      "title": "Complete Z80 rotate and shift vector coverage",
+      "status": "in_progress",
+      "source_authority": [
+        "design/warajevo-zx-spectrum-next-architecture.md section 11",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 052"
+      ],
+      "notes": "Opened on 2026-08-20 for Phase-2 task 052. Scope reconciles accumulator, CB, and indexed-CB rotate/shift behavior, including undocumented SLL, and closes any remaining full-vector or bus-trace evidence gaps."
     }
   ]
 }
