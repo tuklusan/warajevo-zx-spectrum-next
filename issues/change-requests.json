@@ -331,7 +331,28 @@
         "design/warajevo-zx-spectrum-next-architecture.md section 11",
         "design/wzsn-architectures-1-2-developer-tasks.md task 047"
       ],
-      "notes": "Opened on 2026-08-20 for Phase-2 task 047. Scope includes IX/IY substitution plus ignored and repeated DD/FD prefix-chain behavior; DDCB/FDCB indexed-bit execution remains task 048."
+      "latest_evidence": {
+        "slice": 1,
+        "implementation_commit": "3fcdd6ad0a87cfd12d534c9481e207e03fad22ae",
+        "behavior": "Ignored and repeated DD/FD prefix chains with exact M1, refresh-register, program-counter, and timing behavior",
+        "code_review_range": "2fb49ec25fddc10725c5af0e7bad3a0efa0c96b4..3fcdd6ad0a87cfd12d534c9481e207e03fad22ae",
+        "code_review": "PASS",
+        "test_artifact_review": "PASS",
+        "ssh_runs": [
+          "CR0028-PREFIX-CHAIN-LINUX",
+          "CR0028-PREFIX-CHAIN-WIN10",
+          "CR0028-PREFIX-CHAIN-WIN11"
+        ],
+        "hosted_run": "32422038239",
+        "hosted_platforms": [
+          "linux-x64",
+          "linux-arm64",
+          "windows-x64",
+          "macos-arm64",
+          "macos-intel-x64"
+        ]
+      },
+      "notes": "Opened on 2026-08-20 for Phase-2 task 047. Slice 1 completed ignored and repeated prefix-chain behavior with zero-finding CODE and TEST_ARTIFACT reviews and passing evidence on all three SSH machines plus five hosted platforms. Scope continues with IX/IY substitution; DDCB/FDCB indexed-bit execution remains task 048."
     }
   ]
 }
