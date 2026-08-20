@@ -421,12 +421,21 @@ def main() -> int:
             )
             command_text = f"{machine['python_command']} tools/harness/run_cmake_smoke.py --artifact-dir {remote_dir} --probe-only"
         elif args.action == "smoke":
+            fuse_command = (
+                f"{machine['python_command']} tools/harness/run_fuse_ed_platform.py "
+                f"--runner-root {shlex.quote(remote_dir + '/build')} "
+                "--private-root test-artefacts/fuse-corpus "
+                f"--manifest {shlex.quote(remote_dir + '/fuse-ed-manifest.json')}"
+            )
             primary = run_linux(
                 machine,
-                f"{machine['python_command']} tools/harness/run_cmake_smoke.py --artifact-dir {shlex.quote(remote_dir)}",
+                f"{machine['python_command']} tools/harness/run_cmake_smoke.py --artifact-dir {shlex.quote(remote_dir)} && {fuse_command}",
                 root,
             )
-            command_text = f"{machine['python_command']} tools/harness/run_cmake_smoke.py --artifact-dir {remote_dir}"
+            command_text = (
+                f"{machine['python_command']} tools/harness/run_cmake_smoke.py --artifact-dir {remote_dir} && "
+                f"{fuse_command}"
+            )
         else:
             primary = run_linux(
                 machine,
@@ -455,6 +464,8 @@ def main() -> int:
                     "$ProgressPreference = 'SilentlyContinue'",
                     f"Set-Location '{machine['project_dir']}'",
                     f"& {machine['python_command']} '.\\tools\\harness\\run_cmake_smoke.py' --artifact-dir '.\\{remote_dir_windows}'",
+                    "if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }",
+                    f"& {machine['python_command']} '.\\tools\\harness\\run_fuse_ed_platform.py' --runner-root '.\\{remote_dir_windows}\\build' --private-root '.\\test-artefacts\\fuse-corpus' --manifest '.\\{remote_dir_windows}\\fuse-ed-manifest.json'",
                     "exit $LASTEXITCODE",
                 ]
             )

@@ -25,6 +25,9 @@ This directory contains the tracked baseline harness entry points for:
 - `run_cmake_smoke.py`
   Shared probe and CMake smoke-build entry point used both remotely and by
   GitHub Actions
+- `run_fuse_ed_platform.py`
+  Acquires the pinned Fuse revision into private project-local test artifacts,
+  verifies its identity, and runs every ED vector without silent skips
 - `stream_zip_tree.py`
   Packages a remote artefact tree to stdout as ZIP bytes for pull-back
 - `capture-linux-active-display.sh`
@@ -87,8 +90,10 @@ The workflow lives in:
 .github/workflows/platform-smoke.yml
 ```
 
-It runs the same `run_cmake_smoke.py` entry point as the SSH remotes and uploads
-the resulting artefact tree for each runner.
+It runs the same CMake smoke and pinned Fuse ED conformance entry points as the
+SSH remotes and uploads the resulting manifest and smoke artefact tree for each
+runner. The acquired upstream source remains under ignored `test-artefacts/`
+and is not uploaded.
 
 ## Screenshot notes
 
