@@ -204,7 +204,7 @@ int main(void)
             return 1;
         }
     }
-    if (implemented != 75u || prefix != 4u || documented_unimplemented != 177u ||
+    if (implemented != 79u || prefix != 4u || documented_unimplemented != 173u ||
         undocumented != 0u || illegal != 0u ||
         wz_z80_primary_opcode_decode(0x00u)->operation != WZ_Z80_PRIMARY_OP_NOP ||
         wz_z80_primary_opcode_decode(0x32u)->operation != WZ_Z80_PRIMARY_OP_LD_NN_A ||
@@ -213,6 +213,8 @@ int main(void)
         wz_z80_primary_opcode_decode(0xbfu)->operation != WZ_Z80_PRIMARY_OP_ALU ||
         wz_z80_primary_opcode_decode(0xc6u)->operation != WZ_Z80_PRIMARY_OP_ALU ||
         wz_z80_primary_opcode_decode(0xfeu)->operation != WZ_Z80_PRIMARY_OP_ALU ||
+        wz_z80_primary_opcode_decode(0x09u)->operation != WZ_Z80_PRIMARY_OP_ADD_HL_RR ||
+        wz_z80_primary_opcode_decode(0x39u)->operation != WZ_Z80_PRIMARY_OP_ADD_HL_RR ||
         wz_z80_primary_opcode_decode(0xcbu)->operation != WZ_Z80_PRIMARY_OP_PREFIX_CB ||
         wz_z80_primary_opcode_decode(0xddu)->operation != WZ_Z80_PRIMARY_OP_PREFIX_DD ||
         wz_z80_primary_opcode_decode(0xedu)->operation != WZ_Z80_PRIMARY_OP_PREFIX_ED ||
@@ -400,6 +402,35 @@ int main(void)
         bus_log.requests[0].address != 0u ||
         bus_log.requests[0].value != 0x01u) {
         fputs("Z80 unsupported opcode trace failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 ADD HL edge test failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.main.h = 0x0fu;
+    machine.cpu.main.l = 0xffu;
+    machine.cpu.main.b = 0xf0u;
+    machine.cpu.main.c = 0x01u;
+    machine.cpu.main.f = 0xc7u;
+    machine.memory[0u] = 0x09u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.h != 0x00u || machine.cpu.main.l != 0x00u ||
+        machine.cpu.main.f != 0xd5u || machine.cpu.memptr != 0x1000u ||
+        machine.cpu.program_counter != 1u || machine.master_tick != 22u) {
+        fputs("Z80 ADD HL,BC carry/half-carry flags failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.main.h = 0x20u;
+    machine.cpu.main.l = 0x00u;
+    machine.cpu.stack_pointer = 0x0800u;
+    machine.cpu.main.f = 0x45u;
+    machine.memory[1u] = 0x39u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.h != 0x28u || machine.cpu.main.l != 0x00u ||
+        machine.cpu.main.f != 0x6cu || machine.cpu.memptr != 0x2001u ||
+        machine.cpu.program_counter != 2u || machine.master_tick != 44u) {
+        fputs("Z80 ADD HL,SP preserved/undocumented flags failed\n", stderr);
         return 1;
     }
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {

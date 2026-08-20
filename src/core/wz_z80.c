@@ -42,20 +42,20 @@ static const wz_z80_opcode_decode_t wz_z80_primary_opcode_table[256] = {
     WZ_Z80_IMPL(0x00u, WZ_Z80_PRIMARY_OP_NOP),
     WZ_Z80_UN(0x01u), WZ_Z80_UN(0x02u), WZ_Z80_UN(0x03u),
     WZ_Z80_UN(0x04u), WZ_Z80_UN(0x05u), WZ_Z80_UN(0x06u), WZ_Z80_UN(0x07u),
-    WZ_Z80_UN(0x08u), WZ_Z80_UN(0x09u), WZ_Z80_UN(0x0au), WZ_Z80_UN(0x0bu),
+    WZ_Z80_UN(0x08u), WZ_Z80_IMPL(0x09u, WZ_Z80_PRIMARY_OP_ADD_HL_RR), WZ_Z80_UN(0x0au), WZ_Z80_UN(0x0bu),
     WZ_Z80_UN(0x0cu), WZ_Z80_UN(0x0du), WZ_Z80_UN(0x0eu), WZ_Z80_UN(0x0fu),
     WZ_Z80_UN(0x10u), WZ_Z80_UN(0x11u), WZ_Z80_UN(0x12u), WZ_Z80_UN(0x13u),
     WZ_Z80_UN(0x14u), WZ_Z80_UN(0x15u), WZ_Z80_UN(0x16u), WZ_Z80_UN(0x17u),
-    WZ_Z80_UN(0x18u), WZ_Z80_UN(0x19u), WZ_Z80_UN(0x1au), WZ_Z80_UN(0x1bu),
+    WZ_Z80_UN(0x18u), WZ_Z80_IMPL(0x19u, WZ_Z80_PRIMARY_OP_ADD_HL_RR), WZ_Z80_UN(0x1au), WZ_Z80_UN(0x1bu),
     WZ_Z80_UN(0x1cu), WZ_Z80_UN(0x1du), WZ_Z80_UN(0x1eu), WZ_Z80_UN(0x1fu),
     WZ_Z80_UN(0x20u), WZ_Z80_UN(0x21u), WZ_Z80_UN(0x22u), WZ_Z80_UN(0x23u),
     WZ_Z80_UN(0x24u), WZ_Z80_UN(0x25u), WZ_Z80_UN(0x26u), WZ_Z80_UN(0x27u),
-    WZ_Z80_UN(0x28u), WZ_Z80_UN(0x29u), WZ_Z80_UN(0x2au), WZ_Z80_UN(0x2bu),
+    WZ_Z80_UN(0x28u), WZ_Z80_IMPL(0x29u, WZ_Z80_PRIMARY_OP_ADD_HL_RR), WZ_Z80_UN(0x2au), WZ_Z80_UN(0x2bu),
     WZ_Z80_UN(0x2cu), WZ_Z80_UN(0x2du), WZ_Z80_UN(0x2eu), WZ_Z80_UN(0x2fu),
     WZ_Z80_UN(0x30u), WZ_Z80_UN(0x31u),
     WZ_Z80_IMPL(0x32u, WZ_Z80_PRIMARY_OP_LD_NN_A),
     WZ_Z80_UN(0x33u), WZ_Z80_UN(0x34u), WZ_Z80_UN(0x35u), WZ_Z80_UN(0x36u),
-    WZ_Z80_UN(0x37u), WZ_Z80_UN(0x38u), WZ_Z80_UN(0x39u), WZ_Z80_UN(0x3au),
+    WZ_Z80_UN(0x37u), WZ_Z80_UN(0x38u), WZ_Z80_IMPL(0x39u, WZ_Z80_PRIMARY_OP_ADD_HL_RR), WZ_Z80_UN(0x3au),
     WZ_Z80_UN(0x3bu), WZ_Z80_UN(0x3cu), WZ_Z80_UN(0x3du),
     WZ_Z80_IMPL(0x3eu, WZ_Z80_PRIMARY_OP_LD_A_N),
     WZ_Z80_UN(0x3fu), WZ_Z80_UN(0x40u), WZ_Z80_UN(0x41u), WZ_Z80_UN(0x42u),
@@ -905,6 +905,24 @@ static wz_byte_t wz_z80_add16_flags(wz_word_t left, wz_word_t right, wz_byte_t c
     return flags;
 }
 
+static wz_byte_t wz_z80_add16_preserved_flags(wz_byte_t old_flags,
+                                               wz_word_t left,
+                                               wz_word_t right,
+                                               wz_word_t result)
+{
+    wz_dword_t wide = (wz_dword_t)left + (wz_dword_t)right;
+    wz_byte_t flags = (wz_byte_t)(old_flags &
+                                  (WZ_Z80_FLAG_S | WZ_Z80_FLAG_Z | WZ_Z80_FLAG_PV));
+    flags |= (wz_byte_t)((result >> 8u) & (WZ_Z80_FLAG_Y | WZ_Z80_FLAG_X));
+    if (((left ^ right ^ result) & 0x1000u) != 0u) {
+        flags |= WZ_Z80_FLAG_H;
+    }
+    if ((wide & 0x10000u) != 0u) {
+        flags |= WZ_Z80_FLAG_C;
+    }
+    return flags;
+}
+
 static wz_byte_t wz_z80_sub16_flags(wz_word_t left, wz_word_t right, wz_byte_t carry, wz_word_t result)
 {
     wz_byte_t high = (wz_byte_t)(result >> 8u);
@@ -1481,6 +1499,17 @@ wz_result_t wz_z80_step(wz_machine_t* machine)
             machine->master_tick += 14u;
         }
         wz_z80_execute_alu_value(&machine->cpu, operation, value);
+        return WZ_RESULT_OK;
+    }
+    case WZ_Z80_PRIMARY_OP_ADD_HL_RR: {
+        wz_word_t left = wz_z80_hl(&machine->cpu);
+        wz_word_t right = wz_z80_get_rr(&machine->cpu, (wz_byte_t)(opcode >> 4u));
+        wz_word_t sum = (wz_word_t)(left + right);
+        machine->cpu.memptr = wz_z80_add16(left, 1u);
+        wz_z80_set_rr(&machine->cpu, 2u, sum);
+        machine->cpu.main.f = wz_z80_add16_preserved_flags(
+            machine->cpu.main.f, left, right, sum);
+        machine->master_tick += 22u;
         return WZ_RESULT_OK;
     }
     case WZ_Z80_PRIMARY_OP_PREFIX_CB:
