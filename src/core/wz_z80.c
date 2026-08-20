@@ -435,6 +435,35 @@ static wz_result_t wz_z80_cb_load_target(wz_machine_t* machine,
     return WZ_RESULT_OK;
 }
 
+static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
+                                               wz_byte_t initial_prefix)
+{
+    wz_byte_t active_prefix = initial_prefix;
+    size_t prefix_count = 1u;
+
+    machine->master_tick += 8u;
+    while (machine->memory[machine->cpu.program_counter] == 0xddu ||
+           machine->memory[machine->cpu.program_counter] == 0xfdu) {
+        wz_byte_t prefix = 0u;
+        if (prefix_count == 65536u ||
+            wz_z80_bus(machine, WZ_BUS_M1_OPCODE_FETCH, 0u,
+                       machine->cpu.program_counter, &prefix, 4u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
+        wz_z80_increment_r(&machine->cpu);
+        machine->master_tick += 8u;
+        active_prefix = prefix;
+        prefix_count += 1u;
+    }
+
+    if (machine->memory[machine->cpu.program_counter] == 0xcbu) {
+        return WZ_RESULT_UNSUPPORTED_OPERATION;
+    }
+    (void)active_prefix;
+    return wz_z80_step(machine);
+}
+
 static wz_result_t wz_z80_cb_store_target(wz_machine_t* machine,
                                           const wz_z80_cb_opcode_decode_t* decode,
                                           wz_byte_t value)
@@ -1163,6 +1192,7 @@ wz_result_t wz_z80_step(wz_machine_t* machine)
         return wz_z80_execute_ed(machine, wz_z80_ed_opcode_decode(value));
     case WZ_Z80_PRIMARY_OP_PREFIX_DD:
     case WZ_Z80_PRIMARY_OP_PREFIX_FD:
+        return wz_z80_execute_index_prefix(machine, opcode);
     case WZ_Z80_PRIMARY_OP_UNSUPPORTED:
     default:
         return WZ_RESULT_UNSUPPORTED_OPERATION;

@@ -429,6 +429,46 @@ int main(void)
         fputs("machine reset before Z80 ED-prefix test failed\n", stderr);
         return 1;
     }
+
+    machine.memory[0u] = 0xddu;
+    machine.memory[1u] = 0xfdu;
+    machine.memory[2u] = 0x00u;
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.program_counter != 3u ||
+        machine.cpu.r != 3u ||
+        machine.master_tick != 24u ||
+        bus_log.count != 3u ||
+        bus_log.requests[0].value != 0xddu ||
+        bus_log.requests[1].value != 0xfdu ||
+        bus_log.requests[2].value != 0x00u) {
+        fputs("Z80 repeated index-prefix NOP failed\n", stderr);
+        return 1;
+    }
+
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before ignored index-prefix ED test failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.main.a = 0x15u;
+    machine.memory[0u] = 0xddu;
+    machine.memory[1u] = 0xedu;
+    machine.memory[2u] = 0x44u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.a != 0xebu ||
+        machine.cpu.program_counter != 3u ||
+        machine.cpu.r != 3u ||
+        machine.master_tick != 24u) {
+        fputs("Z80 ignored index-prefix ED execution failed\n", stderr);
+        return 1;
+    }
+
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 unsupported ED-prefix test failed\n", stderr);
+        return 1;
+    }
     memset(&bus_log, 0, sizeof(bus_log));
     wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
     machine.memory[0u] = 0xedu;
