@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 31,
+  "next_cr_number": 32,
   "status_values": [
     "open",
     "in_progress",
@@ -390,12 +390,35 @@
     {
       "cr_number": "CR-0030",
       "title": "Implement Z80 8-bit arithmetic and logic flags",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/warajevo-zx-spectrum-next-architecture.md section 11",
         "design/wzsn-architectures-1-2-developer-tasks.md task 049"
       ],
-      "notes": "Opened on 2026-08-20 for Phase-2 task 049. Scope includes ADD/ADC/SUB/SBC/AND/XOR/OR/CP flag semantics, undocumented X/Y bits, register/immediate/memory operand forms, and exhaustive or sampled edge-vector evidence."
+      "latest_evidence": {
+        "implementation_commit": "09aabe121747a919b35a8b056bc0711aacd3abd1",
+        "code_review_range": "b51789f2d1e7581b04f5dd7d26ad9f81b6047664..09aabe121747a919b35a8b056bc0711aacd3abd1",
+        "code_review": "PASS",
+        "test_artifact_review": "PASS",
+        "ssh_runs": [
+          "CR0030-ALU-R2-LINUX",
+          "CR0030-ALU-R2-WIN10-R2",
+          "CR0030-ALU-R2-WIN11"
+        ],
+        "hosted_run": "32426836180",
+        "hosted_platforms": ["linux-x64", "linux-arm64", "windows-x64", "macos-arm64", "macos-intel-x64"]
+      },
+      "notes": "Opened and closed on 2026-08-20 for Phase-2 task 049. Implemented ADD/ADC/SUB/SBC/AND/XOR/OR/CP across register, immediate, and (HL) forms with carry, half-carry, overflow/parity, sign/zero, N, and undocumented X/Y semantics. Initial SSH and hosted runs failed only because the primary-table cardinality fixture still expected three implemented opcodes; commit 09aabe121747a919b35a8b056bc0711aacd3abd1 corrected it to require all 75 implemented entries. The full corrected range passed CODE review, three SSH machines, five hosted platforms, 621 pinned regression cases per platform, and TEST_ARTIFACT review with zero findings."
+    },
+    {
+      "cr_number": "CR-0031",
+      "title": "Complete Z80 16-bit arithmetic flag semantics",
+      "status": "in_progress",
+      "source_authority": [
+        "design/warajevo-zx-spectrum-next-architecture.md section 11",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 050"
+      ],
+      "notes": "Opened on 2026-08-20 for Phase-2 task 050. Scope completes 16-bit arithmetic carry and half-carry behavior with edge-vector evidence across primary, ED, and indexed forms."
     }
   ]
 }
