@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import ctypes
 import hashlib
+import http.client
 import json
 import mimetypes
 import os
@@ -768,7 +769,7 @@ class DeepSeekClient:
                     call_record["elapsed_seconds"] = round(time.monotonic() - call_started, 3)
                     telemetry.api_call_records.append(call_record)
                     raise ConfigurationError(last_error) from None
-            except (urllib.error.URLError, TimeoutError) as exc:
+            except (urllib.error.URLError, TimeoutError, http.client.RemoteDisconnected) as exc:
                 last_error = f"transport failure: {type(exc).__name__}"
             except TruncationError:
                 call_record["result_class"] = "truncated"

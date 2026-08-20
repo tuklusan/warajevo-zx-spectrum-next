@@ -221,6 +221,30 @@ class GateTests(unittest.TestCase):
         with self.assertRaises(gate.ConfigurationError):
             gate.DeepSeekClient("")
 
+    def test_remote_disconnect_is_retried(self):
+        class Response:
+            def __enter__(self): return self
+            def __exit__(self, *_): return False
+            def read(self):
+                return b'{"choices":[{"finish_reason":"stop","message":{"content":"{}"}}]}'
+
+        attempts = 0
+
+        def opener(request, timeout):
+            nonlocal attempts
+            attempts += 1
+            if attempts == 1:
+                raise gate.http.client.RemoteDisconnected("closed")
+            return Response()
+
+        telemetry = gate.Telemetry("CODE", "snap")
+        with patch.object(gate.time, "sleep"):
+            gate.DeepSeekClient("secret", opener).request("system", "review", telemetry)
+        self.assertEqual(attempts, 2)
+        self.assertEqual(telemetry.retries, 1)
+        self.assertEqual([item["result_class"] for item in telemetry.api_call_records],
+                         ["retryable_failure", "success"])
+
     def test_exact_environment_variable_name_is_used(self):
         with patch.dict(gate.os.environ, {gate.KEY_NAME: "configured"}, clear=True):
             self.assertIsInstance(gate.DeepSeekClient(), gate.DeepSeekClient)
