@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 28,
+  "next_cr_number": 29,
   "status_values": [
     "open",
     "in_progress",
@@ -291,24 +291,28 @@
     {
       "cr_number": "CR-0027",
       "title": "Implement ED-prefixed Z80 decode and execution",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/warajevo-zx-spectrum-next-architecture.md section 11",
         "design/wzsn-architectures-1-2-developer-tasks.md task 046"
       ],
       "latest_evidence": {
-        "slice": 11,
-        "implementation_commit": "c5e4478f76ce50115258cfafe670623582a21844",
-        "behavior": "All decoded ED operations execute; INI, IND, INIR, INDR, OUTI, OUTD, OTIR, and OTDR have bus-visible repeat and direction coverage; all standard ED forms are classified implemented while undocumented aliases remain explicit",
-        "code_review_range": "824ac83aa4a81b7e8392c115f1d88d4e8496061e..c5e4478f76ce50115258cfafe670623582a21844",
+        "slice": 15,
+        "implementation_commit": "a0fda7752342a34fd308d9e30d94d31006057757",
+        "behavior": "Complete ED decode/execution, canonical MEMPTR and refresh behavior, deterministic external bus input, and a pinned 109-case Fuse ED adapter with zero silent skips",
+        "code_review_range": "fbf3ba0eac2b66855a3e88d05af04116e70f912a..a0fda7752342a34fd308d9e30d94d31006057757",
         "code_review": "PASS",
         "test_artifact_review": "PASS",
         "ssh_runs": [
-          "CR0027-EDFINAL-LINUX",
-          "CR0027-EDFINAL-WIN10",
-          "CR0027-EDFINAL-WIN11"
+          "CR0027-FUSE-GATED-LINUX",
+          "CR0027-FUSE-GATED-WIN10",
+          "CR0027-FUSE-GATED-WIN11"
         ],
-        "hosted_run": "32417659033",
+        "hosted_run": "32420268003",
+        "fuse_commit": "9cbab635f5c9dfdfc5cb769aa89048c7e624d6b7",
+        "fuse_ed_cases_per_platform": 109,
+        "fuse_ed_failures": 0,
+        "fuse_ed_silent_skips": 0,
         "hosted_platforms": [
           "linux-x64",
           "linux-arm64",
@@ -317,7 +321,17 @@
           "macos-intel-x64"
         ]
       },
-      "notes": "Opened on 2026-08-13 for Phase-2 task 046. ED decode and execution were implemented incrementally through commit c5e4478f76ce50115258cfafe670623582a21844, with CODE and TEST_ARTIFACT gates and the required SSH/hosted platform matrix passing for every slice. The final table reconciliation proves there are no documented-unimplemented ED entries. The pinned external corpus was verified at commit 9cbab635f5c9dfdfc5cb769aa89048c7e624d6b7; its actual vector path is z80/tests/. CR closure remains pending until all 109 applicable ED corpus cases run through the project adapter with no silent skips and pass, as required by task 046."
+      "notes": "Opened on 2026-08-13 for Phase-2 task 046 and closed on 2026-08-20. ED decode and execution were implemented incrementally, all standard forms are classified implemented, canonical state now includes MEMPTR, M1 fetches update R, and deterministic bus input supports external test models. The pinned corpus adapter verifies commit 9cbab635f5c9dfdfc5cb769aa89048c7e624d6b7 and accounts for every ED case under z80/tests/. All 109 applicable final-state, timing, and memory cases passed with zero silent skips on the three SSH machines and five hosted platforms in run 32420268003. Exact corpus bus-event projection is explicitly deferred to task 059. CODE and TEST_ARTIFACT reviews passed with zero findings. A repeated remote-disconnect incident exposed a missing transient retry in the review client; commit a0fda7752342a34fd308d9e30d94d31006057757 added bounded handling and its own regression coverage before closure."
+    },
+    {
+      "cr_number": "CR-0028",
+      "title": "Implement DD and FD index-prefix semantics",
+      "status": "in_progress",
+      "source_authority": [
+        "design/warajevo-zx-spectrum-next-architecture.md section 11",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 047"
+      ],
+      "notes": "Opened on 2026-08-20 for Phase-2 task 047. Scope includes IX/IY substitution plus ignored and repeated DD/FD prefix-chain behavior; DDCB/FDCB indexed-bit execution remains task 048."
     }
   ]
 }
