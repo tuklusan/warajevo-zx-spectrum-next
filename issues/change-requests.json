@@ -332,18 +332,18 @@
         "design/wzsn-architectures-1-2-developer-tasks.md task 047"
       ],
       "latest_evidence": {
-        "slice": 1,
-        "implementation_commit": "3fcdd6ad0a87cfd12d534c9481e207e03fad22ae",
-        "behavior": "Ignored and repeated DD/FD prefix chains with exact M1, refresh-register, program-counter, and timing behavior",
-        "code_review_range": "2fb49ec25fddc10725c5af0e7bad3a0efa0c96b4..3fcdd6ad0a87cfd12d534c9481e207e03fad22ae",
+        "slice": 2,
+        "implementation_commit": "3d7683ddab047b88be60e5ce3fc09d192a168ec6",
+        "behavior": "Ignored and repeated prefix chains plus IX/IY 16-bit load, memory transfer, increment, decrement, add, indirect jump, and stack-pointer transfer semantics",
+        "code_review_range": "7a1a87888f46005c21608ead5afc1bd0947f5390..3d7683ddab047b88be60e5ce3fc09d192a168ec6",
         "code_review": "PASS",
         "test_artifact_review": "PASS",
         "ssh_runs": [
-          "CR0028-PREFIX-CHAIN-LINUX",
-          "CR0028-PREFIX-CHAIN-WIN10",
-          "CR0028-PREFIX-CHAIN-WIN11"
+          "CR0028-INDEX-CORE-LINUX",
+          "CR0028-INDEX-CORE-WIN10",
+          "CR0028-INDEX-CORE-WIN11"
         ],
-        "hosted_run": "32422038239",
+        "hosted_run": "32422711565",
         "hosted_platforms": [
           "linux-x64",
           "linux-arm64",
@@ -352,7 +352,7 @@
           "macos-intel-x64"
         ]
       },
-      "notes": "Opened on 2026-08-20 for Phase-2 task 047. Slice 1 completed ignored and repeated prefix-chain behavior with zero-finding CODE and TEST_ARTIFACT reviews and passing evidence on all three SSH machines plus five hosted platforms. Scope continues with IX/IY substitution; DDCB/FDCB indexed-bit execution remains task 048."
+      "notes": "Opened on 2026-08-20 for Phase-2 task 047. Slices 1-2 completed ignored/repeated prefix chains and the core 16-bit IX/IY operation family with zero-finding CODE and TEST_ARTIFACT reviews and passing evidence on all three SSH machines plus five hosted platforms. Scope continues with byte-register and displacement substitution; DDCB/FDCB indexed-bit execution remains task 048."
     }
   ]
 }
