@@ -727,6 +727,7 @@ int main(void)
     machine.cpu.main.h = 0x40u;
     machine.cpu.main.l = 0x00u;
     machine.cpu.main.f = 0xc1u;
+    machine.cpu.memptr = 0x1234u;
     machine.memory[0u] = 0xedu;
     machine.memory[1u] = 0xa1u;
     machine.memory[0x4000u] = 0x01u;
