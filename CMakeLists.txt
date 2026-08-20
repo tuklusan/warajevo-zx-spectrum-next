@@ -74,6 +74,9 @@ add_executable(
 
 target_link_libraries(wz_tests PRIVATE wz_core wz_diagnostics)
 
+add_executable(wz_fuse_ed_runner tests/wz_fuse_ed_runner.c)
+target_link_libraries(wz_fuse_ed_runner PRIVATE wz_core)
+
 enable_testing()
 add_test(NAME wz_tests_placeholder COMMAND wz_tests)
 
