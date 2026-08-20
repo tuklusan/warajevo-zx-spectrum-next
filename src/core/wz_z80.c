@@ -647,6 +647,7 @@ static wz_result_t wz_z80_execute_ld_block(wz_machine_t* machine,
 
     if (repeat && count != 0u) {
         machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 0xfffeu);
+        machine->cpu.memptr = wz_z80_add16(machine->cpu.program_counter, 1u);
         machine->master_tick += 42u;
     } else {
         machine->master_tick += 32u;
@@ -693,8 +694,10 @@ static wz_result_t wz_z80_execute_cp_block(wz_machine_t* machine,
 
     if (repeat && count != 0u && result != 0u) {
         machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 0xfffeu);
+        machine->cpu.memptr = wz_z80_add16(machine->cpu.program_counter, 1u);
         machine->master_tick += 42u;
     } else {
+        machine->cpu.memptr = wz_z80_add16(machine->cpu.memptr, decrement ? 0xffffu : 1u);
         machine->master_tick += 32u;
     }
     return WZ_RESULT_OK;
@@ -735,6 +738,7 @@ static wz_result_t wz_z80_execute_in_block(wz_machine_t* machine,
     }
 
     machine->cpu.main.b = (wz_byte_t)(machine->cpu.main.b - 1u);
+    machine->cpu.memptr = wz_z80_add16(port, decrement ? 0xffffu : 1u);
     wz_z80_set_rr(&machine->cpu, 2u, wz_z80_add16(address, decrement ? 0xffffu : 1u));
     sum = (wz_word_t)value + (wz_byte_t)(machine->cpu.main.c + (decrement ? 0xffu : 1u));
     machine->cpu.main.f = wz_z80_block_io_flags(machine->cpu.main.b, value, sum);
@@ -763,6 +767,7 @@ static wz_result_t wz_z80_execute_out_block(wz_machine_t* machine,
     machine->cpu.main.b = (wz_byte_t)(machine->cpu.main.b - 1u);
     wz_z80_set_rr(&machine->cpu, 2u, wz_z80_add16(address, decrement ? 0xffffu : 1u));
     port = wz_z80_get_rr(&machine->cpu, 0u);
+    machine->cpu.memptr = wz_z80_add16(port, decrement ? 0xffffu : 1u);
     if (wz_z80_bus(machine, WZ_BUS_IO_WRITE, 14u, port, &value, 4u) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_STATE;
     }
@@ -825,6 +830,7 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_IN_R_C:
         address = wz_z80_get_rr(&machine->cpu, 0u);
+        machine->cpu.memptr = wz_z80_add16(address, 1u);
         value = 0u;
         if (wz_z80_bus(machine, WZ_BUS_IO_READ, 8u, address, &value, 4u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
@@ -840,6 +846,7 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_OUT_C_R:
         address = wz_z80_get_rr(&machine->cpu, 0u);
+        machine->cpu.memptr = wz_z80_add16(address, 1u);
         target = wz_z80_target_register(&machine->cpu, decode.operand);
         if (target != 0) {
             value = *target;
@@ -858,6 +865,7 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         pair_value = wz_z80_get_rr(&machine->cpu, decode.operand);
         carry_in = (wz_byte_t)(machine->cpu.main.f & WZ_Z80_FLAG_C);
         result16 = (wz_word_t)(hl + pair_value + carry_in);
+        machine->cpu.memptr = wz_z80_add16(hl, 1u);
         wz_z80_set_rr(&machine->cpu, 2u, result16);
         machine->cpu.main.f = wz_z80_add16_flags(hl, pair_value, carry_in, result16);
         machine->master_tick += 30u;
@@ -867,6 +875,7 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         pair_value = wz_z80_get_rr(&machine->cpu, decode.operand);
         carry_in = (wz_byte_t)(machine->cpu.main.f & WZ_Z80_FLAG_C);
         result16 = (wz_word_t)(hl - pair_value - carry_in);
+        machine->cpu.memptr = wz_z80_add16(hl, 1u);
         wz_z80_set_rr(&machine->cpu, 2u, result16);
         machine->cpu.main.f = wz_z80_sub16_flags(hl, pair_value, carry_in, result16);
         machine->master_tick += 30u;
@@ -884,6 +893,7 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         }
         machine->cpu.main.f = (wz_byte_t)((machine->cpu.main.f & WZ_Z80_FLAG_C) |
                                           wz_z80_sz53p_flags(machine->cpu.main.a));
+        machine->cpu.memptr = wz_z80_add16(address, 1u);
         machine->master_tick += 36u;
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_RLD:
@@ -899,6 +909,7 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         }
         machine->cpu.main.f = (wz_byte_t)((machine->cpu.main.f & WZ_Z80_FLAG_C) |
                                           wz_z80_sz53p_flags(machine->cpu.main.a));
+        machine->cpu.memptr = wz_z80_add16(address, 1u);
         machine->master_tick += 36u;
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_LDI:
@@ -946,6 +957,7 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         }
         machine->cpu.stack_pointer = wz_z80_add16(machine->cpu.stack_pointer, 1u);
         machine->cpu.program_counter = (wz_word_t)low | ((wz_word_t)high << 8u);
+        machine->cpu.memptr = machine->cpu.program_counter;
         machine->cpu.iff1 = machine->cpu.iff2;
         machine->master_tick += 28u;
         return WZ_RESULT_OK;
@@ -961,6 +973,7 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         }
         machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
         address = (wz_word_t)low | ((wz_word_t)high << 8u);
+        machine->cpu.memptr = wz_z80_add16(address, 1u);
         pair_value = wz_z80_get_rr(&machine->cpu, decode.operand);
         value = (wz_byte_t)(pair_value & 0xffu);
         if (wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 20u, address, &value, 3u) != WZ_RESULT_OK) {
@@ -985,6 +998,7 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         }
         machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
         address = (wz_word_t)low | ((wz_word_t)high << 8u);
+        machine->cpu.memptr = wz_z80_add16(address, 1u);
         if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 20u, address, &low, 3u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
@@ -1046,6 +1060,7 @@ void wz_z80_state_init(wz_z80_state_t* state)
     state->iy = 0u;
     state->stack_pointer = 0xffffu;
     state->program_counter = 0u;
+    state->memptr = 0u;
     state->i = 0u;
     state->r = 0u;
     state->iff1 = 0u;

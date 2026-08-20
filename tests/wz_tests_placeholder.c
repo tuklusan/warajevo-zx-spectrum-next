@@ -552,6 +552,7 @@ int main(void)
         machine.cpu.main.h != 0x80u ||
         machine.cpu.main.l != 0x00u ||
         machine.cpu.main.f != 0x94u ||
+        machine.cpu.memptr != 0x8000u ||
         machine.cpu.program_counter != 2u ||
         machine.master_tick != 30u) {
         fputs("Z80 ED ADC HL,rr failed\n", stderr);
@@ -571,6 +572,7 @@ int main(void)
         machine.cpu.main.h != 0xffu ||
         machine.cpu.main.l != 0xfeu ||
         machine.cpu.main.f != 0xbbu ||
+        machine.cpu.memptr != 0x0001u ||
         machine.cpu.program_counter != 2u ||
         machine.master_tick != 30u) {
         fputs("Z80 ED SBC HL,rr failed\n", stderr);
@@ -604,7 +606,8 @@ int main(void)
         bus_log.requests[3].cycle != WZ_BUS_MEMORY_WRITE ||
         bus_log.requests[3].master_tick != 14u ||
         bus_log.requests[3].address != 0x4000u ||
-        bus_log.requests[3].value != 0x43u) {
+        bus_log.requests[3].value != 0x43u ||
+        machine.cpu.memptr != 0x4001u) {
         fputs("Z80 ED RRD trace failed\n", stderr);
         return 1;
     }
@@ -681,6 +684,7 @@ int main(void)
     machine.cpu.main.h = 0x40u;
     machine.cpu.main.l = 0x00u;
     machine.cpu.main.f = 0xc1u;
+    machine.cpu.memptr = 0x1234u;
     machine.memory[0u] = 0xedu;
     machine.memory[1u] = 0xb8u;
     machine.memory[0x4000u] = 0x01u;
@@ -706,6 +710,7 @@ int main(void)
         machine.cpu.main.h != 0x3fu ||
         machine.cpu.main.l != 0xfeu ||
         machine.cpu.main.f != 0xc9u ||
+        machine.cpu.memptr != 0x0001u ||
         machine.memory[0x4fffu] != 0x07u) {
         fputs("Z80 ED LDDR repeat failed\n", stderr);
         return 1;
@@ -733,6 +738,7 @@ int main(void)
         machine.cpu.main.h != 0x40u ||
         machine.cpu.main.l != 0x01u ||
         machine.cpu.main.f != 0x3fu ||
+        machine.cpu.memptr != 0x1235u ||
         machine.cpu.program_counter != 2u ||
         machine.master_tick != 32u ||
         bus_log.count != 3u ||
@@ -753,6 +759,7 @@ int main(void)
     machine.cpu.main.h = 0x40u;
     machine.cpu.main.l = 0x00u;
     machine.cpu.main.f = 0x01u;
+    machine.cpu.memptr = 0x1234u;
     machine.memory[0u] = 0xedu;
     machine.memory[1u] = 0xb9u;
     machine.memory[0x4000u] = 0x01u;
@@ -772,7 +779,8 @@ int main(void)
         machine.cpu.main.c != 0x00u ||
         machine.cpu.main.h != 0x3fu ||
         machine.cpu.main.l != 0xfeu ||
-        machine.cpu.main.f != 0x43u) {
+        machine.cpu.main.f != 0x43u ||
+        machine.cpu.memptr != 0x0000u) {
         fputs("Z80 ED CPDR repeat failed\n", stderr);
         return 1;
     }
@@ -809,6 +817,7 @@ int main(void)
         machine.cpu.main.h != 0x40u ||
         machine.cpu.main.l != 0x02u ||
         machine.cpu.main.f != 0x57u ||
+        machine.cpu.memptr != 0x0101u ||
         machine.memory[0x4001u] != 0xffu) {
         fputs("Z80 ED INIR repeat failed\n", stderr);
         return 1;
@@ -839,7 +848,8 @@ int main(void)
         bus_log.requests[2].address != 0x4000u ||
         bus_log.requests[3].cycle != WZ_BUS_IO_WRITE ||
         bus_log.requests[3].address != 0x0110u ||
-        bus_log.requests[3].value != 0x80u) {
+        bus_log.requests[3].value != 0x80u ||
+        machine.cpu.memptr != 0x010fu) {
         fputs("Z80 ED OUTD trace failed\n", stderr);
         return 1;
     }
@@ -864,6 +874,7 @@ int main(void)
         machine.cpu.iff1 != 1u ||
         machine.cpu.iff2 != 1u ||
         machine.cpu.main.f != 0xa5u ||
+        machine.cpu.memptr != 0x1234u ||
         machine.master_tick != 28u ||
         bus_log.count != 4u ||
         bus_log.requests[2].cycle != WZ_BUS_MEMORY_READ ||
@@ -928,7 +939,8 @@ int main(void)
         bus_log.requests[5].cycle != WZ_BUS_MEMORY_WRITE ||
         bus_log.requests[5].master_tick != 26u ||
         bus_log.requests[5].address != 0xffffu ||
-        bus_log.requests[5].value != 0x12u) {
+        bus_log.requests[5].value != 0x12u ||
+        machine.cpu.memptr != 0xffffu) {
         fputs("Z80 ED store pair trace failed\n", stderr);
         return 1;
     }
