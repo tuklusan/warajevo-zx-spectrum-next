@@ -247,7 +247,7 @@ int main(void)
             return 1;
         }
     }
-    if (ed_documented_unimplemented == 0u || ed_implemented == 0u ||
+    if (ed_documented_unimplemented != 0u || ed_implemented == 0u ||
         ed_documented_unimplemented + ed_implemented + ed_undocumented != 256u ||
         wz_z80_ed_opcode_decode(0x44u).operation != WZ_Z80_ED_OP_NEG ||
         wz_z80_ed_opcode_decode(0x44u).status != WZ_Z80_OPCODE_IMPLEMENTED ||

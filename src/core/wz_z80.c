@@ -211,7 +211,7 @@ wz_z80_ed_opcode_decode_t wz_z80_ed_opcode_decode(wz_byte_t opcode)
     case 0x60u: case 0x68u: case 0x78u:
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_IN_R_C,
                               (wz_byte_t)((opcode >> 3u) & 0x07u),
-                              WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED);
+                              WZ_Z80_OPCODE_IMPLEMENTED);
     case 0x70u:
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_IN_R_C,
                               WZ_Z80_TARGET_HL_INDIRECT, WZ_Z80_OPCODE_UNDOCUMENTED);
@@ -219,18 +219,18 @@ wz_z80_ed_opcode_decode_t wz_z80_ed_opcode_decode(wz_byte_t opcode)
     case 0x61u: case 0x69u: case 0x79u:
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_OUT_C_R,
                               (wz_byte_t)((opcode >> 3u) & 0x07u),
-                              WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED);
+                              WZ_Z80_OPCODE_IMPLEMENTED);
     case 0x71u:
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_OUT_C_R,
                               WZ_Z80_TARGET_HL_INDIRECT, WZ_Z80_OPCODE_UNDOCUMENTED);
     case 0x42u: case 0x52u: case 0x62u: case 0x72u:
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_SBC_HL_RR,
                               (wz_byte_t)((opcode >> 4u) & 0x03u),
-                              WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED);
+                              WZ_Z80_OPCODE_IMPLEMENTED);
     case 0x4au: case 0x5au: case 0x6au: case 0x7au:
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_ADC_HL_RR,
                               (wz_byte_t)((opcode >> 4u) & 0x03u),
-                              WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED);
+                              WZ_Z80_OPCODE_IMPLEMENTED);
     case 0x43u: case 0x53u: case 0x63u: case 0x73u:
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_LD_NN_RR,
                               (wz_byte_t)((opcode >> 4u) & 0x03u),
