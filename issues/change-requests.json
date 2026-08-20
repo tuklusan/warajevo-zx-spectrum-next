@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 34,
+  "next_cr_number": 36,
   "status_values": [
     "open",
     "in_progress",
@@ -451,12 +451,42 @@
     {
       "cr_number": "CR-0033",
       "title": "Complete Z80 rotate and shift vector coverage",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/warajevo-zx-spectrum-next-architecture.md section 11",
         "design/wzsn-architectures-1-2-developer-tasks.md task 052"
       ],
-      "notes": "Opened on 2026-08-20 for Phase-2 task 052. Scope reconciles accumulator, CB, and indexed-CB rotate/shift behavior, including undocumented SLL, and closes any remaining full-vector or bus-trace evidence gaps."
+      "latest_evidence": {
+        "implementation_commit": "b1fbc52ee62c1220eebe73b5599777f603aa9510",
+        "code_review_range": "206af462b2cde7f8a55a1293b5d520d087e100f7..b1fbc52ee62c1220eebe73b5599777f603aa9510",
+        "code_review": "PASS",
+        "test_artifact_review": "PASS",
+        "ssh_runs": ["CR0033-CB-LINUX", "CR0033-CB-WIN10", "CR0033-CB-WIN11"],
+        "hosted_run": "32429591271 rerun",
+        "fuse_cb_rotate_shift_cases_per_platform": 64,
+        "hosted_platforms": ["linux-x64", "linux-arm64", "windows-x64", "macos-arm64", "macos-intel-x64"]
+      },
+      "notes": "Opened and closed on 2026-08-20 for Phase-2 task 052. Made all 64 pinned ordinary CB rotate/shift cases, including SLL, a permanent platform gate alongside ED and indexed-CB corpora. The initial macOS ARM64 attempt failed during upstream clone with an HTTP packfile error before cases ran; the same-commit rerun passed. All three SSH and five hosted platforms plus TEST_ARTIFACT review passed with zero findings."
+    },
+    {
+      "cr_number": "CR-0034",
+      "title": "Reconcile Z80 block transfer search and I/O timing",
+      "status": "closed",
+      "source_authority": [
+        "design/warajevo-zx-spectrum-next-architecture.md sections 11 and 12",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 053"
+      ],
+      "notes": "Opened and closed by reconciliation on 2026-08-20. CR-0027 implemented LDI/LDD/LDIR/LDDR, CPI/CPD/CPIR/CPDR, INI/IND/INIR/INDR, and OUTI/OUTD/OTIR/OTDR with explicit repeat/terminating timing, PC rewind, MEMPTR, flags, and ordered bus requests. Its 109-case pinned ED corpus and exact project traces passed three SSH machines and five hosted platforms; subsequent CR-0033 evidence reran the same permanent ED gate successfully across all eight platforms."
+    },
+    {
+      "cr_number": "CR-0035",
+      "title": "Implement Z80 stack and subroutine bus timing",
+      "status": "in_progress",
+      "source_authority": [
+        "design/warajevo-zx-spectrum-next-architecture.md sections 11 and 12",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 054"
+      ],
+      "notes": "Opened on 2026-08-20 for Phase-2 task 054. Scope includes CALL, RET, RST, PUSH, POP, exact memory read/write ordering, wrapping SP transitions, conditional forms where applicable, and trace evidence."
     }
   ]
 }
