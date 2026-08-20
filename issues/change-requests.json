@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 29,
+  "next_cr_number": 30,
   "status_values": [
     "open",
     "in_progress",
@@ -326,7 +326,7 @@
     {
       "cr_number": "CR-0028",
       "title": "Implement DD and FD index-prefix semantics",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/warajevo-zx-spectrum-next-architecture.md section 11",
         "design/wzsn-architectures-1-2-developer-tasks.md task 047"
@@ -352,7 +352,17 @@
           "macos-intel-x64"
         ]
       },
-      "notes": "Opened on 2026-08-20 for Phase-2 task 047. Slices 1-2 completed ignored/repeated prefix chains and the core 16-bit IX/IY operation family with zero-finding CODE and TEST_ARTIFACT reviews and passing evidence on all three SSH machines plus five hosted platforms. Scope continues with byte-register and displacement substitution; DDCB/FDCB indexed-bit execution remains task 048."
+      "notes": "Opened and closed on 2026-08-20 for Phase-2 task 047. Slices 1-2 completed ignored/repeated prefix chains and IX/IY substitution for every currently executable 16-bit operation family, with zero-finding CODE and TEST_ARTIFACT reviews and passing evidence on all three SSH machines plus five hosted platforms. This satisfies task 047's prefix-chain completion criterion. Byte arithmetic substitutions follow the corresponding base-operation tasks 049-050; DDCB/FDCB indexed-bit execution is separately tracked by task 048."
+    },
+    {
+      "cr_number": "CR-0029",
+      "title": "Implement DDCB and FDCB indexed-bit operations",
+      "status": "in_progress",
+      "source_authority": [
+        "design/warajevo-zx-spectrum-next-architecture.md section 11",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 048"
+      ],
+      "notes": "Opened on 2026-08-20 for Phase-2 task 048. Scope includes signed displacement addressing, indexed rotate/shift/bit/res/set semantics, undocumented memory-plus-register forms, exact bus traces, and pinned Fuse conformance evidence."
     }
   ]
 }
