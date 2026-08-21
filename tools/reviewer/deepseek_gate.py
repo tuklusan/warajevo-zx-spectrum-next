@@ -16,9 +16,12 @@ import http.client
 import json
 import mimetypes
 import os
+import queue
+import re
 import ssl
 import subprocess
 import sys
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -49,6 +52,7 @@ REQUEST_TIMEOUT_SECONDS = 180
 RETRY_DELAYS = (1, 3)
 MAX_CONTEXT_CYCLES = 2
 MAX_NEW_CANDIDATE_CYCLES = 1
+NON_CALLABLE_IDENTIFIERS = {"if", "for", "while", "switch", "return", "sizeof"}
 VERDICTS = {"PASS", "FAIL", "INCONCLUSIVE", "REVIEW_UNAVAILABLE", "HUMAN_DECISION_REQUIRED"}
 SEVERITIES = {"BLOCKER", "HIGH"}
 PRIOR_STATUSES = {"OPEN", "RESOLVED", "DISPUTED"}
@@ -680,6 +684,32 @@ class DeepSeekClient:
             context = ssl.create_default_context()
         return urllib.request.urlopen(request, timeout=timeout, context=context)
 
+    @staticmethod
+    def _read_response(opener: Any, request: urllib.request.Request, timeout: int,
+                       deadline: ReviewDeadline | None, phase: str) -> bytes:
+        if deadline is None:
+            with opener(request, timeout=timeout) as response:
+                return response.read()
+        result: queue.Queue[tuple[bool, Any]] = queue.Queue(maxsize=1)
+
+        def perform_request() -> None:
+            try:
+                with opener(request, timeout=timeout) as response:
+                    result.put((True, response.read()))
+            except Exception as exc:
+                result.put((False, exc))
+
+        worker = threading.Thread(target=perform_request, daemon=True,
+                                  name=f"review-transport-{phase}")
+        worker.start()
+        try:
+            succeeded, value = result.get(timeout=deadline.remaining())
+        except queue.Empty:
+            raise ReviewError(f"REVIEW_DEADLINE_EXCEEDED during {phase}") from None
+        if not succeeded:
+            raise value
+        return value
+
     def request(self, system: str, user: str, telemetry: Telemetry,
                 thinking: str = "enabled", reasoning_effort: str | None = "high",
                 max_tokens: int = DISCOVERY_OUTPUT_TOKENS, phase: str = "UNSPECIFIED",
@@ -725,8 +755,8 @@ class DeepSeekClient:
             try:
                 opener = self._opener or self._open
                 timeout = deadline.timeout() if deadline is not None else REQUEST_TIMEOUT_SECONDS
-                with opener(request, timeout=timeout) as response:
-                    envelope = json.loads(response.read().decode())
+                response_data = self._read_response(opener, request, timeout, deadline, phase)
+                envelope = json.loads(response_data.decode())
                 choice = envelope["choices"][0]
                 finish_reason = choice.get("finish_reason")
                 if finish_reason == "insufficient_system_resource":
@@ -1051,11 +1081,39 @@ def resolve_context_request(root: Path, packet: ReviewPacket, request: dict[str,
     return {"request": request, "status": "UNRESOLVED", "reason": "unsupported context request type"}
 
 
+def location_symbol_request(packet: ReviewPacket, candidate: dict[str, Any]) -> dict[str, Any] | None:
+    if not packet.head_sha:
+        return None
+    path, separator, line_text = candidate["location"].rpartition(":")
+    if not separator:
+        return None
+    try:
+        line_number = int(line_text)
+    except ValueError:
+        return None
+    content = dict(packet.records).get(f"head/{path}")
+    lines = content.splitlines() if content is not None else []
+    if not 1 <= line_number <= len(lines):
+        return None
+    identifiers = re.findall(r"\b([A-Za-z_][A-Za-z0-9_]*)\s*\(", lines[line_number - 1])
+    symbols = [identifier for identifier in identifiers if identifier not in NON_CALLABLE_IDENTIFIERS]
+    if not symbols:
+        return None
+    return {"type": "SYMBOL", "symbol": symbols[-1], "origin": "DETERMINISTIC_LOCATION_SYMBOL"}
+
+
 def resolve_candidate_context(root: Path, packet: ReviewPacket, candidates: list[dict[str, Any]],
                               telemetry: Telemetry) -> tuple[list[dict[str, Any]], list[str]]:
     unresolved: list[str] = []
     for candidate in candidates:
-        requests = candidate.get("context_requests", [])
+        requests = list(candidate.get("context_requests", []))
+        automatic_request = location_symbol_request(packet, candidate)
+        requested_symbols = {
+            request.get("symbol") for request in requests if request.get("type") == "SYMBOL"
+        }
+        if (automatic_request is not None and len(requests) < MAX_CONTEXT_CYCLES
+                and automatic_request["symbol"] not in requested_symbols):
+            requests.append(automatic_request)
         if len(requests) > MAX_CONTEXT_CYCLES:
             requests = requests[:MAX_CONTEXT_CYCLES]
             unresolved.append(candidate["candidate_id"])
