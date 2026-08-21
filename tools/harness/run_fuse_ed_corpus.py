@@ -28,6 +28,10 @@ BRANCH_OPCODES = frozenset({
     "10", "18", "20", "28", "30", "38", "c2", "c3", "ca", "d2",
     "da", "e2", "e9", "ea", "f2", "fa",
 })
+INC_DEC_OPCODES = frozenset({
+    "04", "05", "0c", "0d", "14", "15", "1c", "1d",
+    "24", "25", "2c", "2d", "34", "35", "3c", "3d",
+})
 
 
 @dataclass
@@ -150,7 +154,8 @@ def main() -> int:
     parser.add_argument("--manifest", required=True, type=Path)
     parser.add_argument("--commit", required=True)
     parser.add_argument("--selection", choices=(
-        "ed", "indexed-cb", "cb-rotate-shift", "stack-subroutine", "branch"
+        "ed", "indexed-cb", "cb-rotate-shift", "stack-subroutine", "branch",
+        "inc-dec"
     ),
                         default="ed")
     args = parser.parse_args()
@@ -181,13 +186,18 @@ def main() -> int:
         selection_description = (
             "all CALL, RET, RST, PUSH, and POP cases including conditional paths"
         )
-    else:
+    elif args.selection == "branch":
         names = sorted(name for name in inputs
                        if name.split("_", 1)[0] in BRANCH_OPCODES)
         expected_count = 28
         selection_description = (
             "all JR, JP, and DJNZ cases including taken and not-taken paths"
         )
+    else:
+        names = sorted(name for name in inputs
+                       if name.split("_", 1)[0] in INC_DEC_OPCODES)
+        expected_count = 16
+        selection_description = "all primary INC and DEC register and memory cases"
     results: list[dict[str, object]] = []
     with tempfile.TemporaryDirectory(prefix=f"wzsn-fuse-{args.selection}-") as temporary:
         case_path = Path(temporary) / "case.in"

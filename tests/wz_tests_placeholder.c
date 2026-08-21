@@ -204,7 +204,7 @@ int main(void)
             return 1;
         }
     }
-    if (implemented != 137u || prefix != 4u || documented_unimplemented != 115u ||
+    if (implemented != 153u || prefix != 4u || documented_unimplemented != 99u ||
         undocumented != 0u || illegal != 0u ||
         wz_z80_primary_opcode_decode(0x00u)->operation != WZ_Z80_PRIMARY_OP_NOP ||
         wz_z80_primary_opcode_decode(0x32u)->operation != WZ_Z80_PRIMARY_OP_LD_NN_A ||
@@ -227,6 +227,9 @@ int main(void)
         wz_z80_primary_opcode_decode(0xc3u)->operation != WZ_Z80_PRIMARY_OP_BRANCH ||
         wz_z80_primary_opcode_decode(0xe9u)->operation != WZ_Z80_PRIMARY_OP_BRANCH ||
         wz_z80_primary_opcode_decode(0xfau)->operation != WZ_Z80_PRIMARY_OP_BRANCH ||
+        wz_z80_primary_opcode_decode(0x04u)->operation != WZ_Z80_PRIMARY_OP_INC_DEC ||
+        wz_z80_primary_opcode_decode(0x35u)->operation != WZ_Z80_PRIMARY_OP_INC_DEC ||
+        wz_z80_primary_opcode_decode(0x3du)->operation != WZ_Z80_PRIMARY_OP_INC_DEC ||
         wz_z80_primary_opcode_decode(0xcbu)->operation != WZ_Z80_PRIMARY_OP_PREFIX_CB ||
         wz_z80_primary_opcode_decode(0xddu)->operation != WZ_Z80_PRIMARY_OP_PREFIX_DD ||
         wz_z80_primary_opcode_decode(0xedu)->operation != WZ_Z80_PRIMARY_OP_PREFIX_ED ||
@@ -1700,6 +1703,69 @@ int main(void)
         bus_log.requests[3].address != 0xffffu ||
         bus_log.requests[3].value != 0x35u) {
         fputs("Z80 RST wrapping trace failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 INC register test failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.main.b = 0x7fu;
+    machine.cpu.main.f = 0x01u;
+    machine.memory[0u] = 0x04u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.b != 0x80u ||
+        machine.cpu.main.f != 0x95u ||
+        machine.cpu.program_counter != 1u ||
+        machine.master_tick != 8u) {
+        fputs("Z80 INC register overflow flags failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 DEC register test failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.main.c = 0x80u;
+    machine.cpu.main.f = 0x01u;
+    machine.memory[0u] = 0x0du;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.c != 0x7fu ||
+        machine.cpu.main.f != 0x3fu ||
+        machine.cpu.program_counter != 1u ||
+        machine.master_tick != 8u) {
+        fputs("Z80 DEC register overflow flags failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 INC memory test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    machine.cpu.main.h = 0xffu;
+    machine.cpu.main.l = 0xffu;
+    machine.cpu.main.f = 0x01u;
+    machine.memory[0u] = 0x34u;
+    machine.memory[0xffffu] = 0xffu;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.memory[0xffffu] != 0u ||
+        machine.cpu.main.f != 0x51u ||
+        machine.cpu.program_counter != 1u ||
+        machine.master_tick != 22u ||
+        bus_log.count != 4u ||
+        bus_log.requests[1].cycle != WZ_BUS_MEMORY_READ ||
+        bus_log.requests[1].master_tick != 8u ||
+        bus_log.requests[1].address != 0xffffu ||
+        bus_log.requests[1].value != 0xffu ||
+        bus_log.requests[2].cycle != WZ_BUS_INTERNAL ||
+        bus_log.requests[2].master_tick != 14u ||
+        bus_log.requests[2].address != 0xffffu ||
+        bus_log.requests[2].t_states != 1u ||
+        bus_log.requests[3].cycle != WZ_BUS_MEMORY_WRITE ||
+        bus_log.requests[3].master_tick != 16u ||
+        bus_log.requests[3].address != 0xffffu ||
+        bus_log.requests[3].value != 0u) {
+        fputs("Z80 INC memory trace failed\n", stderr);
         return 1;
     }
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {

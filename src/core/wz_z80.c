@@ -41,22 +41,22 @@ static void wz_z80_increment_r(wz_z80_state_t* state)
 static const wz_z80_opcode_decode_t wz_z80_primary_opcode_table[256] = {
     WZ_Z80_IMPL(0x00u, WZ_Z80_PRIMARY_OP_NOP),
     WZ_Z80_UN(0x01u), WZ_Z80_UN(0x02u), WZ_Z80_UN(0x03u),
-    WZ_Z80_UN(0x04u), WZ_Z80_UN(0x05u), WZ_Z80_UN(0x06u), WZ_Z80_IMPL(0x07u, WZ_Z80_PRIMARY_OP_SPECIAL_FLAGS),
+    WZ_Z80_IMPL(0x04u, WZ_Z80_PRIMARY_OP_INC_DEC), WZ_Z80_IMPL(0x05u, WZ_Z80_PRIMARY_OP_INC_DEC), WZ_Z80_UN(0x06u), WZ_Z80_IMPL(0x07u, WZ_Z80_PRIMARY_OP_SPECIAL_FLAGS),
     WZ_Z80_UN(0x08u), WZ_Z80_IMPL(0x09u, WZ_Z80_PRIMARY_OP_ADD_HL_RR), WZ_Z80_UN(0x0au), WZ_Z80_UN(0x0bu),
-    WZ_Z80_UN(0x0cu), WZ_Z80_UN(0x0du), WZ_Z80_UN(0x0eu), WZ_Z80_IMPL(0x0fu, WZ_Z80_PRIMARY_OP_SPECIAL_FLAGS),
+    WZ_Z80_IMPL(0x0cu, WZ_Z80_PRIMARY_OP_INC_DEC), WZ_Z80_IMPL(0x0du, WZ_Z80_PRIMARY_OP_INC_DEC), WZ_Z80_UN(0x0eu), WZ_Z80_IMPL(0x0fu, WZ_Z80_PRIMARY_OP_SPECIAL_FLAGS),
     WZ_Z80_IMPL(0x10u, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_UN(0x11u), WZ_Z80_UN(0x12u), WZ_Z80_UN(0x13u),
-    WZ_Z80_UN(0x14u), WZ_Z80_UN(0x15u), WZ_Z80_UN(0x16u), WZ_Z80_IMPL(0x17u, WZ_Z80_PRIMARY_OP_SPECIAL_FLAGS),
+    WZ_Z80_IMPL(0x14u, WZ_Z80_PRIMARY_OP_INC_DEC), WZ_Z80_IMPL(0x15u, WZ_Z80_PRIMARY_OP_INC_DEC), WZ_Z80_UN(0x16u), WZ_Z80_IMPL(0x17u, WZ_Z80_PRIMARY_OP_SPECIAL_FLAGS),
     WZ_Z80_IMPL(0x18u, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_IMPL(0x19u, WZ_Z80_PRIMARY_OP_ADD_HL_RR), WZ_Z80_UN(0x1au), WZ_Z80_UN(0x1bu),
-    WZ_Z80_UN(0x1cu), WZ_Z80_UN(0x1du), WZ_Z80_UN(0x1eu), WZ_Z80_IMPL(0x1fu, WZ_Z80_PRIMARY_OP_SPECIAL_FLAGS),
+    WZ_Z80_IMPL(0x1cu, WZ_Z80_PRIMARY_OP_INC_DEC), WZ_Z80_IMPL(0x1du, WZ_Z80_PRIMARY_OP_INC_DEC), WZ_Z80_UN(0x1eu), WZ_Z80_IMPL(0x1fu, WZ_Z80_PRIMARY_OP_SPECIAL_FLAGS),
     WZ_Z80_IMPL(0x20u, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_UN(0x21u), WZ_Z80_UN(0x22u), WZ_Z80_UN(0x23u),
-    WZ_Z80_UN(0x24u), WZ_Z80_UN(0x25u), WZ_Z80_UN(0x26u), WZ_Z80_IMPL(0x27u, WZ_Z80_PRIMARY_OP_SPECIAL_FLAGS),
+    WZ_Z80_IMPL(0x24u, WZ_Z80_PRIMARY_OP_INC_DEC), WZ_Z80_IMPL(0x25u, WZ_Z80_PRIMARY_OP_INC_DEC), WZ_Z80_UN(0x26u), WZ_Z80_IMPL(0x27u, WZ_Z80_PRIMARY_OP_SPECIAL_FLAGS),
     WZ_Z80_IMPL(0x28u, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_IMPL(0x29u, WZ_Z80_PRIMARY_OP_ADD_HL_RR), WZ_Z80_UN(0x2au), WZ_Z80_UN(0x2bu),
-    WZ_Z80_UN(0x2cu), WZ_Z80_UN(0x2du), WZ_Z80_UN(0x2eu), WZ_Z80_IMPL(0x2fu, WZ_Z80_PRIMARY_OP_SPECIAL_FLAGS),
+    WZ_Z80_IMPL(0x2cu, WZ_Z80_PRIMARY_OP_INC_DEC), WZ_Z80_IMPL(0x2du, WZ_Z80_PRIMARY_OP_INC_DEC), WZ_Z80_UN(0x2eu), WZ_Z80_IMPL(0x2fu, WZ_Z80_PRIMARY_OP_SPECIAL_FLAGS),
     WZ_Z80_IMPL(0x30u, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_UN(0x31u),
     WZ_Z80_IMPL(0x32u, WZ_Z80_PRIMARY_OP_LD_NN_A),
-    WZ_Z80_UN(0x33u), WZ_Z80_UN(0x34u), WZ_Z80_UN(0x35u), WZ_Z80_UN(0x36u),
+    WZ_Z80_UN(0x33u), WZ_Z80_IMPL(0x34u, WZ_Z80_PRIMARY_OP_INC_DEC), WZ_Z80_IMPL(0x35u, WZ_Z80_PRIMARY_OP_INC_DEC), WZ_Z80_UN(0x36u),
     WZ_Z80_IMPL(0x37u, WZ_Z80_PRIMARY_OP_SPECIAL_FLAGS), WZ_Z80_IMPL(0x38u, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_IMPL(0x39u, WZ_Z80_PRIMARY_OP_ADD_HL_RR), WZ_Z80_UN(0x3au),
-    WZ_Z80_UN(0x3bu), WZ_Z80_UN(0x3cu), WZ_Z80_UN(0x3du),
+    WZ_Z80_UN(0x3bu), WZ_Z80_IMPL(0x3cu, WZ_Z80_PRIMARY_OP_INC_DEC), WZ_Z80_IMPL(0x3du, WZ_Z80_PRIMARY_OP_INC_DEC),
     WZ_Z80_IMPL(0x3eu, WZ_Z80_PRIMARY_OP_LD_A_N),
     WZ_Z80_IMPL(0x3fu, WZ_Z80_PRIMARY_OP_SPECIAL_FLAGS), WZ_Z80_UN(0x40u), WZ_Z80_UN(0x41u), WZ_Z80_UN(0x42u),
     WZ_Z80_UN(0x43u), WZ_Z80_UN(0x44u), WZ_Z80_UN(0x45u), WZ_Z80_UN(0x46u),
@@ -420,6 +420,31 @@ static bool wz_z80_condition_met(const wz_z80_state_t* state, wz_byte_t conditio
     wz_byte_t mask = masks[condition >> 1u];
     bool flag_set = (state->main.f & mask) != 0u;
     return (condition & 1u) != 0u ? flag_set : !flag_set;
+}
+
+static wz_byte_t wz_z80_execute_inc_dec_value(wz_z80_state_t* state,
+                                              wz_byte_t value,
+                                              bool decrement)
+{
+    wz_byte_t result = decrement ? (wz_byte_t)(value - 1u) :
+                                   (wz_byte_t)(value + 1u);
+    wz_byte_t flags = (wz_byte_t)((state->main.f & WZ_Z80_FLAG_C) |
+                                  (result & (WZ_Z80_FLAG_S |
+                                             WZ_Z80_FLAG_Y |
+                                             WZ_Z80_FLAG_X)));
+    if (result == 0u) {
+        flags |= WZ_Z80_FLAG_Z;
+    }
+    if (decrement) {
+        flags |= WZ_Z80_FLAG_N;
+        if ((value & 0x0fu) == 0u) flags |= WZ_Z80_FLAG_H;
+        if (value == 0x80u) flags |= WZ_Z80_FLAG_PV;
+    } else {
+        if ((value & 0x0fu) == 0x0fu) flags |= WZ_Z80_FLAG_H;
+        if (value == 0x7fu) flags |= WZ_Z80_FLAG_PV;
+    }
+    state->main.f = flags;
+    return result;
 }
 
 static bool wz_z80_parity_even(wz_byte_t value)
@@ -1812,6 +1837,35 @@ wz_result_t wz_z80_step(wz_machine_t* machine)
         machine->cpu.memptr = address;
         machine->master_tick += opcode == 0x10u ? 26u : 24u;
         return WZ_RESULT_OK;
+    case WZ_Z80_PRIMARY_OP_INC_DEC: {
+        wz_byte_t target = (wz_byte_t)((opcode >> 3u) & 0x07u);
+        bool decrement = (opcode & 1u) != 0u;
+        wz_byte_t* target_register;
+        if (target == WZ_Z80_TARGET_HL_INDIRECT) {
+            address = wz_z80_hl(&machine->cpu);
+            if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,
+                           address, &value, 3u) != WZ_RESULT_OK) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+            value = wz_z80_execute_inc_dec_value(&machine->cpu, value, decrement);
+            if (wz_z80_bus(machine, WZ_BUS_INTERNAL, 14u,
+                           address, 0, 1u) != WZ_RESULT_OK ||
+                wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 16u,
+                           address, &value, 3u) != WZ_RESULT_OK) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+            machine->master_tick += 22u;
+            return WZ_RESULT_OK;
+        }
+        target_register = wz_z80_target_register(&machine->cpu, target);
+        if (target_register == 0) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        *target_register = wz_z80_execute_inc_dec_value(
+            &machine->cpu, *target_register, decrement);
+        machine->master_tick += 8u;
+        return WZ_RESULT_OK;
+    }
     case WZ_Z80_PRIMARY_OP_PREFIX_CB:
         if (wz_z80_bus(machine, WZ_BUS_M1_OPCODE_FETCH, 4u,
                        machine->cpu.program_counter, &cb_opcode, 4u) != WZ_RESULT_OK) {

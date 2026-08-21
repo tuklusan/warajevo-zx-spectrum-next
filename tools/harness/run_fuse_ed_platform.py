@@ -91,6 +91,12 @@ def main() -> int:
     )
     branch_command.extend(["--selection", "branch"])
     run(branch_command, project)
+    inc_dec_command = command.copy()
+    inc_dec_command[inc_dec_command.index(str(args.manifest.resolve()))] = str(
+        args.manifest.resolve().with_name("fuse-inc-dec-manifest.json")
+    )
+    inc_dec_command.extend(["--selection", "inc-dec"])
+    run(inc_dec_command, project)
     return 0
 
 
