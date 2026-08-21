@@ -44,18 +44,18 @@ static const wz_z80_opcode_decode_t wz_z80_primary_opcode_table[256] = {
     WZ_Z80_UN(0x04u), WZ_Z80_UN(0x05u), WZ_Z80_UN(0x06u), WZ_Z80_IMPL(0x07u, WZ_Z80_PRIMARY_OP_SPECIAL_FLAGS),
     WZ_Z80_UN(0x08u), WZ_Z80_IMPL(0x09u, WZ_Z80_PRIMARY_OP_ADD_HL_RR), WZ_Z80_UN(0x0au), WZ_Z80_UN(0x0bu),
     WZ_Z80_UN(0x0cu), WZ_Z80_UN(0x0du), WZ_Z80_UN(0x0eu), WZ_Z80_IMPL(0x0fu, WZ_Z80_PRIMARY_OP_SPECIAL_FLAGS),
-    WZ_Z80_UN(0x10u), WZ_Z80_UN(0x11u), WZ_Z80_UN(0x12u), WZ_Z80_UN(0x13u),
+    WZ_Z80_IMPL(0x10u, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_UN(0x11u), WZ_Z80_UN(0x12u), WZ_Z80_UN(0x13u),
     WZ_Z80_UN(0x14u), WZ_Z80_UN(0x15u), WZ_Z80_UN(0x16u), WZ_Z80_IMPL(0x17u, WZ_Z80_PRIMARY_OP_SPECIAL_FLAGS),
-    WZ_Z80_UN(0x18u), WZ_Z80_IMPL(0x19u, WZ_Z80_PRIMARY_OP_ADD_HL_RR), WZ_Z80_UN(0x1au), WZ_Z80_UN(0x1bu),
+    WZ_Z80_IMPL(0x18u, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_IMPL(0x19u, WZ_Z80_PRIMARY_OP_ADD_HL_RR), WZ_Z80_UN(0x1au), WZ_Z80_UN(0x1bu),
     WZ_Z80_UN(0x1cu), WZ_Z80_UN(0x1du), WZ_Z80_UN(0x1eu), WZ_Z80_IMPL(0x1fu, WZ_Z80_PRIMARY_OP_SPECIAL_FLAGS),
-    WZ_Z80_UN(0x20u), WZ_Z80_UN(0x21u), WZ_Z80_UN(0x22u), WZ_Z80_UN(0x23u),
+    WZ_Z80_IMPL(0x20u, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_UN(0x21u), WZ_Z80_UN(0x22u), WZ_Z80_UN(0x23u),
     WZ_Z80_UN(0x24u), WZ_Z80_UN(0x25u), WZ_Z80_UN(0x26u), WZ_Z80_IMPL(0x27u, WZ_Z80_PRIMARY_OP_SPECIAL_FLAGS),
-    WZ_Z80_UN(0x28u), WZ_Z80_IMPL(0x29u, WZ_Z80_PRIMARY_OP_ADD_HL_RR), WZ_Z80_UN(0x2au), WZ_Z80_UN(0x2bu),
+    WZ_Z80_IMPL(0x28u, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_IMPL(0x29u, WZ_Z80_PRIMARY_OP_ADD_HL_RR), WZ_Z80_UN(0x2au), WZ_Z80_UN(0x2bu),
     WZ_Z80_UN(0x2cu), WZ_Z80_UN(0x2du), WZ_Z80_UN(0x2eu), WZ_Z80_IMPL(0x2fu, WZ_Z80_PRIMARY_OP_SPECIAL_FLAGS),
-    WZ_Z80_UN(0x30u), WZ_Z80_UN(0x31u),
+    WZ_Z80_IMPL(0x30u, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_UN(0x31u),
     WZ_Z80_IMPL(0x32u, WZ_Z80_PRIMARY_OP_LD_NN_A),
     WZ_Z80_UN(0x33u), WZ_Z80_UN(0x34u), WZ_Z80_UN(0x35u), WZ_Z80_UN(0x36u),
-    WZ_Z80_IMPL(0x37u, WZ_Z80_PRIMARY_OP_SPECIAL_FLAGS), WZ_Z80_UN(0x38u), WZ_Z80_IMPL(0x39u, WZ_Z80_PRIMARY_OP_ADD_HL_RR), WZ_Z80_UN(0x3au),
+    WZ_Z80_IMPL(0x37u, WZ_Z80_PRIMARY_OP_SPECIAL_FLAGS), WZ_Z80_IMPL(0x38u, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_IMPL(0x39u, WZ_Z80_PRIMARY_OP_ADD_HL_RR), WZ_Z80_UN(0x3au),
     WZ_Z80_UN(0x3bu), WZ_Z80_UN(0x3cu), WZ_Z80_UN(0x3du),
     WZ_Z80_IMPL(0x3eu, WZ_Z80_PRIMARY_OP_LD_A_N),
     WZ_Z80_IMPL(0x3fu, WZ_Z80_PRIMARY_OP_SPECIAL_FLAGS), WZ_Z80_UN(0x40u), WZ_Z80_UN(0x41u), WZ_Z80_UN(0x42u),
@@ -83,25 +83,25 @@ static const wz_z80_opcode_decode_t wz_z80_primary_opcode_table[256] = {
     WZ_Z80_IMPL(0xa8u, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xa9u, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xaau, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xabu, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xacu, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xadu, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xaeu, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xafu, WZ_Z80_PRIMARY_OP_ALU),
     WZ_Z80_IMPL(0xb0u, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xb1u, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xb2u, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xb3u, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xb4u, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xb5u, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xb6u, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xb7u, WZ_Z80_PRIMARY_OP_ALU),
     WZ_Z80_IMPL(0xb8u, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xb9u, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xbau, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xbbu, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xbcu, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xbdu, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xbeu, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xbfu, WZ_Z80_PRIMARY_OP_ALU),
-    WZ_Z80_IMPL(0xc0u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_IMPL(0xc1u, WZ_Z80_PRIMARY_OP_POP), WZ_Z80_UN(0xc2u),
-    WZ_Z80_UN(0xc3u), WZ_Z80_IMPL(0xc4u, WZ_Z80_PRIMARY_OP_CALL), WZ_Z80_IMPL(0xc5u, WZ_Z80_PRIMARY_OP_PUSH), WZ_Z80_IMPL(0xc6u, WZ_Z80_PRIMARY_OP_ALU),
-    WZ_Z80_IMPL(0xc7u, WZ_Z80_PRIMARY_OP_RST), WZ_Z80_IMPL(0xc8u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_IMPL(0xc9u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_UN(0xcau),
+    WZ_Z80_IMPL(0xc0u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_IMPL(0xc1u, WZ_Z80_PRIMARY_OP_POP), WZ_Z80_IMPL(0xc2u, WZ_Z80_PRIMARY_OP_BRANCH),
+    WZ_Z80_IMPL(0xc3u, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_IMPL(0xc4u, WZ_Z80_PRIMARY_OP_CALL), WZ_Z80_IMPL(0xc5u, WZ_Z80_PRIMARY_OP_PUSH), WZ_Z80_IMPL(0xc6u, WZ_Z80_PRIMARY_OP_ALU),
+    WZ_Z80_IMPL(0xc7u, WZ_Z80_PRIMARY_OP_RST), WZ_Z80_IMPL(0xc8u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_IMPL(0xc9u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_IMPL(0xcau, WZ_Z80_PRIMARY_OP_BRANCH),
     WZ_Z80_PREFIX(0xcbu, WZ_Z80_PRIMARY_OP_PREFIX_CB),
     WZ_Z80_IMPL(0xccu, WZ_Z80_PRIMARY_OP_CALL), WZ_Z80_IMPL(0xcdu, WZ_Z80_PRIMARY_OP_CALL), WZ_Z80_IMPL(0xceu, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xcfu, WZ_Z80_PRIMARY_OP_RST),
-    WZ_Z80_IMPL(0xd0u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_IMPL(0xd1u, WZ_Z80_PRIMARY_OP_POP), WZ_Z80_UN(0xd2u), WZ_Z80_UN(0xd3u),
+    WZ_Z80_IMPL(0xd0u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_IMPL(0xd1u, WZ_Z80_PRIMARY_OP_POP), WZ_Z80_IMPL(0xd2u, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_UN(0xd3u),
     WZ_Z80_IMPL(0xd4u, WZ_Z80_PRIMARY_OP_CALL), WZ_Z80_IMPL(0xd5u, WZ_Z80_PRIMARY_OP_PUSH), WZ_Z80_IMPL(0xd6u, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xd7u, WZ_Z80_PRIMARY_OP_RST),
-    WZ_Z80_IMPL(0xd8u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_UN(0xd9u), WZ_Z80_UN(0xdau), WZ_Z80_UN(0xdbu),
+    WZ_Z80_IMPL(0xd8u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_UN(0xd9u), WZ_Z80_IMPL(0xdau, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_UN(0xdbu),
     WZ_Z80_IMPL(0xdcu, WZ_Z80_PRIMARY_OP_CALL),
     WZ_Z80_PREFIX(0xddu, WZ_Z80_PRIMARY_OP_PREFIX_DD),
     WZ_Z80_IMPL(0xdeu, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xdfu, WZ_Z80_PRIMARY_OP_RST), WZ_Z80_IMPL(0xe0u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_IMPL(0xe1u, WZ_Z80_PRIMARY_OP_POP),
-    WZ_Z80_UN(0xe2u), WZ_Z80_UN(0xe3u), WZ_Z80_IMPL(0xe4u, WZ_Z80_PRIMARY_OP_CALL), WZ_Z80_IMPL(0xe5u, WZ_Z80_PRIMARY_OP_PUSH),
-    WZ_Z80_IMPL(0xe6u, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xe7u, WZ_Z80_PRIMARY_OP_RST), WZ_Z80_IMPL(0xe8u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_UN(0xe9u),
-    WZ_Z80_UN(0xeau), WZ_Z80_UN(0xebu), WZ_Z80_IMPL(0xecu, WZ_Z80_PRIMARY_OP_CALL),
+    WZ_Z80_IMPL(0xe2u, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_UN(0xe3u), WZ_Z80_IMPL(0xe4u, WZ_Z80_PRIMARY_OP_CALL), WZ_Z80_IMPL(0xe5u, WZ_Z80_PRIMARY_OP_PUSH),
+    WZ_Z80_IMPL(0xe6u, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xe7u, WZ_Z80_PRIMARY_OP_RST), WZ_Z80_IMPL(0xe8u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_IMPL(0xe9u, WZ_Z80_PRIMARY_OP_BRANCH),
+    WZ_Z80_IMPL(0xeau, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_UN(0xebu), WZ_Z80_IMPL(0xecu, WZ_Z80_PRIMARY_OP_CALL),
     WZ_Z80_PREFIX(0xedu, WZ_Z80_PRIMARY_OP_PREFIX_ED),
     WZ_Z80_IMPL(0xeeu, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xefu, WZ_Z80_PRIMARY_OP_RST), WZ_Z80_IMPL(0xf0u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_IMPL(0xf1u, WZ_Z80_PRIMARY_OP_POP),
-    WZ_Z80_UN(0xf2u), WZ_Z80_UN(0xf3u), WZ_Z80_IMPL(0xf4u, WZ_Z80_PRIMARY_OP_CALL), WZ_Z80_IMPL(0xf5u, WZ_Z80_PRIMARY_OP_PUSH),
+    WZ_Z80_IMPL(0xf2u, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_UN(0xf3u), WZ_Z80_IMPL(0xf4u, WZ_Z80_PRIMARY_OP_CALL), WZ_Z80_IMPL(0xf5u, WZ_Z80_PRIMARY_OP_PUSH),
     WZ_Z80_IMPL(0xf6u, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xf7u, WZ_Z80_PRIMARY_OP_RST), WZ_Z80_IMPL(0xf8u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_UN(0xf9u),
-    WZ_Z80_UN(0xfau), WZ_Z80_UN(0xfbu), WZ_Z80_IMPL(0xfcu, WZ_Z80_PRIMARY_OP_CALL),
+    WZ_Z80_IMPL(0xfau, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_UN(0xfbu), WZ_Z80_IMPL(0xfcu, WZ_Z80_PRIMARY_OP_CALL),
     WZ_Z80_PREFIX(0xfdu, WZ_Z80_PRIMARY_OP_PREFIX_FD),
     WZ_Z80_IMPL(0xfeu, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xffu, WZ_Z80_PRIMARY_OP_RST)
 };
@@ -1740,6 +1740,77 @@ wz_result_t wz_z80_step(wz_machine_t* machine)
         machine->cpu.program_counter = address;
         machine->cpu.memptr = address;
         machine->master_tick += 22u;
+        return WZ_RESULT_OK;
+    case WZ_Z80_PRIMARY_OP_BRANCH:
+        if (opcode == 0xe9u) {
+            machine->cpu.program_counter = wz_z80_hl(&machine->cpu);
+            machine->master_tick += 8u;
+            return WZ_RESULT_OK;
+        }
+        if (opcode >= 0xc2u) {
+            bool taken = opcode == 0xc3u || wz_z80_condition_met(
+                &machine->cpu, (wz_byte_t)((opcode >> 3u) & 0x07u));
+            if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,
+                           machine->cpu.program_counter, &low, 3u) != WZ_RESULT_OK) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+            machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
+            if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 14u,
+                           machine->cpu.program_counter, &high, 3u) != WZ_RESULT_OK) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+            machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
+            address = (wz_word_t)low | ((wz_word_t)high << 8u);
+            machine->cpu.memptr = address;
+            if (taken) {
+                machine->cpu.program_counter = address;
+            }
+            machine->master_tick += 20u;
+            return WZ_RESULT_OK;
+        }
+        if (opcode == 0x10u) {
+            if (wz_z80_bus(machine, WZ_BUS_INTERNAL, 8u,
+                           machine->cpu.program_counter, 0, 1u) != WZ_RESULT_OK) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+            machine->cpu.main.b = (wz_byte_t)(machine->cpu.main.b - 1u);
+            if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 10u,
+                           machine->cpu.program_counter, &value, 3u) != WZ_RESULT_OK) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+            machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
+            if (machine->cpu.main.b == 0u) {
+                machine->master_tick += 16u;
+                return WZ_RESULT_OK;
+            }
+            if (wz_z80_bus(machine, WZ_BUS_INTERNAL, 16u,
+                           wz_z80_add16(machine->cpu.program_counter, 0xffffu),
+                           0, 5u) != WZ_RESULT_OK) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+        } else {
+            bool taken = opcode == 0x18u || wz_z80_condition_met(
+                &machine->cpu, (wz_byte_t)((opcode >> 3u) & 0x03u));
+            if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,
+                           machine->cpu.program_counter, &value, 3u) != WZ_RESULT_OK) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+            machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
+            if (!taken) {
+                machine->master_tick += 14u;
+                return WZ_RESULT_OK;
+            }
+            if (wz_z80_bus(machine, WZ_BUS_INTERNAL, 14u,
+                           wz_z80_add16(machine->cpu.program_counter, 0xffffu),
+                           0, 5u) != WZ_RESULT_OK) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+        }
+        address = (wz_word_t)(machine->cpu.program_counter +
+                              (wz_word_t)(int16_t)(int8_t)value);
+        machine->cpu.program_counter = address;
+        machine->cpu.memptr = address;
+        machine->master_tick += opcode == 0x10u ? 26u : 24u;
         return WZ_RESULT_OK;
     case WZ_Z80_PRIMARY_OP_PREFIX_CB:
         if (wz_z80_bus(machine, WZ_BUS_M1_OPCODE_FETCH, 4u,

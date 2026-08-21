@@ -204,7 +204,7 @@ int main(void)
             return 1;
         }
     }
-    if (implemented != 121u || prefix != 4u || documented_unimplemented != 131u ||
+    if (implemented != 137u || prefix != 4u || documented_unimplemented != 115u ||
         undocumented != 0u || illegal != 0u ||
         wz_z80_primary_opcode_decode(0x00u)->operation != WZ_Z80_PRIMARY_OP_NOP ||
         wz_z80_primary_opcode_decode(0x32u)->operation != WZ_Z80_PRIMARY_OP_LD_NN_A ||
@@ -222,6 +222,11 @@ int main(void)
         wz_z80_primary_opcode_decode(0xc9u)->operation != WZ_Z80_PRIMARY_OP_RET ||
         wz_z80_primary_opcode_decode(0xfcu)->operation != WZ_Z80_PRIMARY_OP_CALL ||
         wz_z80_primary_opcode_decode(0xffu)->operation != WZ_Z80_PRIMARY_OP_RST ||
+        wz_z80_primary_opcode_decode(0x10u)->operation != WZ_Z80_PRIMARY_OP_BRANCH ||
+        wz_z80_primary_opcode_decode(0x38u)->operation != WZ_Z80_PRIMARY_OP_BRANCH ||
+        wz_z80_primary_opcode_decode(0xc3u)->operation != WZ_Z80_PRIMARY_OP_BRANCH ||
+        wz_z80_primary_opcode_decode(0xe9u)->operation != WZ_Z80_PRIMARY_OP_BRANCH ||
+        wz_z80_primary_opcode_decode(0xfau)->operation != WZ_Z80_PRIMARY_OP_BRANCH ||
         wz_z80_primary_opcode_decode(0xcbu)->operation != WZ_Z80_PRIMARY_OP_PREFIX_CB ||
         wz_z80_primary_opcode_decode(0xddu)->operation != WZ_Z80_PRIMARY_OP_PREFIX_DD ||
         wz_z80_primary_opcode_decode(0xedu)->operation != WZ_Z80_PRIMARY_OP_PREFIX_ED ||
@@ -1695,6 +1700,142 @@ int main(void)
         bus_log.requests[3].address != 0xffffu ||
         bus_log.requests[3].value != 0x35u) {
         fputs("Z80 RST wrapping trace failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 JR test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    machine.cpu.program_counter = 0xfffeu;
+    machine.memory[0xfffeu] = 0x18u;
+    machine.memory[0xffffu] = 0xfeu;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.program_counter != 0xfffeu ||
+        machine.cpu.memptr != 0xfffeu ||
+        machine.master_tick != 24u ||
+        bus_log.count != 3u ||
+        bus_log.requests[1].cycle != WZ_BUS_MEMORY_READ ||
+        bus_log.requests[1].master_tick != 8u ||
+        bus_log.requests[1].address != 0xffffu ||
+        bus_log.requests[1].value != 0xfeu ||
+        bus_log.requests[2].cycle != WZ_BUS_INTERNAL ||
+        bus_log.requests[2].master_tick != 14u ||
+        bus_log.requests[2].address != 0xffffu ||
+        bus_log.requests[2].t_states != 5u) {
+        fputs("Z80 JR signed wrapping trace failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before conditional JR test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    machine.cpu.main.f = 0x40u;
+    machine.cpu.memptr = 0x1234u;
+    machine.memory[0u] = 0x20u;
+    machine.memory[1u] = 0x40u;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.program_counter != 2u ||
+        machine.cpu.memptr != 0x1234u ||
+        machine.master_tick != 14u ||
+        bus_log.count != 2u) {
+        fputs("Z80 untaken conditional JR trace failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 DJNZ taken test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    machine.cpu.main.b = 2u;
+    machine.memory[0u] = 0x10u;
+    machine.memory[1u] = 0xfeu;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.b != 1u ||
+        machine.cpu.program_counter != 0u ||
+        machine.cpu.memptr != 0u ||
+        machine.master_tick != 26u ||
+        bus_log.count != 4u ||
+        bus_log.requests[1].cycle != WZ_BUS_INTERNAL ||
+        bus_log.requests[1].master_tick != 8u ||
+        bus_log.requests[1].t_states != 1u ||
+        bus_log.requests[2].cycle != WZ_BUS_MEMORY_READ ||
+        bus_log.requests[2].master_tick != 10u ||
+        bus_log.requests[2].address != 1u ||
+        bus_log.requests[3].cycle != WZ_BUS_INTERNAL ||
+        bus_log.requests[3].master_tick != 16u ||
+        bus_log.requests[3].address != 1u ||
+        bus_log.requests[3].t_states != 5u) {
+        fputs("Z80 DJNZ taken trace failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 DJNZ untaken test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    machine.cpu.main.b = 1u;
+    machine.cpu.memptr = 0x5678u;
+    machine.memory[0u] = 0x10u;
+    machine.memory[1u] = 0xfeu;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.b != 0u ||
+        machine.cpu.program_counter != 2u ||
+        machine.cpu.memptr != 0x5678u ||
+        machine.master_tick != 16u ||
+        bus_log.count != 3u) {
+        fputs("Z80 DJNZ untaken trace failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before conditional JP test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    machine.cpu.main.f = 0x40u;
+    machine.memory[0u] = 0xc2u;
+    machine.memory[1u] = 0x34u;
+    machine.memory[2u] = 0x12u;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.program_counter != 3u ||
+        machine.cpu.memptr != 0x1234u ||
+        machine.master_tick != 20u ||
+        bus_log.count != 3u ||
+        bus_log.requests[1].master_tick != 8u ||
+        bus_log.requests[1].address != 1u ||
+        bus_log.requests[2].master_tick != 14u ||
+        bus_log.requests[2].address != 2u) {
+        fputs("Z80 untaken conditional JP trace failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 JP HL test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    machine.cpu.main.h = 0xcau;
+    machine.cpu.main.l = 0xfeu;
+    machine.cpu.memptr = 0x9abcu;
+    machine.memory[0u] = 0xe9u;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.program_counter != 0xcafeu ||
+        machine.cpu.memptr != 0x9abcu ||
+        machine.master_tick != 8u ||
+        bus_log.count != 1u) {
+        fputs("Z80 JP HL trace failed\n", stderr);
         return 1;
     }
 

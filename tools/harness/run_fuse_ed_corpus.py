@@ -24,6 +24,10 @@ STACK_SUBROUTINE_OPCODES = frozenset({
     "e0", "e1", "e4", "e5", "e7", "e8", "ec", "ef",
     "f0", "f1", "f4", "f5", "f7", "f8", "fc", "ff",
 })
+BRANCH_OPCODES = frozenset({
+    "10", "18", "20", "28", "30", "38", "c2", "c3", "ca", "d2",
+    "da", "e2", "e9", "ea", "f2", "fa",
+})
 
 
 @dataclass
@@ -146,7 +150,7 @@ def main() -> int:
     parser.add_argument("--manifest", required=True, type=Path)
     parser.add_argument("--commit", required=True)
     parser.add_argument("--selection", choices=(
-        "ed", "indexed-cb", "cb-rotate-shift", "stack-subroutine"
+        "ed", "indexed-cb", "cb-rotate-shift", "stack-subroutine", "branch"
     ),
                         default="ed")
     args = parser.parse_args()
@@ -170,12 +174,19 @@ def main() -> int:
                        int(name[2:], 16) < 0x40)
         expected_count = 64
         selection_description = "all CB rotate/shift cases from cb00 through cb3f"
-    else:
+    elif args.selection == "stack-subroutine":
         names = sorted(name for name in inputs
                        if name.split("_", 1)[0] in STACK_SUBROUTINE_OPCODES)
         expected_count = 50
         selection_description = (
             "all CALL, RET, RST, PUSH, and POP cases including conditional paths"
+        )
+    else:
+        names = sorted(name for name in inputs
+                       if name.split("_", 1)[0] in BRANCH_OPCODES)
+        expected_count = 28
+        selection_description = (
+            "all JR, JP, and DJNZ cases including taken and not-taken paths"
         )
     results: list[dict[str, object]] = []
     with tempfile.TemporaryDirectory(prefix=f"wzsn-fuse-{args.selection}-") as temporary:

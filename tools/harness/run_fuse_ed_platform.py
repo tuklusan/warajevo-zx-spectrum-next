@@ -85,6 +85,12 @@ def main() -> int:
     )
     stack_command.extend(["--selection", "stack-subroutine"])
     run(stack_command, project)
+    branch_command = command.copy()
+    branch_command[branch_command.index(str(args.manifest.resolve()))] = str(
+        args.manifest.resolve().with_name("fuse-branch-manifest.json")
+    )
+    branch_command.extend(["--selection", "branch"])
+    run(branch_command, project)
     return 0
 
 
