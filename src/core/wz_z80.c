@@ -1887,8 +1887,7 @@ wz_result_t wz_z80_step(wz_machine_t* machine)
     }
     case WZ_Z80_PRIMARY_OP_HALT:
         machine->cpu.halted = 1u;
-        machine->cpu.program_counter = wz_z80_add16(
-            machine->cpu.program_counter, 0xffffu);
+        machine->cpu.program_counter = pc;
         machine->master_tick += 8u;
         return WZ_RESULT_OK;
     case WZ_Z80_PRIMARY_OP_PREFIX_CB:

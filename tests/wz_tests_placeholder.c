@@ -1911,38 +1911,38 @@ int main(void)
     }
     memset(&bus_log, 0, sizeof(bus_log));
     wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
-    machine.cpu.program_counter = 0xffffu;
+    machine.cpu.program_counter = 0x1234u;
     machine.cpu.r = 0xffu;
-    machine.memory[0xffffu] = 0x76u;
+    machine.memory[0x1234u] = 0x76u;
     if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
         wz_z80_step(&machine) != WZ_RESULT_OK ||
         machine.cpu.halted != 1u ||
-        machine.cpu.program_counter != 0xffffu ||
+        machine.cpu.program_counter != 0x1234u ||
         machine.cpu.r != 0x80u ||
         machine.master_tick != 8u ||
         bus_log.count != 1u ||
         bus_log.requests[0].cycle != WZ_BUS_M1_OPCODE_FETCH ||
-        bus_log.requests[0].address != 0xffffu ||
+        bus_log.requests[0].address != 0x1234u ||
         bus_log.requests[0].value != 0x76u) {
         fputs("Z80 HALT entry failed\n", stderr);
         return 1;
     }
-    machine.memory[0xffffu] = 0u;
+    machine.memory[0x1234u] = 0u;
     if (wz_z80_step(&machine) != WZ_RESULT_OK ||
         machine.cpu.halted != 1u ||
-        machine.cpu.program_counter != 0xffffu ||
+        machine.cpu.program_counter != 0x1234u ||
         machine.cpu.r != 0x81u ||
         machine.master_tick != 16u ||
         bus_log.count != 2u ||
         bus_log.requests[1].cycle != WZ_BUS_M1_OPCODE_FETCH ||
         bus_log.requests[1].master_tick != 8u ||
-        bus_log.requests[1].address != 0xffffu ||
+        bus_log.requests[1].address != 0x1234u ||
         bus_log.requests[1].value != 0u) {
         fputs("Z80 repeated halted M1 failed\n", stderr);
         return 1;
     }
     wz_z80_exit_halt_for_interrupt(&machine.cpu);
-    if (machine.cpu.halted != 0u || machine.cpu.program_counter != 0u ||
+    if (machine.cpu.halted != 0u || machine.cpu.program_counter != 0x1235u ||
         machine.cpu.r != 0x81u || machine.master_tick != 16u) {
         fputs("Z80 accepted-interrupt HALT exit boundary failed\n", stderr);
         return 1;
