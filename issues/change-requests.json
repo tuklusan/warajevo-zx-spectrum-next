@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 38,
+  "next_cr_number": 39,
   "status_values": [
     "open",
     "in_progress",
@@ -501,22 +501,53 @@
     {
       "cr_number": "CR-0036",
       "title": "Implement Z80 relative and absolute branch timing",
-      "status": "open",
+      "status": "closed",
       "source_authority": [
         "design/warajevo-zx-spectrum-next-architecture.md sections 11 and 12",
         "design/wzsn-architectures-1-2-developer-tasks.md task 055"
       ],
-      "notes": "Opened on 2026-08-20 for Phase-2 task 055. Scope includes JR, JP, and DJNZ taken and not-taken paths, all applicable conditions, signed displacement and address wrapping, MEMPTR behavior, and exact cycle traces. Candidate 7e3ae2b passed CODE review and all focused CTest traces; 27 of 28 pinned branch cases passed on all three SSH machines. The DJNZ case exposed missing INC C support from closed task 049, so CR-0036 returned to open while prerequisite remediation CR-0037 is completed."
+      "latest_evidence": {
+        "implementation_commit": "7e3ae2b806cc13f029701b701b9550f953fe4d46",
+        "corrected_build_commit": "4e77131feca6ac409bed6191bbff50ad8bae0db8",
+        "code_review_range": "495056a6f874673e99abb9a3bc4658515691130f..7e3ae2b806cc13f029701b701b9550f953fe4d46",
+        "code_review": "PASS",
+        "test_artifact_review": "PASS",
+        "ssh_runs": ["CR0037-INCDEC-LINUX", "CR0037-INCDEC-WIN10-R2", "CR0037-INCDEC-WIN11-R2"],
+        "hosted_run": "32432332307",
+        "fuse_branch_cases_per_platform": 28,
+        "hosted_platforms": ["linux-x64", "linux-arm64", "windows-x64", "macos-arm64", "macos-intel-x64"]
+      },
+      "notes": "Opened and closed on 2026-08-20 for Phase-2 task 055. Implemented JR, JP, JP (HL), and DJNZ with all conditions, signed displacement/address wrapping, MEMPTR behavior, and exact taken/not-taken cycle traces. Candidate 7e3ae2b passed CODE review and focused CTest; 27 of 28 initial branch cases passed before the DJNZ case exposed missing INC C support from closed task 049. After prerequisite CR-0037, all 28 branch cases passed on three SSH and five hosted platforms, and the separate CR-0036 TEST_ARTIFACT review passed with zero findings."
     },
     {
       "cr_number": "CR-0037",
-      "title": "Complete omitted Z80 INC and DEC arithmetic family",
-      "status": "in_progress",
+      "title": "Complete omitted primary Z80 INC and DEC arithmetic family",
+      "status": "closed",
       "source_authority": [
         "design/warajevo-zx-spectrum-next-architecture.md sections 11 and 12",
         "design/wzsn-architectures-1-2-developer-tasks.md task 049"
       ],
-      "notes": "Opened on 2026-08-20 after the CR-0036 DJNZ corpus exposed that CR-0030 closed task 049 without the primary INC/DEC register and (HL) forms. Implement the complete family with exact flags, memory bus timing, wrapping values, and pinned reference vectors before resuming CR-0036."
+      "latest_evidence": {
+        "implementation_commit": "4e77131feca6ac409bed6191bbff50ad8bae0db8",
+        "code_review_range": "b61ceadca336f40fd9f577782aac32d841a9b11f..4e77131feca6ac409bed6191bbff50ad8bae0db8",
+        "code_review": "PASS",
+        "test_artifact_review": "PASS",
+        "ssh_runs": ["CR0037-INCDEC-LINUX", "CR0037-INCDEC-WIN10-R2", "CR0037-INCDEC-WIN11-R2"],
+        "hosted_run": "32432332307",
+        "fuse_inc_dec_cases_per_platform": 16,
+        "hosted_platforms": ["linux-x64", "linux-arm64", "windows-x64", "macos-arm64", "macos-intel-x64"]
+      },
+      "notes": "Opened and closed on 2026-08-20 after the CR-0036 DJNZ corpus exposed that CR-0030 closed task 049 without the primary INC/DEC register and (HL) forms. Implemented all 16 primary forms with carry preservation, overflow, half-carry/borrow, sign/zero, N, X/Y flags, and exact memory read/internal/write timing. All 16 pinned cases passed on three SSH and five hosted platforms; CODE and 64-file TEST_ARTIFACT reviews passed with zero findings. The first Windows 10 artifact pull had a CRC error after its remote tests passed, and the first Windows 11 corpus launch was blocked by Application Control after CTest passed; fresh run identities passed without bypassing policy."
+    },
+    {
+      "cr_number": "CR-0038",
+      "title": "Implement Z80 HALT and refresh semantics",
+      "status": "in_progress",
+      "source_authority": [
+        "design/warajevo-zx-spectrum-next-architecture.md sections 11 and 12",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 056"
+      ],
+      "notes": "Opened on 2026-08-20 for Phase-2 task 056. Scope includes HALT entry, repeated halted M1/refresh behavior, PC and R semantics, and interrupt/no-interrupt exit evidence without host-time dependence."
     }
   ]
 }
