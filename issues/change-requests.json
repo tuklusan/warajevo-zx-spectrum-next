@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 36,
+  "next_cr_number": 37,
   "status_values": [
     "open",
     "in_progress",
@@ -481,12 +481,32 @@
     {
       "cr_number": "CR-0035",
       "title": "Implement Z80 stack and subroutine bus timing",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/warajevo-zx-spectrum-next-architecture.md sections 11 and 12",
         "design/wzsn-architectures-1-2-developer-tasks.md task 054"
       ],
-      "notes": "Opened on 2026-08-20 for Phase-2 task 054. Scope includes CALL, RET, RST, PUSH, POP, exact memory read/write ordering, wrapping SP transitions, conditional forms where applicable, and trace evidence."
+      "latest_evidence": {
+        "implementation_commit": "0bb10c5fe773ae50cfa0cd8e53e0340b3d60200c",
+        "code_review_range": "c03c24b9db48811d8ce4146b5eac229eff48cffe..0bb10c5fe773ae50cfa0cd8e53e0340b3d60200c",
+        "code_review": "PASS",
+        "test_artifact_review": "PASS",
+        "ssh_runs": ["CR0035-STACK-LINUX", "CR0035-STACK-WIN10", "CR0035-STACK-WIN11"],
+        "hosted_run": "32430892679",
+        "fuse_stack_subroutine_cases_per_platform": 50,
+        "hosted_platforms": ["linux-x64", "linux-arm64", "windows-x64", "macos-arm64", "macos-intel-x64"]
+      },
+      "notes": "Opened and closed on 2026-08-20 for Phase-2 task 054. Implemented all CALL, RET, RST, PUSH, and POP primary opcodes, including conditional timing, AF stack-pair semantics, wrapping SP transitions, MEMPTR effects, and exact internal/read/write traces. The permanent pinned stack/subroutine corpus passed all 50 cases on each of three SSH and five hosted platforms. CODE and 48-file TEST_ARTIFACT reviews passed with zero findings."
+    },
+    {
+      "cr_number": "CR-0036",
+      "title": "Implement Z80 relative and absolute branch timing",
+      "status": "in_progress",
+      "source_authority": [
+        "design/warajevo-zx-spectrum-next-architecture.md sections 11 and 12",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 055"
+      ],
+      "notes": "Opened on 2026-08-20 for Phase-2 task 055. Scope includes JR, JP, and DJNZ taken and not-taken paths, all applicable conditions, signed displacement and address wrapping, MEMPTR behavior, and exact cycle traces."
     }
   ]
 }
