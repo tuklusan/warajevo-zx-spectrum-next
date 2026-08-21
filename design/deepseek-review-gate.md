@@ -178,6 +178,14 @@ length finish, malformed JSON, incomplete pass, missing mandatory context, retry
 exhaustion, API failure, duplicate active review, or overall deadline exhaustion
 fails closed. Normal review has no separate liveness call.
 
+For CODE candidates, deterministic context completion also examines the exact
+candidate-location line in the immutable changed-file record. When that line
+contains a callable identifier and the candidate has remaining context-request
+capacity, the harness adds one bounded symbol lookup against the reviewed head
+tree. This ensures that a candidate located at a declaration or call site reaches
+falsification with tracked implementation context even when discovery omitted an
+explicit navigation request; model-authored paths or summaries are not trusted.
+
 Stable scope, requirement, and immutable evidence prefixes are ordered before
 pass-specific instructions for cache reuse. The review-unit budget is calculated
 after the stable prefix and fails closed as `REQUIREMENT_SCOPE_TOO_BROAD` when
