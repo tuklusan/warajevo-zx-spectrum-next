@@ -186,6 +186,11 @@ tree. This ensures that a candidate located at a declaration or call site reache
 falsification with tracked implementation context even when discovery omitted an
 explicit navigation request; model-authored paths or summaries are not trusted.
 
+The wall-clock review deadline is also enforced outside the HTTP socket call.
+The bounded caller stops waiting and fails closed when the remaining review time
+expires even if a platform transport keeps a socket operation alive beyond its
+requested timeout; a stalled transport can therefore never extend gate authority.
+
 Stable scope, requirement, and immutable evidence prefixes are ordered before
 pass-specific instructions for cache reuse. The review-unit budget is calculated
 after the stable prefix and fails closed as `REQUIREMENT_SCOPE_TOO_BROAD` when

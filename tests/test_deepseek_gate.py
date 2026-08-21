@@ -11,6 +11,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 import unittest
 import urllib.error
@@ -929,6 +930,22 @@ class GateTests(unittest.TestCase):
                                      packet(), scope(), requirement(), [], gate.Telemetry("CODE", "snap"),
                                      deadline)
         self.assertEqual(result["verdict"], "REVIEW_UNAVAILABLE")
+
+    def test_blocked_transport_cannot_outlive_review_deadline(self):
+        release = threading.Event()
+
+        def blocked_opener(request, timeout):
+            release.wait(5.0)
+
+        client = gate.DeepSeekClient("secret", blocked_opener)
+        started = time.monotonic()
+        try:
+            with self.assertRaisesRegex(gate.ReviewError, "REVIEW_DEADLINE_EXCEEDED"):
+                client.request("system", "user", gate.Telemetry("CODE", "snap"),
+                               deadline=gate.ReviewDeadline(0.05))
+            self.assertLess(time.monotonic() - started, 1.0)
+        finally:
+            release.set()
 
     def test_deadline_exhaustion_after_clean_discovery_cannot_pass(self):
         class ExpiringClient(FakeClient):

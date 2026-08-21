@@ -16,10 +16,12 @@ import http.client
 import json
 import mimetypes
 import os
+import queue
 import re
 import ssl
 import subprocess
 import sys
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -682,6 +684,32 @@ class DeepSeekClient:
             context = ssl.create_default_context()
         return urllib.request.urlopen(request, timeout=timeout, context=context)
 
+    @staticmethod
+    def _read_response(opener: Any, request: urllib.request.Request, timeout: int,
+                       deadline: ReviewDeadline | None, phase: str) -> bytes:
+        if deadline is None:
+            with opener(request, timeout=timeout) as response:
+                return response.read()
+        result: queue.Queue[tuple[bool, Any]] = queue.Queue(maxsize=1)
+
+        def perform_request() -> None:
+            try:
+                with opener(request, timeout=timeout) as response:
+                    result.put((True, response.read()))
+            except Exception as exc:
+                result.put((False, exc))
+
+        worker = threading.Thread(target=perform_request, daemon=True,
+                                  name=f"review-transport-{phase}")
+        worker.start()
+        try:
+            succeeded, value = result.get(timeout=deadline.remaining())
+        except queue.Empty:
+            raise ReviewError(f"REVIEW_DEADLINE_EXCEEDED during {phase}") from None
+        if not succeeded:
+            raise value
+        return value
+
     def request(self, system: str, user: str, telemetry: Telemetry,
                 thinking: str = "enabled", reasoning_effort: str | None = "high",
                 max_tokens: int = DISCOVERY_OUTPUT_TOKENS, phase: str = "UNSPECIFIED",
@@ -727,8 +755,8 @@ class DeepSeekClient:
             try:
                 opener = self._opener or self._open
                 timeout = deadline.timeout() if deadline is not None else REQUEST_TIMEOUT_SECONDS
-                with opener(request, timeout=timeout) as response:
-                    envelope = json.loads(response.read().decode())
+                response_data = self._read_response(opener, request, timeout, deadline, phase)
+                envelope = json.loads(response_data.decode())
                 choice = envelope["choices"][0]
                 finish_reason = choice.get("finish_reason")
                 if finish_reason == "insufficient_system_resource":

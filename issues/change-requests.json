@@ -557,7 +557,7 @@
         "design/deepseek-review-gate.md",
         "design/FRESH-PROJECT-DEEPSEEK-REVIEW-GATE.md sections on deterministic context completion and bootstrap maintenance"
       ],
-      "notes": "Opened on 2026-08-20 after CR-0038 produced two consecutive inconclusive CODE reviews while reviewer health remained available. The second candidate cited a header declaration, emitted no context request, and reached falsification without the corresponding implementation body even though that body was present in the immutable reviewed snapshot. Scope is bounded deterministic symbol-context enrichment, regression coverage, independent bootstrap review, and protected remote/hosted validation before feature work resumes."
+      "notes": "Opened on 2026-08-20 after CR-0038 produced two consecutive inconclusive CODE reviews while reviewer health remained available. The second candidate cited a header declaration, emitted no context request, and reached falsification without the corresponding implementation body even though that body was present in the immutable reviewed snapshot. The first bootstrap review attempt was explicitly terminated after it outlived its 480-second deadline, exposing that socket timeout alone did not enforce the wall-clock review limit. Scope includes bounded deterministic symbol-context enrichment, a hard caller-side transport deadline, regression coverage, independent bootstrap review, and protected remote/hosted validation before feature work resumes."
     }
   ]
 }
