@@ -213,7 +213,7 @@ normal reviews of the same snapshot while safely recovering stale locks.
 python tools/reviewer/deepseek_gate.py review --type CODE --cr CR-0020 --base <base> --head <head> --requirements design/deepseek-review-gate.md --scope-file test-artefacts/reviewer/requirements/CR-0020-review-harness-hardening.local.txt
 python tools/reviewer/deepseek_gate.py review --type DOCUMENTATION --requirements design/deepseek-review-gate.md --path <document>
 python tools/reviewer/deepseek_gate.py review --type TEST_ARTIFACT --requirements design/deepseek-review-gate.md --run-id <test-run-id> --build-id <build-identity> --path <artifact>
-python tools/reviewer/deepseek_gate.py health-check --requirements design/deepseek-review-gate.md
+python tools/reviewer/deepseek_gate.py health-check --requirements design/deepseek-review-gate.md --deadline-seconds 60
 ```
 
 The retained bootstrap gate is an architecturally independent one-pass audit

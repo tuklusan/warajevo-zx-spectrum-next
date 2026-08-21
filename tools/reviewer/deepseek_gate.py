@@ -1777,6 +1777,7 @@ def main() -> int:
     review.add_argument("--deadline-seconds", type=float, default=DEFAULT_REVIEW_DEADLINE_SECONDS)
     health = sub.add_parser("health-check")
     health.add_argument("--requirements", required=True)
+    health.add_argument("--deadline-seconds", type=float, default=60.0)
     args = parser.parse_args()
     root = Path.cwd().resolve()
     if args.command == "health-check":
@@ -1784,7 +1785,8 @@ def main() -> int:
             client = DeepSeekClient()
             telemetry = Telemetry("DOCUMENTATION", "manual-health-check")
             result = client.request("Return JSON only.", "Return {\"status\":\"available\"} as JSON.", telemetry,
-                                    "disabled", None, DISCOVERY_OUTPUT_TOKENS, "HEALTH-CHECK")
+                                    "disabled", None, DISCOVERY_OUTPUT_TOKENS, "HEALTH-CHECK",
+                                    ReviewDeadline(args.deadline_seconds))
             print(canonical_json({"status": "available" if result.get("status") == "available" else "inconclusive"}))
             return 0 if result.get("status") == "available" else 2
         except ReviewError as exc:
