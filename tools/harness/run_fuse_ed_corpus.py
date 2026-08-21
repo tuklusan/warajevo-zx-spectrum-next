@@ -155,7 +155,7 @@ def main() -> int:
     parser.add_argument("--commit", required=True)
     parser.add_argument("--selection", choices=(
         "ed", "indexed-cb", "cb-rotate-shift", "stack-subroutine", "branch",
-        "inc-dec"
+        "inc-dec", "halt"
     ),
                         default="ed")
     args = parser.parse_args()
@@ -193,11 +193,15 @@ def main() -> int:
         selection_description = (
             "all JR, JP, and DJNZ cases including taken and not-taken paths"
         )
-    else:
+    elif args.selection == "inc-dec":
         names = sorted(name for name in inputs
                        if name.split("_", 1)[0] in INC_DEC_OPCODES)
         expected_count = 16
         selection_description = "all primary INC and DEC register and memory cases"
+    else:
+        names = ["76"] if "76" in inputs else []
+        expected_count = 1
+        selection_description = "the primary HALT state and timing case"
     results: list[dict[str, object]] = []
     with tempfile.TemporaryDirectory(prefix=f"wzsn-fuse-{args.selection}-") as temporary:
         case_path = Path(temporary) / "case.in"

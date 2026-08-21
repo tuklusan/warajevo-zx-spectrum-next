@@ -97,6 +97,12 @@ def main() -> int:
     )
     inc_dec_command.extend(["--selection", "inc-dec"])
     run(inc_dec_command, project)
+    halt_command = command.copy()
+    halt_command[halt_command.index(str(args.manifest.resolve()))] = str(
+        args.manifest.resolve().with_name("fuse-halt-manifest.json")
+    )
+    halt_command.extend(["--selection", "halt"])
+    run(halt_command, project)
     return 0
 
 

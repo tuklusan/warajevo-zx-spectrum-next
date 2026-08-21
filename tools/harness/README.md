@@ -30,7 +30,8 @@ This directory contains the tracked baseline harness entry points for:
   complete ED corpus, the complete DDCB/FDCB indexed-bit corpus, all ordinary
   CB rotate/shift vectors including undocumented SLL, and all CALL/RET/RST/
   PUSH/POP vectors including conditional paths, plus all JR/JP/DJNZ branch
-  vectors with taken and not-taken paths, and all primary INC/DEC vectors.
+  vectors with taken and not-taken paths, all primary INC/DEC vectors, and the
+  primary HALT state/timing vector.
   Acquires the pinned Fuse revision into private project-local test artifacts,
   verifies its identity, and runs every ED vector without silent skips
 - `stream_zip_tree.py`

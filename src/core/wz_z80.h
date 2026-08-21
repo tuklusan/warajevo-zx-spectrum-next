@@ -71,6 +71,7 @@ typedef enum {
     WZ_Z80_PRIMARY_OP_RST,
     WZ_Z80_PRIMARY_OP_BRANCH,
     WZ_Z80_PRIMARY_OP_INC_DEC,
+    WZ_Z80_PRIMARY_OP_HALT,
     WZ_Z80_PRIMARY_OP_PREFIX_CB,
     WZ_Z80_PRIMARY_OP_PREFIX_DD,
     WZ_Z80_PRIMARY_OP_PREFIX_ED,
@@ -156,6 +157,7 @@ size_t wz_z80_cb_opcode_count(void);
 const wz_z80_cb_opcode_decode_t* wz_z80_cb_opcode_decode(wz_byte_t opcode);
 size_t wz_z80_ed_opcode_count(void);
 wz_z80_ed_opcode_decode_t wz_z80_ed_opcode_decode(wz_byte_t opcode);
+void wz_z80_exit_halt_for_interrupt(wz_z80_state_t* state);
 wz_result_t wz_z80_step(wz_machine_t* machine);
 
 #endif

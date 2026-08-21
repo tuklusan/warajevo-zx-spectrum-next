@@ -204,7 +204,7 @@ int main(void)
             return 1;
         }
     }
-    if (implemented != 153u || prefix != 4u || documented_unimplemented != 99u ||
+    if (implemented != 154u || prefix != 4u || documented_unimplemented != 98u ||
         undocumented != 0u || illegal != 0u ||
         wz_z80_primary_opcode_decode(0x00u)->operation != WZ_Z80_PRIMARY_OP_NOP ||
         wz_z80_primary_opcode_decode(0x32u)->operation != WZ_Z80_PRIMARY_OP_LD_NN_A ||
@@ -230,6 +230,7 @@ int main(void)
         wz_z80_primary_opcode_decode(0x04u)->operation != WZ_Z80_PRIMARY_OP_INC_DEC ||
         wz_z80_primary_opcode_decode(0x35u)->operation != WZ_Z80_PRIMARY_OP_INC_DEC ||
         wz_z80_primary_opcode_decode(0x3du)->operation != WZ_Z80_PRIMARY_OP_INC_DEC ||
+        wz_z80_primary_opcode_decode(0x76u)->operation != WZ_Z80_PRIMARY_OP_HALT ||
         wz_z80_primary_opcode_decode(0xcbu)->operation != WZ_Z80_PRIMARY_OP_PREFIX_CB ||
         wz_z80_primary_opcode_decode(0xddu)->operation != WZ_Z80_PRIMARY_OP_PREFIX_DD ||
         wz_z80_primary_opcode_decode(0xedu)->operation != WZ_Z80_PRIMARY_OP_PREFIX_ED ||
@@ -1902,6 +1903,48 @@ int main(void)
         machine.master_tick != 8u ||
         bus_log.count != 1u) {
         fputs("Z80 JP HL trace failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 HALT test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    machine.cpu.program_counter = 0xffffu;
+    machine.cpu.r = 0xffu;
+    machine.memory[0xffffu] = 0x76u;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.halted != 1u ||
+        machine.cpu.program_counter != 0xffffu ||
+        machine.cpu.r != 0x80u ||
+        machine.master_tick != 8u ||
+        bus_log.count != 1u ||
+        bus_log.requests[0].cycle != WZ_BUS_M1_OPCODE_FETCH ||
+        bus_log.requests[0].address != 0xffffu ||
+        bus_log.requests[0].value != 0x76u) {
+        fputs("Z80 HALT entry failed\n", stderr);
+        return 1;
+    }
+    machine.memory[0xffffu] = 0u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.halted != 1u ||
+        machine.cpu.program_counter != 0xffffu ||
+        machine.cpu.r != 0x81u ||
+        machine.master_tick != 16u ||
+        bus_log.count != 2u ||
+        bus_log.requests[1].cycle != WZ_BUS_M1_OPCODE_FETCH ||
+        bus_log.requests[1].master_tick != 8u ||
+        bus_log.requests[1].address != 0xffffu ||
+        bus_log.requests[1].value != 0u) {
+        fputs("Z80 repeated halted M1 failed\n", stderr);
+        return 1;
+    }
+    wz_z80_exit_halt_for_interrupt(&machine.cpu);
+    if (machine.cpu.halted != 0u || machine.cpu.program_counter != 0u ||
+        machine.cpu.r != 0x81u || machine.master_tick != 16u) {
+        fputs("Z80 accepted-interrupt HALT exit boundary failed\n", stderr);
         return 1;
     }
 

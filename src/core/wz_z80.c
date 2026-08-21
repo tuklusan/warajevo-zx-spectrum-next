@@ -71,7 +71,7 @@ static const wz_z80_opcode_decode_t wz_z80_primary_opcode_table[256] = {
     WZ_Z80_UN(0x67u), WZ_Z80_UN(0x68u), WZ_Z80_UN(0x69u), WZ_Z80_UN(0x6au),
     WZ_Z80_UN(0x6bu), WZ_Z80_UN(0x6cu), WZ_Z80_UN(0x6du), WZ_Z80_UN(0x6eu),
     WZ_Z80_UN(0x6fu), WZ_Z80_UN(0x70u), WZ_Z80_UN(0x71u), WZ_Z80_UN(0x72u),
-    WZ_Z80_UN(0x73u), WZ_Z80_UN(0x74u), WZ_Z80_UN(0x75u), WZ_Z80_UN(0x76u),
+    WZ_Z80_UN(0x73u), WZ_Z80_UN(0x74u), WZ_Z80_UN(0x75u), WZ_Z80_IMPL(0x76u, WZ_Z80_PRIMARY_OP_HALT),
     WZ_Z80_UN(0x77u), WZ_Z80_UN(0x78u), WZ_Z80_UN(0x79u), WZ_Z80_UN(0x7au),
     WZ_Z80_UN(0x7bu), WZ_Z80_UN(0x7cu), WZ_Z80_UN(0x7du), WZ_Z80_UN(0x7eu),
     WZ_Z80_UN(0x7fu),
@@ -1535,6 +1535,14 @@ wz_result_t wz_z80_state_validate(const wz_z80_state_t* state)
     return WZ_RESULT_OK;
 }
 
+void wz_z80_exit_halt_for_interrupt(wz_z80_state_t* state)
+{
+    if (state != 0 && state->halted != 0u) {
+        state->halted = 0u;
+        state->program_counter = wz_z80_add16(state->program_counter, 1u);
+    }
+}
+
 wz_result_t wz_z80_step(wz_machine_t* machine)
 {
     wz_byte_t opcode = 0u;
@@ -1551,6 +1559,17 @@ wz_result_t wz_z80_step(wz_machine_t* machine)
     }
     if (wz_z80_state_validate(&machine->cpu) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_STATE;
+    }
+
+    if (machine->cpu.halted != 0u) {
+        pc = machine->cpu.program_counter;
+        if (wz_z80_bus(machine, WZ_BUS_M1_OPCODE_FETCH, 0u,
+                       pc, &opcode, 4u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        wz_z80_increment_r(&machine->cpu);
+        machine->master_tick += 8u;
+        return WZ_RESULT_OK;
     }
 
     pc = machine->cpu.program_counter;
@@ -1866,6 +1885,12 @@ wz_result_t wz_z80_step(wz_machine_t* machine)
         machine->master_tick += 8u;
         return WZ_RESULT_OK;
     }
+    case WZ_Z80_PRIMARY_OP_HALT:
+        machine->cpu.halted = 1u;
+        machine->cpu.program_counter = wz_z80_add16(
+            machine->cpu.program_counter, 0xffffu);
+        machine->master_tick += 8u;
+        return WZ_RESULT_OK;
     case WZ_Z80_PRIMARY_OP_PREFIX_CB:
         if (wz_z80_bus(machine, WZ_BUS_M1_OPCODE_FETCH, 4u,
                        machine->cpu.program_counter, &cb_opcode, 4u) != WZ_RESULT_OK) {
