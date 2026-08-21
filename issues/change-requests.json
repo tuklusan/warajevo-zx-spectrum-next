@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 37,
+  "next_cr_number": 38,
   "status_values": [
     "open",
     "in_progress",
@@ -501,12 +501,22 @@
     {
       "cr_number": "CR-0036",
       "title": "Implement Z80 relative and absolute branch timing",
-      "status": "in_progress",
+      "status": "open",
       "source_authority": [
         "design/warajevo-zx-spectrum-next-architecture.md sections 11 and 12",
         "design/wzsn-architectures-1-2-developer-tasks.md task 055"
       ],
-      "notes": "Opened on 2026-08-20 for Phase-2 task 055. Scope includes JR, JP, and DJNZ taken and not-taken paths, all applicable conditions, signed displacement and address wrapping, MEMPTR behavior, and exact cycle traces."
+      "notes": "Opened on 2026-08-20 for Phase-2 task 055. Scope includes JR, JP, and DJNZ taken and not-taken paths, all applicable conditions, signed displacement and address wrapping, MEMPTR behavior, and exact cycle traces. Candidate 7e3ae2b passed CODE review and all focused CTest traces; 27 of 28 pinned branch cases passed on all three SSH machines. The DJNZ case exposed missing INC C support from closed task 049, so CR-0036 returned to open while prerequisite remediation CR-0037 is completed."
+    },
+    {
+      "cr_number": "CR-0037",
+      "title": "Complete omitted Z80 INC and DEC arithmetic family",
+      "status": "in_progress",
+      "source_authority": [
+        "design/warajevo-zx-spectrum-next-architecture.md sections 11 and 12",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 049"
+      ],
+      "notes": "Opened on 2026-08-20 after the CR-0036 DJNZ corpus exposed that CR-0030 closed task 049 without the primary INC/DEC register and (HL) forms. Implement the complete family with exact flags, memory bus timing, wrapping values, and pinned reference vectors before resuming CR-0036."
     }
   ]
 }
