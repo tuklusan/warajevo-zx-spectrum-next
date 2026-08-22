@@ -229,6 +229,11 @@ review authority.
 Transport-successful but schema-invalid bootstrap output receives at most two
 fresh repair attempts and then remains inconclusive.
 
+Bootstrap maintenance may authorize remote validation only through an exact
+`wzsn/maintenance/CR-####` published ref, an immutable matching bootstrap PASS
+receipt, and an unchanged `design/deepseek-review-gate.md` authority digest.
+This path is unavailable to normal smoke runs and never authorizes `main`.
+
 ## Verdict Contract
 
 - `PASS`: complete review, no confirmed serious defect, and no material
