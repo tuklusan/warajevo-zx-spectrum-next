@@ -11,6 +11,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include <stdio.h>
 #include "core/wz_trace.h"
+#include "core/wz_z80.h"
 
 #define WZ_TRACE_FILE_SIZE 16777216u
 #define WZ_TRACE_HEADER_SIZE 256u
@@ -32,6 +33,14 @@ typedef struct {
 
 typedef bool (*wz_trace_recover_fn)(const wz_trace_event_t* event, void* context);
 
+/* Assembles the five adjacent CPU synchronization chunks into one Z80 state. */
+typedef struct {
+    wz_z80_state_t state;
+    wz_master_tick_t master_tick;
+    wz_qword_t last_sequence;
+    wz_byte_t next_chunk;
+} wz_trace_cpu_state_sync_t;
+
 wz_result_t wz_trace_file_create(wz_trace_file_t* trace, const char* path,
                                  wz_qword_t session_id, wz_dword_t profile_kind,
                                  wz_qword_t rom_identity, wz_dword_t event_mask);
@@ -40,5 +49,8 @@ wz_result_t wz_trace_file_freeze(wz_trace_file_t* trace);
 void wz_trace_file_close(wz_trace_file_t* trace);
 wz_result_t wz_trace_file_recover(const char* path, wz_trace_recover_fn recover,
                                   void* context, size_t* recovered_count);
+void wz_trace_cpu_state_sync_init(wz_trace_cpu_state_sync_t* sync);
+bool wz_trace_cpu_state_sync_apply(wz_trace_cpu_state_sync_t* sync,
+                                   const wz_trace_event_t* event);
 
 #endif

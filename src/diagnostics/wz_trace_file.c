@@ -46,6 +46,76 @@ static wz_qword_t slot_count(void)
     return (WZ_TRACE_FILE_SIZE - WZ_TRACE_HEADER_SIZE) / WZ_TRACE_RECORD_SIZE;
 }
 
+static void unpack_bank(wz_z80_register_bank_t* bank, wz_qword_t packed)
+{
+    bank->a = (wz_byte_t)packed;
+    bank->f = (wz_byte_t)(packed >> 8u);
+    bank->b = (wz_byte_t)(packed >> 16u);
+    bank->c = (wz_byte_t)(packed >> 24u);
+    bank->d = (wz_byte_t)(packed >> 32u);
+    bank->e = (wz_byte_t)(packed >> 40u);
+    bank->h = (wz_byte_t)(packed >> 48u);
+    bank->l = (wz_byte_t)(packed >> 56u);
+}
+
+void wz_trace_cpu_state_sync_init(wz_trace_cpu_state_sync_t* sync)
+{
+    if (sync != NULL) {
+        memset(sync, 0, sizeof(*sync));
+    }
+}
+
+bool wz_trace_cpu_state_sync_apply(wz_trace_cpu_state_sync_t* sync,
+                                   const wz_trace_event_t* event)
+{
+    if (sync == NULL || event == NULL || event->kind != WZ_TRACE_CPU_STATE_SYNC ||
+        event->cycle >= 5u) {
+        return false;
+    }
+    if (event->cycle == 0u) {
+        memset(&sync->state, 0, sizeof(sync->state));
+        sync->master_tick = event->master_tick;
+        sync->last_sequence = event->sequence;
+        sync->next_chunk = 1u;
+    } else if (event->cycle != sync->next_chunk ||
+               event->master_tick != sync->master_tick ||
+               event->sequence != sync->last_sequence + 1u) {
+        sync->next_chunk = 0u;
+        return false;
+    } else {
+        sync->last_sequence = event->sequence;
+        sync->next_chunk += 1u;
+    }
+    switch (event->cycle) {
+    case 0u:
+        unpack_bank(&sync->state.main, event->register_snapshot);
+        break;
+    case 1u:
+        unpack_bank(&sync->state.alternate, event->register_snapshot);
+        break;
+    case 2u:
+        sync->state.ix = (wz_word_t)event->register_snapshot;
+        sync->state.iy = (wz_word_t)(event->register_snapshot >> 16u);
+        sync->state.stack_pointer = (wz_word_t)(event->register_snapshot >> 32u);
+        sync->state.program_counter = (wz_word_t)(event->register_snapshot >> 48u);
+        break;
+    case 3u:
+        sync->state.memptr = (wz_word_t)event->register_snapshot;
+        sync->state.i = (wz_byte_t)(event->register_snapshot >> 16u);
+        sync->state.r = (wz_byte_t)(event->register_snapshot >> 24u);
+        sync->state.iff1 = (wz_byte_t)(event->register_snapshot >> 32u);
+        sync->state.iff2 = (wz_byte_t)(event->register_snapshot >> 40u);
+        sync->state.interrupt_enable_delay = (wz_byte_t)(event->register_snapshot >> 48u);
+        sync->state.interrupt_mode = (wz_byte_t)(event->register_snapshot >> 56u);
+        break;
+    default:
+        sync->state.halted = (wz_byte_t)event->register_snapshot;
+        sync->next_chunk = 0u;
+        return wz_z80_state_validate(&sync->state) == WZ_RESULT_OK;
+    }
+    return false;
+}
+
 static bool write_header(wz_trace_file_t* t)
 {
     wz_byte_t h[WZ_TRACE_HEADER_SIZE]; memset(h,0,sizeof(h)); memcpy(h,"WZSNTRC",7u);

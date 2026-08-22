@@ -103,6 +103,7 @@ int main(void)
     wz_bus_request_t bus_request;
     bus_log_t bus_log;
     timing_trace_log_t timing_trace_log;
+    wz_trace_cpu_state_sync_t recovered_cpu_sync;
     wz_qword_t recovered_last = 0u;
     size_t recovered_count = 0u;
     size_t opcode_index;
@@ -2317,11 +2318,18 @@ int main(void)
     }
     wz_trace_sink_init(&trace_sink, wz_trace_file_emit, &trace_file);
     for (wz_byte_t chunk = 0u; chunk < 5u; ++chunk) {
+        static const wz_qword_t state_chunks[5] = {
+            UINT64_C(0x8877665544332211),
+            UINT64_C(0x0123456789abcdef),
+            UINT64_C(0x13572468def09abc),
+            UINT64_C(0x020101013c9a2468),
+            UINT64_C(0x0000000000000000)
+        };
         wz_trace_event_t state_event = {0};
         state_event.kind = WZ_TRACE_CPU_STATE_SYNC;
         state_event.master_tick = 1234u;
         state_event.cycle = chunk;
-        state_event.register_snapshot = UINT64_C(0x1122334455667788) + chunk;
+        state_event.register_snapshot = state_chunks[chunk];
         wz_trace_emit_detail(&trace_sink, &state_event);
     }
     if (wz_trace_file_freeze(&trace_file) != WZ_RESULT_OK) {
@@ -2334,11 +2342,37 @@ int main(void)
                               &recovered_count) != WZ_RESULT_OK ||
         recovered_count != 5u || timing_trace_log.count != 5u ||
         timing_trace_log.events[0].kind != WZ_TRACE_CPU_STATE_SYNC ||
-        timing_trace_log.events[0].register_snapshot != UINT64_C(0x1122334455667788) ||
+        timing_trace_log.events[0].register_snapshot != UINT64_C(0x8877665544332211) ||
         timing_trace_log.events[4].cycle != 4u ||
-        timing_trace_log.events[4].register_snapshot != UINT64_C(0x112233445566778c)) {
+        timing_trace_log.events[4].register_snapshot != 0u) {
         fputs("state trace recovery failed\n", stderr);
         return 1;
+    }
+    wz_trace_cpu_state_sync_init(&recovered_cpu_sync);
+    {
+        bool recovered_state = false;
+    for (size_t index = 0u; index < timing_trace_log.count; ++index) {
+            recovered_state = wz_trace_cpu_state_sync_apply(&recovered_cpu_sync,
+                                                             &timing_trace_log.events[index]);
+        }
+        if (!recovered_state || recovered_cpu_sync.master_tick != 1234u ||
+            recovered_cpu_sync.state.main.a != 0x11u ||
+            recovered_cpu_sync.state.main.l != 0x88u ||
+            recovered_cpu_sync.state.alternate.a != 0xefu ||
+            recovered_cpu_sync.state.alternate.l != 0x01u ||
+            recovered_cpu_sync.state.ix != 0x9abcu ||
+            recovered_cpu_sync.state.iy != 0xdef0u ||
+            recovered_cpu_sync.state.stack_pointer != 0x2468u ||
+            recovered_cpu_sync.state.program_counter != 0x1357u ||
+            recovered_cpu_sync.state.memptr != 0x2468u ||
+            recovered_cpu_sync.state.i != 0x9au || recovered_cpu_sync.state.r != 0x3cu ||
+            recovered_cpu_sync.state.iff1 != 1u || recovered_cpu_sync.state.iff2 != 1u ||
+            recovered_cpu_sync.state.interrupt_enable_delay != 1u ||
+            recovered_cpu_sync.state.interrupt_mode != WZ_Z80_INTERRUPT_MODE_2 ||
+            recovered_cpu_sync.state.halted != 0u) {
+            fputs("state trace decoder failed\n", stderr);
+            return 1;
+        }
     }
     remove(state_trace_path);
 
