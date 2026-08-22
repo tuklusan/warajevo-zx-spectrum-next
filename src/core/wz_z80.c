@@ -1545,10 +1545,110 @@ void wz_z80_exit_halt_for_interrupt(wz_z80_state_t* state)
     }
 }
 
+static wz_result_t wz_z80_push_interrupt_pc(wz_machine_t* machine,
+                                            wz_master_tick_t offset)
+{
+    wz_byte_t value;
+
+    machine->cpu.stack_pointer = wz_z80_add16(machine->cpu.stack_pointer, 0xffffu);
+    value = (wz_byte_t)(machine->cpu.program_counter >> 8u);
+    if (wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, offset,
+                   machine->cpu.stack_pointer, &value, 3u) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    machine->cpu.stack_pointer = wz_z80_add16(machine->cpu.stack_pointer, 0xffffu);
+    value = (wz_byte_t)(machine->cpu.program_counter & 0xffu);
+    if (wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, offset + 6u,
+                   machine->cpu.stack_pointer, &value, 3u) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    return WZ_RESULT_OK;
+}
+
 bool wz_z80_maskable_interrupts_acceptable(const wz_z80_state_t* state)
 {
     return state != 0 && state->iff1 != 0u &&
            state->interrupt_enable_delay == 0u;
+}
+
+wz_result_t wz_z80_accept_maskable_interrupt(wz_machine_t* machine)
+{
+    wz_byte_t vector = 0u;
+    wz_byte_t low = 0u;
+    wz_byte_t high = 0u;
+    wz_word_t address;
+
+    if (machine == 0 || wz_z80_state_validate(&machine->cpu) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (!wz_z80_maskable_interrupts_acceptable(&machine->cpu)) {
+        return WZ_RESULT_UNSUPPORTED_OPERATION;
+    }
+    if (wz_z80_bus(machine, WZ_BUS_INTERRUPT_ACKNOWLEDGE, 0u,
+                   machine->cpu.program_counter, &vector, 7u) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    wz_z80_increment_r(&machine->cpu);
+    machine->cpu.iff1 = 0u;
+    machine->cpu.iff2 = 0u;
+    wz_z80_exit_halt_for_interrupt(&machine->cpu);
+
+    switch ((wz_z80_interrupt_mode_t)machine->cpu.interrupt_mode) {
+    case WZ_Z80_INTERRUPT_MODE_0:
+        if ((vector & 0xc7u) != 0xc7u) {
+            return WZ_RESULT_UNSUPPORTED_OPERATION;
+        }
+        if (wz_z80_push_interrupt_pc(machine, 14u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->cpu.program_counter = (wz_word_t)(vector & 0x38u);
+        machine->cpu.memptr = machine->cpu.program_counter;
+        machine->master_tick += 26u;
+        return WZ_RESULT_OK;
+    case WZ_Z80_INTERRUPT_MODE_1:
+        if (wz_z80_push_interrupt_pc(machine, 14u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->cpu.program_counter = 0x0038u;
+        machine->cpu.memptr = 0x0038u;
+        machine->master_tick += 26u;
+        return WZ_RESULT_OK;
+    case WZ_Z80_INTERRUPT_MODE_2:
+        address = (wz_word_t)((wz_word_t)machine->cpu.i << 8u) | vector;
+        if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 14u,
+                       address, &low, 3u) != WZ_RESULT_OK ||
+            wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 20u,
+                       wz_z80_add16(address, 1u), &high, 3u) != WZ_RESULT_OK ||
+            wz_z80_push_interrupt_pc(machine, 26u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->cpu.program_counter = (wz_word_t)low | ((wz_word_t)high << 8u);
+        machine->cpu.memptr = machine->cpu.program_counter;
+        machine->master_tick += 38u;
+        return WZ_RESULT_OK;
+    default:
+        return WZ_RESULT_INVALID_STATE;
+    }
+}
+
+wz_result_t wz_z80_accept_nmi(wz_machine_t* machine)
+{
+    if (machine == 0 || wz_z80_state_validate(&machine->cpu) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    wz_z80_exit_halt_for_interrupt(&machine->cpu);
+    if (wz_z80_bus(machine, WZ_BUS_INTERNAL, 0u,
+                   machine->cpu.program_counter, 0, 5u) != WZ_RESULT_OK ||
+        wz_z80_push_interrupt_pc(machine, 10u) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    wz_z80_increment_r(&machine->cpu);
+    machine->cpu.iff2 = machine->cpu.iff1;
+    machine->cpu.iff1 = 0u;
+    machine->cpu.program_counter = 0x0066u;
+    machine->cpu.memptr = 0x0066u;
+    machine->master_tick += 22u;
+    return WZ_RESULT_OK;
 }
 
 wz_result_t wz_z80_step(wz_machine_t* machine)

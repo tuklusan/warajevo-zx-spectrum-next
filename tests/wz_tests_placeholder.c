@@ -96,7 +96,7 @@ int main(void)
     size_t ed_documented_unimplemented = 0u;
     size_t ed_implemented = 0u;
     size_t ed_undocumented = 0u;
-    const wz_byte_t interrupt_value = 0x5au;
+    wz_byte_t interrupt_value = 0x5au;
     FILE* trace_stream;
     const char* trace_path = "wz-trace-regression.bin";
 
@@ -1988,6 +1988,114 @@ int main(void)
         machine.cpu.halted != 1u || machine.cpu.interrupt_enable_delay != 0u ||
         !wz_z80_maskable_interrupts_acceptable(&machine.cpu)) {
         fputs("Z80 EI HALT acceptance boundary failed\n", stderr);
+        return 1;
+    }
+
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 IM0 interrupt test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    wz_bus_input_init(&bus_input, read_bus_input, (void*)&interrupt_value);
+    interrupt_value = 0xffu;
+    machine.cpu.iff1 = 1u;
+    machine.cpu.iff2 = 1u;
+    machine.cpu.program_counter = 0x1234u;
+    machine.cpu.stack_pointer = 0x8000u;
+    machine.cpu.r = 0x7fu;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_machine_set_bus_input(&machine, &bus_input) != WZ_RESULT_OK ||
+        wz_z80_accept_maskable_interrupt(&machine) != WZ_RESULT_OK ||
+        machine.cpu.program_counter != 0x0038u || machine.cpu.stack_pointer != 0x7ffeu ||
+        machine.memory[0x7fffu] != 0x12u || machine.memory[0x7ffeu] != 0x34u ||
+        machine.cpu.iff1 != 0u || machine.cpu.iff2 != 0u || machine.cpu.r != 0u ||
+        machine.master_tick != 26u || bus_log.count != 3u ||
+        bus_log.requests[0].cycle != WZ_BUS_INTERRUPT_ACKNOWLEDGE ||
+        bus_log.requests[0].master_tick != 0u || bus_log.requests[0].t_states != 7u ||
+        bus_log.requests[1].cycle != WZ_BUS_MEMORY_WRITE ||
+        bus_log.requests[1].master_tick != 14u || bus_log.requests[1].address != 0x7fffu ||
+        bus_log.requests[2].cycle != WZ_BUS_MEMORY_WRITE ||
+        bus_log.requests[2].master_tick != 20u || bus_log.requests[2].address != 0x7ffeu) {
+        fputs("Z80 IM0 RST interrupt trace failed\n", stderr);
+        return 1;
+    }
+
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 IM1 interrupt test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    machine.cpu.iff1 = 1u;
+    machine.cpu.iff2 = 1u;
+    machine.cpu.interrupt_mode = (wz_byte_t)WZ_Z80_INTERRUPT_MODE_1;
+    machine.cpu.program_counter = 0x3456u;
+    machine.cpu.stack_pointer = 0x8000u;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_accept_maskable_interrupt(&machine) != WZ_RESULT_OK ||
+        machine.cpu.program_counter != 0x0038u || machine.memory[0x7fffu] != 0x34u ||
+        machine.memory[0x7ffeu] != 0x56u || machine.master_tick != 26u ||
+        bus_log.count != 3u || bus_log.requests[0].cycle != WZ_BUS_INTERRUPT_ACKNOWLEDGE ||
+        bus_log.requests[1].master_tick != 14u || bus_log.requests[2].master_tick != 20u) {
+        fputs("Z80 IM1 interrupt trace failed\n", stderr);
+        return 1;
+    }
+
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 IM2 interrupt test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    interrupt_value = 0x10u;
+    machine.cpu.iff1 = 1u;
+    machine.cpu.iff2 = 1u;
+    machine.cpu.interrupt_mode = (wz_byte_t)WZ_Z80_INTERRUPT_MODE_2;
+    machine.cpu.i = 0x80u;
+    machine.cpu.program_counter = 0x3456u;
+    machine.cpu.stack_pointer = 0x8000u;
+    machine.memory[0x8010u] = 0x34u;
+    machine.memory[0x8011u] = 0x12u;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_machine_set_bus_input(&machine, &bus_input) != WZ_RESULT_OK ||
+        wz_z80_accept_maskable_interrupt(&machine) != WZ_RESULT_OK ||
+        machine.cpu.program_counter != 0x1234u || machine.cpu.memptr != 0x1234u ||
+        machine.memory[0x7fffu] != 0x34u || machine.memory[0x7ffeu] != 0x56u ||
+        machine.master_tick != 38u || bus_log.count != 5u ||
+        bus_log.requests[0].cycle != WZ_BUS_INTERRUPT_ACKNOWLEDGE ||
+        bus_log.requests[1].cycle != WZ_BUS_MEMORY_READ ||
+        bus_log.requests[1].master_tick != 14u || bus_log.requests[1].address != 0x8010u ||
+        bus_log.requests[2].cycle != WZ_BUS_MEMORY_READ ||
+        bus_log.requests[2].master_tick != 20u || bus_log.requests[2].address != 0x8011u ||
+        bus_log.requests[3].master_tick != 26u || bus_log.requests[4].master_tick != 32u) {
+        fputs("Z80 IM2 interrupt trace failed\n", stderr);
+        return 1;
+    }
+
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 NMI test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    machine.cpu.iff1 = 1u;
+    machine.cpu.iff2 = 0u;
+    machine.cpu.halted = 1u;
+    machine.cpu.program_counter = 0x2000u;
+    machine.cpu.stack_pointer = 0x8000u;
+    machine.cpu.r = 0x7fu;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_accept_nmi(&machine) != WZ_RESULT_OK ||
+        machine.cpu.program_counter != 0x0066u || machine.cpu.memptr != 0x0066u ||
+        machine.cpu.halted != 0u || machine.cpu.iff1 != 0u || machine.cpu.iff2 != 1u ||
+        machine.cpu.r != 0u || machine.memory[0x7fffu] != 0x20u ||
+        machine.memory[0x7ffeu] != 0x01u || machine.master_tick != 22u ||
+        bus_log.count != 3u || bus_log.requests[0].cycle != WZ_BUS_INTERNAL ||
+        bus_log.requests[0].master_tick != 0u || bus_log.requests[0].t_states != 5u ||
+        bus_log.requests[1].master_tick != 10u || bus_log.requests[2].master_tick != 16u) {
+        fputs("Z80 NMI interrupt trace failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_set_bus_input(&machine, 0) != WZ_RESULT_OK) {
+        fputs("Z80 interrupt input removal failed\n", stderr);
         return 1;
     }
 

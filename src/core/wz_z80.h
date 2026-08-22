@@ -162,6 +162,8 @@ size_t wz_z80_ed_opcode_count(void);
 wz_z80_ed_opcode_decode_t wz_z80_ed_opcode_decode(wz_byte_t opcode);
 void wz_z80_exit_halt_for_interrupt(wz_z80_state_t* state);
 bool wz_z80_maskable_interrupts_acceptable(const wz_z80_state_t* state);
+wz_result_t wz_z80_accept_maskable_interrupt(wz_machine_t* machine);
+wz_result_t wz_z80_accept_nmi(wz_machine_t* machine);
 wz_result_t wz_z80_step(wz_machine_t* machine);
 
 #endif
