@@ -165,7 +165,7 @@ void wz_trace_file_emit(const wz_trace_event_t* e,void* context)
     memset(r,0,sizeof(r)); r[0]=(wz_byte_t)WZ_TRACE_RECORD_SIZE;
     r[1]=(wz_byte_t)e->kind; r[2]=e->cycle; r[3]=e->t_states;
     put32(r+4u,(wz_dword_t)e->sequence); put32(r+8u,tick_delta);
-    if (e->kind == WZ_TRACE_CPU_STATE_SYNC) {
+    if (e->kind == WZ_TRACE_CPU_STATE_SYNC || e->kind == WZ_TRACE_CPU_STATE_DELTA) {
         put64(r+12u, e->register_snapshot);
     } else {
         put16(r+12u,e->address); put16(r+14u,e->program_counter);
@@ -207,7 +207,7 @@ wz_result_t wz_trace_file_recover(const char* path,wz_trace_recover_fn fn,void* 
         if(r[0]!=WZ_TRACE_RECORD_SIZE||get32(r+WZ_TRACE_COMMIT_OFFSET)!=WZ_TRACE_COMMIT||get32(r+4u)!=(wz_dword_t)seq)continue;
         memset(&e, 0, sizeof(e)); e.kind=(wz_trace_event_kind_t)r[1];
         e.cycle=r[2]; e.t_states=r[3]; e.sequence=seq; e.master_tick=tick;
-        if (e.kind == WZ_TRACE_CPU_STATE_SYNC) {
+        if (e.kind == WZ_TRACE_CPU_STATE_SYNC || e.kind == WZ_TRACE_CPU_STATE_DELTA) {
             e.register_snapshot=get64(r+12u);
         } else {
             e.address=get16(r+12u); e.program_counter=get16(r+14u);
