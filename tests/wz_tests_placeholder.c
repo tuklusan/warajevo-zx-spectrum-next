@@ -2041,6 +2041,9 @@ int main(void)
     machine.cpu.program_counter = 0x1234u;
     machine.cpu.stack_pointer = 0x8000u;
     machine.cpu.r = 0x7fu;
+    memset(&timing_trace_log, 0, sizeof(timing_trace_log));
+    wz_trace_sink_init(&trace_sink, record_timing_trace, &timing_trace_log);
+    wz_machine_set_timing_trace(&machine, &trace_sink);
     if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
         wz_machine_set_bus_input(&machine, &bus_input) != WZ_RESULT_OK ||
         wz_z80_accept_maskable_interrupt(&machine) != WZ_RESULT_OK ||
@@ -2048,6 +2051,11 @@ int main(void)
         machine.memory[0x7fffu] != 0x12u || machine.memory[0x7ffeu] != 0x34u ||
         machine.cpu.iff1 != 0u || machine.cpu.iff2 != 0u || machine.cpu.r != 0u ||
         machine.master_tick != 26u || bus_log.count != 3u ||
+        timing_trace_log.count != 4u ||
+        timing_trace_log.events[0].kind != WZ_TRACE_INTERRUPT ||
+        timing_trace_log.events[0].value != 1u ||
+        timing_trace_log.events[1].kind != WZ_TRACE_CPU_BUS ||
+        timing_trace_log.events[1].cycle != WZ_BUS_INTERRUPT_ACKNOWLEDGE ||
         bus_log.requests[0].cycle != WZ_BUS_INTERRUPT_ACKNOWLEDGE ||
         bus_log.requests[0].master_tick != 0u || bus_log.requests[0].t_states != 7u ||
         bus_log.requests[1].cycle != WZ_BUS_MEMORY_WRITE ||
