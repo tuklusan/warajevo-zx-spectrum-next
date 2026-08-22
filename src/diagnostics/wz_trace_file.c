@@ -201,7 +201,16 @@ wz_result_t wz_trace_file_recover(const char* path,wz_trace_recover_fn fn,void* 
             e.value=r[16]; e.auxiliary=r[17]; e.register_snapshot=get16(r+18u);
         }
         n++;if(!fn(&e,context))break;
-        tick+=get32(r+8u);
+        /* A record stores its tick relative to its predecessor, so use the
+           following committed record to advance the recovered timeline. */
+        if (seq < last) {
+            wz_qword_t next_slot = (seq + 1u) % slot_count();
+            if (fseek(f, (long)(WZ_TRACE_HEADER_SIZE + next_slot * WZ_TRACE_RECORD_SIZE), SEEK_SET) != 0 ||
+                fread(r, 1u, sizeof(r), f) != sizeof(r) || r[0] != WZ_TRACE_RECORD_SIZE ||
+                get32(r + WZ_TRACE_COMMIT_OFFSET) != WZ_TRACE_COMMIT ||
+                get32(r + 4u) != (wz_dword_t)(seq + 1u)) break;
+            tick += get32(r + 8u);
+        }
         if(seq==UINT64_MAX)break;
     }
     fclose(f);*count=n;return WZ_RESULT_OK;

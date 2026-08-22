@@ -2344,6 +2344,8 @@ int main(void)
         recovered_count != 5u || timing_trace_log.count != 5u ||
         timing_trace_log.events[0].kind != WZ_TRACE_CPU_STATE_SYNC ||
         timing_trace_log.events[0].register_snapshot != UINT64_C(0x8877665544332211) ||
+        timing_trace_log.events[0].master_tick != 1234u ||
+        timing_trace_log.events[4].master_tick != 1234u ||
         timing_trace_log.events[4].cycle != 4u ||
         timing_trace_log.events[4].register_snapshot != 0u) {
         fputs("state trace recovery failed\n", stderr);
