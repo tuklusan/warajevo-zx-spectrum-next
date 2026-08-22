@@ -147,6 +147,9 @@ def empty_review_responses(review_type="CODE"):
 
 
 class GateTests(unittest.TestCase):
+    def test_bootstrap_output_budget_matches_single_finding_contract(self):
+        self.assertEqual(bootstrap_gate.BOOTSTRAP_OUTPUT_TOKENS, gate.DISCOVERY_OUTPUT_TOKENS)
+
     def test_bootstrap_result_requires_consistent_verdict_and_exact_requirement(self):
         requirements = requirement()
         self.assertTrue(bootstrap_gate.bootstrap_result_valid(
