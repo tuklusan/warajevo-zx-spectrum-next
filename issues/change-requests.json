@@ -612,12 +612,12 @@
     {
       "cr_number": "CR-0045",
       "title": "Add compact full-register timing trace synchronization encoding",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/warajevo-zx-spectrum-next-architecture.md section 44.2",
         "CR-0042 acceptance audit"
       ],
-      "notes": "Opened on 2026-08-22 because CR-0042's 28-byte ring record restores required retention but cannot persist a full instruction register snapshot. Scope is compact delta plus periodic absolute CPU-state synchronization records that reconstruct all main/alternate registers, IX/IY, SP, PC, I/R, IFF, IM, HALT and MEMPTR without weakening the fixed 16 MiB eight-frame requirement."
+      "notes": "Opened and closed on 2026-08-22 because CR-0042's ring record could not persist a full instruction register snapshot. Periodic absolute five-chunk CPU-state synchronization and sparse full-width state deltas now reconstruct all main/alternate registers, IX/IY, SP, PC, I/R, IFF, IM, HALT and MEMPTR without changing the fixed 16 MiB file size. Commits f0b0fad, 7744256, ebb24c4, 0fcd770, and 7853bf6 were independently reviewed. Linux CR0045-STATE-DELTA-LINUX-R3, Windows 10 CR0045-STATE-DELTA-WIN10-R3, Windows 11 CR0045-STATE-DELTA-WIN11-R3, hosted platform-smoke 32552090467, and repository-gates 32552090502 passed; TEST_ARTIFACT review passed with zero findings."
     },
     {
       "cr_number": "CR-0046",
