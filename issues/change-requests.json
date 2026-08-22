@@ -592,12 +592,12 @@
     {
       "cr_number": "CR-0043",
       "title": "Reconcile completed CRs with mandatory upstream migration inventories",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "WORKFLOW.md Migration Pre-Development Gate",
         "design/cr-preflight/retrospective-audit.md"
       ],
-      "notes": "Opened on 2026-08-22 after the retrospective audit found that CR-0001 through CR-0041 lack durable per-CR functional inventory and second-pass upstream zero-gap evidence. Scope is evidence reconstruction, behavioral disposition, and corrective CR creation for every discovered migration gap. This CR is a prerequisite for accepting Phase-2 completion but does not authorize fabricated retrospective evidence."
+      "notes": "Opened on 2026-08-22 after the retrospective audit found that CR-0001 through CR-0041 lacked durable per-CR functional inventory and second-pass upstream zero-gap evidence. Closed on 2026-08-22 after adding individual retrospective records for every completed CR, retaining discovered corrective history and deferred behavior without claiming historical pre-approval. The complete immutable DOCUMENTATION packet passed with zero confirmed findings. Current Phase-2 implementation and validation gates remain independently required."
     },
     {
       "cr_number": "CR-0044",
