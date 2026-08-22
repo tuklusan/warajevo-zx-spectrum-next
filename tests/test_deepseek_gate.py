@@ -581,8 +581,8 @@ class GateTests(unittest.TestCase):
         self.assertEqual(result["verdict"], "PASS")
         self.assertEqual(result["confirmed_findings"], [])
         self.assertEqual(len(client.calls), 2)
-        self.assertEqual(client.calls[-1]["thinking"], "enabled")
-        self.assertEqual(client.calls[-1]["effort"], "high")
+        self.assertEqual(client.calls[-1]["thinking"], "disabled")
+        self.assertIsNone(client.calls[-1]["effort"])
         self.assertIn("int validate", client.calls[-1]["user"])
 
     def test_failed_combined_discovery_fails_closed(self):

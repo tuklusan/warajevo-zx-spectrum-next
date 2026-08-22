@@ -725,7 +725,7 @@ class DeepSeekClient:
         return value
 
     def request(self, system: str, user: str, telemetry: Telemetry,
-                thinking: str = "enabled", reasoning_effort: str | None = "high",
+                thinking: str = "disabled", reasoning_effort: str | None = None,
                 max_tokens: int = DISCOVERY_OUTPUT_TOKENS, phase: str = "UNSPECIFIED",
                 deadline: ReviewDeadline | None = None) -> dict[str, Any]:
         if thinking not in {"enabled", "disabled"}:
@@ -835,8 +835,8 @@ class DeepSeekClient:
 
 
 def request_validated(client: DeepSeekClient, system: str, prompt: str, telemetry: Telemetry,
-                      validator: Any, label: str, thinking: str = "enabled",
-                      reasoning_effort: str | None = "high",
+                      validator: Any, label: str, thinking: str = "disabled",
+                      reasoning_effort: str | None = None,
                       max_tokens: int = DISCOVERY_OUTPUT_TOKENS,
                       deadline: ReviewDeadline | None = None) -> dict[str, Any]:
     request_prompt = prompt
@@ -1449,7 +1449,7 @@ def perform_review(client: DeepSeekClient, root: Path, review_type: str, packet:
                     client, SYSTEM_DATA_BOUNDARY + "You are a hostile independent falsifier. Return JSON only.",
                     falsification_prompt(prefix, packet, batch, prior), telemetry,
                     lambda item, ids=expected_ids: decision_schema_valid(item, ids), "FALSIFICATION",
-                    "enabled", "high", FALSIFICATION_OUTPUT_TOKENS, deadline,
+                    "disabled", None, FALSIFICATION_OUTPUT_TOKENS, deadline,
                 )
             except TruncationError:
                 if len(batch) == 1:
@@ -1574,7 +1574,7 @@ def perform_review(client: DeepSeekClient, root: Path, review_type: str, packet:
                      else item.get("confirmed_severity") is None)
                 and (item["decision"] == "HUMAN_DECISION_REQUIRED"
                      or bool(item["proof"].strip()) and bool(item["negative_check"].strip())),
-                "ADJUDICATION", "enabled", "max", ADJUDICATION_OUTPUT_TOKENS, deadline,
+                "ADJUDICATION", "disabled", None, ADJUDICATION_OUTPUT_TOKENS, deadline,
             )
             if adjudication["decision"] in {"REJECTED", "NON_BLOCKING"}:
                 confirmed_ids.discard(identifier)

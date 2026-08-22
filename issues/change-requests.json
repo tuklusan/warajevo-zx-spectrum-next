@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 48,
+  "next_cr_number": 49,
   "status_values": [
     "open",
     "in_progress",
@@ -638,6 +638,17 @@
         "CR-0045 review telemetry"
       ],
       "notes": "Opened and closed on 2026-08-22 after CR-0045 normal review reached its output limit during one single-candidate falsification call. Commit cfda929 added one compact non-thinking retry against unchanged evidence and retained fail-closed behavior. Bootstrap and normal CODE reviews passed; reviewer-gate suite passed 75 tests on Linux CR0047-REVIEW-GATE-LINUX, Windows 10 CR0047-REVIEW-GATE-WIN10, and Windows 11 CR0047-REVIEW-GATE-WIN11; standard smoke passed on all three remotes; hosted platform-smoke 32551184613 and repository-gates 32551184638 passed; TEST_ARTIFACT review passed with zero findings."
+    },
+    {
+      "cr_number": "CR-0048",
+      "title": "Disable thinking for the external review transport",
+      "status": "in_progress",
+      "source_authority": [
+        "user-reported deepseek-v4-pro empty-content behavior",
+        "design/deepseek-review-gate.md",
+        "project reviewer workflow"
+      ],
+      "notes": "Opened on 2026-08-22 to require disabled thinking for discovery, falsification, and adjudication because the configured provider returns empty content otherwise. Scope preserves JSON-schema validation, evidence binding, retries, and fail-closed handling."
     }
   ]
 }
