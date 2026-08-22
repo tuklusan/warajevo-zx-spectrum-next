@@ -30,6 +30,20 @@ static void record_trace(const wz_trace_event_t* event, void* context)
     }
 }
 
+typedef struct {
+    wz_trace_event_t events[8];
+    size_t count;
+} timing_trace_log_t;
+
+static void record_timing_trace(const wz_trace_event_t* event, void* context)
+{
+    timing_trace_log_t* log = (timing_trace_log_t*)context;
+    if (log->count < (sizeof(log->events) / sizeof(log->events[0]))) {
+        log->events[log->count] = *event;
+    }
+    log->count += 1u;
+}
+
 static bool recover_trace(const wz_trace_event_t* event, void* context)
 {
     wz_qword_t* last_sequence = (wz_qword_t*)context;
@@ -82,6 +96,7 @@ int main(void)
     wz_bus_input_t bus_input;
     wz_bus_request_t bus_request;
     bus_log_t bus_log;
+    timing_trace_log_t timing_trace_log;
     wz_qword_t recovered_last = 0u;
     size_t recovered_count = 0u;
     size_t opcode_index;
@@ -354,6 +369,28 @@ int main(void)
         bus_log.requests[0].address != 0u ||
         bus_log.requests[0].value != 0u) {
         fputs("Z80 NOP fetch trace failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before structured timing trace test failed\n", stderr);
+        return 1;
+    }
+    memset(&timing_trace_log, 0, sizeof(timing_trace_log));
+    wz_trace_sink_init(&trace_sink, record_timing_trace, &timing_trace_log);
+    wz_machine_set_timing_trace(&machine, &trace_sink);
+    machine.cpu.main.a = 0x12u;
+    machine.cpu.main.f = 0x34u;
+    machine.memory[0u] = 0x00u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK || timing_trace_log.count != 2u ||
+        timing_trace_log.events[0].kind != WZ_TRACE_CPU_BUS ||
+        timing_trace_log.events[0].cycle != WZ_BUS_M1_OPCODE_FETCH ||
+        timing_trace_log.events[0].address != 0u ||
+        timing_trace_log.events[1].kind != WZ_TRACE_CPU_INSTRUCTION ||
+        timing_trace_log.events[1].program_counter != 0u ||
+        timing_trace_log.events[1].value != 0x00u ||
+        timing_trace_log.events[1].sequence != 1u ||
+        (timing_trace_log.events[1].register_snapshot & UINT64_C(0xffff)) != UINT64_C(0x3412)) {
+        fputs("structured CPU timing trace failed\n", stderr);
         return 1;
     }
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {

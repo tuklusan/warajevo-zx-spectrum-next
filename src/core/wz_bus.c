@@ -112,5 +112,15 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
     if (machine->bus_observer.record != 0) {
         machine->bus_observer.record(request, machine->bus_observer.context);
     }
+    if (machine->timing_trace != 0) {
+        wz_trace_event_t event = {0};
+        event.kind = WZ_TRACE_CPU_BUS;
+        event.master_tick = request->master_tick;
+        event.address = request->address;
+        event.value = request->value;
+        event.cycle = (wz_byte_t)request->cycle;
+        event.t_states = request->t_states;
+        wz_trace_emit_detail(machine->timing_trace, &event);
+    }
     return WZ_RESULT_OK;
 }

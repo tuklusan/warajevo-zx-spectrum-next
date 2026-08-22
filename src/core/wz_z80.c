@@ -31,6 +31,31 @@ static void wz_z80_increment_r(wz_z80_state_t* state)
     state->r = (wz_byte_t)((state->r & 0x80u) | ((state->r + 1u) & 0x7fu));
 }
 
+static void wz_z80_trace_instruction(wz_machine_t* machine,
+                                     wz_word_t pc,
+                                     wz_byte_t opcode)
+{
+    wz_trace_event_t event = {0};
+
+    if (machine->timing_trace == 0) {
+        return;
+    }
+    event.kind = WZ_TRACE_CPU_INSTRUCTION;
+    event.master_tick = machine->master_tick;
+    event.program_counter = pc;
+    event.stack_pointer = machine->cpu.stack_pointer;
+    event.value = opcode;
+    event.register_snapshot = (wz_qword_t)machine->cpu.main.a |
+        ((wz_qword_t)machine->cpu.main.f << 8u) |
+        ((wz_qword_t)machine->cpu.main.b << 16u) |
+        ((wz_qword_t)machine->cpu.main.c << 24u) |
+        ((wz_qword_t)machine->cpu.main.d << 32u) |
+        ((wz_qword_t)machine->cpu.main.e << 40u) |
+        ((wz_qword_t)machine->cpu.main.h << 48u) |
+        ((wz_qword_t)machine->cpu.main.l << 56u);
+    wz_trace_emit_detail(machine->timing_trace, &event);
+}
+
 #define WZ_Z80_UN(opcode_value) \
     { (wz_byte_t)(opcode_value), WZ_Z80_PRIMARY_OP_UNSUPPORTED, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED }
 #define WZ_Z80_IMPL(opcode_value, operation_value) \
@@ -1691,6 +1716,7 @@ wz_result_t wz_z80_step(wz_machine_t* machine)
     }
     machine->cpu.program_counter = wz_z80_add16(pc, 1u);
     wz_z80_increment_r(&machine->cpu);
+    wz_z80_trace_instruction(machine, pc, opcode);
 
     decode = wz_z80_primary_opcode_decode(opcode);
     switch (decode->operation) {

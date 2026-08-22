@@ -25,12 +25,28 @@ void wz_trace_emit(wz_trace_sink_t* sink,
 {
     wz_trace_event_t event;
 
-    if (sink == 0 || sink->emit == 0) {
-        return;
-    }
-
     event.kind = kind;
     event.master_tick = master_tick;
-    event.sequence = sink->next_sequence++;
-    sink->emit(&event, sink->context);
+    event.address = 0u;
+    event.program_counter = 0u;
+    event.stack_pointer = 0u;
+    event.register_snapshot = 0u;
+    event.value = 0u;
+    event.auxiliary = 0u;
+    event.cycle = 0u;
+    event.t_states = 0u;
+    wz_trace_emit_detail(sink, &event);
+}
+
+void wz_trace_emit_detail(wz_trace_sink_t* sink,
+                          const wz_trace_event_t* event)
+{
+    wz_trace_event_t recorded;
+
+    if (sink == 0 || sink->emit == 0 || event == 0) {
+        return;
+    }
+    recorded = *event;
+    recorded.sequence = sink->next_sequence++;
+    sink->emit(&recorded, sink->context);
 }

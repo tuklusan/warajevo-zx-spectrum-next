@@ -22,6 +22,7 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     wz_z80_state_init(&machine->cpu);
     wz_bus_observer_init(&machine->bus_observer, 0, 0);
     wz_bus_input_init(&machine->bus_input, 0, 0);
+    machine->timing_trace = 0;
     machine->master_tick = 0u;
     for (size_t index = 0u; index < sizeof(machine->memory); ++index) {
         machine->memory[index] = 0u;
@@ -35,7 +36,15 @@ void wz_machine_destroy(wz_machine_t* machine)
         machine->profile = 0;
         wz_bus_observer_init(&machine->bus_observer, 0, 0);
         wz_bus_input_init(&machine->bus_input, 0, 0);
+        machine->timing_trace = 0;
         machine->master_tick = 0u;
+    }
+}
+
+void wz_machine_set_timing_trace(wz_machine_t* machine, wz_trace_sink_t* trace)
+{
+    if (machine != 0) {
+        machine->timing_trace = trace;
     }
 }
 
