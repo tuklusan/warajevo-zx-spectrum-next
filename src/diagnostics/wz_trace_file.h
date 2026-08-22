@@ -15,7 +15,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #define WZ_TRACE_FILE_SIZE 16777216u
 #define WZ_TRACE_HEADER_SIZE 256u
-#define WZ_TRACE_RECORD_SIZE 28u
+#define WZ_TRACE_RECORD_SIZE 24u
+#define WZ_TRACE_COMMIT_OFFSET 20u
 
 typedef struct {
     FILE* file;
@@ -25,6 +26,7 @@ typedef struct {
     wz_qword_t generation;
     wz_qword_t first_sequence;
     wz_qword_t last_sequence;
+    wz_master_tick_t last_master_tick;
     wz_dword_t event_mask;
     wz_dword_t profile_kind;
     bool frozen;

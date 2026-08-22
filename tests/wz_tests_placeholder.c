@@ -2295,7 +2295,8 @@ int main(void)
         fseek(trace_stream,
               (long)(WZ_TRACE_HEADER_SIZE +
                      (799999u % ((WZ_TRACE_FILE_SIZE - WZ_TRACE_HEADER_SIZE) /
-                                  WZ_TRACE_RECORD_SIZE)) * WZ_TRACE_RECORD_SIZE + 24u),
+                                  WZ_TRACE_RECORD_SIZE)) * WZ_TRACE_RECORD_SIZE +
+                     WZ_TRACE_COMMIT_OFFSET),
               SEEK_SET) != 0 || fputc(0, trace_stream) == EOF ||
         fclose(trace_stream) != 0) {
         fputs("trace size or truncation fixture failed\n", stderr);
