@@ -24,6 +24,26 @@ checks and hostile falsification become blockers. A new CODE attempt
 invalidates the prior private receipt before review begins, and unresolved or
 ambiguous authority remains fail-closed.
 
+## Migration Pre-Development Gate
+
+Before editing implementation artifacts for every CR or other tracked work item,
+create `design/cr-preflight/CR-NNNN.md`. The record must enumerate every
+functional aspect in scope, including normal behavior, edge cases, state
+transitions, timing/bus effects, data formats, error behavior, UI or external
+contract effects, tests, and compatibility implications.
+
+The record must identify the architecture/task authority and the upstream
+repository commit plus every source file, symbol, or search domain examined.
+Each discovered upstream behavior must have an explicit disposition:
+`IMPLEMENT_NOW`, `DEFERRED_WITH_CR`, `NOT_APPLICABLE`, or
+`REIMPLEMENTED_DIFFERENTLY` with an evidence-backed reason.
+
+Before implementation begins, repeat the upstream discovery scan using broader
+symbols and neighboring control paths. The preflight exit is valid only when
+the record states `Status: APPROVED_FOR_IMPLEMENTATION` and its zero-gap scan
+lists no undispositioned behavior. CODE review and remote/hosted execution are
+blocked until this tracked record exists for the active CR.
+
 ## Root Rule
 
 Never create any project item or artifact above the project directory.

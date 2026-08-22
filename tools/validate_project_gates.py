@@ -216,6 +216,31 @@ def validate_change_requests(path: Path) -> list[str]:
     return problems
 
 
+def validate_cr_preflight(root: Path) -> list[str]:
+    tracker = root / "issues" / "change-requests.json"
+    data = json.loads(tracker.read_text(encoding="utf-8"))
+    problems: list[str] = []
+    required = (
+        "## Functional Inventory",
+        "## Upstream Discovery",
+        "## Disposition",
+        "## Zero-Gap Exit Scan",
+        "Status: APPROVED_FOR_IMPLEMENTATION",
+    )
+    for entry in data.get("change_requests", []):
+        if entry.get("status") != "in_progress":
+            continue
+        path = root / "design" / "cr-preflight" / f"{entry.get('cr_number')}.md"
+        if not path.exists():
+            problems.append(f"{path.relative_to(root)}: active CR lacks migration pre-development gate")
+            continue
+        content = path.read_text(encoding="utf-8")
+        for marker in required:
+            if marker not in content:
+                problems.append(f"{path.relative_to(root)}: missing required preflight marker {marker!r}")
+    return problems
+
+
 def load_remote_machines(path: Path) -> dict[str, dict[str, str]]:
     module = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
 
@@ -556,6 +581,7 @@ def main() -> int:
     problems.extend(validate_forbidden_local_build_outputs(root))
     problems.extend(validate_remote_only_ci_policy(root))
     problems.extend(validate_platform_smoke_workflow(root))
+    problems.extend(validate_cr_preflight(root))
     problems.extend(validate_repository_identity_documents(root))
     problems.extend(validate_remote_machine_documents(root))
     problems.extend(validate_required_workflow_documents(root))
