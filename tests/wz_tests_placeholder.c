@@ -121,6 +121,7 @@ int main(void)
     wz_byte_t interrupt_value = 0x5au;
     FILE* trace_stream;
     const char* trace_path = "wz-trace-regression.bin";
+    const char* failing_trace_path = "wz-trace-failing-opcode.bin";
     const char* state_trace_path = "wz-trace-state-regression.bin";
 
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
@@ -430,6 +431,50 @@ int main(void)
         fputs("complete CPU timing synchronization trace failed\n", stderr);
         return 1;
     }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before failing opcode trace test failed\n", stderr);
+        return 1;
+    }
+    remove(failing_trace_path);
+    if (wz_trace_file_create(&trace_file, failing_trace_path, 4u,
+                             (wz_dword_t)profile->kind, 0x9abcu, UINT32_MAX) != WZ_RESULT_OK) {
+        fputs("failing opcode trace creation failed\n", stderr);
+        return 1;
+    }
+    wz_trace_sink_init(&trace_sink, wz_trace_file_emit, &trace_file);
+    wz_machine_set_timing_trace(&machine, &trace_sink);
+    machine.memory[0u] = 0x01u;
+    if (wz_z80_step(&machine) != WZ_RESULT_UNSUPPORTED_OPERATION ||
+        wz_trace_file_freeze(&trace_file) != WZ_RESULT_OK) {
+        wz_trace_file_close(&trace_file);
+        fputs("failing opcode trace execution failed\n", stderr);
+        return 1;
+    }
+    wz_trace_file_close(&trace_file);
+    memset(&timing_trace_log, 0, sizeof(timing_trace_log));
+    if (wz_trace_file_recover(failing_trace_path, recover_timing_trace, &timing_trace_log,
+                              &recovered_count) != WZ_RESULT_OK ||
+        recovered_count != 7u || timing_trace_log.count != 7u ||
+        timing_trace_log.events[0].kind != WZ_TRACE_CPU_BUS ||
+        timing_trace_log.events[0].cycle != WZ_BUS_M1_OPCODE_FETCH ||
+        timing_trace_log.events[0].address != 0u || timing_trace_log.events[0].value != 0x01u ||
+        timing_trace_log.events[1].kind != WZ_TRACE_CPU_INSTRUCTION ||
+        timing_trace_log.events[1].program_counter != 0u || timing_trace_log.events[1].value != 0x01u) {
+        remove(failing_trace_path);
+        fputs("failing opcode trace recovery failed\n", stderr);
+        return 1;
+    }
+    wz_trace_cpu_state_sync_init(&recovered_cpu_sync);
+    for (size_t index = 2u; index < timing_trace_log.count; ++index) {
+        (void)wz_trace_cpu_state_sync_apply(&recovered_cpu_sync, &timing_trace_log.events[index]);
+    }
+    if (!recovered_cpu_sync.complete || recovered_cpu_sync.master_tick != 0u ||
+        recovered_cpu_sync.state.program_counter != 1u || recovered_cpu_sync.state.r != 1u) {
+        remove(failing_trace_path);
+        fputs("failing opcode state reconstruction failed\n", stderr);
+        return 1;
+    }
+    remove(failing_trace_path);
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
         fputs("machine reset before Z80 load test failed\n", stderr);
         return 1;
