@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 44,
+  "next_cr_number": 45,
   "status_values": [
     "open",
     "in_progress",
@@ -598,6 +598,16 @@
         "design/cr-preflight/retrospective-audit.md"
       ],
       "notes": "Opened on 2026-08-22 after the retrospective audit found that CR-0001 through CR-0041 lack durable per-CR functional inventory and second-pass upstream zero-gap evidence. Scope is evidence reconstruction, behavioral disposition, and corrective CR creation for every discovered migration gap. This CR is a prerequisite for accepting Phase-2 completion but does not authorize fabricated retrospective evidence."
+    },
+    {
+      "cr_number": "CR-0044",
+      "title": "Complete IM0 injected-opcode interrupt execution",
+      "status": "in_progress",
+      "source_authority": [
+        "design/warajevo-zx-spectrum-next-architecture.md section 11",
+        "CR-0041 retrospective upstream reconciliation"
+      ],
+      "notes": "Opened on 2026-08-22 after CR-0041 audit established that its IM0 entry accepts only RST vectors. Scope is complete execution of the bus-supplied IM0 instruction stream without inventing a memory opcode fetch, including prefixed forms, immediate bytes from PC, bus timing, IFF/HALT interactions, unsupported-opcode behavior, and trace coverage."
     }
   ]
 }
