@@ -221,8 +221,10 @@ path for maintenance of the normal gate. It consumes the complete bounded
 immutable packet and remains available after cutover. Its full prompt has a
 separate conservative 2 MB input ceiling so a complete gate-maintenance change
 is not silently reduced to the normal per-unit budget. Its output budget is
-8,192 tokens because the contract permits at most one concise finding; a larger
-reserve can delay service scheduling without adding review authority.
+12,288 tokens, matching the bounded hostile-falsification budget: the provider
+may consume part of that allowance for high-effort reasoning even though the
+contract permits at most one concise finding. A larger reserve can delay service
+scheduling without adding review authority.
 Transport-successful but schema-invalid bootstrap output receives at most two
 fresh repair attempts and then remains inconclusive.
 
