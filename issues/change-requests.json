@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 46,
+  "next_cr_number": 47,
   "status_values": [
     "open",
     "in_progress",
@@ -618,6 +618,16 @@
         "CR-0042 acceptance audit"
       ],
       "notes": "Opened on 2026-08-22 because CR-0042's 28-byte ring record restores required retention but cannot persist a full instruction register snapshot. Scope is compact delta plus periodic absolute CPU-state synchronization records that reconstruct all main/alternate registers, IX/IY, SP, PC, I/R, IFF, IM, HALT and MEMPTR without weakening the fixed 16 MiB eight-frame requirement."
+    },
+    {
+      "cr_number": "CR-0046",
+      "title": "Extend external review default deadline to twenty minutes",
+      "status": "in_progress",
+      "source_authority": [
+        "project reviewer workflow",
+        "user-approved 20-minute timeout"
+      ],
+      "notes": "Opened on 2026-08-22. Scope is the shared default review deadline only; per-call overrides, health-check timeout, fail-closed expiration, and review evidence protections remain intact."
     }
   ]
 }

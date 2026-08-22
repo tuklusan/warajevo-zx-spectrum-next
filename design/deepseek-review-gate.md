@@ -117,6 +117,11 @@ ambiguous evidence is not forced into a model-generated answer.
 
 ## Review Types And Artifacts
 
+The default bounded deadline for a CODE, DOCUMENTATION, or TEST_ARTIFACT
+review is 1,200 seconds (20 minutes). A caller may select a shorter explicit
+deadline when its immutable packet is known to require less time; expiration
+remains fail-closed and never authorizes remote or hosted execution.
+
 `CODE`, `DOCUMENTATION`, and `TEST_ARTIFACT` use the same candidate/proof
 discipline. Documentation style and future detail do not block current work.
 
