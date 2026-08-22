@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 42,
+  "next_cr_number": 43,
   "status_values": [
     "open",
     "in_progress",
@@ -578,6 +578,16 @@
         "design/wzsn-architectures-1-2-developer-tasks.md task 058"
       ],
       "notes": "Closed on 2026-08-22. Implemented explicit IM 0 RST-vector, IM 1, IM 2, and NMI acceptance entry points with interrupt-acknowledge, vector-read, internal, and stack-write bus phases at exact master-tick offsets; IFF, R, MEMPTR, and HALT return-PC transitions are covered by deterministic traces. Upstream Warajevo preserves IFF1 into IFF2 and advances held HALT PC before NMI stacking, consistent with this implementation. CODE review PASS; remote Linux CR0041-INT-LINUX, Windows 10 CR0041-INT-WIN10-R2, and Windows 11 CR0041-INT-WIN11-R2 smoke PASS; hosted run 32547526442 passed Linux x64/ARM64, Windows x64, and macOS Intel/ARM64; TEST_ARTIFACT review PASS. Full arbitrary IM 0 injected-opcode dispatch remains constrained by the supported primary-opcode execution model and is deferred for the complete CPU-dispatch scope."
+    },
+    {
+      "cr_number": "CR-0042",
+      "title": "Complete TIMING_FULL CPU instruction and bus instrumentation",
+      "status": "in_progress",
+      "source_authority": [
+        "design/warajevo-zx-spectrum-next-architecture.md sections 11, 36, and 44.2",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 059"
+      ],
+      "notes": "Opened on 2026-08-22 for Phase-2 task 059. Scope is structured instruction boundary/register/opcode records; every externally visible CPU bus operation; interrupt sample/accept/acknowledge evidence; same-tick sequence ordering; compact deterministic binary persistence; and a trace-based failing-opcode reconstruction test. The 16 MiB eight-frame retention measurement remains a Phase-2 exit acceptance requirement and must be demonstrated before task 062 closes."
     }
   ]
 }
