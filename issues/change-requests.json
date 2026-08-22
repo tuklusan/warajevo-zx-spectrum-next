@@ -622,12 +622,12 @@
     {
       "cr_number": "CR-0046",
       "title": "Extend external review default deadline to twenty minutes",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "project reviewer workflow",
         "user-approved 20-minute timeout"
       ],
-      "notes": "Opened on 2026-08-22. Scope is the shared default review deadline only; per-call overrides, health-check timeout, fail-closed expiration, and review evidence protections remain intact."
+      "notes": "Opened and closed on 2026-08-22. Commit 399e26f set the shared normal/bootstrap default to 1,200 seconds while retaining explicit overrides, 60-second health checks, and fail-closed expiration. Bootstrap and normal CODE reviews passed; Linux CR0046-DEADLINE-LINUX-R2, Windows 10 CR0046-DEADLINE-WIN10-R2, and Windows 11 CR0046-DEADLINE-WIN11-R2 passed; hosted platform-smoke 32550513657 and repository-gates 32550513595 passed; TEST_ARTIFACT review passed with zero findings."
     }
   ]
 }
