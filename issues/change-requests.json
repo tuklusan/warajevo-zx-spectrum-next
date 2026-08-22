@@ -542,7 +542,7 @@
     {
       "cr_number": "CR-0038",
       "title": "Implement Z80 HALT and refresh semantics",
-      "status": "open",
+      "status": "in_progress",
       "source_authority": [
         "design/warajevo-zx-spectrum-next-architecture.md sections 11 and 12",
         "design/wzsn-architectures-1-2-developer-tasks.md task 056"
