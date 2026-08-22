@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 40,
+  "next_cr_number": 41,
   "status_values": [
     "open",
     "in_progress",
@@ -558,6 +558,16 @@
         "design/FRESH-PROJECT-DEEPSEEK-REVIEW-GATE.md sections on deterministic context completion and bootstrap maintenance"
       ],
       "notes": "Opened on 2026-08-20 after CR-0038 produced two consecutive inconclusive CODE reviews while reviewer health remained available. Closed on 2026-08-22 after implementing declaration-only bounded symbol context, process-terminated deadline transport, bounded bootstrap discovery, and a maintenance-only remote authorization path. The isolated maintenance commit 7e8074a passed bootstrap and normal CODE reviews, Linux remote run CR0039-GATE-LINUX-R2, Windows remote runs CR0039-GATE-WIN10 and CR0039-GATE-WIN11, hosted run 32546464584 on five platforms, and TEST_ARTIFACT review with zero findings."
+    },
+    {
+      "cr_number": "CR-0040",
+      "title": "Implement Z80 EI and DI delayed interrupt acceptance",
+      "status": "in_progress",
+      "source_authority": [
+        "design/warajevo-zx-spectrum-next-architecture.md section 11",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 057"
+      ],
+      "notes": "Opened on 2026-08-22 for Phase-2 task 057. Scope is DI immediate disable, EI deferred enable after exactly one following instruction, HALT interaction, and deterministic acceptance-state tests. IM 0/1/2 and NMI bus-entry work remain deferred to task 058."
     }
   ]
 }
