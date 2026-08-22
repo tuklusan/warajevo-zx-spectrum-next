@@ -9,7 +9,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "diagnostics/wz_trace_file.h"
 #include <string.h>
 
-#define WZ_TRACE_FORMAT_VERSION 2u
+#define WZ_TRACE_FORMAT_VERSION 3u
 #define WZ_TRACE_COMMIT UINT32_C(0x57415a43)
 
 static void put32(wz_byte_t* p, wz_dword_t v)
@@ -77,9 +77,14 @@ void wz_trace_file_emit(const wz_trace_event_t* e,void* context)
     memset(r,0,sizeof(r)); r[0]=(wz_byte_t)WZ_TRACE_RECORD_SIZE;
     r[1]=(wz_byte_t)e->kind; r[2]=e->cycle; r[3]=e->t_states;
     put32(r+4u,(wz_dword_t)e->sequence); put64(r+8u,e->master_tick);
-    put16(r+16u,e->address); put16(r+18u,e->program_counter);
-    r[20]=e->value; r[21]=e->auxiliary;
-    put16(r+22u,(wz_word_t)e->register_snapshot); put32(r+24u,WZ_TRACE_COMMIT);
+    if (e->kind == WZ_TRACE_CPU_STATE_SYNC) {
+        put64(r+16u, e->register_snapshot);
+    } else {
+        put16(r+16u,e->address); put16(r+18u,e->program_counter);
+        r[20]=e->value; r[21]=e->auxiliary;
+        put16(r+22u,(wz_word_t)e->register_snapshot);
+    }
+    put32(r+24u,WZ_TRACE_COMMIT);
     if(fseek(t->file,(long)(WZ_TRACE_HEADER_SIZE+t->next_slot*WZ_TRACE_RECORD_SIZE),SEEK_SET)!=0||
        fwrite(r,1u,sizeof(r),t->file)!=sizeof(r)){t->failed=true;return;}
     if(t->first_sequence==UINT64_MAX)t->first_sequence=e->sequence;
@@ -107,8 +112,12 @@ wz_result_t wz_trace_file_recover(const char* path,wz_trace_recover_fn fn,void* 
         if(r[0]!=WZ_TRACE_RECORD_SIZE||get32(r+24u)!=WZ_TRACE_COMMIT||get32(r+4u)!=(wz_dword_t)seq)continue;
         memset(&e, 0, sizeof(e)); e.kind=(wz_trace_event_kind_t)r[1];
         e.cycle=r[2]; e.t_states=r[3]; e.sequence=seq; e.master_tick=get64(r+8u);
-        e.address=get16(r+16u); e.program_counter=get16(r+18u);
-        e.value=r[20]; e.auxiliary=r[21]; e.register_snapshot=get16(r+22u);
+        if (e.kind == WZ_TRACE_CPU_STATE_SYNC) {
+            e.register_snapshot=get64(r+16u);
+        } else {
+            e.address=get16(r+16u); e.program_counter=get16(r+18u);
+            e.value=r[20]; e.auxiliary=r[21]; e.register_snapshot=get16(r+22u);
+        }
         n++;if(!fn(&e,context))break;
         if(seq==UINT64_MAX)break;
     }

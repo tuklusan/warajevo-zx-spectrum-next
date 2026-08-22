@@ -54,6 +54,44 @@ static void wz_z80_trace_instruction(wz_machine_t* machine,
         ((wz_qword_t)machine->cpu.main.h << 48u) |
         ((wz_qword_t)machine->cpu.main.l << 56u);
     wz_trace_emit_detail(machine->timing_trace, &event);
+
+    if ((machine->timing_trace->next_sequence % WZ_TRACE_CPU_SYNC_INTERVAL) == 0u) {
+        wz_trace_event_t sync = {0};
+        const wz_z80_state_t* state = &machine->cpu;
+        sync.kind = WZ_TRACE_CPU_STATE_SYNC;
+        sync.master_tick = machine->master_tick;
+        sync.cycle = 0u;
+        sync.register_snapshot = event.register_snapshot;
+        wz_trace_emit_detail(machine->timing_trace, &sync);
+        sync.cycle = 1u;
+        sync.register_snapshot = (wz_qword_t)state->alternate.a |
+            ((wz_qword_t)state->alternate.f << 8u) |
+            ((wz_qword_t)state->alternate.b << 16u) |
+            ((wz_qword_t)state->alternate.c << 24u) |
+            ((wz_qword_t)state->alternate.d << 32u) |
+            ((wz_qword_t)state->alternate.e << 40u) |
+            ((wz_qword_t)state->alternate.h << 48u) |
+            ((wz_qword_t)state->alternate.l << 56u);
+        wz_trace_emit_detail(machine->timing_trace, &sync);
+        sync.cycle = 2u;
+        sync.register_snapshot = (wz_qword_t)state->ix |
+            ((wz_qword_t)state->iy << 16u) |
+            ((wz_qword_t)state->stack_pointer << 32u) |
+            ((wz_qword_t)state->program_counter << 48u);
+        wz_trace_emit_detail(machine->timing_trace, &sync);
+        sync.cycle = 3u;
+        sync.register_snapshot = (wz_qword_t)state->memptr |
+            ((wz_qword_t)state->i << 16u) |
+            ((wz_qword_t)state->r << 24u) |
+            ((wz_qword_t)state->iff1 << 32u) |
+            ((wz_qword_t)state->iff2 << 40u) |
+            ((wz_qword_t)state->interrupt_enable_delay << 48u) |
+            ((wz_qword_t)state->interrupt_mode << 56u);
+        wz_trace_emit_detail(machine->timing_trace, &sync);
+        sync.cycle = 4u;
+        sync.register_snapshot = state->halted;
+        wz_trace_emit_detail(machine->timing_trace, &sync);
+    }
 }
 
 static void wz_z80_trace_interrupt(wz_machine_t* machine, wz_byte_t kind)

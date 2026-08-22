@@ -11,13 +11,16 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "core/wz_types.h"
 
+#define WZ_TRACE_CPU_SYNC_INTERVAL 4096u
+
 typedef enum {
     WZ_TRACE_MASTER_TICK_ADVANCED = 0,
     WZ_TRACE_TIMING_FULL = 1,
     WZ_TRACE_DEVELOPER_MARKER = 2,
     WZ_TRACE_CPU_INSTRUCTION = 3,
     WZ_TRACE_CPU_BUS = 4,
-    WZ_TRACE_INTERRUPT = 5
+    WZ_TRACE_INTERRUPT = 5,
+    WZ_TRACE_CPU_STATE_SYNC = 6
 } wz_trace_event_kind_t;
 
 typedef struct {

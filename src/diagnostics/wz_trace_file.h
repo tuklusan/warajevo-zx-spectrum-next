@@ -15,7 +15,6 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #define WZ_TRACE_FILE_SIZE 16777216u
 #define WZ_TRACE_HEADER_SIZE 256u
 #define WZ_TRACE_RECORD_SIZE 28u
-#define WZ_TRACE_SYNC_INTERVAL 4096u
 
 typedef struct {
     FILE* file;
