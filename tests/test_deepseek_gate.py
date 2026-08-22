@@ -870,7 +870,8 @@ class GateTests(unittest.TestCase):
                                          gate.Telemetry("CODE", "snap"))
         self.assertEqual(result["verdict"], "PASS")
         self.assertEqual(client.calls[-1]["phase"], "ADJUDICATION")
-        self.assertEqual(client.calls[-1]["effort"], "max")
+        self.assertEqual(client.calls[-1]["thinking"], "disabled")
+        self.assertIsNone(client.calls[-1]["effort"])
 
     def test_multi_file_one_unit_does_not_trigger_integration_call(self):
         review_packet = gate.ReviewPacket(
