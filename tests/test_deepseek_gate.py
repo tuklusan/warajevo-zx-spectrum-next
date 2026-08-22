@@ -914,7 +914,7 @@ class GateTests(unittest.TestCase):
         client = gate.DeepSeekClient("secret", blocked_opener)
         started = time.monotonic()
         try:
-            with self.assertRaisesRegex(gate.ReviewError, "REVIEW_DEADLINE_EXCEEDED"):
+            with self.assertRaisesRegex(gate.ReviewError, "deadline-enforced transport"):
                 client.request("system", "user", gate.Telemetry("CODE", "snap"),
                                deadline=gate.ReviewDeadline(0.05))
             self.assertLess(time.monotonic() - started, 1.0)

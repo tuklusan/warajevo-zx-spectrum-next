@@ -1115,6 +1115,20 @@ def location_symbol_request(packet: ReviewPacket, candidate: dict[str, Any]) -> 
     return {"type": "SYMBOL", "symbol": symbols[-1], "origin": "DETERMINISTIC_LOCATION_SYMBOL"}
 
 
+def compact_automatic_symbol_context(resolution: dict[str, Any]) -> None:
+    request = resolution.get("request", {})
+    if request.get("origin") != "DETERMINISTIC_LOCATION_SYMBOL":
+        return
+    symbol = request.get("symbol", "")
+    for context in resolution.get("contexts", []):
+        content = context.get("content")
+        if not isinstance(content, str):
+            continue
+        line_number = next((index for index, line in enumerate(content.splitlines(), 1) if symbol in line), 1)
+        context["content"] = bounded_source_context(content, f"{context.get('path', '')}:{line_number}", radius=80)
+        context["content_is_bounded"] = True
+
+
 def resolve_candidate_context(root: Path, packet: ReviewPacket, candidates: list[dict[str, Any]],
                               telemetry: Telemetry) -> tuple[list[dict[str, Any]], list[str]]:
     unresolved: list[str] = []
@@ -1134,6 +1148,7 @@ def resolve_candidate_context(root: Path, packet: ReviewPacket, candidates: list
         for request in requests:
             telemetry.context_request_count += 1
             resolution = resolve_context_request(root, packet, request)
+            compact_automatic_symbol_context(resolution)
             if resolution["status"] == "RESOLVED":
                 telemetry.context_request_resolved_count += 1
             else:
