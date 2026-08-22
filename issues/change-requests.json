@@ -632,12 +632,12 @@
     {
       "cr_number": "CR-0047",
       "title": "Recover a bounded single-candidate falsification truncation",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "project reviewer workflow",
         "CR-0045 review telemetry"
       ],
-      "notes": "Opened on 2026-08-22 after CR-0045 normal review reached its output limit during one single-candidate falsification call. Scope is one compact, non-thinking retry against unchanged evidence while preserving deadline, schema, telemetry, and fail-closed behavior."
+      "notes": "Opened and closed on 2026-08-22 after CR-0045 normal review reached its output limit during one single-candidate falsification call. Commit cfda929 added one compact non-thinking retry against unchanged evidence and retained fail-closed behavior. Bootstrap and normal CODE reviews passed; reviewer-gate suite passed 75 tests on Linux CR0047-REVIEW-GATE-LINUX, Windows 10 CR0047-REVIEW-GATE-WIN10, and Windows 11 CR0047-REVIEW-GATE-WIN11; standard smoke passed on all three remotes; hosted platform-smoke 32551184613 and repository-gates 32551184638 passed; TEST_ARTIFACT review passed with zero findings."
     }
   ]
 }
