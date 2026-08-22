@@ -562,12 +562,12 @@
     {
       "cr_number": "CR-0040",
       "title": "Implement Z80 EI and DI delayed interrupt acceptance",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/warajevo-zx-spectrum-next-architecture.md section 11",
         "design/wzsn-architectures-1-2-developer-tasks.md task 057"
       ],
-      "notes": "Opened on 2026-08-22 for Phase-2 task 057. Scope is DI immediate disable, EI deferred enable after exactly one following instruction, HALT interaction, and deterministic acceptance-state tests. IM 0/1/2 and NMI bus-entry work remain deferred to task 058."
+      "notes": "Closed on 2026-08-22. DI immediately clears both interrupt flip-flops; EI sets both but serializes a one-following-instruction acceptance deferral, including EI followed by HALT. The primary-opcode decoder, state validation, canonical state format v4, and deterministic tests cover the behavior. Upstream Warajevo Z80.ASM uses an instruction-dispatch deferral after EI for the same boundary. CODE review PASS; remote Linux, Windows 10, and Windows 11 smoke PASS; hosted Linux x64/ARM64, Windows x64, and macOS Intel/ARM64 matrix PASS; TEST_ARTIFACT review PASS. IM 0/1/2 and NMI bus-entry work remain deferred to task 058."
     }
   ]
 }
