@@ -2112,6 +2112,25 @@ int main(void)
         return 1;
     }
     memset(&bus_log, 0, sizeof(bus_log));
+    memset(&timing_trace_log, 0, sizeof(timing_trace_log));
+    wz_trace_sink_init(&trace_sink, record_timing_trace, &timing_trace_log);
+    wz_machine_set_timing_trace(&machine, &trace_sink);
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_accept_maskable_interrupt(&machine) != WZ_RESULT_UNSUPPORTED_OPERATION ||
+        timing_trace_log.count != 1u ||
+        timing_trace_log.events[0].kind != WZ_TRACE_INTERRUPT ||
+        timing_trace_log.events[0].value != WZ_TRACE_INTERRUPT_MASKABLE_SAMPLE ||
+        machine.cpu.program_counter != 0u || machine.cpu.stack_pointer != 0xffffu ||
+        machine.cpu.iff1 != 0u || machine.cpu.iff2 != 0u ||
+        machine.master_tick != 0u || bus_log.count != 0u) {
+        fputs("Z80 rejected maskable interrupt trace failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset after rejected interrupt trace test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
     machine.cpu.iff1 = 1u;
     machine.cpu.iff2 = 1u;
     machine.cpu.interrupt_mode = (wz_byte_t)WZ_Z80_INTERRUPT_MODE_1;
