@@ -99,9 +99,9 @@ static const wz_z80_opcode_decode_t wz_z80_primary_opcode_table[256] = {
     WZ_Z80_IMPL(0xeau, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_UN(0xebu), WZ_Z80_IMPL(0xecu, WZ_Z80_PRIMARY_OP_CALL),
     WZ_Z80_PREFIX(0xedu, WZ_Z80_PRIMARY_OP_PREFIX_ED),
     WZ_Z80_IMPL(0xeeu, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xefu, WZ_Z80_PRIMARY_OP_RST), WZ_Z80_IMPL(0xf0u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_IMPL(0xf1u, WZ_Z80_PRIMARY_OP_POP),
-    WZ_Z80_IMPL(0xf2u, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_UN(0xf3u), WZ_Z80_IMPL(0xf4u, WZ_Z80_PRIMARY_OP_CALL), WZ_Z80_IMPL(0xf5u, WZ_Z80_PRIMARY_OP_PUSH),
+    WZ_Z80_IMPL(0xf2u, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_IMPL(0xf3u, WZ_Z80_PRIMARY_OP_DI), WZ_Z80_IMPL(0xf4u, WZ_Z80_PRIMARY_OP_CALL), WZ_Z80_IMPL(0xf5u, WZ_Z80_PRIMARY_OP_PUSH),
     WZ_Z80_IMPL(0xf6u, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xf7u, WZ_Z80_PRIMARY_OP_RST), WZ_Z80_IMPL(0xf8u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_UN(0xf9u),
-    WZ_Z80_IMPL(0xfau, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_UN(0xfbu), WZ_Z80_IMPL(0xfcu, WZ_Z80_PRIMARY_OP_CALL),
+    WZ_Z80_IMPL(0xfau, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_IMPL(0xfbu, WZ_Z80_PRIMARY_OP_EI), WZ_Z80_IMPL(0xfcu, WZ_Z80_PRIMARY_OP_CALL),
     WZ_Z80_PREFIX(0xfdu, WZ_Z80_PRIMARY_OP_PREFIX_FD),
     WZ_Z80_IMPL(0xfeu, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xffu, WZ_Z80_PRIMARY_OP_RST)
 };
@@ -1517,6 +1517,7 @@ void wz_z80_state_init(wz_z80_state_t* state)
     state->r = 0u;
     state->iff1 = 0u;
     state->iff2 = 0u;
+    state->interrupt_enable_delay = 0u;
     state->interrupt_mode = (wz_byte_t)WZ_Z80_INTERRUPT_MODE_0;
     state->halted = 0u;
 }
@@ -1526,7 +1527,8 @@ wz_result_t wz_z80_state_validate(const wz_z80_state_t* state)
     if (state == 0) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
-    if (state->iff1 > 1u || state->iff2 > 1u || state->halted > 1u) {
+    if (state->iff1 > 1u || state->iff2 > 1u ||
+        state->interrupt_enable_delay > 1u || state->halted > 1u) {
         return WZ_RESULT_INVALID_STATE;
     }
     if (state->interrupt_mode > (wz_byte_t)WZ_Z80_INTERRUPT_MODE_2) {
@@ -1541,6 +1543,12 @@ void wz_z80_exit_halt_for_interrupt(wz_z80_state_t* state)
         state->halted = 0u;
         state->program_counter = wz_z80_add16(state->program_counter, 1u);
     }
+}
+
+bool wz_z80_maskable_interrupts_acceptable(const wz_z80_state_t* state)
+{
+    return state != 0 && state->iff1 != 0u &&
+           state->interrupt_enable_delay == 0u;
 }
 
 wz_result_t wz_z80_step(wz_machine_t* machine)
@@ -1559,6 +1567,11 @@ wz_result_t wz_z80_step(wz_machine_t* machine)
     }
     if (wz_z80_state_validate(&machine->cpu) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_STATE;
+    }
+
+    /* EI blocks recognition until this following instruction has completed. */
+    if (machine->cpu.interrupt_enable_delay != 0u) {
+        machine->cpu.interrupt_enable_delay = 0u;
     }
 
     if (machine->cpu.halted != 0u) {
@@ -1888,6 +1901,18 @@ wz_result_t wz_z80_step(wz_machine_t* machine)
     case WZ_Z80_PRIMARY_OP_HALT:
         machine->cpu.halted = 1u;
         machine->cpu.program_counter = pc;
+        machine->master_tick += 8u;
+        return WZ_RESULT_OK;
+    case WZ_Z80_PRIMARY_OP_DI:
+        machine->cpu.iff1 = 0u;
+        machine->cpu.iff2 = 0u;
+        machine->cpu.interrupt_enable_delay = 0u;
+        machine->master_tick += 8u;
+        return WZ_RESULT_OK;
+    case WZ_Z80_PRIMARY_OP_EI:
+        machine->cpu.iff1 = 1u;
+        machine->cpu.iff2 = 1u;
+        machine->cpu.interrupt_enable_delay = 1u;
         machine->master_tick += 8u;
         return WZ_RESULT_OK;
     case WZ_Z80_PRIMARY_OP_PREFIX_CB:

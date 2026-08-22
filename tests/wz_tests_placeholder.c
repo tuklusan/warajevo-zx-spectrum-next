@@ -204,7 +204,7 @@ int main(void)
             return 1;
         }
     }
-    if (implemented != 154u || prefix != 4u || documented_unimplemented != 98u ||
+    if (implemented != 156u || prefix != 4u || documented_unimplemented != 96u ||
         undocumented != 0u || illegal != 0u ||
         wz_z80_primary_opcode_decode(0x00u)->operation != WZ_Z80_PRIMARY_OP_NOP ||
         wz_z80_primary_opcode_decode(0x32u)->operation != WZ_Z80_PRIMARY_OP_LD_NN_A ||
@@ -231,6 +231,8 @@ int main(void)
         wz_z80_primary_opcode_decode(0x35u)->operation != WZ_Z80_PRIMARY_OP_INC_DEC ||
         wz_z80_primary_opcode_decode(0x3du)->operation != WZ_Z80_PRIMARY_OP_INC_DEC ||
         wz_z80_primary_opcode_decode(0x76u)->operation != WZ_Z80_PRIMARY_OP_HALT ||
+        wz_z80_primary_opcode_decode(0xf3u)->operation != WZ_Z80_PRIMARY_OP_DI ||
+        wz_z80_primary_opcode_decode(0xfbu)->operation != WZ_Z80_PRIMARY_OP_EI ||
         wz_z80_primary_opcode_decode(0xcbu)->operation != WZ_Z80_PRIMARY_OP_PREFIX_CB ||
         wz_z80_primary_opcode_decode(0xddu)->operation != WZ_Z80_PRIMARY_OP_PREFIX_DD ||
         wz_z80_primary_opcode_decode(0xedu)->operation != WZ_Z80_PRIMARY_OP_PREFIX_ED ||
@@ -1948,9 +1950,50 @@ int main(void)
         return 1;
     }
 
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 EI/DI test failed\n", stderr);
+        return 1;
+    }
+    machine.memory[0u] = 0xfbu;
+    machine.memory[1u] = 0x00u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.iff1 != 1u || machine.cpu.iff2 != 1u ||
+        machine.cpu.interrupt_enable_delay != 1u ||
+        wz_z80_maskable_interrupts_acceptable(&machine.cpu)) {
+        fputs("Z80 EI did not defer maskable interrupt acceptance\n", stderr);
+        return 1;
+    }
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.interrupt_enable_delay != 0u ||
+        !wz_z80_maskable_interrupts_acceptable(&machine.cpu)) {
+        fputs("Z80 EI delay did not expire after one instruction\n", stderr);
+        return 1;
+    }
+    machine.memory[2u] = 0xf3u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.iff1 != 0u || machine.cpu.iff2 != 0u ||
+        machine.cpu.interrupt_enable_delay != 0u ||
+        wz_z80_maskable_interrupts_acceptable(&machine.cpu)) {
+        fputs("Z80 DI did not immediately disable maskable interrupts\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 EI HALT delay test failed\n", stderr);
+        return 1;
+    }
+    machine.memory[0u] = 0xfbu;
+    machine.memory[1u] = 0x76u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.halted != 1u || machine.cpu.interrupt_enable_delay != 0u ||
+        !wz_z80_maskable_interrupts_acceptable(&machine.cpu)) {
+        fputs("Z80 EI HALT acceptance boundary failed\n", stderr);
+        return 1;
+    }
+
     wz_state_writer_init(&writer, serialized, sizeof(serialized));
     if (wz_state_serialize_machine(&machine, &writer) != WZ_RESULT_OK ||
-        writer.length != 65578u ||
+        writer.length != 65579u ||
         wz_state_hash_machine(&machine, &first_hash) != WZ_RESULT_OK) {
         fputs("canonical state serialization failed\n", stderr);
         return 1;
@@ -1964,6 +2007,7 @@ int main(void)
     machine.cpu.r = 0x78u;
     machine.cpu.iff1 = 1u;
     machine.cpu.iff2 = 1u;
+    machine.cpu.interrupt_enable_delay = 1u;
     machine.cpu.interrupt_mode = (wz_byte_t)WZ_Z80_INTERRUPT_MODE_2;
     machine.cpu.halted = 1u;
     wz_state_writer_init(&writer, serialized, sizeof(serialized));
@@ -1978,6 +2022,7 @@ int main(void)
         restored.cpu.r != 0x78u ||
         restored.cpu.iff1 != 1u ||
         restored.cpu.iff2 != 1u ||
+        restored.cpu.interrupt_enable_delay != 1u ||
         restored.cpu.interrupt_mode != (wz_byte_t)WZ_Z80_INTERRUPT_MODE_2 ||
         restored.cpu.halted != 1u) {
         fputs("Z80 state round trip failed\n", stderr);

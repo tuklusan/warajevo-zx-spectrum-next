@@ -44,6 +44,7 @@ typedef struct {
     wz_byte_t r;
     wz_byte_t iff1;
     wz_byte_t iff2;
+    wz_byte_t interrupt_enable_delay;
     wz_byte_t interrupt_mode;
     wz_byte_t halted;
 } wz_z80_state_t;
@@ -72,6 +73,8 @@ typedef enum {
     WZ_Z80_PRIMARY_OP_BRANCH,
     WZ_Z80_PRIMARY_OP_INC_DEC,
     WZ_Z80_PRIMARY_OP_HALT,
+    WZ_Z80_PRIMARY_OP_DI,
+    WZ_Z80_PRIMARY_OP_EI,
     WZ_Z80_PRIMARY_OP_PREFIX_CB,
     WZ_Z80_PRIMARY_OP_PREFIX_DD,
     WZ_Z80_PRIMARY_OP_PREFIX_ED,
@@ -158,6 +161,7 @@ const wz_z80_cb_opcode_decode_t* wz_z80_cb_opcode_decode(wz_byte_t opcode);
 size_t wz_z80_ed_opcode_count(void);
 wz_z80_ed_opcode_decode_t wz_z80_ed_opcode_decode(wz_byte_t opcode);
 void wz_z80_exit_halt_for_interrupt(wz_z80_state_t* state);
+bool wz_z80_maskable_interrupts_acceptable(const wz_z80_state_t* state);
 wz_result_t wz_z80_step(wz_machine_t* machine);
 
 #endif

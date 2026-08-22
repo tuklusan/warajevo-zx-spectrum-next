@@ -10,8 +10,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "core/wz_machine.h"
 
-#define WZ_STATE_VERSION 3u
-#define WZ_STATE_HEADER_LENGTH 42u
+#define WZ_STATE_VERSION 4u
+#define WZ_STATE_HEADER_LENGTH 43u
 #define WZ_STATE_MACHINE_LENGTH (65536u + WZ_STATE_HEADER_LENGTH)
 
 static wz_result_t wz_state_write(wz_state_writer_t* writer,
@@ -110,6 +110,7 @@ wz_result_t wz_state_serialize_machine(const wz_machine_t* machine,
         wz_state_write_u8(writer, machine->cpu.r) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, machine->cpu.iff1) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, machine->cpu.iff2) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, machine->cpu.interrupt_enable_delay) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, machine->cpu.interrupt_mode) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, machine->cpu.halted) != WZ_RESULT_OK ||
         wz_state_write_u64(writer, machine->master_tick) != WZ_RESULT_OK ||
@@ -166,7 +167,7 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
         return WZ_RESULT_INVALID_PROFILE;
     }
     for (size_t index = 0u; index < 8u; ++index) {
-        tick |= (wz_qword_t)data[34u + index] << (index * 8u);
+        tick |= (wz_qword_t)data[35u + index] << (index * 8u);
     }
     cpu.main.a = data[2u];
     cpu.main.f = data[3u];
@@ -193,8 +194,9 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
     cpu.r = data[29u];
     cpu.iff1 = data[30u];
     cpu.iff2 = data[31u];
-    cpu.interrupt_mode = data[32u];
-    cpu.halted = data[33u];
+    cpu.interrupt_enable_delay = data[32u];
+    cpu.interrupt_mode = data[33u];
+    cpu.halted = data[34u];
     if (wz_z80_state_validate(&cpu) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_STATE;
     }
