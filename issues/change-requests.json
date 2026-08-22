@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 47,
+  "next_cr_number": 48,
   "status_values": [
     "open",
     "in_progress",
@@ -628,6 +628,16 @@
         "user-approved 20-minute timeout"
       ],
       "notes": "Opened and closed on 2026-08-22. Commit 399e26f set the shared normal/bootstrap default to 1,200 seconds while retaining explicit overrides, 60-second health checks, and fail-closed expiration. Bootstrap and normal CODE reviews passed; Linux CR0046-DEADLINE-LINUX-R2, Windows 10 CR0046-DEADLINE-WIN10-R2, and Windows 11 CR0046-DEADLINE-WIN11-R2 passed; hosted platform-smoke 32550513657 and repository-gates 32550513595 passed; TEST_ARTIFACT review passed with zero findings."
+    },
+    {
+      "cr_number": "CR-0047",
+      "title": "Recover a bounded single-candidate falsification truncation",
+      "status": "in_progress",
+      "source_authority": [
+        "project reviewer workflow",
+        "CR-0045 review telemetry"
+      ],
+      "notes": "Opened on 2026-08-22 after CR-0045 normal review reached its output limit during one single-candidate falsification call. Scope is one compact, non-thinking retry against unchanged evidence while preserving deadline, schema, telemetry, and fail-closed behavior."
     }
   ]
 }

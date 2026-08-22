@@ -44,6 +44,7 @@ SAFETY_MARGIN_BYTES = 32_768
 CONTEXT_BYTES = 340_000
 DISCOVERY_OUTPUT_TOKENS = 8_192
 FALSIFICATION_OUTPUT_TOKENS = 12_288
+COMPACT_FALSIFICATION_OUTPUT_TOKENS = 4_096
 ADJUDICATION_OUTPUT_TOKENS = 12_288
 DEFAULT_REVIEW_DEADLINE_SECONDS = 1200.0
 STALE_LOCK_SECONDS = 900.0
@@ -1452,12 +1453,31 @@ def perform_review(client: DeepSeekClient, root: Path, review_type: str, packet:
                 )
             except TruncationError:
                 if len(batch) == 1:
-                    unresolved_context.append(batch[0]["candidate_id"])
-                    batch_index += 1
+                    # Hidden reasoning can exhaust the normal reply allowance before it emits JSON.
+                    # Retry the identical single-candidate packet once without hidden reasoning.
+                    try:
+                        value = request_validated(
+                            client,
+                            SYSTEM_DATA_BOUNDARY +
+                            "You are a hostile independent falsifier. Return one compact JSON decision only.",
+                            falsification_prompt(prefix, packet, batch, prior) +
+                            "\nUse only the supplied evidence. Return the required JSON decision without prose.",
+                            telemetry,
+                            lambda item, ids=expected_ids: decision_schema_valid(item, ids),
+                            "FALSIFICATION-COMPACT", "disabled", None,
+                            COMPACT_FALSIFICATION_OUTPUT_TOKENS, deadline,
+                        )
+                    except TruncationError:
+                        unresolved_context.append(batch[0]["candidate_id"])
+                        batch_index += 1
+                        continue
+                    except ReviewError as exc:
+                        return compact_result(review_type, scope.get("cr_number", ""), packet,
+                                              "REVIEW_UNAVAILABLE", False, reason=str(exc), prior=prior)
+                else:
+                    midpoint = len(batch) // 2
+                    batches[batch_index:batch_index + 1] = [batch[:midpoint], batch[midpoint:]]
                     continue
-                midpoint = len(batch) // 2
-                batches[batch_index:batch_index + 1] = [batch[:midpoint], batch[midpoint:]]
-                continue
             for decision in value["decisions"]:
                 decisions[decision["candidate_id"]] = decision
             newly_discovered.extend(value.get("new_candidates", []))

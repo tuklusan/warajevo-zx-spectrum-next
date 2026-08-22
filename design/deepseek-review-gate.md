@@ -179,6 +179,10 @@ thinking enabled with `reasoning_effort=high`, with an initial budget near 12288
 tokens. `reasoning_effort=max` is reserved for genuine evidence-backed
 adjudication. Per-phase output budgets replace a single maximum allowance, while
 dynamic input budgeting and candidate sharding prevent silent truncation. A
+single-candidate falsification response that reaches its limit receives exactly
+one repeat over the identical immutable evidence with hidden reasoning disabled
+and a compact 4096-token reply allowance. A second truncation remains
+inconclusive; the fallback never supplies review authority by itself.
 length finish, malformed JSON, incomplete pass, missing mandatory context, retry
 exhaustion, API failure, duplicate active review, or overall deadline exhaustion
 fails closed. Normal review has no separate liveness call.

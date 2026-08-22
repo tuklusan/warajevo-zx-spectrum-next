@@ -603,6 +603,19 @@ class GateTests(unittest.TestCase):
         self.assertEqual(result["verdict"], "PASS")
         self.assertGreater(telemetry.passes.count("CODE-DISCOVERY"), 1)
 
+    def test_truncated_single_falsification_retries_without_hidden_reasoning(self):
+        responses = [discovery("CODE-DISCOVERY", [candidate()]),
+                     gate.TruncationError("length"), falsification(candidate_id(), "REJECTED")]
+        client = FakeClient(responses)
+        result = gate.perform_review(client, ROOT, "CODE", packet(), scope(), requirement(), [],
+                                     gate.Telemetry("CODE", "snap"))
+        self.assertEqual(result["verdict"], "PASS")
+        self.assertEqual([call["phase"] for call in client.calls],
+                         ["CODE-DISCOVERY", "FALSIFICATION", "FALSIFICATION-COMPACT"])
+        self.assertEqual(client.calls[-1]["thinking"], "disabled")
+        self.assertIsNone(client.calls[-1]["effort"])
+        self.assertEqual(client.calls[-1]["max_tokens"], gate.COMPACT_FALSIFICATION_OUTPUT_TOKENS)
+
     def test_real_defect_is_confirmed_with_complete_evidence_chain(self):
         responses = [discovery("CODE-DISCOVERY", [candidate()]),
                      falsification(candidate_id(), "CONFIRMED")]
