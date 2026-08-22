@@ -220,11 +220,12 @@ The retained bootstrap gate is an architecturally independent one-pass audit
 path for maintenance of the normal gate. It consumes the complete bounded
 immutable packet and remains available after cutover. Its full prompt has a
 separate conservative 2 MB input ceiling so a complete gate-maintenance change
-is not silently reduced to the normal per-unit budget. Its output budget is
-12,288 tokens, matching the bounded hostile-falsification budget: the provider
-may consume part of that allowance for high-effort reasoning even though the
-contract permits at most one concise finding. A larger reserve can delay service
-scheduling without adding review authority.
+is not silently reduced to the normal per-unit budget. It uses the same
+non-thinking, 8,192-token bounded discovery mode as normal candidate discovery:
+the bootstrap contract requires one complete independently auditable verdict,
+not hidden-reasoning output that can consume the response allowance before a
+result is emitted. A larger reserve can delay service scheduling without adding
+review authority.
 Transport-successful but schema-invalid bootstrap output receives at most two
 fresh repair attempts and then remains inconclusive.
 
