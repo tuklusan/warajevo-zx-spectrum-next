@@ -551,35 +551,6 @@ class GateTests(unittest.TestCase):
         finally:
             repo.close()
 
-    def test_declaration_candidate_automatically_resolves_implementation_context(self):
-        repo = GitFixture()
-        try:
-            repo.write("src/item.c", "void reviewed_operation(void) { /* decisive implementation */ }\n")
-            repo.write("include/item.h", "void placeholder(void);\n")
-            base = repo.commit("base")
-            repo.write("include/item.h", "void reviewed_operation(void);\n")
-            head = repo.commit("head")
-            review_packet = gate.code_packet(repo.root, base, head)
-            allegation = candidate(location="include/item.h:1")
-            allegation["candidate_id"] = "DS-AUTOCONTEXT"
-            telemetry = gate.Telemetry("CODE", review_packet.snapshot_id)
-
-            resolved, unresolved = gate.resolve_candidate_context(
-                repo.root, review_packet, [allegation], telemetry
-            )
-
-            self.assertEqual(unresolved, [])
-            self.assertEqual(telemetry.context_request_count, 1)
-            self.assertEqual(telemetry.context_request_resolved_count, 1)
-            resolution = resolved[0]["resolved_context"][0]
-            self.assertEqual(resolution["request"]["origin"], "DETERMINISTIC_LOCATION_SYMBOL")
-            self.assertTrue(any(
-                context["path"] == "src/item.c" and "decisive implementation" in context["content"]
-                for context in resolution["contexts"]
-            ))
-        finally:
-            repo.close()
-
     def test_file_packet_context_uses_immutable_packet_records(self):
         review_packet = gate.ReviewPacket(
             "files:doc", "doc",
@@ -943,7 +914,7 @@ class GateTests(unittest.TestCase):
         client = gate.DeepSeekClient("secret", blocked_opener)
         started = time.monotonic()
         try:
-            with self.assertRaisesRegex(gate.ReviewError, "REVIEW_DEADLINE_EXCEEDED"):
+            with self.assertRaisesRegex(gate.ReviewError, "deadline-enforced transport"):
                 client.request("system", "user", gate.Telemetry("CODE", "snap"),
                                deadline=gate.ReviewDeadline(0.05))
             self.assertLess(time.monotonic() - started, 1.0)

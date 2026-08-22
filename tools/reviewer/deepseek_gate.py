@@ -15,13 +15,12 @@ import hashlib
 import http.client
 import json
 import mimetypes
+import multiprocessing
 import os
-import queue
 import re
 import ssl
 import subprocess
 import sys
-import threading
 import time
 import urllib.error
 import urllib.request
@@ -685,29 +684,43 @@ class DeepSeekClient:
         return urllib.request.urlopen(request, timeout=timeout, context=context)
 
     @staticmethod
+    def _transport_worker(request: urllib.request.Request, timeout: int, connection: Any) -> None:
+        try:
+            with DeepSeekClient._open(request, timeout=timeout) as response:
+                connection.send((True, response.read()))
+        except Exception as exc:
+            connection.send((False, f"{type(exc).__name__}: {exc}"))
+        finally:
+            connection.close()
+
+    @staticmethod
     def _read_response(opener: Any, request: urllib.request.Request, timeout: int,
                        deadline: ReviewDeadline | None, phase: str) -> bytes:
         if deadline is None:
             with opener(request, timeout=timeout) as response:
                 return response.read()
-        result: queue.Queue[tuple[bool, Any]] = queue.Queue(maxsize=1)
-
-        def perform_request() -> None:
-            try:
-                with opener(request, timeout=timeout) as response:
-                    result.put((True, response.read()))
-            except Exception as exc:
-                result.put((False, exc))
-
-        worker = threading.Thread(target=perform_request, daemon=True,
-                                  name=f"review-transport-{phase}")
+        if opener is not DeepSeekClient._open:
+            raise ReviewError("deadline-enforced transport requires the built-in opener")
+        receiver, sender = multiprocessing.get_context("spawn").Pipe(duplex=False)
+        worker = multiprocessing.get_context("spawn").Process(
+            target=DeepSeekClient._transport_worker, args=(request, timeout, sender), daemon=True
+        )
         worker.start()
+        sender.close()
         try:
-            succeeded, value = result.get(timeout=deadline.remaining())
-        except queue.Empty:
-            raise ReviewError(f"REVIEW_DEADLINE_EXCEEDED during {phase}") from None
+            if not receiver.poll(deadline.remaining()):
+                worker.terminate()
+                worker.join(timeout=5)
+                raise ReviewError(f"REVIEW_DEADLINE_EXCEEDED during {phase}")
+            succeeded, value = receiver.recv()
+        finally:
+            receiver.close()
+            worker.join(timeout=5)
+        if worker.is_alive():
+            worker.terminate()
+            worker.join(timeout=5)
         if not succeeded:
-            raise value
+            raise urllib.error.URLError(value)
         return value
 
     def request(self, system: str, user: str, telemetry: Telemetry,
@@ -1095,11 +1108,28 @@ def location_symbol_request(packet: ReviewPacket, candidate: dict[str, Any]) -> 
     lines = content.splitlines() if content is not None else []
     if not 1 <= line_number <= len(lines):
         return None
-    identifiers = re.findall(r"\b([A-Za-z_][A-Za-z0-9_]*)\s*\(", lines[line_number - 1])
+    location_line = lines[line_number - 1].strip()
+    if not location_line.endswith(";"):
+        return None
+    identifiers = re.findall(r"\b([A-Za-z_][A-Za-z0-9_]*)\s*\(", location_line)
     symbols = [identifier for identifier in identifiers if identifier not in NON_CALLABLE_IDENTIFIERS]
     if not symbols:
         return None
     return {"type": "SYMBOL", "symbol": symbols[-1], "origin": "DETERMINISTIC_LOCATION_SYMBOL"}
+
+
+def compact_automatic_symbol_context(resolution: dict[str, Any]) -> None:
+    request = resolution.get("request", {})
+    if request.get("origin") != "DETERMINISTIC_LOCATION_SYMBOL":
+        return
+    symbol = request.get("symbol", "")
+    for context in resolution.get("contexts", []):
+        content = context.get("content")
+        if not isinstance(content, str):
+            continue
+        line_number = next((index for index, line in enumerate(content.splitlines(), 1) if symbol in line), 1)
+        context["content"] = bounded_source_context(content, f"{context.get('path', '')}:{line_number}", radius=80)
+        context["content_is_bounded"] = True
 
 
 def resolve_candidate_context(root: Path, packet: ReviewPacket, candidates: list[dict[str, Any]],
@@ -1121,6 +1151,7 @@ def resolve_candidate_context(root: Path, packet: ReviewPacket, candidates: list
         for request in requests:
             telemetry.context_request_count += 1
             resolution = resolve_context_request(root, packet, request)
+            compact_automatic_symbol_context(resolution)
             if resolution["status"] == "RESOLVED":
                 telemetry.context_request_resolved_count += 1
             else:

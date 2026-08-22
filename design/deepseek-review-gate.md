@@ -182,9 +182,9 @@ For CODE candidates, deterministic context completion also examines the exact
 candidate-location line in the immutable changed-file record. When that line
 contains a callable identifier and the candidate has remaining context-request
 capacity, the harness adds one bounded symbol lookup against the reviewed head
-tree. This ensures that a candidate located at a declaration or call site reaches
-falsification with tracked implementation context even when discovery omitted an
-explicit navigation request; model-authored paths or summaries are not trusted.
+tree. This ensures that a candidate located at a declaration reaches falsification
+with tracked implementation context even when discovery omitted an explicit
+navigation request; model-authored paths or summaries are not trusted.
 
 The wall-clock review deadline is also enforced outside the HTTP socket call.
 The bounded caller stops waiting and fails closed when the remaining review time
