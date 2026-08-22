@@ -15,13 +15,12 @@ import hashlib
 import http.client
 import json
 import mimetypes
+import multiprocessing
 import os
-import queue
 import re
 import ssl
 import subprocess
 import sys
-import threading
 import time
 import urllib.error
 import urllib.request
@@ -685,29 +684,43 @@ class DeepSeekClient:
         return urllib.request.urlopen(request, timeout=timeout, context=context)
 
     @staticmethod
+    def _transport_worker(request: urllib.request.Request, timeout: int, connection: Any) -> None:
+        try:
+            with DeepSeekClient._open(request, timeout=timeout) as response:
+                connection.send((True, response.read()))
+        except Exception as exc:
+            connection.send((False, f"{type(exc).__name__}: {exc}"))
+        finally:
+            connection.close()
+
+    @staticmethod
     def _read_response(opener: Any, request: urllib.request.Request, timeout: int,
                        deadline: ReviewDeadline | None, phase: str) -> bytes:
         if deadline is None:
             with opener(request, timeout=timeout) as response:
                 return response.read()
-        result: queue.Queue[tuple[bool, Any]] = queue.Queue(maxsize=1)
-
-        def perform_request() -> None:
-            try:
-                with opener(request, timeout=timeout) as response:
-                    result.put((True, response.read()))
-            except Exception as exc:
-                result.put((False, exc))
-
-        worker = threading.Thread(target=perform_request, daemon=True,
-                                  name=f"review-transport-{phase}")
+        if opener is not DeepSeekClient._open:
+            raise ReviewError("deadline-enforced transport requires the built-in opener")
+        receiver, sender = multiprocessing.get_context("spawn").Pipe(duplex=False)
+        worker = multiprocessing.get_context("spawn").Process(
+            target=DeepSeekClient._transport_worker, args=(request, timeout, sender), daemon=True
+        )
         worker.start()
+        sender.close()
         try:
-            succeeded, value = result.get(timeout=deadline.remaining())
-        except queue.Empty:
-            raise ReviewError(f"REVIEW_DEADLINE_EXCEEDED during {phase}") from None
+            if not receiver.poll(deadline.remaining()):
+                worker.terminate()
+                worker.join(timeout=5)
+                raise ReviewError(f"REVIEW_DEADLINE_EXCEEDED during {phase}")
+            succeeded, value = receiver.recv()
+        finally:
+            receiver.close()
+            worker.join(timeout=5)
+        if worker.is_alive():
+            worker.terminate()
+            worker.join(timeout=5)
         if not succeeded:
-            raise value
+            raise urllib.error.URLError(value)
         return value
 
     def request(self, system: str, user: str, telemetry: Telemetry,
