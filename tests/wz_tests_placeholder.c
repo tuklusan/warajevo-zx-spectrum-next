@@ -465,14 +465,19 @@ int main(void)
         return 1;
     }
     wz_trace_cpu_state_sync_init(&recovered_cpu_sync);
-    for (size_t index = 2u; index < timing_trace_log.count; ++index) {
-        (void)wz_trace_cpu_state_sync_apply(&recovered_cpu_sync, &timing_trace_log.events[index]);
-    }
-    if (!recovered_cpu_sync.complete || recovered_cpu_sync.master_tick != 0u ||
-        recovered_cpu_sync.state.program_counter != 1u || recovered_cpu_sync.state.r != 1u) {
-        remove(failing_trace_path);
-        fputs("failing opcode state reconstruction failed\n", stderr);
-        return 1;
+    {
+        bool recovered_state = false;
+        for (size_t index = 2u; index < timing_trace_log.count; ++index) {
+            recovered_state = wz_trace_cpu_state_sync_apply(&recovered_cpu_sync,
+                                                             &timing_trace_log.events[index]);
+        }
+        if (!recovered_state || !recovered_cpu_sync.has_absolute_state ||
+            recovered_cpu_sync.master_tick != 0u ||
+            recovered_cpu_sync.state.program_counter != 1u || recovered_cpu_sync.state.r != 1u) {
+            remove(failing_trace_path);
+            fputs("failing opcode state reconstruction failed\n", stderr);
+            return 1;
+        }
     }
     remove(failing_trace_path);
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
