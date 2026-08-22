@@ -68,23 +68,27 @@ void wz_trace_cpu_state_sync_init(wz_trace_cpu_state_sync_t* sync)
 bool wz_trace_cpu_state_sync_apply(wz_trace_cpu_state_sync_t* sync,
                                    const wz_trace_event_t* event)
 {
-    if (sync == NULL || event == NULL || event->kind != WZ_TRACE_CPU_STATE_SYNC ||
+    if (sync == NULL || event == NULL ||
+        (event->kind != WZ_TRACE_CPU_STATE_SYNC && event->kind != WZ_TRACE_CPU_STATE_DELTA) ||
         event->cycle >= 5u) {
         return false;
     }
-    if (event->cycle == 0u) {
+    if (event->kind == WZ_TRACE_CPU_STATE_SYNC && event->cycle == 0u) {
         memset(&sync->state, 0, sizeof(sync->state));
         sync->master_tick = event->master_tick;
         sync->last_sequence = event->sequence;
         sync->next_chunk = 1u;
-    } else if (event->cycle != sync->next_chunk ||
+        sync->has_absolute_state = false;
+    } else if (event->kind == WZ_TRACE_CPU_STATE_SYNC && (event->cycle != sync->next_chunk ||
                event->master_tick != sync->master_tick ||
-               event->sequence != sync->last_sequence + 1u) {
+               event->sequence != sync->last_sequence + 1u)) {
         sync->next_chunk = 0u;
         return false;
-    } else {
+    } else if (event->kind == WZ_TRACE_CPU_STATE_SYNC) {
         sync->last_sequence = event->sequence;
         sync->next_chunk += 1u;
+    } else if (!sync->has_absolute_state || sync->next_chunk != 0u) {
+        return false;
     }
     switch (event->cycle) {
     case 0u:
@@ -110,7 +114,16 @@ bool wz_trace_cpu_state_sync_apply(wz_trace_cpu_state_sync_t* sync,
         break;
     default:
         sync->state.halted = (wz_byte_t)event->register_snapshot;
-        sync->next_chunk = 0u;
+        if (event->kind == WZ_TRACE_CPU_STATE_SYNC) {
+            sync->next_chunk = 0u;
+            sync->has_absolute_state = wz_z80_state_validate(&sync->state) == WZ_RESULT_OK;
+            return sync->has_absolute_state;
+        }
+        return wz_z80_state_validate(&sync->state) == WZ_RESULT_OK;
+    }
+    if (event->kind == WZ_TRACE_CPU_STATE_DELTA) {
+        sync->master_tick = event->master_tick;
+        sync->last_sequence = event->sequence;
         return wz_z80_state_validate(&sync->state) == WZ_RESULT_OK;
     }
     return false;

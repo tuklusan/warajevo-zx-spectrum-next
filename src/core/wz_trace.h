@@ -20,7 +20,8 @@ typedef enum {
     WZ_TRACE_CPU_INSTRUCTION = 3,
     WZ_TRACE_CPU_BUS = 4,
     WZ_TRACE_INTERRUPT = 5,
-    WZ_TRACE_CPU_STATE_SYNC = 6
+    WZ_TRACE_CPU_STATE_SYNC = 6,
+    WZ_TRACE_CPU_STATE_DELTA = 7
 } wz_trace_event_kind_t;
 
 typedef struct {
@@ -43,6 +44,8 @@ typedef struct {
     wz_trace_emit_fn emit;
     void* context;
     wz_qword_t next_sequence;
+    wz_qword_t cpu_state_chunks[5];
+    bool cpu_state_valid;
 } wz_trace_sink_t;
 
 void wz_trace_sink_init(wz_trace_sink_t* sink,

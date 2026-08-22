@@ -16,6 +16,7 @@ void wz_trace_sink_init(wz_trace_sink_t* sink,
         sink->emit = emit;
         sink->context = context;
         sink->next_sequence = 0u;
+        sink->cpu_state_valid = false;
     }
 }
 

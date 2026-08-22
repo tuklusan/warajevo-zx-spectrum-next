@@ -41,6 +41,7 @@ typedef struct {
     wz_master_tick_t master_tick;
     wz_qword_t last_sequence;
     wz_byte_t next_chunk;
+    bool has_absolute_state;
 } wz_trace_cpu_state_sync_t;
 
 wz_result_t wz_trace_file_create(wz_trace_file_t* trace, const char* path,

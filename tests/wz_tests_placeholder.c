@@ -2333,6 +2333,14 @@ int main(void)
         state_event.register_snapshot = state_chunks[chunk];
         wz_trace_emit_detail(&trace_sink, &state_event);
     }
+    {
+        wz_trace_event_t state_delta = {0};
+        state_delta.kind = WZ_TRACE_CPU_STATE_DELTA;
+        state_delta.master_tick = 1242u;
+        state_delta.cycle = 2u;
+        state_delta.register_snapshot = UINT64_C(0xbeef2468def09abc);
+        wz_trace_emit_detail(&trace_sink, &state_delta);
+    }
     if (wz_trace_file_freeze(&trace_file) != WZ_RESULT_OK) {
         fputs("state trace freeze failed\n", stderr);
         return 1;
@@ -2341,13 +2349,16 @@ int main(void)
     memset(&timing_trace_log, 0, sizeof(timing_trace_log));
     if (wz_trace_file_recover(state_trace_path, recover_timing_trace, &timing_trace_log,
                               &recovered_count) != WZ_RESULT_OK ||
-        recovered_count != 5u || timing_trace_log.count != 5u ||
+        recovered_count != 6u || timing_trace_log.count != 6u ||
         timing_trace_log.events[0].kind != WZ_TRACE_CPU_STATE_SYNC ||
         timing_trace_log.events[0].register_snapshot != UINT64_C(0x8877665544332211) ||
         timing_trace_log.events[0].master_tick != 1234u ||
         timing_trace_log.events[4].master_tick != 1234u ||
         timing_trace_log.events[4].cycle != 4u ||
-        timing_trace_log.events[4].register_snapshot != 0u) {
+        timing_trace_log.events[4].register_snapshot != 0u ||
+        timing_trace_log.events[5].kind != WZ_TRACE_CPU_STATE_DELTA ||
+        timing_trace_log.events[5].master_tick != 1242u ||
+        timing_trace_log.events[5].cycle != 2u) {
         fputs("state trace recovery failed\n", stderr);
         return 1;
     }
@@ -2358,7 +2369,7 @@ int main(void)
             recovered_state = wz_trace_cpu_state_sync_apply(&recovered_cpu_sync,
                                                              &timing_trace_log.events[index]);
         }
-        if (!recovered_state || recovered_cpu_sync.master_tick != 1234u ||
+        if (!recovered_state || recovered_cpu_sync.master_tick != 1242u ||
             recovered_cpu_sync.state.main.a != 0x11u ||
             recovered_cpu_sync.state.main.l != 0x88u ||
             recovered_cpu_sync.state.alternate.a != 0xefu ||
@@ -2366,7 +2377,7 @@ int main(void)
             recovered_cpu_sync.state.ix != 0x9abcu ||
             recovered_cpu_sync.state.iy != 0xdef0u ||
             recovered_cpu_sync.state.stack_pointer != 0x2468u ||
-            recovered_cpu_sync.state.program_counter != 0x1357u ||
+            recovered_cpu_sync.state.program_counter != 0xbeefu ||
             recovered_cpu_sync.state.memptr != 0x2468u ||
             recovered_cpu_sync.state.i != 0x9au || recovered_cpu_sync.state.r != 0x3cu ||
             recovered_cpu_sync.state.iff1 != 1u || recovered_cpu_sync.state.iff2 != 1u ||

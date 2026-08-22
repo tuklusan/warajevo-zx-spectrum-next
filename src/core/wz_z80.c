@@ -36,6 +36,8 @@ static void wz_z80_trace_instruction(wz_machine_t* machine,
                                      wz_byte_t opcode)
 {
     wz_trace_event_t event = {0};
+    wz_qword_t state_chunks[5];
+    bool full_sync;
 
     if (machine->timing_trace == 0) {
         return;
@@ -55,42 +57,42 @@ static void wz_z80_trace_instruction(wz_machine_t* machine,
         ((wz_qword_t)machine->cpu.main.l << 56u);
     wz_trace_emit_detail(machine->timing_trace, &event);
 
-    if ((machine->timing_trace->next_sequence % WZ_TRACE_CPU_SYNC_INTERVAL) == 0u) {
+    state_chunks[0] = event.register_snapshot;
+    state_chunks[1] = (wz_qword_t)machine->cpu.alternate.a |
+        ((wz_qword_t)machine->cpu.alternate.f << 8u) |
+        ((wz_qword_t)machine->cpu.alternate.b << 16u) |
+        ((wz_qword_t)machine->cpu.alternate.c << 24u) |
+        ((wz_qword_t)machine->cpu.alternate.d << 32u) |
+        ((wz_qword_t)machine->cpu.alternate.e << 40u) |
+        ((wz_qword_t)machine->cpu.alternate.h << 48u) |
+        ((wz_qword_t)machine->cpu.alternate.l << 56u);
+    state_chunks[2] = (wz_qword_t)machine->cpu.ix |
+        ((wz_qword_t)machine->cpu.iy << 16u) |
+        ((wz_qword_t)machine->cpu.stack_pointer << 32u) |
+        ((wz_qword_t)machine->cpu.program_counter << 48u);
+    state_chunks[3] = (wz_qword_t)machine->cpu.memptr |
+        ((wz_qword_t)machine->cpu.i << 16u) |
+        ((wz_qword_t)machine->cpu.r << 24u) |
+        ((wz_qword_t)machine->cpu.iff1 << 32u) |
+        ((wz_qword_t)machine->cpu.iff2 << 40u) |
+        ((wz_qword_t)machine->cpu.interrupt_enable_delay << 48u) |
+        ((wz_qword_t)machine->cpu.interrupt_mode << 56u);
+    state_chunks[4] = machine->cpu.halted;
+    full_sync = !machine->timing_trace->cpu_state_valid ||
+        (machine->timing_trace->next_sequence % WZ_TRACE_CPU_SYNC_INTERVAL) == 0u;
+    {
         wz_trace_event_t sync = {0};
-        const wz_z80_state_t* state = &machine->cpu;
-        sync.kind = WZ_TRACE_CPU_STATE_SYNC;
+        sync.kind = full_sync ? WZ_TRACE_CPU_STATE_SYNC : WZ_TRACE_CPU_STATE_DELTA;
         sync.master_tick = machine->master_tick;
-        sync.cycle = 0u;
-        sync.register_snapshot = event.register_snapshot;
-        wz_trace_emit_detail(machine->timing_trace, &sync);
-        sync.cycle = 1u;
-        sync.register_snapshot = (wz_qword_t)state->alternate.a |
-            ((wz_qword_t)state->alternate.f << 8u) |
-            ((wz_qword_t)state->alternate.b << 16u) |
-            ((wz_qword_t)state->alternate.c << 24u) |
-            ((wz_qword_t)state->alternate.d << 32u) |
-            ((wz_qword_t)state->alternate.e << 40u) |
-            ((wz_qword_t)state->alternate.h << 48u) |
-            ((wz_qword_t)state->alternate.l << 56u);
-        wz_trace_emit_detail(machine->timing_trace, &sync);
-        sync.cycle = 2u;
-        sync.register_snapshot = (wz_qword_t)state->ix |
-            ((wz_qword_t)state->iy << 16u) |
-            ((wz_qword_t)state->stack_pointer << 32u) |
-            ((wz_qword_t)state->program_counter << 48u);
-        wz_trace_emit_detail(machine->timing_trace, &sync);
-        sync.cycle = 3u;
-        sync.register_snapshot = (wz_qword_t)state->memptr |
-            ((wz_qword_t)state->i << 16u) |
-            ((wz_qword_t)state->r << 24u) |
-            ((wz_qword_t)state->iff1 << 32u) |
-            ((wz_qword_t)state->iff2 << 40u) |
-            ((wz_qword_t)state->interrupt_enable_delay << 48u) |
-            ((wz_qword_t)state->interrupt_mode << 56u);
-        wz_trace_emit_detail(machine->timing_trace, &sync);
-        sync.cycle = 4u;
-        sync.register_snapshot = state->halted;
-        wz_trace_emit_detail(machine->timing_trace, &sync);
+        for (wz_byte_t chunk = 0u; chunk < 5u; ++chunk) {
+            if (full_sync || state_chunks[chunk] != machine->timing_trace->cpu_state_chunks[chunk]) {
+                sync.cycle = chunk;
+                sync.register_snapshot = state_chunks[chunk];
+                wz_trace_emit_detail(machine->timing_trace, &sync);
+            }
+            machine->timing_trace->cpu_state_chunks[chunk] = state_chunks[chunk];
+        }
+        machine->timing_trace->cpu_state_valid = true;
     }
 }
 
