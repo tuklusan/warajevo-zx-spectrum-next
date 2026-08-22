@@ -1108,7 +1108,10 @@ def location_symbol_request(packet: ReviewPacket, candidate: dict[str, Any]) -> 
     lines = content.splitlines() if content is not None else []
     if not 1 <= line_number <= len(lines):
         return None
-    identifiers = re.findall(r"\b([A-Za-z_][A-Za-z0-9_]*)\s*\(", lines[line_number - 1])
+    location_line = lines[line_number - 1].strip()
+    if not location_line.endswith(";"):
+        return None
+    identifiers = re.findall(r"\b([A-Za-z_][A-Za-z0-9_]*)\s*\(", location_line)
     symbols = [identifier for identifier in identifiers if identifier not in NON_CALLABLE_IDENTIFIERS]
     if not symbols:
         return None
