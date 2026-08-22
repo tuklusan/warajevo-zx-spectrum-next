@@ -12,6 +12,9 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "core/wz_types.h"
 
 #define WZ_TRACE_CPU_SYNC_INTERVAL 4096u
+#define WZ_TRACE_INTERRUPT_MASKABLE_SAMPLE 1u
+#define WZ_TRACE_INTERRUPT_MASKABLE_ACCEPT 2u
+#define WZ_TRACE_INTERRUPT_NMI_ACCEPT 3u
 
 typedef enum {
     WZ_TRACE_MASTER_TICK_ADVANCED = 0,

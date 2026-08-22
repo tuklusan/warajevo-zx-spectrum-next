@@ -1665,10 +1665,11 @@ wz_result_t wz_z80_accept_maskable_interrupt(wz_machine_t* machine)
     if (machine == 0 || wz_z80_state_validate(&machine->cpu) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
+    wz_z80_trace_interrupt(machine, WZ_TRACE_INTERRUPT_MASKABLE_SAMPLE);
     if (!wz_z80_maskable_interrupts_acceptable(&machine->cpu)) {
         return WZ_RESULT_UNSUPPORTED_OPERATION;
     }
-    wz_z80_trace_interrupt(machine, 1u);
+    wz_z80_trace_interrupt(machine, WZ_TRACE_INTERRUPT_MASKABLE_ACCEPT);
     if (wz_z80_bus(machine, WZ_BUS_INTERRUPT_ACKNOWLEDGE, 0u,
                    machine->cpu.program_counter, &vector, 7u) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_STATE;
@@ -1721,7 +1722,7 @@ wz_result_t wz_z80_accept_nmi(wz_machine_t* machine)
     if (machine == 0 || wz_z80_state_validate(&machine->cpu) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
-    wz_z80_trace_interrupt(machine, 2u);
+    wz_z80_trace_interrupt(machine, WZ_TRACE_INTERRUPT_NMI_ACCEPT);
     wz_z80_exit_halt_for_interrupt(&machine->cpu);
     if (wz_z80_bus(machine, WZ_BUS_INTERNAL, 0u,
                    machine->cpu.program_counter, 0, 5u) != WZ_RESULT_OK ||
