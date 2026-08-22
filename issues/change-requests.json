@@ -542,12 +542,12 @@
     {
       "cr_number": "CR-0038",
       "title": "Implement Z80 HALT and refresh semantics",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/warajevo-zx-spectrum-next-architecture.md sections 11 and 12",
         "design/wzsn-architectures-1-2-developer-tasks.md task 056"
       ],
-      "notes": "Opened on 2026-08-20 for Phase-2 task 056. Scope includes HALT entry, repeated halted M1/refresh behavior, PC and R semantics, and interrupt/no-interrupt exit evidence without host-time dependence. Feature work paused on 2026-08-20 after two consecutive inconclusive CODE reviews: a declaration-located candidate emitted no context request, so falsification did not receive the tracked implementation body. CR-0039 must repair and validate the review gate before this CR resumes."
+      "notes": "Opened on 2026-08-20 for Phase-2 task 056. Closed on 2026-08-22 after implementing HALT entry, repeated halted M1 refresh, held-PC behavior, R increment semantics, and accepted-interrupt exit. Upstream Z80.ASM confirms explicit HALT state held until timer/interrupt release. Commit 540efaf passed CODE review, Linux CR0038-HALT-LINUX, Windows CR0038-HALT-WIN10, Windows CR0038-HALT-WIN11-R2, hosted run 32546700146 across five platforms, and TEST_ARTIFACT review with zero findings. The initial Windows 11 run compiled and passed CTest but its external Fuse runner was Application-Control blocked; the fresh-run retry passed without bypassing host policy."
     },
     {
       "cr_number": "CR-0039",
