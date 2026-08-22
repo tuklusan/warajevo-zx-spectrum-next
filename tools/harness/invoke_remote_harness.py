@@ -44,6 +44,7 @@ REMOTE_MACHINES = {
     },
 }
 SAFE_RUN_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}\Z")
+MAINTENANCE_REF = re.compile(r"wzsn/maintenance/CR-[0-9]{4}[A-Za-z0-9._/-]*\Z")
 
 
 def utc_stamp() -> str:
@@ -193,6 +194,38 @@ def require_code_review_pass(root: Path) -> None:
         raise SystemExit("remote smoke blocked: CODE PASS diff identity mismatch")
 
 
+def require_bootstrap_maintenance_pass(root: Path, cr_number: str, published_ref: str) -> None:
+    if not MAINTENANCE_REF.fullmatch(published_ref) or cr_number not in published_ref:
+        raise SystemExit("remote smoke blocked: bootstrap maintenance ref is invalid")
+    receipt_path = root / "test-artefacts" / "reviewer" / "bootstrap-pass.json"
+    try:
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise SystemExit("remote smoke blocked: bootstrap PASS receipt is missing or invalid") from exc
+    if receipt.get("verdict") != "PASS" or receipt.get("review_complete") is not True or receipt.get("cr_number") != cr_number:
+        raise SystemExit("remote smoke blocked: bootstrap PASS receipt is not authorized for this CR")
+    sources = receipt.get("requirement_sources")
+    if not isinstance(sources, list) or len(sources) != 1 or sources[0].get("source") != "design/deepseek-review-gate.md":
+        raise SystemExit("remote smoke blocked: bootstrap authority is not the review-gate specification")
+    source = root / "design" / "deepseek-review-gate.md"
+    if hashlib.sha256(source.read_bytes()).hexdigest() != sources[0].get("sha256"):
+        raise SystemExit("remote smoke blocked: bootstrap authority changed after review")
+    head = run_git(root, "rev-parse", "HEAD")
+    published = run_git(root, "ls-remote", "--heads", "origin", published_ref).split()
+    if len(published) != 2 or published[0] != head:
+        raise SystemExit("remote smoke blocked: maintenance candidate is not published exactly")
+    snapshot = str(receipt.get("snapshot_id", ""))
+    if not snapshot.startswith("git:") or f"..{head}:sha256:" not in snapshot:
+        raise SystemExit("remote smoke blocked: bootstrap PASS does not match current commit")
+
+
+def run_git(root: Path, *args: str) -> str:
+    try:
+        return subprocess.run(["git", *args], cwd=root, check=True, capture_output=True, text=True, timeout=30).stdout.strip()
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired, OSError) as exc:
+        raise SystemExit("remote smoke blocked: git identity check failed") from exc
+
+
 def known_hosts_option(root: Path) -> list[str]:
     path = root / "test-artefacts" / "ssh-known-hosts.local"
     if not path.exists():
@@ -280,16 +313,19 @@ def run_linux(machine: dict[str, str], shell_command: str, root: Path) -> subpro
     )
 
 
-def sync_linux(machine: dict[str, str], root: Path) -> subprocess.CompletedProcess[bytes]:
-    return run_linux(machine, "git pull --ff-only origin main", root)
+def sync_linux(machine: dict[str, str], root: Path, published_ref: str | None = None) -> subprocess.CompletedProcess[bytes]:
+    command = (f"git fetch origin {shlex.quote(published_ref)} && git checkout --detach FETCH_HEAD" if published_ref
+               else "git checkout main && git pull --ff-only origin main")
+    return run_linux(machine, command, root)
 
 
-def sync_windows(machine: dict[str, str], root: Path) -> subprocess.CompletedProcess[bytes]:
+def sync_windows(machine: dict[str, str], root: Path, published_ref: str | None = None) -> subprocess.CompletedProcess[bytes]:
     script_text = "\n".join(
         [
             "$ErrorActionPreference = 'Stop'",
             f"Set-Location '{machine['project_dir']}'",
-            "& git pull --ff-only origin main",
+            (f"& git fetch origin '{published_ref}'\n& git checkout --detach FETCH_HEAD" if published_ref
+             else "& git checkout main\n& git pull --ff-only origin main"),
             "exit $LASTEXITCODE",
         ]
     )
@@ -388,19 +424,27 @@ def main() -> int:
     parser.add_argument("action", choices=("probe", "smoke", "screenshot"))
     parser.add_argument("machine", choices=sorted(REMOTE_MACHINES))
     parser.add_argument("--run-id", default=utc_stamp())
+    parser.add_argument("--bootstrap-maintenance-cr")
+    parser.add_argument("--published-ref")
     args = parser.parse_args()
     args.run_id = validate_run_id(args.run_id)
 
     root = repo_root()
     if args.action == "smoke":
-        require_code_review_pass(root)
+        if args.bootstrap_maintenance_cr or args.published_ref:
+            if not args.bootstrap_maintenance_cr or not args.published_ref:
+                raise SystemExit("bootstrap maintenance requires both CR and published ref")
+            require_bootstrap_maintenance_pass(root, args.bootstrap_maintenance_cr, args.published_ref)
+        else:
+            require_code_review_pass(root)
     machine = REMOTE_MACHINES[args.machine]
     remote_dir = f".wzsn-harness/{args.run_id}"
     remote_dir_windows = windows_relative_path(remote_dir)
     local_dir = root / "test-artefacts" / "remote-runs" / args.machine / args.run_id
     local_dir.mkdir(parents=True, exist_ok=True)
 
-    sync = sync_linux(machine, root) if machine["kind"] == "linux" else sync_windows(machine, root)
+    sync = (sync_linux(machine, root, args.published_ref) if machine["kind"] == "linux"
+            else sync_windows(machine, root, args.published_ref))
     write_text(local_dir / "sync-stdout.txt", decode_output(sync.stdout))
     write_text(local_dir / "sync-stderr.txt", decode_output(sync.stderr))
     if sync.returncode != 0:

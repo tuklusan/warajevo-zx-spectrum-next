@@ -112,6 +112,7 @@ def main() -> int:
     parser.add_argument("--base", required=True)
     parser.add_argument("--head", required=True)
     parser.add_argument("--requirements", action="append", required=True)
+    parser.add_argument("--cr")
     parser.add_argument("--path", action="append", default=[])
     parser.add_argument("--line-start", type=int)
     parser.add_argument("--line-end", type=int)
@@ -171,7 +172,22 @@ def main() -> int:
     if result.get("verdict") != "INCONCLUSIVE" and not bootstrap_result_valid(result, requirements, packet):
         result = {"review_complete": False, "verdict": "INCONCLUSIVE",
                   "reason": {"invalid_bootstrap_response": bootstrap_result_errors(result, requirements, packet)}}
-    print(json.dumps({"review_type": "CODE", "snapshot_id": packet.snapshot_id, **result},
+    output = {"review_type": "CODE", "cr_number": args.cr or "", "snapshot_id": packet.snapshot_id, **result}
+    if result.get("verdict") == "PASS" and args.cr:
+        receipt = {
+            "schema_version": 1,
+            "cr_number": args.cr,
+            "snapshot_id": packet.snapshot_id,
+            "requirement_sources": [
+                {"source": item["source"], "sha256": item["sha256"]} for item in requirements
+            ],
+            "verdict": "PASS",
+            "review_complete": True,
+        }
+        directory = root / "test-artefacts" / "reviewer"
+        directory.mkdir(parents=True, exist_ok=True)
+        (directory / "bootstrap-pass.json").write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
+    print(json.dumps(output,
                      separators=(",", ":"), sort_keys=True))
     return 0 if result.get("verdict") == "PASS" else 2
 
