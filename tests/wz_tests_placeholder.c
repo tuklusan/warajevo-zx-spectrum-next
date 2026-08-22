@@ -2384,7 +2384,12 @@ int main(void)
             recovered_cpu_sync.state.interrupt_enable_delay != 1u ||
             recovered_cpu_sync.state.interrupt_mode != WZ_Z80_INTERRUPT_MODE_2 ||
             recovered_cpu_sync.state.halted != 0u) {
-            fputs("state trace decoder failed\n", stderr);
+            fprintf(stderr, "state trace decoder failed: complete=%u tick=%llu pc=%04x sp=%04x im=%u\n",
+                    recovered_state ? 1u : 0u,
+                    (unsigned long long)recovered_cpu_sync.master_tick,
+                    (unsigned)recovered_cpu_sync.state.program_counter,
+                    (unsigned)recovered_cpu_sync.state.stack_pointer,
+                    (unsigned)recovered_cpu_sync.state.interrupt_mode);
             return 1;
         }
     }
