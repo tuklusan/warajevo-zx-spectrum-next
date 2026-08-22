@@ -29,7 +29,7 @@ from deepseek_gate import (
 )
 
 BOOTSTRAP_INPUT_BUDGET_BYTES = 2_000_000
-BOOTSTRAP_OUTPUT_TOKENS = 8_192
+BOOTSTRAP_OUTPUT_TOKENS = 12_288
 
 
 def line_slice_content(content: str, line_start: int | None, line_end: int | None) -> str:
