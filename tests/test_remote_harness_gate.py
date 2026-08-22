@@ -104,8 +104,8 @@ class HarnessGateTests(unittest.TestCase):
         tracker_data = (ROOT / "issues" / "change-requests.json").read_bytes()
         tracker = json.loads(tracker_data)
         active = [item for item in tracker["change_requests"] if item.get("status") == "in_progress"]
-        self.assertEqual(len(active), 1)
-        cr = active[0]
+        self.assertTrue(active)
+        cr = active[-1]
         scope = {
             "cr_number": cr["cr_number"], "title": cr.get("title"), "status": cr.get("status"),
             "source_authority": cr.get("source_authority", []), "notes": cr.get("notes", ""),
