@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 41,
+  "next_cr_number": 42,
   "status_values": [
     "open",
     "in_progress",
@@ -568,6 +568,16 @@
         "design/wzsn-architectures-1-2-developer-tasks.md task 057"
       ],
       "notes": "Closed on 2026-08-22. DI immediately clears both interrupt flip-flops; EI sets both but serializes a one-following-instruction acceptance deferral, including EI followed by HALT. The primary-opcode decoder, state validation, canonical state format v4, and deterministic tests cover the behavior. Upstream Warajevo Z80.ASM uses an instruction-dispatch deferral after EI for the same boundary. CODE review PASS; remote Linux, Windows 10, and Windows 11 smoke PASS; hosted Linux x64/ARM64, Windows x64, and macOS Intel/ARM64 matrix PASS; TEST_ARTIFACT review PASS. IM 0/1/2 and NMI bus-entry work remain deferred to task 058."
+    },
+    {
+      "cr_number": "CR-0041",
+      "title": "Implement Z80 interrupt-mode entry and NMI bus phases",
+      "status": "in_progress",
+      "source_authority": [
+        "design/warajevo-zx-spectrum-next-architecture.md section 11",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 058"
+      ],
+      "notes": "Opened on 2026-08-22 for Phase-2 task 058. Scope is IM 0, IM 1, IM 2 maskable-interrupt entry and NMI state handling with exact externally visible acknowledge, stack, and vector bus phases. This work consumes CR-0040 acceptance state and must consult upstream Warajevo before finalizing timing or compatibility decisions."
     }
   ]
 }
