@@ -572,12 +572,12 @@
     {
       "cr_number": "CR-0041",
       "title": "Implement Z80 interrupt-mode entry and NMI bus phases",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/warajevo-zx-spectrum-next-architecture.md section 11",
         "design/wzsn-architectures-1-2-developer-tasks.md task 058"
       ],
-      "notes": "Opened on 2026-08-22 for Phase-2 task 058. Scope is IM 0, IM 1, IM 2 maskable-interrupt entry and NMI state handling with exact externally visible acknowledge, stack, and vector bus phases. This work consumes CR-0040 acceptance state and must consult upstream Warajevo before finalizing timing or compatibility decisions."
+      "notes": "Closed on 2026-08-22. Implemented explicit IM 0 RST-vector, IM 1, IM 2, and NMI acceptance entry points with interrupt-acknowledge, vector-read, internal, and stack-write bus phases at exact master-tick offsets; IFF, R, MEMPTR, and HALT return-PC transitions are covered by deterministic traces. Upstream Warajevo preserves IFF1 into IFF2 and advances held HALT PC before NMI stacking, consistent with this implementation. CODE review PASS; remote Linux CR0041-INT-LINUX, Windows 10 CR0041-INT-WIN10-R2, and Windows 11 CR0041-INT-WIN11-R2 smoke PASS; hosted run 32547526442 passed Linux x64/ARM64, Windows x64, and macOS Intel/ARM64; TEST_ARTIFACT review PASS. Full arbitrary IM 0 injected-opcode dispatch remains constrained by the supported primary-opcode execution model and is deferred for the complete CPU-dispatch scope."
     }
   ]
 }
