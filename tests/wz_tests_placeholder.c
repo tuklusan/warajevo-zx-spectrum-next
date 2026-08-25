@@ -674,7 +674,7 @@ int main(void)
         return 1;
     }
     machine.cpu.main.a = 0x9au;
-    machine.cpu.main.f = WZ_Z80_FLAG_N;
+    machine.cpu.main.f = 0x02u;
     machine.memory[2u] = 0x27u;
     if (wz_z80_step(&machine) != WZ_RESULT_OK ||
         machine.cpu.main.a != 0x34u || machine.cpu.main.f != 0x23u) {
