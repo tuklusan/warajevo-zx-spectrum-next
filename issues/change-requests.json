@@ -642,13 +642,13 @@
     {
       "cr_number": "CR-0048",
       "title": "Disable thinking for the external review transport",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "user-reported deepseek-v4-pro empty-content behavior",
         "design/deepseek-review-gate.md",
         "project reviewer workflow"
       ],
-      "notes": "Opened on 2026-08-22 to require disabled thinking for discovery, falsification, and adjudication because the configured provider returns empty content otherwise. Scope preserves JSON-schema validation, evidence binding, retries, and fail-closed handling."
+      "notes": "Opened on 2026-08-22 to require disabled thinking for discovery, falsification, and adjudication because the configured provider returns empty content otherwise. Closed after zero-finding CODE review, passing remote smoke runs on Linux, Windows 10, and Windows 11, hosted platform-smoke 32803893775 across five platforms, and zero-finding TEST_ARTIFACT review. JSON-schema validation, evidence binding, retries, and fail-closed handling remain unchanged."
     }
   ]
 }
