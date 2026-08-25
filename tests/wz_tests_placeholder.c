@@ -507,7 +507,7 @@ int main(void)
     }
     wz_trace_sink_init(&trace_sink, wz_trace_file_emit, &trace_file);
     wz_machine_set_timing_trace(&machine, &trace_sink);
-    machine.memory[0u] = 0x01u;
+    machine.memory[0u] = 0xd3u;
     if (wz_z80_step(&machine) != WZ_RESULT_UNSUPPORTED_OPERATION ||
         wz_trace_file_freeze(&trace_file) != WZ_RESULT_OK) {
         wz_trace_file_close(&trace_file);
@@ -521,11 +521,11 @@ int main(void)
         recovered_count != 8u || timing_trace_log.count != 8u ||
         timing_trace_log.events[0].kind != WZ_TRACE_CPU_BUS ||
         timing_trace_log.events[0].cycle != WZ_BUS_M1_OPCODE_FETCH ||
-        timing_trace_log.events[0].address != 0u || timing_trace_log.events[0].value != 0x01u ||
+        timing_trace_log.events[0].address != 0u || timing_trace_log.events[0].value != 0xd3u ||
         timing_trace_log.events[1].kind != WZ_TRACE_CPU_OPCODE_BYTE ||
-        timing_trace_log.events[1].address != 0u || timing_trace_log.events[1].value != 0x01u ||
+        timing_trace_log.events[1].address != 0u || timing_trace_log.events[1].value != 0xd3u ||
         timing_trace_log.events[2].kind != WZ_TRACE_CPU_INSTRUCTION ||
-        timing_trace_log.events[2].program_counter != 0u || timing_trace_log.events[2].value != 0x01u) {
+        timing_trace_log.events[2].program_counter != 0u || timing_trace_log.events[2].value != 0xd3u) {
         remove(failing_trace_path);
         fputs("failing opcode trace recovery failed\n", stderr);
         return 1;
