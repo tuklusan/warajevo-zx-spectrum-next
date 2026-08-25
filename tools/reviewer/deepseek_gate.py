@@ -1667,6 +1667,8 @@ def write_telemetry(root: Path, telemetry: Telemetry, final: dict[str, Any],
         "human_decision_required_count": telemetry.human_decision_required_count,
         "final_confirmed_count": len(final.get("confirmed_findings", [])),
         "verdict": final.get("verdict"),
+        # Persist the complete private verdict so an inconclusive gate can be repaired.
+        "final_result": final,
         "elapsed_seconds": round(time.monotonic() - telemetry.started, 3),
     }
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S.%fZ")

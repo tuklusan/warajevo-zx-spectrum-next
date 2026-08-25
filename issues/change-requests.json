@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 49,
+  "next_cr_number": 50,
   "status_values": [
     "open",
     "in_progress",
@@ -649,6 +649,17 @@
         "project reviewer workflow"
       ],
       "notes": "Opened on 2026-08-22 to require disabled thinking for discovery, falsification, and adjudication because the configured provider returns empty content otherwise. Closed after zero-finding CODE review, passing remote smoke runs on Linux, Windows 10, and Windows 11, hosted platform-smoke 32803893775 across five platforms, and zero-finding TEST_ARTIFACT review. JSON-schema validation, evidence binding, retries, and fail-closed handling remain unchanged."
+    },
+    {
+      "cr_number": "CR-0049",
+      "title": "Persist complete private reviewer verdicts",
+      "status": "in_progress",
+      "source_authority": [
+        "CR-0044 inconclusive review evidence",
+        "design/deepseek-review-gate.md",
+        "project reviewer workflow"
+      ],
+      "notes": "Opened on 2026-08-25 after an otherwise healthy CODE review recorded an unresolved candidate only in process output. The gate must retain its complete final verdict privately for diagnosis, while preserving fail-closed behavior and every existing decision rule."
     }
   ]
 }
