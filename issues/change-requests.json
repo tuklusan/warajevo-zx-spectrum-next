@@ -653,13 +653,13 @@
     {
       "cr_number": "CR-0049",
       "title": "Persist complete private reviewer verdicts",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "CR-0044 inconclusive review evidence",
         "design/deepseek-review-gate.md",
         "project reviewer workflow"
       ],
-      "notes": "Opened on 2026-08-25 after an otherwise healthy CODE review recorded an unresolved candidate only in process output. The gate must retain its complete final verdict privately for diagnosis, while preserving fail-closed behavior and every existing decision rule."
+      "notes": "Opened on 2026-08-25 after an otherwise healthy CODE review recorded an unresolved candidate only in process output. The gate now retains the complete final verdict privately in telemetry without changing review semantics. CODE review passed; Linux, Windows 10, and Windows 11 remote harness runs passed; hosted platform-smoke 32805278008 passed across five platforms; TEST_ARTIFACT review passed."
     }
   ]
 }
