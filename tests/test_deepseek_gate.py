@@ -924,6 +924,7 @@ class GateTests(unittest.TestCase):
         self.assertIn("content_is_bounded", prompt)
         self.assertIn(gate.sha256_bytes(source.encode()), prompt)
         self.assertEqual(prompt.count(source), 0)
+        self.assertIn("Do not confirm a candidate from outside knowledge", prompt)
 
     def test_review_deadline_exhaustion_cannot_pass(self):
         deadline = gate.ReviewDeadline(0.0)

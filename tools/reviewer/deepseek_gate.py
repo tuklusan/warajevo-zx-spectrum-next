@@ -1289,6 +1289,9 @@ def falsification_prompt(prefix: str, packet: ReviewPacket, candidates: list[dic
         "IMMUTABLE_EVIDENCE_PACKET\n" + canonical_json(falsification_evidence(packet, candidates)) +
         "\nCANDIDATES\n" + canonical_json(compact_candidates) + "\nRELEVANT_PRIOR_EVIDENCE\n" + canonical_json(relevant_prior) +
         "\nAssume every candidate is false until exact current evidence and an exact current requirement positively prove it. "
+        "Treat only the supplied immutable packet and authoritative requirement sources as evidence. Do not confirm a "
+        "candidate from outside knowledge, remembered specifications, timing diagrams, or an asserted upstream behavior that "
+        "is not present in those sources; request the exact missing source and return UNRESOLVED instead. "
         "For each candidate, inspect alternate callers/callees, initialization, cleanup, invariants, reachability, language and "
         "platform behavior, assumptions, current CR scope, future-work boundaries, and the gate severity contract. Return "
         "exactly one CONFIRMED, REJECTED, NON_BLOCKING, or UNRESOLVED decision per candidate. CONFIRMED requires positive "
