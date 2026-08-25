@@ -2177,7 +2177,12 @@ int main(void)
         bus_log.requests[0].cycle != WZ_BUS_INTERRUPT_ACKNOWLEDGE ||
         bus_log.requests[1].cycle != WZ_BUS_M1_OPCODE_FETCH ||
         bus_log.requests[1].master_tick != 14u || bus_log.requests[1].address != 0x1234u) {
-        fputs("Z80 IM0 injected CB opcode test failed\n", stderr);
+        fprintf(stderr, "Z80 IM0 CB failed: pc=%04x b=%02x r=%02x tick=%llu buses=%u second=%u/%llu/%04x\n",
+                (unsigned)machine.cpu.program_counter, (unsigned)machine.cpu.main.b,
+                (unsigned)machine.cpu.r, (unsigned long long)machine.master_tick,
+                bus_log.count, bus_log.count > 1u ? (unsigned)bus_log.requests[1].cycle : 0u,
+                (unsigned long long)(bus_log.count > 1u ? bus_log.requests[1].master_tick : 0u),
+                bus_log.count > 1u ? (unsigned)bus_log.requests[1].address : 0u);
         return 1;
     }
 
