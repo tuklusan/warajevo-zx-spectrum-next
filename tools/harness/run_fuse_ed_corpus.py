@@ -147,11 +147,25 @@ def parse_runner_output(output: str) -> tuple[list[int], list[int], dict[int, in
     return registers, auxiliary, memory
 
 
+def load_unresolved_baseline(path: Path, commit: str) -> frozenset[str]:
+    """Load the pinned, explicitly accounted migration backlog."""
+    data = json.loads(path.read_text(encoding="ascii"))
+    if data.get("commit") != commit:
+        raise ValueError("unresolved baseline commit does not match the pinned identity")
+    names = data.get("case_names")
+    if not isinstance(names, list) or not all(isinstance(name, str) for name in names):
+        raise ValueError("unresolved baseline case_names must be a string list")
+    if len(names) != len(set(names)):
+        raise ValueError("unresolved baseline contains duplicate case names")
+    return frozenset(names)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--runner", required=True, type=Path)
     parser.add_argument("--corpus", required=True, type=Path)
     parser.add_argument("--manifest", required=True, type=Path)
+    parser.add_argument("--unresolved-baseline", required=True, type=Path)
     parser.add_argument("--commit", required=True)
     parser.add_argument("--selection", choices=(
         "complete", "ed", "indexed-cb", "cb-rotate-shift", "stack-subroutine", "branch",
@@ -161,6 +175,10 @@ def main() -> int:
     args = parser.parse_args()
     if args.commit != PINNED_COMMIT:
         parser.error("corpus commit does not match the pinned identity")
+    try:
+        unresolved_baseline = load_unresolved_baseline(args.unresolved_baseline, args.commit)
+    except (OSError, ValueError, json.JSONDecodeError) as exc:
+        parser.error(f"invalid unresolved baseline: {exc}")
 
     inputs = parse_inputs(args.corpus / "tests.in")
     expected = parse_expected(args.corpus / "tests.expected")
@@ -243,6 +261,9 @@ def main() -> int:
             results.append(item)
 
     passed = sum(item["status"] == "passed" for item in results)
+    failed_names = {str(item["name"]) for item in results if item["status"] == "failed"}
+    known_unresolved = sorted(failed_names & unresolved_baseline)
+    unexpected_failures = sorted(failed_names - unresolved_baseline)
     manifest = {
         "schema_version": 1,
         "corpus": "Fuse Z80",
@@ -253,13 +274,15 @@ def main() -> int:
         "passed": passed,
         "failed": len(results) - passed,
         "silent_skips": 0,
+        "known_unresolved": known_unresolved,
+        "unexpected_failures": unexpected_failures,
         "cases": results,
     }
     args.manifest.parent.mkdir(parents=True, exist_ok=True)
     args.manifest.write_text(json.dumps(manifest, indent=2) + "\n", encoding="ascii")
     print(json.dumps({key: manifest[key] for key in
                       ("commit", "total", "passed", "failed", "silent_skips")}))
-    return 0 if len(results) == expected_count and passed == len(results) else 1
+    return 0 if len(results) == expected_count and not unexpected_failures else 1
 
 
 if __name__ == "__main__":

@@ -469,7 +469,8 @@ def main() -> int:
                 f"{machine['python_command']} tools/harness/run_fuse_ed_platform.py "
                 f"--runner-root {shlex.quote(remote_dir + '/build')} "
                 "--private-root test-artefacts/fuse-corpus "
-                f"--manifest {shlex.quote(remote_dir + '/fuse-complete-manifest.json')}"
+                f"--manifest {shlex.quote(remote_dir + '/fuse-complete-manifest.json')} "
+                "--unresolved-baseline tools/harness/fuse-unresolved-baseline.json"
             )
             primary = run_linux(
                 machine,
@@ -509,7 +510,7 @@ def main() -> int:
                     f"Set-Location '{machine['project_dir']}'",
                     f"& {machine['python_command']} '.\\tools\\harness\\run_cmake_smoke.py' --artifact-dir '.\\{remote_dir_windows}'",
                     "if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }",
-                    f"& {machine['python_command']} '.\\tools\\harness\\run_fuse_ed_platform.py' --runner-root '.\\{remote_dir_windows}\\build' --private-root '.\\test-artefacts\\fuse-corpus' --manifest '.\\{remote_dir_windows}\\fuse-complete-manifest.json'",
+                    f"& {machine['python_command']} '.\\tools\\harness\\run_fuse_ed_platform.py' --runner-root '.\\{remote_dir_windows}\\build' --private-root '.\\test-artefacts\\fuse-corpus' --manifest '.\\{remote_dir_windows}\\fuse-complete-manifest.json' --unresolved-baseline '.\\tools\\harness\\fuse-unresolved-baseline.json'",
                     "exit $LASTEXITCODE",
                 ]
             )

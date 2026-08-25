@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 54,
+  "next_cr_number": 55,
   "status_values": [
     "open",
     "in_progress",
@@ -696,13 +696,25 @@
     {
       "cr_number": "CR-0053",
       "title": "Correct DAA, SCF, and CCF primary flag semantics",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/warajevo-zx-spectrum-next-architecture.md sections 11 and 36.1",
         "design/wzsn-architectures-1-2-developer-tasks.md task 044",
         "CR-0051 complete Fuse inventory"
       ],
-      "notes": "Opened on 2026-08-25 after CR-0052 closure isolated remaining applicable primary Fuse failures 0x27, 0x37, and 0x3f. Inventory upstream flag and MEMPTR behavior, implement exact state and timing, and require all applicable pinned Fuse vectors to pass without waivers."
+      "notes": "Opened on 2026-08-25 after CR-0052 closure isolated remaining applicable primary Fuse failures 0x27, 0x37, and 0x3f. Closed after upstream DAA_/SCF/CCF comparison, CODE review, and TEST_ARTIFACT review passed with zero findings. Linux CR0053-FLAGS-LINUX-R4, Windows 10 CR0053-FLAGS-WIN10-R1, and Windows 11 CR0053-FLAGS-WIN11-R1 all passed CTest and the three applicable vectors, with matching 1,182/1,356 complete-corpus accounting and zero silent skips. The Windows harness nonzero exit for unrelated remaining corpus failures is isolated in CR-0054."
+    },
+    {
+      "cr_number": "CR-0054",
+      "title": "Make incremental complete-Fuse remote validation platform-consistent",
+      "status": "in_progress",
+      "source_authority": [
+        "WORKFLOW.md remote-only validation rule",
+        "design/fuse-z80-test-suite.md",
+        "CR-0051 complete Fuse inventory",
+        "CR-0053 remote validation evidence"
+      ],
+      "notes": "Opened on 2026-08-25 because Linux records complete-corpus results while allowing remaining applicable failures to be migrated in subsequent CRs, but the Windows runner exits nonzero after the same correctly-accounted result. Inventory and reconcile runner exit semantics, preserving fail-closed behavior for silent skips, manifest gaps, and failures in the CR under validation."
     }
   ]
 }

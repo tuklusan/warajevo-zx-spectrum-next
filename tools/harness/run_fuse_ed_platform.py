@@ -39,6 +39,7 @@ def main() -> int:
     parser.add_argument("--runner-root", required=True, type=Path)
     parser.add_argument("--private-root", required=True, type=Path)
     parser.add_argument("--manifest", required=True, type=Path)
+    parser.add_argument("--unresolved-baseline", required=True, type=Path)
     args = parser.parse_args()
 
     project = Path.cwd().resolve()
@@ -64,6 +65,7 @@ def main() -> int:
         "--runner", str(runner),
         "--corpus", str(source / "z80" / "tests"),
         "--manifest", str(args.manifest.resolve()),
+        "--unresolved-baseline", str(args.unresolved_baseline.resolve()),
         "--commit", PINNED_COMMIT,
         "--selection", "complete",
     ]
