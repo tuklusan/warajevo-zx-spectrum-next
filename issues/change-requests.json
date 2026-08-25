@@ -602,12 +602,12 @@
     {
       "cr_number": "CR-0044",
       "title": "Complete IM0 injected-opcode interrupt execution",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/warajevo-zx-spectrum-next-architecture.md section 11",
         "CR-0041 retrospective upstream reconciliation"
       ],
-      "notes": "Opened on 2026-08-22 after CR-0041 audit established that its IM0 entry accepts only RST vectors. Scope is complete execution of the bus-supplied IM0 instruction stream without inventing a memory opcode fetch, including prefixed forms, immediate bytes from PC, bus timing, IFF/HALT interactions, unsupported-opcode behavior, and trace coverage."
+      "notes": "Opened on 2026-08-22 after CR-0041 audit established that its IM0 entry accepts only RST vectors. Closed on 2026-08-25 after implementing bus-supplied IM0 primary, CB, ED, DD, FD, and RST execution without an invented first memory fetch. Primary/immediate, prefixed, R, PC, bus-cycle, and timing regressions pass. CODE review passed; Linux CR0044-IM0-R4-linux-x64-lxqt, Windows 10 CR0044-IM0-R5-WIN10, and Windows 11 CR0044-IM0-R5-WIN11 remote harness runs passed; hosted platform-smoke 32807328371 passed across five platforms; TEST_ARTIFACT review passed."
     },
     {
       "cr_number": "CR-0045",
