@@ -706,7 +706,7 @@ int main(void)
         machine.cpu.main.a != 0x03u || machine.cpu.main.f != 0x45u ||
         wz_z80_step(&machine) != WZ_RESULT_OK ||
         machine.cpu.main.a != 0x81u || machine.cpu.main.f != 0x45u ||
-        machine.cpu.program_counter != 7u || machine.master_tick != 56u) {
+        machine.cpu.program_counter != 8u || machine.master_tick != 56u) {
         fputs("Z80 accumulator rotate flags failed\n", stderr);
         return 1;
     }
