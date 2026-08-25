@@ -24,7 +24,9 @@ typedef enum {
     WZ_TRACE_CPU_BUS = 4,
     WZ_TRACE_INTERRUPT = 5,
     WZ_TRACE_CPU_STATE_SYNC = 6,
-    WZ_TRACE_CPU_STATE_DELTA = 7
+    WZ_TRACE_CPU_STATE_DELTA = 7,
+    /* Byte returned by an M1 cycle; pairs with the preceding CPU bus record. */
+    WZ_TRACE_CPU_OPCODE_BYTE = 8
 } wz_trace_event_kind_t;
 
 typedef struct {

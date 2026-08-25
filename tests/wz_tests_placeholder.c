@@ -404,30 +404,33 @@ int main(void)
     machine.cpu.interrupt_mode = (wz_byte_t)WZ_Z80_INTERRUPT_MODE_2;
     machine.cpu.halted = 0u;
     machine.memory[0u] = 0x00u;
-    if (wz_z80_step(&machine) != WZ_RESULT_OK || timing_trace_log.count != 7u ||
+    if (wz_z80_step(&machine) != WZ_RESULT_OK || timing_trace_log.count != 8u ||
         timing_trace_log.events[0].kind != WZ_TRACE_CPU_BUS ||
         timing_trace_log.events[0].cycle != WZ_BUS_M1_OPCODE_FETCH ||
         timing_trace_log.events[0].address != 0u ||
-        timing_trace_log.events[1].kind != WZ_TRACE_CPU_INSTRUCTION ||
-        timing_trace_log.events[1].program_counter != 0u ||
-        timing_trace_log.events[1].value != 0x00u ||
-        timing_trace_log.events[1].sequence != WZ_TRACE_CPU_SYNC_INTERVAL - 1u ||
-        (timing_trace_log.events[1].register_snapshot & UINT64_C(0xffff)) != UINT64_C(0x3412)) {
+        timing_trace_log.events[1].kind != WZ_TRACE_CPU_OPCODE_BYTE ||
+        timing_trace_log.events[1].master_tick != timing_trace_log.events[0].master_tick ||
+        timing_trace_log.events[1].address != 0u || timing_trace_log.events[1].value != 0x00u ||
+        timing_trace_log.events[2].kind != WZ_TRACE_CPU_INSTRUCTION ||
+        timing_trace_log.events[2].program_counter != 0u ||
+        timing_trace_log.events[2].value != 0x00u ||
+        timing_trace_log.events[2].sequence != WZ_TRACE_CPU_SYNC_INTERVAL ||
+        (timing_trace_log.events[2].register_snapshot & UINT64_C(0xffff)) != UINT64_C(0x3412)) {
         fputs("structured CPU timing trace failed\n", stderr);
         return 1;
     }
-    if (timing_trace_log.events[2].kind != WZ_TRACE_CPU_STATE_SYNC ||
-        timing_trace_log.events[2].cycle != 0u ||
-        timing_trace_log.events[2].register_snapshot != timing_trace_log.events[1].register_snapshot ||
-        timing_trace_log.events[3].cycle != 1u ||
-        (timing_trace_log.events[3].register_snapshot & UINT64_C(0xffff)) != UINT64_C(0x7856) ||
-        timing_trace_log.events[4].cycle != 2u ||
-        (timing_trace_log.events[4].register_snapshot & UINT64_C(0xffffffff)) != UINT64_C(0xdef09abc) ||
-        timing_trace_log.events[5].cycle != 3u ||
-        (timing_trace_log.events[5].register_snapshot & UINT64_C(0xffff)) != UINT64_C(0x2468) ||
-        timing_trace_log.events[6].cycle != 4u ||
-        timing_trace_log.events[6].register_snapshot != 0u ||
-        timing_trace_log.events[2].sequence + 4u != timing_trace_log.events[6].sequence) {
+    if (timing_trace_log.events[3].kind != WZ_TRACE_CPU_STATE_SYNC ||
+        timing_trace_log.events[3].cycle != 0u ||
+        timing_trace_log.events[3].register_snapshot != timing_trace_log.events[2].register_snapshot ||
+        timing_trace_log.events[4].cycle != 1u ||
+        (timing_trace_log.events[4].register_snapshot & UINT64_C(0xffff)) != UINT64_C(0x7856) ||
+        timing_trace_log.events[5].cycle != 2u ||
+        (timing_trace_log.events[5].register_snapshot & UINT64_C(0xffffffff)) != UINT64_C(0xdef09abc) ||
+        timing_trace_log.events[6].cycle != 3u ||
+        (timing_trace_log.events[6].register_snapshot & UINT64_C(0xffff)) != UINT64_C(0x2468) ||
+        timing_trace_log.events[7].cycle != 4u ||
+        timing_trace_log.events[7].register_snapshot != 0u ||
+        timing_trace_log.events[3].sequence + 4u != timing_trace_log.events[7].sequence) {
         fputs("complete CPU timing synchronization trace failed\n", stderr);
         return 1;
     }
@@ -454,12 +457,14 @@ int main(void)
     memset(&timing_trace_log, 0, sizeof(timing_trace_log));
     if (wz_trace_file_recover(failing_trace_path, recover_timing_trace, &timing_trace_log,
                               &recovered_count) != WZ_RESULT_OK ||
-        recovered_count != 7u || timing_trace_log.count != 7u ||
+        recovered_count != 8u || timing_trace_log.count != 8u ||
         timing_trace_log.events[0].kind != WZ_TRACE_CPU_BUS ||
         timing_trace_log.events[0].cycle != WZ_BUS_M1_OPCODE_FETCH ||
         timing_trace_log.events[0].address != 0u || timing_trace_log.events[0].value != 0x01u ||
-        timing_trace_log.events[1].kind != WZ_TRACE_CPU_INSTRUCTION ||
-        timing_trace_log.events[1].program_counter != 0u || timing_trace_log.events[1].value != 0x01u) {
+        timing_trace_log.events[1].kind != WZ_TRACE_CPU_OPCODE_BYTE ||
+        timing_trace_log.events[1].address != 0u || timing_trace_log.events[1].value != 0x01u ||
+        timing_trace_log.events[2].kind != WZ_TRACE_CPU_INSTRUCTION ||
+        timing_trace_log.events[2].program_counter != 0u || timing_trace_log.events[2].value != 0x01u) {
         remove(failing_trace_path);
         fputs("failing opcode trace recovery failed\n", stderr);
         return 1;
@@ -467,7 +472,7 @@ int main(void)
     wz_trace_cpu_state_sync_init(&recovered_cpu_sync);
     {
         bool recovered_state = false;
-        for (size_t index = 2u; index < timing_trace_log.count; ++index) {
+        for (size_t index = 3u; index < timing_trace_log.count; ++index) {
             recovered_state = wz_trace_cpu_state_sync_apply(&recovered_cpu_sync,
                                                              &timing_trace_log.events[index]);
         }

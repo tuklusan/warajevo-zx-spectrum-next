@@ -115,6 +115,25 @@ static void wz_z80_trace_interrupt(wz_machine_t* machine, wz_byte_t kind)
     wz_trace_emit_detail(machine->timing_trace, &event);
 }
 
+static void wz_z80_trace_opcode_byte(wz_machine_t* machine,
+                                     wz_master_tick_t master_tick,
+                                     wz_word_t address,
+                                     wz_byte_t value)
+{
+    wz_trace_event_t event = {0};
+
+    if (machine->timing_trace == 0) {
+        return;
+    }
+    event.kind = WZ_TRACE_CPU_OPCODE_BYTE;
+    event.master_tick = master_tick;
+    event.address = address;
+    event.program_counter = machine->cpu.program_counter;
+    event.value = value;
+    event.cycle = WZ_BUS_M1_OPCODE_FETCH;
+    wz_trace_emit_detail(machine->timing_trace, &event);
+}
+
 #define WZ_Z80_UN(opcode_value) \
     { (wz_byte_t)(opcode_value), WZ_Z80_PRIMARY_OP_UNSUPPORTED, WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED }
 #define WZ_Z80_IMPL(opcode_value, operation_value) \
@@ -1566,6 +1585,9 @@ static wz_result_t wz_z80_bus(wz_machine_t* machine,
     }
     if (value != 0) {
         *value = request.value;
+    }
+    if (cycle == WZ_BUS_M1_OPCODE_FETCH) {
+        wz_z80_trace_opcode_byte(machine, request.master_tick, address, request.value);
     }
     return WZ_RESULT_OK;
 }
