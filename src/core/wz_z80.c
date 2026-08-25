@@ -650,8 +650,8 @@ static void wz_z80_execute_special_flags(wz_z80_state_t* state, wz_byte_t opcode
             if (carry != 0u || old_a > 0x99u) { correction |= 0x60u; carry = WZ_Z80_FLAG_C; }
             state->main.a = (wz_byte_t)(old_a + correction);
         } else {
-            if ((old_f & WZ_Z80_FLAG_H) != 0u) correction |= 0x06u;
-            if (carry != 0u) correction |= 0x60u;
+            if ((old_f & WZ_Z80_FLAG_H) != 0u || (old_a & 0x0fu) > 9u) correction |= 0x06u;
+            if (carry != 0u || old_a > 0x99u) { correction |= 0x60u; carry = WZ_Z80_FLAG_C; }
             state->main.a = (wz_byte_t)(old_a - correction);
         }
         state->main.f = (wz_byte_t)(wz_z80_sz53p_flags(state->main.a) |
@@ -667,11 +667,11 @@ static void wz_z80_execute_special_flags(wz_z80_state_t* state, wz_byte_t opcode
         break;
     case 0x37u:
         state->main.f = (wz_byte_t)((old_f & (WZ_Z80_FLAG_S | WZ_Z80_FLAG_Z | WZ_Z80_FLAG_PV)) |
-                                    WZ_Z80_FLAG_C | (old_a & (WZ_Z80_FLAG_Y | WZ_Z80_FLAG_X)));
+                                    WZ_Z80_FLAG_C | (old_f & (WZ_Z80_FLAG_Y | WZ_Z80_FLAG_X)));
         break;
     case 0x3fu:
         state->main.f = (wz_byte_t)((old_f & (WZ_Z80_FLAG_S | WZ_Z80_FLAG_Z | WZ_Z80_FLAG_PV)) |
-                                    (old_a & (WZ_Z80_FLAG_Y | WZ_Z80_FLAG_X)) |
+                                    (old_f & (WZ_Z80_FLAG_Y | WZ_Z80_FLAG_X)) |
                                     ((old_f & WZ_Z80_FLAG_C) != 0u ? WZ_Z80_FLAG_H : WZ_Z80_FLAG_C));
         break;
     }

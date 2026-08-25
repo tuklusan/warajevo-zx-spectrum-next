@@ -673,9 +673,17 @@ int main(void)
         fputs("Z80 DAA subtraction correction failed\n", stderr);
         return 1;
     }
+    machine.cpu.main.a = 0x9au;
+    machine.cpu.main.f = WZ_Z80_FLAG_N;
+    machine.memory[2u] = 0x27u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.a != 0x34u || machine.cpu.main.f != 0x23u) {
+        fputs("Z80 DAA subtraction invalid-BCD correction failed\n", stderr);
+        return 1;
+    }
     machine.cpu.main.a = 0x55u;
     machine.cpu.main.f = 0x45u;
-    machine.memory[2u] = 0x2fu;
+    machine.memory[3u] = 0x2fu;
     if (wz_z80_step(&machine) != WZ_RESULT_OK ||
         machine.cpu.main.a != 0xaau || machine.cpu.main.f != 0x7fu) {
         fputs("Z80 CPL flags failed\n", stderr);
@@ -683,17 +691,17 @@ int main(void)
     }
     machine.cpu.main.a = 0x28u;
     machine.cpu.main.f = 0x44u;
-    machine.memory[3u] = 0x37u;
-    machine.memory[4u] = 0x3fu;
-    if (wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.main.f != 0x6du ||
-        wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.main.f != 0x7cu) {
+    machine.memory[4u] = 0x37u;
+    machine.memory[5u] = 0x3fu;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.main.f != 0x45u ||
+        wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.main.f != 0x54u) {
         fputs("Z80 SCF/CCF flags failed\n", stderr);
         return 1;
     }
     machine.cpu.main.a = 0x81u;
     machine.cpu.main.f = 0x44u;
-    machine.memory[5u] = 0x07u;
-    machine.memory[6u] = 0x1fu;
+    machine.memory[6u] = 0x07u;
+    machine.memory[7u] = 0x1fu;
     if (wz_z80_step(&machine) != WZ_RESULT_OK ||
         machine.cpu.main.a != 0x03u || machine.cpu.main.f != 0x45u ||
         wz_z80_step(&machine) != WZ_RESULT_OK ||
