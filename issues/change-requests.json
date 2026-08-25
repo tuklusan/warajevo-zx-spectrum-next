@@ -685,13 +685,13 @@
     {
       "cr_number": "CR-0052",
       "title": "Implement complete primary Z80 load and data-transfer family",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/warajevo-zx-spectrum-next-architecture.md sections 11 and 36.1",
         "design/wzsn-architectures-1-2-developer-tasks.md tasks 044 and 060",
         "CR-0051 complete Fuse inventory"
       ],
-      "notes": "Opened on 2026-08-25 after the complete pinned Fuse run identified applicable failures across LD rr,nn, LD r,n, LD r,r, BC/DE/HL/nn indirect transfers, EX AF,AF', and 16-bit pair INC/DEC forms. Implement exact architectural state, memory bus order, MEMPTR, PC, R, and timing behavior; applicable Fuse failures must pass rather than be waived."
+      "notes": "Opened on 2026-08-25 after the complete pinned Fuse run identified applicable failures across LD rr,nn, LD r,n, LD r,r, BC/DE/HL/nn indirect transfers, EX AF,AF', and 16-bit pair INC/DEC forms. Closed on 2026-08-25 after immutable code and test-artifact reviews passed and Linux, Windows 10, and Windows 11 each passed the C and gate suites with 1,180 of 1,356 pinned Fuse cases passing and zero silent skips. All applicable primary load cases pass; remaining 0x27, 0x37, and 0x3f flag cases are outside this CR."
     }
   ]
 }
