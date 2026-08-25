@@ -279,6 +279,18 @@ int main(void)
         return 1;
     }
     memset(&machine.cpu, 0, sizeof(machine.cpu));
+    machine.master_tick = 0u;
+    machine.cpu.program_counter = 0x2050u;
+    machine.cpu.main.a = 0x56u;
+    machine.cpu.main.b = 0x00u;
+    machine.cpu.main.c = 0x01u;
+    machine.memory[0x2050u] = 0x02u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK || machine.memory[0x0001u] != 0x56u ||
+        machine.cpu.memptr != 0x5602u || machine.master_tick != 14u) {
+        fputs("LD (BC),A MEMPTR state failed\n", stderr);
+        return 1;
+    }
+    memset(&machine.cpu, 0, sizeof(machine.cpu));
     memset(&bus_log, 0, sizeof(bus_log));
     machine.master_tick = 0u;
     machine.cpu.program_counter = 0x2100u;

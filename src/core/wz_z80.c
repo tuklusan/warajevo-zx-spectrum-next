@@ -1922,15 +1922,17 @@ execute_opcode:
         }
         if (opcode == 0x02u || opcode == 0x12u || opcode == 0x0au || opcode == 0x1au) {
             address = wz_z80_get_rr(&machine->cpu, (wz_byte_t)(opcode >> 4u));
-            machine->cpu.memptr = wz_z80_add16(address, 1u);
             if (opcode == 0x02u || opcode == 0x12u) {
                 value = machine->cpu.main.a;
+                machine->cpu.memptr = (wz_word_t)((wz_word_t)value << 8u) |
+                    (wz_byte_t)(address + 1u);
                 if (wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 8u, address, &value, 3u) != WZ_RESULT_OK) {
                     return WZ_RESULT_INVALID_STATE;
                 }
             } else if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u, address, &value, 3u) != WZ_RESULT_OK) {
                 return WZ_RESULT_INVALID_STATE;
             } else {
+                machine->cpu.memptr = wz_z80_add16(address, 1u);
                 machine->cpu.main.a = value;
             }
             machine->master_tick += 14u;
