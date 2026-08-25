@@ -582,12 +582,12 @@
     {
       "cr_number": "CR-0042",
       "title": "Complete TIMING_FULL CPU instruction and bus instrumentation",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/warajevo-zx-spectrum-next-architecture.md sections 11, 36, and 44.2",
         "design/wzsn-architectures-1-2-developer-tasks.md task 059"
       ],
-      "notes": "Opened on 2026-08-22 for Phase-2 task 059. Scope is structured instruction boundary/register/opcode records; every externally visible CPU bus operation; interrupt sample/accept/acknowledge evidence; same-tick sequence ordering; compact deterministic binary persistence; and a trace-based failing-opcode reconstruction test. The 16 MiB eight-frame retention measurement remains a Phase-2 exit acceptance requirement and must be demonstrated before task 062 closes."
+      "notes": "Opened on 2026-08-22 for Phase-2 task 059. Closed on 2026-08-25 after completing structured instruction boundaries/register snapshots, every visible bus event, interrupt decision evidence, same-tick sequence ordering, compact binary persistence, failing-opcode reconstruction, and explicit primary/CB/ED/DD/FD/indexed prefix-byte retention. Upstream Z80 dispatch tables were rescanned before the prefix-byte addition. CODE review passed; Linux CR0042-PREFIX-TRACE-linux-x64-lxqt, Windows 10 CR0042-PREFIX-TRACE-windows-10-reference, and Windows 11 CR0042-PREFIX-TRACE-R2-windows-11-laptop smoke runs passed; hosted platform-smoke 32808998835 passed across five platforms; TEST_ARTIFACT review passed. The 16 MiB eight-frame retention measurement remains Phase-2 exit task 062 and must be demonstrated before Phase-2 closes."
     },
     {
       "cr_number": "CR-0043",
