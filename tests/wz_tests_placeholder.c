@@ -594,6 +594,7 @@ int main(void)
         wz_z80_step(&machine) != WZ_RESULT_OK ||
         machine.memory[0x4000u] != 0x22u ||
         machine.cpu.program_counter != 3u ||
+        machine.cpu.memptr != 0x2201u ||
         machine.master_tick != 26u ||
         bus_log.count != 4u ||
         bus_log.requests[0].cycle != WZ_BUS_M1_OPCODE_FETCH ||

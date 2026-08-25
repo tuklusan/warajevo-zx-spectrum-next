@@ -1834,6 +1834,8 @@ execute_opcode:
         machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
         address = (wz_word_t)low | ((wz_word_t)high << 8u);
         value = machine->cpu.main.a;
+        machine->cpu.memptr = (wz_word_t)((wz_word_t)value << 8u) |
+            (wz_byte_t)(low + 1u);
         if (wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 20u, address, &value, 3u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
