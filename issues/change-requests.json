@@ -707,14 +707,14 @@
     {
       "cr_number": "CR-0054",
       "title": "Make incremental complete-Fuse remote validation platform-consistent",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "WORKFLOW.md remote-only validation rule",
         "design/fuse-z80-test-suite.md",
         "CR-0051 complete Fuse inventory",
         "CR-0053 remote validation evidence"
       ],
-      "notes": "Opened on 2026-08-25 because Linux records complete-corpus results while allowing remaining applicable failures to be migrated in subsequent CRs, but the Windows runner exits nonzero after the same correctly-accounted result. Inventory and reconcile runner exit semantics, preserving fail-closed behavior for silent skips, manifest gaps, and failures in the CR under validation."
+      "notes": "Opened on 2026-08-25 because Linux records complete-corpus results while allowing remaining applicable failures to be migrated in subsequent CRs, but the Windows runner exits nonzero after the same correctly-accounted result. Closed after a tracked pinned 174-case unresolved baseline made every new failure fatal while retaining explicit backlog accounting. CODE and TEST_ARTIFACT reviews passed with zero findings. Linux CR0054-HARNESS-LINUX-R2, Windows 10 CR0054-HARNESS-WIN10-R2, and Windows 11 CR0054-HARNESS-WIN11-R2 all passed four CTest gates, reported 1,182/1,356 with 174 known unresolved cases, zero unexpected failures, and zero silent skips."
     }
   ]
 }
