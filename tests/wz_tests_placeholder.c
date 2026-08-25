@@ -2236,6 +2236,34 @@ int main(void)
     }
 
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 IM0 FD interrupt test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    wz_bus_input_init(&bus_input, read_bus_input, (void*)&interrupt_value);
+    interrupt_value = 0xfdu;
+    machine.cpu.iff1 = 1u;
+    machine.cpu.iff2 = 1u;
+    machine.cpu.program_counter = 0x1234u;
+    machine.cpu.r = 0x7fu;
+    machine.memory[0x1234u] = 0x21u;
+    machine.memory[0x1235u] = 0x78u;
+    machine.memory[0x1236u] = 0x56u;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_machine_set_bus_input(&machine, &bus_input) != WZ_RESULT_OK ||
+        wz_z80_accept_maskable_interrupt(&machine) != WZ_RESULT_OK ||
+        machine.cpu.program_counter != 0x1237u || machine.cpu.iy != 0x5678u ||
+        machine.cpu.r != 0x01u || machine.master_tick != 34u || bus_log.count != 4u ||
+        bus_log.requests[0].cycle != WZ_BUS_INTERRUPT_ACKNOWLEDGE ||
+        bus_log.requests[1].cycle != WZ_BUS_M1_OPCODE_FETCH ||
+        bus_log.requests[1].master_tick != 14u || bus_log.requests[1].address != 0x1234u ||
+        bus_log.requests[2].master_tick != 22u || bus_log.requests[3].master_tick != 28u) {
+        fputs("Z80 IM0 injected FD opcode test failed\n", stderr);
+        return 1;
+    }
+
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
         fputs("machine reset before Z80 IM0 RST interrupt test failed\n", stderr);
         return 1;
     }
