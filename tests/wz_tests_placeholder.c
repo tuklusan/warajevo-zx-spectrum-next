@@ -228,7 +228,7 @@ int main(void)
             return 1;
         }
     }
-    if (implemented != 244u || prefix != 4u || documented_unimplemented != 8u ||
+    if (implemented != 246u || prefix != 4u || documented_unimplemented != 6u ||
         undocumented != 0u || illegal != 0u ||
         wz_z80_primary_opcode_decode(0x00u)->operation != WZ_Z80_PRIMARY_OP_NOP ||
         wz_z80_primary_opcode_decode(0x32u)->operation != WZ_Z80_PRIMARY_OP_LD_NN_A ||
@@ -264,6 +264,65 @@ int main(void)
         wz_z80_primary_opcode_decode(0xedu)->operation != WZ_Z80_PRIMARY_OP_PREFIX_ED ||
         wz_z80_primary_opcode_decode(0xfdu)->operation != WZ_Z80_PRIMARY_OP_PREFIX_FD) {
         fputs("primary opcode table contents failed\n", stderr);
+        return 1;
+    }
+    memset(&machine.cpu, 0, sizeof(machine.cpu));
+    machine.master_tick = 0u;
+    machine.cpu.program_counter = 0x2000u;
+    machine.memory[0x2000u] = 0x01u;
+    machine.memory[0x2001u] = 0x34u;
+    machine.memory[0x2002u] = 0x12u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.main.b != 0x12u ||
+        machine.cpu.main.c != 0x34u || machine.cpu.program_counter != 0x2003u ||
+        machine.master_tick != 20u) {
+        fputs("LD BC,nn state or timing failed\n", stderr);
+        return 1;
+    }
+    memset(&machine.cpu, 0, sizeof(machine.cpu));
+    memset(&bus_log, 0, sizeof(bus_log));
+    machine.master_tick = 0u;
+    machine.cpu.program_counter = 0x2100u;
+    machine.cpu.main.h = 0x12u;
+    machine.cpu.main.l = 0x34u;
+    machine.memory[0x2100u] = 0x22u;
+    machine.memory[0x2101u] = 0x00u;
+    machine.memory[0x2102u] = 0x40u;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK || machine.memory[0x4000u] != 0x34u ||
+        machine.memory[0x4001u] != 0x12u || machine.cpu.program_counter != 0x2103u ||
+        machine.cpu.memptr != 0x4001u || machine.master_tick != 32u || bus_log.count != 5u ||
+        bus_log.requests[1].cycle != WZ_BUS_MEMORY_READ || bus_log.requests[1].master_tick != 8u ||
+        bus_log.requests[2].cycle != WZ_BUS_MEMORY_READ || bus_log.requests[2].master_tick != 14u ||
+        bus_log.requests[3].cycle != WZ_BUS_MEMORY_WRITE || bus_log.requests[3].master_tick != 20u ||
+        bus_log.requests[4].cycle != WZ_BUS_MEMORY_WRITE || bus_log.requests[4].master_tick != 26u ||
+        wz_machine_set_bus_observer(&machine, 0) != WZ_RESULT_OK) {
+        fputs("LD (nn),HL bus sequence failed\n", stderr);
+        return 1;
+    }
+    memset(&machine.cpu, 0, sizeof(machine.cpu));
+    machine.master_tick = 0u;
+    machine.cpu.program_counter = 0x2200u;
+    machine.cpu.main.h = 0x50u;
+    machine.cpu.main.l = 0x00u;
+    machine.memory[0x2200u] = 0x36u;
+    machine.memory[0x2201u] = 0xa5u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK || machine.memory[0x5000u] != 0xa5u ||
+        machine.cpu.program_counter != 0x2202u || machine.master_tick != 20u) {
+        fputs("LD (HL),n state or timing failed\n", stderr);
+        return 1;
+    }
+    memset(&machine.cpu, 0, sizeof(machine.cpu));
+    machine.master_tick = 0u;
+    machine.cpu.program_counter = 0x2300u;
+    machine.cpu.main.a = 0x11u;
+    machine.cpu.main.f = 0x22u;
+    machine.cpu.alternate.a = 0x33u;
+    machine.cpu.alternate.f = 0x44u;
+    machine.memory[0x2300u] = 0x08u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.main.a != 0x33u ||
+        machine.cpu.main.f != 0x44u || machine.cpu.alternate.a != 0x11u ||
+        machine.cpu.alternate.f != 0x22u || machine.master_tick != 8u) {
+        fputs("EX AF,AF' state or timing failed\n", stderr);
         return 1;
     }
     if (wz_z80_cb_opcode_count() != 256u) {
