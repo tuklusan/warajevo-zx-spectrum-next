@@ -707,7 +707,7 @@
     {
       "cr_number": "CR-0054",
       "title": "Make incremental complete-Fuse remote validation platform-consistent",
-      "status": "closed",
+      "status": "in_progress",
       "source_authority": [
         "WORKFLOW.md remote-only validation rule",
         "design/fuse-z80-test-suite.md",
