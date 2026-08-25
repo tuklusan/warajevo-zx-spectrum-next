@@ -65,8 +65,15 @@ def main() -> int:
         "--corpus", str(source / "z80" / "tests"),
         "--manifest", str(args.manifest.resolve()),
         "--commit", PINNED_COMMIT,
+        "--selection", "complete",
     ]
     run(command, project)
+    ed_command = command.copy()
+    ed_command[ed_command.index(str(args.manifest.resolve()))] = str(
+        args.manifest.resolve().with_name("fuse-ed-manifest.json")
+    )
+    ed_command[ed_command.index("complete")] = "ed"
+    run(ed_command, project)
     indexed_command = command.copy()
     indexed_command[indexed_command.index(str(args.manifest.resolve()))] = str(
         args.manifest.resolve().with_name("fuse-indexed-cb-manifest.json")

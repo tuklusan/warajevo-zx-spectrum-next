@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 51,
+  "next_cr_number": 52,
   "status_values": [
     "open",
     "in_progress",
@@ -670,6 +670,17 @@
         "CR-0042 reviewer telemetry"
       ],
       "notes": "Opened on 2026-08-25 after CR-0042 CODE review became inconclusive before falsification because full resolved source context was serialized twice and exceeded the input ceiling. Closed on 2026-08-25 after compacting only transmitted falsification context while retaining immutable hashes and exact bounded excerpts, and removing duplicate full context from candidate transport. Bootstrap and normal CODE review passed. Linux, Windows 10, and Windows 11 smoke suites passed, including the external-review regression suite. Hosted platform-smoke 32808655077 passed across Linux x64/ARM64, Windows x64, and macOS Intel/ARM64; TEST_ARTIFACT review passed with zero findings."
+    },
+    {
+      "cr_number": "CR-0051",
+      "title": "Integrate and account for the complete pinned Fuse Z80 corpus",
+      "status": "in_progress",
+      "source_authority": [
+        "design/warajevo-zx-spectrum-next-architecture.md section 36.1",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 060",
+        "design/fuse-z80-test-suite.md"
+      ],
+      "notes": "Opened on 2026-08-25 after audit found the current harness executes only seven selected Fuse vector families. Replace selection-only accounting with a complete pinned-corpus manifest, preserve existing family manifests, report every source case exactly once as passed, failed, or explicitly reviewed inapplicable under an assumption-based reason, and retain fail-closed behavior for all applicable failures."
     }
   ]
 }

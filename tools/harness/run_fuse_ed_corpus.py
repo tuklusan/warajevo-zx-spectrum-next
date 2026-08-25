@@ -154,17 +154,21 @@ def main() -> int:
     parser.add_argument("--manifest", required=True, type=Path)
     parser.add_argument("--commit", required=True)
     parser.add_argument("--selection", choices=(
-        "ed", "indexed-cb", "cb-rotate-shift", "stack-subroutine", "branch",
+        "complete", "ed", "indexed-cb", "cb-rotate-shift", "stack-subroutine", "branch",
         "inc-dec", "halt"
     ),
-                        default="ed")
+                        default="complete")
     args = parser.parse_args()
     if args.commit != PINNED_COMMIT:
         parser.error("corpus commit does not match the pinned identity")
 
     inputs = parse_inputs(args.corpus / "tests.in")
     expected = parse_expected(args.corpus / "tests.expected")
-    if args.selection == "ed":
+    if args.selection == "complete":
+        names = sorted(inputs)
+        expected_count = len(inputs)
+        selection_description = "every pinned Fuse Z80 vector from tests.in"
+    elif args.selection == "ed":
         names = sorted(name for name in inputs if name.startswith("ed"))
         expected_count = 109
         selection_description = "all case names beginning with ed"
