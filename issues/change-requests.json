@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 50,
+  "next_cr_number": 51,
   "status_values": [
     "open",
     "in_progress",
@@ -660,6 +660,16 @@
         "project reviewer workflow"
       ],
       "notes": "Opened on 2026-08-25 after an otherwise healthy CODE review recorded an unresolved candidate only in process output. The gate now retains the complete final verdict privately in telemetry without changing review semantics. CODE review passed; Linux, Windows 10, and Windows 11 remote harness runs passed; hosted platform-smoke 32805278008 passed across five platforms; TEST_ARTIFACT review passed."
+    },
+    {
+      "cr_number": "CR-0050",
+      "title": "Bound single-candidate external-review evidence",
+      "status": "in_progress",
+      "source_authority": [
+        "design/deepseek-review-gate.md",
+        "CR-0042 reviewer telemetry"
+      ],
+      "notes": "Opened on 2026-08-25 after CR-0042 CODE review became inconclusive before falsification because full resolved source context was serialized twice and exceeded the input ceiling. Preserve immutable source hashes and exact bounded excerpts, remove duplicate full context from candidate transport, retain fail-closed behavior when evidence is insufficient, and validate through bootstrap review plus all remote and hosted gates before CR-0042 resumes."
     }
   ]
 }

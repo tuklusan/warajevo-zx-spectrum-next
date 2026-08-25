@@ -41,6 +41,7 @@ TARGET_UNIT_BYTES = 340_000
 MIN_UNIT_BYTES = 64_000
 PROTOCOL_OVERHEAD_BYTES = 16_384
 SAFETY_MARGIN_BYTES = 32_768
+FALSIFICATION_CONTEXT_BYTES = 48_000
 CONTEXT_BYTES = 340_000
 DISCOVERY_OUTPUT_TOKENS = 8_192
 FALSIFICATION_OUTPUT_TOKENS = 12_288
@@ -931,6 +932,42 @@ def bounded_source_context(content: str, location: str, radius: int = 200) -> st
     return "\n".join(f"{index + 1}: {lines[index]}" for index in range(start, end))
 
 
+def compact_falsification_text(content: str, location: str) -> str:
+    """Keep falsification evidence exact, bounded, and centered on the allegation."""
+    excerpt = bounded_source_context(content, location, radius=80)
+    encoded = excerpt.encode()
+    if len(encoded) <= FALSIFICATION_CONTEXT_BYTES:
+        return excerpt
+    return encoded[:FALSIFICATION_CONTEXT_BYTES].decode("utf-8", errors="ignore")
+
+
+def compact_falsification_resolution(value: Any, location: str) -> Any:
+    if not isinstance(value, dict):
+        return value
+    compact = dict(value)
+    path = str(compact.get("path", ""))
+    content = compact.get("content")
+    if isinstance(content, str):
+        compact["content"] = compact_falsification_text(content, f"{path}:1")
+        compact["content_is_bounded"] = True
+    contexts = compact.get("contexts")
+    if isinstance(contexts, list):
+        compact_contexts = []
+        for context in contexts:
+            if not isinstance(context, dict):
+                compact_contexts.append(context)
+                continue
+            item = dict(context)
+            source = item.get("content")
+            if isinstance(source, str):
+                item["content"] = compact_falsification_text(
+                    source, f"{item.get('path', '')}:1")
+                item["content_is_bounded"] = True
+            compact_contexts.append(item)
+        compact["contexts"] = compact_contexts
+    return compact
+
+
 def falsification_evidence(packet: ReviewPacket, candidates: list[dict[str, Any]]) -> dict[str, Any]:
     records = dict(packet.records)
     evidence: list[dict[str, Any]] = []
@@ -941,7 +978,10 @@ def falsification_evidence(packet: ReviewPacket, candidates: list[dict[str, Any]
         if content is not None:
             item["bounded_source_context"] = bounded_source_context(content, candidate["location"])
             item["full_source_sha256"] = sha256_bytes(content.encode())
-        item["resolved_context"] = candidate.get("resolved_context", [])
+        item["resolved_context"] = [
+            compact_falsification_resolution(value, candidate["location"])
+            for value in candidate.get("resolved_context", [])
+        ]
         evidence.append(item)
     return {"manifest": packet.manifest, "candidate_evidence": evidence}
 
@@ -1241,9 +1281,13 @@ def falsification_prompt(prefix: str, packet: ReviewPacket, candidates: list[dic
                          prior: list[dict[str, Any]]) -> str:
     relevant_ids = {candidate["candidate_id"] for candidate in candidates}
     relevant_prior = [item for item in prior if item["id"] in relevant_ids]
+    compact_candidates = [
+        {key: value for key, value in candidate.items() if key != "resolved_context"}
+        for candidate in candidates
+    ]
     return prefix + (
         "IMMUTABLE_EVIDENCE_PACKET\n" + canonical_json(falsification_evidence(packet, candidates)) +
-        "\nCANDIDATES\n" + canonical_json(candidates) + "\nRELEVANT_PRIOR_EVIDENCE\n" + canonical_json(relevant_prior) +
+        "\nCANDIDATES\n" + canonical_json(compact_candidates) + "\nRELEVANT_PRIOR_EVIDENCE\n" + canonical_json(relevant_prior) +
         "\nAssume every candidate is false until exact current evidence and an exact current requirement positively prove it. "
         "For each candidate, inspect alternate callers/callees, initialization, cleanup, invariants, reachability, language and "
         "platform behavior, assumptions, current CR scope, future-work boundaries, and the gate severity contract. Return "

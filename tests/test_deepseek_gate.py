@@ -912,6 +912,19 @@ class GateTests(unittest.TestCase):
         with self.assertRaises(gate.OutputError):
             gate.build_review_units(packet(), gate.stable_prefix("CODE", "snap", scope(), broad, "packet"))
 
+    def test_falsification_compacts_requested_source_without_dropping_its_hash(self):
+        source = "int guard(void) { return 1; }\n" * 100000
+        reviewed = candidate(requests=[{"type": "PATH", "path": "src/other.c"}])
+        reviewed["resolved_context"] = [{
+            "request": reviewed["context_requests"][0], "status": "RESOLVED",
+            "path": "src/other.c", "sha256": gate.sha256_bytes(source.encode()), "content": source,
+        }]
+        prompt = gate.falsification_prompt("prefix\n", packet(), [reviewed], [])
+        self.assertLess(len(prompt.encode()), gate.INPUT_BUDGET_BYTES)
+        self.assertIn("content_is_bounded", prompt)
+        self.assertIn(gate.sha256_bytes(source.encode()), prompt)
+        self.assertEqual(prompt.count(source), 0)
+
     def test_review_deadline_exhaustion_cannot_pass(self):
         deadline = gate.ReviewDeadline(0.0)
         result = gate.perform_review(FakeClient([discovery("CODE-DISCOVERY")]), ROOT, "CODE",
