@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 52,
+  "next_cr_number": 53,
   "status_values": [
     "open",
     "in_progress",
@@ -681,6 +681,17 @@
         "design/fuse-z80-test-suite.md"
       ],
       "notes": "Opened on 2026-08-25 after audit found the current harness executes only seven selected Fuse vector families. Replace selection-only accounting with a complete pinned-corpus manifest, preserve existing family manifests, report every source case exactly once as passed, failed, or explicitly reviewed inapplicable under an assumption-based reason, and retain fail-closed behavior for all applicable failures."
+    },
+    {
+      "cr_number": "CR-0052",
+      "title": "Implement complete primary Z80 load and data-transfer family",
+      "status": "in_progress",
+      "source_authority": [
+        "design/warajevo-zx-spectrum-next-architecture.md sections 11 and 36.1",
+        "design/wzsn-architectures-1-2-developer-tasks.md tasks 044 and 060",
+        "CR-0051 complete Fuse inventory"
+      ],
+      "notes": "Opened on 2026-08-25 after the complete pinned Fuse run identified applicable failures across LD rr,nn, LD r,n, LD r,r, BC/DE/HL/nn indirect transfers, EX AF,AF', and 16-bit pair INC/DEC forms. Implement exact architectural state, memory bus order, MEMPTR, PC, R, and timing behavior; applicable Fuse failures must pass rather than be waived."
     }
   ]
 }
