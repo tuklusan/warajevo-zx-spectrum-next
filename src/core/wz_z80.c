@@ -1681,16 +1681,12 @@ wz_result_t wz_z80_accept_maskable_interrupt(wz_machine_t* machine)
 
     switch ((wz_z80_interrupt_mode_t)machine->cpu.interrupt_mode) {
     case WZ_Z80_INTERRUPT_MODE_0:
-        if ((vector & 0xc7u) != 0xc7u) {
-            return WZ_RESULT_UNSUPPORTED_OPERATION;
-        }
-        if (wz_z80_push_interrupt_pc(machine, 14u) != WZ_RESULT_OK) {
-            return WZ_RESULT_INVALID_STATE;
-        }
-        machine->cpu.program_counter = (wz_word_t)(vector & 0x38u);
-        machine->cpu.memptr = machine->cpu.program_counter;
-        machine->master_tick += 26u;
-        return WZ_RESULT_OK;
+        /* The acknowledge cycle supplies the first instruction byte in IM0. */
+        machine->im0_injected_opcode = vector;
+        machine->im0_injected_opcode_pending = 1u;
+        /* An acknowledge takes seven T states rather than an M1's four. */
+        machine->master_tick += 6u;
+        return wz_z80_step(machine);
     case WZ_Z80_INTERRUPT_MODE_1:
         if (wz_z80_push_interrupt_pc(machine, 14u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
@@ -1761,6 +1757,14 @@ wz_result_t wz_z80_step(wz_machine_t* machine)
         machine->cpu.interrupt_enable_delay = 0u;
     }
 
+    if (machine->im0_injected_opcode_pending != 0u) {
+        pc = machine->cpu.program_counter;
+        opcode = machine->im0_injected_opcode;
+        machine->im0_injected_opcode_pending = 0u;
+        wz_z80_trace_instruction(machine, pc, opcode);
+        goto execute_opcode;
+    }
+
     if (machine->cpu.halted != 0u) {
         pc = machine->cpu.program_counter;
         if (wz_z80_bus(machine, WZ_BUS_M1_OPCODE_FETCH, 0u,
@@ -1780,6 +1784,7 @@ wz_result_t wz_z80_step(wz_machine_t* machine)
     wz_z80_increment_r(&machine->cpu);
     wz_z80_trace_instruction(machine, pc, opcode);
 
+execute_opcode:
     decode = wz_z80_primary_opcode_decode(opcode);
     switch (decode->operation) {
     case WZ_Z80_PRIMARY_OP_NOP:

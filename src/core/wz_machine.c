@@ -24,6 +24,8 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     wz_bus_input_init(&machine->bus_input, 0, 0);
     machine->timing_trace = 0;
     machine->master_tick = 0u;
+    machine->im0_injected_opcode = 0u;
+    machine->im0_injected_opcode_pending = 0u;
     for (size_t index = 0u; index < sizeof(machine->memory); ++index) {
         machine->memory[index] = 0u;
     }
@@ -38,6 +40,8 @@ void wz_machine_destroy(wz_machine_t* machine)
         wz_bus_input_init(&machine->bus_input, 0, 0);
         machine->timing_trace = 0;
         machine->master_tick = 0u;
+        machine->im0_injected_opcode = 0u;
+        machine->im0_injected_opcode_pending = 0u;
     }
 }
 
