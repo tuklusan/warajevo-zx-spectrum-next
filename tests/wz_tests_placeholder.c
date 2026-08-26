@@ -235,6 +235,7 @@ int main(void)
         wz_z80_primary_opcode_decode(0x01u)->operation != WZ_Z80_PRIMARY_OP_LOAD ||
         wz_z80_primary_opcode_decode(0x40u)->operation != WZ_Z80_PRIMARY_OP_LOAD ||
         wz_z80_primary_opcode_decode(0x3eu)->operation != WZ_Z80_PRIMARY_OP_LD_A_N ||
+        wz_z80_primary_opcode_decode(0xd3u)->operation != WZ_Z80_PRIMARY_OP_OUT_N_A ||
         wz_z80_primary_opcode_decode(0x80u)->operation != WZ_Z80_PRIMARY_OP_ALU ||
         wz_z80_primary_opcode_decode(0xbfu)->operation != WZ_Z80_PRIMARY_OP_ALU ||
         wz_z80_primary_opcode_decode(0xc6u)->operation != WZ_Z80_PRIMARY_OP_ALU ||
@@ -607,6 +608,32 @@ int main(void)
         fputs("Z80 absolute store trace failed\n", stderr);
         return 1;
     }
+
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before Z80 OUT (n),A test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    machine.cpu.main.a = 0xa2u;
+    machine.cpu.main.f = 0x5au;
+    machine.memory[0u] = 0xd3u;
+    machine.memory[1u] = 0xecu;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.a != 0xa2u || machine.cpu.main.f != 0x5au ||
+        machine.cpu.memptr != 0xa2edu || machine.cpu.program_counter != 2u ||
+        machine.cpu.r != 1u || machine.master_tick != 22u || bus_log.count != 3u ||
+        bus_log.requests[1].cycle != WZ_BUS_MEMORY_READ ||
+        bus_log.requests[1].master_tick != 8u || bus_log.requests[1].address != 1u ||
+        bus_log.requests[1].value != 0xecu ||
+        bus_log.requests[2].cycle != WZ_BUS_IO_WRITE ||
+        bus_log.requests[2].master_tick != 14u || bus_log.requests[2].address != 0xa2ecu ||
+        bus_log.requests[2].value != 0xa2u) {
+        fputs("Z80 OUT (n),A trace failed\n", stderr);
+        return 1;
+    }
+
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
         fputs("machine reset before Z80 unsupported-opcode test failed\n", stderr);
         return 1;
