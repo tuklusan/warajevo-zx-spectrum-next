@@ -1707,6 +1707,7 @@ int main(void)
     machine.cpu.main.h = 0x28u;
     machine.cpu.main.l = 0x00u;
     machine.cpu.main.f = 0x01u;
+    machine.cpu.memptr = 0x2800u;
     machine.memory[0u] = 0xcbu;
     machine.memory[1u] = 0x7eu;
     machine.memory[0x2800u] = 0x80u;
