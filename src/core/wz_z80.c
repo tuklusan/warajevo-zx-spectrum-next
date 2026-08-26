@@ -667,7 +667,8 @@ static void wz_z80_execute_special_flags(wz_z80_state_t* state, wz_byte_t opcode
         break;
     case 0x37u:
         state->main.f = (wz_byte_t)((old_f & (WZ_Z80_FLAG_S | WZ_Z80_FLAG_Z | WZ_Z80_FLAG_PV)) |
-                                    WZ_Z80_FLAG_C | (old_f & (WZ_Z80_FLAG_Y | WZ_Z80_FLAG_X)));
+                                    WZ_Z80_FLAG_C |
+                                    ((old_a | old_f) & (WZ_Z80_FLAG_Y | WZ_Z80_FLAG_X)));
         break;
     case 0x3fu:
         state->main.f = (wz_byte_t)((old_f & (WZ_Z80_FLAG_S | WZ_Z80_FLAG_Z | WZ_Z80_FLAG_PV)) |

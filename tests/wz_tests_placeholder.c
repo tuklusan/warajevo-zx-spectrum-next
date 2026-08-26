@@ -693,20 +693,38 @@ int main(void)
     machine.cpu.main.f = 0x44u;
     machine.memory[4u] = 0x37u;
     machine.memory[5u] = 0x3fu;
-    if (wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.main.f != 0x45u ||
-        wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.main.f != 0x54u) {
+    if (wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.main.f != 0x6du ||
+        wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.main.f != 0x7cu) {
         fputs("Z80 SCF/CCF flags failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.main.a = 0x00u;
+    machine.cpu.main.f = 0xffu;
+    machine.memory[6u] = 0x37u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.main.f != 0xedu) {
+        fputs("Z80 SCF prior-flag X/Y sourcing failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.main.a = 0xffu;
+    machine.cpu.main.f = 0x00u;
+    machine.memory[7u] = 0x37u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.main.f != 0x29u) {
+        fputs("Z80 SCF accumulator X/Y sourcing failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before accumulator rotate vectors failed\n", stderr);
         return 1;
     }
     machine.cpu.main.a = 0x81u;
     machine.cpu.main.f = 0x44u;
-    machine.memory[6u] = 0x07u;
-    machine.memory[7u] = 0x1fu;
+    machine.memory[0u] = 0x07u;
+    machine.memory[1u] = 0x1fu;
     if (wz_z80_step(&machine) != WZ_RESULT_OK ||
         machine.cpu.main.a != 0x03u || machine.cpu.main.f != 0x45u ||
         wz_z80_step(&machine) != WZ_RESULT_OK ||
         machine.cpu.main.a != 0x81u || machine.cpu.main.f != 0x45u ||
-        machine.cpu.program_counter != 8u || machine.master_tick != 64u) {
+        machine.cpu.program_counter != 2u || machine.master_tick != 16u) {
         fputs("Z80 accumulator rotate flags failed\n", stderr);
         return 1;
     }
