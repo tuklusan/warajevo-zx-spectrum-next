@@ -779,7 +779,8 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
         }
         machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
         address = (wz_word_t)low | ((wz_word_t)high << 8u);
-        machine->cpu.memptr = wz_z80_add16(address, 1u);
+        machine->cpu.memptr = (wz_word_t)((wz_word_t)machine->cpu.main.a << 8u) |
+            (wz_byte_t)(low + 1u);
         if (opcode == 0x22u) {
             value = (wz_byte_t)(*index & 0xffu);
             if (wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 20u,

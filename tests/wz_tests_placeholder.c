@@ -633,6 +633,18 @@ int main(void)
         fputs("Z80 OUT (n),A trace failed\n", stderr);
         return 1;
     }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before OUT (n),A MEMPTR wrap test failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.main.a = 0xa2u;
+    machine.memory[0u] = 0xd3u;
+    machine.memory[1u] = 0xffu;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.memptr != 0xa200u ||
+        machine.cpu.program_counter != 2u || machine.master_tick != 22u) {
+        fputs("Z80 OUT (n),A MEMPTR low-byte wrap failed\n", stderr);
+        return 1;
+    }
 
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
         fputs("machine reset before Z80 unsupported-opcode test failed\n", stderr);
