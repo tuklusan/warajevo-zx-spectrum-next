@@ -1068,6 +1068,25 @@ int main(void)
     }
 
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before BIT (HL) MEMPTR flag test failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.main.f = 0x01u;
+    machine.cpu.main.h = 0x61u;
+    machine.cpu.main.l = 0x31u;
+    machine.cpu.memptr = 0xff00u;
+    machine.memory[0u] = 0xcbu;
+    machine.memory[1u] = 0x46u;
+    machine.memory[0x6131u] = 0xd5u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.f != 0x39u || machine.cpu.memptr != 0xff00u ||
+        machine.cpu.program_counter != 2u || machine.cpu.r != 2u ||
+        machine.master_tick != 24u) {
+        fputs("Z80 BIT (HL) MEMPTR X/Y flags failed\n", stderr);
+        return 1;
+    }
+
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
         fputs("machine reset before Z80 unsupported ED-prefix test failed\n", stderr);
         return 1;
     }

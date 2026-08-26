@@ -920,7 +920,7 @@ static wz_result_t wz_z80_execute_cb(wz_machine_t* machine,
     case WZ_Z80_CB_OP_BIT:
         result = (wz_byte_t)(value & (wz_byte_t)(1u << decode->bit));
         bit_flag_source = decode->target == WZ_Z80_TARGET_HL_INDIRECT ?
-            (wz_byte_t)(wz_z80_hl(&machine->cpu) >> 8u) : value;
+            (wz_byte_t)(machine->cpu.memptr >> 8u) : value;
         machine->cpu.main.f = (wz_byte_t)((machine->cpu.main.f & WZ_Z80_FLAG_C) |
                                           WZ_Z80_FLAG_H |
                                           (bit_flag_source & (WZ_Z80_FLAG_Y | WZ_Z80_FLAG_X)));

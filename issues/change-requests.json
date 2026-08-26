@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 57,
+  "next_cr_number": 58,
   "status_values": [
     "open",
     "in_progress",
@@ -734,6 +734,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 11 and 36.1", "design/fuse-z80-test-suite.md", "CR-0051 complete Fuse inventory"],
       "notes": "Opened after complete-corpus failures b8, ba, bb, bd, be, and bf established that CP must source X/Y from the compared operand rather than the subtraction result. Closed after the shared CP path was corrected and those six entries were removed from the pinned unresolved baseline. Immutable CODE review passed for 09baaa4d2a9d3f76dcea1bef01e19122d8a01049. Linux CR0056-CP-LINUX-R1, Windows 10 CR0056-CP-WIN10-R1, and Windows 11 CR0056-CP-WIN11-R1 all passed CTest and report 1,190/1,356 complete-corpus results, 166 known unresolved cases, zero unexpected failures, and zero silent skips. TEST_ARTIFACT review passed for the cross-platform evidence set. The upstream primary CP dispatch and all CP operand forms were re-scanned with no additional functional gap."
+    },
+    {
+      "cr_number": "CR-0057",
+      "title": "Correct ordinary BIT (HL) undocumented X/Y flag sourcing",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 11 and 36.1", "design/fuse-z80-test-suite.md", "upstream/main src/spectrum-kernel/Z80.ASM BIT0MHL through BIT7MHL"],
+      "notes": "Opened after pinned Fuse cases cb46, cb46_1 through cb46_4, cb4e, cb56, cb5e, cb66, cb6e, cb76, and cb7e demonstrated that ordinary BIT n,(HL) obtains undocumented X/Y from MEMPTR high, not H. Preserve carry, H/N/Z/PV/S behavior, MEMPTR preservation, timing, program counter, refresh, and memory-read behavior; remove only remotely resolved baseline entries."
     }
   ]
 }
