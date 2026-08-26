@@ -222,15 +222,26 @@ def windows_developer_environment() -> dict[str, str]:
     environment = os.environ.copy()
     vswhere = Path(environment.get("ProgramFiles(x86)", r"C:\Program Files (x86)")) / \
         "Microsoft Visual Studio" / "Installer" / "vswhere.exe"
-    if not vswhere.is_file():
-        return environment
-    install = subprocess.run(
-        [str(vswhere), "-products", "*", "-latest", "-property", "installationPath"],
-        check=False, capture_output=True, text=True,
-    )
-    install_path = install.stdout.strip()
-    devcmd = Path(install_path) / "Common7" / "Tools" / "VsDevCmd.bat"
-    if install.returncode != 0 or not devcmd.is_file():
+    devcmd = None
+    if vswhere.is_file():
+        install = subprocess.run(
+            [str(vswhere), "-products", "*", "-latest", "-property", "installationPath"],
+            check=False, capture_output=True, text=True,
+        )
+        candidate = Path(install.stdout.strip()) / "Common7" / "Tools" / "VsDevCmd.bat"
+        if install.returncode == 0 and candidate.is_file():
+            devcmd = candidate
+    if devcmd is None:
+        root = Path(environment.get("ProgramFiles", r"C:\Program Files")) / "Microsoft Visual Studio"
+        for version in ("18", "17"):
+            for edition in ("Community", "Professional", "Enterprise", "BuildTools"):
+                candidate = root / version / edition / "Common7" / "Tools" / "VsDevCmd.bat"
+                if candidate.is_file():
+                    devcmd = candidate
+                    break
+            if devcmd is not None:
+                break
+    if devcmd is None:
         return environment
     loaded = subprocess.run(
         ["cmd", "/d", "/s", "/c", f'call "{devcmd}" -arch=x64 >nul && set'],
