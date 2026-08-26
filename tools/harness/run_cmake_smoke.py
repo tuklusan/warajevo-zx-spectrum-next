@@ -223,6 +223,7 @@ def windows_developer_environment() -> dict[str, str]:
     vswhere = Path(environment.get("ProgramFiles(x86)", r"C:\Program Files (x86)")) / \
         "Microsoft Visual Studio" / "Installer" / "vswhere.exe"
     devcmd = None
+    installation_root = None
     if vswhere.is_file():
         install = subprocess.run(
             [str(vswhere), "-products", "*", "-latest", "-property", "installationPath"],
@@ -231,6 +232,7 @@ def windows_developer_environment() -> dict[str, str]:
         candidate = Path(install.stdout.strip()) / "Common7" / "Tools" / "VsDevCmd.bat"
         if install.returncode == 0 and candidate.is_file():
             devcmd = candidate
+            installation_root = candidate.parents[2]
     if devcmd is None:
         root = Path(environment.get("ProgramFiles", r"C:\Program Files")) / "Microsoft Visual Studio"
         for version in ("18", "17"):
@@ -238,21 +240,33 @@ def windows_developer_environment() -> dict[str, str]:
                 candidate = root / version / edition / "Common7" / "Tools" / "VsDevCmd.bat"
                 if candidate.is_file():
                     devcmd = candidate
+                    installation_root = candidate.parents[2]
                     break
             if devcmd is not None:
                 break
-    if devcmd is None:
+    if devcmd is not None:
+        loaded = subprocess.run(
+            ["cmd", "/d", "/s", "/c", f'call "{devcmd}" -arch=x64 >nul && set'],
+            check=False, capture_output=True, text=True, env=environment,
+        )
+        if loaded.returncode == 0:
+            for line in loaded.stdout.splitlines():
+                key, separator, value = line.partition("=")
+                if separator and key:
+                    environment[key] = value
+    if installation_root is None:
+        root = Path(environment.get("ProgramFiles", r"C:\Program Files")) / "Microsoft Visual Studio"
+        for version in ("18", "17"):
+            for edition in ("Community", "Professional", "Enterprise", "BuildTools"):
+                candidate = root / version / edition
+                if (candidate / "VC" / "Tools" / "MSVC").is_dir():
+                    installation_root = candidate
+                    break
+            if installation_root is not None:
+                break
+    if installation_root is None:
         return environment
-    loaded = subprocess.run(
-        ["cmd", "/d", "/s", "/c", f'call "{devcmd}" -arch=x64 >nul && set'],
-        check=False, capture_output=True, text=True, env=environment,
-    )
-    if loaded.returncode == 0:
-        for line in loaded.stdout.splitlines():
-            key, separator, value = line.partition("=")
-            if separator and key:
-                environment[key] = value
-    msvc_root = devcmd.parents[2] / "VC" / "Tools" / "MSVC"
+    msvc_root = installation_root / "VC" / "Tools" / "MSVC"
     if msvc_root.is_dir():
         versions = sorted((path for path in msvc_root.iterdir() if path.is_dir()), reverse=True)
         if versions:
