@@ -247,12 +247,11 @@ def windows_developer_environment() -> dict[str, str]:
         ["cmd", "/d", "/s", "/c", f'call "{devcmd}" -arch=x64 >nul && set'],
         check=False, capture_output=True, text=True, env=environment,
     )
-    if loaded.returncode != 0:
-        return environment
-    for line in loaded.stdout.splitlines():
-        key, separator, value = line.partition("=")
-        if separator and key:
-            environment[key] = value
+    if loaded.returncode == 0:
+        for line in loaded.stdout.splitlines():
+            key, separator, value = line.partition("=")
+            if separator and key:
+                environment[key] = value
     msvc_root = devcmd.parents[2] / "VC" / "Tools" / "MSVC"
     if msvc_root.is_dir():
         versions = sorted((path for path in msvc_root.iterdir() if path.is_dir()), reverse=True)
