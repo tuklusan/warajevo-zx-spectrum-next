@@ -640,7 +640,7 @@ int main(void)
     }
     memset(&bus_log, 0, sizeof(bus_log));
     wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
-    machine.memory[0u] = 0xd3u;
+    machine.memory[0u] = 0xdbu;
     if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
         wz_z80_step(&machine) != WZ_RESULT_UNSUPPORTED_OPERATION ||
         machine.cpu.program_counter != 1u ||
@@ -648,7 +648,7 @@ int main(void)
         bus_log.count != 1u ||
         bus_log.requests[0].cycle != WZ_BUS_M1_OPCODE_FETCH ||
         bus_log.requests[0].address != 0u ||
-        bus_log.requests[0].value != 0xd3u) {
+        bus_log.requests[0].value != 0xdbu) {
         fputs("Z80 unsupported opcode trace failed\n", stderr);
         return 1;
     }
