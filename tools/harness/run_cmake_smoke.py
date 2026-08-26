@@ -176,7 +176,7 @@ def command_text(command: list[str]) -> str:
     return shlex.join(command)
 
 
-def run_logged(command: list[str], log_path: Path) -> subprocess.CompletedProcess[str]:
+def run_logged(command: list[str], log_path: Path, environment: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
     log_path.parent.mkdir(parents=True, exist_ok=True)
     with log_path.open("w", encoding="utf-8") as log:
         header = f"$ {command_text(command)}"
@@ -188,6 +188,7 @@ def run_logged(command: list[str], log_path: Path) -> subprocess.CompletedProces
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
+            env=environment,
         )
         lines: queue.Queue[str | None] = queue.Queue()
 
@@ -215,6 +216,33 @@ def run_logged(command: list[str], log_path: Path) -> subprocess.CompletedProces
         returncode = process.wait()
         reader.join(timeout=5)
     return subprocess.CompletedProcess(command, returncode)
+
+
+def windows_developer_environment() -> dict[str, str]:
+    environment = os.environ.copy()
+    vswhere = Path(environment.get("ProgramFiles(x86)", r"C:\Program Files (x86)")) / \
+        "Microsoft Visual Studio" / "Installer" / "vswhere.exe"
+    if not vswhere.is_file():
+        return environment
+    install = subprocess.run(
+        [str(vswhere), "-products", "*", "-latest", "-property", "installationPath"],
+        check=False, capture_output=True, text=True,
+    )
+    install_path = install.stdout.strip()
+    devcmd = Path(install_path) / "Common7" / "Tools" / "VsDevCmd.bat"
+    if install.returncode != 0 or not devcmd.is_file():
+        return environment
+    loaded = subprocess.run(
+        ["cmd", "/d", "/s", "/c", f'call "{devcmd}" -arch=x64 >nul && set'],
+        check=False, capture_output=True, text=True, env=environment,
+    )
+    if loaded.returncode != 0:
+        return environment
+    for line in loaded.stdout.splitlines():
+        key, separator, value = line.partition("=")
+        if separator and key:
+            environment[key] = value
+    return environment
 
 
 def load_generator_name(build_dir: Path) -> str:
@@ -273,6 +301,7 @@ def main() -> int:
     os.environ["TMP"] = str(temp_dir)
 
     system_name = platform.system()
+    build_environment = windows_developer_environment() if system_name == "Windows" else os.environ.copy()
     python_command = choose_python_command()
     compiler_command = choose_compiler(system_name, args.compiler)
     build_helper = choose_build_helper(system_name)
@@ -373,7 +402,7 @@ def main() -> int:
         configure_command.extend(["-G", "Ninja"])
 
     summary["commands"].append(configure_command)
-    configure_result = run_logged(configure_command, artifact_dir / "configure.log")
+    configure_result = run_logged(configure_command, artifact_dir / "configure.log", build_environment)
     if configure_result.returncode != 0:
         summary["status"] = "configure_failed"
         summary["configure_returncode"] = configure_result.returncode
@@ -389,7 +418,7 @@ def main() -> int:
         build_command.extend(["--config", args.build_config])
 
     summary["commands"].append(build_command)
-    build_result = run_logged(build_command, artifact_dir / "build.log")
+    build_result = run_logged(build_command, artifact_dir / "build.log", build_environment)
     if build_result.returncode != 0:
         summary["status"] = "build_failed"
         summary["build_returncode"] = build_result.returncode
@@ -401,7 +430,7 @@ def main() -> int:
         ctest_command.extend(["-C", args.build_config])
 
     summary["commands"].append(ctest_command)
-    ctest_result = run_logged(ctest_command, artifact_dir / "ctest.log")
+    ctest_result = run_logged(ctest_command, artifact_dir / "ctest.log", build_environment)
     if ctest_result.returncode != 0:
         summary["status"] = "tests_failed"
         summary["ctest_returncode"] = ctest_result.returncode
