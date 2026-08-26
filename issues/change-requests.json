@@ -738,9 +738,9 @@
     {
       "cr_number": "CR-0057",
       "title": "Correct ordinary BIT (HL) undocumented X/Y flag sourcing",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 11 and 36.1", "design/fuse-z80-test-suite.md", "upstream/main src/spectrum-kernel/Z80.ASM BIT0MHL through BIT7MHL"],
-      "notes": "Opened after pinned Fuse cases cb46, cb46_1 through cb46_4, cb4e, cb56, cb5e, cb66, cb6e, cb76, and cb7e demonstrated that ordinary BIT n,(HL) obtains undocumented X/Y from MEMPTR high, not H. Preserve carry, H/N/Z/PV/S behavior, MEMPTR preservation, timing, program counter, refresh, and memory-read behavior; remove only remotely resolved baseline entries."
+      "notes": "Opened after pinned Fuse cases cb46, cb46_1 through cb46_4, cb4e, cb56, cb5e, cb66, cb6e, cb76, and cb7e demonstrated that ordinary BIT n,(HL) obtains undocumented X/Y from MEMPTR high, not H. Closed after correcting the shared ordinary CB BIT path and aligning the existing trace fixture with its explicit MEMPTR state. Immutable CODE reviews passed for 2d458ac981661fb32ba73703eda667d8124a5b85 and 1f6d129a00d2bd973a1a55103229a591ca2d6964. Linux CR0057-BIT-HL-LINUX-R2, Windows 10 CR0057-BIT-HL-WIN10-R2, and Windows 11 CR0057-BIT-HL-WIN11-R2 all passed CTest and report 1,202/1,356 complete-corpus results, 154 known unresolved cases, zero unexpected failures, and zero silent skips. TEST_ARTIFACT review passed for the cross-platform evidence set. The upstream BIT0MHL through BIT7MHL and separate register/indexed paths were re-scanned with no additional ordinary BIT (HL) migration gap."
     }
   ]
 }
