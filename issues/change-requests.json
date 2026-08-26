@@ -719,14 +719,14 @@
     {
       "cr_number": "CR-0055",
       "title": "Complete SCF undocumented X/Y flag sourcing",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/warajevo-zx-spectrum-next-architecture.md sections 11 and 36.1",
         "design/fuse-z80-test-suite.md",
         "CR-0051 complete Fuse inventory",
         "CR-0053 upstream flag migration evidence"
       ],
-      "notes": "Opened on 2026-08-25 after CR-0054 complete accounting isolated Fuse case 37_2. Reconcile the legacy SCF handler with the complete pinned vectors: 37_1 requires X/Y retained from prior F, while 37_2 requires X/Y sourced from A when prior F lacks them. Implement the exact combined behavior, remove 37_2 from the unresolved baseline only after all approved remote platforms pass it, and retain fail-closed complete-corpus accounting."
+      "notes": "Opened on 2026-08-25 after CR-0054 complete accounting isolated Fuse case 37_2. Closed after implementing combined accumulator/prior-F X/Y sourcing for SCF and removing 37_2 from the pinned unresolved baseline. CODE and TEST_ARTIFACT reviews passed with zero findings. Linux CR0055-SCF-LINUX-R1, Windows 10 CR0055-SCF-WIN10-R1, and Windows 11 CR0055-SCF-WIN11-R1 all passed CTest; 37_1 and 37_2 pass on every platform, with 1,183/1,356 complete-corpus results, 173 known unresolved cases, zero unexpected failures, and zero silent skips."
     }
   ]
 }
