@@ -593,8 +593,9 @@ static void wz_z80_execute_alu_value(wz_z80_state_t* state,
     } else if (operation <= 3u || operation == 7u) {
         carry = operation == 3u ? carry : 0u;
         result = (wz_byte_t)(left - operand - carry);
-        flags = (wz_byte_t)(WZ_Z80_FLAG_N |
-                            (result & (WZ_Z80_FLAG_S | WZ_Z80_FLAG_Y | WZ_Z80_FLAG_X)));
+        flags = (wz_byte_t)(WZ_Z80_FLAG_N | (result & WZ_Z80_FLAG_S) |
+                            ((operation == 7u ? operand : result) &
+                             (WZ_Z80_FLAG_Y | WZ_Z80_FLAG_X)));
         if (result == 0u) flags |= WZ_Z80_FLAG_Z;
         if (((left ^ operand ^ result) & 0x10u) != 0u) flags |= WZ_Z80_FLAG_H;
         if ((((left ^ operand) & (left ^ result)) & 0x80u) != 0u) flags |= WZ_Z80_FLAG_PV;

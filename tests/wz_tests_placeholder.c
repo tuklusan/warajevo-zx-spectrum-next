@@ -1040,6 +1040,34 @@ int main(void)
     }
 
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before CP operand-flag test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    machine.cpu.main.a = 0xf5u;
+    machine.cpu.main.b = 0x0fu;
+    machine.cpu.main.h = 0x40u;
+    machine.cpu.main.l = 0x00u;
+    machine.memory[0u] = 0xb8u;
+    machine.memory[1u] = 0xbeu;
+    machine.memory[0x4000u] = 0x0fu;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.a != 0xf5u || machine.cpu.main.f != 0x9au ||
+        machine.cpu.program_counter != 1u || machine.master_tick != 8u ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.cpu.main.a != 0xf5u || machine.cpu.main.f != 0x9au ||
+        machine.cpu.program_counter != 2u || machine.master_tick != 22u ||
+        bus_log.count != 3u ||
+        bus_log.requests[2].cycle != WZ_BUS_MEMORY_READ ||
+        bus_log.requests[2].master_tick != 16u ||
+        bus_log.requests[2].address != 0x4000u || bus_log.requests[2].value != 0x0fu) {
+        fputs("Z80 CP operand X/Y flags or memory trace failed\n", stderr);
+        return 1;
+    }
+
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
         fputs("machine reset before Z80 unsupported ED-prefix test failed\n", stderr);
         return 1;
     }

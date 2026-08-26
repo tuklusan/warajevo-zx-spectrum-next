@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 56,
+  "next_cr_number": 57,
   "status_values": [
     "open",
     "in_progress",
@@ -727,6 +727,13 @@
         "CR-0053 upstream flag migration evidence"
       ],
       "notes": "Opened on 2026-08-25 after CR-0054 complete accounting isolated Fuse case 37_2. Closed after implementing combined accumulator/prior-F X/Y sourcing for SCF and removing 37_2 from the pinned unresolved baseline. CODE and TEST_ARTIFACT reviews passed with zero findings. Linux CR0055-SCF-LINUX-R1, Windows 10 CR0055-SCF-WIN10-R1, and Windows 11 CR0055-SCF-WIN11-R1 all passed CTest; 37_1 and 37_2 pass on every platform, with 1,183/1,356 complete-corpus results, 173 known unresolved cases, zero unexpected failures, and zero silent skips."
+    },
+    {
+      "cr_number": "CR-0056",
+      "title": "Correct primary CP undocumented X/Y flag sourcing",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 11 and 36.1", "design/fuse-z80-test-suite.md", "CR-0051 complete Fuse inventory"],
+      "notes": "Opened after complete-corpus failures b8, ba, bb, bd, be, and bf established that CP must source X/Y from the compared operand rather than the subtraction result. Preserve all documented subtraction flags, A preservation, timing, and (HL) bus behavior; remove only these resolved cases from the pinned backlog after three-platform validation."
     }
   ]
 }
