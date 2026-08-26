@@ -274,9 +274,25 @@ def windows_developer_environment() -> dict[str, str]:
             include = versions[0] / "include"
             if library.is_dir():
                 environment["LIB"] = str(library) + ";" + environment.get("LIB", "")
+                environment["WZSN_MSVC_LIBRARY_PATH"] = str(library)
             if include.is_dir():
                 environment["INCLUDE"] = str(include) + ";" + environment.get("INCLUDE", "")
     return environment
+
+
+def windows_linker_paths(environment: dict[str, str]) -> list[Path]:
+    paths = []
+    msvc_library = environment.get("WZSN_MSVC_LIBRARY_PATH")
+    if msvc_library:
+        paths.append(Path(msvc_library))
+    kit_root = Path(environment.get("ProgramFiles(x86)", r"C:\Program Files (x86)")) / "Windows Kits" / "10" / "Lib"
+    if kit_root.is_dir():
+        for version in sorted((path for path in kit_root.iterdir() if path.is_dir()), reverse=True):
+            candidates = (version / "um" / "x64", version / "ucrt" / "x64")
+            if all(candidate.is_dir() for candidate in candidates):
+                paths.extend(candidates)
+                break
+    return paths
 
 
 def load_generator_name(build_dir: Path) -> str:
@@ -431,6 +447,12 @@ def main() -> int:
                 configure_command.append(f"-DCMAKE_RC_COMPILER={cmake_path_string(tools['rc']['path'])}")
             if tools["mt"]["path"]:
                 configure_command.append(f"-DCMAKE_MT={cmake_path_string(tools['mt']['path'])}")
+        linker_paths = windows_linker_paths(build_environment)
+        if linker_paths:
+            linker_flags = " ".join(
+                f"-Xlinker /libpath:{cmake_path_string(str(path))}" for path in linker_paths
+            )
+            configure_command.append(f"-DCMAKE_EXE_LINKER_FLAGS={linker_flags}")
 
     if tools["ninja"]["path"]:
         configure_command.extend(["-G", "Ninja"])
