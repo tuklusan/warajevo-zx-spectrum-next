@@ -450,7 +450,7 @@ def main() -> int:
         linker_paths = windows_linker_paths(build_environment)
         if linker_paths:
             linker_flags = " ".join(
-                f"-Xlinker /libpath:{cmake_path_string(str(path))}" for path in linker_paths
+                f'-Xlinker "/libpath:{cmake_path_string(str(path))}"' for path in linker_paths
             )
             configure_command.append(f"-DCMAKE_EXE_LINKER_FLAGS={linker_flags}")
 
