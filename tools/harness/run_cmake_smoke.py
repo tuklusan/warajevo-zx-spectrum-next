@@ -271,12 +271,9 @@ def windows_developer_environment() -> dict[str, str]:
         versions = sorted((path for path in msvc_root.iterdir() if path.is_dir()), reverse=True)
         if versions:
             library = versions[0] / "lib" / "x64"
-            include = versions[0] / "include"
             if library.is_dir():
                 environment["LIB"] = str(library) + ";" + environment.get("LIB", "")
                 environment["WZSN_MSVC_LIBRARY_PATH"] = str(library)
-            if include.is_dir():
-                environment["INCLUDE"] = str(include) + ";" + environment.get("INCLUDE", "")
     return environment
 
 
