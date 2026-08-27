@@ -236,6 +236,7 @@ int main(void)
         wz_z80_primary_opcode_decode(0x40u)->operation != WZ_Z80_PRIMARY_OP_LOAD ||
         wz_z80_primary_opcode_decode(0x3eu)->operation != WZ_Z80_PRIMARY_OP_LD_A_N ||
         wz_z80_primary_opcode_decode(0xd3u)->operation != WZ_Z80_PRIMARY_OP_OUT_N_A ||
+        wz_z80_primary_opcode_decode(0xd9u)->operation != WZ_Z80_PRIMARY_OP_EXX ||
         wz_z80_primary_opcode_decode(0x80u)->operation != WZ_Z80_PRIMARY_OP_ALU ||
         wz_z80_primary_opcode_decode(0xbfu)->operation != WZ_Z80_PRIMARY_OP_ALU ||
         wz_z80_primary_opcode_decode(0xc6u)->operation != WZ_Z80_PRIMARY_OP_ALU ||
@@ -336,6 +337,60 @@ int main(void)
         machine.cpu.main.f != 0x44u || machine.cpu.alternate.a != 0x11u ||
         machine.cpu.alternate.f != 0x22u || machine.master_tick != 8u) {
         fputs("EX AF,AF' state or timing failed\n", stderr);
+        return 1;
+    }
+    memset(&machine.cpu, 0, sizeof(machine.cpu));
+    machine.master_tick = 0u;
+    machine.cpu.program_counter = 0x2300u;
+    machine.cpu.main.a = 0x11u;
+    machine.cpu.main.f = 0x22u;
+    machine.cpu.main.b = 0x33u;
+    machine.cpu.main.c = 0x44u;
+    machine.cpu.main.d = 0x55u;
+    machine.cpu.main.e = 0x66u;
+    machine.cpu.main.h = 0x77u;
+    machine.cpu.main.l = 0x88u;
+    machine.cpu.alternate.a = 0x99u;
+    machine.cpu.alternate.f = 0xaau;
+    machine.cpu.alternate.b = 0xbbu;
+    machine.cpu.alternate.c = 0xccu;
+    machine.cpu.alternate.d = 0xddu;
+    machine.cpu.alternate.e = 0xeeu;
+    machine.cpu.alternate.h = 0xf0u;
+    machine.cpu.alternate.l = 0x0fu;
+    machine.memory[0x2300u] = 0xd9u;
+    memset(&bus_log, 0, sizeof(bus_log));
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.program_counter != 0x2301u ||
+        machine.cpu.r != 0x01u || machine.cpu.main.a != 0x11u ||
+        machine.cpu.main.f != 0x22u || machine.cpu.main.b != 0xbbu ||
+        machine.cpu.main.c != 0xccu || machine.cpu.main.d != 0xddu ||
+        machine.cpu.main.e != 0xeeu || machine.cpu.main.h != 0xf0u ||
+        machine.cpu.main.l != 0x0fu || machine.cpu.alternate.a != 0x99u ||
+        machine.cpu.alternate.f != 0xaau || machine.cpu.alternate.b != 0x33u ||
+        machine.cpu.alternate.c != 0x44u || machine.cpu.alternate.d != 0x55u ||
+        machine.cpu.alternate.e != 0x66u || machine.cpu.alternate.h != 0x77u ||
+        machine.cpu.alternate.l != 0x88u || machine.master_tick != 8u ||
+        bus_log.count != 1u || bus_log.requests[0].cycle != WZ_BUS_M1_OPCODE_FETCH ||
+        bus_log.requests[0].master_tick != 0u || bus_log.requests[0].address != 0x2300u) {
+        fputs("EXX state, fetch, or timing failed\n", stderr);
+        return 1;
+    }
+    machine.memory[0x2301u] = 0xddu;
+    machine.memory[0x2302u] = 0xfdu;
+    machine.memory[0x2303u] = 0xd9u;
+    memset(&bus_log, 0, sizeof(bus_log));
+    if (wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.program_counter != 0x2304u ||
+        machine.cpu.r != 0x04u || machine.cpu.main.b != 0x33u ||
+        machine.cpu.main.c != 0x44u || machine.cpu.main.d != 0x55u ||
+        machine.cpu.main.e != 0x66u || machine.cpu.main.h != 0x77u ||
+        machine.cpu.main.l != 0x88u || machine.cpu.alternate.b != 0xbbu ||
+        machine.cpu.alternate.c != 0xccu || machine.cpu.alternate.d != 0xddu ||
+        machine.cpu.alternate.e != 0xeeu || machine.cpu.alternate.h != 0xf0u ||
+        machine.cpu.alternate.l != 0x0fu || machine.master_tick != 32u ||
+        bus_log.count != 3u || bus_log.requests[0].address != 0x2301u ||
+        bus_log.requests[1].address != 0x2302u || bus_log.requests[2].address != 0x2303u) {
+        fputs("prefixed EXX state, fetch, or timing failed\n", stderr);
         return 1;
     }
     if (wz_z80_cb_opcode_count() != 256u) {

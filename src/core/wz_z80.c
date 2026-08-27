@@ -193,7 +193,7 @@ static const wz_z80_opcode_decode_t wz_z80_primary_opcode_table[256] = {
     WZ_Z80_IMPL(0xccu, WZ_Z80_PRIMARY_OP_CALL), WZ_Z80_IMPL(0xcdu, WZ_Z80_PRIMARY_OP_CALL), WZ_Z80_IMPL(0xceu, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xcfu, WZ_Z80_PRIMARY_OP_RST),
     WZ_Z80_IMPL(0xd0u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_IMPL(0xd1u, WZ_Z80_PRIMARY_OP_POP), WZ_Z80_IMPL(0xd2u, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_IMPL(0xd3u, WZ_Z80_PRIMARY_OP_OUT_N_A),
     WZ_Z80_IMPL(0xd4u, WZ_Z80_PRIMARY_OP_CALL), WZ_Z80_IMPL(0xd5u, WZ_Z80_PRIMARY_OP_PUSH), WZ_Z80_IMPL(0xd6u, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xd7u, WZ_Z80_PRIMARY_OP_RST),
-    WZ_Z80_IMPL(0xd8u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_UN(0xd9u), WZ_Z80_IMPL(0xdau, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_UN(0xdbu),
+    WZ_Z80_IMPL(0xd8u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_IMPL(0xd9u, WZ_Z80_PRIMARY_OP_EXX), WZ_Z80_IMPL(0xdau, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_UN(0xdbu),
     WZ_Z80_IMPL(0xdcu, WZ_Z80_PRIMARY_OP_CALL),
     WZ_Z80_PREFIX(0xddu, WZ_Z80_PRIMARY_OP_PREFIX_DD),
     WZ_Z80_IMPL(0xdeu, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xdfu, WZ_Z80_PRIMARY_OP_RST), WZ_Z80_IMPL(0xe0u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_IMPL(0xe1u, WZ_Z80_PRIMARY_OP_POP),
@@ -1858,6 +1858,29 @@ execute_opcode:
         }
         machine->master_tick += 22u;
         return WZ_RESULT_OK;
+    case WZ_Z80_PRIMARY_OP_EXX: {
+        wz_byte_t b = machine->cpu.main.b;
+        wz_byte_t c = machine->cpu.main.c;
+        wz_byte_t d = machine->cpu.main.d;
+        wz_byte_t e = machine->cpu.main.e;
+        wz_byte_t h = machine->cpu.main.h;
+        wz_byte_t l = machine->cpu.main.l;
+
+        machine->cpu.main.b = machine->cpu.alternate.b;
+        machine->cpu.main.c = machine->cpu.alternate.c;
+        machine->cpu.main.d = machine->cpu.alternate.d;
+        machine->cpu.main.e = machine->cpu.alternate.e;
+        machine->cpu.main.h = machine->cpu.alternate.h;
+        machine->cpu.main.l = machine->cpu.alternate.l;
+        machine->cpu.alternate.b = b;
+        machine->cpu.alternate.c = c;
+        machine->cpu.alternate.d = d;
+        machine->cpu.alternate.e = e;
+        machine->cpu.alternate.h = h;
+        machine->cpu.alternate.l = l;
+        machine->master_tick += 8u;
+        return WZ_RESULT_OK;
+    }
     case WZ_Z80_PRIMARY_OP_LOAD: {
         wz_byte_t source = (wz_byte_t)(opcode & 0x07u);
         wz_byte_t target = (wz_byte_t)((opcode >> 3u) & 0x07u);
