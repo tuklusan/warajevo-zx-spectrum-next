@@ -745,9 +745,9 @@
     {
       "cr_number": "CR-0058",
       "title": "Implement primary OUT (n),A I/O write semantics",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 11, 15.4, and 36.1", "design/fuse-z80-test-suite.md", "upstream/main src/spectrum-kernel/Z80.ASM OUTNA"],
-      "notes": "Opened after pinned Fuse cases d3 through d3_4 established the missing documented primary OUT (n),A operation. Implement immediate-port read, A:n port address formation, I/O write, MEMPTR=port+1, PC/R/timing, and flag preservation via the existing bus abstraction; remove only remotely resolved baseline entries. Device-specific port effects remain separately owned by their architecture phases."
+      "notes": "Opened after pinned Fuse cases d3 through d3_4 established the missing documented primary OUT (n),A operation. Implement immediate-port read, A:n port address formation, I/O write, MEMPTR=port+1, PC/R/timing, and flag preservation via the existing bus abstraction; remove only remotely resolved baseline entries. Device-specific port effects remain separately owned by their architecture phases. Immutable CODE reviews passed through 20b57cd66ac32f80b891a8bbbf40208ad4d4ccea. Linux CR0058-OUT-NA-LINUX-R9, Windows 10 CR0058-OUT-NA-WIN10-R9, and Windows 11 CR0058-OUT-NA-WIN11-R14 passed CTest and recorded 1,207/1,356 pinned Fuse cases, 149 known unresolved cases, zero unexpected failures, and zero silent skips. The immutable three-platform TEST_ARTIFACT review passed for CR0058-OUT-NA-3PLAT-R9. A post-implementation upstream OUTNA and D0-DF scan found no undispositioned behavior. Windows 11 remote validation uses the project-contained Build Tools installation. The immutable DOCUMENTATION review passed; CR closed."
     }
   ]
 }
