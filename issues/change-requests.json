@@ -752,16 +752,16 @@
     {
       "cr_number": "CR-0059",
       "title": "Implement primary EXX alternate-register exchange semantics",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 11 and 36.1", "design/fuse-z80-test-suite.md", "upstream/main src/spectrum-kernel/Z80.ASM EXX"],
-      "notes": "Opened after the pinned complete Fuse baseline isolated d9 as the next primary-operation gap. Implement only D9 decode, complete BC/DE/HL alternate-bank exchange, fetch-only timing, and applicable DD/FD prefix behavior; DB input, E3, EB, F9, and indexed families remain separate CRs. Required preflight upstream scan is recorded in design/cr-preflight/CR-0059.md."
+      "notes": "Opened after the pinned complete Fuse baseline isolated d9 as the next primary-operation gap. Implement only D9 decode, complete BC/DE/HL alternate-bank exchange, fetch-only timing, and applicable DD/FD prefix behavior; DB input, E3, EB, F9, and indexed families remain separate CRs. Required preflight upstream scan is recorded in design/cr-preflight/CR-0059.md. Immutable CODE review passed for abc5029c3b69bb313367907763d01d84daf7d4cc..c5405eff15b0c86bc0c5b06bd8029f1ee4bb8ff5. Linux CR0059-EXX-LINUX-R2, Windows 10 CR0059-EXX-WIN10-R3, and Windows 11 CR0059-EXX-WIN11-R3 passed CTest and recorded 1,208/1,356 pinned Fuse cases, 148 known unresolved cases, zero unexpected failures, and zero silent skips. The three-platform TEST_ARTIFACT review passed. Hosted platform-smoke 33141520563 passed all five platforms after CR-0060 repaired the shared corpus argument contract. The final upstream D9/EXX scan found no undispositioned behavior. DOCUMENTATION review passed; CR closed."
     },
     {
       "cr_number": "CR-0060",
       "title": "Repair hosted complete-Fuse workflow argument contract",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["WORKFLOW.md remote and hosted validation rule", "tools/harness/run_fuse_ed_platform.py required arguments", "hosted platform-smoke run 33125968324"],
-      "notes": "Opened after all hosted platforms built and passed CTest but complete Fuse accounting stopped because platform-smoke.yml omitted the runner's required unresolved baseline argument. Restore the explicit tracked baseline argument only; preserve emulator behavior and baseline content. Required preflight is recorded in design/cr-preflight/CR-0060.md."
+      "notes": "Opened after all hosted platforms built and passed CTest but complete Fuse accounting stopped because platform-smoke.yml omitted the runner's required unresolved baseline argument. Restore the explicit tracked baseline argument only; preserve emulator behavior and baseline content. Required preflight is recorded in design/cr-preflight/CR-0060.md. Immutable CODE review passed for 07c8b862c9050f8579bd807999e9a2548de6dec4..d839a730ac96377f1e7a09a8a258a1118fc3a9f5. Hosted run 33141520563 passed repository gates and all five platform-smoke jobs with the complete corpus. TEST_ARTIFACT review passed for the hosted evidence packet. The workflow call scan found no remaining omitted unresolved-baseline argument. DOCUMENTATION review passed; CR closed."
     }
   ]
 }
