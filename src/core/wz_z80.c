@@ -197,7 +197,7 @@ static const wz_z80_opcode_decode_t wz_z80_primary_opcode_table[256] = {
     WZ_Z80_IMPL(0xdcu, WZ_Z80_PRIMARY_OP_CALL),
     WZ_Z80_PREFIX(0xddu, WZ_Z80_PRIMARY_OP_PREFIX_DD),
     WZ_Z80_IMPL(0xdeu, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xdfu, WZ_Z80_PRIMARY_OP_RST), WZ_Z80_IMPL(0xe0u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_IMPL(0xe1u, WZ_Z80_PRIMARY_OP_POP),
-    WZ_Z80_IMPL(0xe2u, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_UN(0xe3u), WZ_Z80_IMPL(0xe4u, WZ_Z80_PRIMARY_OP_CALL), WZ_Z80_IMPL(0xe5u, WZ_Z80_PRIMARY_OP_PUSH),
+    WZ_Z80_IMPL(0xe2u, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_IMPL(0xe3u, WZ_Z80_PRIMARY_OP_EX_SP_RR), WZ_Z80_IMPL(0xe4u, WZ_Z80_PRIMARY_OP_CALL), WZ_Z80_IMPL(0xe5u, WZ_Z80_PRIMARY_OP_PUSH),
     WZ_Z80_IMPL(0xe6u, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xe7u, WZ_Z80_PRIMARY_OP_RST), WZ_Z80_IMPL(0xe8u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_IMPL(0xe9u, WZ_Z80_PRIMARY_OP_BRANCH),
     WZ_Z80_IMPL(0xeau, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_UN(0xebu), WZ_Z80_IMPL(0xecu, WZ_Z80_PRIMARY_OP_CALL),
     WZ_Z80_PREFIX(0xedu, WZ_Z80_PRIMARY_OP_PREFIX_ED),
@@ -515,6 +515,36 @@ static void wz_z80_set_stack_pair(wz_z80_state_t* state,
     wz_z80_set_rr(state, pair, value);
 }
 
+static wz_result_t wz_z80_exchange_stack_pair(wz_machine_t* machine,
+                                               wz_word_t* pair)
+{
+    wz_byte_t low;
+    wz_byte_t high;
+    wz_word_t original = *pair;
+    wz_word_t stack_pointer = machine->cpu.stack_pointer;
+    wz_word_t stack_value;
+
+    if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u, stack_pointer, &low, 3u) != WZ_RESULT_OK ||
+        wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 14u,
+                   wz_z80_add16(stack_pointer, 1u), &high, 3u) != WZ_RESULT_OK ||
+        wz_z80_bus(machine, WZ_BUS_INTERNAL, 20u, stack_pointer, 0, 3u) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+
+    stack_value = (wz_word_t)low | ((wz_word_t)high << 8u);
+
+    low = (wz_byte_t)(original & 0xffu);
+    high = (wz_byte_t)(original >> 8u);
+    if (wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 26u, stack_pointer, &low, 3u) != WZ_RESULT_OK ||
+        wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 32u,
+                   wz_z80_add16(stack_pointer, 1u), &high, 3u) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+
+    *pair = stack_value;
+    return WZ_RESULT_OK;
+}
+
 static bool wz_z80_condition_met(const wz_z80_state_t* state, wz_byte_t condition)
 {
     static const wz_byte_t masks[4] = {
@@ -737,7 +767,7 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
     opcode = machine->memory[machine->cpu.program_counter];
     switch (opcode) {
     case 0x09u: case 0x19u: case 0x21u: case 0x22u: case 0x23u:
-    case 0x29u: case 0x2au: case 0x2bu: case 0x39u: case 0xe9u: case 0xf9u:
+    case 0x29u: case 0x2au: case 0x2bu: case 0x39u: case 0xe3u: case 0xe9u: case 0xf9u:
         break;
     default:
         return wz_z80_step(machine);
@@ -835,6 +865,12 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
     case 0xe9u:
         machine->cpu.program_counter = *index;
         machine->master_tick += 8u;
+        return WZ_RESULT_OK;
+    case 0xe3u:
+        if (wz_z80_exchange_stack_pair(machine, index) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->master_tick += 38u;
         return WZ_RESULT_OK;
     case 0xf9u:
         machine->cpu.stack_pointer = *index;
@@ -1896,6 +1932,16 @@ execute_opcode:
         machine->cpu.main.a = value;
         machine->master_tick += 22u;
         return WZ_RESULT_OK;
+    case WZ_Z80_PRIMARY_OP_EX_SP_RR: {
+        wz_word_t hl = wz_z80_hl(&machine->cpu);
+        if (wz_z80_exchange_stack_pair(machine, &hl) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->cpu.main.h = (wz_byte_t)(hl >> 8u);
+        machine->cpu.main.l = (wz_byte_t)(hl & 0xffu);
+        machine->master_tick += 38u;
+        return WZ_RESULT_OK;
+    }
     case WZ_Z80_PRIMARY_OP_LOAD: {
         wz_byte_t source = (wz_byte_t)(opcode & 0x07u);
         wz_byte_t target = (wz_byte_t)((opcode >> 3u) & 0x07u);
