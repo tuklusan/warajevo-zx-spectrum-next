@@ -50,7 +50,7 @@ jobs:
         run: python tools/harness/run_cmake_smoke.py --artifact-dir .wzsn-harness/github/${{ matrix.id }}
 
       - name: Run pinned Fuse ED conformance
-        run: python tools/harness/run_fuse_ed_platform.py --runner-root .wzsn-harness/github/${{ matrix.id }}/build --private-root test-artefacts/github/${{ matrix.id }} --manifest .wzsn-harness/github/${{ matrix.id }}/fuse-complete-manifest.json
+        run: python tools/harness/run_fuse_ed_platform.py --runner-root .wzsn-harness/github/${{ matrix.id }}/build --private-root test-artefacts/github/${{ matrix.id }} --manifest .wzsn-harness/github/${{ matrix.id }}/fuse-complete-manifest.json --unresolved-baseline tools/harness/fuse-unresolved-baseline.json
 
       - name: Upload smoke artefacts
         if: always()
