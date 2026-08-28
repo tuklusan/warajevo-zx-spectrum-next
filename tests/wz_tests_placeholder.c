@@ -228,7 +228,7 @@ int main(void)
             return 1;
         }
     }
-    if (implemented != 248u || prefix != 4u || documented_unimplemented != 4u ||
+    if (implemented != 249u || prefix != 4u || documented_unimplemented != 3u ||
         undocumented != 0u || illegal != 0u ||
         wz_z80_primary_opcode_decode(0x00u)->operation != WZ_Z80_PRIMARY_OP_NOP ||
         wz_z80_primary_opcode_decode(0x32u)->operation != WZ_Z80_PRIMARY_OP_LD_NN_A ||
@@ -237,6 +237,7 @@ int main(void)
         wz_z80_primary_opcode_decode(0x3eu)->operation != WZ_Z80_PRIMARY_OP_LD_A_N ||
         wz_z80_primary_opcode_decode(0xd3u)->operation != WZ_Z80_PRIMARY_OP_OUT_N_A ||
         wz_z80_primary_opcode_decode(0xd9u)->operation != WZ_Z80_PRIMARY_OP_EXX ||
+        wz_z80_primary_opcode_decode(0xdbu)->operation != WZ_Z80_PRIMARY_OP_IN_A_N ||
         wz_z80_primary_opcode_decode(0x80u)->operation != WZ_Z80_PRIMARY_OP_ALU ||
         wz_z80_primary_opcode_decode(0xbfu)->operation != WZ_Z80_PRIMARY_OP_ALU ||
         wz_z80_primary_opcode_decode(0xc6u)->operation != WZ_Z80_PRIMARY_OP_ALU ||

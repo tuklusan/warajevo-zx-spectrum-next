@@ -9,10 +9,6 @@
     "schema_version": 1,
     "commit": "9cbab635f5c9dfdfc5cb769aa89048c7e624d6b7",
     "case_names": [
-        "db",
-        "db_1",
-        "db_2",
-        "db_3",
         "dd24",
         "dd25",
         "dd26",

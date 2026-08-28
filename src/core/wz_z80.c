@@ -193,7 +193,7 @@ static const wz_z80_opcode_decode_t wz_z80_primary_opcode_table[256] = {
     WZ_Z80_IMPL(0xccu, WZ_Z80_PRIMARY_OP_CALL), WZ_Z80_IMPL(0xcdu, WZ_Z80_PRIMARY_OP_CALL), WZ_Z80_IMPL(0xceu, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xcfu, WZ_Z80_PRIMARY_OP_RST),
     WZ_Z80_IMPL(0xd0u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_IMPL(0xd1u, WZ_Z80_PRIMARY_OP_POP), WZ_Z80_IMPL(0xd2u, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_IMPL(0xd3u, WZ_Z80_PRIMARY_OP_OUT_N_A),
     WZ_Z80_IMPL(0xd4u, WZ_Z80_PRIMARY_OP_CALL), WZ_Z80_IMPL(0xd5u, WZ_Z80_PRIMARY_OP_PUSH), WZ_Z80_IMPL(0xd6u, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xd7u, WZ_Z80_PRIMARY_OP_RST),
-    WZ_Z80_IMPL(0xd8u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_IMPL(0xd9u, WZ_Z80_PRIMARY_OP_EXX), WZ_Z80_IMPL(0xdau, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_UN(0xdbu),
+    WZ_Z80_IMPL(0xd8u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_IMPL(0xd9u, WZ_Z80_PRIMARY_OP_EXX), WZ_Z80_IMPL(0xdau, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_IMPL(0xdbu, WZ_Z80_PRIMARY_OP_IN_A_N),
     WZ_Z80_IMPL(0xdcu, WZ_Z80_PRIMARY_OP_CALL),
     WZ_Z80_PREFIX(0xddu, WZ_Z80_PRIMARY_OP_PREFIX_DD),
     WZ_Z80_IMPL(0xdeu, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xdfu, WZ_Z80_PRIMARY_OP_RST), WZ_Z80_IMPL(0xe0u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_IMPL(0xe1u, WZ_Z80_PRIMARY_OP_POP),
@@ -1881,6 +1881,21 @@ execute_opcode:
         machine->master_tick += 8u;
         return WZ_RESULT_OK;
     }
+    case WZ_Z80_PRIMARY_OP_IN_A_N:
+        if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,
+                       machine->cpu.program_counter, &low, 3u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
+        address = (wz_word_t)(((wz_word_t)machine->cpu.main.a << 8u) | low);
+        machine->cpu.memptr = (wz_word_t)((wz_word_t)machine->cpu.main.a << 8u) |
+            (wz_byte_t)(low + 1u);
+        if (wz_z80_bus(machine, WZ_BUS_IO_READ, 14u, address, &value, 4u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->cpu.main.a = value;
+        machine->master_tick += 22u;
+        return WZ_RESULT_OK;
     case WZ_Z80_PRIMARY_OP_LOAD: {
         wz_byte_t source = (wz_byte_t)(opcode & 0x07u);
         wz_byte_t target = (wz_byte_t)((opcode >> 3u) & 0x07u);
