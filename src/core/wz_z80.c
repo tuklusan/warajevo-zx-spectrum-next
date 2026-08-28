@@ -542,6 +542,7 @@ static wz_result_t wz_z80_exchange_stack_pair(wz_machine_t* machine,
     }
 
     *pair = stack_value;
+    machine->cpu.memptr = stack_value;
     return WZ_RESULT_OK;
 }
 
