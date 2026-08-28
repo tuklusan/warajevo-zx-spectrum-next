@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 61,
+  "next_cr_number": 62,
   "status_values": [
     "open",
     "in_progress",
@@ -762,6 +762,13 @@
       "status": "closed",
       "source_authority": ["WORKFLOW.md remote and hosted validation rule", "tools/harness/run_fuse_ed_platform.py required arguments", "hosted platform-smoke run 33125968324"],
       "notes": "Opened after all hosted platforms built and passed CTest but complete Fuse accounting stopped because platform-smoke.yml omitted the runner's required unresolved baseline argument. Restore the explicit tracked baseline argument only; preserve emulator behavior and baseline content. Required preflight is recorded in design/cr-preflight/CR-0060.md. Immutable CODE review passed for 07c8b862c9050f8579bd807999e9a2548de6dec4..d839a730ac96377f1e7a09a8a258a1118fc3a9f5. Hosted run 33141520563 passed repository gates and all five platform-smoke jobs with the complete corpus. TEST_ARTIFACT review passed for the hosted evidence packet. The workflow call scan found no remaining omitted unresolved-baseline argument. DOCUMENTATION review passed; CR closed."
+    },
+    {
+      "cr_number": "CR-0061",
+      "title": "Implement primary IN A,(n) I/O read semantics",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 11, 15.4, and 36.1", "design/fuse-z80-test-suite.md", "upstream/main src/spectrum-kernel/Z80.ASM INAN"],
+      "notes": "Opened after pinned Fuse cases db through db_3 established the missing documented primary IN A,(n) operation. Implement immediate-port read, pre-read A:n port formation, I/O input, MEMPTR=port+1 with low-byte wrap, PC/R/timing, and flag preservation through the existing bus abstraction; remove only remotely resolved baseline entries. Device-specific port effects remain separately owned by architecture phases. Required preflight upstream scan is recorded in design/cr-preflight/CR-0061.md."
     }
   ]
 }
