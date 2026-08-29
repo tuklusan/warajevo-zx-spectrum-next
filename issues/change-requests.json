@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 67,
+  "next_cr_number": 68,
   "status_values": [
     "open",
     "in_progress",
@@ -804,6 +804,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 11 and 36.1", "design/fuse-z80-test-suite.md", "upstream/main src/spectrum-kernel/Z80.ASM CP_N and primary/DD/FD dispatch tables"],
       "notes": "Opened because fe remained in the pinned Fuse unresolved baseline although the corrected shared CP path and upstream CP_N routine appeared aligned. Closed on 2026-08-29 after candidate and standard Linux, Windows 10, and Windows 11 validation proved 1,217 complete cases pass with 139 known unresolved cases and no unexpected failures or silent skips when only fe is removed. CODE, TEST_ARTIFACT, hosted, documentation, and final upstream scans passed; closure evidence is recorded in design/cr-preflight/CR-0066.md."
+    },
+    {
+      "cr_number": "CR-0067",
+      "title": "Implement indexed INC DEC and immediate-load forms",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 11 and 36.1", "design/fuse-z80-test-suite.md", "upstream/main src/spectrum-kernel/Z80.ASM DD/FD tables and indexed INC DEC load routines"],
+      "notes": "Opened for the first remaining indexed DD/FD migration slice: IXH/IYH and IXL/IYL increment, decrement, and immediate load; plus indexed-memory increment, decrement, and immediate load with signed displacement. Required functional inventory and upstream zero-gap scan are recorded in design/cr-preflight/CR-0067.md."
     }
   ]
 }
