@@ -1293,6 +1293,71 @@ int main(void)
         }
     }
 
+    {
+        static const wz_byte_t indexed_memory_transfers[] = {
+            0x46u, 0x4eu, 0x56u, 0x5eu, 0x66u, 0x6eu, 0x7eu,
+            0x70u, 0x71u, 0x72u, 0x73u, 0x74u, 0x75u, 0x77u
+        };
+        for (size_t prefix_index = 0u; prefix_index < 2u; prefix_index += 1u) {
+            wz_byte_t prefix_value = prefix_index == 0u ? 0xddu : 0xfdu;
+            for (size_t transfer_index = 0u;
+                 transfer_index < sizeof(indexed_memory_transfers) / sizeof(indexed_memory_transfers[0]);
+                 transfer_index += 1u) {
+                wz_byte_t transfer_opcode = indexed_memory_transfers[transfer_index];
+                wz_byte_t source_code = (wz_byte_t)(transfer_opcode & 0x07u);
+                wz_byte_t target_code = (wz_byte_t)((transfer_opcode >> 3u) & 0x07u);
+                wz_word_t indexed_address;
+                wz_byte_t expected_value;
+
+                if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+                    fputs("machine reset before indexed-memory transfer matrix test failed\n", stderr);
+                    return 1;
+                }
+                memset(&bus_log, 0, sizeof(bus_log));
+                wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+                machine.cpu.main.a = 0x70u;
+                machine.cpu.main.b = 0x10u;
+                machine.cpu.main.c = 0x20u;
+                machine.cpu.main.d = 0x30u;
+                machine.cpu.main.e = 0x40u;
+                machine.cpu.main.h = 0x50u;
+                machine.cpu.main.l = 0x60u;
+                machine.cpu.main.f = 0x5au;
+                machine.cpu.ix = 0x4002u;
+                machine.cpu.iy = 0x2802u;
+                machine.memory[0u] = prefix_value;
+                machine.memory[1u] = transfer_opcode;
+                machine.memory[2u] = 0xfeu;
+                indexed_address = prefix_value == 0xddu ? 0x4000u : 0x2800u;
+                machine.memory[indexed_address] = 0xa5u;
+                expected_value = source_code == 6u ? machine.memory[indexed_address] :
+                    *test_primary_register(&machine.cpu, source_code);
+                if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+                    wz_z80_step(&machine) != WZ_RESULT_OK ||
+                    (source_code == 6u &&
+                     *test_primary_register(&machine.cpu, target_code) != expected_value) ||
+                    (target_code == 6u && machine.memory[indexed_address] != expected_value) ||
+                    machine.cpu.main.f != 0x5au || machine.cpu.memptr != indexed_address ||
+                    machine.cpu.program_counter != 3u || machine.cpu.r != 2u ||
+                    machine.master_tick != 38u || bus_log.count != 5u ||
+                    bus_log.requests[2].cycle != WZ_BUS_MEMORY_READ ||
+                    bus_log.requests[2].master_tick != 16u ||
+                    bus_log.requests[3].cycle != WZ_BUS_INTERNAL ||
+                    bus_log.requests[3].master_tick != 22u ||
+                    bus_log.requests[3].t_states != 5u ||
+                    bus_log.requests[4].cycle != (source_code == 6u ?
+                                                   WZ_BUS_MEMORY_READ : WZ_BUS_MEMORY_WRITE) ||
+                    bus_log.requests[4].master_tick != 32u ||
+                    bus_log.requests[4].address != indexed_address) {
+                    fprintf(stderr,
+                            "Z80 indexed-memory transfer matrix failed: prefix=%02x opcode=%02x\n",
+                            (unsigned)prefix_value, (unsigned)transfer_opcode);
+                    return 1;
+                }
+            }
+        }
+    }
+
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
         fputs("machine reset before indexed CB rotate test failed\n", stderr);
         return 1;
