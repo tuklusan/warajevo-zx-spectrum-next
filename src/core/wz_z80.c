@@ -837,7 +837,7 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
                        address, &value, 3u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
-        machine->master_tick += 46u;
+        machine->master_tick += 38u;
         return WZ_RESULT_OK;
     case 0x36u:
         if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,
@@ -856,7 +856,7 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
                        address, &value, 3u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
-        machine->master_tick += 38u;
+        machine->master_tick += 30u;
         return WZ_RESULT_OK;
     case 0x21u:
         if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,

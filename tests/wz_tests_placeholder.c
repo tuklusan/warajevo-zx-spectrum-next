@@ -1208,7 +1208,12 @@ int main(void)
         wz_z80_step(&machine) != WZ_RESULT_OK || machine.memory[0x2802u] != 0x5au ||
         machine.cpu.memptr != 0x2802u || machine.cpu.program_counter != 14u ||
         machine.cpu.r != 8u || machine.master_tick != 168u) {
-        fputs("Z80 DD/FD indexed-memory INC/DEC/LD behavior or trace failed\n", stderr);
+        fprintf(stderr,
+                "Z80 DD/FD indexed-memory INC/DEC/LD failed: ix=%04x iy=%04x f=%02x pc=%04x r=%02x mp=%04x tick=%llu count=%zu\n",
+                (unsigned)machine.cpu.ix, (unsigned)machine.cpu.iy,
+                (unsigned)machine.cpu.main.f, (unsigned)machine.cpu.program_counter,
+                (unsigned)machine.cpu.r, (unsigned)machine.cpu.memptr,
+                (unsigned long long)machine.master_tick, bus_log.count);
         return 1;
     }
 
