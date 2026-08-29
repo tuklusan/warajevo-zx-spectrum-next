@@ -199,7 +199,7 @@ static const wz_z80_opcode_decode_t wz_z80_primary_opcode_table[256] = {
     WZ_Z80_IMPL(0xdeu, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xdfu, WZ_Z80_PRIMARY_OP_RST), WZ_Z80_IMPL(0xe0u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_IMPL(0xe1u, WZ_Z80_PRIMARY_OP_POP),
     WZ_Z80_IMPL(0xe2u, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_IMPL(0xe3u, WZ_Z80_PRIMARY_OP_EX_SP_RR), WZ_Z80_IMPL(0xe4u, WZ_Z80_PRIMARY_OP_CALL), WZ_Z80_IMPL(0xe5u, WZ_Z80_PRIMARY_OP_PUSH),
     WZ_Z80_IMPL(0xe6u, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xe7u, WZ_Z80_PRIMARY_OP_RST), WZ_Z80_IMPL(0xe8u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_IMPL(0xe9u, WZ_Z80_PRIMARY_OP_BRANCH),
-    WZ_Z80_IMPL(0xeau, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_UN(0xebu), WZ_Z80_IMPL(0xecu, WZ_Z80_PRIMARY_OP_CALL),
+    WZ_Z80_IMPL(0xeau, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_IMPL(0xebu, WZ_Z80_PRIMARY_OP_EX_DE_HL), WZ_Z80_IMPL(0xecu, WZ_Z80_PRIMARY_OP_CALL),
     WZ_Z80_PREFIX(0xedu, WZ_Z80_PRIMARY_OP_PREFIX_ED),
     WZ_Z80_IMPL(0xeeu, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xefu, WZ_Z80_PRIMARY_OP_RST), WZ_Z80_IMPL(0xf0u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_IMPL(0xf1u, WZ_Z80_PRIMARY_OP_POP),
     WZ_Z80_IMPL(0xf2u, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_IMPL(0xf3u, WZ_Z80_PRIMARY_OP_DI), WZ_Z80_IMPL(0xf4u, WZ_Z80_PRIMARY_OP_CALL), WZ_Z80_IMPL(0xf5u, WZ_Z80_PRIMARY_OP_PUSH),
@@ -1915,6 +1915,16 @@ execute_opcode:
         machine->cpu.alternate.e = e;
         machine->cpu.alternate.h = h;
         machine->cpu.alternate.l = l;
+        machine->master_tick += 8u;
+        return WZ_RESULT_OK;
+    }
+    case WZ_Z80_PRIMARY_OP_EX_DE_HL: {
+        wz_byte_t d = machine->cpu.main.d;
+        wz_byte_t e = machine->cpu.main.e;
+        machine->cpu.main.d = machine->cpu.main.h;
+        machine->cpu.main.e = machine->cpu.main.l;
+        machine->cpu.main.h = d;
+        machine->cpu.main.l = e;
         machine->master_tick += 8u;
         return WZ_RESULT_OK;
     }

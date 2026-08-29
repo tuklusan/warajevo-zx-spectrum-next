@@ -228,7 +228,7 @@ int main(void)
             return 1;
         }
     }
-    if (implemented != 250u || prefix != 4u || documented_unimplemented != 2u ||
+    if (implemented != 251u || prefix != 4u || documented_unimplemented != 1u ||
         undocumented != 0u || illegal != 0u ||
         wz_z80_primary_opcode_decode(0x00u)->operation != WZ_Z80_PRIMARY_OP_NOP ||
         wz_z80_primary_opcode_decode(0x32u)->operation != WZ_Z80_PRIMARY_OP_LD_NN_A ||
@@ -237,6 +237,7 @@ int main(void)
         wz_z80_primary_opcode_decode(0x3eu)->operation != WZ_Z80_PRIMARY_OP_LD_A_N ||
         wz_z80_primary_opcode_decode(0xd3u)->operation != WZ_Z80_PRIMARY_OP_OUT_N_A ||
         wz_z80_primary_opcode_decode(0xd9u)->operation != WZ_Z80_PRIMARY_OP_EXX ||
+        wz_z80_primary_opcode_decode(0xebu)->operation != WZ_Z80_PRIMARY_OP_EX_DE_HL ||
         wz_z80_primary_opcode_decode(0xdbu)->operation != WZ_Z80_PRIMARY_OP_IN_A_N ||
         wz_z80_primary_opcode_decode(0xe3u)->operation != WZ_Z80_PRIMARY_OP_EX_SP_RR ||
         wz_z80_primary_opcode_decode(0x80u)->operation != WZ_Z80_PRIMARY_OP_ALU ||
@@ -393,6 +394,42 @@ int main(void)
         bus_log.count != 3u || bus_log.requests[0].address != 0x2301u ||
         bus_log.requests[1].address != 0x2302u || bus_log.requests[2].address != 0x2303u) {
         fputs("prefixed EXX state, fetch, or timing failed\n", stderr);
+        return 1;
+    }
+    memset(&machine.cpu, 0, sizeof(machine.cpu));
+    machine.master_tick = 0u;
+    machine.cpu.program_counter = 0x2380u;
+    machine.cpu.main.d = 0x12u;
+    machine.cpu.main.e = 0x34u;
+    machine.cpu.main.h = 0x56u;
+    machine.cpu.main.l = 0x78u;
+    machine.cpu.main.f = 0xa5u;
+    machine.cpu.ix = 0x9abcu;
+    machine.cpu.iy = 0xdef0u;
+    machine.cpu.memptr = 0x1357u;
+    machine.memory[0x2380u] = 0xebu;
+    memset(&bus_log, 0, sizeof(bus_log));
+    if (wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.program_counter != 0x2381u ||
+        machine.cpu.r != 1u || machine.cpu.main.d != 0x56u || machine.cpu.main.e != 0x78u ||
+        machine.cpu.main.h != 0x12u || machine.cpu.main.l != 0x34u || machine.cpu.main.f != 0xa5u ||
+        machine.cpu.ix != 0x9abcu || machine.cpu.iy != 0xdef0u || machine.cpu.memptr != 0x1357u ||
+        machine.master_tick != 8u || bus_log.count != 1u ||
+        bus_log.requests[0].cycle != WZ_BUS_M1_OPCODE_FETCH) {
+        fputs("EX DE,HL state, fetch, or timing failed\n", stderr);
+        return 1;
+    }
+    machine.memory[0x2381u] = 0xddu;
+    machine.memory[0x2382u] = 0xfdu;
+    machine.memory[0x2383u] = 0xebu;
+    memset(&bus_log, 0, sizeof(bus_log));
+    if (wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.program_counter != 0x2384u ||
+        machine.cpu.r != 4u || machine.cpu.main.d != 0x12u || machine.cpu.main.e != 0x34u ||
+        machine.cpu.main.h != 0x56u || machine.cpu.main.l != 0x78u || machine.cpu.main.f != 0xa5u ||
+        machine.cpu.ix != 0x9abcu || machine.cpu.iy != 0xdef0u || machine.cpu.memptr != 0x1357u ||
+        machine.master_tick != 32u || bus_log.count != 3u ||
+        bus_log.requests[0].address != 0x2381u || bus_log.requests[1].address != 0x2382u ||
+        bus_log.requests[2].address != 0x2383u) {
+        fputs("prefixed EX DE,HL state, fetch, or timing failed\n", stderr);
         return 1;
     }
     memset(&machine.cpu, 0, sizeof(machine.cpu));
