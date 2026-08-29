@@ -1143,6 +1143,76 @@ int main(void)
     }
 
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before indexed byte operation test failed\n", stderr);
+        return 1;
+    }
+    machine.cpu.ix = 0x7f80u;
+    machine.cpu.iy = 0x8000u;
+    machine.cpu.main.f = 0x01u;
+    machine.memory[0u] = 0xddu; machine.memory[1u] = 0x24u;
+    machine.memory[2u] = 0xddu; machine.memory[3u] = 0x2du;
+    machine.memory[4u] = 0xddu; machine.memory[5u] = 0x26u; machine.memory[6u] = 0x12u;
+    machine.memory[7u] = 0xfdu; machine.memory[8u] = 0x2cu;
+    machine.memory[9u] = 0xfdu; machine.memory[10u] = 0x25u;
+    machine.memory[11u] = 0xfdu; machine.memory[12u] = 0x2eu; machine.memory[13u] = 0x34u;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.ix != 0x8080u ||
+        machine.cpu.main.f != 0x95u || machine.cpu.program_counter != 2u ||
+        machine.cpu.r != 2u || machine.master_tick != 16u ||
+        wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.ix != 0x807fu ||
+        machine.cpu.main.f != 0x3fu || machine.master_tick != 32u ||
+        wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.ix != 0x127fu ||
+        machine.cpu.main.f != 0x3fu || machine.cpu.program_counter != 7u ||
+        machine.cpu.r != 6u || machine.master_tick != 54u ||
+        wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.iy != 0x8001u ||
+        machine.cpu.main.f != 0x01u || machine.master_tick != 70u ||
+        wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.iy != 0x7f01u ||
+        machine.cpu.main.f != 0x3fu || machine.master_tick != 86u ||
+        wz_z80_step(&machine) != WZ_RESULT_OK || machine.cpu.iy != 0x7f34u ||
+        machine.cpu.main.f != 0x3fu || machine.cpu.program_counter != 14u ||
+        machine.cpu.r != 12u || machine.master_tick != 108u) {
+        fputs("Z80 DD/FD index-byte INC/DEC/LD behavior failed\n", stderr);
+        return 1;
+    }
+
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before indexed-memory operation test failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    machine.cpu.ix = 0x4002u;
+    machine.cpu.iy = 0x2800u;
+    machine.cpu.main.f = 0x01u;
+    machine.memory[0u] = 0xddu; machine.memory[1u] = 0x34u; machine.memory[2u] = 0xfeu;
+    machine.memory[3u] = 0xfdu; machine.memory[4u] = 0x35u; machine.memory[5u] = 0x01u;
+    machine.memory[6u] = 0xddu; machine.memory[7u] = 0x36u; machine.memory[8u] = 0xffu; machine.memory[9u] = 0xa5u;
+    machine.memory[10u] = 0xfdu; machine.memory[11u] = 0x36u; machine.memory[12u] = 0x02u; machine.memory[13u] = 0x5au;
+    machine.memory[0x4000u] = 0x7fu;
+    machine.memory[0x2801u] = 0x80u;
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        wz_z80_step(&machine) != WZ_RESULT_OK || machine.memory[0x4000u] != 0x80u ||
+        machine.cpu.main.f != 0x95u || machine.cpu.memptr != 0x4000u ||
+        machine.cpu.program_counter != 3u || machine.cpu.r != 2u ||
+        machine.master_tick != 46u || bus_log.count != 7u ||
+        bus_log.requests[2].cycle != WZ_BUS_MEMORY_READ || bus_log.requests[2].master_tick != 16u ||
+        bus_log.requests[3].cycle != WZ_BUS_INTERNAL || bus_log.requests[3].master_tick != 22u ||
+        bus_log.requests[4].cycle != WZ_BUS_MEMORY_READ || bus_log.requests[4].master_tick != 32u ||
+        bus_log.requests[5].cycle != WZ_BUS_INTERNAL || bus_log.requests[5].master_tick != 38u ||
+        bus_log.requests[6].cycle != WZ_BUS_MEMORY_WRITE || bus_log.requests[6].master_tick != 40u ||
+        wz_z80_step(&machine) != WZ_RESULT_OK || machine.memory[0x2801u] != 0x7fu ||
+        machine.cpu.main.f != 0x3fu || machine.cpu.memptr != 0x2801u ||
+        machine.master_tick != 92u ||
+        wz_z80_step(&machine) != WZ_RESULT_OK || machine.memory[0x4001u] != 0xa5u ||
+        machine.cpu.memptr != 0x4001u || machine.cpu.program_counter != 10u ||
+        machine.cpu.r != 6u || machine.master_tick != 130u ||
+        wz_z80_step(&machine) != WZ_RESULT_OK || machine.memory[0x2802u] != 0x5au ||
+        machine.cpu.memptr != 0x2802u || machine.cpu.program_counter != 14u ||
+        machine.cpu.r != 8u || machine.master_tick != 168u) {
+        fputs("Z80 DD/FD indexed-memory INC/DEC/LD behavior or trace failed\n", stderr);
+        return 1;
+    }
+
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
         fputs("machine reset before indexed CB rotate test failed\n", stderr);
         return 1;
     }
