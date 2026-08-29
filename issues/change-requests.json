@@ -794,9 +794,9 @@
     {
       "cr_number": "CR-0065",
       "title": "Implement primary LD SP,HL and verify indexed forms",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 11 and 36.1", "design/fuse-z80-test-suite.md", "upstream/main src/spectrum-kernel/Z80.ASM LDSPHL, LDSPIX, LDSPIY, and primary/DD/FD dispatch tables"],
-      "notes": "Opened after the pinned complete Fuse baseline isolated f9 as the next primary-operation gap. Implement primary LD SP,HL with exact six-T-state fetch-only behavior; verify and regress the existing DD F9 and FD F9 IX/IY selection paths; preserve flags, MEMPTR, unrelated state, memory, and I/O; and remove only f9 from the baseline. Required functional inventory and upstream zero-gap scan are recorded in design/cr-preflight/CR-0065.md."
+      "notes": "Opened after the pinned complete Fuse baseline isolated f9 as the next primary-operation gap. Implement primary LD SP,HL with exact six-T-state fetch-only behavior; verify and regress the existing DD F9 and FD F9 IX/IY selection paths; preserve flags, MEMPTR, unrelated state, memory, and I/O; and remove only f9 from the baseline. Required functional inventory and upstream zero-gap scan are recorded in design/cr-preflight/CR-0065.md. Closed on 2026-08-29 after immutable CODE review passed for f8a125b2755efaa20aa311c382aa7c0dc9a251a5..d431c01e1df01e0dd5f51746afa0af8ee098cc3b; Linux CR0065-LDSP-LINUX-R3, Windows 10 CR0065-LDSP-WIN10-R1, and Windows 11 CR0065-LDSP-WIN11-R1 passed CMake and complete Fuse validation; compact three-platform TEST_ARTIFACT review CR0065-LDSP-3PLAT-R1 passed; hosted repository-gates 33254826216 and platform-smoke 33254826229 passed; documentation review passed; final upstream boundary scan found no undispositioned behavior."
     }
   ]
 }
