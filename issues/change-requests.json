@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 65,
+  "next_cr_number": 66,
   "status_values": [
     "open",
     "in_progress",
@@ -790,6 +790,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 11 and 36.1", "design/fuse-z80-test-suite.md", "upstream/main src/spectrum-kernel/Z80.ASM EXDEHL and primary/DD/FD dispatch tables"],
       "notes": "Opened after the pinned complete Fuse baseline isolated eb as an unresolved primary operation. Implement the DE/HL exchange with exact 4 T-state primary behavior, preserved flags and unrelated state, and the upstream DD/FD prefixed retention behavior. Remove only eb from the unresolved baseline; preserve unrelated primary and indexed gaps. Required functional inventory and upstream zero-gap scan are recorded in design/cr-preflight/CR-0064.md. Closed on 2026-08-29 after immutable CODE review passed for d3e14f656800d8ca3e2b1e601a70037a5e1dc25f..8cf3da9ca5352c1abab5e1b6d6e158c4f9262d30; Linux CR0064-EXDEHL-LINUX-R3, Windows 10 CR0064-EXDEHL-WIN10-R4, and Windows 11 CR0064-EXDEHL-WIN11-R2 passed CMake and complete Fuse validation; compact three-platform TEST_ARTIFACT review CR0064-EXDEHL-3PLAT-R1 passed; hosted repository-gates 33234485060 and platform-smoke 33234485084 passed; documentation review passed; final upstream boundary scan found no undispositioned behavior."
+    },
+    {
+      "cr_number": "CR-0065",
+      "title": "Implement primary LD SP,HL and verify indexed forms",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 11 and 36.1", "design/fuse-z80-test-suite.md", "upstream/main src/spectrum-kernel/Z80.ASM LDSPHL, LDSPIX, LDSPIY, and primary/DD/FD dispatch tables"],
+      "notes": "Opened after the pinned complete Fuse baseline isolated f9 as the next primary-operation gap. Implement primary LD SP,HL with exact six-T-state fetch-only behavior; verify and regress the existing DD F9 and FD F9 IX/IY selection paths; preserve flags, MEMPTR, unrelated state, memory, and I/O; and remove only f9 from the baseline. Required functional inventory and upstream zero-gap scan are recorded in design/cr-preflight/CR-0065.md."
     }
   ]
 }
