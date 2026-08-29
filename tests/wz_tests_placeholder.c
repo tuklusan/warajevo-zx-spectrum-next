@@ -728,7 +728,7 @@ int main(void)
     wz_trace_sink_init(&trace_sink, wz_trace_file_emit, &trace_file);
     wz_machine_set_timing_trace(&machine, &trace_sink);
     machine.memory[0u] = 0xf9u;
-    if (wz_z80_step(&machine) != WZ_RESULT_UNSUPPORTED_OPERATION ||
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
         wz_trace_file_freeze(&trace_file) != WZ_RESULT_OK) {
         wz_trace_file_close(&trace_file);
         fputs("failing opcode trace execution failed\n", stderr);
@@ -758,7 +758,7 @@ int main(void)
                                                              &timing_trace_log.events[index]);
         }
         if (!recovered_state || !recovered_cpu_sync.has_absolute_state ||
-            recovered_cpu_sync.master_tick != 0u ||
+            recovered_cpu_sync.master_tick != 12u ||
             recovered_cpu_sync.state.program_counter != 1u || recovered_cpu_sync.state.r != 1u) {
             remove(failing_trace_path);
             fputs("failing opcode state reconstruction failed\n", stderr);
@@ -859,15 +859,19 @@ int main(void)
     }
     memset(&bus_log, 0, sizeof(bus_log));
     wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
-    machine.memory[0u] = 0xf9u;
+    machine.memory[0u] = 0xedu;
+    machine.memory[1u] = 0x00u;
     if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
         wz_z80_step(&machine) != WZ_RESULT_UNSUPPORTED_OPERATION ||
-        machine.cpu.program_counter != 1u ||
+        machine.cpu.program_counter != 2u ||
         machine.master_tick != 0u ||
-        bus_log.count != 1u ||
+        bus_log.count != 2u ||
         bus_log.requests[0].cycle != WZ_BUS_M1_OPCODE_FETCH ||
         bus_log.requests[0].address != 0u ||
-        bus_log.requests[0].value != 0xf9u) {
+        bus_log.requests[0].value != 0xedu ||
+        bus_log.requests[1].cycle != WZ_BUS_M1_OPCODE_FETCH ||
+        bus_log.requests[1].address != 1u ||
+        bus_log.requests[1].value != 0x00u) {
         fputs("Z80 unsupported opcode trace failed\n", stderr);
         return 1;
     }
