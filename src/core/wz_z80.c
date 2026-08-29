@@ -738,6 +738,8 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
     wz_byte_t displacement = 0u;
     wz_byte_t value;
     wz_byte_t flags;
+    wz_byte_t source;
+    wz_byte_t target;
     wz_word_t* index;
     wz_word_t address;
     wz_word_t operand;
@@ -767,14 +769,21 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
     }
 
     opcode = machine->memory[machine->cpu.program_counter];
-    switch (opcode) {
-    case 0x09u: case 0x19u: case 0x21u: case 0x22u: case 0x23u:
-    case 0x24u: case 0x25u: case 0x26u: case 0x29u: case 0x2au: case 0x2bu:
-    case 0x2cu: case 0x2du: case 0x2eu: case 0x34u: case 0x35u: case 0x36u:
-    case 0x39u: case 0xe3u: case 0xe9u: case 0xf9u:
-        break;
-    default:
-        return wz_z80_step(machine);
+    source = (wz_byte_t)(opcode & 0x07u);
+    target = (wz_byte_t)((opcode >> 3u) & 0x07u);
+    if (!(opcode >= 0x40u && opcode <= 0x7fu &&
+          source != WZ_Z80_TARGET_HL_INDIRECT &&
+          target != WZ_Z80_TARGET_HL_INDIRECT &&
+          (source == 4u || source == 5u || target == 4u || target == 5u))) {
+        switch (opcode) {
+        case 0x09u: case 0x19u: case 0x21u: case 0x22u: case 0x23u:
+        case 0x24u: case 0x25u: case 0x26u: case 0x29u: case 0x2au: case 0x2bu:
+        case 0x2cu: case 0x2du: case 0x2eu: case 0x34u: case 0x35u: case 0x36u:
+        case 0x39u: case 0xe3u: case 0xe9u: case 0xf9u:
+            break;
+        default:
+            return wz_z80_step(machine);
+        }
     }
 
     if (wz_z80_bus(machine, WZ_BUS_M1_OPCODE_FETCH, 0u,
@@ -784,6 +793,38 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
     machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
     wz_z80_increment_r(&machine->cpu);
     index = active_prefix == 0xddu ? &machine->cpu.ix : &machine->cpu.iy;
+
+    if (opcode >= 0x40u && opcode <= 0x7fu &&
+        source != WZ_Z80_TARGET_HL_INDIRECT &&
+        target != WZ_Z80_TARGET_HL_INDIRECT &&
+        (source == 4u || source == 5u || target == 4u || target == 5u)) {
+        wz_byte_t* register_value;
+
+        if (source == 4u) {
+            value = (wz_byte_t)(*index >> 8u);
+        } else if (source == 5u) {
+            value = (wz_byte_t)(*index & 0xffu);
+        } else {
+            register_value = wz_z80_target_register(&machine->cpu, source);
+            if (register_value == 0) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+            value = *register_value;
+        }
+        if (target == 4u) {
+            *index = (wz_word_t)((*index & 0x00ffu) | ((wz_word_t)value << 8u));
+        } else if (target == 5u) {
+            *index = (wz_word_t)((*index & 0xff00u) | value);
+        } else {
+            register_value = wz_z80_target_register(&machine->cpu, target);
+            if (register_value == 0) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+            *register_value = value;
+        }
+        machine->master_tick += 8u;
+        return WZ_RESULT_OK;
+    }
 
     switch (opcode) {
     case 0x24u:

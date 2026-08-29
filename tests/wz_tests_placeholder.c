@@ -71,6 +71,20 @@ static void record_bus_request(const wz_bus_request_t* request, void* context)
     log->count += 1u;
 }
 
+static wz_byte_t* test_primary_register(wz_z80_state_t* state, wz_byte_t code)
+{
+    switch (code) {
+    case 0u: return &state->main.b;
+    case 1u: return &state->main.c;
+    case 2u: return &state->main.d;
+    case 3u: return &state->main.e;
+    case 4u: return &state->main.h;
+    case 5u: return &state->main.l;
+    case 7u: return &state->main.a;
+    default: return 0;
+    }
+}
+
 static wz_byte_t read_bus_input(wz_bus_cycle_t cycle,
                                 wz_word_t address,
                                 void* context)
@@ -1215,6 +1229,68 @@ int main(void)
                 (unsigned)machine.cpu.r, (unsigned)machine.cpu.memptr,
                 (unsigned long long)machine.master_tick, bus_log.count);
         return 1;
+    }
+
+    for (size_t prefix_index = 0u; prefix_index < 2u; prefix_index += 1u) {
+        wz_byte_t prefix_value = prefix_index == 0u ? 0xddu : 0xfdu;
+        for (wz_byte_t transfer_opcode = 0x40u; transfer_opcode <= 0x7fu;
+             transfer_opcode += 1u) {
+            wz_byte_t source_code = (wz_byte_t)(transfer_opcode & 0x07u);
+            wz_byte_t target_code = (wz_byte_t)((transfer_opcode >> 3u) & 0x07u);
+            wz_word_t expected_index;
+            wz_byte_t expected_value;
+            wz_byte_t* primary_register;
+
+            if (source_code == 6u || target_code == 6u ||
+                (source_code != 4u && source_code != 5u &&
+                 target_code != 4u && target_code != 5u)) {
+                continue;
+            }
+            if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+                fputs("machine reset before indexed byte-transfer matrix test failed\n", stderr);
+                return 1;
+            }
+            machine.cpu.main.a = 0x70u;
+            machine.cpu.main.b = 0x10u;
+            machine.cpu.main.c = 0x20u;
+            machine.cpu.main.d = 0x30u;
+            machine.cpu.main.e = 0x40u;
+            machine.cpu.main.h = 0x50u;
+            machine.cpu.main.l = 0x60u;
+            machine.cpu.main.f = 0x5au;
+            machine.cpu.ix = 0xa1b2u;
+            machine.cpu.iy = 0xc3d4u;
+            machine.cpu.memptr = 0x2468u;
+            machine.memory[0u] = prefix_value;
+            machine.memory[1u] = transfer_opcode;
+            expected_index = prefix_value == 0xddu ? machine.cpu.ix : machine.cpu.iy;
+            if (source_code == 4u) {
+                expected_value = (wz_byte_t)(expected_index >> 8u);
+            } else if (source_code == 5u) {
+                expected_value = (wz_byte_t)(expected_index & 0xffu);
+            } else {
+                primary_register = test_primary_register(&machine.cpu, source_code);
+                expected_value = *primary_register;
+            }
+            if (target_code == 4u) {
+                expected_index = (wz_word_t)((expected_index & 0x00ffu) |
+                                              ((wz_word_t)expected_value << 8u));
+            } else if (target_code == 5u) {
+                expected_index = (wz_word_t)((expected_index & 0xff00u) |
+                                              expected_value);
+            }
+            if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+                (prefix_value == 0xddu ? machine.cpu.ix : machine.cpu.iy) != expected_index ||
+                (target_code != 4u && target_code != 5u &&
+                 *test_primary_register(&machine.cpu, target_code) != expected_value) ||
+                machine.cpu.main.f != 0x5au || machine.cpu.memptr != 0x2468u ||
+                machine.cpu.program_counter != 2u || machine.cpu.r != 2u ||
+                machine.master_tick != 16u) {
+                fprintf(stderr, "Z80 indexed byte-transfer matrix failed: prefix=%02x opcode=%02x\n",
+                        (unsigned)prefix_value, (unsigned)transfer_opcode);
+                return 1;
+            }
+        }
     }
 
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
