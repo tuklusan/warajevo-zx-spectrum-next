@@ -810,7 +810,7 @@
       "title": "Implement indexed INC DEC and immediate-load forms",
       "status": "in_progress",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 11 and 36.1", "design/fuse-z80-test-suite.md", "upstream/main src/spectrum-kernel/Z80.ASM DD/FD tables and indexed INC DEC load routines"],
-      "notes": "Opened for the first remaining indexed DD/FD migration slice: IXH/IYH and IXL/IYL increment, decrement, and immediate load; plus indexed-memory increment, decrement, and immediate load with signed displacement. Required functional inventory and upstream zero-gap scan are recorded in design/cr-preflight/CR-0067.md."
+      "notes": "Opened for the first remaining indexed DD/FD migration slice: IXH/IYH and IXL/IYL increment, decrement, and immediate load; plus indexed-memory increment, decrement, and immediate load with signed displacement. Candidate closure on 2026-08-29: all 18 scoped cases passed CTest and Fuse validation on Linux, Windows 10, and Windows 11 with no silent skips or unexpected failures; CODE, TEST_ARTIFACT, and hosted validation passed. The final upstream DD/FD table and helper scan found no undispositioned behavior in scope. Closure evidence is recorded in design/cr-preflight/CR-0067.md."
     }
   ]
 }
