@@ -1358,6 +1358,70 @@ int main(void)
         }
     }
 
+    {
+        static const wz_byte_t indexed_alu_source_codes[] = { 4u, 5u, 6u };
+        static const wz_byte_t indexed_alu_operands[] = { 0x95u, 0x0fu, 0x42u };
+        for (size_t prefix_index = 0u; prefix_index < 2u; prefix_index += 1u) {
+            wz_byte_t prefix_value = prefix_index == 0u ? 0xddu : 0xfdu;
+            for (wz_byte_t operation = 0u; operation < 8u; operation += 1u) {
+                for (size_t source_index = 0u;
+                     source_index < sizeof(indexed_alu_source_codes) / sizeof(indexed_alu_source_codes[0]);
+                     source_index += 1u) {
+                    wz_machine_t expected_machine;
+                    wz_byte_t source_code = indexed_alu_source_codes[source_index];
+                    wz_byte_t operand = indexed_alu_operands[source_index];
+                    wz_byte_t indexed_opcode = (wz_byte_t)(0x80u + operation * 8u + source_code);
+                    wz_word_t indexed_address = 0x9521u;
+
+                    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK ||
+                        wz_machine_init(&expected_machine, profile) != WZ_RESULT_OK) {
+                        fputs("machine reset before indexed ALU matrix test failed\n", stderr);
+                        return 1;
+                    }
+                    memset(&bus_log, 0, sizeof(bus_log));
+                    wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+                    machine.cpu.main.a = 0x63u;
+                    machine.cpu.main.f = 0x01u;
+                    machine.cpu.ix = 0x950fu;
+                    machine.cpu.iy = 0x950fu;
+                    machine.cpu.memptr = 0x2468u;
+                    machine.memory[0u] = prefix_value;
+                    machine.memory[1u] = indexed_opcode;
+                    machine.memory[2u] = 0x12u;
+                    machine.memory[indexed_address] = operand;
+                    expected_machine.cpu.main.a = 0x63u;
+                    expected_machine.cpu.main.b = operand;
+                    expected_machine.cpu.main.f = 0x01u;
+                    expected_machine.memory[0u] = (wz_byte_t)(0x80u + operation * 8u);
+                    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+                        wz_z80_step(&expected_machine) != WZ_RESULT_OK ||
+                        wz_z80_step(&machine) != WZ_RESULT_OK ||
+                        machine.cpu.main.a != expected_machine.cpu.main.a ||
+                        machine.cpu.main.f != expected_machine.cpu.main.f ||
+                        machine.cpu.program_counter != (source_code == 6u ? 3u : 2u) ||
+                        machine.cpu.r != 2u ||
+                        machine.master_tick != (source_code == 6u ? 38u : 16u) ||
+                        machine.cpu.memptr != (source_code == 6u ? indexed_address : 0x2468u) ||
+                        bus_log.count != (source_code == 6u ? 5u : 2u) ||
+                        (source_code == 6u &&
+                         (bus_log.requests[2].cycle != WZ_BUS_MEMORY_READ ||
+                          bus_log.requests[2].master_tick != 16u ||
+                          bus_log.requests[3].cycle != WZ_BUS_INTERNAL ||
+                          bus_log.requests[3].master_tick != 22u ||
+                          bus_log.requests[3].t_states != 5u ||
+                          bus_log.requests[4].cycle != WZ_BUS_MEMORY_READ ||
+                          bus_log.requests[4].master_tick != 32u ||
+                          bus_log.requests[4].address != indexed_address ||
+                          bus_log.requests[4].value != operand))) {
+                        fprintf(stderr, "Z80 indexed ALU matrix failed: prefix=%02x opcode=%02x\n",
+                                (unsigned)prefix_value, (unsigned)indexed_opcode);
+                        return 1;
+                    }
+                }
+            }
+        }
+    }
+
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
         fputs("machine reset before indexed CB rotate test failed\n", stderr);
         return 1;

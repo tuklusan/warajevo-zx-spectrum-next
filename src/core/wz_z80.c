@@ -771,12 +771,14 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
     opcode = machine->memory[machine->cpu.program_counter];
     source = (wz_byte_t)(opcode & 0x07u);
     target = (wz_byte_t)((opcode >> 3u) & 0x07u);
-    if (!(opcode >= 0x40u && opcode <= 0x7fu && opcode != 0x76u &&
-          ((source != WZ_Z80_TARGET_HL_INDIRECT &&
-            target != WZ_Z80_TARGET_HL_INDIRECT &&
-            (source == 4u || source == 5u || target == 4u || target == 5u)) ||
-           source == WZ_Z80_TARGET_HL_INDIRECT ||
-           target == WZ_Z80_TARGET_HL_INDIRECT))) {
+    if (!((opcode >= 0x40u && opcode <= 0x7fu && opcode != 0x76u &&
+           ((source != WZ_Z80_TARGET_HL_INDIRECT &&
+             target != WZ_Z80_TARGET_HL_INDIRECT &&
+             (source == 4u || source == 5u || target == 4u || target == 5u)) ||
+            source == WZ_Z80_TARGET_HL_INDIRECT ||
+            target == WZ_Z80_TARGET_HL_INDIRECT)) ||
+          (opcode >= 0x80u && opcode <= 0xbfu &&
+           (source == 4u || source == 5u || source == WZ_Z80_TARGET_HL_INDIRECT)))) {
         switch (opcode) {
         case 0x09u: case 0x19u: case 0x21u: case 0x22u: case 0x23u:
         case 0x24u: case 0x25u: case 0x26u: case 0x29u: case 0x2au: case 0x2bu:
@@ -795,6 +797,31 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
     machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
     wz_z80_increment_r(&machine->cpu);
     index = active_prefix == 0xddu ? &machine->cpu.ix : &machine->cpu.iy;
+
+    if (opcode >= 0x80u && opcode <= 0xbfu) {
+        if (source == 4u) {
+            value = (wz_byte_t)(*index >> 8u);
+        } else if (source == 5u) {
+            value = (wz_byte_t)(*index & 0xffu);
+        } else {
+            if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,
+                           machine->cpu.program_counter, &displacement, 3u) != WZ_RESULT_OK) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+            machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
+            address = (wz_word_t)(*index + (wz_word_t)(int16_t)(int8_t)displacement);
+            machine->cpu.memptr = address;
+            if (wz_z80_bus(machine, WZ_BUS_INTERNAL, 14u,
+                           address, 0, 5u) != WZ_RESULT_OK ||
+                wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 24u,
+                           address, &value, 3u) != WZ_RESULT_OK) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+        }
+        wz_z80_execute_alu_value(&machine->cpu, (wz_byte_t)((opcode >> 3u) & 0x07u), value);
+        machine->master_tick += source == WZ_Z80_TARGET_HL_INDIRECT ? 30u : 8u;
+        return WZ_RESULT_OK;
+    }
 
     if (opcode >= 0x40u && opcode <= 0x7fu && opcode != 0x76u &&
         (source == WZ_Z80_TARGET_HL_INDIRECT ||
