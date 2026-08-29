@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 71,
+  "next_cr_number": 72,
   "status_values": [
     "open",
     "in_progress",
@@ -832,6 +832,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 11 and 36.1", "design/fuse-z80-test-suite.md", "upstream/main src/spectrum-kernel/Z80.ASM DD/FD tables and indexed ALU helpers"],
       "notes": "Closed on 2026-08-29 for the complete DD/FD 80-BF ALU operand family: IXH/IYH, IXL/IYL, and signed indexed-memory operands for ADD, ADC, SUB, SBC, AND, XOR, OR, and CP. Linux CR0070-ALU-LINUX-R1, Windows 10 CR0070-ALU-WIN10-R1, and Windows 11 CR0070-ALU-WIN11-R1 passed CTest and all 47 applicable corpus cases with 1,352/1,356 complete results, four remaining indexed stack-pair cases, zero unexpected failures, and zero silent skips. The focused CTest matrix covers all 48 substitutions, including FD B4, which has no separate corpus case. CODE, TEST_ARTIFACT, candidate-baseline CODE, documentation, and hosted gates passed. The final upstream zero-gap scan leaves only DD/FD E1 and E5 indexed stack-pair operations for a separate follow-on CR."
+    },
+    {
+      "cr_number": "CR-0071",
+      "title": "Implement indexed POP and PUSH stack-pair forms",
+      "status": "open",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 11 and 36.1", "design/fuse-z80-test-suite.md", "upstream/main src/spectrum-kernel/Z80.ASM DD/FD tables, POPIX, POPIY, PUSHIX, and PUSHIY"],
+      "notes": "Opened on 2026-08-29 for all remaining pinned indexed stack-pair operations: DD/FD E1 and E5. The preflight requires IX/IY selection, exact stack byte order, primary-compatible timing and state preservation, and an adjacent-handler zero-gap scan."
     }
   ]
 }
