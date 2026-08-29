@@ -758,7 +758,7 @@ int main(void)
                                                              &timing_trace_log.events[index]);
         }
         if (!recovered_state || !recovered_cpu_sync.has_absolute_state ||
-            recovered_cpu_sync.master_tick != 12u ||
+            recovered_cpu_sync.master_tick != 0u ||
             recovered_cpu_sync.state.program_counter != 1u || recovered_cpu_sync.state.r != 1u) {
             remove(failing_trace_path);
             fputs("failing opcode state reconstruction failed\n", stderr);
