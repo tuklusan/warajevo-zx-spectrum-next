@@ -94,6 +94,10 @@ if(WZSN_ENABLE_REVIEW_GATE_TESTS)
         NAME fuse_harness_gate_tests
         COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tests/test_fuse_harness_gate.py
     )
+    add_test(
+        NAME fuse_review_evidence_tests
+        COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tests/test_fuse_review_evidence.py
+    )
 endif()
 
 add_custom_target(wz_gui_stub)
