@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 63,
+  "next_cr_number": 64,
   "status_values": [
     "open",
     "in_progress",
@@ -776,6 +776,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 11 and 36.1", "design/fuse-z80-test-suite.md", "upstream/main src/spectrum-kernel/Z80.ASM EXMSPHL, EXMSPIX, and EXMSPIY"],
       "notes": "Opened after the pinned complete Fuse baseline isolated e3, dde3, and fde3 as the remaining stack-exchange gap. Implement primary EX (SP),HL and DD/FD IX/IY forms, ordered stack reads/writes including address wrap, preservation of flags and unrelated registers, correct PC/R/prefix behavior, and the documented 19/23 T-state timing. Replace stale test sentinels that used E3 as an unsupported opcode before enabling its implementation. Required preflight upstream scan is recorded in design/cr-preflight/CR-0062.md. Immutable CODE review passed for 32897589cb2ef418ec44f8665807e752d9ccc001..646765729e5f9e9900d4287370ce89e154f7b8fe. Linux CR0062-EXSP-LINUX-R2, Windows 10 CR0062-EXSP-WIN10-R1, and Windows 11 CR0062-EXSP-WIN11-R1 passed CTest and each recorded 1,215/1,356 pinned Fuse cases, 141 known unresolved cases exactly matching the baseline, zero unexpected failures, and zero silent skips. Compact three-platform TEST_ARTIFACT review CR0062-EXSP-3PLAT-R3 passed after packaging the verified result fields into a machine-readable summary. Hosted platform-smoke 33211936442 and repository-gates 33211936409 passed. The final upstream E3 exchange scan found no undispositioned behavior. DOCUMENTATION review passed with packet manifest hash 2f87bd243f46a83e8b222efa5f543966d52a3cfce12c84eece3a114dca26c227; CR closed."
+    },
+    {
+      "cr_number": "CR-0063",
+      "title": "Produce bounded provenance-bound Fuse review summaries",
+      "status": "in_progress",
+      "source_authority": ["design/deepseek-review-gate.md Review Types And Artifacts and Verdict Contract", "design/fuse-z80-test-suite.md", "WORKFLOW.md external review and remote-validation gates"],
+      "notes": "Opened after CR-0062 demonstrated that raw multi-platform Fuse manifests can exceed useful review context despite containing complete results. Add a deterministic harness-owned summary producer that reads only pulled remote manifests and session records, emits the project notice and exact source identities, captures required cases, baseline comparison, unexpected failures, silent skips, and per-machine totals, and fails closed on malformed, inconsistent, or incomplete evidence. The summary is private review input, never a substitute for raw artifacts, and must not alter emulator behavior or validation execution. Required functional inventory and upstream non-applicability scan are recorded in design/cr-preflight/CR-0063.md."
     }
   ]
 }
