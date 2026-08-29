@@ -787,7 +787,7 @@
     {
       "cr_number": "CR-0064",
       "title": "Implement EX DE,HL and prefixed retention semantics",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 11 and 36.1", "design/fuse-z80-test-suite.md", "upstream/main src/spectrum-kernel/Z80.ASM EXDEHL and primary/DD/FD dispatch tables"],
       "notes": "Opened after the pinned complete Fuse baseline isolated eb as an unresolved primary operation. Implement the DE/HL exchange with exact 4 T-state primary behavior, preserved flags and unrelated state, and the upstream DD/FD prefixed retention behavior. Remove only eb from the unresolved baseline; preserve unrelated primary and indexed gaps. Required functional inventory and upstream zero-gap scan are recorded in design/cr-preflight/CR-0064.md. Closed on 2026-08-29 after immutable CODE review passed for d3e14f656800d8ca3e2b1e601a70037a5e1dc25f..8cf3da9ca5352c1abab5e1b6d6e158c4f9262d30; Linux CR0064-EXDEHL-LINUX-R3, Windows 10 CR0064-EXDEHL-WIN10-R4, and Windows 11 CR0064-EXDEHL-WIN11-R2 passed CMake and complete Fuse validation; compact three-platform TEST_ARTIFACT review CR0064-EXDEHL-3PLAT-R1 passed; hosted repository-gates 33234485060 and platform-smoke 33234485084 passed; documentation review passed; final upstream boundary scan found no undispositioned behavior."
     }
