@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 70,
+  "next_cr_number": 71,
   "status_values": [
     "open",
     "in_progress",
@@ -825,6 +825,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 11 and 36.1", "design/fuse-z80-test-suite.md", "upstream/main src/spectrum-kernel/Z80.ASM DD/FD tables, LDBMIX through LDAMIX, and LDMIXB through LDMIXA routines"],
       "notes": "Opened for all DD/FD indexed-memory byte loads and stores in the 40-7F transfer matrix. Candidate closure on 2026-08-29: all 28 scoped baseline cases passed CTest and Fuse validation on Linux, Windows 10, and Windows 11 with no silent skips or unexpected failures; CODE, TEST_ARTIFACT, and hosted validation passed. The final DD/FD table and helper scan found no undispositioned memory-transfer behavior. Indexed ALU forms remain explicitly deferred. Closure evidence is recorded in design/cr-preflight/CR-0069.md."
+    },
+    {
+      "cr_number": "CR-0070",
+      "title": "Implement the full indexed ALU operand family",
+      "status": "open",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 11 and 36.1", "design/fuse-z80-test-suite.md", "upstream/main src/spectrum-kernel/Z80.ASM DD/FD tables and indexed ALU helpers"],
+      "notes": "Opened on 2026-08-29 for the complete DD/FD 80-BF ALU operand family: IXH/IYH, IXL/IYL, and signed indexed-memory operands for ADD, ADC, SUB, SBC, AND, XOR, OR, and CP. The functional preflight records the required all-48-form boundary. DD/FD E1 and E5 indexed stack-pair operations remain separately deferred."
     }
   ]
 }
