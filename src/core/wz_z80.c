@@ -203,7 +203,7 @@ static const wz_z80_opcode_decode_t wz_z80_primary_opcode_table[256] = {
     WZ_Z80_PREFIX(0xedu, WZ_Z80_PRIMARY_OP_PREFIX_ED),
     WZ_Z80_IMPL(0xeeu, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xefu, WZ_Z80_PRIMARY_OP_RST), WZ_Z80_IMPL(0xf0u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_IMPL(0xf1u, WZ_Z80_PRIMARY_OP_POP),
     WZ_Z80_IMPL(0xf2u, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_IMPL(0xf3u, WZ_Z80_PRIMARY_OP_DI), WZ_Z80_IMPL(0xf4u, WZ_Z80_PRIMARY_OP_CALL), WZ_Z80_IMPL(0xf5u, WZ_Z80_PRIMARY_OP_PUSH),
-    WZ_Z80_IMPL(0xf6u, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xf7u, WZ_Z80_PRIMARY_OP_RST), WZ_Z80_IMPL(0xf8u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_UN(0xf9u),
+    WZ_Z80_IMPL(0xf6u, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xf7u, WZ_Z80_PRIMARY_OP_RST), WZ_Z80_IMPL(0xf8u, WZ_Z80_PRIMARY_OP_RET), WZ_Z80_IMPL(0xf9u, WZ_Z80_PRIMARY_OP_LD_SP_RR),
     WZ_Z80_IMPL(0xfau, WZ_Z80_PRIMARY_OP_BRANCH), WZ_Z80_IMPL(0xfbu, WZ_Z80_PRIMARY_OP_EI), WZ_Z80_IMPL(0xfcu, WZ_Z80_PRIMARY_OP_CALL),
     WZ_Z80_PREFIX(0xfdu, WZ_Z80_PRIMARY_OP_PREFIX_FD),
     WZ_Z80_IMPL(0xfeu, WZ_Z80_PRIMARY_OP_ALU), WZ_Z80_IMPL(0xffu, WZ_Z80_PRIMARY_OP_RST)
@@ -2371,6 +2371,10 @@ execute_opcode:
         machine->cpu.iff2 = 1u;
         machine->cpu.interrupt_enable_delay = 1u;
         machine->master_tick += 8u;
+        return WZ_RESULT_OK;
+    case WZ_Z80_PRIMARY_OP_LD_SP_RR:
+        machine->cpu.stack_pointer = wz_z80_hl(&machine->cpu);
+        machine->master_tick += 12u;
         return WZ_RESULT_OK;
     case WZ_Z80_PRIMARY_OP_PREFIX_CB:
         if (wz_z80_bus(machine, WZ_BUS_M1_OPCODE_FETCH, 4u,
