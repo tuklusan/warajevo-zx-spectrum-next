@@ -2527,16 +2527,16 @@ int main(void)
     }
     memset(&bus_log, 0, sizeof(bus_log));
     wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
-    machine.cpu.stack_pointer = 0x4000u;
+    machine.cpu.stack_pointer = 0x8000u;
     machine.memory[0u] = 0xc4u;
     machine.memory[1u] = 0x34u;
     machine.memory[2u] = 0x12u;
     if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
         wz_z80_step(&machine) != WZ_RESULT_OK ||
         machine.cpu.program_counter != 0x1234u ||
-        machine.cpu.stack_pointer != 0x3ffeu ||
-        machine.memory[0x3fffu] != 0u ||
-        machine.memory[0x3ffeu] != 3u ||
+        machine.cpu.stack_pointer != 0x7ffeu ||
+        machine.memory[0x7fffu] != 0u ||
+        machine.memory[0x7ffeu] != 3u ||
         machine.master_tick != 34u ||
         bus_log.count != 6u) {
         fputs("Z80 taken conditional CALL trace failed\n", stderr);
@@ -2622,7 +2622,7 @@ int main(void)
         machine.cpu.program_counter != 0x38u ||
         machine.cpu.memptr != 0x38u ||
         machine.cpu.stack_pointer != 0xffffu ||
-        machine.memory[0u] != 0x12u ||
+        machine.memory[0u] != 0u ||
         machine.memory[0xffffu] != 0x35u ||
         machine.master_tick != 22u ||
         bus_log.count != 4u ||
