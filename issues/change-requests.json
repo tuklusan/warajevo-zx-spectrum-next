@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 72,
+  "next_cr_number": 73,
   "status_values": [
     "open",
     "in_progress",
@@ -839,6 +839,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 11 and 36.1", "design/fuse-z80-test-suite.md", "upstream/main src/spectrum-kernel/Z80.ASM DD/FD tables, POPIX, POPIY, PUSHIX, and PUSHIY"],
       "notes": "Closed on 2026-08-30 after implementing all remaining pinned indexed stack-pair operations: DD/FD E1 and E5. The preflight requires IX/IY selection, exact stack byte order, primary-compatible timing and state preservation, and an adjacent-handler zero-gap scan. Implementation and baseline-disposition CODE reviews passed with no confirmed findings; Linux remote run CR0071-STACK-LINUX-R2 passed CTest and all 1,356 pinned Fuse vectors, including dde1, dde5, fde1, and fde5, with zero unresolved cases, silent skips, or unexpected failures; TEST_ARTIFACT review passed; hosted repository-gates 33322942223 and platform-smoke 33322942161 passed across Linux x64/ARM64, Windows x64, and macOS ARM64/Intel. Windows 10 SSH timed out before execution; Windows 11 synchronized the reviewed revision but ended the SSH transport with code 255 before smoke execution. These infrastructure exceptions are documented in the preflight and are covered by the successful hosted Windows validation."
+    },
+    {
+      "cr_number": "CR-0072",
+      "title": "Audit and complete Phase-2 project-owned CPU acceptance coverage",
+      "status": "open",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 36.1 and 39", "design/wzsn-architectures-1-2-developer-tasks.md task 061", "reference/original-warajevo/source/src/spectrum-kernel/Z80.ASM"],
+      "notes": "Opened on 2026-08-30 to establish complete project-owned CPU acceptance coverage beyond the pinned Fuse corpus. The mandatory functional inventory and upstream zero-gap exit scan are recorded in design/cr-preflight/CR-0072.md."
     }
   ]
 }
