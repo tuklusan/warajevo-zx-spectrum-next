@@ -843,7 +843,7 @@
     {
       "cr_number": "CR-0072",
       "title": "Audit and complete Phase-2 project-owned CPU acceptance coverage",
-      "status": "open",
+      "status": "in_progress",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 36.1 and 39", "design/wzsn-architectures-1-2-developer-tasks.md task 061", "reference/original-warajevo/source/src/spectrum-kernel/Z80.ASM"],
       "notes": "Opened on 2026-08-30 to establish complete project-owned CPU acceptance coverage beyond the pinned Fuse corpus. The mandatory functional inventory and upstream zero-gap exit scan are recorded in design/cr-preflight/CR-0072.md."
     }
