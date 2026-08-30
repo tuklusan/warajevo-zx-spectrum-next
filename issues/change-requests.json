@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 73,
+  "next_cr_number": 74,
   "status_values": [
     "open",
     "in_progress",
@@ -846,6 +846,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 36.1 and 39", "design/wzsn-architectures-1-2-developer-tasks.md task 061", "reference/original-warajevo/source/src/spectrum-kernel/Z80.ASM"],
       "notes": "Closed on 2026-08-30 after establishing complete project-owned CPU acceptance coverage beyond the pinned Fuse corpus. design/cpu-acceptance-coverage.md maps each Phase-2 CPU category to direct deterministic test evidence and explicitly defers named later-phase behavior. The preserved Z80.ASM primary, CB, ED, DD, FD, HALT, and interrupt paths were scanned with no inherited CPU behavior lacking a covered or phase-owned disposition. CODE, TEST_ARTIFACT, and DOCUMENTATION reviews passed without findings; Linux CR0072-CPU-COVERAGE-LINUX-R1 passed CTest and all 1,356 pinned Fuse vectors with zero unresolved cases, silent skips, or unexpected failures; hosted repository-gates 33323487400 and platform-smoke 33323487382 passed across Linux x64/ARM64, Windows x64, and macOS ARM64/Intel."
+    },
+    {
+      "cr_number": "CR-0073",
+      "title": "Demonstrate TIMING_FULL eight-frame retention and close the Phase-2 gate",
+      "status": "open",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 36.1, 44.1, 44.2, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 062"],
+      "notes": "Opened on 2026-08-30 to provide the remaining measured TIMING_FULL trace-retention evidence for the Phase-2 gate. The required functional inventory and zero-gap exit scan are recorded in design/cr-preflight/CR-0073.md."
     }
   ]
 }
