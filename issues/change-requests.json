@@ -836,7 +836,7 @@
     {
       "cr_number": "CR-0071",
       "title": "Implement indexed POP and PUSH stack-pair forms",
-      "status": "open",
+      "status": "in_progress",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 11 and 36.1", "design/fuse-z80-test-suite.md", "upstream/main src/spectrum-kernel/Z80.ASM DD/FD tables, POPIX, POPIY, PUSHIX, and PUSHIY"],
       "notes": "Opened on 2026-08-29 for all remaining pinned indexed stack-pair operations: DD/FD E1 and E5. The preflight requires IX/IY selection, exact stack byte order, primary-compatible timing and state preservation, and an adjacent-handler zero-gap scan."
     }
