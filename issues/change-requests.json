@@ -857,9 +857,9 @@
     {
       "cr_number": "CR-0074",
       "title": "Implement 48K ROM and RAM routing through the machine bus",
-      "status": "blocked",
+      "status": "in_progress",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 12 and 29", "design/wzsn-architectures-1-2-developer-tasks.md task 063"],
-      "notes": "Blocked on 2026-08-30 after the reviewed implementation exposed and corrected a ROM-protected wrap fixture on the Linux remote. The required follow-up CODE review cannot complete because the reviewer account reports HTTP 402 insufficient balance. CR-0075 records a fail-closed transport-diagnostic repair; resume this CR only after the review gate accepts an authenticated health check and the follow-up review passes."
+      "notes": "Resumed on 2026-08-30 after the reviewer health check returned available. The reviewed implementation exposed and corrected a ROM-protected wrap fixture on the Linux remote. CR-0075 preserves actionable non-secret HTTP status through the deadline transport; both CRs require fresh CODE review before publication, remote validation, and closure."
     },
     {
       "cr_number": "CR-0075",
