@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 74,
+  "next_cr_number": 75,
   "status_values": [
     "open",
     "in_progress",
@@ -853,6 +853,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 36.1, 44.1, 44.2, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 062"],
       "notes": "Closed on 2026-08-30 after providing the measured TIMING_FULL trace-retention evidence for the Phase-2 gate. CODE, TEST_ARTIFACT, and DOCUMENTATION reviews passed without findings; Linux CR0073-TIMING-FULL-LINUX-R1 passed the production traced workload, CTest, and all 1,356 pinned Fuse vectors with no unresolved cases, silent skips, or unexpected failures. The fixture executes 160,000 traced NOP instructions through the normal CPU, bus, trace, freeze, and recovery paths and proves fixed 16 MiB capacity, retained instruction/bus records, and an eight-frame retained window. Hosted repository-gates 33323888596 and platform-smoke 33323888561 passed across Linux x64/ARM64, Windows x64, and macOS ARM64/Intel."
+    },
+    {
+      "cr_number": "CR-0074",
+      "title": "Implement 48K ROM and RAM routing through the machine bus",
+      "status": "open",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 12 and 29", "design/wzsn-architectures-1-2-developer-tasks.md task 063"],
+      "notes": "Opened on 2026-08-30 for the Phase-3 48K memory-map foundation. The required functional inventory and upstream zero-gap exit scan are recorded in design/cr-preflight/CR-0074.md."
     }
   ]
 }
