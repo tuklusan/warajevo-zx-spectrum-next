@@ -783,7 +783,7 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
         case 0x09u: case 0x19u: case 0x21u: case 0x22u: case 0x23u:
         case 0x24u: case 0x25u: case 0x26u: case 0x29u: case 0x2au: case 0x2bu:
         case 0x2cu: case 0x2du: case 0x2eu: case 0x34u: case 0x35u: case 0x36u:
-        case 0x39u: case 0xe3u: case 0xe9u: case 0xf9u:
+        case 0x39u: case 0xe1u: case 0xe3u: case 0xe5u: case 0xe9u: case 0xf9u:
             break;
         default:
             return wz_z80_step(machine);
@@ -1060,6 +1060,39 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
     case 0xf9u:
         machine->cpu.stack_pointer = *index;
         machine->master_tick += 12u;
+        return WZ_RESULT_OK;
+    case 0xe1u:
+        if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,
+                       machine->cpu.stack_pointer, &low, 3u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->cpu.stack_pointer = wz_z80_add16(machine->cpu.stack_pointer, 1u);
+        if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 14u,
+                       machine->cpu.stack_pointer, &high, 3u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->cpu.stack_pointer = wz_z80_add16(machine->cpu.stack_pointer, 1u);
+        *index = (wz_word_t)low | ((wz_word_t)high << 8u);
+        machine->master_tick += 20u;
+        return WZ_RESULT_OK;
+    case 0xe5u:
+        if (wz_z80_bus(machine, WZ_BUS_INTERNAL, 8u,
+                       machine->cpu.stack_pointer, 0, 1u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->cpu.stack_pointer = wz_z80_add16(machine->cpu.stack_pointer, 0xffffu);
+        value = (wz_byte_t)(*index >> 8u);
+        if (wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 10u,
+                       machine->cpu.stack_pointer, &value, 3u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->cpu.stack_pointer = wz_z80_add16(machine->cpu.stack_pointer, 0xffffu);
+        value = (wz_byte_t)(*index & 0xffu);
+        if (wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 16u,
+                       machine->cpu.stack_pointer, &value, 3u) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->master_tick += 22u;
         return WZ_RESULT_OK;
     default:
         return WZ_RESULT_UNSUPPORTED_OPERATION;

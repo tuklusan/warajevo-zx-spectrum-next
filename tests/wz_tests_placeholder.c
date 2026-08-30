@@ -1422,6 +1422,77 @@ int main(void)
         }
     }
 
+    {
+        static const wz_byte_t indexed_stack_opcodes[] = { 0xe1u, 0xe5u };
+        for (size_t prefix_index = 0u; prefix_index < 2u; prefix_index += 1u) {
+            wz_byte_t prefix_value = prefix_index == 0u ? 0xddu : 0xfdu;
+            for (size_t opcode_index = 0u;
+                 opcode_index < sizeof(indexed_stack_opcodes) / sizeof(indexed_stack_opcodes[0]);
+                 opcode_index += 1u) {
+                wz_byte_t stack_opcode = indexed_stack_opcodes[opcode_index];
+                wz_word_t* selected_index;
+                wz_word_t* unselected_index;
+
+                if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+                    fputs("machine reset before indexed stack-pair matrix test failed\n", stderr);
+                    return 1;
+                }
+                memset(&bus_log, 0, sizeof(bus_log));
+                wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+                machine.cpu.main.f = 0x5au;
+                machine.cpu.memptr = 0x2468u;
+                machine.cpu.stack_pointer = 0x8000u;
+                machine.memory[0u] = prefix_value;
+                machine.memory[1u] = stack_opcode;
+                selected_index = prefix_value == 0xddu ? &machine.cpu.ix : &machine.cpu.iy;
+                unselected_index = prefix_value == 0xddu ? &machine.cpu.iy : &machine.cpu.ix;
+                *selected_index = 0x1234u;
+                *unselected_index = 0xbeefu;
+                if (stack_opcode == 0xe1u) {
+                    *selected_index = 0xdeadu;
+                    machine.memory[0x8000u] = 0x34u;
+                    machine.memory[0x8001u] = 0x12u;
+                }
+                if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+                    wz_z80_step(&machine) != WZ_RESULT_OK ||
+                    *selected_index != 0x1234u || *unselected_index != 0xbeefu ||
+                    machine.cpu.main.f != 0x5au || machine.cpu.memptr != 0x2468u ||
+                    machine.cpu.program_counter != 2u || machine.cpu.r != 2u ||
+                    machine.cpu.stack_pointer != (stack_opcode == 0xe1u ? 0x8002u : 0x7ffeu) ||
+                    machine.master_tick != (stack_opcode == 0xe1u ? 28u : 30u) ||
+                    bus_log.count != (stack_opcode == 0xe1u ? 4u : 5u) ||
+                    (stack_opcode == 0xe1u &&
+                     (bus_log.requests[2].cycle != WZ_BUS_MEMORY_READ ||
+                      bus_log.requests[2].master_tick != 16u ||
+                      bus_log.requests[2].address != 0x8000u ||
+                      bus_log.requests[3].cycle != WZ_BUS_MEMORY_READ ||
+                      bus_log.requests[3].master_tick != 22u ||
+                      bus_log.requests[3].address != 0x8001u)) ||
+                    (stack_opcode == 0xe5u &&
+                     (bus_log.requests[2].cycle != WZ_BUS_INTERNAL ||
+                      bus_log.requests[2].master_tick != 16u ||
+                      bus_log.requests[2].t_states != 1u ||
+                      bus_log.requests[3].cycle != WZ_BUS_MEMORY_WRITE ||
+                      bus_log.requests[3].master_tick != 20u ||
+                      bus_log.requests[3].address != 0x7fffu ||
+                      bus_log.requests[3].value != 0x12u ||
+                      bus_log.requests[4].cycle != WZ_BUS_MEMORY_WRITE ||
+                      bus_log.requests[4].master_tick != 26u ||
+                      bus_log.requests[4].address != 0x7ffeu ||
+                      bus_log.requests[4].value != 0x34u))) {
+                    fprintf(stderr, "Z80 indexed stack-pair matrix failed: prefix=%02x opcode=%02x\n",
+                            (unsigned)prefix_value, (unsigned)stack_opcode);
+                    return 1;
+                }
+                if (stack_opcode == 0xe5u &&
+                    machine.memory[0x7ffeu] != 0x34u) {
+                    fputs("Z80 indexed stack-pair low write failed\n", stderr);
+                    return 1;
+                }
+            }
+        }
+    }
+
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
         fputs("machine reset before indexed CB rotate test failed\n", stderr);
         return 1;
