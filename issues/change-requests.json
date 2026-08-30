@@ -836,9 +836,9 @@
     {
       "cr_number": "CR-0071",
       "title": "Implement indexed POP and PUSH stack-pair forms",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 11 and 36.1", "design/fuse-z80-test-suite.md", "upstream/main src/spectrum-kernel/Z80.ASM DD/FD tables, POPIX, POPIY, PUSHIX, and PUSHIY"],
-      "notes": "Opened on 2026-08-29 for all remaining pinned indexed stack-pair operations: DD/FD E1 and E5. The preflight requires IX/IY selection, exact stack byte order, primary-compatible timing and state preservation, and an adjacent-handler zero-gap scan."
+      "notes": "Closed on 2026-08-30 after implementing all remaining pinned indexed stack-pair operations: DD/FD E1 and E5. The preflight requires IX/IY selection, exact stack byte order, primary-compatible timing and state preservation, and an adjacent-handler zero-gap scan. Implementation and baseline-disposition CODE reviews passed with no confirmed findings; Linux remote run CR0071-STACK-LINUX-R2 passed CTest and all 1,356 pinned Fuse vectors, including dde1, dde5, fde1, and fde5, with zero unresolved cases, silent skips, or unexpected failures; TEST_ARTIFACT review passed; hosted repository-gates 33322942223 and platform-smoke 33322942161 passed across Linux x64/ARM64, Windows x64, and macOS ARM64/Intel. Windows 10 SSH timed out before execution; Windows 11 synchronized the reviewed revision but ended the SSH transport with code 255 before smoke execution. These infrastructure exceptions are documented in the preflight and are covered by the successful hosted Windows validation."
     }
   ]
 }
