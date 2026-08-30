@@ -58,6 +58,27 @@ static bool recover_timing_trace(const wz_trace_event_t* event, void* context)
 }
 
 typedef struct {
+    wz_qword_t first_master_tick;
+    wz_qword_t last_master_tick;
+    size_t count;
+    bool saw_bus;
+    bool saw_instruction;
+} retention_trace_log_t;
+
+static bool recover_retention_trace(const wz_trace_event_t* event, void* context)
+{
+    retention_trace_log_t* log = (retention_trace_log_t*)context;
+    if (log->count == 0u) {
+        log->first_master_tick = event->master_tick;
+    }
+    log->last_master_tick = event->master_tick;
+    log->saw_bus = log->saw_bus || event->kind == WZ_TRACE_CPU_BUS;
+    log->saw_instruction = log->saw_instruction || event->kind == WZ_TRACE_CPU_INSTRUCTION;
+    log->count += 1u;
+    return true;
+}
+
+typedef struct {
     wz_bus_request_t requests[8];
     size_t count;
 } bus_log_t;
@@ -117,6 +138,7 @@ int main(void)
     wz_bus_request_t bus_request;
     bus_log_t bus_log;
     timing_trace_log_t timing_trace_log;
+    retention_trace_log_t retention_trace_log;
     wz_trace_cpu_state_sync_t recovered_cpu_sync;
     wz_qword_t recovered_last = 0u;
     size_t recovered_count = 0u;
@@ -137,6 +159,7 @@ int main(void)
     const char* trace_path = "wz-trace-regression.bin";
     const char* failing_trace_path = "wz-trace-failing-opcode.bin";
     const char* state_trace_path = "wz-trace-state-regression.bin";
+    const char* timing_full_trace_path = "wz-trace-timing-full-retention.bin";
 
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
         fputs("machine initialization failed\n", stderr);
@@ -3269,6 +3292,56 @@ int main(void)
         return 1;
     }
     remove(trace_path);
+
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before timing-full retention test failed\n", stderr);
+        return 1;
+    }
+    remove(timing_full_trace_path);
+    if (wz_trace_file_create(&trace_file, timing_full_trace_path, 5u,
+                             (wz_dword_t)profile->kind, 0x9abcu, UINT32_MAX) != WZ_RESULT_OK) {
+        fputs("timing-full retention trace creation failed\n", stderr);
+        return 1;
+    }
+    wz_trace_sink_init(&trace_sink, wz_trace_file_emit, &trace_file);
+    wz_machine_set_timing_trace(&machine, &trace_sink);
+    for (wz_qword_t index = 0u; index < 160000u; ++index) {
+        if (wz_z80_step(&machine) != WZ_RESULT_OK) {
+            wz_trace_file_close(&trace_file);
+            remove(timing_full_trace_path);
+            fputs("timing-full retention workload execution failed\n", stderr);
+            return 1;
+        }
+    }
+    if (wz_trace_file_freeze(&trace_file) != WZ_RESULT_OK) {
+        wz_trace_file_close(&trace_file);
+        remove(timing_full_trace_path);
+        fputs("timing-full retention trace freeze failed\n", stderr);
+        return 1;
+    }
+    wz_trace_file_close(&trace_file);
+    memset(&retention_trace_log, 0, sizeof(retention_trace_log));
+    if (wz_trace_file_recover(timing_full_trace_path, recover_retention_trace,
+                              &retention_trace_log, &recovered_count) != WZ_RESULT_OK ||
+        retention_trace_log.count != recovered_count ||
+        retention_trace_log.count < (8u * 69888u) ||
+        !retention_trace_log.saw_bus || !retention_trace_log.saw_instruction ||
+        retention_trace_log.last_master_tick > machine.master_tick ||
+        retention_trace_log.first_master_tick >
+            machine.master_tick - (8u * 69888u)) {
+        remove(timing_full_trace_path);
+        fputs("timing-full eight-frame retention failed\n", stderr);
+        return 1;
+    }
+    trace_stream = fopen(timing_full_trace_path, "rb");
+    if (trace_stream == NULL || fseek(trace_stream, 0, SEEK_END) != 0 ||
+        ftell(trace_stream) != (long)WZ_TRACE_FILE_SIZE || fclose(trace_stream) != 0) {
+        remove(timing_full_trace_path);
+        fputs("timing-full retention trace capacity failed\n", stderr);
+        return 1;
+    }
+    wz_machine_set_timing_trace(&machine, 0);
+    remove(timing_full_trace_path);
 
     remove(state_trace_path);
     if (wz_trace_file_create(&trace_file, state_trace_path, 3u,

@@ -850,7 +850,7 @@
     {
       "cr_number": "CR-0073",
       "title": "Demonstrate TIMING_FULL eight-frame retention and close the Phase-2 gate",
-      "status": "open",
+      "status": "in_progress",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 36.1, 44.1, 44.2, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 062"],
       "notes": "Opened on 2026-08-30 to provide the remaining measured TIMING_FULL trace-retention evidence for the Phase-2 gate. The required functional inventory and zero-gap exit scan are recorded in design/cr-preflight/CR-0073.md."
     }
