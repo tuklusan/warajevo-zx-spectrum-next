@@ -1248,14 +1248,14 @@ int main(void)
     memset(&bus_log, 0, sizeof(bus_log));
     wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
     machine.cpu.ix = 0x4002u;
-    machine.cpu.iy = 0x2800u;
+    machine.cpu.iy = 0x4100u;
     machine.cpu.main.f = 0x01u;
     machine.memory[0u] = 0xddu; machine.memory[1u] = 0x34u; machine.memory[2u] = 0xfeu;
     machine.memory[3u] = 0xfdu; machine.memory[4u] = 0x35u; machine.memory[5u] = 0x01u;
     machine.memory[6u] = 0xddu; machine.memory[7u] = 0x36u; machine.memory[8u] = 0xffu; machine.memory[9u] = 0xa5u;
     machine.memory[10u] = 0xfdu; machine.memory[11u] = 0x36u; machine.memory[12u] = 0x02u; machine.memory[13u] = 0x5au;
     machine.memory[0x4000u] = 0x7fu;
-    machine.memory[0x2801u] = 0x80u;
+    machine.memory[0x4101u] = 0x80u;
     if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
         wz_z80_step(&machine) != WZ_RESULT_OK || machine.memory[0x4000u] != 0x80u ||
         machine.cpu.main.f != 0x95u || machine.cpu.memptr != 0x4000u ||
@@ -1266,14 +1266,14 @@ int main(void)
         bus_log.requests[4].cycle != WZ_BUS_MEMORY_READ || bus_log.requests[4].master_tick != 32u ||
         bus_log.requests[5].cycle != WZ_BUS_INTERNAL || bus_log.requests[5].master_tick != 38u ||
         bus_log.requests[6].cycle != WZ_BUS_MEMORY_WRITE || bus_log.requests[6].master_tick != 40u ||
-        wz_z80_step(&machine) != WZ_RESULT_OK || machine.memory[0x2801u] != 0x7fu ||
-        machine.cpu.main.f != 0x3fu || machine.cpu.memptr != 0x2801u ||
+        wz_z80_step(&machine) != WZ_RESULT_OK || machine.memory[0x4101u] != 0x7fu ||
+        machine.cpu.main.f != 0x3fu || machine.cpu.memptr != 0x4101u ||
         machine.master_tick != 92u ||
         wz_z80_step(&machine) != WZ_RESULT_OK || machine.memory[0x4001u] != 0xa5u ||
         machine.cpu.memptr != 0x4001u || machine.cpu.program_counter != 10u ||
         machine.cpu.r != 6u || machine.master_tick != 130u ||
-        wz_z80_step(&machine) != WZ_RESULT_OK || machine.memory[0x2802u] != 0x5au ||
-        machine.cpu.memptr != 0x2802u || machine.cpu.program_counter != 14u ||
+        wz_z80_step(&machine) != WZ_RESULT_OK || machine.memory[0x4102u] != 0x5au ||
+        machine.cpu.memptr != 0x4102u || machine.cpu.program_counter != 14u ||
         machine.cpu.r != 8u || machine.master_tick != 168u) {
         fprintf(stderr,
                 "Z80 DD/FD indexed-memory INC/DEC/LD failed: ix=%04x iy=%04x f=%02x pc=%04x r=%02x mp=%04x tick=%llu count=%zu\n",
@@ -1377,11 +1377,11 @@ int main(void)
                 machine.cpu.main.l = 0x60u;
                 machine.cpu.main.f = 0x5au;
                 machine.cpu.ix = 0x4002u;
-                machine.cpu.iy = 0x2802u;
+                machine.cpu.iy = 0x4002u;
                 machine.memory[0u] = prefix_value;
                 machine.memory[1u] = transfer_opcode;
                 machine.memory[2u] = 0xfeu;
-                indexed_address = prefix_value == 0xddu ? 0x4000u : 0x2800u;
+                indexed_address = 0x4000u;
                 machine.memory[indexed_address] = 0xa5u;
                 expected_value = source_code == 6u ? machine.memory[indexed_address] :
                     *test_primary_register(&machine.cpu, source_code);
@@ -1582,17 +1582,17 @@ int main(void)
         fputs("machine reset before indexed CB bit test failed\n", stderr);
         return 1;
     }
-    machine.cpu.iy = 0x27ffu;
+    machine.cpu.iy = 0x3fffu;
     machine.cpu.main.b = 0x55u;
     machine.cpu.main.f = 0x01u;
     machine.memory[0u] = 0xfdu;
     machine.memory[1u] = 0xcbu;
     machine.memory[2u] = 0x01u;
     machine.memory[3u] = 0x78u;
-    machine.memory[0x2800u] = 0x80u;
+    machine.memory[0x4000u] = 0x80u;
     if (wz_z80_step(&machine) != WZ_RESULT_OK ||
-        machine.memory[0x2800u] != 0x80u || machine.cpu.main.b != 0x55u ||
-        machine.cpu.main.f != 0xb9u || machine.cpu.memptr != 0x2800u ||
+        machine.memory[0x4000u] != 0x80u || machine.cpu.main.b != 0x55u ||
+        machine.cpu.main.f != 0xb9u || machine.cpu.memptr != 0x4000u ||
         machine.cpu.program_counter != 4u || machine.cpu.r != 2u ||
         machine.master_tick != 40u) {
         fputs("Z80 FDCB BIT memory-only behavior failed\n", stderr);
@@ -1605,7 +1605,7 @@ int main(void)
     machine.memory[6u] = 0x01u;
     machine.memory[7u] = 0xdeu;
     if (wz_z80_step(&machine) != WZ_RESULT_OK ||
-        machine.memory[0x2800u] != 0x88u || machine.cpu.main.f != 0xb9u ||
+        machine.memory[0x4000u] != 0x88u || machine.cpu.main.f != 0xb9u ||
         machine.cpu.program_counter != 8u || machine.master_tick != 86u) {
         fputs("Z80 FDCB SET memory-only behavior failed\n", stderr);
         return 1;
