@@ -850,9 +850,9 @@
     {
       "cr_number": "CR-0073",
       "title": "Demonstrate TIMING_FULL eight-frame retention and close the Phase-2 gate",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 36.1, 44.1, 44.2, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 062"],
-      "notes": "Opened on 2026-08-30 to provide the remaining measured TIMING_FULL trace-retention evidence for the Phase-2 gate. The required functional inventory and zero-gap exit scan are recorded in design/cr-preflight/CR-0073.md."
+      "notes": "Closed on 2026-08-30 after providing the measured TIMING_FULL trace-retention evidence for the Phase-2 gate. CODE, TEST_ARTIFACT, and DOCUMENTATION reviews passed without findings; Linux CR0073-TIMING-FULL-LINUX-R1 passed the production traced workload, CTest, and all 1,356 pinned Fuse vectors with no unresolved cases, silent skips, or unexpected failures. The fixture executes 160,000 traced NOP instructions through the normal CPU, bus, trace, freeze, and recovery paths and proves fixed 16 MiB capacity, retained instruction/bus records, and an eight-frame retained window. Hosted repository-gates 33323888596 and platform-smoke 33323888561 passed across Linux x64/ARM64, Windows x64, and macOS ARM64/Intel."
     }
   ]
 }
