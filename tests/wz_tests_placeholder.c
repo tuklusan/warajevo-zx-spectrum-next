@@ -1592,7 +1592,7 @@ int main(void)
     machine.memory[0x4000u] = 0x80u;
     if (wz_z80_step(&machine) != WZ_RESULT_OK ||
         machine.memory[0x4000u] != 0x80u || machine.cpu.main.b != 0x55u ||
-        machine.cpu.main.f != 0xb9u || machine.cpu.memptr != 0x4000u ||
+        machine.cpu.main.f != 0x91u || machine.cpu.memptr != 0x4000u ||
         machine.cpu.program_counter != 4u || machine.cpu.r != 2u ||
         machine.master_tick != 40u) {
         fputs("Z80 FDCB BIT memory-only behavior failed\n", stderr);
@@ -1605,7 +1605,7 @@ int main(void)
     machine.memory[6u] = 0x01u;
     machine.memory[7u] = 0xdeu;
     if (wz_z80_step(&machine) != WZ_RESULT_OK ||
-        machine.memory[0x4000u] != 0x88u || machine.cpu.main.f != 0xb9u ||
+        machine.memory[0x4000u] != 0x88u || machine.cpu.main.f != 0x91u ||
         machine.cpu.program_counter != 8u || machine.master_tick != 86u) {
         fputs("Z80 FDCB SET memory-only behavior failed\n", stderr);
         return 1;
