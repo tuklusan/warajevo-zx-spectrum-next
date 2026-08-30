@@ -17,6 +17,9 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "core/wz_types.h"
 #include "core/wz_z80.h"
 
+#define WZ_48K_ROM_SIZE 16384u
+#define WZ_48K_RAM_SIZE 49152u
+
 typedef struct wz_machine {
     const wz_machine_profile_t* profile;
     wz_z80_state_t cpu;
@@ -34,5 +37,11 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
 void wz_machine_destroy(wz_machine_t* machine);
 const char* wz_machine_boot_message(void);
 void wz_machine_set_timing_trace(wz_machine_t* machine, wz_trace_sink_t* trace);
+wz_result_t wz_machine_load_48k_rom(wz_machine_t* machine,
+                                    const wz_byte_t* bytes,
+                                    size_t length);
+wz_byte_t wz_machine_memory_read(const wz_machine_t* machine, wz_word_t address);
+void wz_machine_memory_write(wz_machine_t* machine, wz_word_t address,
+                             wz_byte_t value);
 
 #endif

@@ -52,6 +52,32 @@ void wz_machine_set_timing_trace(wz_machine_t* machine, wz_trace_sink_t* trace)
     }
 }
 
+wz_result_t wz_machine_load_48k_rom(wz_machine_t* machine,
+                                    const wz_byte_t* bytes,
+                                    size_t length)
+{
+    if (machine == 0 || bytes == 0 || length != WZ_48K_ROM_SIZE) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    for (size_t index = 0u; index < WZ_48K_ROM_SIZE; ++index) {
+        machine->memory[index] = bytes[index];
+    }
+    return WZ_RESULT_OK;
+}
+
+wz_byte_t wz_machine_memory_read(const wz_machine_t* machine, wz_word_t address)
+{
+    return machine == 0 ? 0xffu : machine->memory[address];
+}
+
+void wz_machine_memory_write(wz_machine_t* machine, wz_word_t address,
+                             wz_byte_t value)
+{
+    if (machine != 0 && address >= WZ_48K_ROM_SIZE) {
+        machine->memory[address] = value;
+    }
+}
+
 const char* wz_machine_boot_message(void)
 {
     return "Warajevo ZX Spectrum Next bootstrap";

@@ -857,7 +857,7 @@
     {
       "cr_number": "CR-0074",
       "title": "Implement 48K ROM and RAM routing through the machine bus",
-      "status": "open",
+      "status": "in_progress",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 12 and 29", "design/wzsn-architectures-1-2-developer-tasks.md task 063"],
       "notes": "Opened on 2026-08-30 for the Phase-3 48K memory-map foundation. The required functional inventory and upstream zero-gap exit scan are recorded in design/cr-preflight/CR-0074.md."
     }

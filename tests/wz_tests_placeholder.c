@@ -223,6 +223,36 @@ int main(void)
         fputs("bus observer removal failed\n", stderr);
         return 1;
     }
+    {
+        static wz_byte_t rom_image[WZ_48K_ROM_SIZE];
+
+        memset(rom_image, 0, sizeof(rom_image));
+        rom_image[0x1234u] = 0x5au;
+        if (wz_machine_load_48k_rom(&machine, rom_image, sizeof(rom_image)) != WZ_RESULT_OK ||
+            wz_machine_load_48k_rom(&machine, rom_image, sizeof(rom_image) - 1u) !=
+                WZ_RESULT_INVALID_ARGUMENT) {
+            fputs("48K ROM loading contract failed\n", stderr);
+            return 1;
+        }
+        wz_bus_request_init(&bus_request, WZ_BUS_MEMORY_READ, 24u, 0x1234u, 0u, 3u);
+        if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
+            bus_request.value != 0x5au) {
+            fputs("48K ROM bus read failed\n", stderr);
+            return 1;
+        }
+        wz_bus_request_init(&bus_request, WZ_BUS_MEMORY_WRITE, 30u, 0x1234u, 0xa5u, 3u);
+        if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
+            machine.memory[0x1234u] != 0x5au) {
+            fputs("48K ROM write protection failed\n", stderr);
+            return 1;
+        }
+        wz_bus_request_init(&bus_request, WZ_BUS_MEMORY_WRITE, 36u, 0x4000u, 0xa5u, 3u);
+        if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
+            machine.memory[0x4000u] != 0xa5u) {
+            fputs("48K RAM bus write failed\n", stderr);
+            return 1;
+        }
+    }
     wz_bus_input_init(&bus_input, read_bus_input, (void*)&interrupt_value);
     wz_bus_request_init(&bus_request, WZ_BUS_IO_READ, 24u, 0x34feu, 0u, 4u);
     if (wz_machine_set_bus_input(&machine, &bus_input) != WZ_RESULT_OK ||
@@ -325,10 +355,10 @@ int main(void)
     machine.master_tick = 0u;
     machine.cpu.program_counter = 0x2050u;
     machine.cpu.main.a = 0x56u;
-    machine.cpu.main.b = 0x00u;
+    machine.cpu.main.b = 0x40u;
     machine.cpu.main.c = 0x01u;
     machine.memory[0x2050u] = 0x02u;
-    if (wz_z80_step(&machine) != WZ_RESULT_OK || machine.memory[0x0001u] != 0x56u ||
+    if (wz_z80_step(&machine) != WZ_RESULT_OK || machine.memory[0x4001u] != 0x56u ||
         machine.cpu.memptr != 0x5602u || machine.master_tick != 14u) {
         fputs("LD (BC),A MEMPTR state failed\n", stderr);
         return 1;

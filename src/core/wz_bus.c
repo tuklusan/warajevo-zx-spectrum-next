@@ -88,10 +88,10 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
     switch (request->cycle) {
     case WZ_BUS_M1_OPCODE_FETCH:
     case WZ_BUS_MEMORY_READ:
-        request->value = machine->memory[request->address];
+        request->value = wz_machine_memory_read(machine, request->address);
         break;
     case WZ_BUS_MEMORY_WRITE:
-        machine->memory[request->address] = request->value;
+        wz_machine_memory_write(machine, request->address, request->value);
         break;
     case WZ_BUS_IO_READ:
     case WZ_BUS_INTERRUPT_ACKNOWLEDGE:
