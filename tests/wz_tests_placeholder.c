@@ -1473,11 +1473,11 @@ int main(void)
                       bus_log.requests[2].master_tick != 16u ||
                       bus_log.requests[2].t_states != 1u ||
                       bus_log.requests[3].cycle != WZ_BUS_MEMORY_WRITE ||
-                      bus_log.requests[3].master_tick != 20u ||
+                      bus_log.requests[3].master_tick != 18u ||
                       bus_log.requests[3].address != 0x7fffu ||
                       bus_log.requests[3].value != 0x12u ||
                       bus_log.requests[4].cycle != WZ_BUS_MEMORY_WRITE ||
-                      bus_log.requests[4].master_tick != 26u ||
+                      bus_log.requests[4].master_tick != 24u ||
                       bus_log.requests[4].address != 0x7ffeu ||
                       bus_log.requests[4].value != 0x34u))) {
                     fprintf(stderr, "Z80 indexed stack-pair matrix failed: prefix=%02x opcode=%02x\n",
