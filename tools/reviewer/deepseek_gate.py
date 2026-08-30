@@ -686,12 +686,28 @@ class DeepSeekClient:
         return urllib.request.urlopen(request, timeout=timeout, context=context)
 
     @staticmethod
+    def _transport_failure_record(exc: Exception) -> dict[str, Any]:
+        if isinstance(exc, urllib.error.HTTPError):
+            return {"kind": "http", "status": int(exc.code)}
+        return {"kind": "transport", "type": type(exc).__name__}
+
+    @staticmethod
+    def _raise_transport_failure(request: urllib.request.Request, value: Any) -> None:
+        if (isinstance(value, dict) and value.get("kind") == "http"
+                and isinstance(value.get("status"), int)):
+            raise urllib.error.HTTPError(request.full_url, value["status"],
+                                         "remote HTTP failure", {}, None)
+        if isinstance(value, dict) and value.get("kind") == "transport":
+            raise urllib.error.URLError(str(value.get("type", "transport failure")))
+        raise urllib.error.URLError(str(value))
+
+    @staticmethod
     def _transport_worker(request: urllib.request.Request, timeout: int, connection: Any) -> None:
         try:
             with DeepSeekClient._open(request, timeout=timeout) as response:
                 connection.send((True, response.read()))
         except Exception as exc:
-            connection.send((False, f"{type(exc).__name__}: {exc}"))
+            connection.send((False, DeepSeekClient._transport_failure_record(exc)))
         finally:
             connection.close()
 
@@ -722,7 +738,7 @@ class DeepSeekClient:
             worker.terminate()
             worker.join(timeout=5)
         if not succeeded:
-            raise urllib.error.URLError(value)
+            DeepSeekClient._raise_transport_failure(request, value)
         return value
 
     def request(self, system: str, user: str, telemetry: Telemetry,

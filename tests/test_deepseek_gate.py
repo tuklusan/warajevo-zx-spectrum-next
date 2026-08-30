@@ -949,6 +949,16 @@ class GateTests(unittest.TestCase):
         finally:
             release.set()
 
+    def test_deadline_transport_preserves_http_failure_status(self):
+        request = urllib.request.Request("https://example.invalid")
+        record = gate.DeepSeekClient._transport_failure_record(
+            urllib.error.HTTPError(request.full_url, 402, "payment required", {}, None)
+        )
+        self.assertEqual(record, {"kind": "http", "status": 402})
+        with self.assertRaises(urllib.error.HTTPError) as raised:
+            gate.DeepSeekClient._raise_transport_failure(request, record)
+        self.assertEqual(raised.exception.code, 402)
+
     def test_deadline_exhaustion_after_clean_discovery_cannot_pass(self):
         class ExpiringClient(FakeClient):
             def request(self, system, user, telemetry, thinking="enabled", reasoning_effort="high",
