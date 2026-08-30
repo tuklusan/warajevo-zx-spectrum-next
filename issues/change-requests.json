@@ -843,9 +843,9 @@
     {
       "cr_number": "CR-0072",
       "title": "Audit and complete Phase-2 project-owned CPU acceptance coverage",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 36.1 and 39", "design/wzsn-architectures-1-2-developer-tasks.md task 061", "reference/original-warajevo/source/src/spectrum-kernel/Z80.ASM"],
-      "notes": "Opened on 2026-08-30 to establish complete project-owned CPU acceptance coverage beyond the pinned Fuse corpus. The mandatory functional inventory and upstream zero-gap exit scan are recorded in design/cr-preflight/CR-0072.md."
+      "notes": "Closed on 2026-08-30 after establishing complete project-owned CPU acceptance coverage beyond the pinned Fuse corpus. design/cpu-acceptance-coverage.md maps each Phase-2 CPU category to direct deterministic test evidence and explicitly defers named later-phase behavior. The preserved Z80.ASM primary, CB, ED, DD, FD, HALT, and interrupt paths were scanned with no inherited CPU behavior lacking a covered or phase-owned disposition. CODE, TEST_ARTIFACT, and DOCUMENTATION reviews passed without findings; Linux CR0072-CPU-COVERAGE-LINUX-R1 passed CTest and all 1,356 pinned Fuse vectors with zero unresolved cases, silent skips, or unexpected failures; hosted repository-gates 33323487400 and platform-smoke 33323487382 passed across Linux x64/ARM64, Windows x64, and macOS ARM64/Intel."
     }
   ]
 }
