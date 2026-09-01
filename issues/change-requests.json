@@ -969,7 +969,7 @@
     {
       "cr_number": "CR-0090",
       "title": "Add non-raster differential scenarios against preserved reference",
-      "status": "open",
+      "status": "in_progress",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 11, 36, 39, 44, and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 076", "design/cpu-acceptance-coverage.md", "design/cr-preflight/CR-0089.md", "reference/original-warajevo/source"],
       "notes": "Opened on 2026-09-01 after CR-0089 as the next ordered Phase-3 task. Add deterministic non-raster comparison scenarios with machine-readable divergence classifications and hardware-authority handling."
     }
