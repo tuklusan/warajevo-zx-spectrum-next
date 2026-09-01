@@ -71,7 +71,9 @@ pattern is:
 | Delay in T-states | 6 | 5 | 4 | 3 | 2 | 1 | 0 | 0 |
 
 Contention is active during the screen-drawing windows, not while the ULA is
-drawing the border. Port accesses use the reference four-case pattern:
+drawing the border. An even port-FE access is explicitly contended because the
+ULA supplies its result; an odd port is not ULA-selected. Port accesses use
+the reference four-case pattern:
 
 | Port address high byte in `0x40..0x7f` | Address bit 0 | Pattern |
 | --- | --- | --- |
