@@ -254,6 +254,7 @@ int main(void)
         fputs("bus data source removal failed\n", stderr);
         return 1;
     }
+    memset(&bus_log, 0, sizeof(bus_log));
     wz_bus_request_init(&bus_request, WZ_BUS_IO_READ, 12u, 0x00feu, 0u, 4u);
     if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
         bus_request.value != 0xbfu) {
