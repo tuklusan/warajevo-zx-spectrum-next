@@ -105,7 +105,7 @@ wz_byte_t wz_machine_contention_delay(const wz_machine_t* machine,
         }
         return 0u;
     }
-    if (cycle != WZ_BUS_IO_READ && cycle != WZ_BUS_IO_WRITE ||
+    if ((cycle != WZ_BUS_IO_READ && cycle != WZ_BUS_IO_WRITE) ||
         (address & 1u) != 0u || t_states == 0u) {
         return 0u;
     }
