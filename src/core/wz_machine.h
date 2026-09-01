@@ -28,6 +28,7 @@ typedef struct wz_machine {
     wz_trace_sink_t* timing_trace;
     wz_byte_t memory[65536u];
     wz_byte_t has_48k_rom;
+    wz_qword_t rom_identity;
     wz_master_tick_t master_tick;
     wz_byte_t im0_injected_opcode;
     wz_byte_t im0_injected_opcode_pending;
@@ -41,6 +42,7 @@ void wz_machine_set_timing_trace(wz_machine_t* machine, wz_trace_sink_t* trace);
 wz_result_t wz_machine_load_48k_rom(wz_machine_t* machine,
                                     const wz_byte_t* bytes,
                                     size_t length);
+wz_qword_t wz_machine_rom_identity(const wz_byte_t* bytes, size_t length);
 wz_byte_t wz_machine_memory_read(const wz_machine_t* machine, wz_word_t address);
 void wz_machine_memory_write(wz_machine_t* machine, wz_word_t address,
                              wz_byte_t value);

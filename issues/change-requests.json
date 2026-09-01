@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 77,
+  "next_cr_number": 78,
   "status_values": [
     "open",
     "in_progress",
@@ -874,6 +874,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 12 and 29", "design/wzsn-architectures-1-2-developer-tasks.md task 063", "design/fuse-z80-test-suite.md"],
       "notes": "Closed on 2026-09-01. ROM installation is explicit machine state; only a valid external 16 KiB load protects 0000-3fff, while the unloaded deterministic CPU-vector fixture remains writable. CODE, TEST_ARTIFACT, and DOCUMENTATION reviews passed without confirmed findings. Linux CR0076-FIXTURE-ROM-LINUX-R2 passed CTest and all 1,356 Fuse vectors with zero unresolved, unexpected, or skipped cases; hosted repository-gates 33517003481 and platform-smoke 33517003505 passed across Linux x64/ARM64, Windows x64, and macOS ARM64/Intel. Final machine-path and preserved-reference scans found no undispositioned scoped behavior."
+    },
+    {
+      "cr_number": "CR-0077",
+      "title": "Certify externally supplied ROM identity for machine profiles",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 12, 29, and 36", "design/wzsn-architectures-1-2-developer-tasks.md task 064"],
+      "notes": "Opened on 2026-09-01 for task 064. Add profile-declared external-ROM identity validation without embedding firmware bytes, reject absent or mismatched certification identity, and retain loaded-ROM identity/protection state through deterministic serialization."
     }
   ]
 }

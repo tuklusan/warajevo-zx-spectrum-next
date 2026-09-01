@@ -24,6 +24,7 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     wz_bus_input_init(&machine->bus_input, 0, 0);
     machine->timing_trace = 0;
     machine->has_48k_rom = 0u;
+    machine->rom_identity = 0u;
     machine->master_tick = 0u;
     machine->im0_injected_opcode = 0u;
     machine->im0_injected_opcode_pending = 0u;
@@ -41,6 +42,7 @@ void wz_machine_destroy(wz_machine_t* machine)
         wz_bus_input_init(&machine->bus_input, 0, 0);
         machine->timing_trace = 0;
         machine->has_48k_rom = 0u;
+        machine->rom_identity = 0u;
         machine->master_tick = 0u;
         machine->im0_injected_opcode = 0u;
         machine->im0_injected_opcode_pending = 0u;
@@ -58,14 +60,38 @@ wz_result_t wz_machine_load_48k_rom(wz_machine_t* machine,
                                     const wz_byte_t* bytes,
                                     size_t length)
 {
+    wz_qword_t identity;
+
     if (machine == 0 || bytes == 0 || length != WZ_48K_ROM_SIZE) {
         return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (machine->profile == 0 || machine->profile->expected_rom_identity == 0u) {
+        return WZ_RESULT_INVALID_PROFILE;
+    }
+    identity = wz_machine_rom_identity(bytes, length);
+    if (identity != machine->profile->expected_rom_identity) {
+        return WZ_RESULT_ROM_IDENTITY_MISMATCH;
     }
     for (size_t index = 0u; index < WZ_48K_ROM_SIZE; ++index) {
         machine->memory[index] = bytes[index];
     }
     machine->has_48k_rom = 1u;
+    machine->rom_identity = identity;
     return WZ_RESULT_OK;
+}
+
+wz_qword_t wz_machine_rom_identity(const wz_byte_t* bytes, size_t length)
+{
+    wz_qword_t identity = UINT64_C(14695981039346656037);
+
+    if (bytes == 0 || length != WZ_48K_ROM_SIZE) {
+        return 0u;
+    }
+    for (size_t index = 0u; index < length; ++index) {
+        identity ^= (wz_qword_t)bytes[index];
+        identity *= UINT64_C(1099511628211);
+    }
+    return identity;
 }
 
 wz_byte_t wz_machine_memory_read(const wz_machine_t* machine, wz_word_t address)

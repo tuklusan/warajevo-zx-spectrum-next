@@ -123,7 +123,8 @@ int main(void)
     wz_machine_t machine;
     wz_machine_t restored;
     wz_scheduler_t scheduler;
-    wz_byte_t serialized[65584u];
+    wz_byte_t serialized[65588u];
+    wz_machine_profile_t certified_profile;
     wz_state_writer_t writer;
     wz_qword_t first_hash;
     wz_qword_t second_hash;
@@ -234,7 +235,30 @@ int main(void)
 
         memset(rom_image, 0, sizeof(rom_image));
         rom_image[0x1234u] = 0x5au;
+        if (wz_machine_rom_identity(rom_image, sizeof(rom_image) - 1u) != 0u ||
+            wz_machine_load_48k_rom(&machine, rom_image, sizeof(rom_image)) !=
+                WZ_RESULT_INVALID_PROFILE) {
+            fputs("unconfigured 48K ROM certification failed\n", stderr);
+            return 1;
+        }
+        certified_profile = *profile;
+        certified_profile.expected_rom_identity =
+            wz_machine_rom_identity(rom_image, sizeof(rom_image));
+        if (certified_profile.expected_rom_identity == 0u ||
+            wz_machine_init(&machine, &certified_profile) != WZ_RESULT_OK) {
+            fputs("48K ROM certification profile failed\n", stderr);
+            return 1;
+        }
+        rom_image[0u] ^= 1u;
+        if (wz_machine_load_48k_rom(&machine, rom_image, sizeof(rom_image)) !=
+                WZ_RESULT_ROM_IDENTITY_MISMATCH ||
+            machine.has_48k_rom != 0u || machine.rom_identity != 0u) {
+            fputs("48K ROM mismatch rejection failed\n", stderr);
+            return 1;
+        }
+        rom_image[0u] ^= 1u;
         if (wz_machine_load_48k_rom(&machine, rom_image, sizeof(rom_image)) != WZ_RESULT_OK ||
+            machine.rom_identity != certified_profile.expected_rom_identity ||
             wz_machine_load_48k_rom(&machine, rom_image, sizeof(rom_image) - 1u) !=
                 WZ_RESULT_INVALID_ARGUMENT) {
             fputs("48K ROM loading contract failed\n", stderr);
@@ -258,6 +282,23 @@ int main(void)
             fputs("48K RAM bus write failed\n", stderr);
             return 1;
         }
+        wz_state_writer_init(&writer, serialized, sizeof(serialized));
+        if (wz_state_serialize_machine(&machine, &writer) != WZ_RESULT_OK ||
+            wz_state_deserialize_machine(&restored, serialized, writer.length) != WZ_RESULT_OK ||
+            restored.has_48k_rom != 1u ||
+            restored.rom_identity != certified_profile.expected_rom_identity) {
+            fputs("48K ROM certification state round trip failed\n", stderr);
+            return 1;
+        }
+        wz_machine_memory_write(&restored, 0x1234u, 0xa5u);
+        if (restored.memory[0x1234u] != 0x5au) {
+            fputs("restored 48K ROM write protection failed\n", stderr);
+            return 1;
+        }
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset after 48K ROM certification test failed\n", stderr);
+        return 1;
     }
     wz_bus_input_init(&bus_input, read_bus_input, (void*)&interrupt_value);
     wz_bus_request_init(&bus_request, WZ_BUS_IO_READ, 24u, 0x34feu, 0u, 4u);

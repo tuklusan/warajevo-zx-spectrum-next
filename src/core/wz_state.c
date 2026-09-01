@@ -10,8 +10,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "core/wz_machine.h"
 
-#define WZ_STATE_VERSION 4u
-#define WZ_STATE_HEADER_LENGTH 43u
+#define WZ_STATE_VERSION 5u
+#define WZ_STATE_HEADER_LENGTH 52u
 #define WZ_STATE_MACHINE_LENGTH (65536u + WZ_STATE_HEADER_LENGTH)
 
 static wz_result_t wz_state_write(wz_state_writer_t* writer,
@@ -99,6 +99,8 @@ wz_result_t wz_state_serialize_machine(const wz_machine_t* machine,
 
     if (wz_state_write_u8(writer, WZ_STATE_VERSION) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, (wz_byte_t)machine->profile->kind) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, machine->has_48k_rom) != WZ_RESULT_OK ||
+        wz_state_write_u64(writer, machine->rom_identity) != WZ_RESULT_OK ||
         wz_state_write_z80_bank(writer, &machine->cpu.main) != WZ_RESULT_OK ||
         wz_state_write_z80_bank(writer, &machine->cpu.alternate) != WZ_RESULT_OK ||
         wz_state_write_u16(writer, machine->cpu.ix) != WZ_RESULT_OK ||
@@ -167,41 +169,51 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
         return WZ_RESULT_INVALID_PROFILE;
     }
     for (size_t index = 0u; index < 8u; ++index) {
-        tick |= (wz_qword_t)data[35u + index] << (index * 8u);
+        tick |= (wz_qword_t)data[44u + index] << (index * 8u);
     }
-    cpu.main.a = data[2u];
-    cpu.main.f = data[3u];
-    cpu.main.b = data[4u];
-    cpu.main.c = data[5u];
-    cpu.main.d = data[6u];
-    cpu.main.e = data[7u];
-    cpu.main.h = data[8u];
-    cpu.main.l = data[9u];
-    cpu.alternate.a = data[10u];
-    cpu.alternate.f = data[11u];
-    cpu.alternate.b = data[12u];
-    cpu.alternate.c = data[13u];
-    cpu.alternate.d = data[14u];
-    cpu.alternate.e = data[15u];
-    cpu.alternate.h = data[16u];
-    cpu.alternate.l = data[17u];
-    cpu.ix = wz_read_le16(data + 18u);
-    cpu.iy = wz_read_le16(data + 20u);
-    cpu.stack_pointer = wz_read_le16(data + 22u);
-    cpu.program_counter = wz_read_le16(data + 24u);
-    cpu.memptr = wz_read_le16(data + 26u);
-    cpu.i = data[28u];
-    cpu.r = data[29u];
-    cpu.iff1 = data[30u];
-    cpu.iff2 = data[31u];
-    cpu.interrupt_enable_delay = data[32u];
-    cpu.interrupt_mode = data[33u];
-    cpu.halted = data[34u];
+    cpu.main.a = data[11u];
+    cpu.main.f = data[12u];
+    cpu.main.b = data[13u];
+    cpu.main.c = data[14u];
+    cpu.main.d = data[15u];
+    cpu.main.e = data[16u];
+    cpu.main.h = data[17u];
+    cpu.main.l = data[18u];
+    cpu.alternate.a = data[19u];
+    cpu.alternate.f = data[20u];
+    cpu.alternate.b = data[21u];
+    cpu.alternate.c = data[22u];
+    cpu.alternate.d = data[23u];
+    cpu.alternate.e = data[24u];
+    cpu.alternate.h = data[25u];
+    cpu.alternate.l = data[26u];
+    cpu.ix = wz_read_le16(data + 27u);
+    cpu.iy = wz_read_le16(data + 29u);
+    cpu.stack_pointer = wz_read_le16(data + 31u);
+    cpu.program_counter = wz_read_le16(data + 33u);
+    cpu.memptr = wz_read_le16(data + 35u);
+    cpu.i = data[37u];
+    cpu.r = data[38u];
+    cpu.iff1 = data[39u];
+    cpu.iff2 = data[40u];
+    cpu.interrupt_enable_delay = data[41u];
+    cpu.interrupt_mode = data[42u];
+    cpu.halted = data[43u];
     if (wz_z80_state_validate(&cpu) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_STATE;
     }
     machine->profile = profile;
     machine->cpu = cpu;
+    machine->has_48k_rom = data[2u];
+    machine->rom_identity = 0u;
+    for (size_t index = 0u; index < sizeof(machine->rom_identity); ++index) {
+        machine->rom_identity |= (wz_qword_t)data[3u + index] << (index * 8u);
+    }
+    if (machine->has_48k_rom > 1u ||
+        (machine->has_48k_rom == 0u && machine->rom_identity != 0u) ||
+        (machine->has_48k_rom != 0u && machine->rom_identity == 0u)) {
+        return WZ_RESULT_INVALID_STATE;
+    }
     machine->master_tick = tick;
     for (size_t index = 0u; index < sizeof(machine->memory); ++index) {
         machine->memory[index] = data[WZ_STATE_HEADER_LENGTH + index];
