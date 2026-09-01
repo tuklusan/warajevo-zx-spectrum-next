@@ -880,7 +880,7 @@
       "title": "Certify externally supplied ROM identity for machine profiles",
       "status": "in_progress",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 12, 29, and 36", "design/wzsn-architectures-1-2-developer-tasks.md task 064"],
-      "notes": "Opened on 2026-09-01 for task 064. Add profile-declared external-ROM identity validation without embedding firmware bytes, reject absent or mismatched certification identity, and retain loaded-ROM identity/protection state through deterministic serialization."
+      "notes": "Candidate closure recorded on 2026-09-01. Profile-declared FNV-1a identity validation rejects unconfigured and mismatched external ROMs without embedding firmware bytes; loaded-ROM identity and protection state survive canonical serialization. CODE and TEST_ARTIFACT reviews passed without confirmed findings. Linux CR0077-ROM-IDENTITY-LINUX-R3 passed CTest and all 1,356 Fuse vectors with zero unresolved, unexpected, or skipped cases; hosted repository-gates 33518667074 and platform-smoke 33518667005 passed across Linux x64/ARM64, Windows x64, and macOS ARM64/Intel. Final machine-path and preserved-reference scans found no undispositioned scoped behavior."
     }
   ]
 }
