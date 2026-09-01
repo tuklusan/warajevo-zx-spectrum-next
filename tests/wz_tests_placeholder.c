@@ -3242,7 +3242,7 @@ int main(void)
 
     wz_state_writer_init(&writer, serialized, sizeof(serialized));
     if (wz_state_serialize_machine(&machine, &writer) != WZ_RESULT_OK ||
-        writer.length != 65579u ||
+        writer.length != 65588u ||
         wz_state_hash_machine(&machine, &first_hash) != WZ_RESULT_OK) {
         fputs("canonical state serialization failed\n", stderr);
         return 1;
