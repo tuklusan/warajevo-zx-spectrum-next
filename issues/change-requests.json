@@ -906,9 +906,9 @@
     {
       "cr_number": "CR-0081",
       "title": "Implement ULA port-FE output latches",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 12, 15, 20, 36, and 44", "design/wzsn-architectures-1-2-developer-tasks.md task 067", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
-      "notes": "Opened on 2026-09-01 as the next ordered Phase-3 task. Preflight requires border bits 0..2, MIC bit 3, beeper bit 4, decoded port-FE writes, exact master-tick ordering, reset/state behavior, and upstream zero-gap review before closure."
+      "notes": "Opened on 2026-09-01 as the next ordered Phase-3 task. Closed after implementing decoded ULA port-FE output latching, exact request-tick capture, ordered transition tracing, and canonical state serialization for border, beeper, and MIC output bits. CODE and DOCUMENTATION reviews passed; Linux remote harness CR0081-ULA-OUTPUT-LINUX-R3 passed all CTest gates and 1,356/1,356 Fuse vectors; hosted platform-smoke 33554248477 passed five platforms; upstream zero-gap scan completed."
     }
   ]
 }
