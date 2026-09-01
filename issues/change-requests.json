@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 81,
+  "next_cr_number": 82,
   "status_values": [
     "open",
     "in_progress",
@@ -902,6 +902,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 12 and 22", "design/wzsn-architectures-1-2-developer-tasks.md task 066", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
       "notes": "Opened on 2026-09-01 as the next ordered Phase-3 task. Closed after implementing core-owned active-low eight-row keyboard state, normalized physical key transitions, authentic simultaneous row selection on ULA reads, and deterministic tests without host-key knowledge. CODE and DOCUMENTATION reviews passed; Linux remote harness CR0080-KEYBOARD-LINUX-R8 passed all CTest gates and 1,356/1,356 Fuse vectors; hosted platform-smoke 33553129888 passed five platforms. Host mapping, source ownership, and timing assignment remain later Phase-5 work."
+    },
+    {
+      "cr_number": "CR-0081",
+      "title": "Implement ULA port-FE output latches",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 12, 15, 20, 36, and 44", "design/wzsn-architectures-1-2-developer-tasks.md task 067", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
+      "notes": "Opened on 2026-09-01 as the next ordered Phase-3 task. Preflight requires border bits 0..2, MIC bit 3, beeper bit 4, decoded port-FE writes, exact master-tick ordering, reset/state behavior, and upstream zero-gap review before closure."
     }
   ]
 }
