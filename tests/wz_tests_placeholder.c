@@ -3763,7 +3763,14 @@ int main(void)
         timing_trace_log.events[0].value != WZ_TRACE_INTERRUPT_LINE_ASSERT ||
         timing_trace_log.events[1].value != WZ_TRACE_INTERRUPT_MASKABLE_SAMPLE ||
         timing_trace_log.events[2].value != WZ_TRACE_INTERRUPT_MASKABLE_ACCEPT) {
-        fputs("combined Phase-3 interrupt evidence failed\n", stderr);
+        fprintf(stderr, "combined Phase-3 interrupt evidence failed: pc=%04x sp=%04x bus=%u trace=%u first=%u second=%u third=%u\n",
+                (unsigned)machine.cpu.program_counter,
+                (unsigned)machine.cpu.stack_pointer,
+                (unsigned)bus_log.count,
+                (unsigned)timing_trace_log.count,
+                timing_trace_log.count > 0u ? (unsigned)timing_trace_log.events[0].value : 0u,
+                timing_trace_log.count > 1u ? (unsigned)timing_trace_log.events[1].value : 0u,
+                timing_trace_log.count > 2u ? (unsigned)timing_trace_log.events[2].value : 0u);
         return 1;
     }
     wz_machine_set_timing_trace(&machine, 0);
