@@ -377,12 +377,21 @@ int main(void)
         fputs("hardware I/O mode restore failed\n", stderr);
         return 1;
     }
+    memset(&timing_trace_log, 0, sizeof(timing_trace_log));
+    wz_trace_sink_init(&trace_sink, record_timing_trace, &timing_trace_log);
+    wz_machine_set_timing_trace(&machine, &trace_sink);
     wz_bus_request_init(&bus_request, WZ_BUS_IO_WRITE, 32u, 0x12feu, 0xa5u, 4u);
     if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK) {
         fputs("ULA partial port-FE write decode failed\n", stderr);
         return 1;
     }
-    if (machine.ula_output != 0x05u || machine.ula_output_tick != 32u) {
+    if (machine.ula_output != 0x05u || machine.ula_output_tick != 32u ||
+        timing_trace_log.count != 1u ||
+        timing_trace_log.events[0].kind != WZ_TRACE_DEVELOPER_MARKER ||
+        timing_trace_log.events[0].master_tick != 32u ||
+        timing_trace_log.events[0].address != 0x00feu ||
+        timing_trace_log.events[0].value != 0x05u ||
+        timing_trace_log.events[0].auxiliary != 0x01u) {
         fputs("ULA output latch state failed\n", stderr);
         return 1;
     }
@@ -398,6 +407,7 @@ int main(void)
         fputs("ULA output latch transition failed\n", stderr);
         return 1;
     }
+    wz_machine_set_timing_trace(&machine, 0);
     if (wz_machine_set_hardware_io_decode(&machine, false) != WZ_RESULT_OK) {
         fputs("synthetic CPU fixture I/O setup failed\n", stderr);
         return 1;
@@ -3344,6 +3354,8 @@ int main(void)
     }
 
     wz_state_writer_init(&writer, serialized, sizeof(serialized));
+    machine.ula_output = 0x1bu;
+    machine.ula_output_tick = 1234u;
     if (wz_state_serialize_machine(&machine, &writer) != WZ_RESULT_OK ||
         writer.length != 65605u ||
         wz_state_hash_machine(&machine, &first_hash) != WZ_RESULT_OK) {
@@ -3381,7 +3393,8 @@ int main(void)
         restored.cpu.interrupt_enable_delay != 1u ||
         restored.cpu.interrupt_mode != (wz_byte_t)WZ_Z80_INTERRUPT_MODE_2 ||
         restored.cpu.halted != 1u ||
-        restored.keyboard_rows[2u] != 0x1du) {
+        restored.keyboard_rows[2u] != 0x1du ||
+        restored.ula_output != 0x1bu || restored.ula_output_tick != 1234u) {
         fputs("Z80 state round trip failed\n", stderr);
         return 1;
     }
