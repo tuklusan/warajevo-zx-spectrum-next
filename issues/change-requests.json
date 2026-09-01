@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 84,
+  "next_cr_number": 85,
   "status_values": [
     "open",
     "in_progress",
@@ -923,6 +923,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 13, 14, 36, 44, and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 069", "design/machine-timing-evidence.md", "reference/original-warajevo/source"],
       "notes": "Opened on 2026-09-01 as the next ordered Phase-3 task. Closed after source-level proof that CPU opcode execution contains no Spectrum-specific contention table or delay logic and that shared bus dispatch preserves exact tick/trace behavior. CODE and DOCUMENTATION reviews passed; CR-0082 runtime vectors supplied green remote execution evidence with 1,356/1,356 Fuse vectors; upstream zero-gap scan completed."
+    },
+    {
+      "cr_number": "CR-0084",
+      "title": "Implement profile-driven maskable interrupt line scheduling",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 10, 14, 36, 44, and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 070", "design/machine-timing-evidence.md", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
+      "notes": "Opened on 2026-09-01 after the upstream completeness preflight. Implement profile-defined frame-boundary assertion and 32-T-state deassertion of the level-triggered maskable interrupt line; CPU sampling remains task 071."
     }
   ]
 }
