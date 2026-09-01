@@ -141,7 +141,7 @@ int main(void)
     wz_machine_t machine;
     wz_machine_t restored;
     wz_scheduler_t scheduler;
-    wz_byte_t serialized[65596u];
+    wz_byte_t serialized[65605u];
     wz_machine_profile_t certified_profile;
     wz_state_writer_t writer;
     wz_qword_t first_hash;
@@ -380,6 +380,22 @@ int main(void)
     wz_bus_request_init(&bus_request, WZ_BUS_IO_WRITE, 32u, 0x12feu, 0xa5u, 4u);
     if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK) {
         fputs("ULA partial port-FE write decode failed\n", stderr);
+        return 1;
+    }
+    if (machine.ula_output != 0x05u || machine.ula_output_tick != 32u) {
+        fputs("ULA output latch state failed\n", stderr);
+        return 1;
+    }
+    wz_bus_request_init(&bus_request, WZ_BUS_IO_WRITE, 36u, 0x12ffu, 0x1fu, 4u);
+    if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
+        machine.ula_output != 0x05u || machine.ula_output_tick != 32u) {
+        fputs("odd-port ULA output selection failed\n", stderr);
+        return 1;
+    }
+    wz_bus_request_init(&bus_request, WZ_BUS_IO_WRITE, 40u, 0x12feu, 0x1bu, 4u);
+    if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
+        machine.ula_output != 0x1bu || machine.ula_output_tick != 40u) {
+        fputs("ULA output latch transition failed\n", stderr);
         return 1;
     }
     if (wz_machine_set_hardware_io_decode(&machine, false) != WZ_RESULT_OK) {
@@ -3329,7 +3345,7 @@ int main(void)
 
     wz_state_writer_init(&writer, serialized, sizeof(serialized));
     if (wz_state_serialize_machine(&machine, &writer) != WZ_RESULT_OK ||
-        writer.length != 65596u ||
+        writer.length != 65605u ||
         wz_state_hash_machine(&machine, &first_hash) != WZ_RESULT_OK) {
         fputs("canonical state serialization failed\n", stderr);
         return 1;

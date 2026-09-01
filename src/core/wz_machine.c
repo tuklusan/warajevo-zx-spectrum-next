@@ -28,8 +28,10 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     for (size_t index = 0u; index < 8u; ++index) {
         machine->keyboard_rows[index] = 0x1fu;
     }
+    machine->ula_output = 0u;
     machine->rom_identity = 0u;
     machine->master_tick = 0u;
+    machine->ula_output_tick = 0u;
     machine->im0_injected_opcode = 0u;
     machine->im0_injected_opcode_pending = 0u;
     for (size_t index = 0u; index < sizeof(machine->memory); ++index) {
@@ -50,8 +52,10 @@ void wz_machine_destroy(wz_machine_t* machine)
         for (size_t index = 0u; index < 8u; ++index) {
             machine->keyboard_rows[index] = 0x1fu;
         }
+        machine->ula_output = 0u;
         machine->rom_identity = 0u;
         machine->master_tick = 0u;
+        machine->ula_output_tick = 0u;
         machine->im0_injected_opcode = 0u;
         machine->im0_injected_opcode_pending = 0u;
     }
@@ -167,11 +171,23 @@ wz_byte_t wz_machine_ula_port_fe_read(const wz_machine_t* machine,
 }
 
 void wz_machine_ula_port_fe_write(wz_machine_t* machine, wz_word_t address,
-                                  wz_byte_t value)
+                                  wz_byte_t value, wz_master_tick_t master_tick)
 {
-    (void)machine;
     (void)address;
-    (void)value;
+    if (machine == 0) {
+        return;
+    }
+    machine->ula_output = (wz_byte_t)(value & 0x1fu);
+    machine->ula_output_tick = master_tick;
+    if (machine->timing_trace != 0) {
+        wz_trace_event_t event = {0};
+        event.kind = WZ_TRACE_DEVELOPER_MARKER;
+        event.master_tick = master_tick;
+        event.address = 0x00feu;
+        event.value = machine->ula_output;
+        event.auxiliary = 0x01u;
+        wz_trace_emit_detail(machine->timing_trace, &event);
+    }
 }
 
 const char* wz_machine_boot_message(void)

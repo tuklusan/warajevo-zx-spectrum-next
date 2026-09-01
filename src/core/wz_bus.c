@@ -107,7 +107,8 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
     case WZ_BUS_IO_WRITE:
         if (machine->hardware_io_decode_enabled &&
             wz_machine_ula_port_fe_selected(request->address)) {
-            wz_machine_ula_port_fe_write(machine, request->address, request->value);
+            wz_machine_ula_port_fe_write(machine, request->address, request->value,
+                                         request->master_tick);
         }
         break;
     case WZ_BUS_INTERRUPT_ACKNOWLEDGE:

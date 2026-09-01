@@ -30,8 +30,10 @@ typedef struct wz_machine {
     wz_byte_t has_48k_rom;
     wz_byte_t hardware_io_decode_enabled;
     wz_byte_t keyboard_rows[8u];
+    wz_byte_t ula_output;
     wz_qword_t rom_identity;
     wz_master_tick_t master_tick;
+    wz_master_tick_t ula_output_tick;
     wz_byte_t im0_injected_opcode;
     wz_byte_t im0_injected_opcode_pending;
 } wz_machine_t;
@@ -57,6 +59,6 @@ bool wz_machine_ula_port_fe_selected(wz_word_t address);
 wz_byte_t wz_machine_ula_port_fe_read(const wz_machine_t* machine,
                                        wz_word_t address);
 void wz_machine_ula_port_fe_write(wz_machine_t* machine, wz_word_t address,
-                                  wz_byte_t value);
+                                  wz_byte_t value, wz_master_tick_t master_tick);
 
 #endif

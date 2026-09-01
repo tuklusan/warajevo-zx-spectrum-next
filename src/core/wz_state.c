@@ -10,8 +10,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "core/wz_machine.h"
 
-#define WZ_STATE_VERSION 6u
-#define WZ_STATE_HEADER_LENGTH 60u
+#define WZ_STATE_VERSION 7u
+#define WZ_STATE_HEADER_LENGTH 69u
 #define WZ_STATE_MACHINE_LENGTH (65536u + WZ_STATE_HEADER_LENGTH)
 
 static wz_result_t wz_state_write(wz_state_writer_t* writer,
@@ -118,6 +118,8 @@ wz_result_t wz_state_serialize_machine(const wz_machine_t* machine,
         wz_state_write_u64(writer, machine->master_tick) != WZ_RESULT_OK ||
         wz_state_write(writer, machine->keyboard_rows,
                        sizeof(machine->keyboard_rows)) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, machine->ula_output) != WZ_RESULT_OK ||
+        wz_state_write_u64(writer, machine->ula_output_tick) != WZ_RESULT_OK ||
         wz_state_write(writer, machine->memory, sizeof(machine->memory)) != WZ_RESULT_OK) {
         return WZ_RESULT_SERIALIZATION_FAILURE;
     }
@@ -153,6 +155,7 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
     const wz_machine_profile_t* profile;
     wz_z80_state_t cpu;
     wz_qword_t tick = 0u;
+    wz_qword_t ula_output_tick = 0u;
 
     if (machine == 0 || data == 0) {
         return WZ_RESULT_INVALID_ARGUMENT;
@@ -224,6 +227,14 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
         }
         machine->keyboard_rows[index] = data[52u + index];
     }
+    machine->ula_output = data[60u];
+    if ((machine->ula_output & 0xe0u) != 0u) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    for (size_t index = 0u; index < sizeof(ula_output_tick); ++index) {
+        ula_output_tick |= (wz_qword_t)data[61u + index] << (index * 8u);
+    }
+    machine->ula_output_tick = ula_output_tick;
     for (size_t index = 0u; index < sizeof(machine->memory); ++index) {
         machine->memory[index] = data[WZ_STATE_HEADER_LENGTH + index];
     }
