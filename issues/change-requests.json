@@ -941,9 +941,9 @@
     {
       "cr_number": "CR-0086",
       "title": "Add timed bus-visible data-source mechanism",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 12, 15.6, 36, 44, and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 072", "design/machine-timing-evidence.md", "reference/original-warajevo/source"],
-      "notes": "Opened on 2026-09-01 after CR-0085 as the next ordered Phase-3 task. Add a request-aware timed bus data-source boundary for synthetic devices; actual ULA fetch and floating-bus policy remain later tasks."
+      "notes": "Closed on 2026-09-01 after adding a request-aware, post-contention bus data-source boundary that can claim deterministic memory, I/O, and interrupt-acknowledge reads while preserving existing fallback behavior. CODE and DOCUMENTATION reviews passed with no confirmed findings. Linux CR0086-BUS-SOURCE-LINUX-R3 passed all five CTest gates and every pinned suite with zero failures and zero silent skips; hosted platform-smoke 33568537215 passed Linux x64/ARM64, Windows x64, macOS ARM64/Intel. Final upstream zero-gap scan completed; ULA fetch scheduling and floating-bus policy remain explicitly deferred to later tasks."
     }
   ]
 }
