@@ -25,6 +25,9 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     machine->timing_trace = 0;
     machine->has_48k_rom = 0u;
     machine->hardware_io_decode_enabled = 1u;
+    for (size_t index = 0u; index < 8u; ++index) {
+        machine->keyboard_rows[index] = 0x1fu;
+    }
     machine->rom_identity = 0u;
     machine->master_tick = 0u;
     machine->im0_injected_opcode = 0u;
@@ -44,6 +47,9 @@ void wz_machine_destroy(wz_machine_t* machine)
         machine->timing_trace = 0;
         machine->has_48k_rom = 0u;
         machine->hardware_io_decode_enabled = 1u;
+        for (size_t index = 0u; index < 8u; ++index) {
+            machine->keyboard_rows[index] = 0x1fu;
+        }
         machine->rom_identity = 0u;
         machine->master_tick = 0u;
         machine->im0_injected_opcode = 0u;
@@ -64,6 +70,25 @@ wz_result_t wz_machine_set_hardware_io_decode(wz_machine_t* machine, bool enable
         return WZ_RESULT_INVALID_ARGUMENT;
     }
     machine->hardware_io_decode_enabled = enabled ? 1u : 0u;
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_machine_set_keyboard_key(wz_machine_t* machine,
+                                        wz_byte_t row,
+                                        wz_byte_t key,
+                                        bool pressed)
+{
+    wz_byte_t mask;
+
+    if (machine == 0 || row >= 8u || key >= 5u) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    mask = (wz_byte_t)(1u << key);
+    if (pressed) {
+        machine->keyboard_rows[row] &= (wz_byte_t)~mask;
+    } else {
+        machine->keyboard_rows[row] |= mask;
+    }
     return WZ_RESULT_OK;
 }
 
@@ -127,9 +152,17 @@ bool wz_machine_ula_port_fe_selected(wz_word_t address)
 wz_byte_t wz_machine_ula_port_fe_read(const wz_machine_t* machine,
                                        wz_word_t address)
 {
-    (void)machine;
-    (void)address;
-    return 0xffu;
+    wz_byte_t value = 0xbfu;
+
+    if (machine == 0) {
+        return 0xffu;
+    }
+    for (size_t row = 0u; row < 8u; ++row) {
+        if ((address & (wz_word_t)(1u << (8u + row))) == 0u) {
+            value &= machine->keyboard_rows[row];
+        }
+    }
+    return value;
 }
 
 void wz_machine_ula_port_fe_write(wz_machine_t* machine, wz_word_t address,

@@ -10,8 +10,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "core/wz_machine.h"
 
-#define WZ_STATE_VERSION 5u
-#define WZ_STATE_HEADER_LENGTH 52u
+#define WZ_STATE_VERSION 6u
+#define WZ_STATE_HEADER_LENGTH 60u
 #define WZ_STATE_MACHINE_LENGTH (65536u + WZ_STATE_HEADER_LENGTH)
 
 static wz_result_t wz_state_write(wz_state_writer_t* writer,
@@ -116,6 +116,8 @@ wz_result_t wz_state_serialize_machine(const wz_machine_t* machine,
         wz_state_write_u8(writer, machine->cpu.interrupt_mode) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, machine->cpu.halted) != WZ_RESULT_OK ||
         wz_state_write_u64(writer, machine->master_tick) != WZ_RESULT_OK ||
+        wz_state_write(writer, machine->keyboard_rows,
+                       sizeof(machine->keyboard_rows)) != WZ_RESULT_OK ||
         wz_state_write(writer, machine->memory, sizeof(machine->memory)) != WZ_RESULT_OK) {
         return WZ_RESULT_SERIALIZATION_FAILURE;
     }
@@ -205,6 +207,7 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
     machine->profile = profile;
     machine->cpu = cpu;
     machine->has_48k_rom = data[2u];
+    machine->hardware_io_decode_enabled = 1u;
     machine->rom_identity = 0u;
     for (size_t index = 0u; index < sizeof(machine->rom_identity); ++index) {
         machine->rom_identity |= (wz_qword_t)data[3u + index] << (index * 8u);
@@ -215,6 +218,12 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
         return WZ_RESULT_INVALID_STATE;
     }
     machine->master_tick = tick;
+    for (size_t index = 0u; index < sizeof(machine->keyboard_rows); ++index) {
+        if ((data[52u + index] & 0xe0u) != 0xe0u) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->keyboard_rows[index] = data[52u + index];
+    }
     for (size_t index = 0u; index < sizeof(machine->memory); ++index) {
         machine->memory[index] = data[WZ_STATE_HEADER_LENGTH + index];
     }

@@ -123,7 +123,7 @@ int main(void)
     wz_machine_t machine;
     wz_machine_t restored;
     wz_scheduler_t scheduler;
-    wz_byte_t serialized[65588u];
+    wz_byte_t serialized[65596u];
     wz_machine_profile_t certified_profile;
     wz_state_writer_t writer;
     wz_qword_t first_hash;
@@ -310,8 +310,33 @@ int main(void)
     }
     wz_bus_request_init(&bus_request, WZ_BUS_IO_READ, 28u, 0x34feu, 0u, 4u);
     if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
-        bus_request.value != 0xffu) {
+        bus_request.value != 0xbfu) {
         fputs("ULA partial port-FE read decode failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_set_keyboard_key(&machine, 0u, 0u, true) != WZ_RESULT_OK) {
+        fputs("keyboard key press failed\n", stderr);
+        return 1;
+    }
+    wz_bus_request_init(&bus_request, WZ_BUS_IO_READ, 30u, 0xfefeu, 0u, 4u);
+    if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
+        bus_request.value != 0xbeu) {
+        fputs("keyboard row read failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_set_keyboard_key(&machine, 3u, 4u, true) != WZ_RESULT_OK) {
+        fputs("second keyboard key press failed\n", stderr);
+        return 1;
+    }
+    wz_bus_request_init(&bus_request, WZ_BUS_IO_READ, 32u, 0xf6feu, 0u, 4u);
+    if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
+        bus_request.value != 0x9eu) {
+        fputs("simultaneous keyboard row read failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_set_keyboard_key(&machine, 0u, 0u, false) != WZ_RESULT_OK ||
+        wz_machine_set_keyboard_key(&machine, 3u, 4u, false) != WZ_RESULT_OK) {
+        fputs("keyboard key release failed\n", stderr);
         return 1;
     }
     if (wz_machine_set_hardware_io_decode(&machine, false) != WZ_RESULT_OK) {
@@ -3267,7 +3292,7 @@ int main(void)
 
     wz_state_writer_init(&writer, serialized, sizeof(serialized));
     if (wz_state_serialize_machine(&machine, &writer) != WZ_RESULT_OK ||
-        writer.length != 65588u ||
+        writer.length != 65596u ||
         wz_state_hash_machine(&machine, &first_hash) != WZ_RESULT_OK) {
         fputs("canonical state serialization failed\n", stderr);
         return 1;
@@ -3284,6 +3309,10 @@ int main(void)
     machine.cpu.interrupt_enable_delay = 1u;
     machine.cpu.interrupt_mode = (wz_byte_t)WZ_Z80_INTERRUPT_MODE_2;
     machine.cpu.halted = 1u;
+    if (wz_machine_set_keyboard_key(&machine, 2u, 1u, true) != WZ_RESULT_OK) {
+        fputs("keyboard state setup failed\n", stderr);
+        return 1;
+    }
     wz_state_writer_init(&writer, serialized, sizeof(serialized));
     if (wz_state_serialize_machine(&machine, &writer) != WZ_RESULT_OK ||
         wz_state_deserialize_machine(&restored, serialized, writer.length) != WZ_RESULT_OK ||
@@ -3298,7 +3327,8 @@ int main(void)
         restored.cpu.iff2 != 1u ||
         restored.cpu.interrupt_enable_delay != 1u ||
         restored.cpu.interrupt_mode != (wz_byte_t)WZ_Z80_INTERRUPT_MODE_2 ||
-        restored.cpu.halted != 1u) {
+        restored.cpu.halted != 1u ||
+        restored.keyboard_rows[2u] != 0x1du) {
         fputs("Z80 state round trip failed\n", stderr);
         return 1;
     }

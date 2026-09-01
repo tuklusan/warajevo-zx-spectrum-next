@@ -29,6 +29,7 @@ typedef struct wz_machine {
     wz_byte_t memory[65536u];
     wz_byte_t has_48k_rom;
     wz_byte_t hardware_io_decode_enabled;
+    wz_byte_t keyboard_rows[8u];
     wz_qword_t rom_identity;
     wz_master_tick_t master_tick;
     wz_byte_t im0_injected_opcode;
@@ -41,6 +42,10 @@ void wz_machine_destroy(wz_machine_t* machine);
 const char* wz_machine_boot_message(void);
 void wz_machine_set_timing_trace(wz_machine_t* machine, wz_trace_sink_t* trace);
 wz_result_t wz_machine_set_hardware_io_decode(wz_machine_t* machine, bool enabled);
+wz_result_t wz_machine_set_keyboard_key(wz_machine_t* machine,
+                                        wz_byte_t row,
+                                        wz_byte_t key,
+                                        bool pressed);
 wz_result_t wz_machine_load_48k_rom(wz_machine_t* machine,
                                     const wz_byte_t* bytes,
                                     size_t length);
