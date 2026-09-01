@@ -138,6 +138,46 @@ static bool claim_timed_data(const wz_bus_request_t* request,
     return true;
 }
 
+typedef struct {
+    wz_qword_t hash;
+    wz_master_tick_t master_tick;
+    wz_word_t program_counter;
+    wz_byte_t accumulator;
+    wz_byte_t flags;
+    wz_byte_t memory_4000;
+} differential_result_t;
+
+static bool run_differential_program(wz_machine_t* machine,
+                                     const wz_machine_profile_t* profile,
+                                     const wz_byte_t* program,
+                                     size_t program_length,
+                                     wz_word_t load_address,
+                                     unsigned steps,
+                                     differential_result_t* result)
+{
+    if (wz_machine_init(machine, profile) != WZ_RESULT_OK ||
+        result == 0 || program == 0 || program_length > sizeof(machine->memory) ||
+        (size_t)load_address + program_length > sizeof(machine->memory)) {
+        return false;
+    }
+    memcpy(&machine->memory[load_address], program, program_length);
+    machine->cpu.program_counter = load_address;
+    for (unsigned step = 0u; step < steps; ++step) {
+        if (wz_z80_step(machine) != WZ_RESULT_OK) {
+            return false;
+        }
+    }
+    if (wz_state_hash_machine(machine, &result->hash) != WZ_RESULT_OK) {
+        return false;
+    }
+    result->master_tick = machine->master_tick;
+    result->program_counter = machine->cpu.program_counter;
+    result->accumulator = machine->cpu.main.a;
+    result->flags = machine->cpu.main.f;
+    result->memory_4000 = machine->memory[0x4000u];
+    return true;
+}
+
 static wz_byte_t read_cpu_fixture_input(wz_bus_cycle_t cycle,
                                         wz_word_t address,
                                         void* context)
@@ -202,6 +242,39 @@ int main(void)
     const char* failing_trace_path = "wz-trace-failing-opcode.bin";
     const char* state_trace_path = "wz-trace-state-regression.bin";
     const char* timing_full_trace_path = "wz-trace-timing-full-retention.bin";
+
+    {
+        static const wz_byte_t load_store_program[] = {
+            0x3eu, 0x42u, 0x32u, 0x00u, 0x40u, 0x3au, 0x00u, 0x40u
+        };
+        static const wz_byte_t immediate_add_program[] = {
+            0x3eu, 0x3cu, 0xc6u, 0x42u
+        };
+        differential_result_t first_result;
+        differential_result_t second_result;
+        if (!run_differential_program(&machine, profile, load_store_program,
+                                      sizeof(load_store_program), 0x2000u, 3u,
+                                      &first_result) ||
+            !run_differential_program(&machine, profile, load_store_program,
+                                      sizeof(load_store_program), 0x2000u, 3u,
+                                      &second_result) ||
+            memcmp(&first_result, &second_result, sizeof(first_result)) != 0 ||
+            first_result.accumulator != 0x42u || first_result.memory_4000 != 0x42u) {
+            fputs("load/store differential scenario failed\n", stderr);
+            return 1;
+        }
+        if (!run_differential_program(&machine, profile, immediate_add_program,
+                                      sizeof(immediate_add_program), 0x2000u, 2u,
+                                      &first_result) ||
+            !run_differential_program(&machine, profile, immediate_add_program,
+                                      sizeof(immediate_add_program), 0x2000u, 2u,
+                                      &second_result) ||
+            memcmp(&first_result, &second_result, sizeof(first_result)) != 0 ||
+            first_result.accumulator != 0x7eu) {
+            fputs("immediate-add differential scenario failed\n", stderr);
+            return 1;
+        }
+    }
 
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
         fputs("machine initialization failed\n", stderr);

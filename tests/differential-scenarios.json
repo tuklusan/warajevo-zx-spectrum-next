@@ -1,0 +1,32 @@
+{
+  "project_notice": [
+    "Warajevo ZX Spectrum Next",
+    "Copyright (c) 2026 Supratim Sanyal, SANYALnet Labs, for new original project material.",
+    "New original material is licensed under GNU GPL v2 or later (GPL-2.0-or-later), as stated in LICENSE.txt.",
+    "Upstream Warajevo and third-party material retain their applicable copyrights and licenses.",
+    "See LICENSE.txt and NOTICE.md for complete terms and provenance."
+  ],
+  "schema_version": 1,
+  "reference_identity": "94f69bd8f4acb6c0c320ae34f9b1c3ee29bc5545",
+  "reference_source_root": "reference/original-warajevo/source/src/spectrum-kernel/Z80.ASM",
+  "scenarios": [
+    {
+      "id": "load-store-round-trip",
+      "program_hex": "3e423200403a0040",
+      "load_address": 8192,
+      "steps": 3,
+      "reference_boundary": "Z80.ASM:primary LD and memory dispatch",
+      "classification": "source_reviewed_match",
+      "compared_fields": ["register_a", "memory_4000", "program_counter", "master_tick"]
+    },
+    {
+      "id": "immediate-add",
+      "program_hex": "3e3cc642",
+      "load_address": 8192,
+      "steps": 2,
+      "reference_boundary": "Z80.ASM:primary arithmetic dispatch",
+      "classification": "source_reviewed_match",
+      "compared_fields": ["register_a", "flags", "program_counter", "master_tick"]
+    }
+  ]
+}
