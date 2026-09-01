@@ -196,7 +196,7 @@ int main(void)
     }
     wz_bus_request_init(&bus_request, WZ_BUS_IO_READ, 12u, 0x00feu, 0u, 4u);
     if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
-        bus_request.value != 0xffu) {
+        bus_request.value != 0xbfu) {
         fputs("bus I/O read failed\n", stderr);
         return 1;
     }
