@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 83,
+  "next_cr_number": 84,
   "status_values": [
     "open",
     "in_progress",
@@ -916,6 +916,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 13, 14, 36, 44, and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 068", "reference/original-warajevo/source"],
       "notes": "Opened on 2026-09-01 as the next ordered Phase-3 task. Closed after implementing evidence-backed 48K PAL memory and I/O contention in the bus/timing layer, exact delay and same-edge ordering, deterministic profile behavior, and boundary/I/O vectors. CODE and DOCUMENTATION reviews passed; Linux remote harness CR0082-CONTENTION-LINUX-R2 passed all CTest gates and 1,356/1,356 Fuse vectors; hosted platform-smoke 33556099116 passed five platforms; upstream zero-gap scan completed."
+    },
+    {
+      "cr_number": "CR-0083",
+      "title": "Verify contention remains isolated in the bus timing layer",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 13, 14, 36, 44, and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 069", "design/machine-timing-evidence.md", "reference/original-warajevo/source"],
+      "notes": "Opened on 2026-09-01 as the next ordered Phase-3 task. Preflight requires source-level proof that CPU opcode execution contains no Spectrum-specific contention table or delay logic, shared bus dispatch coverage, exact tick/trace preservation, and upstream zero-gap review before closure."
     }
   ]
 }
