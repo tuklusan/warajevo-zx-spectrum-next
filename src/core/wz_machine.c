@@ -29,6 +29,7 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
         machine->keyboard_rows[index] = 0x1fu;
     }
     machine->ula_output = 0u;
+    machine->maskable_interrupt_line_low = 0u;
     machine->rom_identity = 0u;
     machine->master_tick = 0u;
     machine->ula_output_tick = 0u;
@@ -53,6 +54,7 @@ void wz_machine_destroy(wz_machine_t* machine)
             machine->keyboard_rows[index] = 0x1fu;
         }
         machine->ula_output = 0u;
+        machine->maskable_interrupt_line_low = 0u;
         machine->rom_identity = 0u;
         machine->master_tick = 0u;
         machine->ula_output_tick = 0u;
@@ -243,6 +245,51 @@ void wz_machine_ula_port_fe_write(wz_machine_t* machine, wz_word_t address,
         event.auxiliary = 0x01u;
         wz_trace_emit_detail(machine->timing_trace, &event);
     }
+}
+
+void wz_machine_update_interrupt_line(wz_machine_t* machine)
+{
+    wz_dword_t frame_tstate;
+    wz_dword_t assert_tstate;
+    wz_dword_t deassert_tstate;
+    bool should_be_low;
+
+    if (machine == 0 || machine->profile == 0 ||
+        machine->profile->master_ticks_per_cpu_tstate == 0u ||
+        machine->profile->tstates_per_frame == 0u) {
+        return;
+    }
+    frame_tstate = (wz_dword_t)((machine->master_tick /
+        machine->profile->master_ticks_per_cpu_tstate) %
+        machine->profile->tstates_per_frame);
+    assert_tstate = machine->profile->interrupt_assert_tstate %
+        machine->profile->tstates_per_frame;
+    deassert_tstate = machine->profile->interrupt_deassert_tstate %
+        machine->profile->tstates_per_frame;
+    if (assert_tstate < deassert_tstate) {
+        should_be_low = frame_tstate >= assert_tstate &&
+            frame_tstate < deassert_tstate;
+    } else {
+        should_be_low = frame_tstate >= assert_tstate ||
+            frame_tstate < deassert_tstate;
+    }
+    if ((machine->maskable_interrupt_line_low != 0u) == should_be_low) {
+        return;
+    }
+    machine->maskable_interrupt_line_low = should_be_low ? 1u : 0u;
+    if (machine->timing_trace != 0) {
+        wz_trace_event_t event = {0};
+        event.kind = WZ_TRACE_INTERRUPT;
+        event.master_tick = machine->master_tick;
+        event.value = should_be_low ? WZ_TRACE_INTERRUPT_LINE_ASSERT :
+            WZ_TRACE_INTERRUPT_LINE_DEASSERT;
+        wz_trace_emit_detail(machine->timing_trace, &event);
+    }
+}
+
+bool wz_machine_maskable_interrupt_line_low(const wz_machine_t* machine)
+{
+    return machine != 0 && machine->maskable_interrupt_line_low != 0u;
 }
 
 const char* wz_machine_boot_message(void)

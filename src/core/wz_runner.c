@@ -31,8 +31,10 @@ wz_result_t wz_headless_runner_advance(wz_headless_runner_t* runner,
         return WZ_RESULT_INVALID_ARGUMENT;
     }
 
+    wz_machine_update_interrupt_line(runner->machine);
     for (wz_master_tick_t offset = 0u; offset < ticks; ++offset) {
         ++runner->machine->master_tick;
+        wz_machine_update_interrupt_line(runner->machine);
         wz_trace_emit(runner->trace_sink,
                       WZ_TRACE_MASTER_TICK_ADVANCED,
                       runner->machine->master_tick);

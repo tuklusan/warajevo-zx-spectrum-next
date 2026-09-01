@@ -20,6 +20,8 @@ static const wz_machine_profile_t wz_profile_48k = {
     448u,
     256u,
     192u,
+    0u,
+    32u,
     0u
 };
 
@@ -35,6 +37,8 @@ static const wz_machine_profile_t wz_profile_128k = {
     456u,
     256u,
     192u,
+    0u,
+    32u,
     0u
 };
 

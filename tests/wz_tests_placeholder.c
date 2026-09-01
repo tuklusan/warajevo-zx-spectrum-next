@@ -3390,8 +3390,9 @@ int main(void)
     wz_state_writer_init(&writer, serialized, sizeof(serialized));
     machine.ula_output = 0x1bu;
     machine.ula_output_tick = 1234u;
+    machine.maskable_interrupt_line_low = 1u;
     if (wz_state_serialize_machine(&machine, &writer) != WZ_RESULT_OK ||
-        writer.length != 65605u ||
+        writer.length != 65606u ||
         wz_state_hash_machine(&machine, &first_hash) != WZ_RESULT_OK) {
         fputs("canonical state serialization failed\n", stderr);
         return 1;
@@ -3428,7 +3429,8 @@ int main(void)
         restored.cpu.interrupt_mode != (wz_byte_t)WZ_Z80_INTERRUPT_MODE_2 ||
         restored.cpu.halted != 1u ||
         restored.keyboard_rows[2u] != 0x1du ||
-        restored.ula_output != 0x1bu || restored.ula_output_tick != 1234u) {
+        restored.ula_output != 0x1bu || restored.ula_output_tick != 1234u ||
+        restored.maskable_interrupt_line_low != 1u) {
         fputs("Z80 state round trip failed\n", stderr);
         return 1;
     }
@@ -3462,6 +3464,35 @@ int main(void)
         fputs("headless runner or trace sink failed\n", stderr);
         return 1;
     }
+
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before interrupt line schedule test failed\n", stderr);
+        return 1;
+    }
+    memset(&timing_trace_log, 0, sizeof(timing_trace_log));
+    wz_trace_sink_init(&trace_sink, record_timing_trace, &timing_trace_log);
+    wz_machine_set_timing_trace(&machine, &trace_sink);
+    wz_machine_update_interrupt_line(&machine);
+    machine.master_tick = 64u;
+    wz_machine_update_interrupt_line(&machine);
+    machine.master_tick = 139776u;
+    wz_machine_update_interrupt_line(&machine);
+    machine.master_tick = 139840u;
+    wz_machine_update_interrupt_line(&machine);
+    if (!wz_machine_maskable_interrupt_line_low(&machine) ||
+        timing_trace_log.count != 4u ||
+        timing_trace_log.events[0].value != WZ_TRACE_INTERRUPT_LINE_ASSERT ||
+        timing_trace_log.events[0].master_tick != 0u ||
+        timing_trace_log.events[1].value != WZ_TRACE_INTERRUPT_LINE_DEASSERT ||
+        timing_trace_log.events[1].master_tick != 64u ||
+        timing_trace_log.events[2].value != WZ_TRACE_INTERRUPT_LINE_ASSERT ||
+        timing_trace_log.events[2].master_tick != 139776u ||
+        timing_trace_log.events[3].value != WZ_TRACE_INTERRUPT_LINE_DEASSERT ||
+        timing_trace_log.events[3].master_tick != 139840u) {
+        fputs("profile-driven interrupt line schedule failed\n", stderr);
+        return 1;
+    }
+    wz_machine_set_timing_trace(&machine, 0);
 
     wz_scheduler_init(&scheduler);
     if (wz_scheduler_schedule(&scheduler, 10u, WZ_EVENT_EXTERNAL,

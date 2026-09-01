@@ -10,8 +10,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "core/wz_machine.h"
 
-#define WZ_STATE_VERSION 7u
-#define WZ_STATE_HEADER_LENGTH 69u
+#define WZ_STATE_VERSION 8u
+#define WZ_STATE_HEADER_LENGTH 70u
 #define WZ_STATE_MACHINE_LENGTH (65536u + WZ_STATE_HEADER_LENGTH)
 
 static wz_result_t wz_state_write(wz_state_writer_t* writer,
@@ -120,6 +120,7 @@ wz_result_t wz_state_serialize_machine(const wz_machine_t* machine,
                        sizeof(machine->keyboard_rows)) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, machine->ula_output) != WZ_RESULT_OK ||
         wz_state_write_u64(writer, machine->ula_output_tick) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, machine->maskable_interrupt_line_low) != WZ_RESULT_OK ||
         wz_state_write(writer, machine->memory, sizeof(machine->memory)) != WZ_RESULT_OK) {
         return WZ_RESULT_SERIALIZATION_FAILURE;
     }
@@ -235,6 +236,10 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
         ula_output_tick |= (wz_qword_t)data[61u + index] << (index * 8u);
     }
     machine->ula_output_tick = ula_output_tick;
+    if (data[69u] > 1u) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    machine->maskable_interrupt_line_low = data[69u];
     for (size_t index = 0u; index < sizeof(machine->memory); ++index) {
         machine->memory[index] = data[WZ_STATE_HEADER_LENGTH + index];
     }

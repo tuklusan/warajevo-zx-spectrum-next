@@ -28,6 +28,8 @@ typedef struct {
     uint16_t raster_clocks_per_line;
     uint16_t active_width;
     uint16_t active_height;
+    wz_dword_t interrupt_assert_tstate;
+    wz_dword_t interrupt_deassert_tstate;
     wz_qword_t expected_rom_identity;
 } wz_machine_profile_t;
 
