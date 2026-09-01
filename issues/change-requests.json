@@ -927,9 +927,9 @@
     {
       "cr_number": "CR-0084",
       "title": "Implement profile-driven maskable interrupt line scheduling",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 10, 14, 36, 44, and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 070", "design/machine-timing-evidence.md", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
-      "notes": "Opened on 2026-09-01 after the upstream completeness preflight. Implement profile-defined frame-boundary assertion and 32-T-state deassertion of the level-triggered maskable interrupt line; CPU sampling remains task 071."
+      "notes": "Opened on 2026-09-01 after the upstream completeness preflight. Closed after implementing profile-defined frame-boundary assertion and 32-T-state deassertion of the level-triggered maskable interrupt line, exact trace events, canonical state preservation, and frame-boundary vectors. CODE and DOCUMENTATION reviews passed with no confirmed findings; CODE snapshot bd11fd7..54a084b and DOCUMENTATION packet review passed. Linux CR0084-INTERRUPT-LINUX-R3 passed all five CTest gates and 1,356/1,356 pinned vectors; hosted platform-smoke 33558828079 passed Linux x64/ARM64, Windows x64, Windows x86-64, macOS ARM64, and macOS Intel. Upstream zero-gap scan completed; CPU sampling remains task 071."
     }
   ]
 }

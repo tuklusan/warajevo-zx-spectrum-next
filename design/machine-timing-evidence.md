@@ -53,7 +53,7 @@ be inferred solely from C call order.
 | Topic | Current status | Required before |
 | --- | --- | --- |
 | 48K PAL master clock and master-tick ratio | Frozen for Phase-1 integer domain | Phase 1 complete; revisit only with new evidence |
-| Frame geometry and interrupt timing | Geometry frozen; exact interrupt edge remains open | Phase 3/4 |
+| Frame geometry and interrupt timing | 48K frame boundary and 32-T-state interrupt pulse frozen | Phase 3 complete; revisit only with new evidence |
 | Contention evidence tables | Scaffold created | Phase 3 |
 | Floating-bus evidence | Scaffold created | Phase 4 |
 | Same-master-tick event ordering | Phase-1 scheduler ordering frozen; hardware visibility details remain open | Phase 3/4 |
@@ -98,6 +98,6 @@ Authority: [48K ZX Spectrum Technical Information](https://worldofspectrum.org/f
 
 ## Notes
 
-The frozen values above authorize Phase-1 implementation only. They do not
-certify a particular ULA revision or complete the contention, floating-bus,
-interrupt-edge, raster-fetch, or same-edge hardware evidence gates.
+The frozen values above authorize the implemented timing slices. They do not
+certify a particular ULA revision or complete floating-bus, raster-fetch, or
+same-edge hardware evidence gates.

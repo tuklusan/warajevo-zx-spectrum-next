@@ -37,7 +37,7 @@ the difference is recorded.
 
 ## Deferred Categories
 
-Contention, scheduled frame interrupts, ULA fetch ordering, floating-bus
+Contention, ULA fetch ordering, floating-bus
 behavior, memory-map routing, device I/O effects, real-hardware timing
 measurement, and full-machine compatibility are not CPU-complete claims. They
 remain owned by the named Phase-3 and later tasks in
