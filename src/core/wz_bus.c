@@ -50,6 +50,17 @@ void wz_bus_input_init(wz_bus_input_t* input,
     input->context = context;
 }
 
+void wz_bus_data_source_init(wz_bus_data_source_t* source,
+                             wz_bus_data_source_fn read,
+                             void* context)
+{
+    if (source == 0) {
+        return;
+    }
+    source->read = read;
+    source->context = context;
+}
+
 wz_result_t wz_machine_set_bus_observer(wz_machine_t* machine,
                                         const wz_bus_observer_t* observer)
 {
@@ -79,6 +90,20 @@ wz_result_t wz_machine_set_bus_input(wz_machine_t* machine,
     return WZ_RESULT_OK;
 }
 
+wz_result_t wz_machine_set_bus_data_source(wz_machine_t* machine,
+                                           const wz_bus_data_source_t* source)
+{
+    if (machine == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (source == 0) {
+        wz_bus_data_source_init(&machine->bus_data_source, 0, 0);
+    } else {
+        machine->bus_data_source = *source;
+    }
+    return WZ_RESULT_OK;
+}
+
 wz_result_t wz_machine_bus_request(wz_machine_t* machine,
                                    wz_bus_request_t* request)
 {
@@ -98,7 +123,15 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
         request->master_tick += (wz_master_tick_t)contention_delay * 2u;
     }
 
-    switch (request->cycle) {
+    if ((request->cycle == WZ_BUS_M1_OPCODE_FETCH ||
+         request->cycle == WZ_BUS_MEMORY_READ ||
+         request->cycle == WZ_BUS_IO_READ ||
+         request->cycle == WZ_BUS_INTERRUPT_ACKNOWLEDGE) &&
+        machine->bus_data_source.read != 0 &&
+        machine->bus_data_source.read(request, &request->value,
+                                      machine->bus_data_source.context)) {
+        /* A claimed source owns the read value; tracing still sees the request. */
+    } else switch (request->cycle) {
     case WZ_BUS_M1_OPCODE_FETCH:
     case WZ_BUS_MEMORY_READ:
         request->value = wz_machine_memory_read(machine, request->address);

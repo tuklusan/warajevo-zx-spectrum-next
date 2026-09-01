@@ -25,6 +25,7 @@ typedef struct wz_machine {
     wz_z80_state_t cpu;
     wz_bus_observer_t bus_observer;
     wz_bus_input_t bus_input;
+    wz_bus_data_source_t bus_data_source;
     wz_trace_sink_t* timing_trace;
     wz_byte_t memory[65536u];
     wz_byte_t has_48k_rom;

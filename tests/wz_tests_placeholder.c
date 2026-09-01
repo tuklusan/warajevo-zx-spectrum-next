@@ -117,6 +117,27 @@ static wz_byte_t read_bus_input(wz_bus_cycle_t cycle,
     return *interrupt_value;
 }
 
+typedef struct {
+    unsigned calls;
+    wz_master_tick_t seen_tick;
+    wz_byte_t seen_delay;
+} data_source_fixture_t;
+
+static bool claim_timed_data(const wz_bus_request_t* request,
+                             wz_byte_t* value,
+                             void* context)
+{
+    data_source_fixture_t* fixture = (data_source_fixture_t*)context;
+    if (request->cycle != WZ_BUS_MEMORY_READ || request->address != 0x4000u) {
+        return false;
+    }
+    fixture->calls += 1u;
+    fixture->seen_tick = request->master_tick;
+    fixture->seen_delay = request->contention_delay;
+    *value = 0xa5u;
+    return true;
+}
+
 static wz_byte_t read_cpu_fixture_input(wz_bus_cycle_t cycle,
                                         wz_word_t address,
                                         void* context)
@@ -154,8 +175,10 @@ int main(void)
     wz_trace_file_t duplicate;
     wz_bus_observer_t bus_observer;
     wz_bus_input_t bus_input;
+    wz_bus_data_source_t bus_data_source;
     wz_bus_request_t bus_request;
     bus_log_t bus_log;
+    data_source_fixture_t data_source_fixture;
     timing_trace_log_t timing_trace_log;
     retention_trace_log_t retention_trace_log;
     wz_trace_cpu_state_sync_t recovered_cpu_sync;
@@ -210,6 +233,25 @@ int main(void)
     if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
         machine.memory[0x4000u] != 0x5cu) {
         fputs("bus memory write failed\n", stderr);
+        return 1;
+    }
+    memset(&data_source_fixture, 0, sizeof(data_source_fixture));
+    wz_bus_data_source_init(&bus_data_source, claim_timed_data,
+                            &data_source_fixture);
+    if (wz_machine_set_bus_data_source(&machine, &bus_data_source) != WZ_RESULT_OK) {
+        fputs("bus data source installation failed\n", stderr);
+        return 1;
+    }
+    wz_bus_request_init(&bus_request, WZ_BUS_MEMORY_READ, 12u, 0x4000u, 0u, 3u);
+    if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
+        bus_request.value != 0xa5u || data_source_fixture.calls != 1u ||
+        data_source_fixture.seen_tick != bus_request.master_tick ||
+        data_source_fixture.seen_delay != bus_request.contention_delay) {
+        fputs("timed bus data source failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_set_bus_data_source(&machine, 0) != WZ_RESULT_OK) {
+        fputs("bus data source removal failed\n", stderr);
         return 1;
     }
     wz_bus_request_init(&bus_request, WZ_BUS_IO_READ, 12u, 0x00feu, 0u, 4u);

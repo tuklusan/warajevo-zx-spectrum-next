@@ -30,6 +30,15 @@ typedef struct {
     wz_byte_t contention_delay;
 } wz_bus_request_t;
 
+typedef bool (*wz_bus_data_source_fn)(const wz_bus_request_t* request,
+                                      wz_byte_t* value,
+                                      void* context);
+
+typedef struct {
+    wz_bus_data_source_fn read;
+    void* context;
+} wz_bus_data_source_t;
+
 typedef void (*wz_bus_observer_fn)(const wz_bus_request_t* request, void* context);
 
 typedef struct {
@@ -60,10 +69,15 @@ void wz_bus_observer_init(wz_bus_observer_t* observer,
 void wz_bus_input_init(wz_bus_input_t* input,
                        wz_bus_input_fn read,
                        void* context);
+void wz_bus_data_source_init(wz_bus_data_source_t* source,
+                             wz_bus_data_source_fn read,
+                             void* context);
 wz_result_t wz_machine_set_bus_observer(wz_machine_t* machine,
                                         const wz_bus_observer_t* observer);
 wz_result_t wz_machine_set_bus_input(wz_machine_t* machine,
                                      const wz_bus_input_t* input);
+wz_result_t wz_machine_set_bus_data_source(wz_machine_t* machine,
+                                           const wz_bus_data_source_t* source);
 wz_result_t wz_machine_bus_request(wz_machine_t* machine,
                                    wz_bus_request_t* request);
 

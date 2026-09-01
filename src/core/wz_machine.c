@@ -22,6 +22,7 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     wz_z80_state_init(&machine->cpu);
     wz_bus_observer_init(&machine->bus_observer, 0, 0);
     wz_bus_input_init(&machine->bus_input, 0, 0);
+    wz_bus_data_source_init(&machine->bus_data_source, 0, 0);
     machine->timing_trace = 0;
     machine->has_48k_rom = 0u;
     machine->hardware_io_decode_enabled = 1u;
@@ -47,6 +48,7 @@ void wz_machine_destroy(wz_machine_t* machine)
         machine->profile = 0;
         wz_bus_observer_init(&machine->bus_observer, 0, 0);
         wz_bus_input_init(&machine->bus_input, 0, 0);
+        wz_bus_data_source_init(&machine->bus_data_source, 0, 0);
         machine->timing_trace = 0;
         machine->has_48k_rom = 0u;
         machine->hardware_io_decode_enabled = 1u;
