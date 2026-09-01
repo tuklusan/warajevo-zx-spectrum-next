@@ -1,0 +1,30 @@
+{
+  "project_notice": [
+    "Warajevo ZX Spectrum Next",
+    "Copyright (c) 2026 Supratim Sanyal, SANYALnet Labs, for new original project material.",
+    "New original material is licensed under GNU GPL v2 or later (GPL-2.0-or-later), as stated in LICENSE.txt.",
+    "Upstream Warajevo and third-party material retain their applicable copyrights and licenses.",
+    "See LICENSE.txt and NOTICE.md for complete terms and provenance."
+  ],
+  "schema_version": 1,
+  "reference_identity": "94f69bd8f4acb6c0c320ae34f9b1c3ee29bc5545",
+  "reference_source_roots": [
+    "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM",
+    "reference/original-warajevo/source/src/spectrum-kernel/Z80.ASM"
+  ],
+  "normalized_result_schema": {
+    "encoding": "canonical-json-field-order",
+    "fields": ["scenario_id", "bus_cycles", "contention_delay", "trace_events", "master_tick", "program_counter", "stack_pointer", "interrupt_line_low"],
+    "excludes": ["padding", "pointers", "host timestamps", "file paths"]
+  },
+  "scenarios": [
+    {
+      "id": "contended-read-then-interrupt-sample",
+      "initial_master_tick": 28670,
+      "operations": ["memory_read_4000", "frame_interrupt_assert", "maskable_interrupt_sample_im1"],
+      "reference_boundary": "SPECSIM.ASM contention tables and Z80.ASM interrupt entry",
+      "classification": "source_reviewed_match",
+      "expected": {"contention_delay": 6, "interrupt_line_low": 0, "program_counter": 56}
+    }
+  ]
+}

@@ -976,9 +976,9 @@
     {
       "cr_number": "CR-0091",
       "title": "Run Phase-3 bus, contention, and interrupt evidence suite",
-      "status": "open",
+      "status": "in_progress",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 13, 14, 36, 44, 49.1, and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 077", "design/machine-timing-evidence.md", "design/cr-preflight/CR-0090.md", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM", "reference/original-warajevo/source/src/spectrum-kernel/Z80.ASM"],
-      "notes": "Opened on 2026-09-01 after the upstream completeness preflight. The combined Phase-3 evidence suite must compose bus dispatch, 48K PAL contention, maskable interrupt scheduling and CPU sampling, trace classifications, and canonical timing results, classifying every divergence before the Phase-3 gate can close."
+      "notes": "Opened on 2026-09-01 after the upstream completeness preflight and activated for implementation. The combined Phase-3 evidence suite must compose bus dispatch, 48K PAL contention, maskable interrupt scheduling and CPU sampling, trace classifications, and canonical timing results, classifying every divergence before the Phase-3 gate can close."
     }
   ]
 }

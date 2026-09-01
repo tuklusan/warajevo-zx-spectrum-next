@@ -3728,6 +3728,47 @@ int main(void)
     }
     wz_machine_set_timing_trace(&machine, 0);
 
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before combined Phase-3 evidence failed\n", stderr);
+        return 1;
+    }
+    memset(&bus_log, 0, sizeof(bus_log));
+    memset(&timing_trace_log, 0, sizeof(timing_trace_log));
+    wz_trace_sink_init(&trace_sink, record_timing_trace, &timing_trace_log);
+    if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK) {
+        fputs("combined Phase-3 bus observer setup failed\n", stderr);
+        return 1;
+    }
+    wz_machine_set_timing_trace(&machine, &trace_sink);
+    machine.master_tick = 28670u;
+    wz_bus_request_init(&bus_request, WZ_BUS_MEMORY_READ, machine.master_tick,
+                        0x4000u, 0u, 3u);
+    if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
+        bus_request.contention_delay != 6u || bus_request.master_tick != 28682u ||
+        bus_request.source != WZ_BUS_SOURCE_MEMORY) {
+        fputs("combined Phase-3 contention evidence failed\n", stderr);
+        return 1;
+    }
+    machine.master_tick = 0u;
+    machine.cpu.iff1 = 1u;
+    machine.cpu.iff2 = 1u;
+    machine.cpu.interrupt_mode = (wz_byte_t)WZ_Z80_INTERRUPT_MODE_1;
+    machine.cpu.program_counter = 0x3456u;
+    machine.cpu.stack_pointer = 0x8000u;
+    if (wz_z80_sample_maskable_interrupt(&machine) != WZ_RESULT_OK ||
+        machine.cpu.program_counter != 0x0038u ||
+        machine.cpu.stack_pointer != 0x7ffeu ||
+        bus_log.count < 4u ||
+        timing_trace_log.count < 3u ||
+        timing_trace_log.events[0].value != WZ_TRACE_INTERRUPT_LINE_ASSERT ||
+        timing_trace_log.events[1].value != WZ_TRACE_INTERRUPT_MASKABLE_SAMPLE ||
+        timing_trace_log.events[2].value != WZ_TRACE_INTERRUPT_MASKABLE_ACCEPT) {
+        fputs("combined Phase-3 interrupt evidence failed\n", stderr);
+        return 1;
+    }
+    wz_machine_set_timing_trace(&machine, 0);
+    wz_machine_set_bus_observer(&machine, 0);
+
     wz_scheduler_init(&scheduler);
     if (wz_scheduler_schedule(&scheduler, 10u, WZ_EVENT_EXTERNAL,
                               record_event, &dispatched) != WZ_RESULT_OK ||
