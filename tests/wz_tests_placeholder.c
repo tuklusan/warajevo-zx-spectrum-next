@@ -141,7 +141,7 @@ int main(void)
     wz_machine_t machine;
     wz_machine_t restored;
     wz_scheduler_t scheduler;
-    wz_byte_t serialized[65605u];
+    wz_byte_t serialized[65606u];
     wz_machine_profile_t certified_profile;
     wz_state_writer_t writer;
     wz_qword_t first_hash;
