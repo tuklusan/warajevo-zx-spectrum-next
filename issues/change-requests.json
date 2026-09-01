@@ -864,7 +864,7 @@
     {
       "cr_number": "CR-0075",
       "title": "Preserve reviewer HTTP failure status through deadline transport",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/deepseek-review-gate.md", "tools/reviewer/deepseek_gate.py"],
       "notes": "Opened on 2026-08-30 after an authenticated health probe established HTTP 402 insufficient balance while the deadline subprocess reported only a generic transport failure. Preserve an actionable non-secret HTTP status so the gate remains fail-closed with diagnosable evidence."
     },
@@ -892,9 +892,9 @@
     {
       "cr_number": "CR-0079",
       "title": "Separate CPU-vector fixture I/O from hardware ULA decoding",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 12 and 15", "design/fuse-z80-test-suite.md", "design/wzsn-architectures-1-2-developer-tasks.md task 065"],
-      "notes": "Opened on 2026-09-01 after CR-0078 remote validation showed 14 Fuse failures caused solely by the synthetic CPU-vector input provider using even ports. Add an explicit fixture-only I/O decode bypass, retain hardware ULA partial decoding by default, and prove both modes without changing CPU semantics."
+      "notes": "Opened on 2026-09-01 after CR-0078 remote validation showed 14 Fuse failures caused solely by the synthetic CPU-vector input provider using even ports. Closed after adding an explicit fixture-only I/O decode bypass, retaining hardware ULA partial decoding by default, proving both modes, passing CODE and DOCUMENTATION reviews, Linux CTest plus all 1,356 Fuse vectors, and hosted platform-smoke 33550089295 across five platforms."
     }
   ]
 }
