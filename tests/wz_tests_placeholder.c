@@ -386,12 +386,15 @@ int main(void)
         return 1;
     }
     if (machine.ula_output != 0x05u || machine.ula_output_tick != 32u ||
-        timing_trace_log.count != 1u ||
+        timing_trace_log.count != 2u ||
         timing_trace_log.events[0].kind != WZ_TRACE_DEVELOPER_MARKER ||
         timing_trace_log.events[0].master_tick != 32u ||
         timing_trace_log.events[0].address != 0x00feu ||
         timing_trace_log.events[0].value != 0x05u ||
-        timing_trace_log.events[0].auxiliary != 0x01u) {
+        timing_trace_log.events[0].auxiliary != 0x01u ||
+        timing_trace_log.events[1].kind != WZ_TRACE_CPU_BUS ||
+        timing_trace_log.events[1].master_tick != 32u ||
+        timing_trace_log.events[1].address != 0x12feu) {
         fputs("ULA output latch state failed\n", stderr);
         return 1;
     }
