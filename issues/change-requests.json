@@ -969,9 +969,9 @@
     {
       "cr_number": "CR-0090",
       "title": "Add non-raster differential scenarios against preserved reference",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 11, 36, 39, 44, and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 076", "design/cpu-acceptance-coverage.md", "design/cr-preflight/CR-0089.md", "reference/original-warajevo/source"],
-      "notes": "Opened on 2026-09-01 after CR-0089 as the next ordered Phase-3 task. Add deterministic non-raster comparison scenarios with machine-readable divergence classifications and hardware-authority handling."
+      "notes": "Closed on 2026-09-01 after adding a machine-readable preserved-reference scenario catalog with canonical normalized result schema and repeat-run deterministic comparisons for load/store and arithmetic programs. CODE and DOCUMENTATION reviews passed with no confirmed findings. Linux CR0090-DIFFERENTIAL-LINUX-R2 passed all five CTest gates and every pinned suite with zero failures and zero silent skips; hosted platform-smoke 33571651321 passed Linux x64/ARM64, Windows x64, macOS ARM64/Intel. Final upstream zero-gap scan completed; raster, floating-bus, and model-specific behavior remain explicitly deferred."
     }
   ]
 }
