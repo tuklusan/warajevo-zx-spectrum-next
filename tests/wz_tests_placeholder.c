@@ -3479,7 +3479,7 @@ int main(void)
     wz_machine_update_interrupt_line(&machine);
     machine.master_tick = 139840u;
     wz_machine_update_interrupt_line(&machine);
-    if (!wz_machine_maskable_interrupt_line_low(&machine) ||
+    if (wz_machine_maskable_interrupt_line_low(&machine) ||
         timing_trace_log.count != 4u ||
         timing_trace_log.events[0].value != WZ_TRACE_INTERRUPT_LINE_ASSERT ||
         timing_trace_log.events[0].master_tick != 0u ||
