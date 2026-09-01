@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 89,
+  "next_cr_number": 90,
   "status_values": [
     "open",
     "in_progress",
@@ -958,6 +958,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 12, 15, 36, 44, and 46", "design/wzsn-architectures-1-2-developer-tasks.md task 074", "design/machine-timing-evidence.md", "design/cr-preflight/CR-0087.md", "reference/original-warajevo/source"],
       "notes": "Closed on 2026-09-01 after documenting the total 16-bit I/O contract and adding exhaustive deterministic read/write coverage with preserved ULA partial decoding, fallback behavior, and observer/source classifications. CODE and DOCUMENTATION reviews passed with no confirmed findings. Linux CR0088-IO-NEGATIVE-LINUX-R2 passed all five CTest gates and every pinned suite with zero failures and zero silent skips; hosted platform-smoke 33570024302 passed Linux x64/ARM64, Windows x64, macOS ARM64/Intel. Final upstream zero-gap scan completed; model-specific peripherals remain explicitly deferred."
+    },
+    {
+      "cr_number": "CR-0089",
+      "title": "Fuzz memory and I/O access helpers under sanitizers",
+      "status": "open",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 7, 12, 36, 44, and 46", "design/wzsn-architectures-1-2-developer-tasks.md task 075", "design/machine-timing-evidence.md", "design/cr-preflight/CR-0088.md", "reference/original-warajevo/source"],
+      "notes": "Opened on 2026-09-01 after CR-0088 as the next ordered Phase-3 task. Add deterministic remote sanitizer/fuzz coverage for memory, I/O, contention, invalid enums, nulls, and arbitrary addresses."
     }
   ]
 }
