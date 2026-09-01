@@ -244,7 +244,7 @@ int main(void)
         certified_profile = *profile;
         certified_profile.expected_rom_identity =
             wz_machine_rom_identity(rom_image, sizeof(rom_image));
-        if (certified_profile.expected_rom_identity == 0u ||
+        if (certified_profile.expected_rom_identity != UINT64_C(0x5bb7495d13c5113f) ||
             wz_machine_init(&machine, &certified_profile) != WZ_RESULT_OK) {
             fputs("48K ROM certification profile failed\n", stderr);
             return 1;
