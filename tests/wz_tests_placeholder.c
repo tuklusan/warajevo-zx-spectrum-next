@@ -311,7 +311,7 @@ int main(void)
     }
     wz_bus_input_init(&bus_input, read_bus_input, (void*)&interrupt_value);
     wz_bus_request_init(&bus_request, WZ_BUS_IO_READ, 24u, 0x34ffu, 0u, 4u);
-    if (set_fixture_bus_input(&machine, &bus_input) != WZ_RESULT_OK ||
+    if (wz_machine_set_bus_input(&machine, &bus_input) != WZ_RESULT_OK ||
         wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
         bus_request.value != 0x34u) {
         fputs("bus input provider failed\n", stderr);
