@@ -948,7 +948,7 @@
     {
       "cr_number": "CR-0087",
       "title": "Add deterministic memory and I/O trace fixture classifications",
-      "status": "open",
+      "status": "in_progress",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 13, 15.6, 36, 44, and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 073", "design/machine-timing-evidence.md", "design/cr-preflight/CR-0086.md", "reference/original-warajevo/source"],
       "notes": "Opened on 2026-09-01 after CR-0086 as the next ordered Phase-3 task. Add explicit bus direction and data-source classifications to deterministic fixture records while preserving the current serialized trace layout."
     }
