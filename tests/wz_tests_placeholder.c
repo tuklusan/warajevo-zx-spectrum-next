@@ -117,6 +117,15 @@ static wz_byte_t read_bus_input(wz_bus_cycle_t cycle,
     return *interrupt_value;
 }
 
+static wz_result_t set_fixture_bus_input(wz_machine_t* machine,
+                                         wz_bus_input_t* input)
+{
+    if (wz_machine_set_hardware_io_decode(machine, false) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    return wz_machine_set_bus_input(machine, input);
+}
+
 int main(void)
 {
     const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
@@ -302,7 +311,7 @@ int main(void)
     }
     wz_bus_input_init(&bus_input, read_bus_input, (void*)&interrupt_value);
     wz_bus_request_init(&bus_request, WZ_BUS_IO_READ, 24u, 0x34ffu, 0u, 4u);
-    if (wz_machine_set_bus_input(&machine, &bus_input) != WZ_RESULT_OK ||
+    if (set_fixture_bus_input(&machine, &bus_input) != WZ_RESULT_OK ||
         wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
         bus_request.value != 0x34u) {
         fputs("bus input provider failed\n", stderr);
@@ -3041,7 +3050,7 @@ int main(void)
     wz_trace_sink_init(&trace_sink, record_timing_trace, &timing_trace_log);
     wz_machine_set_timing_trace(&machine, &trace_sink);
     if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
-        wz_machine_set_bus_input(&machine, &bus_input) != WZ_RESULT_OK ||
+        set_fixture_bus_input(&machine, &bus_input) != WZ_RESULT_OK ||
         wz_z80_accept_maskable_interrupt(&machine) != WZ_RESULT_OK ||
         machine.cpu.program_counter != 0x1235u || machine.cpu.stack_pointer != 0x8000u ||
         machine.cpu.main.a != 0x5au ||
@@ -3078,7 +3087,7 @@ int main(void)
     machine.cpu.main.b = 0x80u;
     machine.memory[0x1234u] = 0x00u;
     if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
-        wz_machine_set_bus_input(&machine, &bus_input) != WZ_RESULT_OK ||
+        set_fixture_bus_input(&machine, &bus_input) != WZ_RESULT_OK ||
         wz_z80_accept_maskable_interrupt(&machine) != WZ_RESULT_OK ||
         machine.cpu.program_counter != 0x1235u || machine.cpu.main.b != 0x01u ||
         machine.cpu.r != 0x01u || machine.master_tick != 22u || bus_log.count != 2u ||
@@ -3104,7 +3113,7 @@ int main(void)
     machine.cpu.main.a = 0x01u;
     machine.memory[0x1234u] = 0x44u;
     if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
-        wz_machine_set_bus_input(&machine, &bus_input) != WZ_RESULT_OK ||
+        set_fixture_bus_input(&machine, &bus_input) != WZ_RESULT_OK ||
         wz_z80_accept_maskable_interrupt(&machine) != WZ_RESULT_OK ||
         machine.cpu.program_counter != 0x1235u || machine.cpu.main.a != 0xffu ||
         machine.cpu.r != 0x01u || machine.master_tick != 22u || bus_log.count != 2u ||
@@ -3131,7 +3140,7 @@ int main(void)
     machine.memory[0x1235u] = 0x78u;
     machine.memory[0x1236u] = 0x56u;
     if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
-        wz_machine_set_bus_input(&machine, &bus_input) != WZ_RESULT_OK ||
+        set_fixture_bus_input(&machine, &bus_input) != WZ_RESULT_OK ||
         wz_z80_accept_maskable_interrupt(&machine) != WZ_RESULT_OK ||
         machine.cpu.program_counter != 0x1237u || machine.cpu.ix != 0x5678u ||
         machine.cpu.r != 0x01u || machine.master_tick != 34u || bus_log.count != 4u ||
@@ -3159,7 +3168,7 @@ int main(void)
     machine.memory[0x1235u] = 0x78u;
     machine.memory[0x1236u] = 0x56u;
     if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
-        wz_machine_set_bus_input(&machine, &bus_input) != WZ_RESULT_OK ||
+        set_fixture_bus_input(&machine, &bus_input) != WZ_RESULT_OK ||
         wz_z80_accept_maskable_interrupt(&machine) != WZ_RESULT_OK ||
         machine.cpu.program_counter != 0x1237u || machine.cpu.iy != 0x5678u ||
         machine.cpu.r != 0x01u || machine.master_tick != 34u || bus_log.count != 4u ||
@@ -3185,7 +3194,7 @@ int main(void)
     machine.cpu.stack_pointer = 0x8000u;
     machine.cpu.r = 0x7fu;
     if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
-        wz_machine_set_bus_input(&machine, &bus_input) != WZ_RESULT_OK ||
+        set_fixture_bus_input(&machine, &bus_input) != WZ_RESULT_OK ||
         wz_z80_accept_maskable_interrupt(&machine) != WZ_RESULT_OK ||
         machine.cpu.program_counter != 0x0038u || machine.cpu.stack_pointer != 0x7ffeu ||
         machine.memory[0x7fffu] != 0x12u || machine.memory[0x7ffeu] != 0x34u ||
@@ -3251,7 +3260,7 @@ int main(void)
     machine.memory[0x8010u] = 0x34u;
     machine.memory[0x8011u] = 0x12u;
     if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
-        wz_machine_set_bus_input(&machine, &bus_input) != WZ_RESULT_OK ||
+        set_fixture_bus_input(&machine, &bus_input) != WZ_RESULT_OK ||
         wz_z80_accept_maskable_interrupt(&machine) != WZ_RESULT_OK ||
         machine.cpu.program_counter != 0x1234u || machine.cpu.memptr != 0x1234u ||
         machine.memory[0x7fffu] != 0x34u || machine.memory[0x7ffeu] != 0x56u ||
