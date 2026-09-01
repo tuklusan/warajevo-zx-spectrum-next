@@ -108,6 +108,27 @@ void wz_machine_memory_write(wz_machine_t* machine, wz_word_t address,
     }
 }
 
+bool wz_machine_ula_port_fe_selected(wz_word_t address)
+{
+    return (address & 1u) == 0u;
+}
+
+wz_byte_t wz_machine_ula_port_fe_read(const wz_machine_t* machine,
+                                       wz_word_t address)
+{
+    (void)machine;
+    (void)address;
+    return 0xffu;
+}
+
+void wz_machine_ula_port_fe_write(wz_machine_t* machine, wz_word_t address,
+                                  wz_byte_t value)
+{
+    (void)machine;
+    (void)address;
+    (void)value;
+}
+
 const char* wz_machine_boot_message(void)
 {
     return "Warajevo ZX Spectrum Next bootstrap";

@@ -301,11 +301,22 @@ int main(void)
         return 1;
     }
     wz_bus_input_init(&bus_input, read_bus_input, (void*)&interrupt_value);
-    wz_bus_request_init(&bus_request, WZ_BUS_IO_READ, 24u, 0x34feu, 0u, 4u);
+    wz_bus_request_init(&bus_request, WZ_BUS_IO_READ, 24u, 0x34ffu, 0u, 4u);
     if (wz_machine_set_bus_input(&machine, &bus_input) != WZ_RESULT_OK ||
         wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
         bus_request.value != 0x34u) {
         fputs("bus input provider failed\n", stderr);
+        return 1;
+    }
+    wz_bus_request_init(&bus_request, WZ_BUS_IO_READ, 28u, 0x34feu, 0u, 4u);
+    if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
+        bus_request.value != 0xffu) {
+        fputs("ULA partial port-FE read decode failed\n", stderr);
+        return 1;
+    }
+    wz_bus_request_init(&bus_request, WZ_BUS_IO_WRITE, 32u, 0x12feu, 0xa5u, 4u);
+    if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK) {
+        fputs("ULA partial port-FE write decode failed\n", stderr);
         return 1;
     }
     wz_bus_request_init(&bus_request, WZ_BUS_INTERRUPT_ACKNOWLEDGE,

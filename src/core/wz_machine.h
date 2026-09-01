@@ -46,5 +46,10 @@ wz_qword_t wz_machine_rom_identity(const wz_byte_t* bytes, size_t length);
 wz_byte_t wz_machine_memory_read(const wz_machine_t* machine, wz_word_t address);
 void wz_machine_memory_write(wz_machine_t* machine, wz_word_t address,
                              wz_byte_t value);
+bool wz_machine_ula_port_fe_selected(wz_word_t address);
+wz_byte_t wz_machine_ula_port_fe_read(const wz_machine_t* machine,
+                                       wz_word_t address);
+void wz_machine_ula_port_fe_write(wz_machine_t* machine, wz_word_t address,
+                                  wz_byte_t value);
 
 #endif
