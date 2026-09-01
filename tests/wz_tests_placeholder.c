@@ -3759,27 +3759,15 @@ int main(void)
         machine.cpu.program_counter != 0x0038u ||
         machine.cpu.stack_pointer != 0x7ffeu ||
         bus_log.count < 4u ||
-        timing_trace_log.count < 3u ||
-        timing_trace_log.events[0].value != WZ_TRACE_INTERRUPT_LINE_ASSERT ||
-        timing_trace_log.events[1].value != WZ_TRACE_INTERRUPT_MASKABLE_SAMPLE ||
-        timing_trace_log.events[2].value != WZ_TRACE_INTERRUPT_MASKABLE_ACCEPT) {
-        fprintf(stderr, "combined Phase-3 interrupt evidence failed: pc=%04x sp=%04x bus=%u trace=%u delay=%u tick=%llu source=%u first=%u/%u second=%u/%u third=%u/%u expected=%u/%u/%u\n",
-                (unsigned)machine.cpu.program_counter,
-                (unsigned)machine.cpu.stack_pointer,
-                (unsigned)bus_log.count,
-                (unsigned)timing_trace_log.count,
-                (unsigned)bus_request.contention_delay,
-                (unsigned long long)bus_request.master_tick,
-                (unsigned)bus_request.source,
-                timing_trace_log.count > 0u ? (unsigned)timing_trace_log.events[0].value : 0u,
-                timing_trace_log.count > 0u ? (unsigned)timing_trace_log.events[0].kind : 0u,
-                timing_trace_log.count > 1u ? (unsigned)timing_trace_log.events[1].value : 0u,
-                timing_trace_log.count > 1u ? (unsigned)timing_trace_log.events[1].kind : 0u,
-                timing_trace_log.count > 2u ? (unsigned)timing_trace_log.events[2].value : 0u,
-                timing_trace_log.count > 2u ? (unsigned)timing_trace_log.events[2].kind : 0u,
-                (unsigned)WZ_TRACE_INTERRUPT_LINE_ASSERT,
-                (unsigned)WZ_TRACE_INTERRUPT_MASKABLE_SAMPLE,
-                (unsigned)WZ_TRACE_INTERRUPT_MASKABLE_ACCEPT);
+        timing_trace_log.count < 4u ||
+        timing_trace_log.events[0].kind != WZ_TRACE_CPU_BUS ||
+        timing_trace_log.events[1].kind != WZ_TRACE_INTERRUPT ||
+        timing_trace_log.events[1].value != WZ_TRACE_INTERRUPT_LINE_ASSERT ||
+        timing_trace_log.events[2].kind != WZ_TRACE_INTERRUPT ||
+        timing_trace_log.events[2].value != WZ_TRACE_INTERRUPT_MASKABLE_SAMPLE ||
+        timing_trace_log.events[3].kind != WZ_TRACE_INTERRUPT ||
+        timing_trace_log.events[3].value != WZ_TRACE_INTERRUPT_MASKABLE_ACCEPT) {
+        fputs("combined Phase-3 interrupt evidence failed\n", stderr);
         return 1;
     }
     wz_machine_set_timing_trace(&machine, 0);
