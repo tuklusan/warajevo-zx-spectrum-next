@@ -216,6 +216,33 @@ int main(void)
         fputs("master-tick conversion failed\n", stderr);
         return 1;
     }
+    if (wz_machine_memory_read(0, 0u) != 0xffu ||
+        wz_machine_ula_port_fe_read(0, 0u) != 0xffu ||
+        wz_machine_bus_request(0, 0) != WZ_RESULT_INVALID_ARGUMENT ||
+        wz_machine_bus_request(&machine, 0) != WZ_RESULT_INVALID_ARGUMENT) {
+        fputs("null memory or I/O safety contract failed\n", stderr);
+        return 1;
+    }
+    wz_bus_request_init(&bus_request, (wz_bus_cycle_t)255u,
+                        UINT64_MAX, 0xffffu, 0xa5u, 0xffu);
+    if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_INVALID_ARGUMENT) {
+        fputs("invalid bus cycle safety contract failed\n", stderr);
+        return 1;
+    }
+    for (wz_dword_t address = 0u; address <= 0xffffu; ++address) {
+        wz_word_t word_address = (wz_word_t)address;
+        wz_machine_memory_write(&machine, word_address, (wz_byte_t)address);
+        if (wz_machine_memory_read(&machine, word_address) != (wz_byte_t)address ||
+            wz_machine_contention_delay(&machine, WZ_BUS_MEMORY_READ,
+                                        word_address, UINT64_MAX, 0xffu) > 255u) {
+            fputs("full-range memory safety fixture failed\n", stderr);
+            return 1;
+        }
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset after safety fixture failed\n", stderr);
+        return 1;
+    }
     memset(&bus_log, 0, sizeof(bus_log));
     wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
     if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK) {

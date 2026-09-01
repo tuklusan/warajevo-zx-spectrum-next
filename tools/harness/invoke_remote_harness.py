@@ -426,6 +426,8 @@ def main() -> int:
     parser.add_argument("--run-id", default=utc_stamp())
     parser.add_argument("--bootstrap-maintenance-cr")
     parser.add_argument("--published-ref")
+    parser.add_argument("--sanitizers", action="store_true",
+                        help="Enable address and undefined-behavior sanitizers on remote smoke builds.")
     args = parser.parse_args()
     args.run_id = validate_run_id(args.run_id)
 
@@ -442,6 +444,7 @@ def main() -> int:
     remote_dir_windows = windows_relative_path(remote_dir)
     local_dir = root / "test-artefacts" / "remote-runs" / args.machine / args.run_id
     local_dir.mkdir(parents=True, exist_ok=True)
+    sanitizer_arg = " --sanitizers" if args.sanitizers else ""
 
     sync = (sync_linux(machine, root, args.published_ref) if machine["kind"] == "linux"
             else sync_windows(machine, root, args.published_ref))
@@ -474,11 +477,11 @@ def main() -> int:
             )
             primary = run_linux(
                 machine,
-                f"{machine['python_command']} tools/harness/run_cmake_smoke.py --artifact-dir {shlex.quote(remote_dir)} && {fuse_command}",
+                f"{machine['python_command']} tools/harness/run_cmake_smoke.py --artifact-dir {shlex.quote(remote_dir)}{sanitizer_arg} && {fuse_command}",
                 root,
             )
             command_text = (
-                f"{machine['python_command']} tools/harness/run_cmake_smoke.py --artifact-dir {remote_dir} && "
+                f"{machine['python_command']} tools/harness/run_cmake_smoke.py --artifact-dir {remote_dir}{sanitizer_arg} && "
                 f"{fuse_command}"
             )
         else:
@@ -508,7 +511,7 @@ def main() -> int:
                     "$ErrorActionPreference = 'Stop'",
                     "$ProgressPreference = 'SilentlyContinue'",
                     f"Set-Location '{machine['project_dir']}'",
-                    f"& {machine['python_command']} '.\\tools\\harness\\run_cmake_smoke.py' --artifact-dir '.\\{remote_dir_windows}'",
+                    f"& {machine['python_command']} '.\\tools\\harness\\run_cmake_smoke.py' --artifact-dir '.\\{remote_dir_windows}'{sanitizer_arg}",
                     "if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }",
                     f"& {machine['python_command']} '.\\tools\\harness\\run_fuse_ed_platform.py' --runner-root '.\\{remote_dir_windows}\\build' --private-root '.\\test-artefacts\\fuse-corpus' --manifest '.\\{remote_dir_windows}\\fuse-complete-manifest.json' --unresolved-baseline '.\\tools\\harness\\fuse-unresolved-baseline.json'",
                     "exit $LASTEXITCODE",
