@@ -859,7 +859,7 @@
       "title": "Implement 48K ROM and RAM routing through the machine bus",
       "status": "in_progress",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 12 and 29", "design/wzsn-architectures-1-2-developer-tasks.md task 063"],
-      "notes": "Resumed on 2026-08-30 after the reviewer health check returned available. The reviewed implementation exposed and corrected a ROM-protected wrap fixture on the Linux remote. CR-0075 preserves actionable non-secret HTTP status through the deadline transport; both CRs require fresh CODE review before publication, remote validation, and closure."
+      "notes": "Candidate closure recorded on 2026-09-01. CR-0076 reconciled the unloaded CPU-vector fixture state with loaded-ROM protection without weakening the machine map. Linux CR0076-FIXTURE-ROM-LINUX-R2 passed CTest and all 1,356 Fuse vectors with zero unresolved, unexpected, or skipped cases; direct tests prove a loaded ROM rejects 0000-3fff writes and RAM remains writable. Hosted repository-gates 33517003481 and platform-smoke 33517003505 passed across Linux x64/ARM64, Windows x64, and macOS ARM64/Intel. Final bus and preserved-reference scans found no undispositioned scoped map behavior."
     },
     {
       "cr_number": "CR-0075",
@@ -873,7 +873,7 @@
       "title": "Separate unloaded CPU-vector fixture memory from loaded 48K ROM protection",
       "status": "in_progress",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 12 and 29", "design/wzsn-architectures-1-2-developer-tasks.md task 063", "design/fuse-z80-test-suite.md"],
-      "notes": "Opened on 2026-09-01 after hosted platform-smoke correctly exposed that the CPU-only Fuse vectors mutate their flat fixture image in 0000-3fff, while CR-0074 newly protects a loaded external 48K ROM. Establish an explicit unloaded-fixture versus loaded-ROM contract; retain ROM protection and direct ROM-map tests, and restore the full CPU conformance corpus without baselining those expected fixture-memory differences."
+      "notes": "Candidate closure recorded on 2026-09-01. ROM installation is explicit machine state; only a valid external 16 KiB load protects 0000-3fff, while the unloaded deterministic CPU-vector fixture remains writable. CODE and TEST_ARTIFACT reviews passed without confirmed findings. Linux CR0076-FIXTURE-ROM-LINUX-R2 passed CTest and all 1,356 Fuse vectors with zero unresolved, unexpected, or skipped cases; hosted repository-gates 33517003481 and platform-smoke 33517003505 passed across Linux x64/ARM64, Windows x64, and macOS ARM64/Intel. Final machine-path and preserved-reference scans found no undispositioned scoped behavior."
     }
   ]
 }
