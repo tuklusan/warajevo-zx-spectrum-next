@@ -920,9 +920,9 @@
     {
       "cr_number": "CR-0083",
       "title": "Verify contention remains isolated in the bus timing layer",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 13, 14, 36, 44, and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 069", "design/machine-timing-evidence.md", "reference/original-warajevo/source"],
-      "notes": "Opened on 2026-09-01 as the next ordered Phase-3 task. Preflight requires source-level proof that CPU opcode execution contains no Spectrum-specific contention table or delay logic, shared bus dispatch coverage, exact tick/trace preservation, and upstream zero-gap review before closure."
+      "notes": "Opened on 2026-09-01 as the next ordered Phase-3 task. Closed after source-level proof that CPU opcode execution contains no Spectrum-specific contention table or delay logic and that shared bus dispatch preserves exact tick/trace behavior. CODE and DOCUMENTATION reviews passed; CR-0082 runtime vectors supplied green remote execution evidence with 1,356/1,356 Fuse vectors; upstream zero-gap scan completed."
     }
   ]
 }
