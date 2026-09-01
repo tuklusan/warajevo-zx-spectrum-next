@@ -358,6 +358,10 @@ int main(void)
         fputs("ULA partial port-FE write decode failed\n", stderr);
         return 1;
     }
+    if (wz_machine_set_hardware_io_decode(&machine, false) != WZ_RESULT_OK) {
+        fputs("synthetic CPU fixture I/O setup failed\n", stderr);
+        return 1;
+    }
     wz_bus_request_init(&bus_request, WZ_BUS_INTERRUPT_ACKNOWLEDGE,
                         28u, 0xffffu, 0u, 7u);
     if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
