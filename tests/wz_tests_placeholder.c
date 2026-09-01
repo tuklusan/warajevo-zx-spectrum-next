@@ -223,6 +223,12 @@ int main(void)
         fputs("bus observer removal failed\n", stderr);
         return 1;
     }
+    wz_bus_request_init(&bus_request, WZ_BUS_MEMORY_WRITE, 24u, 0x1234u, 0x5au, 3u);
+    if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
+        machine.memory[0x1234u] != 0x5au) {
+        fputs("unloaded fixture memory write failed\n", stderr);
+        return 1;
+    }
     {
         static wz_byte_t rom_image[WZ_48K_ROM_SIZE];
 

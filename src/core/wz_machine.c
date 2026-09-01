@@ -23,6 +23,7 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     wz_bus_observer_init(&machine->bus_observer, 0, 0);
     wz_bus_input_init(&machine->bus_input, 0, 0);
     machine->timing_trace = 0;
+    machine->has_48k_rom = 0u;
     machine->master_tick = 0u;
     machine->im0_injected_opcode = 0u;
     machine->im0_injected_opcode_pending = 0u;
@@ -39,6 +40,7 @@ void wz_machine_destroy(wz_machine_t* machine)
         wz_bus_observer_init(&machine->bus_observer, 0, 0);
         wz_bus_input_init(&machine->bus_input, 0, 0);
         machine->timing_trace = 0;
+        machine->has_48k_rom = 0u;
         machine->master_tick = 0u;
         machine->im0_injected_opcode = 0u;
         machine->im0_injected_opcode_pending = 0u;
@@ -62,6 +64,7 @@ wz_result_t wz_machine_load_48k_rom(wz_machine_t* machine,
     for (size_t index = 0u; index < WZ_48K_ROM_SIZE; ++index) {
         machine->memory[index] = bytes[index];
     }
+    machine->has_48k_rom = 1u;
     return WZ_RESULT_OK;
 }
 
@@ -73,7 +76,8 @@ wz_byte_t wz_machine_memory_read(const wz_machine_t* machine, wz_word_t address)
 void wz_machine_memory_write(wz_machine_t* machine, wz_word_t address,
                              wz_byte_t value)
 {
-    if (machine != 0 && address >= WZ_48K_ROM_SIZE) {
+    if (machine != 0 &&
+        (!machine->has_48k_rom || address >= WZ_48K_ROM_SIZE)) {
         machine->memory[address] = value;
     }
 }

@@ -27,6 +27,7 @@ typedef struct wz_machine {
     wz_bus_input_t bus_input;
     wz_trace_sink_t* timing_trace;
     wz_byte_t memory[65536u];
+    wz_byte_t has_48k_rom;
     wz_master_tick_t master_tick;
     wz_byte_t im0_injected_opcode;
     wz_byte_t im0_injected_opcode_pending;

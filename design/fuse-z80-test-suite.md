@@ -42,6 +42,11 @@ outputs are test artefacts, not project source and must not be committed.
 
 ## Integration policy
 
+Fuse vectors certify CPU semantics using an unloaded, writable fixture image.
+They do not certify the 48K hardware memory map: project-owned ROM-map tests
+must install an external ROM image and independently verify that emulated
+writes to `0000-3fff` are rejected while `4000-ffff` remains writable.
+
 The eventual `wz_tests` integration must:
 
 - report the pinned commit in its machine-readable test manifest;
