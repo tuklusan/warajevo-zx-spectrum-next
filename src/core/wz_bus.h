@@ -95,6 +95,7 @@ wz_result_t wz_machine_set_bus_input(wz_machine_t* machine,
                                      const wz_bus_input_t* input);
 wz_result_t wz_machine_set_bus_data_source(wz_machine_t* machine,
                                            const wz_bus_data_source_t* source);
+/* Dispatches a total 16-bit bus request without host-dependent fallthrough. */
 wz_result_t wz_machine_bus_request(wz_machine_t* machine,
                                    wz_bus_request_t* request);
 

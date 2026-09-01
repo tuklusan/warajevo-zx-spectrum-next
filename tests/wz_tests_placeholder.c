@@ -424,6 +424,33 @@ int main(void)
         fputs("hardware I/O mode restore failed\n", stderr);
         return 1;
     }
+    if (wz_machine_set_bus_input(&machine, 0) != WZ_RESULT_OK) {
+        fputs("unsupported I/O fixture setup failed\n", stderr);
+        return 1;
+    }
+    for (wz_dword_t port = 0u; port <= 0xffffu; ++port) {
+        wz_word_t address = (wz_word_t)port;
+        wz_bus_request_init(&bus_request, WZ_BUS_IO_READ, port, address, 0u, 4u);
+        if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
+            bus_request.direction != WZ_BUS_DIRECTION_READ ||
+            bus_request.source != (address % 2u == 0u
+                                       ? WZ_BUS_SOURCE_ULA
+                                       : WZ_BUS_SOURCE_FALLBACK) ||
+            (address % 2u != 0u && bus_request.value != 0xffu)) {
+            fputs("full-range unsupported I/O read failed\n", stderr);
+            return 1;
+        }
+        wz_bus_request_init(&bus_request, WZ_BUS_IO_WRITE, port, address,
+                            (wz_byte_t)port, 4u);
+        if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
+            bus_request.direction != WZ_BUS_DIRECTION_WRITE ||
+            bus_request.source != (address % 2u == 0u
+                                       ? WZ_BUS_SOURCE_ULA
+                                       : WZ_BUS_SOURCE_FALLBACK)) {
+            fputs("full-range unsupported I/O write failed\n", stderr);
+            return 1;
+        }
+    }
     memset(&timing_trace_log, 0, sizeof(timing_trace_log));
     wz_trace_sink_init(&trace_sink, record_timing_trace, &timing_trace_log);
     wz_machine_set_timing_trace(&machine, &trace_sink);
