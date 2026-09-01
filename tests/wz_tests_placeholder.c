@@ -605,7 +605,7 @@ int main(void)
         machine.cpu.r != 1u || machine.cpu.stack_pointer != 0xffffu ||
         machine.cpu.main.h != 0x56u || machine.cpu.main.l != 0x78u ||
         machine.cpu.main.f != 0xa5u || machine.cpu.memptr != 0x5678u ||
-        machine.memory[0xffffu] != 0x34u || machine.memory[0u] != 0x56u ||
+        machine.memory[0xffffu] != 0x34u || machine.memory[0u] != 0x12u ||
         machine.master_tick != 38u || bus_log.count != 6u ||
         bus_log.requests[1].cycle != WZ_BUS_MEMORY_READ ||
         bus_log.requests[1].address != 0xffffu ||
@@ -616,7 +616,7 @@ int main(void)
         bus_log.requests[4].address != 0xffffu || bus_log.requests[4].value != 0x34u ||
         bus_log.requests[5].cycle != WZ_BUS_MEMORY_WRITE ||
         bus_log.requests[5].address != 0u || bus_log.requests[5].value != 0x12u) {
-        fputs("EX (SP),HL state, ROM-protected wrap, or bus timing failed\n", stderr);
+        fputs("EX (SP),HL state, fixture wrap, or bus timing failed\n", stderr);
         return 1;
     }
     memset(&machine.cpu, 0, sizeof(machine.cpu));
