@@ -962,9 +962,9 @@
     {
       "cr_number": "CR-0089",
       "title": "Fuzz memory and I/O access helpers under sanitizers",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 7, 12, 36, 44, and 46", "design/wzsn-architectures-1-2-developer-tasks.md task 075", "design/machine-timing-evidence.md", "design/cr-preflight/CR-0088.md", "reference/original-warajevo/source"],
-      "notes": "Opened on 2026-09-01 after CR-0088 as the next ordered Phase-3 task. Add deterministic remote sanitizer/fuzz coverage for memory, I/O, contention, invalid enums, nulls, and arbitrary addresses."
+      "notes": "Closed on 2026-09-01 after adding deterministic null, invalid-cycle, full-address memory, and extreme-timing safety coverage plus a shared remote sanitizer switch. CODE and DOCUMENTATION reviews passed with no confirmed findings. Linux CR0089-SANITIZER-LINUX-R2 passed sanitizer-enabled build, all five CTest gates, and every pinned suite with zero failures and zero silent skips; hosted platform-smoke 33570802496 passed Linux x64/ARM64, Windows x64, macOS ARM64/Intel. Final upstream zero-gap scan completed."
     }
   ]
 }
