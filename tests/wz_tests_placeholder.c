@@ -451,6 +451,11 @@ int main(void)
             return 1;
         }
     }
+    wz_bus_input_init(&bus_input, read_bus_input, (void*)&interrupt_value);
+    if (wz_machine_set_bus_input(&machine, &bus_input) != WZ_RESULT_OK) {
+        fputs("unsupported I/O fixture restore failed\n", stderr);
+        return 1;
+    }
     memset(&timing_trace_log, 0, sizeof(timing_trace_log));
     wz_trace_sink_init(&trace_sink, record_timing_trace, &timing_trace_log);
     wz_machine_set_timing_trace(&machine, &trace_sink);
