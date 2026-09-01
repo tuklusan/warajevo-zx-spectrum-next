@@ -1933,7 +1933,8 @@ bool wz_z80_maskable_interrupts_acceptable(const wz_z80_state_t* state)
            state->interrupt_enable_delay == 0u;
 }
 
-wz_result_t wz_z80_accept_maskable_interrupt(wz_machine_t* machine)
+static wz_result_t wz_z80_accept_maskable_interrupt_impl(wz_machine_t* machine,
+                                                         bool trace_sample)
 {
     wz_byte_t vector = 0u;
     wz_byte_t low = 0u;
@@ -1943,7 +1944,9 @@ wz_result_t wz_z80_accept_maskable_interrupt(wz_machine_t* machine)
     if (machine == 0 || wz_z80_state_validate(&machine->cpu) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
-    wz_z80_trace_interrupt(machine, WZ_TRACE_INTERRUPT_MASKABLE_SAMPLE);
+    if (trace_sample) {
+        wz_z80_trace_interrupt(machine, WZ_TRACE_INTERRUPT_MASKABLE_SAMPLE);
+    }
     if (!wz_z80_maskable_interrupts_acceptable(&machine->cpu)) {
         return WZ_RESULT_UNSUPPORTED_OPERATION;
     }
@@ -1989,6 +1992,25 @@ wz_result_t wz_z80_accept_maskable_interrupt(wz_machine_t* machine)
     default:
         return WZ_RESULT_INVALID_STATE;
     }
+}
+
+wz_result_t wz_z80_sample_maskable_interrupt(wz_machine_t* machine)
+{
+    if (machine == 0 || wz_z80_state_validate(&machine->cpu) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    wz_machine_update_interrupt_line(machine);
+    wz_z80_trace_interrupt(machine, WZ_TRACE_INTERRUPT_MASKABLE_SAMPLE);
+    if (!wz_machine_maskable_interrupt_line_low(machine) ||
+        !wz_z80_maskable_interrupts_acceptable(&machine->cpu)) {
+        return WZ_RESULT_UNSUPPORTED_OPERATION;
+    }
+    return wz_z80_accept_maskable_interrupt_impl(machine, false);
+}
+
+wz_result_t wz_z80_accept_maskable_interrupt(wz_machine_t* machine)
+{
+    return wz_z80_accept_maskable_interrupt_impl(machine, true);
 }
 
 wz_result_t wz_z80_accept_nmi(wz_machine_t* machine)

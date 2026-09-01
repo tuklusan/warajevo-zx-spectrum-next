@@ -3494,6 +3494,50 @@ int main(void)
     }
     wz_machine_set_timing_trace(&machine, 0);
 
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before interrupt sampling test failed\n", stderr);
+        return 1;
+    }
+    memset(&timing_trace_log, 0, sizeof(timing_trace_log));
+    wz_trace_sink_init(&trace_sink, record_timing_trace, &timing_trace_log);
+    wz_machine_set_timing_trace(&machine, &trace_sink);
+    machine.cpu.iff1 = 1u;
+    machine.cpu.iff2 = 1u;
+    machine.cpu.interrupt_mode = (wz_byte_t)WZ_Z80_INTERRUPT_MODE_1;
+    machine.cpu.program_counter = 0x3456u;
+    machine.cpu.stack_pointer = 0x8000u;
+    wz_machine_update_interrupt_line(&machine);
+    if (wz_z80_sample_maskable_interrupt(&machine) != WZ_RESULT_OK ||
+        timing_trace_log.count < 3u ||
+        timing_trace_log.events[0].value != WZ_TRACE_INTERRUPT_LINE_ASSERT ||
+        timing_trace_log.events[1].value != WZ_TRACE_INTERRUPT_MASKABLE_SAMPLE ||
+        timing_trace_log.events[2].value != WZ_TRACE_INTERRUPT_MASKABLE_ACCEPT ||
+        machine.cpu.program_counter != 0x0038u) {
+        fputs("maskable interrupt sampling acceptance order failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("machine reset before interrupt deassertion sample test failed\n", stderr);
+        return 1;
+    }
+    memset(&timing_trace_log, 0, sizeof(timing_trace_log));
+    wz_trace_sink_init(&trace_sink, record_timing_trace, &timing_trace_log);
+    wz_machine_set_timing_trace(&machine, &trace_sink);
+    machine.cpu.iff1 = 1u;
+    machine.cpu.iff2 = 1u;
+    wz_machine_update_interrupt_line(&machine);
+    machine.master_tick = 64u;
+    if (wz_z80_sample_maskable_interrupt(&machine) != WZ_RESULT_UNSUPPORTED_OPERATION ||
+        timing_trace_log.count != 3u ||
+        timing_trace_log.events[0].value != WZ_TRACE_INTERRUPT_LINE_ASSERT ||
+        timing_trace_log.events[1].value != WZ_TRACE_INTERRUPT_LINE_DEASSERT ||
+        timing_trace_log.events[2].value != WZ_TRACE_INTERRUPT_MASKABLE_SAMPLE ||
+        machine.cpu.program_counter != 0u) {
+        fputs("maskable interrupt deassertion sampling failed\n", stderr);
+        return 1;
+    }
+    wz_machine_set_timing_trace(&machine, 0);
+
     wz_scheduler_init(&scheduler);
     if (wz_scheduler_schedule(&scheduler, 10u, WZ_EVENT_EXTERNAL,
                               record_event, &dispatched) != WZ_RESULT_OK ||

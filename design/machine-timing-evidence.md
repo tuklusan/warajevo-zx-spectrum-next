@@ -48,6 +48,21 @@ same-edge ordering for CPU bus activity, ULA fetches, contention, and interrupt
 edges remains subject to the dedicated Phase 3/4 evidence tables and must not
 be inferred solely from C call order.
 
+## Frozen 48K interrupt sampling order
+
+For the project-owned 48K boundary model, an interrupt edge at a sampled
+master tick is observed in this order:
+
+1. ULA interrupt-line assertion or deassertion;
+2. CPU maskable-interrupt sample decision;
+3. CPU interrupt acceptance decision and acknowledge bus cycle, if accepted;
+4. subsequent acknowledge, refresh, stack, and vector bus phases.
+
+The line is sampled only at the CPU boundary represented by the explicit
+sampling API. A line that deasserts before that boundary is not accepted.
+This ordering is an emulation contract for deterministic traces; later ULA
+fetch/raster evidence may refine other same-edge device interactions.
+
 ## Evidence buckets
 
 | Topic | Current status | Required before |
