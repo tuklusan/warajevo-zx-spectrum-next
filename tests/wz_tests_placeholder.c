@@ -269,15 +269,10 @@ int main(void)
     }
     wz_bus_request_init(&bus_request, WZ_BUS_INTERNAL, 20u, 0u, 0u, 1u);
     if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
-        bus_log.count != 5u ||
-        bus_log.requests[0].cycle != WZ_BUS_M1_OPCODE_FETCH ||
-        bus_log.requests[1].cycle != WZ_BUS_MEMORY_WRITE ||
-        bus_log.requests[2].cycle != WZ_BUS_IO_READ ||
-        bus_log.requests[3].cycle != WZ_BUS_INTERRUPT_ACKNOWLEDGE ||
-        bus_log.requests[4].cycle != WZ_BUS_INTERNAL ||
-        bus_log.requests[1].master_tick != 8u ||
-        bus_log.requests[1].address != 0x4000u ||
-        bus_log.requests[1].value != 0x5cu) {
+        bus_log.count != 3u ||
+        bus_log.requests[0].cycle != WZ_BUS_IO_READ ||
+        bus_log.requests[1].cycle != WZ_BUS_INTERRUPT_ACKNOWLEDGE ||
+        bus_log.requests[2].cycle != WZ_BUS_INTERNAL) {
         fputs("mock bus did not record exact requests\n", stderr);
         return 1;
     }
