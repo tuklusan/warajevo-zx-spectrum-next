@@ -411,6 +411,37 @@ int main(void)
         return 1;
     }
     wz_machine_set_timing_trace(&machine, 0);
+    machine.master_tick = 0u;
+    wz_bus_request_init(&bus_request, WZ_BUS_MEMORY_READ, 28670u, 0x4000u, 0u, 3u);
+    if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
+        bus_request.contention_delay != 6u || bus_request.master_tick != 28682u ||
+        machine.master_tick != 12u) {
+        fputs("48K memory contention boundary failed\n", stderr);
+        return 1;
+    }
+    machine.master_tick = 0u;
+    wz_bus_request_init(&bus_request, WZ_BUS_MEMORY_READ, 28926u, 0x4000u, 0u, 3u);
+    if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
+        bus_request.contention_delay != 0u || bus_request.master_tick != 28926u ||
+        machine.master_tick != 0u) {
+        fputs("48K contention window end failed\n", stderr);
+        return 1;
+    }
+    machine.master_tick = 0u;
+    wz_bus_request_init(&bus_request, WZ_BUS_IO_READ, 28670u, 0x12feu, 0u, 4u);
+    if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
+        bus_request.contention_delay != 12u || bus_request.master_tick != 28694u) {
+        fputs("48K ULA I/O contention pattern failed\n", stderr);
+        return 1;
+    }
+    machine.master_tick = 0u;
+    wz_bus_request_init(&bus_request, WZ_BUS_IO_READ, 28670u, 0x40feu, 0u, 4u);
+    if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
+        bus_request.contention_delay != 18u || bus_request.master_tick != 28706u) {
+        fputs("48K contended-port I/O pattern failed\n", stderr);
+        return 1;
+    }
+    machine.master_tick = 0u;
     if (wz_machine_set_hardware_io_decode(&machine, false) != WZ_RESULT_OK) {
         fputs("synthetic CPU fixture I/O setup failed\n", stderr);
         return 1;

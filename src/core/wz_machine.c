@@ -68,6 +68,61 @@ void wz_machine_set_timing_trace(wz_machine_t* machine, wz_trace_sink_t* trace)
     }
 }
 
+static wz_byte_t wz_contention_delay_at_tstate(wz_dword_t tstate)
+{
+    static const wz_byte_t delays[8u] = {6u, 5u, 4u, 3u, 2u, 1u, 0u, 0u};
+    wz_dword_t frame_tstate = tstate % 69888u;
+    wz_dword_t screen_offset;
+
+    if (frame_tstate < 14335u) {
+        return 0u;
+    }
+    screen_offset = (frame_tstate - 14335u) % 224u;
+    if (screen_offset >= 128u) {
+        return 0u;
+    }
+    return delays[(frame_tstate - 14335u) % 8u];
+}
+
+wz_byte_t wz_machine_contention_delay(const wz_machine_t* machine,
+                                      wz_bus_cycle_t cycle,
+                                      wz_word_t address,
+                                      wz_master_tick_t master_tick,
+                                      wz_byte_t t_states)
+{
+    wz_dword_t start_tstate;
+    wz_byte_t delay = 0u;
+
+    if (machine == 0 || machine->profile == 0 ||
+        machine->profile->kind != WZ_MACHINE_48K_PAL) {
+        return 0u;
+    }
+    start_tstate = (wz_dword_t)(master_tick / 2u);
+    if (cycle == WZ_BUS_M1_OPCODE_FETCH || cycle == WZ_BUS_MEMORY_READ ||
+        cycle == WZ_BUS_MEMORY_WRITE) {
+        if (address >= 0x4000u && address <= 0x7fffu) {
+            return wz_contention_delay_at_tstate(start_tstate);
+        }
+        return 0u;
+    }
+    if (cycle != WZ_BUS_IO_READ && cycle != WZ_BUS_IO_WRITE ||
+        (address & 1u) != 0u || t_states == 0u) {
+        return 0u;
+    }
+    if ((address & 0xff00u) >= 0x4000u && (address & 0xff00u) <= 0x7f00u) {
+        for (wz_byte_t index = 0u; index < t_states; ++index) {
+            delay = (wz_byte_t)(delay +
+                wz_contention_delay_at_tstate(start_tstate + index));
+        }
+    } else {
+        for (wz_byte_t index = 1u; index < t_states; ++index) {
+            delay = (wz_byte_t)(delay +
+                wz_contention_delay_at_tstate(start_tstate + index));
+        }
+    }
+    return delay;
+}
+
 wz_result_t wz_machine_set_hardware_io_decode(wz_machine_t* machine, bool enabled)
 {
     if (machine == 0) {

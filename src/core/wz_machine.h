@@ -48,6 +48,11 @@ wz_result_t wz_machine_set_keyboard_key(wz_machine_t* machine,
                                         wz_byte_t row,
                                         wz_byte_t key,
                                         bool pressed);
+wz_byte_t wz_machine_contention_delay(const wz_machine_t* machine,
+                                      wz_bus_cycle_t cycle,
+                                      wz_word_t address,
+                                      wz_master_tick_t master_tick,
+                                      wz_byte_t t_states);
 wz_result_t wz_machine_load_48k_rom(wz_machine_t* machine,
                                     const wz_byte_t* bytes,
                                     size_t length);

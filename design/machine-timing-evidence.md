@@ -59,6 +59,29 @@ be inferred solely from C call order.
 | Same-master-tick event ordering | Phase-1 scheduler ordering frozen; hardware visibility details remain open | Phase 3/4 |
 | Raster-racing smoke cases | Scaffold created | Phase 4A |
 
+## Frozen 48K PAL contention tables
+
+The 48K reference defines screen-memory contention for addresses
+`0x4000..0x7fff` while the ULA is drawing screen data. Relative to the ULA
+interrupt, the first contended cycle is T-state `14335`; the repeating delay
+pattern is:
+
+| Cycle phase modulo 8 | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Delay in T-states | 6 | 5 | 4 | 3 | 2 | 1 | 0 | 0 |
+
+Contention is active during the screen-drawing windows, not while the ULA is
+drawing the border. Port accesses use the reference four-case pattern:
+
+| Port address high byte in `0x40..0x7f` | Address bit 0 | Pattern |
+| --- | --- | --- |
+| No | 0 | no delay for 1 T-state, then 3 T-states |
+| No | 1 | 4 T-states without ULA delay |
+| Yes | 0 | one contended cycle, then 3 T-states |
+| Yes | 1 | four contended cycles |
+
+Authority: [48K ZX Spectrum Technical Information](https://worldofspectrum.org/faq/reference/48kreference.htm), sections “Contended Memory” and “Contended Input/Output”.
+
 ## Initial freeze checklist
 
 1. Record authoritative hardware references for 48K PAL timing. **Complete for

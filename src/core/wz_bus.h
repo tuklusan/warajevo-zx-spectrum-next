@@ -27,6 +27,7 @@ typedef struct {
     wz_word_t address;
     wz_byte_t value;
     wz_byte_t t_states;
+    wz_byte_t contention_delay;
 } wz_bus_request_t;
 
 typedef void (*wz_bus_observer_fn)(const wz_bus_request_t* request, void* context);

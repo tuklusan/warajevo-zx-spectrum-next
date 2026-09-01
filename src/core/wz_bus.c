@@ -25,6 +25,7 @@ void wz_bus_request_init(wz_bus_request_t* request,
     request->address = address;
     request->value = value;
     request->t_states = t_states;
+    request->contention_delay = 0u;
 }
 
 void wz_bus_observer_init(wz_bus_observer_t* observer,
@@ -81,8 +82,20 @@ wz_result_t wz_machine_set_bus_input(wz_machine_t* machine,
 wz_result_t wz_machine_bus_request(wz_machine_t* machine,
                                    wz_bus_request_t* request)
 {
+    wz_byte_t contention_delay;
+
     if (machine == 0 || request == 0) {
         return WZ_RESULT_INVALID_ARGUMENT;
+    }
+
+    contention_delay = wz_machine_contention_delay(machine, request->cycle,
+                                                   request->address,
+                                                   request->master_tick,
+                                                   request->t_states);
+    request->contention_delay = contention_delay;
+    if (contention_delay != 0u) {
+        machine->master_tick += (wz_master_tick_t)contention_delay * 2u;
+        request->master_tick += (wz_master_tick_t)contention_delay * 2u;
     }
 
     switch (request->cycle) {
@@ -136,6 +149,7 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
         event.value = request->value;
         event.cycle = (wz_byte_t)request->cycle;
         event.t_states = request->t_states;
+        event.auxiliary = request->contention_delay;
         wz_trace_emit_detail(machine->timing_trace, &event);
     }
     return WZ_RESULT_OK;
