@@ -28,6 +28,7 @@ typedef struct wz_machine {
     wz_trace_sink_t* timing_trace;
     wz_byte_t memory[65536u];
     wz_byte_t has_48k_rom;
+    wz_byte_t hardware_io_decode_enabled;
     wz_qword_t rom_identity;
     wz_master_tick_t master_tick;
     wz_byte_t im0_injected_opcode;
@@ -39,6 +40,7 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
 void wz_machine_destroy(wz_machine_t* machine);
 const char* wz_machine_boot_message(void);
 void wz_machine_set_timing_trace(wz_machine_t* machine, wz_trace_sink_t* trace);
+wz_result_t wz_machine_set_hardware_io_decode(wz_machine_t* machine, bool enabled);
 wz_result_t wz_machine_load_48k_rom(wz_machine_t* machine,
                                     const wz_byte_t* bytes,
                                     size_t length);

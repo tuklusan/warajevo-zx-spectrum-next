@@ -43,6 +43,9 @@ outputs are test artefacts, not project source and must not be committed.
 ## Integration policy
 
 Fuse vectors certify CPU semantics using an unloaded, writable fixture image.
+The Fuse fixture runner explicitly disables hardware ULA I/O decoding so its
+synthetic I/O provider can supply vector-defined values; ordinary machine
+execution keeps hardware ULA decoding enabled by default.
 They do not certify the 48K hardware memory map: project-owned ROM-map tests
 must install an external ROM image and independently verify that emulated
 writes to `0000-3fff` are rejected while `4000-ffff` remains writable.

@@ -94,7 +94,8 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
         wz_machine_memory_write(machine, request->address, request->value);
         break;
     case WZ_BUS_IO_READ:
-        if (wz_machine_ula_port_fe_selected(request->address)) {
+        if (machine->hardware_io_decode_enabled &&
+            wz_machine_ula_port_fe_selected(request->address)) {
             request->value = wz_machine_ula_port_fe_read(machine, request->address);
         } else if (machine->bus_input.read != 0) {
             request->value = machine->bus_input.read(
@@ -104,7 +105,8 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
         }
         break;
     case WZ_BUS_IO_WRITE:
-        if (wz_machine_ula_port_fe_selected(request->address)) {
+        if (machine->hardware_io_decode_enabled &&
+            wz_machine_ula_port_fe_selected(request->address)) {
             wz_machine_ula_port_fe_write(machine, request->address, request->value);
         }
         break;

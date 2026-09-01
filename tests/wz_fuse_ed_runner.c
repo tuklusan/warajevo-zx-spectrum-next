@@ -102,6 +102,10 @@ int main(int argc, char** argv)
         fclose(input);
         return 2;
     }
+    if (wz_machine_set_hardware_io_decode(&machine, false) != WZ_RESULT_OK) {
+        fclose(input);
+        return 2;
+    }
     for (size_t index = 0u; index < sizeof(machine.memory); index += 4u) {
         machine.memory[index] = 0xdeu;
         machine.memory[index + 1u] = 0xadu;

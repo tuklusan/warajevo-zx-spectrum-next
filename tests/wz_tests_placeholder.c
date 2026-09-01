@@ -314,6 +314,20 @@ int main(void)
         fputs("ULA partial port-FE read decode failed\n", stderr);
         return 1;
     }
+    if (wz_machine_set_hardware_io_decode(&machine, false) != WZ_RESULT_OK) {
+        fputs("fixture I/O mode setup failed\n", stderr);
+        return 1;
+    }
+    wz_bus_request_init(&bus_request, WZ_BUS_IO_READ, 30u, 0x34feu, 0u, 4u);
+    if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
+        bus_request.value != 0x34u) {
+        fputs("fixture I/O mode failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_set_hardware_io_decode(&machine, true) != WZ_RESULT_OK) {
+        fputs("hardware I/O mode restore failed\n", stderr);
+        return 1;
+    }
     wz_bus_request_init(&bus_request, WZ_BUS_IO_WRITE, 32u, 0x12feu, 0xa5u, 4u);
     if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK) {
         fputs("ULA partial port-FE write decode failed\n", stderr);

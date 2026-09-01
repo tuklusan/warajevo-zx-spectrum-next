@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 79,
+  "next_cr_number": 80,
   "status_values": [
     "open",
     "in_progress",
@@ -888,6 +888,13 @@
       "status": "in_progress",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 12 and 15", "design/wzsn-architectures-1-2-developer-tasks.md task 065", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
       "notes": "Opened on 2026-09-01 for task 065. Establish shared partial address decoding and route every low-byte-even I/O access to a dedicated ULA port-FE boundary. Keyboard matrix input, output latches, floating bus, contention, and peripheral decode remain separately owned by later CRs."
+    },
+    {
+      "cr_number": "CR-0079",
+      "title": "Separate CPU-vector fixture I/O from hardware ULA decoding",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 12 and 15", "design/fuse-z80-test-suite.md", "design/wzsn-architectures-1-2-developer-tasks.md task 065"],
+      "notes": "Opened on 2026-09-01 after CR-0078 remote validation showed 14 Fuse failures caused solely by the synthetic CPU-vector input provider using even ports. Add an explicit fixture-only I/O decode bypass, retain hardware ULA partial decoding by default, and prove both modes without changing CPU semantics."
     }
   ]
 }

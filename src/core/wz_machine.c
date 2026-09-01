@@ -24,6 +24,7 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     wz_bus_input_init(&machine->bus_input, 0, 0);
     machine->timing_trace = 0;
     machine->has_48k_rom = 0u;
+    machine->hardware_io_decode_enabled = 1u;
     machine->rom_identity = 0u;
     machine->master_tick = 0u;
     machine->im0_injected_opcode = 0u;
@@ -42,6 +43,7 @@ void wz_machine_destroy(wz_machine_t* machine)
         wz_bus_input_init(&machine->bus_input, 0, 0);
         machine->timing_trace = 0;
         machine->has_48k_rom = 0u;
+        machine->hardware_io_decode_enabled = 1u;
         machine->rom_identity = 0u;
         machine->master_tick = 0u;
         machine->im0_injected_opcode = 0u;
@@ -54,6 +56,15 @@ void wz_machine_set_timing_trace(wz_machine_t* machine, wz_trace_sink_t* trace)
     if (machine != 0) {
         machine->timing_trace = trace;
     }
+}
+
+wz_result_t wz_machine_set_hardware_io_decode(wz_machine_t* machine, bool enabled)
+{
+    if (machine == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    machine->hardware_io_decode_enabled = enabled ? 1u : 0u;
+    return WZ_RESULT_OK;
 }
 
 wz_result_t wz_machine_load_48k_rom(wz_machine_t* machine,
