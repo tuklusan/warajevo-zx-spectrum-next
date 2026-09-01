@@ -117,6 +117,15 @@ static wz_byte_t read_bus_input(wz_bus_cycle_t cycle,
     return *interrupt_value;
 }
 
+static wz_byte_t read_cpu_fixture_input(wz_bus_cycle_t cycle,
+                                        wz_word_t address,
+                                        void* context)
+{
+    const wz_byte_t* interrupt_value = (const wz_byte_t*)context;
+    (void)address;
+    return cycle == WZ_BUS_IO_READ ? 0xffu : *interrupt_value;
+}
+
 static wz_result_t set_fixture_bus_input(wz_machine_t* machine,
                                          wz_bus_input_t* input)
 {
@@ -1940,12 +1949,14 @@ int main(void)
     }
     memset(&bus_log, 0, sizeof(bus_log));
     wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    wz_bus_input_init(&bus_input, read_cpu_fixture_input, (void*)&interrupt_value);
     machine.cpu.main.b = 0x12u;
     machine.cpu.main.c = 0xfeu;
     machine.cpu.main.f = 0x01u;
     machine.memory[0u] = 0xedu;
     machine.memory[1u] = 0x40u;
     if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        set_fixture_bus_input(&machine, &bus_input) != WZ_RESULT_OK ||
         wz_z80_step(&machine) != WZ_RESULT_OK ||
         machine.cpu.main.b != 0xffu ||
         machine.cpu.main.f != 0xadu ||
@@ -1968,6 +1979,11 @@ int main(void)
     machine.cpu.main.f = 0u;
     machine.memory[0u] = 0xedu;
     machine.memory[1u] = 0x70u;
+    wz_bus_input_init(&bus_input, read_cpu_fixture_input, (void*)&interrupt_value);
+    if (set_fixture_bus_input(&machine, &bus_input) != WZ_RESULT_OK) {
+        fputs("ED input fixture setup failed\n", stderr);
+        return 1;
+    }
     if (wz_z80_step(&machine) != WZ_RESULT_OK ||
         machine.cpu.main.b != 0x12u ||
         machine.cpu.main.f != 0xacu ||
@@ -2254,6 +2270,7 @@ int main(void)
     }
     memset(&bus_log, 0, sizeof(bus_log));
     wz_bus_observer_init(&bus_observer, record_bus_request, &bus_log);
+    wz_bus_input_init(&bus_input, read_cpu_fixture_input, (void*)&interrupt_value);
     machine.cpu.main.b = 0x02u;
     machine.cpu.main.c = 0x00u;
     machine.cpu.main.h = 0x40u;
@@ -2261,6 +2278,7 @@ int main(void)
     machine.memory[0u] = 0xedu;
     machine.memory[1u] = 0xb2u;
     if (wz_machine_set_bus_observer(&machine, &bus_observer) != WZ_RESULT_OK ||
+        set_fixture_bus_input(&machine, &bus_input) != WZ_RESULT_OK ||
         wz_z80_step(&machine) != WZ_RESULT_OK ||
         machine.cpu.program_counter != 0u ||
         machine.master_tick != 42u ||
