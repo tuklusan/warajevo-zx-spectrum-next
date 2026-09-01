@@ -159,7 +159,8 @@ wz_byte_t wz_machine_ula_port_fe_read(const wz_machine_t* machine,
     }
     for (size_t row = 0u; row < 8u; ++row) {
         if ((address & (wz_word_t)(1u << (8u + row))) == 0u) {
-            value &= machine->keyboard_rows[row];
+            value = (wz_byte_t)((value & 0xe0u) |
+                                ((value & 0x1fu) & machine->keyboard_rows[row]));
         }
     }
     return value;

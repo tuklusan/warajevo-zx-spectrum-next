@@ -330,7 +330,7 @@ int main(void)
     }
     wz_bus_request_init(&bus_request, WZ_BUS_IO_READ, 32u, 0xf6feu, 0u, 4u);
     if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
-        bus_request.value != 0x9eu) {
+        bus_request.value != 0xaeu) {
         fputs("simultaneous keyboard row read failed\n", stderr);
         return 1;
     }
