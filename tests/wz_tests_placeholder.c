@@ -323,6 +323,12 @@ int main(void)
         fputs("ULA partial port-FE read decode failed\n", stderr);
         return 1;
     }
+    wz_bus_request_init(&bus_request, WZ_BUS_IO_READ, 29u, 0xfffeu, 0u, 4u);
+    if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
+        bus_request.value != 0xbfu) {
+        fputs("no-row keyboard read failed\n", stderr);
+        return 1;
+    }
     if (wz_machine_set_keyboard_key(&machine, 0u, 0u, true) != WZ_RESULT_OK) {
         fputs("keyboard key press failed\n", stderr);
         return 1;
