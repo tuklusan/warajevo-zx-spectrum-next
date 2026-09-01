@@ -244,7 +244,10 @@ int main(void)
     }
     wz_bus_request_init(&bus_request, WZ_BUS_MEMORY_READ, 12u, 0x4000u, 0u, 3u);
     if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
-        bus_request.value != 0xa5u || data_source_fixture.calls != 1u ||
+        bus_request.value != 0xa5u ||
+        bus_request.direction != WZ_BUS_DIRECTION_READ ||
+        bus_request.source != WZ_BUS_SOURCE_DATA_SOURCE ||
+        data_source_fixture.calls != 1u ||
         data_source_fixture.seen_tick != bus_request.master_tick ||
         data_source_fixture.seen_delay != bus_request.contention_delay) {
         fputs("timed bus data source failed\n", stderr);
@@ -271,8 +274,14 @@ int main(void)
     if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
         bus_log.count != 3u ||
         bus_log.requests[0].cycle != WZ_BUS_IO_READ ||
+        bus_log.requests[0].direction != WZ_BUS_DIRECTION_READ ||
+        bus_log.requests[0].source != WZ_BUS_SOURCE_ULA ||
         bus_log.requests[1].cycle != WZ_BUS_INTERRUPT_ACKNOWLEDGE ||
-        bus_log.requests[2].cycle != WZ_BUS_INTERNAL) {
+        bus_log.requests[1].direction != WZ_BUS_DIRECTION_READ ||
+        bus_log.requests[1].source != WZ_BUS_SOURCE_FALLBACK ||
+        bus_log.requests[2].cycle != WZ_BUS_INTERNAL ||
+        bus_log.requests[2].direction != WZ_BUS_DIRECTION_NONE ||
+        bus_log.requests[2].source != WZ_BUS_SOURCE_NONE) {
         fputs("mock bus did not record exact requests\n", stderr);
         return 1;
     }

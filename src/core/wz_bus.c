@@ -26,6 +26,16 @@ void wz_bus_request_init(wz_bus_request_t* request,
     request->value = value;
     request->t_states = t_states;
     request->contention_delay = 0u;
+    request->direction = cycle == WZ_BUS_MEMORY_WRITE ||
+                                cycle == WZ_BUS_IO_WRITE
+                            ? WZ_BUS_DIRECTION_WRITE
+                            : cycle == WZ_BUS_M1_OPCODE_FETCH ||
+                                      cycle == WZ_BUS_MEMORY_READ ||
+                                      cycle == WZ_BUS_IO_READ ||
+                                      cycle == WZ_BUS_INTERRUPT_ACKNOWLEDGE
+                                  ? WZ_BUS_DIRECTION_READ
+                                  : WZ_BUS_DIRECTION_NONE;
+    request->source = WZ_BUS_SOURCE_NONE;
 }
 
 void wz_bus_observer_init(wz_bus_observer_t* observer,
@@ -130,24 +140,29 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
         machine->bus_data_source.read != 0 &&
         machine->bus_data_source.read(request, &request->value,
                                       machine->bus_data_source.context)) {
-        /* A claimed source owns the read value; tracing still sees the request. */
+        request->source = WZ_BUS_SOURCE_DATA_SOURCE;
     } else switch (request->cycle) {
     case WZ_BUS_M1_OPCODE_FETCH:
     case WZ_BUS_MEMORY_READ:
         request->value = wz_machine_memory_read(machine, request->address);
+        request->source = WZ_BUS_SOURCE_MEMORY;
         break;
     case WZ_BUS_MEMORY_WRITE:
         wz_machine_memory_write(machine, request->address, request->value);
+        request->source = WZ_BUS_SOURCE_MEMORY;
         break;
     case WZ_BUS_IO_READ:
         if (machine->hardware_io_decode_enabled &&
             wz_machine_ula_port_fe_selected(request->address)) {
             request->value = wz_machine_ula_port_fe_read(machine, request->address);
+            request->source = WZ_BUS_SOURCE_ULA;
         } else if (machine->bus_input.read != 0) {
             request->value = machine->bus_input.read(
                 request->cycle, request->address, machine->bus_input.context);
+            request->source = WZ_BUS_SOURCE_INPUT;
         } else {
             request->value = 0xffu;
+            request->source = WZ_BUS_SOURCE_FALLBACK;
         }
         break;
     case WZ_BUS_IO_WRITE:
@@ -155,17 +170,23 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
             wz_machine_ula_port_fe_selected(request->address)) {
             wz_machine_ula_port_fe_write(machine, request->address, request->value,
                                          request->master_tick);
+            request->source = WZ_BUS_SOURCE_ULA;
+        } else {
+            request->source = WZ_BUS_SOURCE_FALLBACK;
         }
         break;
     case WZ_BUS_INTERRUPT_ACKNOWLEDGE:
         if (machine->bus_input.read != 0) {
             request->value = machine->bus_input.read(
                 request->cycle, request->address, machine->bus_input.context);
+            request->source = WZ_BUS_SOURCE_INPUT;
         } else {
             request->value = 0xffu;
+            request->source = WZ_BUS_SOURCE_FALLBACK;
         }
         break;
     case WZ_BUS_INTERNAL:
+        request->source = WZ_BUS_SOURCE_NONE;
         break;
     default:
         return WZ_RESULT_INVALID_ARGUMENT;

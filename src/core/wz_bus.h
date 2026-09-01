@@ -21,6 +21,21 @@ typedef enum {
     WZ_BUS_INTERNAL
 } wz_bus_cycle_t;
 
+typedef enum {
+    WZ_BUS_DIRECTION_NONE = 0,
+    WZ_BUS_DIRECTION_READ,
+    WZ_BUS_DIRECTION_WRITE
+} wz_bus_direction_t;
+
+typedef enum {
+    WZ_BUS_SOURCE_NONE = 0,
+    WZ_BUS_SOURCE_MEMORY,
+    WZ_BUS_SOURCE_ULA,
+    WZ_BUS_SOURCE_DATA_SOURCE,
+    WZ_BUS_SOURCE_INPUT,
+    WZ_BUS_SOURCE_FALLBACK
+} wz_bus_source_t;
+
 typedef struct {
     wz_bus_cycle_t cycle;
     wz_master_tick_t master_tick;
@@ -28,6 +43,8 @@ typedef struct {
     wz_byte_t value;
     wz_byte_t t_states;
     wz_byte_t contention_delay;
+    wz_bus_direction_t direction;
+    wz_bus_source_t source;
 } wz_bus_request_t;
 
 typedef bool (*wz_bus_data_source_fn)(const wz_bus_request_t* request,
