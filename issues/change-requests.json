@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 85,
+  "next_cr_number": 86,
   "status_values": [
     "open",
     "in_progress",
@@ -930,6 +930,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 10, 14, 36, 44, and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 070", "design/machine-timing-evidence.md", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
       "notes": "Opened on 2026-09-01 after the upstream completeness preflight. Closed after implementing profile-defined frame-boundary assertion and 32-T-state deassertion of the level-triggered maskable interrupt line, exact trace events, canonical state preservation, and frame-boundary vectors. CODE and DOCUMENTATION reviews passed with no confirmed findings; CODE snapshot bd11fd7..54a084b and DOCUMENTATION packet review passed. Linux CR0084-INTERRUPT-LINUX-R3 passed all five CTest gates and 1,356/1,356 pinned vectors; hosted platform-smoke 33558828079 passed Linux x64/ARM64, Windows x64, Windows x86-64, macOS ARM64, and macOS Intel. Upstream zero-gap scan completed; CPU sampling remains task 071."
+    },
+    {
+      "cr_number": "CR-0085",
+      "title": "Verify CPU interrupt sampling and same-edge ordering",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 10, 11, 14, 36, 44, and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 071", "design/machine-timing-evidence.md", "design/cr-preflight/CR-0084.md", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM", "reference/original-warajevo/source/src/spectrum-kernel/Z80.ASM"],
+      "notes": "Opened on 2026-09-01 after CR-0084. Verify the scheduled ULA line is sampled at the correct CPU boundary, preserve EI/HALT/IFF behavior, and freeze same-edge trace ordering before later ULA/raster work."
     }
   ]
 }
