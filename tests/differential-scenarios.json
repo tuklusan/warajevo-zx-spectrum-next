@@ -9,6 +9,11 @@
   "schema_version": 1,
   "reference_identity": "94f69bd8f4acb6c0c320ae34f9b1c3ee29bc5545",
   "reference_source_root": "reference/original-warajevo/source/src/spectrum-kernel/Z80.ASM",
+  "normalized_result_schema": {
+    "encoding": "canonical-json-field-order",
+    "fields": ["hash", "master_tick", "program_counter", "accumulator", "flags", "memory_4000"],
+    "excludes": ["padding", "pointers", "host timestamps", "file paths"]
+  },
   "scenarios": [
     {
       "id": "load-store-round-trip",

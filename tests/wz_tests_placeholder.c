@@ -178,6 +178,17 @@ static bool run_differential_program(wz_machine_t* machine,
     return true;
 }
 
+static bool differential_results_equal(const differential_result_t* first,
+                                       const differential_result_t* second)
+{
+    return first->hash == second->hash &&
+           first->master_tick == second->master_tick &&
+           first->program_counter == second->program_counter &&
+           first->accumulator == second->accumulator &&
+           first->flags == second->flags &&
+           first->memory_4000 == second->memory_4000;
+}
+
 static wz_byte_t read_cpu_fixture_input(wz_bus_cycle_t cycle,
                                         wz_word_t address,
                                         void* context)
@@ -258,7 +269,7 @@ int main(void)
             !run_differential_program(&machine, profile, load_store_program,
                                       sizeof(load_store_program), 0x2000u, 3u,
                                       &second_result) ||
-            memcmp(&first_result, &second_result, sizeof(first_result)) != 0 ||
+            !differential_results_equal(&first_result, &second_result) ||
             first_result.accumulator != 0x42u || first_result.memory_4000 != 0x42u) {
             fputs("load/store differential scenario failed\n", stderr);
             return 1;
@@ -269,7 +280,7 @@ int main(void)
             !run_differential_program(&machine, profile, immediate_add_program,
                                       sizeof(immediate_add_program), 0x2000u, 2u,
                                       &second_result) ||
-            memcmp(&first_result, &second_result, sizeof(first_result)) != 0 ||
+            !differential_results_equal(&first_result, &second_result) ||
             first_result.accumulator != 0x7eu) {
             fputs("immediate-add differential scenario failed\n", stderr);
             return 1;
