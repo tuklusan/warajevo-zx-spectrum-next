@@ -871,7 +871,7 @@
     {
       "cr_number": "CR-0076",
       "title": "Separate unloaded CPU-vector fixture memory from loaded 48K ROM protection",
-      "status": "open",
+      "status": "in_progress",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 12 and 29", "design/wzsn-architectures-1-2-developer-tasks.md task 063", "design/fuse-z80-test-suite.md"],
       "notes": "Opened on 2026-09-01 after hosted platform-smoke correctly exposed that the CPU-only Fuse vectors mutate their flat fixture image in 0000-3fff, while CR-0074 newly protects a loaded external 48K ROM. Establish an explicit unloaded-fixture versus loaded-ROM contract; retain ROM protection and direct ROM-map tests, and restore the full CPU conformance corpus without baselining those expected fixture-memory differences."
     }
