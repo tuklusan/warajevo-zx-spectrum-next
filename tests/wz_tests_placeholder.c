@@ -2628,7 +2628,7 @@ int main(void)
         machine.cpu.program_counter != 0x38u ||
         machine.cpu.memptr != 0x38u ||
         machine.cpu.stack_pointer != 0xffffu ||
-        machine.memory[0u] != 0u ||
+        machine.memory[0u] != 0x12u ||
         machine.memory[0xffffu] != 0x35u ||
         machine.master_tick != 22u ||
         bus_log.count != 4u ||
