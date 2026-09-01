@@ -885,9 +885,9 @@
     {
       "cr_number": "CR-0078",
       "title": "Add partial I/O port decode with a dedicated ULA port-FE path",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 12 and 15", "design/wzsn-architectures-1-2-developer-tasks.md task 065", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
-      "notes": "Opened on 2026-09-01 for task 065. Establish shared partial address decoding and route every low-byte-even I/O access to a dedicated ULA port-FE boundary. Keyboard matrix input, output latches, floating bus, contention, and peripheral decode remain separately owned by later CRs."
+      "notes": "Opened on 2026-09-01 for task 065. Closed after establishing shared partial address decoding and routing every low-byte-even I/O access to a dedicated ULA port-FE boundary, with keyboard matrix input, output latches, floating bus, contention, and peripheral decode remaining separately owned by later CRs. CODE and DOCUMENTATION reviews passed; Linux CTest and complete Fuse evidence passed; hosted platform-smoke 33550089295 passed across five platforms."
     },
     {
       "cr_number": "CR-0079",
