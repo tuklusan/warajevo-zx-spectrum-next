@@ -219,7 +219,7 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
     }
     machine->master_tick = tick;
     for (size_t index = 0u; index < sizeof(machine->keyboard_rows); ++index) {
-        if ((data[52u + index] & 0xe0u) != 0xe0u) {
+        if ((data[52u + index] & 0xe0u) != 0u) {
             return WZ_RESULT_INVALID_STATE;
         }
         machine->keyboard_rows[index] = data[52u + index];
