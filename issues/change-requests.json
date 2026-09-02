@@ -1081,9 +1081,9 @@
     {
       "cr_number": "CR-0106",
       "title": "Add canonical raster hashes and event traces",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 36, 37, and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 092", "design/raster-sample-encoding.md", "design/cr-preflight/CR-0105.md", "reference/original-warajevo/source"],
-      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-4 scope. Preflight requires canonical raster hashes, deterministic event traces, upstream comparison, remote validation, hosted validation, and a final zero-gap scan."
+      "notes": "Closed on 2026-09-02 after CODE review PASS, Linux remote harness CR0106-raster-evidence-3 passed configure/build/CTest for published head 3e4a6cc, hosted platform-smoke 33591734282 passed all 18 available labels, and final upstream zero-gap scan passed."
     }
   ]
 }
