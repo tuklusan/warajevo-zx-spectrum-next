@@ -1151,9 +1151,9 @@
     {
       "cr_number": "CR-0116",
       "title": "Enforce trace reproducer before timing fixes",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md section 44", "design/wzsn-architectures-1-2-developer-tasks.md task 102", "design/cr-preflight/CR-0115.md", "reference/original-warajevo/source"],
-      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-4A scope. Preflight requires deterministic timing reproducers before fixes, upstream comparison, remote validation, hosted validation, and a final zero-gap scan."
+      "notes": "Closed on 2026-09-02 after CODE and DOCUMENTATION review PASS, Linux remote harness CR0116-timing-reproducer-1 passed, hosted platform-smoke 33595282403 passed across the expanded available matrix, and the final upstream zero-gap policy scan passed."
     }
   ]
 }
