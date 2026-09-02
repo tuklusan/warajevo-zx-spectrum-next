@@ -109,5 +109,11 @@ wz_result_t wz_tape_parse_tzx(const wz_byte_t* data,
                               wz_tzx_block_t* blocks,
                               size_t capacity,
                               size_t* count);
+wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
+                                      size_t block_count,
+                                      wz_dword_t master_ticks_per_tstate,
+                                      wz_tape_segment_t* segments,
+                                      size_t capacity,
+                                      size_t* count);
 
 #endif

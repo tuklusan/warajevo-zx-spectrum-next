@@ -634,6 +634,31 @@ static void test_tzx_parser(void)
     }
 }
 
+static void test_tzx_timing(void)
+{
+    const wz_byte_t tone_data[4u] = {0xe8u, 0x03u, 0x02u, 0x00u};
+    const wz_byte_t sequence_data[5u] = {2u, 0x01u, 0x00u, 0x02u, 0x00u};
+    const wz_byte_t pause_data[2u] = {0x0au, 0x00u};
+    const wz_tzx_block_t blocks[3u] = {
+        {0u, 5u, 0x12u, WZ_TZX_SUPPORTED, tone_data, sizeof(tone_data)},
+        {5u, 6u, 0x13u, WZ_TZX_SUPPORTED, sequence_data, sizeof(sequence_data)},
+        {11u, 3u, 0x20u, WZ_TZX_SUPPORTED, pause_data, sizeof(pause_data)}
+    };
+    wz_tape_segment_t segments[5u];
+    size_t count = 0u;
+
+    if (wz_tape_expand_tzx_timing(blocks, 3u, 2u, 0, 0u, &count) !=
+            WZ_RESULT_BUFFER_TOO_SMALL || count != 5u ||
+        wz_tape_expand_tzx_timing(blocks, 3u, 2u, segments, 5u, &count) !=
+            WZ_RESULT_OK || segments[0u].duration != 2000u ||
+        segments[0u].ear_level != 1u || segments[1u].ear_level != 0u ||
+        segments[2u].duration != 2u || segments[3u].duration != 4u ||
+        segments[4u].duration != 70000u || segments[4u].ear_level != 0u) {
+        fputs("TZX timing contract failed\n", stderr);
+        exit(1);
+    }
+}
+
 static void test_beeper_port_fe_timeline(void)
 {
     wz_machine_t machine;
@@ -1088,6 +1113,7 @@ int main(void)
     test_native_tap_parser();
     test_native_tap_writer();
     test_tzx_parser();
+    test_tzx_timing();
     test_beeper_port_fe_timeline();
     test_mic_capture_timeline();
     test_beeper_pcm_render();

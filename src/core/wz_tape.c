@@ -640,6 +640,111 @@ wz_result_t wz_tape_parse_tzx(const wz_byte_t* data,
     return WZ_RESULT_OK;
 }
 
+static wz_result_t wz_tzx_add_segments(size_t* total, size_t amount)
+{
+    if (total == 0 || amount > SIZE_MAX - *total) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    *total += amount;
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_tzx_append_segment(wz_tape_segment_t* segments,
+                                         size_t capacity,
+                                         size_t* index,
+                                         wz_dword_t tstates,
+                                         wz_dword_t ticks_per_tstate,
+                                         wz_byte_t level)
+{
+    wz_master_tick_t duration;
+    if (segments == 0 || index == 0 || *index >= capacity ||
+        wz_tape_tap_duration(tstates, ticks_per_tstate, &duration) != WZ_RESULT_OK) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    segments[*index].duration = duration;
+    segments[*index].ear_level = level;
+    ++*index;
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
+                                      size_t block_count,
+                                      wz_dword_t master_ticks_per_tstate,
+                                      wz_tape_segment_t* segments,
+                                      size_t capacity,
+                                      size_t* count)
+{
+    size_t required = 0u;
+    size_t index = 0u;
+    wz_byte_t level = 1u;
+
+    if (blocks == 0 || block_count == 0u || count == 0 ||
+        master_ticks_per_tstate == 0u) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    for (size_t block_index = 0u; block_index < block_count; ++block_index) {
+        const wz_tzx_block_t* block = &blocks[block_index];
+        size_t amount = 0u;
+        if (block->data == 0 && block->data_length != 0u) {
+            return WZ_RESULT_INVALID_ARGUMENT;
+        }
+        switch (block->block_id) {
+        case 0x12u:
+            if (block->data_length < 4u) return WZ_RESULT_PARSE_ERROR;
+            amount = (size_t)wz_read_le16(block->data + 2u);
+            break;
+        case 0x13u:
+            if (block->data_length < 1u) return WZ_RESULT_PARSE_ERROR;
+            if ((size_t)block->data[0u] > SIZE_MAX / 2u) return WZ_RESULT_PARSE_ERROR;
+            amount = (size_t)block->data[0u] * 2u;
+            if (block->data_length < 1u + amount) return WZ_RESULT_PARSE_ERROR;
+            break;
+        case 0x20u:
+            if (block->data_length < 2u) return WZ_RESULT_PARSE_ERROR;
+            amount = wz_read_le16(block->data) == 0u ? 0u : 1u;
+            break;
+        default:
+            return WZ_RESULT_UNSUPPORTED_OPERATION;
+        }
+        if (wz_tzx_add_segments(&required, amount) != WZ_RESULT_OK) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+    }
+    *count = required;
+    if (segments == 0 || capacity < required) return WZ_RESULT_BUFFER_TOO_SMALL;
+    for (size_t block_index = 0u; block_index < block_count; ++block_index) {
+        const wz_tzx_block_t* block = &blocks[block_index];
+        if (block->block_id == 0x12u) {
+            wz_word_t duration = wz_read_le16(block->data);
+            wz_word_t repetitions = wz_read_le16(block->data + 2u);
+            for (wz_word_t repetition = 0u; repetition < repetitions; ++repetition) {
+                if (wz_tzx_append_segment(segments, capacity, &index, duration,
+                                          master_ticks_per_tstate, level) != WZ_RESULT_OK) {
+                    return WZ_RESULT_PARSE_ERROR;
+                }
+                level ^= 1u;
+            }
+        } else if (block->block_id == 0x13u) {
+            for (size_t pulse = 0u; pulse < (size_t)block->data[0u]; ++pulse) {
+                wz_word_t duration = wz_read_le16(block->data + 1u + pulse * 2u);
+                if (wz_tzx_append_segment(segments, capacity, &index, duration,
+                                          master_ticks_per_tstate, level) != WZ_RESULT_OK) {
+                    return WZ_RESULT_PARSE_ERROR;
+                }
+                level ^= 1u;
+            }
+        } else {
+            wz_dword_t tstates = (wz_dword_t)wz_read_le16(block->data) * 3500u;
+            if (wz_tzx_append_segment(segments, capacity, &index, tstates,
+                                      master_ticks_per_tstate, 0u) != WZ_RESULT_OK) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            level = 0u;
+        }
+    }
+    return WZ_RESULT_OK;
+}
+
 wz_result_t wz_tape_parse_native_tap(const wz_byte_t* data,
                                      size_t length,
                                      wz_native_tap_record_t* records,
