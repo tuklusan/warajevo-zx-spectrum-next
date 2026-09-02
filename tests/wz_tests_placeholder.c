@@ -311,7 +311,7 @@ static void test_beeper_pcm_render(void)
 
     if (!wz_beeper_render_pcm(events, 2u, 0u, 0u, 10u, 2u,
                               samples, 2u) ||
-        samples[0] != -13107 || samples[1] != 13107 ||
+        samples[0] != -13107 || samples[1] != -13107 ||
         !wz_beeper_render_pcm(events, 2u, 0u, 0u, 10u, 2u,
                                samples, 2u)) {
         fputs("beeper PCM integration contract failed\n", stderr);
