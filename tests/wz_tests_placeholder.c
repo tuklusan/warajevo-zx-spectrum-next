@@ -152,7 +152,7 @@ static void test_kempston_decode(void)
     wz_kempston_t joystick;
 
     wz_kempston_init(&joystick);
-    if (!wz_kempston_port_selected(0x001fu) || wz_kempston_port_selected(0x201fu) ||
+    if (!wz_kempston_port_selected(0x001fu) || !wz_kempston_port_selected(0x201fu) ||
         wz_kempston_read(&joystick, 0x1fu) != 0u ||
         wz_kempston_read(&joystick, 0x1eu) != 0u) {
         fputs("Kempston port selection failed\n", stderr);
