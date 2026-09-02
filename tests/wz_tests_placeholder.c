@@ -342,6 +342,44 @@ int main(void)
         }
         machine.master_tick = 0u;
     }
+    {
+        wz_ula_fetch_event_t fetches[2u];
+        size_t fetch_count = 0u;
+        wz_master_tick_t first_fetch_tick = 14335u * 2u;
+
+        machine.memory[0x4000u] = 0xa5u;
+        machine.memory[0x5800u] = 0x1cu;
+        if (wz_machine_ula_fetches_at_tick(&machine, first_fetch_tick - 2u,
+                                           fetches, 2u, &fetch_count) !=
+                WZ_RESULT_OK || fetch_count != 0u ||
+            wz_machine_ula_fetches_at_tick(&machine, first_fetch_tick,
+                                           fetches, 2u, &fetch_count) !=
+                WZ_RESULT_OK || fetch_count != 2u ||
+            fetches[0].kind != WZ_ULA_FETCH_BITMAP ||
+            fetches[0].master_tick != first_fetch_tick ||
+            fetches[0].address != 0x4000u || fetches[0].value != 0xa5u ||
+            fetches[1].kind != WZ_ULA_FETCH_ATTRIBUTE ||
+            fetches[1].master_tick != first_fetch_tick + 2u ||
+            fetches[1].address != 0x5800u || fetches[1].value != 0x1cu ||
+            wz_machine_ula_fetches_at_tick(&machine, first_fetch_tick,
+                                           fetches, 1u, &fetch_count) !=
+                WZ_RESULT_BUFFER_TOO_SMALL) {
+            fputs("first ULA bitmap/attribute fetch contract failed\n", stderr);
+            return 1;
+        }
+        machine.memory[0x4747u] = 0x3cu;
+        machine.memory[0x59dfu] = 0x47u;
+        if (wz_machine_ula_fetches_at_tick(&machine,
+                                           (14335u + 7u * 224u + 47u * 4u) * 2u,
+                                           fetches, 2u, &fetch_count) !=
+                WZ_RESULT_OK || fetch_count != 2u ||
+            fetches[0].address != 0x4747u || fetches[0].value != 0x3cu ||
+            fetches[1].address != 0x59dfu || fetches[1].value != 0x47u) {
+            fputs("last ULA bitmap/attribute fetch contract failed\n", stderr);
+            return 1;
+        }
+        machine.master_tick = 0u;
+    }
     if (wz_machine_memory_read(0, 0u) != 0xffu ||
         wz_machine_ula_port_fe_read(0, 0u) != 0xffu ||
         wz_machine_bus_request(0, 0) != WZ_RESULT_INVALID_ARGUMENT ||
