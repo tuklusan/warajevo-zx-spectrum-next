@@ -101,6 +101,8 @@ class HarnessGateTests(unittest.TestCase):
     def test_extended_precision_receipt_remains_compatible(self):
         diff = b"reviewed diff"
         digest = hashlib.sha256(diff).hexdigest()
+        receipt_path = ROOT / "test-artefacts" / "reviewer" / "code-pass.json"
+        original_read_text = Path.read_text
         tracker_data = (ROOT / "issues" / "change-requests.json").read_bytes()
         tracker = json.loads(tracker_data)
         active = [item for item in tracker["change_requests"] if item.get("status") == "in_progress"]
@@ -131,8 +133,13 @@ class HarnessGateTests(unittest.TestCase):
             "review_complete": True,
             "snapshot_id": f"git:base..head:sha256:{digest}",
         })
+        def read_text(path, *args, **kwargs):
+            if path == receipt_path:
+                return receipt
+            return original_read_text(path, *args, **kwargs)
+
         with patch.object(Path, "is_file", return_value=True), \
-             patch.object(Path, "read_text", return_value=receipt), \
+             patch.object(Path, "read_text", side_effect=read_text), \
              patch.object(remote.subprocess, "run", side_effect=[
                  Result(text_stdout="head\n"), Result(text_stdout="head\trefs/heads/main\n"),
                  Result(stdout=diff),
