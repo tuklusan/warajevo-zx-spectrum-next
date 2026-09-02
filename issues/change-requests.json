@@ -1305,9 +1305,9 @@
     {
       "cr_number": "CR-0138",
       "title": "Implement discontinuity-free runtime speed changes",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 10.8-10.9", "design/wzsn-architectures-1-2-developer-tasks.md task 124", "design/cr-preflight/CR-0138.md", "reference/original-warajevo/source"],
-      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-5 scope. Preflight requires speed changes to affect future host pacing without resetting or discontinuing canonical master time."
+      "notes": "Closed on 2026-09-02 after adding a pending speed-policy boundary that re-anchors host pacing observations without changing canonical machine time, with coverage for immediate changes, subsequent scaled progress, repeated changes, Unlimited transitions, and regression-safe boundaries. CODE and DOCUMENTATION reviews passed for 012bc22; Linux remote smoke CR0138-speed-linux-1 and Windows 10 remote smoke CR0138-speed-windows-2 passed; hosted platform-smoke 33641865233 and repository-gates 33641865524 passed across five platforms; final upstream run-loop, delay, fast-forward, and media-timing comparison found no undispositioned behavior."
     }
   ]
 }
