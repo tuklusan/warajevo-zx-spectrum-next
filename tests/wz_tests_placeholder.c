@@ -493,7 +493,10 @@ int main(void)
             fputs("overscan border-to-fetch ordering contract failed\n", stderr);
             return 1;
         }
-        machine.master_tick = 0u;
+        if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+            fputs("overscan transition fixture cleanup failed\n", stderr);
+            return 1;
+        }
     }
     {
         wz_ula_fetch_event_t fetches[2u];
