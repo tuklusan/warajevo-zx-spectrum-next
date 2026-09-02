@@ -372,7 +372,7 @@ wz_result_t wz_machine_ula_fetches_at_tick(const wz_machine_t* machine,
     }
     bitmap_tick = (wz_master_tick_t)tstate *
         profile->master_ticks_per_cpu_tstate;
-    attribute_tick = bitmap_tick + profile->attribute_offset_tstates *
+    attribute_tick = bitmap_tick + profile->ula_attribute_offset_tstates *
         profile->master_ticks_per_cpu_tstate;
     row = line;
     if (capacity < 2u || events == 0) {
