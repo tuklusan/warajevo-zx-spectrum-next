@@ -282,9 +282,9 @@ static void test_beeper_port_fe_timeline(void)
         fputs("beeper machine setup failed\n", stderr);
         exit(1);
     }
-    wz_machine_ula_port_fe_write(&machine, 0x00u, 100u);
-    wz_machine_ula_port_fe_write(&machine, 0x18u, 200u);
-    wz_machine_ula_port_fe_write(&machine, 0x00u, 300u);
+    wz_machine_ula_port_fe_write(&machine, 0x00feu, 0x00u, 100u);
+    wz_machine_ula_port_fe_write(&machine, 0x00feu, 0x18u, 200u);
+    wz_machine_ula_port_fe_write(&machine, 0x00feu, 0x00u, 300u);
     count = wz_machine_beeper_events(&machine, events, 4u);
     if (count != 2u || events[0].master_tick != 200u || events[0].level != 1u ||
         events[1].master_tick != 300u || events[1].level != 0u ||
@@ -293,7 +293,7 @@ static void test_beeper_port_fe_timeline(void)
         fputs("beeper timestamp or MIC separation failed\n", stderr);
         exit(1);
     }
-    wz_machine_ula_port_fe_write(&machine, 0x10u, 400u);
+    wz_machine_ula_port_fe_write(&machine, 0x00feu, 0x10u, 400u);
     if (wz_machine_mic_level(&machine) != 1u ||
         wz_machine_beeper_events(&machine, events, 4u) != 2u) {
         fputs("MIC-only port-FE transition failed\n", stderr);
