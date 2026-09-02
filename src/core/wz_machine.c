@@ -90,15 +90,11 @@ wz_result_t wz_machine_mount_tape(wz_machine_t* machine,
                                   const wz_tape_segment_t* segments,
                                   size_t segment_count)
 {
-    wz_tape_t tape;
-    wz_tape_state_t state;
-
-    if (machine == 0 || wz_tape_mount(&tape, segments, segment_count) != WZ_RESULT_OK ||
-        wz_tape_state_init(&state, &tape) != WZ_RESULT_OK) {
+    if (machine == 0 ||
+        wz_tape_mount(&machine->tape, segments, segment_count) != WZ_RESULT_OK ||
+        wz_tape_state_init(&machine->tape_state, &machine->tape) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
-    machine->tape = tape;
-    machine->tape_state = state;
     machine->tape_mounted = 1u;
     return WZ_RESULT_OK;
 }
