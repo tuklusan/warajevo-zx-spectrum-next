@@ -8,6 +8,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "core/wz_kempston.h"
 
+#include <stddef.h>
+
 static const wz_byte_t wz_kempston_masks[WZ_KEMPSTON_CONTROL_COUNT] = {
     0x10u, 0x08u, 0x02u, 0x01u, 0x04u
 };
