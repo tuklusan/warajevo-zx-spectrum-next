@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 154,
+  "next_cr_number": 155,
   "status_values": [
     "open",
     "in_progress",
@@ -1410,9 +1410,16 @@
     {
       "cr_number": "CR-0153",
       "title": "Implement Sokol host audio delivery smoke boundary",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 20, 21, and 38", "design/wzsn-architectures-1-2-developer-tasks.md task 140", "design/cr-preflight/CR-0153.md", "reference/original-warajevo/source"],
-      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-6 scope. Preflight requires push-only Sokol audio delivery with backend availability recorded separately from core correctness."
+      "notes": "Closed on 2026-09-02 after completing the push-only Sokol audio boundary, fixed-point-to-float host conversion, speed mute policy, orderly shutdown, and backend availability separation. CODE review PASS covered 4e025a0..dd83c29; Linux CR0153-sokol-linux-5 and Windows 10 CR0153-sokol-windows-5 passed the Sokol-enabled smoke and all five CTest entries. Hosted platform-smoke 33657766634 passed all 17 configured runner lanes, including Sokol on Windows and modern Apple coverage; the older macOS 14 lane was repaired by explicitly linking AudioToolbox and CoreAudio. The local Big Sur harness was authenticated and bootstrapped successfully, then truthfully reported missing cmake/ctest without attempting a local build; no hardware/backend result was misrepresented. Final upstream audio comparison and zero-gap scan found no undispositioned gap."
+    },
+    {
+      "cr_number": "CR-0154",
+      "title": "Test speed changes across host audio boundaries",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 10.10 and 38", "design/wzsn-architectures-1-2-developer-tasks.md task 141", "design/cr-preflight/CR-0154.md", "reference/original-warajevo/source"],
+      "notes": "Opened on 2026-09-02 as the next ordered Phase-6 scope. Preflight requires deterministic audible/muted boundary transitions with continued headless emulation and host pacing re-anchoring."
     }
   ]
 }

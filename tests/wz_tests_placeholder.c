@@ -277,6 +277,42 @@ static void test_host_pacing(void)
     }
 }
 
+static void test_audio_speed_boundary_transitions(void)
+{
+    wz_host_pacing_t pacing;
+    wz_machine_t machine;
+    wz_headless_runner_t runner;
+    wz_trace_sink_t trace;
+    wz_qword_t requested = 0u;
+    wz_master_tick_t before_tick;
+
+    wz_trace_sink_init(&trace, 0, 0);
+    if (!wz_machine_init(&machine, wz_machine_profile_48k_pal()) ||
+        wz_headless_runner_init(&runner, &machine, &trace) != WZ_RESULT_OK ||
+        !wz_host_pacing_init(&pacing, 1000u, WZ_SPEED_200, 0u, 0u) ||
+        !wz_host_pacing_wait(&pacing, 0u, 1000u, 0, 0, &requested) ||
+        !wz_host_audio_enabled(WZ_SPEED_200) || requested != 500000000u) {
+        fputs("audio speed-boundary setup failed\n", stderr);
+        exit(1);
+    }
+    before_tick = machine.master_tick;
+    if (wz_headless_runner_advance(&runner, 8u) != WZ_RESULT_OK ||
+        machine.master_tick <= before_tick ||
+        !wz_host_pacing_set_speed(&pacing, WZ_SPEED_400) ||
+        !wz_host_pacing_wait(&pacing, 1000000u, machine.master_tick,
+                             0, 0, &requested) ||
+        wz_host_audio_enabled(WZ_SPEED_400) || requested != 0u ||
+        !wz_host_pacing_set_speed(&pacing, WZ_SPEED_50) ||
+        !wz_host_pacing_wait(&pacing, 2000000u, machine.master_tick,
+                             0, 0, &requested) ||
+        !wz_host_audio_enabled(WZ_SPEED_50) || requested != 0u) {
+        fputs("audio speed-boundary transition failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_machine_destroy(&machine);
+}
+
 static void test_beeper_port_fe_timeline(void)
 {
     wz_machine_t machine;
@@ -677,6 +713,7 @@ int main(void)
     test_kempston_mapping();
     test_speed_policy();
     test_host_pacing();
+    test_audio_speed_boundary_transitions();
     test_beeper_port_fe_timeline();
     test_beeper_pcm_render();
     test_audio_pcm_hash();
