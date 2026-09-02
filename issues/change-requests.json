@@ -1046,9 +1046,9 @@
     {
       "cr_number": "CR-0101",
       "title": "Complete INK PAPER BRIGHT interpretation",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 16.3, 17.1, 17.3, 36, and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 087", "design/raster-sample-encoding.md", "design/cr-preflight/CR-0100.md", "reference/original-warajevo/source"],
-      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-4 scope. Preflight requires exhaustive attribute interpretation, upstream comparison, remote validation, hosted validation, and a final zero-gap scan; FLASH phase remains separate."
+      "notes": "Closed on 2026-09-02 after CODE review PASS packet 510a1944, DOCUMENTATION review PASS packet c2254187, Linux remote harness CR0101-ATTRIBUTE-LINUX-R1 passed all five CTest targets, and hosted platform-smoke 33586666729 passed all five jobs for dbde9aa. Final upstream zero-gap scan passed; FLASH phase, diagnostics, and Phase-4 acceptance remain ordered later tasks."
     }
   ]
 }
