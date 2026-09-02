@@ -371,13 +371,13 @@ int main(void)
             fputs("first ULA bitmap/attribute fetch contract failed\n", stderr);
             return 1;
         }
-        machine.memory[0x51afu] = 0x3cu;
+        machine.memory[0x57ffu] = 0x3cu;
         machine.memory[0x5affu] = 0x47u;
         if (wz_machine_ula_fetches_at_tick(&machine,
                                            (14335u + 191u * 224u + 31u * 4u) * 2u,
                                            fetches, 2u, &fetch_count) !=
                 WZ_RESULT_OK || fetch_count != 2u ||
-            fetches[0].address != 0x51afu || fetches[0].value != 0x3cu ||
+            fetches[0].address != 0x57ffu || fetches[0].value != 0x3cu ||
             fetches[1].address != 0x5affu || fetches[1].value != 0x47u) {
             fputs("last ULA bitmap/attribute fetch contract failed\n", stderr);
             return 1;
