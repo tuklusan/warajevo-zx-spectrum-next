@@ -19,6 +19,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "app/wz_speed_policy.h"
 #include "app/wz_host_pacing.h"
 #include "app/wz_host_audio_push.h"
+#include "app/wz_host_audio_policy.h"
 #include "core/audio/wz_audio_policy.h"
 #include "core/audio/wz_ay_mixer_policy.h"
 #include "core/wz_bus.h"
@@ -352,6 +353,21 @@ static void test_canonical_audio_policy(void)
     }
 }
 
+static void test_host_audio_policy(void)
+{
+    if (wz_host_audio_enabled(WZ_SPEED_25) ||
+        !wz_host_audio_enabled(WZ_SPEED_50) ||
+        !wz_host_audio_enabled(WZ_SPEED_100) ||
+        !wz_host_audio_enabled(WZ_SPEED_200) ||
+        wz_host_audio_enabled(WZ_SPEED_400) ||
+        wz_host_audio_enabled(WZ_SPEED_800) ||
+        wz_host_audio_enabled(WZ_SPEED_UNLIMITED) ||
+        wz_host_audio_enabled((wz_speed_policy_t)WZ_SPEED_COUNT)) {
+        fputs("host audio policy contract failed\n", stderr);
+        exit(1);
+    }
+}
+
 static void test_ay_mixer_policy(void)
 {
     if (WZ_AY_CHANNEL_COUNT != 3u || WZ_AY_VOLUME_LEVEL_COUNT != 16u ||
@@ -607,6 +623,7 @@ int main(void)
     test_beeper_pcm_render();
     test_host_audio_push_queue();
     test_canonical_audio_policy();
+    test_host_audio_policy();
     test_ay_mixer_policy();
     test_raster_diagnostic();
     test_raster_invalid_state();
