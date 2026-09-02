@@ -667,6 +667,13 @@ static wz_result_t wz_tzx_append_segment(wz_tape_segment_t* segments,
     return WZ_RESULT_OK;
 }
 
+static bool wz_tzx_is_ignored_metadata(wz_byte_t block_id)
+{
+    return block_id == 0x21u || block_id == 0x22u || block_id == 0x30u ||
+           block_id == 0x31u || block_id == 0x32u || block_id == 0x33u ||
+           block_id == 0x35u || block_id == 0x40u || block_id == 0x5au;
+}
+
 static wz_result_t wz_tzx_count_standard_speed(const wz_tzx_block_t* block,
                                                size_t* amount)
 {
@@ -895,7 +902,10 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
             }
             break;
         default:
-            return WZ_RESULT_UNSUPPORTED_OPERATION;
+            if (!wz_tzx_is_ignored_metadata(block->block_id)) {
+                return WZ_RESULT_UNSUPPORTED_OPERATION;
+            }
+            break;
         }
         if (wz_tzx_add_segments(&required, amount) != WZ_RESULT_OK) {
             return WZ_RESULT_PARSE_ERROR;
@@ -981,13 +991,15 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
             }
         } else if (block->block_id == 0x2bu) {
             level = block->data[4u] == 0u ? 0u : 1u;
-        } else {
+        } else if (block->block_id == 0x20u) {
             wz_dword_t tstates = (wz_dword_t)wz_read_le16(block->data) * 3500u;
             if (wz_tzx_append_segment(segments, capacity, &index, tstates,
                                       master_ticks_per_tstate, 0u) != WZ_RESULT_OK) {
                 return WZ_RESULT_PARSE_ERROR;
             }
             level = 0u;
+        } else if (!wz_tzx_is_ignored_metadata(block->block_id)) {
+            return WZ_RESULT_UNSUPPORTED_OPERATION;
         }
     }
     return WZ_RESULT_OK;
