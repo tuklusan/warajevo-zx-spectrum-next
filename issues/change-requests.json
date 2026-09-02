@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 115,
+  "next_cr_number": 116,
   "status_values": [
     "open",
     "in_progress",
@@ -1137,9 +1137,16 @@
     {
       "cr_number": "CR-0114",
       "title": "Run border and floating-bus timing smoke",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 15, 17, 36, and 49", "design/wzsn-architectures-1-2-developer-tasks.md task 100", "design/cr-preflight/CR-0113.md", "reference/original-warajevo/source"],
-      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-4A scope. Preflight requires canonical border and floating-bus evidence, upstream comparison, remote validation, hosted validation, and a final zero-gap scan."
+      "notes": "Closed on 2026-09-02 after CODE and DOCUMENTATION review PASS, Linux remote harness CR0114-border-floating-bus-1 passed configure/build/CTest for published head 9124795, hosted push validation 33594601097 passed all 18 available labels, and final upstream zero-gap scan passed."
+    },
+    {
+      "cr_number": "CR-0115",
+      "title": "Run raster-racing and multicolor smoke cases",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 18, 36, and 49", "design/wzsn-architectures-1-2-developer-tasks.md task 101", "design/cr-preflight/CR-0114.md", "reference/original-warajevo/source"],
+      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-4A scope. Preflight requires representative raster-racing and multicolor evidence, upstream comparison, remote validation, hosted validation, and a final zero-gap scan."
     }
   ]
 }
