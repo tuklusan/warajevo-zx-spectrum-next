@@ -895,6 +895,18 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
             if (block->data_length < 2u) return WZ_RESULT_PARSE_ERROR;
             amount = wz_read_le16(block->data) == 0u ? 0u : 1u;
             break;
+        case 0x2au: {
+            size_t declared_length;
+            if (block->data_length < 4u) return WZ_RESULT_PARSE_ERROR;
+            declared_length = (size_t)block->data[0u] |
+                ((size_t)block->data[1u] << 8u) |
+                ((size_t)block->data[2u] << 16u) |
+                ((size_t)block->data[3u] << 24u);
+            if (declared_length > block->data_length - 4u) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            break;
+        }
         case 0x2bu:
             if (block->data_length < 5u) return WZ_RESULT_PARSE_ERROR;
             if ((size_t)wz_tzx_read_le24(block->data) > block->data_length - 4u) {
@@ -910,6 +922,7 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
         if (wz_tzx_add_segments(&required, amount) != WZ_RESULT_OK) {
             return WZ_RESULT_PARSE_ERROR;
         }
+        if (block->block_id == 0x2au) break;
     }
     *count = required;
     if (segments == 0 || capacity < required) return WZ_RESULT_BUFFER_TOO_SMALL;
@@ -998,6 +1011,8 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
                 return WZ_RESULT_PARSE_ERROR;
             }
             level = 0u;
+        } else if (block->block_id == 0x2au) {
+            break;
         } else if (!wz_tzx_is_ignored_metadata(block->block_id)) {
             return WZ_RESULT_UNSUPPORTED_OPERATION;
         }
