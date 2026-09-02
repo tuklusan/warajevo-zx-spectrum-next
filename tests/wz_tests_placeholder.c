@@ -74,6 +74,22 @@ static void test_raster_diagnostic(void)
     }
 }
 
+static void test_raster_invalid_state(void)
+{
+    wz_byte_t sample = 0xa5u;
+    wz_raster_buffer_t overflow = {&sample, SIZE_MAX, 2u};
+    wz_raster_buffer_t zero = {&sample, 0u, 1u};
+
+    if (wz_raster_buffer_clear(&overflow, WZ_PALETTE_BLACK) != WZ_RESULT_INVALID_ARGUMENT ||
+        wz_raster_buffer_write(&overflow, 0u, 0u, WZ_PALETTE_BLACK) != WZ_RESULT_INVALID_ARGUMENT ||
+        wz_raster_buffer_read(&overflow, 0u, 0u, &sample) != WZ_RESULT_INVALID_ARGUMENT ||
+        wz_raster_buffer_clear(&zero, WZ_PALETTE_BLACK) != WZ_RESULT_INVALID_ARGUMENT ||
+        sample != 0xa5u) {
+        fputs("raster invalid-state validation failed\n", stderr);
+        exit(1);
+    }
+}
+
 static void record_event(void* context)
 {
     unsigned* value = (unsigned*)context;
@@ -269,6 +285,7 @@ int main(void)
 {
     test_raster_evidence();
     test_raster_diagnostic();
+    test_raster_invalid_state();
     const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
     wz_machine_t machine;
     wz_machine_t restored;

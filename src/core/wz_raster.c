@@ -11,7 +11,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 static bool wz_raster_buffer_valid(const wz_raster_buffer_t* buffer)
 {
     return buffer != 0 && buffer->samples != 0 &&
-        buffer->width != 0u && buffer->height != 0u;
+        buffer->width != 0u && buffer->height != 0u &&
+        buffer->height <= SIZE_MAX / buffer->width;
 }
 
 wz_result_t wz_raster_buffer_init(wz_raster_buffer_t* buffer,
