@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 121,
+  "next_cr_number": 122,
   "status_values": [
     "open",
     "in_progress",
@@ -1179,9 +1179,16 @@
     {
       "cr_number": "CR-0120",
       "title": "Freeze the initial Linux graphics backend",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 27.4 and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 106", "design/cr-preflight/CR-0119.md", "reference/original-warajevo/source"],
-      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-5 scope. Preflight requires an explicit Linux X11 backend decision before host code and must keep backend details outside deterministic core behavior."
+      "notes": "Closed on 2026-09-02 after CODE and DOCUMENTATION review PASS, X11 backend decision and core boundary were recorded, Linux remote smoke CR0120-x11-backend-1 passed, hosted repository gates 33626128703 and platform-smoke 33626128640 passed across the expanded available matrix, and the upstream backend zero-gap scan passed."
+    },
+    {
+      "cr_number": "CR-0121",
+      "title": "Implement the minimal Sokol application shell",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 27, 33, and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 107", "design/cr-preflight/CR-0120.md", "reference/original-warajevo/source"],
+      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-5 scope. Preflight must preserve the deterministic core boundary and keep all host callbacks as orchestration/presentation infrastructure."
     }
   ]
 }
