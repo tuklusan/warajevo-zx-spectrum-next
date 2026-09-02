@@ -11,6 +11,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include <stddef.h>
 
+#include "core/wz_types.h"
 #include "core/audio/wz_audio_policy.h"
 
 #define WZ_HOST_AUDIO_QUEUE_CAPACITY 4096u
