@@ -503,6 +503,10 @@ static void test_native_tap_parser(void)
     native[13u] = 0u;
     native[14u] = 0u;
     native[15u] = 0u;
+    native[16u] = 0xffu;
+    native[17u] = 0xffu;
+    native[18u] = 0xffu;
+    native[19u] = 0xffu;
     native[20u] = 4u;
     native[21u] = 0u;
     native[22u] = 0xa5u;
