@@ -1473,9 +1473,9 @@
     {
       "cr_number": "CR-0162",
       "title": "Implement strict standard Spectrum TAP parsing",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 23.12 and 23.13", "design/wzsn-architectures-1-2-developer-tasks.md task 149", "design/cr-preflight/CR-0162.md", "design/media-format-support.md", "reference/original-warajevo/source"],
-      "notes": "Opened on 2026-09-02 as the next ordered Phase-7 scope. Preflight requires strict standard TAP length, truncation, checksum, and deterministic pulse-expansion behavior with no partial tape publication; native TAP, writing, TZX, WAV, instant loading, trap detection, and host export remain deferred."
+      "notes": "Closed on 2026-09-02 at 26d60e1 after implementing strict standard TAP length, truncation, checksum, and deterministic Normal-mode pulse expansion with two-pass no-partial-publication handling. CODE and DOCUMENTATION reviews passed with zero findings. Initial Linux CR0162-tap-linux-1 found a segment-sizing defect; the corrected Linux CR0162-tap-linux-2 and Windows CR0162-tap-windows-1 runs passed. Hosted platform-smoke 33671786795 passed all 18 jobs. Native TAP, writing, TZX, WAV, instant loading, trap detection, and host export remain explicitly deferred to later ordered tasks; closure evidence is recorded in design/cr-preflight/CR-0162.md."
     }
   ]
 }
