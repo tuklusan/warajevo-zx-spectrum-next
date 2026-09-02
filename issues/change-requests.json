@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 101,
+  "next_cr_number": 102,
   "status_values": [
     "open",
     "in_progress",
@@ -1042,6 +1042,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 16.3, 17, 18, 36, 44, and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 086", "design/raster-sample-encoding.md", "design/cr-preflight/CR-0099.md", "reference/original-warajevo/source"],
       "notes": "Closed on 2026-09-02 after CODE review PASS packet 4dd1e6df, DOCUMENTATION review PASS packet 4360b3ae, Linux remote harness CR0100-PIXEL-DECODE-LINUX-R1 passed all five CTest targets, and hosted platform-smoke 33586270125 passed all five jobs for 42fd179. Final upstream zero-gap scan passed; INK/PAPER/BRIGHT matrix integration, FLASH, diagnostics, and Phase-4 acceptance remain ordered later tasks."
+    },
+    {
+      "cr_number": "CR-0101",
+      "title": "Complete INK PAPER BRIGHT interpretation",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 16.3, 17.1, 17.3, 36, and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 087", "design/raster-sample-encoding.md", "design/cr-preflight/CR-0100.md", "reference/original-warajevo/source"],
+      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-4 scope. Preflight requires exhaustive attribute interpretation, upstream comparison, remote validation, hosted validation, and a final zero-gap scan; FLASH phase remains separate."
     }
   ]
 }
