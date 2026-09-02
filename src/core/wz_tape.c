@@ -238,6 +238,137 @@ wz_result_t wz_tape_write_standard_tap(const wz_tap_block_t* blocks,
     return WZ_RESULT_OK;
 }
 
+bool wz_tape_is_native_tap(const wz_byte_t* data, size_t length)
+{
+    if (data == 0 || length < 12u ||
+        (data[0u] == 0xffu && data[1u] == 0xffu &&
+         data[2u] == 0xffu && data[3u] == 0xffu)) {
+        return false;
+    }
+    for (size_t offset = 4u; offset < 12u; offset += 4u) {
+        if (wz_read_le16(&data[offset]) != 0xffffu ||
+            wz_read_le16(&data[offset + 2u]) != 0xffffu) {
+            return false;
+        }
+    }
+    return true;
+}
+
+static wz_result_t wz_tape_native_record_header(const wz_byte_t* data,
+                                                 size_t length,
+                                                 size_t offset,
+                                                 size_t previous_offset,
+                                                 size_t* next_offset,
+                                                 size_t* header_size,
+                                                 wz_native_tap_record_t* record)
+{
+    size_t next;
+    wz_word_t stored_length;
+
+    if (data == 0 || next_offset == 0 || header_size == 0 || record == 0 ||
+        offset > length || length - offset < 11u) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    if ((wz_qword_t)offset > UINT32_MAX) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    record->offset = offset;
+    record->previous_offset = (size_t)data[offset] |
+        ((size_t)data[offset + 1u] << 8u) |
+        ((size_t)data[offset + 2u] << 16u) |
+        ((size_t)data[offset + 3u] << 24u);
+    next = (size_t)data[offset + 4u] |
+        ((size_t)data[offset + 5u] << 8u) |
+        ((size_t)data[offset + 6u] << 16u) |
+        ((size_t)data[offset + 7u] << 24u);
+    stored_length = wz_read_le16(&data[offset + 8u]);
+    record->next_offset = next;
+    record->stored_length = stored_length;
+    record->flag = data[offset + 10u];
+    if (record->previous_offset != previous_offset ||
+        (next != UINT32_MAX && (next < 12u || next >= length))) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    if (stored_length == 65534u || stored_length == 65535u) {
+        if (length - offset < 17u) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        record->record_type = stored_length == 65534u ? 4u : 5u;
+        *header_size = 17u;
+    } else {
+        if (length - offset < 12u) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        record->record_type = data[offset + 11u];
+        *header_size = 12u;
+    }
+    if (stored_length < 2u ||
+        (size_t)stored_length > length - offset - *header_size) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    record->payload = &data[offset + *header_size];
+    record->payload_length = (size_t)stored_length - 2u;
+    *next_offset = next;
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_tape_parse_native_tap(const wz_byte_t* data,
+                                     size_t length,
+                                     wz_native_tap_record_t* records,
+                                     size_t capacity,
+                                     size_t* count)
+{
+    size_t offset;
+    size_t previous = 0u;
+    size_t found = 0u;
+    size_t guard = 0u;
+
+    if (count == 0 || !wz_tape_is_native_tap(data, length)) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    offset = (size_t)data[0u] | ((size_t)data[1u] << 8u) |
+        ((size_t)data[2u] << 16u) | ((size_t)data[3u] << 24u);
+    if (offset < 12u || offset >= length) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    while (offset != UINT32_MAX) {
+        wz_native_tap_record_t record;
+        size_t next;
+        size_t header_size;
+
+        if (++guard > length ||
+            wz_tape_native_record_header(data, length, offset, previous,
+                                         &next, &header_size, &record) != WZ_RESULT_OK) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        (void)header_size;
+        if (found == SIZE_MAX) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        ++found;
+        previous = offset;
+        offset = next;
+    }
+    *count = found;
+    if (records == 0 || capacity < found) {
+        return WZ_RESULT_BUFFER_TOO_SMALL;
+    }
+    offset = (size_t)data[0u] | ((size_t)data[1u] << 8u) |
+        ((size_t)data[2u] << 16u) | ((size_t)data[3u] << 24u);
+    previous = 0u;
+    for (size_t index = 0u; index < found; ++index) {
+        size_t next;
+        size_t header_size;
+        if (wz_tape_native_record_header(data, length, offset, previous,
+                                         &next, &header_size, &records[index]) != WZ_RESULT_OK) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        previous = offset;
+        offset = next;
+    }
+    return WZ_RESULT_OK;
+}
+
 wz_result_t wz_tape_validate(const wz_tape_segment_t* segments,
                              size_t segment_count)
 {

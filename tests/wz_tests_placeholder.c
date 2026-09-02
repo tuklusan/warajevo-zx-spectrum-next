@@ -486,6 +486,39 @@ static void test_standard_tap_writer(void)
     }
 }
 
+static void test_native_tap_parser(void)
+{
+    wz_byte_t native[32u] = {0xffu, 0xffu, 0xffu, 0xffu,
+                             0xffu, 0xffu, 0xffu, 0xffu,
+                             0xffu, 0xffu, 0xffu, 0xffu};
+    wz_native_tap_record_t record;
+    size_t count = 0u;
+
+    native[0u] = 12u;
+    native[12u] = 0u;
+    native[13u] = 0u;
+    native[14u] = 0u;
+    native[15u] = 0u;
+    native[20u] = 4u;
+    native[21u] = 0u;
+    native[22u] = 0xa5u;
+    native[23u] = 1u;
+    native[24u] = 0x01u;
+    native[25u] = 0x02u;
+    if (!wz_tape_is_native_tap(native, sizeof(native)) ||
+        wz_tape_parse_native_tap(native, sizeof(native), 0, 0u, &count) !=
+            WZ_RESULT_BUFFER_TOO_SMALL || count != 1u ||
+        wz_tape_parse_native_tap(native, sizeof(native), &record, 1u, &count) !=
+            WZ_RESULT_OK || record.offset != 12u || record.previous_offset != 0u ||
+        record.next_offset != UINT32_MAX || record.stored_length != 4u ||
+        record.flag != 0xa5u || record.record_type != 1u ||
+        record.payload_length != 2u || record.payload[0u] != 0x01u ||
+        record.payload[1u] != 0x02u) {
+        fputs("native TAP parser contract failed\n", stderr);
+        exit(1);
+    }
+}
+
 static void test_beeper_port_fe_timeline(void)
 {
     wz_machine_t machine;
@@ -937,6 +970,7 @@ int main(void)
     test_tape_speed_invariance();
     test_standard_tap_parser();
     test_standard_tap_writer();
+    test_native_tap_parser();
     test_beeper_port_fe_timeline();
     test_mic_capture_timeline();
     test_beeper_pcm_render();

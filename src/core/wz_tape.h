@@ -38,6 +38,17 @@ typedef struct {
     size_t length;
 } wz_tap_block_t;
 
+typedef struct {
+    size_t offset;
+    size_t previous_offset;
+    size_t next_offset;
+    wz_word_t stored_length;
+    wz_byte_t flag;
+    wz_byte_t record_type;
+    const wz_byte_t* payload;
+    size_t payload_length;
+} wz_native_tap_record_t;
+
 wz_result_t wz_tape_validate(const wz_tape_segment_t* segments,
                              size_t segment_count);
 wz_result_t wz_tape_mount(wz_tape_t* tape,
@@ -64,5 +75,11 @@ wz_result_t wz_tape_write_standard_tap(const wz_tap_block_t* blocks,
                                        wz_byte_t* output,
                                        size_t capacity,
                                        size_t* length);
+bool wz_tape_is_native_tap(const wz_byte_t* data, size_t length);
+wz_result_t wz_tape_parse_native_tap(const wz_byte_t* data,
+                                     size_t length,
+                                     wz_native_tap_record_t* records,
+                                     size_t capacity,
+                                     size_t* count);
 
 #endif

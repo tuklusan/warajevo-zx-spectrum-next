@@ -1489,7 +1489,7 @@
       "title": "Implement Warajevo-native TAP compatibility parsing",
       "status": "in_progress",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 23.12 and 41", "design/wzsn-architectures-1-2-developer-tasks.md task 151", "design/cr-preflight/CR-0164.md", "design/media-format-support.md", "reference/original-warajevo/source/src/environment/TAPES.PAS", "reference/original-warajevo/source/src/spectrum-kernel/TAPE.ASM"],
-      "notes": "Opened on 2026-09-02 as the next ordered Phase-7 scope. Preflight records the native three-word all-ones signature, linked record traversal, strict bounds and termination rules, and ordinary/compressed/sample distinctions; native writing, maintenance transforms, and decompression remain deferred."
+      "notes": "Opened on 2026-09-02 as the next ordered Phase-7 scope. Preflight records the native first-record pointer followed by two all-ones marker words, linked record traversal, strict bounds and termination rules, and ordinary/compressed/sample distinctions; native writing, maintenance transforms, and decompression remain deferred."
     }
   ]
 }
