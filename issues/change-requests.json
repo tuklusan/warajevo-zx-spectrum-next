@@ -1480,9 +1480,9 @@
     {
       "cr_number": "CR-0163",
       "title": "Implement standard Spectrum TAP writing",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 23.4 and 23.12", "design/wzsn-architectures-1-2-developer-tasks.md task 150", "design/cr-preflight/CR-0163.md", "design/media-format-support.md", "reference/original-warajevo/source"],
-      "notes": "Opened on 2026-09-02 as the next ordered Phase-7 scope. Preflight requires bounded standard TAP logical writing with exact lengths, preserved data, defined XOR checksum output, round-trip coverage, and no partial output publication; native TAP, TZX, WAV, and host export remain deferred."
+      "notes": "Closed on 2026-09-02 at 4af1d57 after implementing bounded standard TAP logical writing with exact lengths, preserved data, computed XOR checksums, sizing, round-trip coverage, and no partial output publication. CODE and DOCUMENTATION reviews passed with zero findings. Remote Linux CR0163-tap-write-linux-1 and Windows CR0163-tap-write-windows-1 passed. Hosted platform-smoke 33673040879 passed all 18 jobs. Native TAP, TZX, WAV, instant loading, trap detection, and host export remain explicitly deferred to later ordered tasks; closure evidence is recorded in design/cr-preflight/CR-0163.md."
     }
   ]
 }
