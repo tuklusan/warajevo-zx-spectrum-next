@@ -13,6 +13,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "core/wz_machine.h"
 #include "core/wz_keyboard_matrix.h"
 #include "app/wz_input_timing.h"
+#include "app/wz_input_focus.h"
 #include "core/wz_bus.h"
 #include "core/wz_scheduler.h"
 #include "core/wz_state.h"
@@ -109,6 +110,30 @@ static void test_input_timestamp_assignment(void)
     assigner.next_sequence = UINT64_MAX;
     if (wz_input_timestamp_assign(&assigner, &event, UINT64_MAX, &second)) {
         fputs("input timestamp sequence exhaustion failed\n", stderr);
+        exit(1);
+    }
+}
+
+static void test_input_focus_loss(void)
+{
+    wz_input_arbiter_t arbiter;
+    wz_input_focus_controller_t controller;
+
+    wz_input_arbiter_init(&arbiter);
+    wz_input_focus_init(&controller, &arbiter);
+    if (!wz_input_arbiter_set(&arbiter, WZ_INPUT_SOURCE_LOCAL, 2u, true) ||
+        !wz_input_arbiter_set(&arbiter, WZ_INPUT_SOURCE_TELNET, 2u, true) ||
+        !wz_input_focus_lost(&controller) || wz_input_focus_is_focused(&controller) ||
+        !wz_input_arbiter_key_down(&arbiter, 2u) ||
+        !wz_input_focus_lost(&controller) || wz_input_focus_is_focused(&controller) ||
+        !wz_input_focus_gained(&controller) || !wz_input_focus_is_focused(&controller) ||
+        wz_input_arbiter_key_down(&arbiter, 2u) != true) {
+        fputs("input focus-loss isolation failed\n", stderr);
+        exit(1);
+    }
+    if (!wz_input_arbiter_set(&arbiter, WZ_INPUT_SOURCE_LOCAL, 2u, true) ||
+        !wz_input_focus_lost(&controller) || !wz_input_arbiter_key_down(&arbiter, 2u)) {
+        fputs("input focus regain behavior failed\n", stderr);
         exit(1);
     }
 }
@@ -348,6 +373,7 @@ int main(void)
     test_raster_evidence();
     test_complete_keyboard_matrix();
     test_input_timestamp_assignment();
+    test_input_focus_loss();
     test_raster_diagnostic();
     test_raster_invalid_state();
     const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
