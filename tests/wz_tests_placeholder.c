@@ -693,7 +693,22 @@ static void test_tzx_timing(void)
     const wz_tzx_block_t csw_blocks[1u] = {
         {0u, 21u, 0x18u, WZ_TZX_SUPPORTED, csw_data, sizeof(csw_data)}
     };
+    wz_result_t csw_probe;
 
+    csw_probe = wz_tape_expand_tzx_timing(csw_blocks, 1u, 2u, 0, 0u, &count);
+    if (csw_probe != WZ_RESULT_BUFFER_TOO_SMALL || count != 3u) {
+        fprintf(stderr, "CSW probe failed: result=%d count=%zu\n", csw_probe, count);
+    }
+    csw_probe = wz_tape_expand_tzx_timing(csw_blocks, 1u, 2u, segments, 5u, &count);
+    if (csw_probe != WZ_RESULT_OK) {
+        fprintf(stderr, "CSW expansion failed: result=%d count=%zu\n", csw_probe, count);
+    } else {
+        fprintf(stderr, "CSW expansion: count=%zu durations=%llu,%llu,%llu levels=%u,%u,%u\n",
+                count, (unsigned long long)segments[0u].duration,
+                (unsigned long long)segments[1u].duration,
+                (unsigned long long)segments[2u].duration,
+                segments[0u].ear_level, segments[1u].ear_level, segments[2u].ear_level);
+    }
     if (wz_tape_expand_tzx_timing(&standard, 1u, 2u, 0, 0u, &count) !=
             WZ_RESULT_BUFFER_TOO_SMALL || count != 8097u ||
         wz_tape_expand_tzx_timing(&turbo, 1u, 2u, 0, 0u, &count) !=
