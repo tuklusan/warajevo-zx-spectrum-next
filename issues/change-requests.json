@@ -1494,9 +1494,9 @@
     {
       "cr_number": "CR-0165",
       "title": "Implement Warajevo-native TAP writing",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 23.12 and 41", "design/wzsn-architectures-1-2-developer-tasks.md task 152", "design/cr-preflight/CR-0165.md", "design/media-format-support.md", "reference/original-warajevo/source/src/environment/TAPES.PAS", "reference/original-warajevo/source/src/spectrum-kernel/TAPE.ASM"],
-      "notes": "Opened on 2026-09-02 as the next ordered Phase-7 scope. Preflight covers native header and linked-record serialization, ordinary and special metadata, terminal links, bounded sizing, no partial publication, and round-trip coverage without conflating native and standard TAP."
+      "notes": "Closed on 2026-09-02 at 86c0cc5 after implementing bounded native TAP serialization with recomputed linked offsets, native header markers, ordinary and special record headers, preserved sample metadata, sizing, capacity rejection without partial output, and round-trip coverage without conflating standard TAP. CODE review passed with zero findings (snapshot git:85e63f1ad2c299abfa482584855bf6af007d65ad..86c0cc5351f054c26a628ba0b99e252b7a970524:sha256:fb950d0d88b0e96c022134caf6b0ba2d5761450a30dd6c9a24a10161b7af5b65). Final DOCUMENTATION review passed with zero findings (packet e7997d4860f3ccaca82b9dd5d71a64862951ed282e72de90e06ec4c6cfc08698). Remote Linux CR0165-native-tap-write-linux-3 and Windows 10 CR0165-native-tap-write-windows-1 passed build and all 5 CTest targets. Hosted platform-smoke 33679624501 completed with all 18 jobs green. Earlier Linux failures were retained as failed evidence: linux-1 found the helper-name compile defect and linux-2 found the capacity-test fixture defect; commits 4d87b81 and 86c0cc5 corrected them. Final upstream zero-gap scan found no undispositioned gap; closure evidence is recorded in design/cr-preflight/CR-0165.md."
     }
   ]
 }
