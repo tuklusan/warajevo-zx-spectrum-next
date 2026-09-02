@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 157,
+  "next_cr_number": 158,
   "status_values": [
     "open",
     "in_progress",
@@ -1434,6 +1434,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md section 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 143", "design/cr-preflight/CR-0156.md", "reference/original-warajevo/source"],
       "notes": "Closed on 2026-09-02 after reconciling CR-0143 through CR-0155 against Architecture Section 49.1 and completing the Phase-6 audio zero-gap scan. CODE and DOCUMENTATION reviews passed with no confirmed findings. Linux CR0156-phase6-linux-1 and Windows 10 CR0156-phase6-windows-1 passed the complete five-test smoke suite; hosted platform-smoke 33660923633 passed all 17 configured runner lanes. Deterministic core audio, host mute/pacing boundaries, Sokol push delivery, cross-compiler evidence, and upstream comparison are complete with no undispositioned gap."
+    },
+    {
+      "cr_number": "CR-0157",
+      "title": "Freeze the tape format support matrix",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 23.12, 23.13, and 49.2", "design/wzsn-architectures-1-2-developer-tasks.md task 144", "design/cr-preflight/CR-0157.md", "design/media-format-support.md", "reference/original-warajevo/source"],
+      "notes": "Opened on 2026-09-02 as the first Phase-7 scope. Preflight requires a complete TZX block classification and explicit TAP, Warajevo-native TAP, and WAV semantics before parser implementation."
     }
   ]
 }
