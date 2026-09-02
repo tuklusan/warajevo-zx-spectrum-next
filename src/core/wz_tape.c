@@ -385,9 +385,9 @@ wz_result_t wz_tape_write_native_tap(const wz_native_tap_record_t* records,
     if (output == 0 || capacity < required) {
         return WZ_RESULT_BUFFER_TOO_SMALL;
     }
-    wz_write_le32(&output[0u], 12u);
-    wz_write_le32(&output[4u], UINT32_MAX);
-    wz_write_le32(&output[8u], UINT32_MAX);
+    wz_tape_write_le32(&output[0u], 12u);
+    wz_tape_write_le32(&output[4u], UINT32_MAX);
+    wz_tape_write_le32(&output[8u], UINT32_MAX);
     size_t previous = 0u;
     offset = 12u;
     for (size_t index = 0u; index < record_count; ++index) {
@@ -395,8 +395,8 @@ wz_result_t wz_tape_write_native_tap(const wz_native_tap_record_t* records,
         size_t header_size = record->record_type < 4u ? 12u : 17u;
         size_t next = index + 1u < record_count ?
             offset + header_size + record->payload_length : (size_t)UINT32_MAX;
-        wz_write_le32(&output[offset], (wz_dword_t)previous);
-        wz_write_le32(&output[offset + 4u], (wz_dword_t)next);
+        wz_tape_write_le32(&output[offset], (wz_dword_t)previous);
+        wz_tape_write_le32(&output[offset + 4u], (wz_dword_t)next);
         wz_write_le16(&output[offset + 8u], record->stored_length);
         output[offset + 10u] = record->flag;
         if (header_size == 12u) {
