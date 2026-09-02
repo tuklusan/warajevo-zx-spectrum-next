@@ -636,6 +636,8 @@ static void test_tzx_parser(void)
 
 static void test_tzx_timing(void)
 {
+    const wz_byte_t standard_data[6u] = {0x00u, 0x00u, 0x02u, 0x00u,
+                                         0x00u, 0xffu};
     const wz_byte_t tone_data[4u] = {0xe8u, 0x03u, 0x02u, 0x00u};
     const wz_byte_t sequence_data[5u] = {2u, 0x01u, 0x00u, 0x02u, 0x00u};
     const wz_byte_t pause_data[2u] = {0x0au, 0x00u};
@@ -646,8 +648,12 @@ static void test_tzx_timing(void)
     };
     wz_tape_segment_t segments[5u];
     size_t count = 0u;
+    const wz_tzx_block_t standard =
+        {0u, 11u, 0x10u, WZ_TZX_SUPPORTED, standard_data, sizeof(standard_data)};
 
-    if (wz_tape_expand_tzx_timing(blocks, 3u, 2u, 0, 0u, &count) !=
+    if (wz_tape_expand_tzx_timing(&standard, 1u, 2u, 0, 0u, &count) !=
+            WZ_RESULT_BUFFER_TOO_SMALL || count != 8097u ||
+        wz_tape_expand_tzx_timing(blocks, 3u, 2u, 0, 0u, &count) !=
             WZ_RESULT_BUFFER_TOO_SMALL || count != 5u ||
         wz_tape_expand_tzx_timing(blocks, 3u, 2u, segments, 5u, &count) !=
             WZ_RESULT_OK || segments[0u].duration != 2000u ||
