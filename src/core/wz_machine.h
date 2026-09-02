@@ -19,6 +19,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #define WZ_48K_ROM_SIZE 16384u
 #define WZ_48K_RAM_SIZE 49152u
+#define WZ_BORDER_EVENT_CAPACITY 1024u
 
 typedef struct {
     wz_qword_t frame_number;
@@ -39,6 +40,11 @@ typedef struct {
     wz_byte_t value;
 } wz_ula_fetch_event_t;
 
+typedef struct {
+    wz_master_tick_t master_tick;
+    wz_byte_t color;
+} wz_border_event_t;
+
 typedef struct wz_machine {
     const wz_machine_profile_t* profile;
     wz_z80_state_t cpu;
@@ -54,6 +60,9 @@ typedef struct wz_machine {
     wz_qword_t rom_identity;
     wz_master_tick_t master_tick;
     wz_master_tick_t ula_output_tick;
+    wz_byte_t border_color;
+    wz_border_event_t border_events[WZ_BORDER_EVENT_CAPACITY];
+    size_t border_event_count;
     wz_byte_t maskable_interrupt_line_low;
     wz_byte_t im0_injected_opcode;
     wz_byte_t im0_injected_opcode_pending;
@@ -88,6 +97,9 @@ wz_byte_t wz_machine_ula_port_fe_read(const wz_machine_t* machine,
                                        wz_word_t address);
 void wz_machine_ula_port_fe_write(wz_machine_t* machine, wz_word_t address,
                                   wz_byte_t value, wz_master_tick_t master_tick);
+wz_byte_t wz_machine_border_color(const wz_machine_t* machine);
+size_t wz_machine_border_events(const wz_machine_t* machine,
+                                wz_border_event_t* events, size_t capacity);
 void wz_machine_update_interrupt_line(wz_machine_t* machine);
 bool wz_machine_maskable_interrupt_line_low(const wz_machine_t* machine);
 wz_result_t wz_machine_raster_position(const wz_machine_t* machine,

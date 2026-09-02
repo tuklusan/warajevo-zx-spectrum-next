@@ -34,6 +34,8 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     machine->rom_identity = 0u;
     machine->master_tick = 0u;
     machine->ula_output_tick = 0u;
+    machine->border_color = 0u;
+    machine->border_event_count = 0u;
     machine->im0_injected_opcode = 0u;
     machine->im0_injected_opcode_pending = 0u;
     for (size_t index = 0u; index < sizeof(machine->memory); ++index) {
@@ -60,6 +62,8 @@ void wz_machine_destroy(wz_machine_t* machine)
         machine->rom_identity = 0u;
         machine->master_tick = 0u;
         machine->ula_output_tick = 0u;
+        machine->border_color = 0u;
+        machine->border_event_count = 0u;
         machine->im0_injected_opcode = 0u;
         machine->im0_injected_opcode_pending = 0u;
     }
@@ -246,6 +250,12 @@ void wz_machine_ula_port_fe_write(wz_machine_t* machine, wz_word_t address,
     }
     machine->ula_output = (wz_byte_t)(value & 0x1fu);
     machine->ula_output_tick = master_tick;
+    machine->border_color = (wz_byte_t)(value & 0x07u);
+    if (machine->border_event_count < WZ_BORDER_EVENT_CAPACITY) {
+        machine->border_events[machine->border_event_count].master_tick = master_tick;
+        machine->border_events[machine->border_event_count].color = machine->border_color;
+        machine->border_event_count += 1u;
+    }
     if (machine->timing_trace != 0) {
         wz_trace_event_t event = {0};
         event.kind = WZ_TRACE_DEVELOPER_MARKER;
@@ -255,6 +265,29 @@ void wz_machine_ula_port_fe_write(wz_machine_t* machine, wz_word_t address,
         event.auxiliary = 0x01u;
         wz_trace_emit_detail(machine->timing_trace, &event);
     }
+}
+
+wz_byte_t wz_machine_border_color(const wz_machine_t* machine)
+{
+    return machine == 0 ? 0u : machine->border_color;
+}
+
+size_t wz_machine_border_events(const wz_machine_t* machine,
+                                wz_border_event_t* events, size_t capacity)
+{
+    size_t count;
+
+    if (machine == 0 || (events == 0 && capacity != 0u)) {
+        return 0u;
+    }
+    count = machine->border_event_count < capacity ?
+        machine->border_event_count : capacity;
+    if (events != 0) {
+        for (size_t index = 0u; index < count; ++index) {
+            events[index] = machine->border_events[index];
+        }
+    }
+    return count;
 }
 
 void wz_machine_update_interrupt_line(wz_machine_t* machine)
