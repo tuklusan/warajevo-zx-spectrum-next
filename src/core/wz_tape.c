@@ -768,6 +768,7 @@ static wz_result_t wz_tzx_expand_csw(const wz_tzx_block_t* block,
         if (block->data[offset] != 0u) {
             samples = block->data[offset++];
         } else {
+            ++offset;
             samples = (uint64_t)block->data[offset] |
                 ((uint64_t)block->data[offset + 1u] << 8u) |
                 ((uint64_t)block->data[offset + 2u] << 16u) |
