@@ -743,7 +743,7 @@ static wz_result_t wz_tzx_count_csw(const wz_tzx_block_t* block,
     }
     (void)offset;
     if (pulses == SIZE_MAX) return WZ_RESULT_PARSE_ERROR;
-    *amount = pulses + (wz_read_le16(block->data) == 0u ? 0u : 1u);
+    *amount = pulses + (wz_read_le16(block->data + 4u) == 0u ? 0u : 1u);
     return WZ_RESULT_OK;
 }
 
@@ -783,9 +783,9 @@ static wz_result_t wz_tzx_expand_csw(const wz_tzx_block_t* block,
         }
         *level ^= 1u;
     }
-    if (wz_read_le16(block->data) != 0u) {
+    if (wz_read_le16(block->data + 4u) != 0u) {
         if (wz_tzx_append_segment(segments, capacity, index,
-                (wz_dword_t)wz_read_le16(block->data) * 3500u,
+                (wz_dword_t)wz_read_le16(block->data + 4u) * 3500u,
                 ticks_per_tstate, 0u) != WZ_RESULT_OK) return WZ_RESULT_PARSE_ERROR;
         *level = 0u;
     }
