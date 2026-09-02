@@ -526,7 +526,8 @@ int main(void)
     if (wz_machine_set_kempston_control(&machine, WZ_KEMPSTON_RIGHT, true) != WZ_RESULT_OK ||
         wz_machine_set_kempston_control(&machine, WZ_KEMPSTON_FIRE, true) != WZ_RESULT_OK ||
         wz_machine_kempston_read(&machine, 0x1fu) != 0x14u ||
-        wz_machine_kempston_read(&machine, 0x1eu) != 0u) {
+        wz_machine_kempston_read(&machine, 0x1eu) != 0u ||
+        wz_machine_kempston_read(&machine, 0x201fu) != 0x14u) {
         fputs("machine Kempston integration failed\n", stderr);
         return 1;
     }
@@ -543,9 +544,18 @@ int main(void)
         wz_bus_request_init(&kempston_request, WZ_BUS_IO_READ, 0u, 0x201fu,
                             0u, 4u);
         if (wz_machine_bus_request(&machine, &kempston_request) != WZ_RESULT_OK ||
-            kempston_request.value != 0xffu ||
-            kempston_request.source != WZ_BUS_SOURCE_FALLBACK) {
-            fputs("machine Kempston full-address decode failed\n", stderr);
+            kempston_request.value != 0x14u ||
+            kempston_request.source != WZ_BUS_SOURCE_INPUT) {
+            fputs("machine Kempston alias decode failed\n", stderr);
+            return 1;
+        }
+        machine.cpu.program_counter = 0u;
+        machine.memory[0u] = 0xdbu;
+        machine.memory[1u] = WZ_KEMPSTON_PORT;
+        machine.cpu.main.a = 0u;
+        if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+            machine.cpu.main.a != 0x14u) {
+            fputs("machine-code Kempston port read failed\n", stderr);
             return 1;
         }
     }
@@ -1121,12 +1131,12 @@ int main(void)
             bus_request.direction != WZ_BUS_DIRECTION_READ ||
             bus_request.source != (address % 2u == 0u
                                        ? WZ_BUS_SOURCE_ULA
-                                       : address == WZ_KEMPSTON_PORT
+                                       : (address & 0xffu) == WZ_KEMPSTON_PORT
                                            ? WZ_BUS_SOURCE_INPUT
                                            : WZ_BUS_SOURCE_FALLBACK) ||
-            (address % 2u != 0u && address != WZ_KEMPSTON_PORT &&
+            (address % 2u != 0u && (address & 0xffu) != WZ_KEMPSTON_PORT &&
              bus_request.value != 0xffu) ||
-            (address == WZ_KEMPSTON_PORT &&
+            ((address & 0xffu) == WZ_KEMPSTON_PORT &&
              bus_request.value != wz_machine_kempston_read(&machine, address))) {
             fputs("full-range unsupported I/O read failed\n", stderr);
             return 1;

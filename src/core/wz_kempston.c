@@ -35,7 +35,7 @@ bool wz_kempston_set(wz_kempston_t* joystick,
 
 bool wz_kempston_port_selected(wz_word_t port)
 {
-    return port == WZ_KEMPSTON_PORT;
+    return (port & 0xffu) == WZ_KEMPSTON_PORT;
 }
 
 wz_byte_t wz_kempston_read(const wz_kempston_t* joystick, wz_word_t port)
