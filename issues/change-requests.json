@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 165,
+  "next_cr_number": 166,
   "status_values": [
     "open",
     "in_progress",
@@ -1490,6 +1490,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 23.12 and 41", "design/wzsn-architectures-1-2-developer-tasks.md task 151", "design/cr-preflight/CR-0164.md", "design/media-format-support.md", "reference/original-warajevo/source/src/environment/TAPES.PAS", "reference/original-warajevo/source/src/spectrum-kernel/TAPE.ASM"],
       "notes": "Closed on 2026-09-02 at 5e3a233 after implementing signature-detected native TAP parsing with strict linked-record bounds, predecessor/successor validation, terminal-link handling, ordinary and special record metadata, payload views, two-pass sizing, and no partial output publication. CODE and DOCUMENTATION reviews passed with zero findings. Remote Linux CR0164-native-tap-linux-5 and Windows CR0164-native-tap-windows-1 passed all 5 CTest targets. Hosted platform-smoke 33677540355 completed with all 18 jobs green. Earlier remote failures were retained as failed evidence and corrected through 5d8ff82, 5a42dc0, 7cd904d, and 5e3a233. Native writing, maintenance transforms, decompression, TZX/WAV, instant loading, trap detection, and host export remain assigned to later ordered tasks; closure evidence is recorded in design/cr-preflight/CR-0164.md."
+    },
+    {
+      "cr_number": "CR-0165",
+      "title": "Implement Warajevo-native TAP writing",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 23.12 and 41", "design/wzsn-architectures-1-2-developer-tasks.md task 152", "design/cr-preflight/CR-0165.md", "design/media-format-support.md", "reference/original-warajevo/source/src/environment/TAPES.PAS", "reference/original-warajevo/source/src/spectrum-kernel/TAPE.ASM"],
+      "notes": "Opened on 2026-09-02 as the next ordered Phase-7 scope. Preflight covers native header and linked-record serialization, ordinary and special metadata, terminal links, bounded sizing, no partial publication, and round-trip coverage without conflating native and standard TAP."
     }
   ]
 }
