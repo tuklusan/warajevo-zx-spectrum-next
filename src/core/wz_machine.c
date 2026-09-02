@@ -431,6 +431,27 @@ wz_result_t wz_machine_ula_fetches_at_tick(const wz_machine_t* machine,
     return WZ_RESULT_OK;
 }
 
+wz_byte_t wz_machine_floating_bus_value(const wz_machine_t* machine,
+                                        wz_master_tick_t master_tick)
+{
+    wz_ula_fetch_event_t events[2u];
+    size_t count = 0u;
+
+    if (wz_machine_ula_fetches_at_tick(machine, master_tick, events,
+                                       sizeof(events) / sizeof(events[0u]),
+                                       &count) == WZ_RESULT_OK && count != 0u) {
+        return events[0u].value;
+    }
+    if (master_tick < 2u ||
+        wz_machine_ula_fetches_at_tick(machine, master_tick - 2u, events,
+                                       sizeof(events) / sizeof(events[0u]),
+                                       &count) != WZ_RESULT_OK || count == 0u ||
+        events[1u].master_tick != master_tick) {
+        return 0xffu;
+    }
+    return events[1u].value;
+}
+
 const char* wz_machine_boot_message(void)
 {
     return "Warajevo ZX Spectrum Next bootstrap";

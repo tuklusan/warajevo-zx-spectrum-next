@@ -411,6 +411,14 @@ int main(void)
             fputs("same-edge CPU-before-ULA visibility contract failed\n", stderr);
             return 1;
         }
+        if (wz_machine_floating_bus_value(&machine, first_fetch_tick) != 0x22u ||
+            wz_machine_floating_bus_value(&machine, first_fetch_tick + 2u) != 0x44u ||
+            wz_machine_floating_bus_value(&machine, first_fetch_tick - 2u) != 0xffu ||
+            wz_machine_floating_bus_value(&machine,
+                                          (14335u + 32u * 4u) * 2u) != 0xffu) {
+            fputs("timed floating-bus contract failed\n", stderr);
+            return 1;
+        }
         wz_machine_memory_write_at_tick(&machine, 0x5800u, 0x55u,
                                         first_fetch_tick + 2u);
         if (fetches[1].value != 0x44u) {
