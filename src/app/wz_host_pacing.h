@@ -21,6 +21,8 @@ typedef struct {
     wz_qword_t anchor_host_nanoseconds;
     wz_qword_t master_ticks_per_second;
     wz_speed_policy_t speed;
+    wz_speed_policy_t pending_speed;
+    bool speed_change_pending;
     bool anchored;
 } wz_host_pacing_t;
 

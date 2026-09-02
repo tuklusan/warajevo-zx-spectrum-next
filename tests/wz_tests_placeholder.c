@@ -248,6 +248,9 @@ static void test_host_pacing(void)
         !wz_host_pacing_set_speed(&pacing, WZ_SPEED_200) ||
         !wz_host_pacing_wait(&pacing, 1000000000u, 1000u,
                              record_pacing_sleep, &sleep_ns, &requested) ||
+        requested != 0u ||
+        !wz_host_pacing_wait(&pacing, 1000000000u, 2000u,
+                             record_pacing_sleep, &sleep_ns, &requested) ||
         requested != 500000000u || sleep_ns != requested ||
         !wz_host_pacing_wait(&pacing, 1000000000u, 0u,
                              record_pacing_sleep, &sleep_ns, &requested) ||

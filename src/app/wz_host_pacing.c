@@ -83,6 +83,8 @@ bool wz_host_pacing_init(wz_host_pacing_t* pacing,
     pacing->anchor_host_nanoseconds = host_nanoseconds;
     pacing->master_ticks_per_second = master_ticks_per_second;
     pacing->speed = speed;
+    pacing->pending_speed = speed;
+    pacing->speed_change_pending = false;
     pacing->anchored = true;
     return true;
 }
@@ -93,7 +95,8 @@ bool wz_host_pacing_set_speed(wz_host_pacing_t* pacing,
     if (pacing == 0 || !wz_speed_policy_valid(speed)) {
         return false;
     }
-    pacing->speed = speed;
+    pacing->pending_speed = speed;
+    pacing->speed_change_pending = true;
     return true;
 }
 
@@ -114,6 +117,13 @@ bool wz_host_pacing_wait(wz_host_pacing_t* pacing,
         return false;
     }
     *requested_sleep_nanoseconds = 0u;
+    if (pacing->speed_change_pending) {
+        pacing->speed = pacing->pending_speed;
+        pacing->anchor_machine_tick = machine_tick;
+        pacing->anchor_host_nanoseconds = host_nanoseconds;
+        pacing->speed_change_pending = false;
+        return true;
+    }
     if (wz_speed_policy_is_unlimited(pacing->speed)) {
         return true;
     }

@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 138,
+  "next_cr_number": 139,
   "status_values": [
     "open",
     "in_progress",
@@ -1301,6 +1301,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 10.7-10.9 and 32", "design/wzsn-architectures-1-2-developer-tasks.md task 123", "design/cr-preflight/CR-0137.md", "reference/original-warajevo/source"],
       "notes": "Closed on 2026-09-02 after adding injectable monotonic host pacing with bounded overflow-safe deadline math, deterministic clock regression handling, speed-policy interaction, and core isolation. CODE and DOCUMENTATION reviews passed for 2af6ad9; Linux remote smoke CR0137-pacing-linux-5 and Windows 10 remote smoke CR0137-pacing-windows-6 passed; hosted platform-smoke 33641227825 and repository-gates 33641227795 passed across five platforms; final upstream timing/run-loop zero-gap scan found no undispositioned behavior."
+    },
+    {
+      "cr_number": "CR-0138",
+      "title": "Implement discontinuity-free runtime speed changes",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 10.8-10.9", "design/wzsn-architectures-1-2-developer-tasks.md task 124", "design/cr-preflight/CR-0138.md", "reference/original-warajevo/source"],
+      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-5 scope. Preflight requires speed changes to affect future host pacing without resetting or discontinuing canonical master time."
     }
   ]
 }
