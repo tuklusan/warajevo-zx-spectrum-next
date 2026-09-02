@@ -416,6 +416,230 @@ wz_result_t wz_tape_write_native_tap(const wz_native_tap_record_t* records,
     return WZ_RESULT_OK;
 }
 
+static wz_dword_t wz_tzx_read_le24(const wz_byte_t* bytes)
+{
+    return (wz_dword_t)bytes[0] | ((wz_dword_t)bytes[1] << 8u) |
+        ((wz_dword_t)bytes[2] << 16u);
+}
+
+static wz_result_t wz_tzx_block_size(const wz_byte_t* data,
+                                     size_t remaining,
+                                     size_t* block_length,
+                                     wz_tzx_disposition_t* disposition)
+{
+    wz_byte_t id;
+    size_t fixed_length = 0u;
+    size_t variable_length = 0u;
+
+    if (data == 0 || block_length == 0 || disposition == 0 || remaining < 1u) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    id = data[0u];
+    *disposition = WZ_TZX_UNSUPPORTED;
+    switch (id) {
+    case 0x10u:
+        fixed_length = 5u;
+        *disposition = WZ_TZX_SUPPORTED;
+        if (remaining >= fixed_length) {
+            variable_length = wz_read_le16(&data[3u]);
+        }
+        break;
+    case 0x11u:
+        fixed_length = 19u;
+        *disposition = WZ_TZX_SUPPORTED;
+        if (remaining >= fixed_length) {
+            variable_length = (size_t)wz_tzx_read_le24(&data[16u]);
+        }
+        break;
+    case 0x12u:
+        fixed_length = 5u;
+        *disposition = WZ_TZX_SUPPORTED;
+        break;
+    case 0x13u:
+        *disposition = WZ_TZX_SUPPORTED;
+        if (remaining < 2u) return WZ_RESULT_PARSE_ERROR;
+        fixed_length = 2u;
+        if ((size_t)data[1u] > (SIZE_MAX - fixed_length) / 2u) return WZ_RESULT_PARSE_ERROR;
+        variable_length = (size_t)data[1u] * 2u;
+        break;
+    case 0x14u:
+        fixed_length = 11u;
+        *disposition = WZ_TZX_SUPPORTED;
+        if (remaining >= fixed_length) variable_length = (size_t)wz_tzx_read_le24(&data[8u]);
+        break;
+    case 0x15u:
+        fixed_length = 7u;
+        *disposition = WZ_TZX_SUPPORTED;
+        if (remaining >= fixed_length) variable_length = (size_t)wz_tzx_read_le24(&data[4u]);
+        break;
+    case 0x18u:
+    case 0x19u:
+        fixed_length = 5u;
+        *disposition = WZ_TZX_SUPPORTED;
+        if (remaining >= fixed_length) variable_length = (size_t)data[1u] |
+            ((size_t)data[2u] << 8u) | ((size_t)data[3u] << 16u) |
+            ((size_t)data[4u] << 24u);
+        break;
+    case 0x20u:
+        fixed_length = 3u;
+        *disposition = WZ_TZX_SUPPORTED;
+        break;
+    case 0x21u:
+        fixed_length = 2u;
+        *disposition = WZ_TZX_IGNORED;
+        if (remaining >= fixed_length) variable_length = data[1u];
+        break;
+    case 0x22u:
+        fixed_length = 1u;
+        *disposition = WZ_TZX_IGNORED;
+        break;
+    case 0x23u:
+        fixed_length = 3u;
+        *disposition = WZ_TZX_SUPPORTED;
+        break;
+    case 0x24u:
+        fixed_length = 3u;
+        *disposition = WZ_TZX_SUPPORTED;
+        break;
+    case 0x25u:
+    case 0x27u:
+        fixed_length = 1u;
+        *disposition = WZ_TZX_SUPPORTED;
+        break;
+    case 0x26u:
+        *disposition = WZ_TZX_SUPPORTED;
+        if (remaining < 3u) return WZ_RESULT_PARSE_ERROR;
+        fixed_length = 3u;
+        if ((size_t)wz_read_le16(&data[1u]) > (SIZE_MAX - fixed_length) / 2u) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        variable_length = (size_t)wz_read_le16(&data[1u]) * 2u;
+        break;
+    case 0x28u:
+        fixed_length = 3u;
+        *disposition = WZ_TZX_SUPPORTED;
+        if (remaining >= fixed_length) variable_length = wz_read_le16(&data[1u]);
+        break;
+    case 0x2au:
+    case 0x2bu:
+        fixed_length = 5u;
+        *disposition = WZ_TZX_SUPPORTED;
+        if (remaining >= fixed_length) variable_length = (size_t)data[1u] |
+            ((size_t)data[2u] << 8u) | ((size_t)data[3u] << 16u) |
+            ((size_t)data[4u] << 24u);
+        break;
+    case 0x30u:
+        fixed_length = 2u;
+        *disposition = WZ_TZX_IGNORED;
+        if (remaining >= fixed_length) variable_length = data[1u];
+        break;
+    case 0x31u:
+        fixed_length = 3u;
+        *disposition = WZ_TZX_IGNORED;
+        if (remaining >= fixed_length) variable_length = data[2u];
+        break;
+    case 0x32u:
+        fixed_length = 3u;
+        *disposition = WZ_TZX_IGNORED;
+        if (remaining >= fixed_length) variable_length = wz_read_le16(&data[1u]);
+        break;
+    case 0x33u:
+        *disposition = WZ_TZX_IGNORED;
+        if (remaining < 2u || (size_t)data[1u] > (SIZE_MAX - 2u) / 3u) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        fixed_length = 2u;
+        variable_length = (size_t)data[1u] * 3u;
+        break;
+    case 0x35u:
+        fixed_length = 21u;
+        *disposition = WZ_TZX_IGNORED;
+        if (remaining >= fixed_length) variable_length = (size_t)data[17u] |
+            ((size_t)data[18u] << 8u) | ((size_t)data[19u] << 16u) |
+            ((size_t)data[20u] << 24u);
+        break;
+    case 0x40u:
+        fixed_length = 3u;
+        *disposition = WZ_TZX_IGNORED;
+        if (remaining >= fixed_length) variable_length = wz_read_le16(&data[1u]);
+        break;
+    case 0x5au:
+        fixed_length = 10u;
+        *disposition = WZ_TZX_IGNORED;
+        break;
+    default:
+        return WZ_RESULT_UNSUPPORTED_OPERATION;
+    }
+    if (fixed_length > remaining || variable_length > remaining - fixed_length) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    *block_length = fixed_length + variable_length;
+    return WZ_RESULT_OK;
+}
+
+static bool wz_tzx_target_is_valid(int32_t current,
+                                   int16_t relative,
+                                   size_t block_count)
+{
+    int32_t target = current + (int32_t)relative;
+    return target >= 0 && (size_t)target < block_count;
+}
+
+wz_result_t wz_tape_parse_tzx(const wz_byte_t* data,
+                              size_t length,
+                              wz_tzx_block_t* blocks,
+                              size_t capacity,
+                              size_t* count)
+{
+    size_t offset = 10u;
+    size_t found = 0u;
+    size_t index;
+    int loop_depth = 0;
+
+    if (data == 0 || count == 0 || length < 10u ||
+        memcmp(data, "ZXTape!\x1a", 8u) != 0 || data[8u] != 1u) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    while (offset < length) {
+        size_t block_length;
+        wz_tzx_disposition_t disposition;
+        wz_result_t result = wz_tzx_block_size(&data[offset], length - offset,
+                                                &block_length, &disposition);
+        if (result != WZ_RESULT_OK) return result;
+        if (found == SIZE_MAX) return WZ_RESULT_PARSE_ERROR;
+        ++found;
+        offset += block_length;
+    }
+    if (offset != length) return WZ_RESULT_PARSE_ERROR;
+    *count = found;
+    if (blocks == 0 || capacity < found) return WZ_RESULT_BUFFER_TOO_SMALL;
+
+    offset = 10u;
+    for (index = 0u; index < found; ++index) {
+        size_t block_length;
+        wz_tzx_disposition_t disposition;
+        if (wz_tzx_block_size(&data[offset], length - offset, &block_length,
+                              &disposition) != WZ_RESULT_OK) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        blocks[index].offset = offset;
+        blocks[index].block_length = block_length;
+        blocks[index].block_id = data[offset];
+        blocks[index].disposition = disposition;
+        blocks[index].data = &data[offset + 1u];
+        blocks[index].data_length = block_length - 1u;
+        if (data[offset] == 0x23u && !wz_tzx_target_is_valid((int32_t)index,
+                (int16_t)wz_read_le16(&data[offset + 1u]), found)) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        if (data[offset] == 0x24u) ++loop_depth;
+        if (data[offset] == 0x25u && loop_depth-- == 0) return WZ_RESULT_PARSE_ERROR;
+        offset += block_length;
+    }
+    if (loop_depth != 0) return WZ_RESULT_PARSE_ERROR;
+    return WZ_RESULT_OK;
+}
+
 wz_result_t wz_tape_parse_native_tap(const wz_byte_t* data,
                                      size_t length,
                                      wz_native_tap_record_t* records,

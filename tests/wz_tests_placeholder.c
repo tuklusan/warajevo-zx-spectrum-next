@@ -582,6 +582,50 @@ static void test_native_tap_writer(void)
     }
 }
 
+static void test_tzx_parser(void)
+{
+    const wz_byte_t valid[21u] = {
+        'Z', 'X', 'T', 'a', 'p', 'e', '!', 0x1au, 1u, 20u,
+        0x10u, 0x00u, 0x00u, 0x02u, 0x00u, 0x00u, 0xffu,
+        0x21u, 0x02u, 'O', 'K'
+    };
+    const wz_byte_t truncated[15u] = {
+        'Z', 'X', 'T', 'a', 'p', 'e', '!', 0x1au, 1u, 20u,
+        0x10u, 0x00u, 0x00u, 0x02u, 0x00u
+    };
+    const wz_byte_t unsupported[11u] = {
+        'Z', 'X', 'T', 'a', 'p', 'e', '!', 0x1au, 1u, 20u, 0x16u
+    };
+    const wz_byte_t bad_jump[13u] = {
+        'Z', 'X', 'T', 'a', 'p', 'e', '!', 0x1au, 1u, 20u,
+        0x23u, 0xffu, 0x7fu
+    };
+    wz_tzx_block_t blocks[2u];
+    size_t count = 0u;
+    wz_byte_t sentinel[2u] = {0x5au, 0x5au};
+
+    if (wz_tape_parse_tzx(valid, sizeof(valid), 0, 0u, &count) !=
+            WZ_RESULT_BUFFER_TOO_SMALL || count != 2u ||
+        wz_tape_parse_tzx(valid, sizeof(valid), blocks, 2u, &count) !=
+            WZ_RESULT_OK || count != 2u || blocks[0u].block_id != 0x10u ||
+        blocks[0u].disposition != WZ_TZX_SUPPORTED ||
+        blocks[0u].block_length != 7u || blocks[1u].block_id != 0x21u ||
+        blocks[1u].disposition != WZ_TZX_IGNORED ||
+        blocks[1u].block_length != 4u ||
+        wz_tape_parse_tzx(valid, sizeof(valid), sentinel, 1u, &count) !=
+            WZ_RESULT_BUFFER_TOO_SMALL || sentinel[0u] != 0x5au ||
+        sentinel[1u] != 0x5au ||
+        wz_tape_parse_tzx(truncated, sizeof(truncated), blocks, 2u, &count) !=
+            WZ_RESULT_PARSE_ERROR ||
+        wz_tape_parse_tzx(unsupported, sizeof(unsupported), blocks, 2u, &count) !=
+            WZ_RESULT_UNSUPPORTED_OPERATION ||
+        wz_tape_parse_tzx(bad_jump, sizeof(bad_jump), blocks, 2u, &count) !=
+            WZ_RESULT_PARSE_ERROR) {
+        fputs("TZX parser contract failed\n", stderr);
+        exit(1);
+    }
+}
+
 static void test_beeper_port_fe_timeline(void)
 {
     wz_machine_t machine;
@@ -1035,6 +1079,7 @@ int main(void)
     test_standard_tap_writer();
     test_native_tap_parser();
     test_native_tap_writer();
+    test_tzx_parser();
     test_beeper_port_fe_timeline();
     test_mic_capture_timeline();
     test_beeper_pcm_render();

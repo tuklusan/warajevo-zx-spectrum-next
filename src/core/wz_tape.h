@@ -52,6 +52,21 @@ typedef struct {
     size_t payload_length;
 } wz_native_tap_record_t;
 
+typedef enum {
+    WZ_TZX_SUPPORTED = 0,
+    WZ_TZX_IGNORED,
+    WZ_TZX_UNSUPPORTED
+} wz_tzx_disposition_t;
+
+typedef struct {
+    size_t offset;
+    size_t block_length;
+    wz_byte_t block_id;
+    wz_tzx_disposition_t disposition;
+    const wz_byte_t* data;
+    size_t data_length;
+} wz_tzx_block_t;
+
 wz_result_t wz_tape_validate(const wz_tape_segment_t* segments,
                              size_t segment_count);
 wz_result_t wz_tape_mount(wz_tape_t* tape,
@@ -89,5 +104,10 @@ wz_result_t wz_tape_write_native_tap(const wz_native_tap_record_t* records,
                                      wz_byte_t* output,
                                      size_t capacity,
                                      size_t* length);
+wz_result_t wz_tape_parse_tzx(const wz_byte_t* data,
+                              size_t length,
+                              wz_tzx_block_t* blocks,
+                              size_t capacity,
+                              size_t* count);
 
 #endif
