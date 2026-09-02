@@ -1821,11 +1821,44 @@ def active_review_is_stale(record: dict[str, Any], path: Path, now: float) -> bo
     return age > STALE_LOCK_SECONDS or (pid > 0 and not process_is_active(pid))
 
 
+def clear_terminal_review_locks(root: Path, now: float) -> None:
+    """Remove completed or abandoned locks before starting a sequential review."""
+    directory = root / "test-artefacts" / "reviewer"
+    if not directory.exists():
+        return
+    for path in directory.glob("active-review-*.json"):
+        try:
+            record = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            record = {}
+        if record.get("status") != "RUNNING" or active_review_is_stale(record, path, now):
+            try:
+                path.unlink()
+            except OSError:
+                continue
+
+
+def require_no_parallel_review(root: Path, now: float) -> None:
+    """Enforce the project rule that review packets are never processed in parallel."""
+    directory = root / "test-artefacts" / "reviewer"
+    if not directory.exists():
+        return
+    clear_terminal_review_locks(root, now)
+    for path in directory.glob("active-review-*.json"):
+        try:
+            record = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if record.get("status") == "RUNNING":
+            raise ReviewError("ACTIVE_REVIEW_ALREADY_RUNNING")
+
+
 def acquire_review_lock(root: Path, snapshot_id: str, review_type: str, cr_number: str,
                         deadline_seconds: float) -> Path:
     path = review_status_path(root, snapshot_id, review_type, cr_number)
     path.parent.mkdir(parents=True, exist_ok=True)
     now = time.monotonic()
+    require_no_parallel_review(root, now)
     if path.exists():
         try:
             existing = json.loads(path.read_text(encoding="utf-8"))
