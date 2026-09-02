@@ -383,6 +383,30 @@ size_t wz_machine_beeper_events(const wz_machine_t* machine,
     return machine == 0 ? 0u : wz_beeper_events(&machine->beeper, events, capacity);
 }
 
+wz_result_t wz_machine_mic_capture_begin(wz_machine_t* machine)
+{
+    return machine == 0 ? WZ_RESULT_INVALID_ARGUMENT :
+        wz_beeper_mic_capture_begin(&machine->beeper);
+}
+
+wz_result_t wz_machine_mic_capture_end(wz_machine_t* machine)
+{
+    return machine == 0 ? WZ_RESULT_INVALID_ARGUMENT :
+        wz_beeper_mic_capture_end(&machine->beeper);
+}
+
+size_t wz_machine_mic_events(const wz_machine_t* machine,
+                             wz_mic_event_t* events,
+                             size_t capacity)
+{
+    return machine == 0 ? 0u : wz_beeper_mic_events(&machine->beeper, events, capacity);
+}
+
+bool wz_machine_mic_capture_overflowed(const wz_machine_t* machine)
+{
+    return machine != 0 && wz_beeper_mic_capture_overflowed(&machine->beeper);
+}
+
 wz_byte_t wz_machine_border_color(const wz_machine_t* machine)
 {
     return machine == 0 ? 0u : machine->border_color;

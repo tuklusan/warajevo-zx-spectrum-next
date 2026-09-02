@@ -24,12 +24,23 @@ void wz_beeper_port_fe_write(wz_beeper_t* beeper,
                              wz_master_tick_t master_tick)
 {
     wz_byte_t level;
+    wz_byte_t mic_level;
 
     if (beeper == 0) {
         return;
     }
     level = (wz_byte_t)((value >> 3u) & 1u);
-    beeper->mic_level = (wz_byte_t)((value >> 4u) & 1u);
+    mic_level = (wz_byte_t)((value >> 4u) & 1u);
+    if (mic_level != beeper->mic_level && beeper->mic_capture_active != 0u) {
+        if (beeper->mic_event_count < WZ_MIC_EVENT_CAPACITY) {
+            beeper->mic_events[beeper->mic_event_count].master_tick = master_tick;
+            beeper->mic_events[beeper->mic_event_count].level = mic_level;
+            beeper->mic_event_count += 1u;
+        } else {
+            beeper->mic_capture_overflow = 1u;
+        }
+    }
+    beeper->mic_level = mic_level;
     if (level == beeper->level) {
         return;
     }
@@ -66,6 +77,47 @@ size_t wz_beeper_events(const wz_beeper_t* beeper,
         memcpy(events, beeper->events, count * sizeof(*events));
     }
     return count;
+}
+
+wz_result_t wz_beeper_mic_capture_begin(wz_beeper_t* beeper)
+{
+    if (beeper == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    beeper->mic_event_count = 0u;
+    beeper->mic_capture_overflow = 0u;
+    beeper->mic_capture_active = 1u;
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_beeper_mic_capture_end(wz_beeper_t* beeper)
+{
+    if (beeper == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    beeper->mic_capture_active = 0u;
+    return WZ_RESULT_OK;
+}
+
+size_t wz_beeper_mic_events(const wz_beeper_t* beeper,
+                            wz_mic_event_t* events,
+                            size_t capacity)
+{
+    size_t count;
+
+    if (beeper == 0 || (events == 0 && capacity != 0u)) {
+        return 0u;
+    }
+    count = beeper->mic_event_count < capacity ? beeper->mic_event_count : capacity;
+    if (count > 0u) {
+        memcpy(events, beeper->mic_events, count * sizeof(*events));
+    }
+    return count;
+}
+
+bool wz_beeper_mic_capture_overflowed(const wz_beeper_t* beeper)
+{
+    return beeper != 0 && beeper->mic_capture_overflow != 0u;
 }
 
 static wz_audio_sample_t wz_beeper_average(wz_qword_t high_ticks,

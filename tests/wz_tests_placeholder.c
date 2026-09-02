@@ -446,6 +446,51 @@ static void test_beeper_port_fe_timeline(void)
     wz_machine_destroy(&machine);
 }
 
+static void test_mic_capture_timeline(void)
+{
+    wz_machine_t machine;
+    wz_mic_event_t events[2u];
+
+    if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK ||
+        wz_machine_mic_capture_begin(&machine) != WZ_RESULT_OK) {
+        fputs("MIC capture setup failed\n", stderr);
+        exit(1);
+    }
+    wz_machine_ula_port_fe_write(&machine, 0x00feu, 0x10u, 100u);
+    wz_machine_ula_port_fe_write(&machine, 0x00feu, 0x10u, 110u);
+    wz_machine_ula_port_fe_write(&machine, 0x00feu, 0x00u, 120u);
+    wz_machine_ula_port_fe_write(&machine, 0x00feu, 0x01u, 130u);
+    if (wz_machine_mic_events(&machine, events, 2u) != 2u ||
+        events[0].master_tick != 100u || events[0].level != 1u ||
+        events[1].master_tick != 120u || events[1].level != 0u ||
+        wz_machine_beeper_events(&machine, 0, 0u) != 0u ||
+        wz_machine_mic_capture_end(&machine) != WZ_RESULT_OK) {
+        fputs("MIC capture edge ordering failed\n", stderr);
+        exit(1);
+    }
+    wz_machine_ula_port_fe_write(&machine, 0x00feu, 0x00u, 140u);
+    if (wz_machine_mic_events(&machine, events, 2u) != 2u ||
+        wz_machine_mic_capture_overflowed(&machine)) {
+        fputs("MIC capture stop behavior failed\n", stderr);
+        exit(1);
+    }
+    if (wz_machine_mic_capture_begin(&machine) != WZ_RESULT_OK) {
+        fputs("MIC capture reset failed\n", stderr);
+        exit(1);
+    }
+    for (size_t index = 0u; index <= WZ_MIC_EVENT_CAPACITY; ++index) {
+        wz_machine_ula_port_fe_write(&machine, 0x00feu,
+                                     (index & 1u) == 0u ? 0x10u : 0x00u,
+                                     (wz_master_tick_t)index);
+    }
+    if (!wz_machine_mic_capture_overflowed(&machine) ||
+        wz_machine_mic_events(&machine, events, 2u) != 2u) {
+        fputs("MIC capture overflow contract failed\n", stderr);
+        exit(1);
+    }
+    wz_machine_destroy(&machine);
+}
+
 static void test_beeper_pcm_render(void)
 {
     const wz_beeper_event_t events[2u] = {{3u, 1u}, {7u, 0u}};
@@ -821,6 +866,7 @@ int main(void)
     test_machine_tape_playback();
     test_tape_speed_invariance();
     test_beeper_port_fe_timeline();
+    test_mic_capture_timeline();
     test_beeper_pcm_render();
     test_audio_pcm_hash();
     test_host_audio_push_queue();

@@ -121,6 +121,12 @@ wz_byte_t wz_machine_mic_level(const wz_machine_t* machine);
 size_t wz_machine_beeper_events(const wz_machine_t* machine,
                                 wz_beeper_event_t* events,
                                 size_t capacity);
+wz_result_t wz_machine_mic_capture_begin(wz_machine_t* machine);
+wz_result_t wz_machine_mic_capture_end(wz_machine_t* machine);
+size_t wz_machine_mic_events(const wz_machine_t* machine,
+                             wz_mic_event_t* events,
+                             size_t capacity);
+bool wz_machine_mic_capture_overflowed(const wz_machine_t* machine);
 wz_byte_t wz_machine_ula_port_fe_read(const wz_machine_t* machine,
                                        wz_word_t address);
 void wz_machine_ula_port_fe_write(wz_machine_t* machine, wz_word_t address,
