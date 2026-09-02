@@ -600,6 +600,11 @@ static void test_tzx_parser(void)
         'Z', 'X', 'T', 'a', 'p', 'e', '!', 0x1au, 1u, 20u,
         0x23u, 0xffu, 0x7fu
     };
+    const wz_byte_t direct_recording[20u] = {
+        'Z', 'X', 'T', 'a', 'p', 'e', '!', 0x1au, 1u, 20u,
+        0x15u, 0xe8u, 0x03u, 0x00u, 0x00u, 0x08u, 0x01u, 0x00u, 0x00u,
+        0xa5u
+    };
     wz_tzx_block_t blocks[2u];
     size_t count = 0u;
     wz_tzx_block_t sentinel[1u] = {{0}};
@@ -620,7 +625,10 @@ static void test_tzx_parser(void)
         wz_tape_parse_tzx(unsupported, sizeof(unsupported), blocks, 2u, &count) !=
             WZ_RESULT_UNSUPPORTED_OPERATION ||
         wz_tape_parse_tzx(bad_jump, sizeof(bad_jump), blocks, 2u, &count) !=
-            WZ_RESULT_PARSE_ERROR) {
+            WZ_RESULT_PARSE_ERROR ||
+        wz_tape_parse_tzx(direct_recording, sizeof(direct_recording), blocks, 1u,
+                          &count) != WZ_RESULT_OK || count != 1u ||
+        blocks[0u].block_id != 0x15u || blocks[0u].block_length != 10u) {
         fputs("TZX parser contract failed\n", stderr);
         exit(1);
     }

@@ -468,9 +468,9 @@ static wz_result_t wz_tzx_block_size(const wz_byte_t* data,
         if (remaining >= fixed_length) variable_length = (size_t)wz_tzx_read_le24(&data[8u]);
         break;
     case 0x15u:
-        fixed_length = 7u;
+        fixed_length = 9u;
         *disposition = WZ_TZX_SUPPORTED;
-        if (remaining >= fixed_length) variable_length = (size_t)wz_tzx_read_le24(&data[4u]);
+        if (remaining >= fixed_length) variable_length = (size_t)wz_tzx_read_le24(&data[6u]);
         break;
     case 0x18u:
     case 0x19u:
