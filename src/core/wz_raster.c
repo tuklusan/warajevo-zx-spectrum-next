@@ -70,15 +70,23 @@ wz_result_t wz_raster_decode_active_pixel(wz_byte_t bitmap,
                                           wz_byte_t bit_position,
                                           wz_byte_t* sample)
 {
-    wz_byte_t color;
-
     if (sample == 0 || bit_position >= 8u) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
-    if ((bitmap & (wz_byte_t)(0x80u >> bit_position)) != 0u) {
-        color = attribute & 0x07u;
-    } else {
-        color = (attribute >> 3u) & 0x07u;
+    return wz_raster_decode_attribute(
+        attribute,
+        (bitmap & (wz_byte_t)(0x80u >> bit_position)) != 0u,
+        sample);
+}
+
+wz_result_t wz_raster_decode_attribute(wz_byte_t attribute, bool ink_selected,
+                                       wz_byte_t* sample)
+{
+    wz_byte_t color = ink_selected ? attribute & 0x07u :
+        (attribute >> 3u) & 0x07u;
+
+    if (sample == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
     }
     if ((attribute & 0x40u) != 0u) {
         color = (wz_byte_t)(color + 8u);

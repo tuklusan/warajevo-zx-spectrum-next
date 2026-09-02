@@ -303,6 +303,21 @@ int main(void)
     }
     {
         wz_byte_t sample = 0u;
+        for (unsigned attribute = 0u; attribute <= 0xffu; ++attribute) {
+            wz_byte_t expected_ink = (wz_byte_t)((attribute & 0x07u) +
+                ((attribute & 0x40u) != 0u ? 8u : 0u));
+            wz_byte_t expected_paper = (wz_byte_t)(((attribute >> 3u) & 0x07u) +
+                ((attribute & 0x40u) != 0u ? 8u : 0u));
+            if (wz_raster_decode_attribute((wz_byte_t)attribute, true,
+                                            &sample) != WZ_RESULT_OK ||
+                sample != expected_ink ||
+                wz_raster_decode_attribute((wz_byte_t)attribute, false,
+                                            &sample) != WZ_RESULT_OK ||
+                sample != expected_paper) {
+                fputs("exhaustive attribute interpretation failed\n", stderr);
+                return 1;
+            }
+        }
         for (wz_byte_t color = 0u; color < 8u; ++color) {
             wz_byte_t attribute = (wz_byte_t)(color | ((7u - color) << 3u));
             if (wz_raster_decode_active_pixel(0x80u, attribute, 0u,
