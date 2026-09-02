@@ -6,7 +6,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 # Phase 3 Reconciliation
 
-Status: ready for gate review
+Status: complete; Phase 3 is closed and Phase 4 is next.
 
 This reconciliation closes the Phase-3 scope defined by architecture section
 49.1 and backlog tasks 063-078. It does not claim raster, floating-bus,
@@ -106,5 +106,5 @@ classification, or a named later task.
 | 1 | 2026-09-01 20:03 | `git status --short` clean; `py -3 tools/validate_project_gates.py` passed; source/task/CR mapping reviewed with no new scoped gap. |
 | 2 | 2026-09-01 20:04 | Same complete scope rescanned without repository changes; `git status --short` clean and `py -3 tools/validate_project_gates.py` passed; no new scoped gap. |
 
-The Phase-3 gate is therefore eligible for closure pending its advisory review
-and publication gates.
+The Phase-3 gate is therefore closed after the advisory documentation review,
+repository-gates validation, and hosted platform-smoke publication gates.
