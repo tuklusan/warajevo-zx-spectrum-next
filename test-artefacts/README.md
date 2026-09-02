@@ -112,11 +112,12 @@ ssh vagab@10.0.0.133 "powershell -NoProfile -Command \"Set-Location 'C:\\Users\\
 ### macos-bigsur-lab
 
 - SSH target: `rumtuk@10.0.0.114`
-- Remote project directory: `~/SOFTWARE_DEV/WARAJEVO-NEXT`
+- Remote project directory: `/Users/rumtuk/SOFTWARE_DEV/WARAJEVO-NEXT`
 - Rule: every file operation, build, test, and pulled-result staging operation
   must remain below this directory; total occupied space must never exceed 1 GiB
 - Rule: use existing key-based SSH where available; never place the supplied
   password in tracked files, command arguments, logs, or environment captures
+- Harness key: local-only `test-artefacts/ssh-private/macos-bigsur`
 
 The harness checks the directory usage before and after every Mac operation and
 fails closed if the 1 GiB limit is exceeded.

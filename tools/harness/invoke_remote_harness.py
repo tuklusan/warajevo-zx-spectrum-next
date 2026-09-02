@@ -45,11 +45,13 @@ REMOTE_MACHINES = {
     "macos-bigsur-lab": {
         "kind": "macos",
         "ssh_target": "rumtuk@10.0.0.114",
-        "project_dir": "~/SOFTWARE_DEV/WARAJEVO-NEXT",
+        "project_dir": "/Users/rumtuk/SOFTWARE_DEV/WARAJEVO-NEXT",
         "python_command": "python3",
         "max_bytes": 1073741824,
+        "identity_file": "test-artefacts/ssh-private/macos-bigsur",
     },
 }
+REMOTE_REPOSITORY = "https://github.com/tuklusan/warajevo-zx-spectrum-next.git"
 SAFE_RUN_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}\Z")
 MAINTENANCE_REF = re.compile(r"wzsn/maintenance/CR-[0-9]{4}[A-Za-z0-9._/-]*\Z")
 
@@ -240,8 +242,12 @@ def known_hosts_option(root: Path) -> list[str]:
     return ["-o", "UserKnownHostsFile=test-artefacts/ssh-known-hosts.local"]
 
 
-def ssh_base(root: Path) -> list[str]:
-    return ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10", *known_hosts_option(root)]
+def ssh_base(root: Path, machine: dict[str, str]) -> list[str]:
+    command = ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=30", *known_hosts_option(root)]
+    identity_file = machine.get("identity_file")
+    if identity_file:
+        command.extend(["-i", identity_file, "-o", "IdentitiesOnly=yes"])
+    return command
 
 
 def decode_output(payload: bytes) -> str:
@@ -320,7 +326,7 @@ def run_linux(machine: dict[str, str], shell_command: str, root: Path) -> subpro
         f"test \"$usage_kb\" -le {machine.get('max_bytes', 0) // 1024 or 1024 * 1024}"
     )
     return subprocess.run(
-        [*ssh_base(root), machine["ssh_target"], remote_command],
+        [*ssh_base(root, machine), machine["ssh_target"], remote_command],
         cwd=root,
         check=False,
         capture_output=True,
@@ -328,8 +334,12 @@ def run_linux(machine: dict[str, str], shell_command: str, root: Path) -> subpro
 
 
 def sync_linux(machine: dict[str, str], root: Path, published_ref: str | None = None) -> subprocess.CompletedProcess[bytes]:
-    command = (f"git fetch origin {shlex.quote(published_ref)} && git checkout --detach FETCH_HEAD" if published_ref
-               else "git checkout main && git pull --ff-only origin main")
+    bootstrap = (
+        f"if [ ! -d .git ]; then git clone {shlex.quote(REMOTE_REPOSITORY)} .; fi"
+    )
+    update = (f"git fetch origin {shlex.quote(published_ref)} && git checkout --detach FETCH_HEAD" if published_ref
+              else "git checkout main && git pull --ff-only origin main")
+    command = f"{bootstrap} && {update}"
     return run_linux(machine, command, root)
 
 
@@ -351,7 +361,7 @@ def run_windows(machine: dict[str, str], script_text: str, root: Path) -> subpro
     encoded = base64.b64encode(script_text.encode("utf-16le")).decode("ascii")
     return subprocess.run(
         [
-            *ssh_base(root),
+            *ssh_base(root, machine),
             machine["ssh_target"],
             f"powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -OutputFormat Text -EncodedCommand {encoded}",
         ],
@@ -371,7 +381,7 @@ def run_windows_with_input(
     encoded = base64.b64encode(script_text.encode("utf-16le")).decode("ascii")
     return subprocess.run(
         [
-            *ssh_base(root),
+            *ssh_base(root, machine),
             machine["ssh_target"],
             f"powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -OutputFormat Text -EncodedCommand {encoded}",
         ],
