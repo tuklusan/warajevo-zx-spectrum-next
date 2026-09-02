@@ -1018,9 +1018,9 @@
     {
       "cr_number": "CR-0097",
       "title": "Implement timed floating-bus values",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 15.6, 18, 36, 44, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 083", "design/machine-timing-evidence.md", "design/cr-preflight/CR-0096.md", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
-      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-4 scope. Preflight requires fetch-derived floating-bus values, deterministic open-bus behavior, upstream comparison, remote validation, hosted validation, and a final zero-gap scan."
+      "notes": "Closed on 2026-09-02 after CODE review PASS packet 2fe1e985, DOCUMENTATION review PASS packet 8600ec62, Linux remote harness CR0097-FLOATING-BUS-LINUX-R1 passed all five CTest targets, and hosted platform-smoke 33584860774 passed all five jobs for cee6fae. Final upstream zero-gap scan passed; sample encoding, raster buffer, pixels, FLASH, and diagnostics remain ordered later Phase-4 tasks."
     }
   ]
 }
