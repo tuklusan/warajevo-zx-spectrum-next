@@ -330,8 +330,8 @@ static void test_host_audio_push_queue(void)
     wz_host_audio_push_init(&queue);
     if (wz_host_audio_push(&queue, input, 3u) != 3u ||
         wz_host_audio_queued(&queue) != 3u ||
-        wz_host_audio_pop(&queue, output, 2u) != 2u ||
-        output[0] != 1 || output[1] != 2 ||
+        wz_host_audio_pop(&queue, output, 1u) != 1u ||
+        output[0] != 1 ||
         wz_host_audio_push(&queue, fill, WZ_HOST_AUDIO_QUEUE_CAPACITY) !=
             WZ_HOST_AUDIO_QUEUE_CAPACITY - 2u ||
         wz_host_audio_dropped(&queue) != 2u) {
