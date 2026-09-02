@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 164,
+  "next_cr_number": 165,
   "status_values": [
     "open",
     "in_progress",
@@ -1483,6 +1483,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 23.4 and 23.12", "design/wzsn-architectures-1-2-developer-tasks.md task 150", "design/cr-preflight/CR-0163.md", "design/media-format-support.md", "reference/original-warajevo/source"],
       "notes": "Closed on 2026-09-02 at 4af1d57 after implementing bounded standard TAP logical writing with exact lengths, preserved data, computed XOR checksums, sizing, round-trip coverage, and no partial output publication. CODE and DOCUMENTATION reviews passed with zero findings. Remote Linux CR0163-tap-write-linux-1 and Windows CR0163-tap-write-windows-1 passed. Hosted platform-smoke 33673040879 passed all 18 jobs. Native TAP, TZX, WAV, instant loading, trap detection, and host export remain explicitly deferred to later ordered tasks; closure evidence is recorded in design/cr-preflight/CR-0163.md."
+    },
+    {
+      "cr_number": "CR-0164",
+      "title": "Implement Warajevo-native TAP compatibility parsing",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 23.12 and 41", "design/wzsn-architectures-1-2-developer-tasks.md task 151", "design/cr-preflight/CR-0164.md", "design/media-format-support.md", "reference/original-warajevo/source/src/environment/TAPES.PAS", "reference/original-warajevo/source/src/spectrum-kernel/TAPE.ASM"],
+      "notes": "Opened on 2026-09-02 as the next ordered Phase-7 scope. Preflight records the native three-word all-ones signature, linked record traversal, strict bounds and termination rules, and ordinary/compressed/sample distinctions; native writing, maintenance transforms, and decompression remain deferred."
     }
   ]
 }
