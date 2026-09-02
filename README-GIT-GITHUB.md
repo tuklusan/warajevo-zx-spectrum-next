@@ -93,7 +93,7 @@ As of 2026-08-09, the baseline GitHub-hosted runner matrix is pinned to the
 current standard labels verified from the official GitHub Actions runner
 reference: all currently documented hosted labels, including Ubuntu 22.04/24.04/
 26.04 x64 and ARM, Windows 2022/2025/2025-vs2026 and Windows ARM, and macOS
-13/14/15/26 Intel and ARM variants (including the documented Xcode 27 preview).
+14/15/26 Intel and ARM variants (including the documented Xcode 27 preview).
 The baseline labels remain `ubuntu-24.04`, `ubuntu-24.04-arm`, `windows-2025`,
 `macos-15`, and `macos-15-intel`.
 

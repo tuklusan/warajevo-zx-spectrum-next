@@ -44,18 +44,12 @@ jobs:
             label: windows-2025
           - id: windows-server-2025-vs2026
             label: windows-2025-vs2026
-          - id: windows-arm64
-            label: windows-11-arm
-          - id: windows-arm64-vs2026
-            label: windows-11-vs2026-arm
           - id: macos-arm64-latest
             label: macos-latest
           - id: macos-arm64
             label: macos-15
           - id: macos-arm64-14
             label: macos-14
-          - id: macos-intel-13
-            label: macos-13
           - id: macos-intel-x64
             label: macos-15-intel
           - id: macos-intel-26
