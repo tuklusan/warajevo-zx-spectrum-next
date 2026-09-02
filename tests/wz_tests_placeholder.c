@@ -256,7 +256,8 @@ static void test_host_pacing(void)
         !wz_host_pacing_wait(&pacing, 0u, UINT64_MAX,
                              record_pacing_sleep, &sleep_ns, &requested) ||
         requested != 0u) {
-        fputs("host pacing contract failed\n", stderr);
+        fprintf(stderr, "host pacing contract failed: request=%llu sleep=%llu\n",
+                (unsigned long long)requested, (unsigned long long)sleep_ns);
         exit(1);
     }
 }

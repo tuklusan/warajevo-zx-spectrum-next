@@ -18,6 +18,38 @@ static wz_qword_t wz_saturating_multiply(wz_qword_t left, wz_qword_t right)
     return left * right;
 }
 
+static wz_qword_t wz_fractional_nanoseconds(wz_qword_t numerator,
+                                             wz_qword_t denominator)
+{
+    wz_qword_t quotient = 0u;
+    wz_qword_t remainder = 0u;
+    const wz_qword_t multiplier = UINT64_C(1000000000);
+
+    for (int bit = 30; bit >= 0; --bit) {
+        wz_qword_t doubled;
+        unsigned carry;
+
+        if (remainder >= denominator - remainder) {
+            doubled = remainder - (denominator - remainder);
+            carry = 1u;
+        } else {
+            doubled = remainder + remainder;
+            carry = 0u;
+        }
+        if (((multiplier >> bit) & 1u) != 0u) {
+            if (doubled >= denominator - numerator) {
+                doubled -= denominator - numerator;
+                carry += 1u;
+            } else {
+                doubled += numerator;
+            }
+        }
+        quotient = quotient * 2u + (wz_qword_t)carry;
+        remainder = doubled;
+    }
+    return quotient;
+}
+
 static wz_qword_t wz_elapsed_nanoseconds(wz_qword_t ticks,
                                          wz_qword_t ticks_per_second)
 {
@@ -30,14 +62,7 @@ static wz_qword_t wz_elapsed_nanoseconds(wz_qword_t ticks,
         return UINT64_MAX;
     }
     result = whole_seconds * UINT64_C(1000000000);
-#if defined(__SIZEOF_INT128__)
-    fractional = (wz_qword_t)(((__uint128_t)remainder * UINT64_C(1000000000)) /
-                              ticks_per_second);
-#else
-    fractional = wz_saturating_multiply(remainder, UINT64_C(1000000000));
-    fractional = fractional == UINT64_MAX ? UINT64_MAX
-                                           : fractional / ticks_per_second;
-#endif
+    fractional = wz_fractional_nanoseconds(remainder, ticks_per_second);
     if (UINT64_MAX - result < fractional) {
         return UINT64_MAX;
     }
