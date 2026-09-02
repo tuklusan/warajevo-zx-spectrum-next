@@ -602,7 +602,8 @@ static void test_tzx_parser(void)
     };
     wz_tzx_block_t blocks[2u];
     size_t count = 0u;
-    wz_byte_t sentinel[2u] = {0x5au, 0x5au};
+    wz_tzx_block_t sentinel[1u] = {{0}};
+    sentinel[0u].offset = 99u;
 
     if (wz_tape_parse_tzx(valid, sizeof(valid), 0, 0u, &count) !=
             WZ_RESULT_BUFFER_TOO_SMALL || count != 2u ||
@@ -613,8 +614,7 @@ static void test_tzx_parser(void)
         blocks[1u].disposition != WZ_TZX_IGNORED ||
         blocks[1u].block_length != 4u ||
         wz_tape_parse_tzx(valid, sizeof(valid), sentinel, 1u, &count) !=
-            WZ_RESULT_BUFFER_TOO_SMALL || sentinel[0u] != 0x5au ||
-        sentinel[1u] != 0x5au ||
+            WZ_RESULT_BUFFER_TOO_SMALL || sentinel[0u].offset != 99u ||
         wz_tape_parse_tzx(truncated, sizeof(truncated), blocks, 2u, &count) !=
             WZ_RESULT_PARSE_ERROR ||
         wz_tape_parse_tzx(unsupported, sizeof(unsupported), blocks, 2u, &count) !=

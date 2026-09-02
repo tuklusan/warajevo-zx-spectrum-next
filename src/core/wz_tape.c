@@ -545,7 +545,7 @@ static wz_result_t wz_tzx_block_size(const wz_byte_t* data,
         break;
     case 0x33u:
         *disposition = WZ_TZX_IGNORED;
-        if (remaining < 2u || (size_t)data[1u] > (SIZE_MAX - 2u) / 3u) {
+        if (remaining < 2u) {
             return WZ_RESULT_PARSE_ERROR;
         }
         fixed_length = 2u;
