@@ -302,6 +302,32 @@ int main(void)
         return 1;
     }
     {
+        wz_byte_t sample = 0u;
+        for (wz_byte_t color = 0u; color < 8u; ++color) {
+            wz_byte_t attribute = (wz_byte_t)(color | ((7u - color) << 3u));
+            if (wz_raster_decode_active_pixel(0x80u, attribute, 0u,
+                                              &sample) != WZ_RESULT_OK ||
+                sample != color ||
+                wz_raster_decode_active_pixel(0x00u, attribute, 0u,
+                                              &sample) != WZ_RESULT_OK ||
+                sample != (wz_byte_t)(7u - color) ||
+                wz_raster_decode_active_pixel(0x01u,
+                                              (wz_byte_t)(attribute | 0x40u),
+                                              7u, &sample) != WZ_RESULT_OK ||
+                sample != (wz_byte_t)(color + 8u)) {
+                fputs("active-pixel color table contract failed\n", stderr);
+                return 1;
+            }
+        }
+        if (wz_raster_decode_active_pixel(0u, 0u, 8u, &sample) !=
+                WZ_RESULT_INVALID_ARGUMENT ||
+            wz_raster_decode_active_pixel(0u, 0u, 0u, 0) !=
+                WZ_RESULT_INVALID_ARGUMENT) {
+            fputs("active-pixel invalid argument contract failed\n", stderr);
+            return 1;
+        }
+    }
+    {
         wz_raster_buffer_t raster_buffer;
         wz_byte_t storage[4u];
         wz_byte_t sample = 0u;
