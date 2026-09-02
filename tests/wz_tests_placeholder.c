@@ -17,6 +17,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "app/wz_input_focus.h"
 #include "app/wz_kempston_mapping.h"
 #include "app/wz_speed_policy.h"
+#include "app/wz_host_pacing.h"
 #include "core/wz_bus.h"
 #include "core/wz_scheduler.h"
 #include "core/wz_state.h"
@@ -220,6 +221,42 @@ static void test_speed_policy(void)
         wz_speed_policy_percent((wz_speed_policy_t)WZ_SPEED_COUNT) != 0u ||
         wz_speed_policy_is_unlimited((wz_speed_policy_t)WZ_SPEED_COUNT)) {
         fputs("speed policy invalid-value contract failed\n", stderr);
+        exit(1);
+    }
+}
+
+static bool record_pacing_sleep(wz_qword_t nanoseconds, void* context)
+{
+    wz_qword_t* recorded = (wz_qword_t*)context;
+    *recorded = nanoseconds;
+    return true;
+}
+
+static void test_host_pacing(void)
+{
+    wz_host_pacing_t pacing;
+    wz_qword_t sleep_ns = 0u;
+    wz_qword_t requested = 0u;
+
+    if (!wz_host_pacing_init(&pacing, 1000u, WZ_SPEED_100, 1000000000u, 0u) ||
+        !wz_host_pacing_wait(&pacing, 1000000000u, 1000u,
+                             record_pacing_sleep, &sleep_ns, &requested) ||
+        requested != 1000000000u || sleep_ns != requested ||
+        !wz_host_pacing_wait(&pacing, 2000000000u, 1000u,
+                             record_pacing_sleep, &sleep_ns, &requested) ||
+        requested != 0u ||
+        !wz_host_pacing_set_speed(&pacing, WZ_SPEED_200) ||
+        !wz_host_pacing_wait(&pacing, 1000000000u, 1000u,
+                             record_pacing_sleep, &sleep_ns, &requested) ||
+        requested != 0u ||
+        !wz_host_pacing_wait(&pacing, 1000000000u, 0u,
+                             record_pacing_sleep, &sleep_ns, &requested) ||
+        requested != 0u ||
+        !wz_host_pacing_set_speed(&pacing, WZ_SPEED_UNLIMITED) ||
+        !wz_host_pacing_wait(&pacing, 0u, UINT64_MAX,
+                             record_pacing_sleep, &sleep_ns, &requested) ||
+        requested != 0u) {
+        fputs("host pacing contract failed\n", stderr);
         exit(1);
     }
 }
@@ -463,6 +500,7 @@ int main(void)
     test_kempston_decode();
     test_kempston_mapping();
     test_speed_policy();
+    test_host_pacing();
     test_raster_diagnostic();
     test_raster_invalid_state();
     const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
