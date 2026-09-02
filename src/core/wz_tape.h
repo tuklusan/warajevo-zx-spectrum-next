@@ -45,6 +45,9 @@ typedef struct {
     wz_word_t stored_length;
     wz_byte_t flag;
     wz_byte_t record_type;
+    wz_word_t decompressed_length;
+    wz_word_t compressed_length;
+    wz_word_t signed_length;
     const wz_byte_t* payload;
     size_t payload_length;
 } wz_native_tap_record_t;
@@ -81,5 +84,10 @@ wz_result_t wz_tape_parse_native_tap(const wz_byte_t* data,
                                      wz_native_tap_record_t* records,
                                      size_t capacity,
                                      size_t* count);
+wz_result_t wz_tape_write_native_tap(const wz_native_tap_record_t* records,
+                                     size_t record_count,
+                                     wz_byte_t* output,
+                                     size_t capacity,
+                                     size_t* length);
 
 #endif

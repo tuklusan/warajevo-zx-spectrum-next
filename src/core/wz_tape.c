@@ -9,6 +9,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "core/wz_tape.h"
 
 #include <limits.h>
+#include <string.h>
 #include <stdint.h>
 
 #define WZ_TAP_PILOT_TSTATES 2168u
@@ -17,6 +18,14 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #define WZ_TAP_ZERO_TSTATES 855u
 #define WZ_TAP_ONE_TSTATES 1710u
 #define WZ_TAP_PAUSE_TSTATES 3500000u
+
+static void wz_tape_write_le32(wz_byte_t bytes[4], wz_dword_t value)
+{
+    bytes[0] = (wz_byte_t)(value & 0xffu);
+    bytes[1] = (wz_byte_t)((value >> 8u) & 0xffu);
+    bytes[2] = (wz_byte_t)((value >> 16u) & 0xffu);
+    bytes[3] = (wz_byte_t)(value >> 24u);
+}
 
 static wz_result_t wz_tape_tap_add_count(size_t* total, size_t amount)
 {
@@ -285,6 +294,9 @@ static wz_result_t wz_tape_native_record_header(const wz_byte_t* data,
     record->next_offset = next;
     record->stored_length = stored_length;
     record->flag = data[offset + 10u];
+    record->decompressed_length = 0u;
+    record->compressed_length = 0u;
+    record->signed_length = 0u;
     if (record->previous_offset != previous_offset ||
         (next != UINT32_MAX && (next < 12u || next >= length))) {
         return WZ_RESULT_PARSE_ERROR;
@@ -294,6 +306,9 @@ static wz_result_t wz_tape_native_record_header(const wz_byte_t* data,
             return WZ_RESULT_PARSE_ERROR;
         }
         record->record_type = stored_length == 65534u ? 4u : 5u;
+        record->decompressed_length = wz_read_le16(&data[offset + 11u]);
+        record->compressed_length = wz_read_le16(&data[offset + 13u]);
+        record->signed_length = wz_read_le16(&data[offset + 15u]);
         *header_size = 17u;
     } else {
         if (length - offset < 12u) {
@@ -302,13 +317,102 @@ static wz_result_t wz_tape_native_record_header(const wz_byte_t* data,
         record->record_type = data[offset + 11u];
         *header_size = 12u;
     }
-    if (stored_length < 2u ||
-        (size_t)stored_length > length - offset - *header_size) {
+    if (stored_length < 2u && *header_size == 12u) {
         return WZ_RESULT_PARSE_ERROR;
     }
     record->payload = &data[offset + *header_size];
-    record->payload_length = (size_t)stored_length - 2u;
+    if (*header_size == 17u) {
+        if (next == UINT32_MAX) {
+            record->payload_length = length - offset - *header_size;
+        } else {
+            if (next < offset + *header_size) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            record->payload_length = next - offset - *header_size;
+        }
+    } else {
+        record->payload_length = (size_t)stored_length - 2u;
+        if (record->payload_length > length - offset - *header_size ||
+            (next != UINT32_MAX && next != offset + *header_size + record->payload_length)) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+    }
     *next_offset = next;
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_tape_write_native_tap(const wz_native_tap_record_t* records,
+                                     size_t record_count,
+                                     wz_byte_t* output,
+                                     size_t capacity,
+                                     size_t* length)
+{
+    size_t required = 12u;
+    size_t offset = 12u;
+
+    if (records == 0 || record_count == 0u || length == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    for (size_t index = 0u; index < record_count; ++index) {
+        const wz_native_tap_record_t* record = &records[index];
+        size_t header_size;
+        if (record->payload == 0 && record->payload_length != 0u) {
+            return WZ_RESULT_INVALID_ARGUMENT;
+        }
+        if (record->record_type < 4u) {
+            if (record->stored_length < 2u ||
+                (size_t)record->stored_length - 2u != record->payload_length) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            header_size = 12u;
+        } else if (record->record_type == 4u || record->record_type == 5u) {
+            if (record->stored_length != (record->record_type == 4u ? 65534u : 65535u)) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            header_size = 17u;
+        } else {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        if (offset > UINT32_MAX || record->payload_length > SIZE_MAX - header_size ||
+            offset > (size_t)UINT32_MAX - header_size - record->payload_length ||
+            required > SIZE_MAX - header_size - record->payload_length) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        offset += header_size + record->payload_length;
+        required += header_size + record->payload_length;
+    }
+    *length = required;
+    if (output == 0 || capacity < required) {
+        return WZ_RESULT_BUFFER_TOO_SMALL;
+    }
+    wz_write_le32(&output[0u], 12u);
+    wz_write_le32(&output[4u], UINT32_MAX);
+    wz_write_le32(&output[8u], UINT32_MAX);
+    size_t previous = 0u;
+    offset = 12u;
+    for (size_t index = 0u; index < record_count; ++index) {
+        const wz_native_tap_record_t* record = &records[index];
+        size_t header_size = record->record_type < 4u ? 12u : 17u;
+        size_t next = index + 1u < record_count ?
+            offset + header_size + record->payload_length : (size_t)UINT32_MAX;
+        wz_write_le32(&output[offset], (wz_dword_t)previous);
+        wz_write_le32(&output[offset + 4u], (wz_dword_t)next);
+        wz_write_le16(&output[offset + 8u], record->stored_length);
+        output[offset + 10u] = record->flag;
+        if (header_size == 12u) {
+            output[offset + 11u] = record->record_type;
+        } else {
+            wz_write_le16(&output[offset + 11u], record->decompressed_length);
+            wz_write_le16(&output[offset + 13u], record->compressed_length);
+            wz_write_le16(&output[offset + 15u], record->signed_length);
+        }
+        if (record->payload_length != 0u) {
+            memcpy(&output[offset + header_size], record->payload,
+                   record->payload_length);
+        }
+        previous = offset;
+        offset += header_size + record->payload_length;
+    }
     return WZ_RESULT_OK;
 }
 

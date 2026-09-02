@@ -538,6 +538,50 @@ static void test_native_tap_parser(void)
     }
 }
 
+static void test_native_tap_writer(void)
+{
+    const wz_byte_t ordinary_payload[2u] = {0x01u, 0x02u};
+    const wz_byte_t sample_payload[3u] = {0xa0u, 0xa1u, 0xa2u};
+    wz_native_tap_record_t records[2u] = {{0}};
+    wz_native_tap_record_t parsed[2u] = {{0}};
+    wz_byte_t output[64u];
+    wz_byte_t sentinel[64u];
+    size_t length = 0u;
+
+    records[0u].stored_length = 4u;
+    records[0u].record_type = 1u;
+    records[0u].flag = 0xa5u;
+    records[0u].payload = ordinary_payload;
+    records[0u].payload_length = sizeof(ordinary_payload);
+    records[1u].stored_length = 65534u;
+    records[1u].record_type = 4u;
+    records[1u].flag = 0x5au;
+    records[1u].decompressed_length = 123u;
+    records[1u].compressed_length = 45u;
+    records[1u].signed_length = 67u;
+    records[1u].payload = sample_payload;
+    records[1u].payload_length = sizeof(sample_payload);
+    memset(sentinel, 0x5au, sizeof(sentinel));
+    memcpy(output, sentinel, sizeof(output));
+    if (wz_tape_write_native_tap(records, 2u, sentinel, sizeof(sentinel) - 1u,
+                                 &length) != WZ_RESULT_BUFFER_TOO_SMALL ||
+        length != 46u || memcmp(sentinel, output, sizeof(sentinel)) != 0 ||
+        wz_tape_write_native_tap(records, 2u, output, sizeof(output), &length) !=
+            WZ_RESULT_OK || length != 46u || !wz_tape_is_native_tap(output, length) ||
+        wz_tape_parse_native_tap(output, length, parsed, 2u, &length) != WZ_RESULT_OK ||
+        parsed[0u].offset != 12u || parsed[0u].next_offset != 26u ||
+        parsed[0u].previous_offset != 0u || parsed[0u].record_type != 1u ||
+        parsed[0u].payload_length != 2u || parsed[1u].offset != 26u ||
+        parsed[1u].previous_offset != 12u || parsed[1u].next_offset != UINT32_MAX ||
+        parsed[1u].record_type != 4u || parsed[1u].decompressed_length != 123u ||
+        parsed[1u].compressed_length != 45u || parsed[1u].signed_length != 67u ||
+        parsed[1u].payload_length != sizeof(sample_payload) ||
+        memcmp(parsed[1u].payload, sample_payload, sizeof(sample_payload)) != 0) {
+        fputs("native TAP writer round-trip failed\n", stderr);
+        exit(1);
+    }
+}
+
 static void test_beeper_port_fe_timeline(void)
 {
     wz_machine_t machine;
@@ -990,6 +1034,7 @@ int main(void)
     test_standard_tap_parser();
     test_standard_tap_writer();
     test_native_tap_parser();
+    test_native_tap_writer();
     test_beeper_port_fe_timeline();
     test_mic_capture_timeline();
     test_beeper_pcm_render();
