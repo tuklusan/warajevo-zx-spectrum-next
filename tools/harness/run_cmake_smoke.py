@@ -330,6 +330,8 @@ def main() -> int:
     )
     parser.add_argument("--compiler", help="Require and use this C compiler executable.")
     parser.add_argument("--sanitizers", action="store_true", help="Enable address and undefined-behavior sanitizers.")
+    parser.add_argument("--sokol-host", action="store_true",
+                        help="Also configure and build the opt-in Sokol host target.")
     parser.add_argument(
         "--probe-only",
         action="store_true",
@@ -428,6 +430,7 @@ def main() -> int:
         str(build_dir),
         "-DWZSN_ENABLE_WARNINGS=ON",
         f"-DWZSN_ENABLE_SANITIZERS={'ON' if args.sanitizers else 'OFF'}",
+        f"-DWZSN_BUILD_SOKOL_HOST={'ON' if args.sokol_host else 'OFF'}",
     ]
 
     if tools["python"]["path"]:
