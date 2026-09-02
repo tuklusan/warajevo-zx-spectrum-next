@@ -1516,9 +1516,9 @@
     {
       "cr_number": "CR-0168",
       "title": "Bind hosted matrix publication to one run",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["WORKFLOW.md hosted validation and publication gates", ".github/workflows/platform-smoke.yml", "design/cr-preflight/CR-0168.md"],
-      "notes": "Closed on 2026-09-02 at ab599a8 after adding a SHA- and run-bound aggregate publication gate that queries the current run's individual jobs and fails closed unless all 18 declared lanes succeed. CODE review passed with no confirmed findings; Linux and Windows remote smoke runs passed; hosted platform-smoke 33687501651 passed all 18 lanes plus publication-gate for the exact SHA. Earlier non-green evidence remains non-green."
+      "notes": "Closed on 2026-09-02 at the final evidence commit after adding a SHA- and run-bound aggregate publication gate that queries the current run's individual jobs and fails closed unless all 18 declared lanes succeed. CODE and DOCUMENTATION reviews passed with no confirmed findings; Linux and Windows remote smoke runs passed; hosted platform-smoke 33687501651 passed all 18 lanes plus publication-gate for ab599a8. Final exact-commit validation is required for the closing evidence commit. Earlier non-green evidence remains non-green."
     }
   ]
 }
