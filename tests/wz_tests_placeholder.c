@@ -19,6 +19,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "app/wz_speed_policy.h"
 #include "app/wz_host_pacing.h"
 #include "core/audio/wz_audio_policy.h"
+#include "core/audio/wz_ay_mixer_policy.h"
 #include "core/wz_bus.h"
 #include "core/wz_scheduler.h"
 #include "core/wz_state.h"
@@ -315,6 +316,17 @@ static void test_canonical_audio_policy(void)
     }
 }
 
+static void test_ay_mixer_policy(void)
+{
+    if (WZ_AY_CHANNEL_COUNT != 3u || WZ_AY_VOLUME_LEVEL_COUNT != 16u ||
+        WZ_AY_VOLUME_GAIN_Q16_16[0] != 0u ||
+        WZ_AY_VOLUME_GAIN_Q16_16[12u] != 65536u ||
+        WZ_AY_VOLUME_GAIN_Q16_16[15u] != 65536u) {
+        fputs("AY mixer policy contract failed\n", stderr);
+        exit(1);
+    }
+}
+
 static void test_raster_diagnostic(void)
 {
     wz_byte_t expected_samples[6] = {0u, 1u, 2u, 3u, 4u, 5u};
@@ -557,6 +569,7 @@ int main(void)
     test_host_pacing();
     test_beeper_port_fe_timeline();
     test_canonical_audio_policy();
+    test_ay_mixer_policy();
     test_raster_diagnostic();
     test_raster_invalid_state();
     const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();

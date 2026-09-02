@@ -1568,6 +1568,13 @@ timed AY writes -------> AY model -------+--> fixed-point mixer
                                   Sokol audio
 ```
 
+For the initial 128K AY target, WZSN freezes three mono AY channels, a
+16-level normalized attenuation table represented in Q16.16, and equal
+channel summation into the canonical mixer. The table is project-owned in
+`wz_ay_mixer_policy.h`; it is intentionally host-stereo-independent. AY tone,
+noise, envelope, register timing, and model clock behavior remain Phase-9
+implementation responsibilities.
+
 Using floating point at the Sokol boundary is acceptable.
 
 Core state and canonical regression audio must not depend on platform-specific

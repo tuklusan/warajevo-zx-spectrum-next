@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 146,
+  "next_cr_number": 147,
   "status_values": [
     "open",
     "in_progress",
@@ -1357,6 +1357,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md section 20.4", "design/wzsn-architectures-1-2-developer-tasks.md task 132", "design/cr-preflight/CR-0145.md", "reference/original-warajevo/source"],
       "notes": "Closed on 2026-09-02 after freezing signed 32-bit Q16.16 samples, signed 64-bit accumulation, representable-range saturation, and round-to-nearest ties-away-from-zero rules. CODE and DOCUMENTATION reviews passed for 5dc232c; Linux remote smoke CR0145-mixer-policy-linux-1 passed; Windows 10 lab transport failed before execution and is explicitly not claimed; hosted platform-smoke 33646915899 and repository-gates 33646915906 passed across the configured runner set, including Windows; final upstream sound-path comparison found no undispositioned gap."
+    },
+    {
+      "cr_number": "CR-0146",
+      "title": "Freeze initial AY analog mixing model",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md section 20.4", "design/wzsn-architectures-1-2-developer-tasks.md task 133", "design/cr-preflight/CR-0146.md", "reference/original-warajevo/source"],
+      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-6 scope. Preflight freezes a three-channel equal mono AY target and project-owned Q16.16 volume gain table before AY implementation."
     }
   ]
 }
