@@ -154,7 +154,7 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
         break;
     case WZ_BUS_IO_READ:
         if (machine->hardware_io_decode_enabled &&
-            wz_kempston_port_selected((wz_byte_t)request->address)) {
+            wz_kempston_port_selected(request->address)) {
             request->value = wz_machine_kempston_read(machine, request->address);
             request->source = WZ_BUS_SOURCE_INPUT;
         } else if (machine->hardware_io_decode_enabled &&

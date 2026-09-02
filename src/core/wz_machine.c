@@ -178,7 +178,7 @@ wz_byte_t wz_machine_kempston_read(const wz_machine_t* machine,
     if (machine == 0) {
         return 0u;
     }
-    return wz_kempston_read(&machine->kempston, (wz_byte_t)address);
+    return wz_kempston_read(&machine->kempston, address);
 }
 
 wz_result_t wz_machine_load_48k_rom(wz_machine_t* machine,

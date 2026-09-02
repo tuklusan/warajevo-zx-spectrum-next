@@ -31,7 +31,7 @@ typedef struct {
 void wz_kempston_init(wz_kempston_t* joystick);
 bool wz_kempston_set(wz_kempston_t* joystick,
                      wz_kempston_control_t control, bool pressed);
-bool wz_kempston_port_selected(wz_byte_t port);
-wz_byte_t wz_kempston_read(const wz_kempston_t* joystick, wz_byte_t port);
+bool wz_kempston_port_selected(wz_word_t port);
+wz_byte_t wz_kempston_read(const wz_kempston_t* joystick, wz_word_t port);
 
 #endif

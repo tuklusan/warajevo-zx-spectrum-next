@@ -152,7 +152,7 @@ static void test_kempston_decode(void)
     wz_kempston_t joystick;
 
     wz_kempston_init(&joystick);
-    if (!wz_kempston_port_selected(0x1fu) || wz_kempston_port_selected(0x1eu) ||
+    if (!wz_kempston_port_selected(0x001fu) || wz_kempston_port_selected(0x201fu) ||
         wz_kempston_read(&joystick, 0x1fu) != 0u ||
         wz_kempston_read(&joystick, 0x1eu) != 0u) {
         fputs("Kempston port selection failed\n", stderr);
@@ -529,6 +529,25 @@ int main(void)
         wz_machine_kempston_read(&machine, 0x1eu) != 0u) {
         fputs("machine Kempston integration failed\n", stderr);
         return 1;
+    }
+    {
+        wz_bus_request_t kempston_request;
+        wz_bus_request_init(&kempston_request, WZ_BUS_IO_READ, 0u, 0x001fu,
+                            0u, 4u);
+        if (wz_machine_bus_request(&machine, &kempston_request) != WZ_RESULT_OK ||
+            kempston_request.value != 0x14u ||
+            kempston_request.source != WZ_BUS_SOURCE_INPUT) {
+            fputs("machine Kempston bus dispatch failed\n", stderr);
+            return 1;
+        }
+        wz_bus_request_init(&kempston_request, WZ_BUS_IO_READ, 0u, 0x201fu,
+                            0u, 4u);
+        if (wz_machine_bus_request(&machine, &kempston_request) != WZ_RESULT_OK ||
+            kempston_request.value != 0xffu ||
+            kempston_request.source != WZ_BUS_SOURCE_FALLBACK) {
+            fputs("machine Kempston full-address decode failed\n", stderr);
+            return 1;
+        }
     }
     if (!wz_raster_sample_is_valid(0x00u) ||
         !wz_raster_sample_is_valid(WZ_RASTER_BORDER_MAX) ||
