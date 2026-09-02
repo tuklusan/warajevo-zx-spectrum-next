@@ -18,6 +18,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "app/wz_kempston_mapping.h"
 #include "app/wz_speed_policy.h"
 #include "app/wz_host_pacing.h"
+#include "app/wz_host_audio_push.h"
 #include "core/audio/wz_audio_policy.h"
 #include "core/audio/wz_ay_mixer_policy.h"
 #include "core/wz_bus.h"
@@ -319,6 +320,26 @@ static void test_beeper_pcm_render(void)
     }
 }
 
+static void test_host_audio_push_queue(void)
+{
+    wz_host_audio_push_queue_t queue;
+    wz_audio_sample_t input[3u] = {1, 2, 3};
+    static const wz_audio_sample_t fill[WZ_HOST_AUDIO_QUEUE_CAPACITY] = {0};
+    wz_audio_sample_t output[3u] = {0, 0, 0};
+
+    wz_host_audio_push_init(&queue);
+    if (wz_host_audio_push(&queue, input, 3u) != 3u ||
+        wz_host_audio_queued(&queue) != 3u ||
+        wz_host_audio_pop(&queue, output, 2u) != 2u ||
+        output[0] != 1 || output[1] != 2 ||
+        wz_host_audio_push(&queue, fill, WZ_HOST_AUDIO_QUEUE_CAPACITY) !=
+            WZ_HOST_AUDIO_QUEUE_CAPACITY - 2u ||
+        wz_host_audio_dropped(&queue) != 2u) {
+        fputs("host audio push queue contract failed\n", stderr);
+        exit(1);
+    }
+}
+
 static void test_canonical_audio_policy(void)
 {
     if (WZ_CANONICAL_AUDIO_SAMPLE_RATE != 44100u ||
@@ -584,6 +605,7 @@ int main(void)
     test_host_pacing();
     test_beeper_port_fe_timeline();
     test_beeper_pcm_render();
+    test_host_audio_push_queue();
     test_canonical_audio_policy();
     test_ay_mixer_policy();
     test_raster_diagnostic();
