@@ -1312,9 +1312,9 @@
     {
       "cr_number": "CR-0139",
       "title": "Harden Unlimited pacing responsiveness",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 10.9 and 32", "design/wzsn-architectures-1-2-developer-tasks.md task 125", "design/cr-preflight/CR-0139.md", "reference/original-warajevo/source"],
-      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-5 scope. Preflight requires Unlimited mode to suppress artificial sleep while retaining deterministic machine execution and host-loop responsiveness."
+      "notes": "Closed on 2026-09-02 after hardening the Unlimited pacing contract to suppress artificial sleep callbacks while retaining deterministic machine execution and outer host-loop responsiveness. CODE and DOCUMENTATION reviews passed for 1d8f6ab; Linux remote smoke CR0139-unlimited-linux-1 and Windows 10 remote smoke CR0139-unlimited-windows-2 passed; hosted platform-smoke 33642513208 and repository-gates 33642513235 passed across five platforms; final upstream fast-forward and run-loop comparison found no undispositioned behavior."
     }
   ]
 }
