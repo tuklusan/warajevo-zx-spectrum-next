@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 132,
+  "next_cr_number": 133,
   "status_values": [
     "open",
     "in_progress",
@@ -1256,9 +1256,16 @@
     {
       "cr_number": "CR-0131",
       "title": "Handle input focus loss deterministically",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 22.5 and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 117", "design/cr-preflight/CR-0131.md", "reference/original-warajevo/source"],
-      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-5 scope. Preflight requires deterministic release of locally owned input on focus loss without affecting independent sources."
+      "notes": "Closed on 2026-09-02 after deterministic local-source release, mixed-source isolation, repeated-loss idempotence, and focus-regain behavior were added, CODE and DOCUMENTATION review PASS, Linux remote smoke CR0131-focus-linux-1 passed, Windows remote smoke CR0131-focus-windows-1 passed, hosted platform-smoke 33634916576 passed, and the final upstream zero-gap scan passed."
+    },
+    {
+      "cr_number": "CR-0132",
+      "title": "Research and freeze keyboard ghosting behavior",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 22.6 and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 118", "design/cr-preflight/CR-0132.md", "reference/original-warajevo/source"],
+      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-5 scope. Preflight requires evidence-based treatment of multiple-row keyboard electrical behavior before Phase-5 exit."
     }
   ]
 }
