@@ -6,7 +6,7 @@ Upstream Warajevo and third-party material retain their applicable copyrights an
 See LICENSE.txt and NOTICE.md for complete terms and provenance.
 */
 
-#if !defined(_WIN32)
+#if !defined(_WIN32) && !defined(__APPLE__)
 #define _POSIX_C_SOURCE 200809L
 #endif
 #define SOKOL_NO_ENTRY
