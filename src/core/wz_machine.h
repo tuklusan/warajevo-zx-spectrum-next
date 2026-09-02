@@ -17,6 +17,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "core/wz_kempston.h"
 #include "core/wz_raster.h"
 #include "core/wz_trace.h"
+#include "core/wz_tape.h"
 #include "core/wz_types.h"
 #include "core/wz_z80.h"
 
@@ -61,6 +62,9 @@ typedef struct wz_machine {
     wz_byte_t keyboard_rows[8u];
     wz_kempston_t kempston;
     wz_beeper_t beeper;
+    wz_tape_t tape;
+    wz_tape_state_t tape_state;
+    wz_byte_t tape_mounted;
     wz_byte_t ula_output;
     wz_qword_t rom_identity;
     wz_master_tick_t master_tick;
@@ -86,6 +90,15 @@ wz_result_t wz_machine_set_keyboard_key(wz_machine_t* machine,
 wz_result_t wz_machine_set_kempston_control(wz_machine_t* machine,
                                              wz_kempston_control_t control,
                                              bool pressed);
+wz_result_t wz_machine_mount_tape(wz_machine_t* machine,
+                                  const wz_tape_segment_t* segments,
+                                  size_t segment_count);
+wz_result_t wz_machine_unmount_tape(wz_machine_t* machine);
+wz_result_t wz_machine_set_tape_motor(wz_machine_t* machine, bool motor_on);
+wz_result_t wz_machine_rewind_tape(wz_machine_t* machine);
+wz_result_t wz_machine_advance_tape(wz_machine_t* machine,
+                                    wz_master_tick_t ticks);
+wz_byte_t wz_machine_tape_ear_level(const wz_machine_t* machine);
 wz_byte_t wz_machine_kempston_read(const wz_machine_t* machine,
                                    wz_word_t address);
 wz_byte_t wz_machine_contention_delay(const wz_machine_t* machine,

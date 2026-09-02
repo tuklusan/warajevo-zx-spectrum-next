@@ -32,6 +32,9 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     wz_kempston_init(&machine->kempston);
     machine->ula_output = 0u;
     wz_beeper_init(&machine->beeper);
+    machine->tape.segments = 0;
+    machine->tape.segment_count = 0u;
+    machine->tape_mounted = 0u;
     machine->maskable_interrupt_line_low = 0u;
     machine->rom_identity = 0u;
     machine->master_tick = 0u;
@@ -61,6 +64,9 @@ void wz_machine_destroy(wz_machine_t* machine)
         }
         wz_kempston_init(&machine->kempston);
         wz_beeper_init(&machine->beeper);
+        machine->tape.segments = 0;
+        machine->tape.segment_count = 0u;
+        machine->tape_mounted = 0u;
         machine->ula_output = 0u;
         machine->maskable_interrupt_line_low = 0u;
         machine->rom_identity = 0u;
@@ -78,6 +84,76 @@ void wz_machine_set_timing_trace(wz_machine_t* machine, wz_trace_sink_t* trace)
     if (machine != 0) {
         machine->timing_trace = trace;
     }
+}
+
+wz_result_t wz_machine_mount_tape(wz_machine_t* machine,
+                                  const wz_tape_segment_t* segments,
+                                  size_t segment_count)
+{
+    wz_tape_t tape;
+    wz_tape_state_t state;
+
+    if (machine == 0 || wz_tape_mount(&tape, segments, segment_count) != WZ_RESULT_OK ||
+        wz_tape_state_init(&state, &tape) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    machine->tape = tape;
+    machine->tape_state = state;
+    machine->tape_mounted = 1u;
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_machine_unmount_tape(wz_machine_t* machine)
+{
+    if (machine == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    machine->tape.segments = 0;
+    machine->tape.segment_count = 0u;
+    machine->tape_mounted = 0u;
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_machine_set_tape_motor(wz_machine_t* machine, bool motor_on)
+{
+    if (machine == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (!machine->tape_mounted) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    return wz_tape_state_set_motor(&machine->tape_state, motor_on);
+}
+
+wz_result_t wz_machine_rewind_tape(wz_machine_t* machine)
+{
+    if (machine == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (!machine->tape_mounted) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    return wz_tape_state_rewind(&machine->tape_state);
+}
+
+wz_result_t wz_machine_advance_tape(wz_machine_t* machine,
+                                    wz_master_tick_t ticks)
+{
+    if (machine == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (!machine->tape_mounted) {
+        return WZ_RESULT_OK;
+    }
+    return wz_tape_state_advance(&machine->tape_state, ticks);
+}
+
+wz_byte_t wz_machine_tape_ear_level(const wz_machine_t* machine)
+{
+    if (machine == 0 || !machine->tape_mounted) {
+        return 0u;
+    }
+    return wz_tape_state_ear_level(&machine->tape_state);
 }
 
 static wz_byte_t wz_contention_delay_at_tstate(wz_dword_t tstate)
@@ -262,6 +338,8 @@ wz_byte_t wz_machine_ula_port_fe_read(const wz_machine_t* machine,
                                 ((value & 0x1fu) & machine->keyboard_rows[row]));
         }
     }
+    value = (wz_byte_t)((value & 0xbfu) |
+                        (wz_byte_t)(wz_machine_tape_ear_level(machine) << 6u));
     return value;
 }
 

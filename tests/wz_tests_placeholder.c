@@ -343,6 +343,36 @@ static void test_tape_object_and_state(void)
     }
 }
 
+static void test_machine_tape_playback(void)
+{
+    const wz_tape_segment_t segments[2u] = {{2u, 0u}, {3u, 1u}};
+    wz_machine_t machine;
+    wz_headless_runner_t runner;
+    const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
+
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK ||
+        wz_machine_set_tape_motor(&machine, true) != WZ_RESULT_INVALID_STATE ||
+        wz_machine_mount_tape(&machine, segments, 2u) != WZ_RESULT_OK ||
+        wz_machine_tape_ear_level(&machine) != 0u ||
+        (wz_machine_ula_port_fe_read(&machine, 0xfeu) & 0x40u) != 0u ||
+        wz_machine_set_tape_motor(&machine, true) != WZ_RESULT_OK ||
+        wz_headless_runner_init(&runner, &machine, 0) != WZ_RESULT_OK ||
+        wz_headless_runner_advance(&runner, 1u) != WZ_RESULT_OK ||
+        wz_machine_tape_ear_level(&machine) != 0u ||
+        wz_headless_runner_advance(&runner, 1u) != WZ_RESULT_OK ||
+        wz_machine_tape_ear_level(&machine) != 1u ||
+        (wz_machine_ula_port_fe_read(&machine, 0xfeu) & 0x40u) == 0u ||
+        wz_machine_rewind_tape(&machine) != WZ_RESULT_OK ||
+        wz_machine_tape_ear_level(&machine) != 0u ||
+        wz_machine_unmount_tape(&machine) != WZ_RESULT_OK ||
+        wz_machine_tape_ear_level(&machine) != 0u) {
+        fputs("machine tape playback integration failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_machine_destroy(&machine);
+}
+
 static void test_beeper_port_fe_timeline(void)
 {
     wz_machine_t machine;
@@ -745,6 +775,7 @@ int main(void)
     test_host_pacing();
     test_audio_speed_boundary_transitions();
     test_tape_object_and_state();
+    test_machine_tape_playback();
     test_beeper_port_fe_timeline();
     test_beeper_pcm_render();
     test_audio_pcm_hash();
