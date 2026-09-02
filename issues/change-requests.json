@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 155,
+  "next_cr_number": 156,
   "status_values": [
     "open",
     "in_progress",
@@ -1420,6 +1420,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 10.10 and 38", "design/wzsn-architectures-1-2-developer-tasks.md task 141", "design/cr-preflight/CR-0154.md", "reference/original-warajevo/source"],
       "notes": "Closed on 2026-09-02 after adding deterministic audible-to-muted and muted-to-audible speed-boundary coverage, explicit host pacing re-anchoring assertions, invalid-policy separation, and continued headless machine advancement. CODE review PASS covered cfe4731..16f4f78; DOCUMENTATION review PASS covered the preflight and tracker. Linux CR0154-boundary-linux-2 and Windows 10 CR0154-boundary-windows-2 passed build and all five CTest entries. Hosted platform-smoke 33659372381 passed all 17 configured runner lanes. Final upstream speed/speaker comparison and zero-gap scan found no undispositioned gap."
+    },
+    {
+      "cr_number": "CR-0155",
+      "title": "Prove deterministic mixer behavior across compilers",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 36 and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 142", "design/cr-preflight/CR-0155.md", "reference/original-warajevo/source"],
+      "notes": "Opened on 2026-09-02 as the next ordered Phase-6 scope. Preflight requires identical canonical mixer, beeper PCM, and evidence results across at least two available compiler/architecture environments."
     }
   ]
 }
