@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 162,
+  "next_cr_number": 163,
   "status_values": [
     "open",
     "in_progress",
@@ -1469,6 +1469,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 20.1, 20.2, and 23.4", "design/wzsn-architectures-1-2-developer-tasks.md task 148", "design/cr-preflight/CR-0161.md", "reference/original-warajevo/source"],
       "notes": "Closed on 2026-09-02 at 93f580c after implementing deterministic core-side SAVE/MIC transitions at canonical master ticks with explicit capture start, stop, reset, bounded overflow, and host-state isolation. CODE and DOCUMENTATION reviews passed with zero findings. Remote Linux CR0161-mic-linux-1 and Windows CR0161-mic-windows-1 passed. Hosted platform-smoke 33669567063 passed all 18 jobs. TAP writing, native tape writing, parsing, instant loading, trap detection, host export, and networking behavior remain explicitly deferred to later ordered tasks; closure evidence is recorded in design/cr-preflight/CR-0161.md."
+    },
+    {
+      "cr_number": "CR-0162",
+      "title": "Implement strict standard Spectrum TAP parsing",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 23.12 and 23.13", "design/wzsn-architectures-1-2-developer-tasks.md task 149", "design/cr-preflight/CR-0162.md", "design/media-format-support.md", "reference/original-warajevo/source"],
+      "notes": "Opened on 2026-09-02 as the next ordered Phase-7 scope. Preflight requires strict standard TAP length, truncation, checksum, and deterministic pulse-expansion behavior with no partial tape publication; native TAP, writing, TZX, WAV, instant loading, trap detection, and host export remain deferred."
     }
   ]
 }
