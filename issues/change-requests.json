@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 108,
+  "next_cr_number": 109,
   "status_values": [
     "open",
     "in_progress",
@@ -1088,9 +1088,16 @@
     {
       "cr_number": "CR-0107",
       "title": "Add raster pixel-level diagnostic dumps",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 36, 37", "design/wzsn-architectures-1-2-developer-tasks.md task 093", "design/raster-sample-encoding.md", "design/cr-preflight/CR-0106.md", "reference/original-warajevo/source"],
-      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-4 scope. Preflight requires deterministic first-difference diagnostics, upstream comparison, remote validation, hosted validation, and a final zero-gap scan."
+      "notes": "Closed on 2026-09-02 after CODE and DOCUMENTATION review PASS, Linux remote harness CR0107-raster-diagnostic-1 passed configure/build/CTest for published head 5f127c7, hosted platform-smoke 33592335061 passed all 18 available labels, and final upstream zero-gap scan passed."
+    },
+    {
+      "cr_number": "CR-0108",
+      "title": "Add raster-state validation and controlled failures",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 15, 16, 37", "design/wzsn-architectures-1-2-developer-tasks.md task 094", "design/raster-sample-encoding.md", "design/cr-preflight/CR-0107.md", "reference/original-warajevo/source"],
+      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-4 scope. Preflight requires defensive raster-state validation, upstream comparison, remote validation, hosted validation, and a final zero-gap scan."
     }
   ]
 }
