@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 134,
+  "next_cr_number": 135,
   "status_values": [
     "open",
     "in_progress",
@@ -1270,9 +1270,16 @@
     {
       "cr_number": "CR-0133",
       "title": "Freeze Kempston joystick port decoding",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 22.7 and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 119", "design/cr-preflight/CR-0133.md", "reference/original-warajevo/source"],
-      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-5 scope. Preflight requires evidence-backed Kempston port and bit semantics before deterministic core state implementation."
+      "notes": "Closed on 2026-09-02 after the Kempston port and active-high bit contract were frozen and implemented, CODE and DOCUMENTATION review PASS, Linux remote smoke CR0133-kempston-linux-2 passed, Windows remote smoke CR0133-kempston-windows-2 passed, hosted platform-smoke 33636420459 passed, and the final upstream zero-gap scan passed."
+    },
+    {
+      "cr_number": "CR-0134",
+      "title": "Integrate deterministic Kempston state into the core",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 22.6 and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 120", "design/cr-preflight/CR-0134.md", "reference/original-warajevo/source"],
+      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-5 scope. Preflight requires machine-code port reads to observe deterministic joystick state separate from the keyboard matrix."
     }
   ]
 }
