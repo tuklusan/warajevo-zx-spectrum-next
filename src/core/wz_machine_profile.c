@@ -24,7 +24,7 @@ static const wz_machine_profile_t wz_profile_48k = {
     32u,
     14335u,
     192u,
-    48u,
+    32u,
     4u,
     1u,
     0u
