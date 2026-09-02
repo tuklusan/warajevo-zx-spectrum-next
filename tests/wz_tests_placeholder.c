@@ -7,6 +7,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "core/wz_machine.h"
@@ -14,6 +15,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "core/wz_scheduler.h"
 #include "core/wz_state.h"
 #include "core/wz_runner.h"
+#include "core/wz_raster_evidence.h"
 #include "diagnostics/wz_trace_file.h"
 
 static void test_raster_evidence(void)
@@ -4350,4 +4352,3 @@ int main(void)
     wz_machine_destroy(&restored);
     return 0;
 }
-#include "core/wz_raster_evidence.h"
