@@ -495,6 +495,9 @@ static void test_native_tap_parser(void)
     size_t count = 0u;
 
     native[0u] = 12u;
+    native[1u] = 0u;
+    native[2u] = 0u;
+    native[3u] = 0u;
     native[12u] = 0u;
     native[13u] = 0u;
     native[14u] = 0u;
