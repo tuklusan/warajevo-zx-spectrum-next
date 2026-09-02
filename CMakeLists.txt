@@ -43,6 +43,7 @@ add_library(
     STATIC
     src/core/wz_machine_profile.c
     src/core/wz_keyboard_matrix.c
+    src/core/wz_kempston.c
     src/core/wz_bus.c
     src/core/wz_machine.c
     src/core/wz_raster.c

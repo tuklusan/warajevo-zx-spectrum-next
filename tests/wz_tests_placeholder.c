@@ -12,6 +12,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "core/wz_machine.h"
 #include "core/wz_keyboard_matrix.h"
+#include "core/wz_kempston.h"
 #include "app/wz_input_timing.h"
 #include "app/wz_input_focus.h"
 #include "core/wz_bus.h"
@@ -142,6 +143,34 @@ static void test_input_focus_loss(void)
     if (!wz_input_arbiter_set(&arbiter, WZ_INPUT_SOURCE_LOCAL, 2u, true) ||
         !wz_input_focus_lost(&controller) || !wz_input_arbiter_key_down(&arbiter, 2u)) {
         fputs("input focus regain behavior failed\n", stderr);
+        exit(1);
+    }
+}
+
+static void test_kempston_decode(void)
+{
+    wz_kempston_t joystick;
+
+    wz_kempston_init(&joystick);
+    if (!wz_kempston_port_selected(0x1fu) || wz_kempston_port_selected(0x1eu) ||
+        wz_kempston_read(&joystick, 0x1fu) != 0u ||
+        wz_kempston_read(&joystick, 0x1eu) != 0u) {
+        fputs("Kempston port selection failed\n", stderr);
+        exit(1);
+    }
+    for (size_t index = 0u; index < WZ_KEMPSTON_CONTROL_COUNT; ++index) {
+        if (!wz_kempston_set(&joystick, (wz_kempston_control_t)index, true) ||
+            (wz_kempston_read(&joystick, 0x1fu) &
+             (wz_byte_t[]){0x10u, 0x08u, 0x02u, 0x01u, 0x04u}[index]) == 0u ||
+            !wz_kempston_set(&joystick, (wz_kempston_control_t)index, false)) {
+            fputs("Kempston bit decode failed\n", stderr);
+            exit(1);
+        }
+    }
+    if (!wz_kempston_set(&joystick, WZ_KEMPSTON_RIGHT, true) ||
+        !wz_kempston_set(&joystick, WZ_KEMPSTON_DOWN, true) ||
+        wz_kempston_read(&joystick, 0x1fu) != 0x12u) {
+        fputs("Kempston combination decode failed\n", stderr);
         exit(1);
     }
 }
@@ -382,6 +411,7 @@ int main(void)
     test_complete_keyboard_matrix();
     test_input_timestamp_assignment();
     test_input_focus_loss();
+    test_kempston_decode();
     test_raster_diagnostic();
     test_raster_invalid_state();
     const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
