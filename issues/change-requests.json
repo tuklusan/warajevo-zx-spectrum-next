@@ -1466,9 +1466,9 @@
     {
       "cr_number": "CR-0161",
       "title": "Implement SAVE/MIC tape output as emulated-time transitions",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 20.1, 20.2, and 23.4", "design/wzsn-architectures-1-2-developer-tasks.md task 148", "design/cr-preflight/CR-0161.md", "reference/original-warajevo/source"],
-      "notes": "Opened on 2026-09-02 as the next ordered Phase-7 scope. Preflight inventories deterministic core-side SAVE/MIC transitions at canonical master ticks, preserves host export outside the core, and explicitly defers TAP writing, native tape writing, parsing, instant loading, trap detection, and networking behavior."
+      "notes": "Closed on 2026-09-02 at 93f580c after implementing deterministic core-side SAVE/MIC transitions at canonical master ticks with explicit capture start, stop, reset, bounded overflow, and host-state isolation. CODE and DOCUMENTATION reviews passed with zero findings. Remote Linux CR0161-mic-linux-1 and Windows CR0161-mic-windows-1 passed. Hosted platform-smoke 33669567063 passed all 18 jobs. TAP writing, native tape writing, parsing, instant loading, trap detection, host export, and networking behavior remain explicitly deferred to later ordered tasks; closure evidence is recorded in design/cr-preflight/CR-0161.md."
     }
   ]
 }
