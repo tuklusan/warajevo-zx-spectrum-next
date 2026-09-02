@@ -99,6 +99,18 @@ static void test_input_timestamp_assignment(void)
         fputs("input timestamp assignment failed\n", stderr);
         exit(1);
     }
+    event.pressed = 0u;
+    if (!wz_input_timestamp_assign(&assigner, &event, UINT64_MAX, &second) ||
+        second.event.pressed != 0u || second.master_tick != UINT64_MAX ||
+        second.sequence != 3u) {
+        fputs("input release timestamp assignment failed\n", stderr);
+        exit(1);
+    }
+    assigner.next_sequence = UINT64_MAX;
+    if (wz_input_timestamp_assign(&assigner, &event, UINT64_MAX, &second)) {
+        fputs("input timestamp sequence exhaustion failed\n", stderr);
+        exit(1);
+    }
 }
 
 static void test_raster_diagnostic(void)
