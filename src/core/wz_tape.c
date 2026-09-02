@@ -845,7 +845,6 @@ static wz_result_t wz_tzx_count_generalized(const wz_tzx_block_t* block,
         size_t pulses = 0u;
         while (pulses < (size_t)block->data[16u] &&
                block->data[symbol_offset + 1u + pulses * 2u] != 0u) ++pulses;
-        if (pulses == (size_t)block->data[16u]) return WZ_RESULT_PARSE_ERROR;
         if (pulses > SIZE_MAX - total) return WZ_RESULT_PARSE_ERROR;
         total += pulses;
     }

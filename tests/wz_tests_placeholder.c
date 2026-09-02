@@ -704,19 +704,7 @@ static void test_tzx_timing(void)
         {0u, 27u, 0x19u, WZ_TZX_SUPPORTED, generalized_data,
          sizeof(generalized_data)}
     };
-    wz_result_t generalized_probe;
 
-    generalized_probe = wz_tape_expand_tzx_timing(generalized_blocks, 1u, 2u,
-                                                   0, 0u, &count);
-    fprintf(stderr, "Generalized probe: result=%d count=%zu\n",
-            generalized_probe, count);
-    generalized_probe = wz_tape_expand_tzx_timing(generalized_blocks, 1u, 2u,
-                                                   segments, 5u, &count);
-    fprintf(stderr, "Generalized expansion: result=%d count=%zu durations=%llu,%llu,%llu levels=%u,%u,%u\n",
-            generalized_probe, count, (unsigned long long)segments[0u].duration,
-            (unsigned long long)segments[1u].duration,
-            (unsigned long long)segments[2u].duration, segments[0u].ear_level,
-            segments[1u].ear_level, segments[2u].ear_level);
     if (wz_tape_expand_tzx_timing(&standard, 1u, 2u, 0, 0u, &count) !=
             WZ_RESULT_BUFFER_TOO_SMALL || count != 8097u ||
         wz_tape_expand_tzx_timing(&turbo, 1u, 2u, 0, 0u, &count) !=
