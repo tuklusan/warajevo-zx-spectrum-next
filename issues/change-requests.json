@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 160,
+  "next_cr_number": 161,
   "status_values": [
     "open",
     "in_progress",
@@ -1455,6 +1455,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 23.1 and 23.2", "design/wzsn-architectures-1-2-developer-tasks.md task 146", "design/cr-preflight/CR-0159.md", "reference/original-warajevo/source"],
       "notes": "Closed on 2026-09-02 at 68f467b after integrating validated tape attachment, canonical master-time advancement, ULA port-FE EAR bit-6 visibility, motor/rewind/no-media behavior, and synthetic headless fixtures. The initial remote sanitizer run CR0159-playback-linux-asan-1 found and proved a temporary tape-descriptor lifetime defect; the corrected implementation passed CODE review with zero confirmed findings for 38e26dafe..68f467b1b, remote sanitizer CR0159-playback-linux-asan-2, Linux CR0159-playback-linux-2, and Windows 10 CR0159-playback-windows-2. DOCUMENTATION review passed with zero confirmed findings. Hosted platform-smoke 33665077487 passed all 18 jobs. Upstream zero-gap exit scan completed with parser, SAVE/MIC, instant-load, trap, and networking scopes explicitly deferred to later ordered tasks."
+    },
+    {
+      "cr_number": "CR-0160",
+      "title": "Prove speed-invariant emulated tape timing",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 23.2 and 23.3", "design/wzsn-architectures-1-2-developer-tasks.md task 147", "design/cr-preflight/CR-0160.md", "reference/original-warajevo/source"],
+      "notes": "Opened on 2026-09-02 as the next ordered Phase-7 scope. Preflight requires canonical edge-tick equivalence across runtime speeds while preserving host pacing separation and explicitly deferring parser, SAVE/MIC, instant-load, trap, and networking behavior."
     }
   ]
 }
