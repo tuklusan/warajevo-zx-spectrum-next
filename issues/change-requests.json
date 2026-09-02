@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 99,
+  "next_cr_number": 100,
   "status_values": [
     "open",
     "in_progress",
@@ -1028,6 +1028,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 16, 16.3, 17, 19, 36, 44, and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 084", "design/raster-sample-encoding.md", "design/cr-preflight/CR-0097.md", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
       "notes": "Closed on 2026-09-02 after CODE review PASS packet 3d176599, DOCUMENTATION review PASS packet eea9022a, Linux remote harness CR0098-RASTER-ENCODING-LINUX-R2 passed all five CTest targets, and hosted platform-smoke 33585467947 passed all five jobs for 4a6beca. Final upstream zero-gap scan passed; full raster buffer, pixel/color/FLASH behavior, and diagnostics remain ordered later Phase-4 tasks."
+    },
+    {
+      "cr_number": "CR-0099",
+      "title": "Implement canonical native raster buffer",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 16.1, 16.2, 16.3, 19, 36, and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 085", "design/raster-sample-encoding.md", "design/cr-preflight/CR-0098.md", "reference/original-warajevo/source"],
+      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-4 scope. Preflight requires profile-sized headless logical raster storage, bounds/invalid-value fixtures, upstream comparison, remote validation, hosted validation, and a final zero-gap scan."
     }
   ]
 }
