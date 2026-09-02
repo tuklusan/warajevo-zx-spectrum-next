@@ -31,6 +31,7 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     }
     wz_kempston_init(&machine->kempston);
     machine->ula_output = 0u;
+    wz_beeper_init(&machine->beeper);
     machine->maskable_interrupt_line_low = 0u;
     machine->rom_identity = 0u;
     machine->master_tick = 0u;
@@ -59,6 +60,7 @@ void wz_machine_destroy(wz_machine_t* machine)
             machine->keyboard_rows[index] = 0x1fu;
         }
         wz_kempston_init(&machine->kempston);
+        wz_beeper_init(&machine->beeper);
         machine->ula_output = 0u;
         machine->maskable_interrupt_line_low = 0u;
         machine->rom_identity = 0u;
@@ -272,6 +274,7 @@ void wz_machine_ula_port_fe_write(wz_machine_t* machine, wz_word_t address,
     }
     machine->ula_output = (wz_byte_t)(value & 0x1fu);
     machine->ula_output_tick = master_tick;
+    wz_beeper_port_fe_write(&machine->beeper, value, master_tick);
     machine->border_color = (wz_byte_t)(value & 0x07u);
     if (machine->border_event_count < WZ_BORDER_EVENT_CAPACITY) {
         machine->border_events[machine->border_event_count].master_tick = master_tick;
@@ -287,6 +290,23 @@ void wz_machine_ula_port_fe_write(wz_machine_t* machine, wz_word_t address,
         event.auxiliary = 0x01u;
         wz_trace_emit_detail(machine->timing_trace, &event);
     }
+}
+
+wz_byte_t wz_machine_beeper_level(const wz_machine_t* machine)
+{
+    return machine == 0 ? 0u : wz_beeper_level(&machine->beeper);
+}
+
+wz_byte_t wz_machine_mic_level(const wz_machine_t* machine)
+{
+    return machine == 0 ? 0u : wz_beeper_mic_level(&machine->beeper);
+}
+
+size_t wz_machine_beeper_events(const wz_machine_t* machine,
+                                wz_beeper_event_t* events,
+                                size_t capacity)
+{
+    return machine == 0 ? 0u : wz_beeper_events(&machine->beeper, events, capacity);
 }
 
 wz_byte_t wz_machine_border_color(const wz_machine_t* machine)

@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 143,
+  "next_cr_number": 144,
   "status_values": [
     "open",
     "in_progress",
@@ -1336,6 +1336,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md section 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 128", "design/cr-preflight/CR-0142.md", "reference/original-warajevo/source"],
       "notes": "Closed on 2026-09-02 after the prerequisite audit confirmed Tasks 105–127 closed, CODE and DOCUMENTATION reviews passed for a100ad6, Linux remote smoke CR0142-phase5-gate-linux-1 and Windows 10 remote smoke CR0142-phase5-gate-windows-2 passed, hosted platform-smoke 33644647840 and repository-gates 33644647807 passed across the configured runner set, and the final upstream host-shell, presentation, input, timing, and configuration comparison found no undispositioned Phase-5 gap."
+    },
+    {
+      "cr_number": "CR-0143",
+      "title": "Implement timestamped beeper transitions",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 20.1-20.2", "design/wzsn-architectures-1-2-developer-tasks.md task 129", "design/cr-preflight/CR-0143.md", "reference/original-warajevo/source"],
+      "notes": "Opened and activated on 2026-09-02 as the first ordered Phase-6 scope. Preflight requires canonical port-FE beeper transitions at master ticks with separate MIC state and no host audio dependency."
     }
   ]
 }

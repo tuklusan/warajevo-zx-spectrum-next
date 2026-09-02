@@ -12,6 +12,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include <stddef.h>
 
 #include "core/wz_bus.h"
+#include "core/audio/wz_beeper.h"
 #include "core/wz_machine_profile.h"
 #include "core/wz_kempston.h"
 #include "core/wz_raster.h"
@@ -59,6 +60,7 @@ typedef struct wz_machine {
     wz_byte_t hardware_io_decode_enabled;
     wz_byte_t keyboard_rows[8u];
     wz_kempston_t kempston;
+    wz_beeper_t beeper;
     wz_byte_t ula_output;
     wz_qword_t rom_identity;
     wz_master_tick_t master_tick;
@@ -101,6 +103,11 @@ void wz_machine_memory_write(wz_machine_t* machine, wz_word_t address,
 void wz_machine_memory_write_at_tick(wz_machine_t* machine, wz_word_t address,
                                      wz_byte_t value, wz_master_tick_t master_tick);
 bool wz_machine_ula_port_fe_selected(wz_word_t address);
+wz_byte_t wz_machine_beeper_level(const wz_machine_t* machine);
+wz_byte_t wz_machine_mic_level(const wz_machine_t* machine);
+size_t wz_machine_beeper_events(const wz_machine_t* machine,
+                                wz_beeper_event_t* events,
+                                size_t capacity);
 wz_byte_t wz_machine_ula_port_fe_read(const wz_machine_t* machine,
                                        wz_word_t address);
 void wz_machine_ula_port_fe_write(wz_machine_t* machine, wz_word_t address,

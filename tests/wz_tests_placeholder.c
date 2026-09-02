@@ -272,6 +272,36 @@ static void test_host_pacing(void)
     }
 }
 
+static void test_beeper_port_fe_timeline(void)
+{
+    wz_machine_t machine;
+    wz_beeper_event_t events[4u];
+    size_t count;
+
+    if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK) {
+        fputs("beeper machine setup failed\n", stderr);
+        exit(1);
+    }
+    wz_machine_ula_port_fe_write(&machine, 0x00u, 100u);
+    wz_machine_ula_port_fe_write(&machine, 0x18u, 200u);
+    wz_machine_ula_port_fe_write(&machine, 0x00u, 300u);
+    count = wz_machine_beeper_events(&machine, events, 4u);
+    if (count != 2u || events[0].master_tick != 200u || events[0].level != 1u ||
+        events[1].master_tick != 300u || events[1].level != 0u ||
+        wz_machine_beeper_level(&machine) != 0u ||
+        wz_machine_mic_level(&machine) != 0u) {
+        fputs("beeper timestamp or MIC separation failed\n", stderr);
+        exit(1);
+    }
+    wz_machine_ula_port_fe_write(&machine, 0x10u, 400u);
+    if (wz_machine_mic_level(&machine) != 1u ||
+        wz_machine_beeper_events(&machine, events, 4u) != 2u) {
+        fputs("MIC-only port-FE transition failed\n", stderr);
+        exit(1);
+    }
+    wz_machine_destroy(&machine);
+}
+
 static void test_raster_diagnostic(void)
 {
     wz_byte_t expected_samples[6] = {0u, 1u, 2u, 3u, 4u, 5u};
@@ -512,6 +542,7 @@ int main(void)
     test_kempston_mapping();
     test_speed_policy();
     test_host_pacing();
+    test_beeper_port_fe_timeline();
     test_raster_diagnostic();
     test_raster_invalid_state();
     const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
