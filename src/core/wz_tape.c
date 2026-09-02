@@ -43,19 +43,20 @@ static wz_result_t wz_tape_tap_count_block(const wz_byte_t* block,
                                            size_t block_length,
                                            size_t* total)
 {
-    size_t pulse_count;
-    size_t byte_count;
+    size_t pilot_count;
+    size_t data_pulse_count;
 
     if (block == 0 || total == 0 || block_length < 2u) {
         return WZ_RESULT_PARSE_ERROR;
     }
-    pulse_count = block[0u] == 0u ? 8063u : 3223u;
-    if (block_length > (SIZE_MAX - pulse_count - 3u) / 16u) {
+    pilot_count = block[0u] == 0u ? 8063u : 3223u;
+    if (block_length > (SIZE_MAX - pilot_count - 3u) / 16u) {
         return WZ_RESULT_PARSE_ERROR;
     }
-    byte_count = block_length * 16u;
-    if (wz_tape_tap_add_count(total, pulse_count) != WZ_RESULT_OK ||
-        wz_tape_tap_add_count(total, 2u + byte_count * 2u) != WZ_RESULT_OK ||
+    data_pulse_count = block_length * 16u;
+    if (wz_tape_tap_add_count(total, pilot_count) != WZ_RESULT_OK ||
+        wz_tape_tap_add_count(total, 2u) != WZ_RESULT_OK ||
+        wz_tape_tap_add_count(total, data_pulse_count) != WZ_RESULT_OK ||
         wz_tape_tap_add_count(total, 1u) != WZ_RESULT_OK) {
         return WZ_RESULT_PARSE_ERROR;
     }
