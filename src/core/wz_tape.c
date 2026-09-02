@@ -695,9 +695,9 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
             break;
         case 0x13u:
             if (block->data_length < 1u) return WZ_RESULT_PARSE_ERROR;
-            if ((size_t)block->data[0u] > SIZE_MAX / 2u) return WZ_RESULT_PARSE_ERROR;
-            amount = (size_t)block->data[0u] * 2u;
-            if (block->data_length < 1u + amount) return WZ_RESULT_PARSE_ERROR;
+            amount = (size_t)block->data[0u];
+            if (amount > (SIZE_MAX - 1u) / 2u ||
+                block->data_length < 1u + amount * 2u) return WZ_RESULT_PARSE_ERROR;
             break;
         case 0x20u:
             if (block->data_length < 2u) return WZ_RESULT_PARSE_ERROR;
