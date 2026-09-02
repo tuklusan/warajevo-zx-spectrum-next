@@ -1121,8 +1121,13 @@ int main(void)
             bus_request.direction != WZ_BUS_DIRECTION_READ ||
             bus_request.source != (address % 2u == 0u
                                        ? WZ_BUS_SOURCE_ULA
-                                       : WZ_BUS_SOURCE_FALLBACK) ||
-            (address % 2u != 0u && bus_request.value != 0xffu)) {
+                                       : address == WZ_KEMPSTON_PORT
+                                           ? WZ_BUS_SOURCE_INPUT
+                                           : WZ_BUS_SOURCE_FALLBACK) ||
+            (address % 2u != 0u && address != WZ_KEMPSTON_PORT &&
+             bus_request.value != 0xffu) ||
+            (address == WZ_KEMPSTON_PORT &&
+             bus_request.value != wz_machine_kempston_read(&machine, address))) {
             fputs("full-range unsupported I/O read failed\n", stderr);
             return 1;
         }
