@@ -454,6 +454,44 @@ int main(void)
         machine.master_tick = 0u;
     }
     {
+        wz_raster_position_t before_active;
+        wz_raster_position_t active_start;
+        wz_border_event_t transitions[2u];
+        wz_ula_fetch_event_t fetches[2u];
+        size_t fetch_count = 0u;
+        size_t transition_count;
+        const wz_master_tick_t first_fetch_tick = 14335u * 2u;
+
+        machine.master_tick = 447u;
+        if (wz_machine_raster_position(&machine, &before_active) != WZ_RESULT_OK ||
+            before_active.line != 0u || before_active.raster_clock != 447u) {
+            fputs("overscan pre-active edge contract failed\n", stderr);
+            return 1;
+        }
+        machine.master_tick = 448u;
+        if (wz_machine_raster_position(&machine, &active_start) != WZ_RESULT_OK ||
+            active_start.line != 1u || active_start.raster_clock != 0u ||
+            active_start.frame_raster_clock != 448u) {
+            fputs("overscan active transition contract failed\n", stderr);
+            return 1;
+        }
+        wz_machine_ula_port_fe_write(&machine, 0x00feu, 0x01u, 447u);
+        wz_machine_ula_port_fe_write(&machine, 0x00feu, 0x06u, 448u);
+        transition_count = wz_machine_border_events(
+            &machine, transitions, sizeof(transitions) / sizeof(transitions[0u]));
+        if (transition_count < 2u || transitions[0u].master_tick != 447u ||
+            transitions[0u].color != 1u || transitions[1u].master_tick != 448u ||
+            transitions[1u].color != 6u ||
+            wz_machine_ula_fetches_at_tick(&machine, first_fetch_tick,
+                                           fetches, 2u, &fetch_count) != WZ_RESULT_OK ||
+            fetch_count != 2u || fetches[0u].master_tick != first_fetch_tick ||
+            fetches[1u].master_tick != first_fetch_tick + 2u) {
+            fputs("overscan border-to-fetch ordering contract failed\n", stderr);
+            return 1;
+        }
+        machine.master_tick = 0u;
+    }
+    {
         wz_ula_fetch_event_t fetches[2u];
         size_t fetch_count = 0u;
         wz_master_tick_t first_fetch_tick = 14335u * 2u;
