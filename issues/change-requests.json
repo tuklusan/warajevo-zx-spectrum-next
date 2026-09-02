@@ -1158,9 +1158,9 @@
     {
       "cr_number": "CR-0117",
       "title": "Repeat the complete Phase-4A timing smoke suite on two compilers",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 36 and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 103", "design/cr-preflight/CR-0116.md", "reference/original-warajevo/source"],
-      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-4A scope. Preflight requires the complete timing-smoke repeat on independent compiler paths, upstream comparison, remote validation, hosted validation, and a final zero-gap scan."
+      "notes": "Closed on 2026-09-02 after CODE and DOCUMENTATION review PASS, Linux GCC remote harness CR0117-phase4a-linux-gcc-1 passed, Windows MSVC remote harness CR0117-phase4a-windows-msvc-1 passed, hosted repository gates 33595650732 and platform-smoke 33595650810 passed across the expanded available matrix, and the final upstream zero-gap scan passed."
     }
   ]
 }
