@@ -15,6 +15,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
   smoke:
@@ -102,8 +103,17 @@ jobs:
           EXPECTED_RUN_ID: ${{ github.run_id }}
           EXPECTED_SHA: ${{ github.sha }}
           MATRIX_RESULT: ${{ needs.smoke.result }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           printf 'run_id=%s\nsha=%s\nmatrix_result=%s\n' "$EXPECTED_RUN_ID" "$EXPECTED_SHA" "$MATRIX_RESULT"
           test -n "$EXPECTED_RUN_ID"
           test "$EXPECTED_SHA" = "${GITHUB_SHA}"
           test "$MATRIX_RESULT" = success
+          expected='linux-x64 linux-x64-latest linux-x64-24 linux-x64-26 linux-arm64-22 linux-arm64 linux-arm64-26 windows-latest windows-server-2022 windows-server-2025 windows-server-2025-vs2026 macos-arm64-latest macos-arm64 macos-arm64-14 macos-intel-x64 macos-intel-26 macos-arm64-26 macos-xcode-27'
+          actual=$(gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/runs/${EXPECTED_RUN_ID}/jobs?per_page=100" --jq '.jobs[] | select(.name != "publication-gate") | [.name, .head_sha, .conclusion] | @tsv')
+          test "$(printf '%s\n' "$actual" | wc -l)" -eq 18
+          while IFS=$'\t' read -r name sha conclusion; do
+            case " $expected " in *" $name "*) ;; *) exit 1 ;; esac
+            test "$sha" = "$EXPECTED_SHA"
+            test "$conclusion" = success
+          done <<< "$actual"
