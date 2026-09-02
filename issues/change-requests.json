@@ -1445,9 +1445,9 @@
     {
       "cr_number": "CR-0158",
       "title": "Implement in-memory tape object and state",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 23.1, 23.2, and 49.2", "design/wzsn-architectures-1-2-developer-tasks.md task 145", "design/cr-preflight/CR-0158.md", "reference/original-warajevo/source"],
-      "notes": "Opened on 2026-09-02 as the next ordered Phase-7 scope. Preflight requires a validated in-memory tape/media boundary independent of host file handles and ready for synthetic headless playback."
+      "notes": "Closed on 2026-09-02 at 568ffec after implementing validated immutable in-memory tape media and mutable playback state, including motor gating, exact-boundary advancement, rewind, and end-of-tape behavior. CODE review passed with zero confirmed findings for ce0cb772..568ffecc; DOCUMENTATION review passed with zero confirmed findings. Linux CR0158-tape-linux-1 and Windows 10 CR0158-tape-windows-1 passed the complete five-test smoke suite. Hosted platform-smoke 33663329995 passed all 18 configured runner jobs. Final upstream-comparison gate found no undispositioned gap; ordered playback integration work may proceed."
     }
   ]
 }
