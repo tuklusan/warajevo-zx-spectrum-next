@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 120,
+  "next_cr_number": 121,
   "status_values": [
     "open",
     "in_progress",
@@ -1172,9 +1172,16 @@
     {
       "cr_number": "CR-0119",
       "title": "Pin the exact Sokol revision before host implementation",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 27.1, 27.3, and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 105", "design/cr-preflight/CR-0118.md", "reference/original-warajevo/source"],
-      "notes": "Opened and activated on 2026-09-02 as the first ordered Phase-5 scope. Preflight requires exact source identity, revision, license, provenance, and a dependency-boundary review before host code."
+      "notes": "Closed on 2026-09-02 after CODE and DOCUMENTATION review PASS, Sokol master resolved to immutable revision 1847290135f95e57e6d220b0a41208306aafc0dd with zlib provenance recorded, Linux remote smoke CR0119-sokol-pin-1 passed, hosted repository gates 33596203624 and platform-smoke 33596203607 passed, and the upstream dependency-boundary zero-gap scan passed."
+    },
+    {
+      "cr_number": "CR-0120",
+      "title": "Freeze the initial Linux graphics backend",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 27.4 and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 106", "design/cr-preflight/CR-0119.md", "reference/original-warajevo/source"],
+      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-5 scope. Preflight requires an explicit Linux X11 backend decision before host code and must keep backend details outside deterministic core behavior."
     }
   ]
 }
