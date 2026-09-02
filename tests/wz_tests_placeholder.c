@@ -300,6 +300,48 @@ int main(void)
         fputs("master-tick conversion failed\n", stderr);
         return 1;
     }
+    {
+        wz_raster_position_t raster_position;
+        if (wz_machine_raster_position(0, &raster_position) !=
+                WZ_RESULT_INVALID_ARGUMENT ||
+            wz_machine_raster_position(&machine, 0) !=
+                WZ_RESULT_INVALID_ARGUMENT ||
+            wz_machine_raster_position(&machine, &raster_position) != WZ_RESULT_OK ||
+            raster_position.frame_number != 0u ||
+            raster_position.frame_raster_clock != 0u ||
+            raster_position.line != 0u || raster_position.raster_clock != 0u) {
+            fputs("initial raster coordinate contract failed\n", stderr);
+            return 1;
+        }
+        machine.master_tick = 447u;
+        if (wz_machine_raster_position(&machine, &raster_position) != WZ_RESULT_OK ||
+            raster_position.line != 0u || raster_position.raster_clock != 447u) {
+            fputs("raster line boundary failed\n", stderr);
+            return 1;
+        }
+        machine.master_tick = 448u;
+        if (wz_machine_raster_position(&machine, &raster_position) != WZ_RESULT_OK ||
+            raster_position.line != 1u || raster_position.raster_clock != 0u ||
+            raster_position.frame_raster_clock != 448u) {
+            fputs("raster line transition failed\n", stderr);
+            return 1;
+        }
+        machine.master_tick = 139775u;
+        if (wz_machine_raster_position(&machine, &raster_position) != WZ_RESULT_OK ||
+            raster_position.frame_number != 0u || raster_position.line != 311u ||
+            raster_position.raster_clock != 447u) {
+            fputs("raster frame boundary failed\n", stderr);
+            return 1;
+        }
+        machine.master_tick = 139776u;
+        if (wz_machine_raster_position(&machine, &raster_position) != WZ_RESULT_OK ||
+            raster_position.frame_number != 1u || raster_position.frame_raster_clock != 0u ||
+            raster_position.line != 0u || raster_position.raster_clock != 0u) {
+            fputs("raster frame wrap failed\n", stderr);
+            return 1;
+        }
+        machine.master_tick = 0u;
+    }
     if (wz_machine_memory_read(0, 0u) != 0xffu ||
         wz_machine_ula_port_fe_read(0, 0u) != 0xffu ||
         wz_machine_bus_request(0, 0) != WZ_RESULT_INVALID_ARGUMENT ||

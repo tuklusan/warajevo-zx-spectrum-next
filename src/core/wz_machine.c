@@ -294,6 +294,30 @@ bool wz_machine_maskable_interrupt_line_low(const wz_machine_t* machine)
     return machine != 0 && machine->maskable_interrupt_line_low != 0u;
 }
 
+wz_result_t wz_machine_raster_position(const wz_machine_t* machine,
+                                       wz_raster_position_t* position)
+{
+    wz_qword_t raster_clocks_per_frame;
+    wz_qword_t frame_raster_clock;
+
+    if (machine == 0 || position == 0 || machine->profile == 0 ||
+        machine->profile->raster_clocks_per_line == 0u ||
+        machine->profile->lines_per_frame == 0u) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    raster_clocks_per_frame =
+        (wz_qword_t)machine->profile->raster_clocks_per_line *
+        (wz_qword_t)machine->profile->lines_per_frame;
+    position->frame_number = machine->master_tick / raster_clocks_per_frame;
+    frame_raster_clock = machine->master_tick % raster_clocks_per_frame;
+    position->frame_raster_clock = (wz_dword_t)frame_raster_clock;
+    position->line = (wz_dword_t)(frame_raster_clock /
+                                  machine->profile->raster_clocks_per_line);
+    position->raster_clock = (wz_dword_t)(frame_raster_clock %
+                                          machine->profile->raster_clocks_per_line);
+    return WZ_RESULT_OK;
+}
+
 const char* wz_machine_boot_message(void)
 {
     return "Warajevo ZX Spectrum Next bootstrap";

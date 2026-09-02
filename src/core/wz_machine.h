@@ -20,6 +20,13 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #define WZ_48K_ROM_SIZE 16384u
 #define WZ_48K_RAM_SIZE 49152u
 
+typedef struct {
+    wz_qword_t frame_number;
+    wz_dword_t frame_raster_clock;
+    wz_dword_t line;
+    wz_dword_t raster_clock;
+} wz_raster_position_t;
+
 typedef struct wz_machine {
     const wz_machine_profile_t* profile;
     wz_z80_state_t cpu;
@@ -69,5 +76,7 @@ void wz_machine_ula_port_fe_write(wz_machine_t* machine, wz_word_t address,
                                   wz_byte_t value, wz_master_tick_t master_tick);
 void wz_machine_update_interrupt_line(wz_machine_t* machine);
 bool wz_machine_maskable_interrupt_line_low(const wz_machine_t* machine);
+wz_result_t wz_machine_raster_position(const wz_machine_t* machine,
+                                       wz_raster_position_t* position);
 
 #endif
