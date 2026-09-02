@@ -1074,9 +1074,9 @@
     {
       "cr_number": "CR-0105",
       "title": "Add multicolor memory-write versus fetch regression",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 13, 18, 36, and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 091", "design/machine-timing-evidence.md", "design/cr-preflight/CR-0104.md", "reference/original-warajevo/source"],
-      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-4 scope. Preflight requires timed multicolor-style write/fetch evidence, upstream comparison, remote validation, hosted validation, and a final zero-gap scan."
+      "notes": "Closed on 2026-09-02 after CODE and DOCUMENTATION review PASS, Linux remote harness CR0105-MULTICOLOR-LINUX-R1 passed all five CTest targets and the complete pinned corpus for published head 5e66851, hosted platform-smoke 33590728764 passed all 18 available labels, and final upstream zero-gap scan passed."
     }
   ]
 }
