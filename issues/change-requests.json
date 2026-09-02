@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 137,
+  "next_cr_number": 138,
   "status_values": [
     "open",
     "in_progress",
@@ -1291,9 +1291,16 @@
     {
       "cr_number": "CR-0136",
       "title": "Implement runtime speed policy values",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 10.7-10.9 and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 122", "design/cr-preflight/CR-0136.md", "reference/original-warajevo/source"],
-      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-5 scope. Preflight requires host pacing policy values without changing emulated master-clock hardware timing."
+      "notes": "Closed on 2026-09-02 after exact 25/50/100/200/400/800/Unlimited host-only policy values and invalid-value handling were added, CODE and DOCUMENTATION review PASS, Linux remote smoke CR0136-speed-linux-1 passed, Windows remote smoke CR0136-speed-windows-1 passed, hosted runs 33639576257 and 33639576317 passed, and the final upstream zero-gap scan passed."
+    },
+    {
+      "cr_number": "CR-0137",
+      "title": "Implement monotonic host-clock pacing",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 10.7-10.9 and 32", "design/wzsn-architectures-1-2-developer-tasks.md task 123", "design/cr-preflight/CR-0137.md", "reference/original-warajevo/source"],
+      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-5 scope. Preflight requires host pacing against a monotonic clock without feeding host time into machine state."
     }
   ]
 }
