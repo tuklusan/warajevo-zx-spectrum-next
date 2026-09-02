@@ -21,6 +21,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "app/wz_host_audio_push.h"
 #include "app/wz_host_audio_policy.h"
 #include "core/audio/wz_audio_policy.h"
+#include "core/audio/wz_audio_evidence.h"
 #include "core/audio/wz_ay_mixer_policy.h"
 #include "core/wz_bus.h"
 #include "core/wz_scheduler.h"
@@ -317,6 +318,33 @@ static void test_beeper_pcm_render(void)
         !wz_beeper_render_pcm(events, 2u, 0u, 0u, 10u, 2u,
                                samples, 2u)) {
         fputs("beeper PCM integration contract failed\n", stderr);
+        exit(1);
+    }
+}
+
+static void test_audio_pcm_hash(void)
+{
+    const wz_beeper_event_t events[2u] = {{3u, 1u}, {7u, 0u}};
+    wz_audio_sample_t first[4u] = {0, 0, 0, 0};
+    wz_audio_sample_t second[4u] = {0, 0, 0, 0};
+    wz_qword_t first_hash;
+    wz_qword_t second_hash;
+
+    if (!wz_beeper_render_pcm(events, 2u, 0u, 0u, 10u, 4u,
+                              first, 4u) ||
+        !wz_beeper_render_pcm(events, 2u, 0u, 0u, 10u, 4u,
+                               second, 4u) ||
+        wz_audio_samples_hash(first, 4u, &first_hash) != WZ_RESULT_OK ||
+        wz_audio_samples_hash(second, 4u, &second_hash) != WZ_RESULT_OK ||
+        first_hash != second_hash || first_hash == 0u) {
+        fputs("canonical audio hash repeatability failed\n", stderr);
+        exit(1);
+    }
+    second[3] += 1;
+    if (wz_audio_samples_hash(second, 4u, &second_hash) != WZ_RESULT_OK ||
+        first_hash == second_hash ||
+        wz_audio_samples_hash(0, 1u, &second_hash) != WZ_RESULT_INVALID_ARGUMENT) {
+        fputs("canonical audio hash sensitivity failed\n", stderr);
         exit(1);
     }
 }
@@ -651,6 +679,7 @@ int main(void)
     test_host_pacing();
     test_beeper_port_fe_timeline();
     test_beeper_pcm_render();
+    test_audio_pcm_hash();
     test_host_audio_push_queue();
     test_canonical_audio_policy();
     test_host_audio_policy();

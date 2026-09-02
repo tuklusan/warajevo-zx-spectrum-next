@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 152,
+  "next_cr_number": 153,
   "status_values": [
     "open",
     "in_progress",
@@ -1399,6 +1399,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 21 and 32", "design/wzsn-architectures-1-2-developer-tasks.md task 138", "design/cr-preflight/CR-0151.md", "reference/original-warajevo/source"],
       "notes": "Closed on 2026-09-02 after hardening the fixed-capacity non-blocking host FIFO with explicit overflow loss and underflow behavior, and adding regression proof that queue pressure leaves the canonical machine hash unchanged. CODE and DOCUMENTATION reviews passed with no confirmed findings. Linux CR0151-backpressure-linux-1 and Windows 10 CR0151-backpressure-windows-1 passed build and all five CTest entries. Hosted platform-smoke 33652531787 and repository-gates 33652531735 passed across the configured runner set; final upstream buffering/callback comparison found no undispositioned gap."
+    },
+    {
+      "cr_number": "CR-0152",
+      "title": "Add canonical beeper and PCM hash regressions",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 20.2, 20.5, and 38", "design/wzsn-architectures-1-2-developer-tasks.md task 139", "design/cr-preflight/CR-0152.md", "reference/original-warajevo/source"],
+      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-6 scope. Preflight requires stable canonical PCM hashing and regression coverage before host device conversion."
     }
   ]
 }
