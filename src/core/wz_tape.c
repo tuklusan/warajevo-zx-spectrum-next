@@ -778,6 +778,37 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
             if (amount > (SIZE_MAX - 1u) / 2u ||
                 block->data_length < 1u + amount * 2u) return WZ_RESULT_PARSE_ERROR;
             break;
+        case 0x14u: {
+            size_t data_length;
+            size_t used_bits;
+            if (block->data_length < 10u) return WZ_RESULT_PARSE_ERROR;
+            data_length = (size_t)wz_tzx_read_le24(block->data + 7u);
+            if (data_length == 0u || data_length > block->data_length - 10u) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            used_bits = block->data[4u] == 0u ? 8u : block->data[4u];
+            if (used_bits > 8u || data_length > (SIZE_MAX - used_bits) / 8u) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            amount = (data_length - 1u) * 16u + used_bits * 2u;
+            if (wz_read_le16(block->data + 5u) != 0u) ++amount;
+            break;
+        }
+        case 0x15u: {
+            size_t data_length;
+            size_t used_bits;
+            if (block->data_length < 8u) return WZ_RESULT_PARSE_ERROR;
+            data_length = (size_t)wz_tzx_read_le24(block->data + 5u);
+            if (data_length == 0u || data_length > block->data_length - 8u) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            used_bits = block->data[4u] == 0u ? 8u : block->data[4u];
+            if (used_bits > 8u || data_length > (SIZE_MAX - used_bits) / 8u ||
+                wz_read_le16(block->data) == 0u) return WZ_RESULT_PARSE_ERROR;
+            amount = (data_length - 1u) * 8u + used_bits;
+            if (wz_read_le16(block->data + 2u) != 0u) ++amount;
+            break;
+        }
         case 0x20u:
             if (block->data_length < 2u) return WZ_RESULT_PARSE_ERROR;
             amount = wz_read_le16(block->data) == 0u ? 0u : 1u;
@@ -815,6 +846,52 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
                     return WZ_RESULT_PARSE_ERROR;
                 }
                 level ^= 1u;
+            }
+        } else if (block->block_id == 0x14u) {
+            size_t data_length = (size_t)wz_tzx_read_le24(block->data + 7u);
+            size_t used_bits = block->data[4u] == 0u ? 8u : block->data[4u];
+            wz_word_t zero_duration = wz_read_le16(block->data);
+            wz_word_t one_duration = wz_read_le16(block->data + 2u);
+            for (size_t byte_index = 0u; byte_index < data_length; ++byte_index) {
+                unsigned bits = byte_index + 1u == data_length ? (unsigned)used_bits : 8u;
+                for (unsigned bit = 0u; bit < bits; ++bit) {
+                    wz_dword_t duration = (block->data[10u + byte_index] &
+                        (wz_byte_t)(0x80u >> bit)) != 0u ? one_duration : zero_duration;
+                    if (wz_tzx_append_segment(segments, capacity, &index, duration,
+                                              master_ticks_per_tstate, level) != WZ_RESULT_OK ||
+                        wz_tzx_append_segment(segments, capacity, &index, duration,
+                                              master_ticks_per_tstate, (wz_byte_t)(level ^ 1u)) !=
+                            WZ_RESULT_OK) return WZ_RESULT_PARSE_ERROR;
+                    level ^= 1u;
+                    level ^= 1u;
+                }
+            }
+            if (wz_read_le16(block->data + 5u) != 0u) {
+                if (wz_tzx_append_segment(segments, capacity, &index,
+                    (wz_dword_t)wz_read_le16(block->data + 5u) * 3500u,
+                    master_ticks_per_tstate, 0u) != WZ_RESULT_OK) return WZ_RESULT_PARSE_ERROR;
+                level = 0u;
+            }
+        } else if (block->block_id == 0x15u) {
+            size_t data_length = (size_t)wz_tzx_read_le24(block->data + 5u);
+            size_t used_bits = block->data[4u] == 0u ? 8u : block->data[4u];
+            wz_word_t duration = wz_read_le16(block->data);
+            for (size_t byte_index = 0u; byte_index < data_length; ++byte_index) {
+                unsigned bits = byte_index + 1u == data_length ? (unsigned)used_bits : 8u;
+                for (unsigned bit = 0u; bit < bits; ++bit) {
+                    level = (block->data[8u + byte_index] &
+                             (wz_byte_t)(0x80u >> bit)) != 0u ? 1u : 0u;
+                    if (wz_tzx_append_segment(segments, capacity, &index, duration,
+                                              master_ticks_per_tstate, level) != WZ_RESULT_OK) {
+                        return WZ_RESULT_PARSE_ERROR;
+                    }
+                }
+            }
+            if (wz_read_le16(block->data + 2u) != 0u) {
+                if (wz_tzx_append_segment(segments, capacity, &index,
+                    (wz_dword_t)wz_read_le16(block->data + 2u) * 3500u,
+                    master_ticks_per_tstate, 0u) != WZ_RESULT_OK) return WZ_RESULT_PARSE_ERROR;
+                level = 0u;
             }
         } else {
             wz_dword_t tstates = (wz_dword_t)wz_read_le16(block->data) * 3500u;
