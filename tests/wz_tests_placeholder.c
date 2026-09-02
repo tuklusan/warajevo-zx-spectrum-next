@@ -462,6 +462,10 @@ int main(void)
         size_t transition_count;
         const wz_master_tick_t first_fetch_tick = 14335u * 2u;
 
+        if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+            fputs("overscan transition fixture reset failed\n", stderr);
+            return 1;
+        }
         machine.master_tick = 447u;
         if (wz_machine_raster_position(&machine, &before_active) != WZ_RESULT_OK ||
             before_active.line != 0u || before_active.raster_clock != 447u) {
