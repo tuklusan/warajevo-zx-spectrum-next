@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 123,
+  "next_cr_number": 124,
   "status_values": [
     "open",
     "in_progress",
@@ -1193,9 +1193,16 @@
     {
       "cr_number": "CR-0122",
       "title": "Add the macOS host translation unit",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 27, 33, and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 108", "design/cr-preflight/CR-0121.md", "reference/original-warajevo/source"],
-      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-5 scope. Preflight requires Objective-C compilation mode for macOS host code while keeping core headers Objective-C-free."
+      "notes": "Closed on 2026-09-02 after CODE and DOCUMENTATION review PASS, macOS Objective-C translation unit and Metal linkage were added, hosted platform smoke 33629069734 passed across available labels, and the local Mac lab probe CR0122-macos-probe-2 documented pre-execution SSH authentication unavailability."
+    },
+    {
+      "cr_number": "CR-0123",
+      "title": "Present the canonical raster through Sokol",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 19.1, 19.2, 27, and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 109", "design/cr-preflight/CR-0122.md", "reference/original-warajevo/source"],
+      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-5 scope. Preflight requires presentation-on/off to preserve identical headless canonical raster hashes."
     }
   ]
 }
