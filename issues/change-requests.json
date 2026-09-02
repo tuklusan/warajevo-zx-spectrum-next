@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 98,
+  "next_cr_number": 99,
   "status_values": [
     "open",
     "in_progress",
@@ -1021,6 +1021,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 15.6, 18, 36, 44, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 083", "design/machine-timing-evidence.md", "design/cr-preflight/CR-0096.md", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
       "notes": "Closed on 2026-09-02 after CODE review PASS packet 2fe1e985, DOCUMENTATION review PASS packet 8600ec62, Linux remote harness CR0097-FLOATING-BUS-LINUX-R1 passed all five CTest targets, and hosted platform-smoke 33584860774 passed all five jobs for cee6fae. Final upstream zero-gap scan passed; sample encoding, raster buffer, pixels, FLASH, and diagnostics remain ordered later Phase-4 tasks."
+    },
+    {
+      "cr_number": "CR-0098",
+      "title": "Freeze canonical raster sample encoding",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 16, 16.3, 17, 19, 36, 44, and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 084", "design/raster-sample-encoding.md", "design/cr-preflight/CR-0097.md", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
+      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-4 scope. Preflight freezes logical active-pixel, border, blanking, and reserved sample values before raster-buffer implementation, with upstream comparison and full validation gates."
     }
   ]
 }
