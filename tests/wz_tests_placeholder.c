@@ -612,6 +612,38 @@ int main(void)
             return 1;
         }
     }
+    {
+        wz_ula_fetch_event_t fetches[2u];
+        size_t fetch_count = 0u;
+        const wz_master_tick_t fetch_tick = 14335u * 2u;
+
+        if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+            fputs("multicolor timing fixture reset failed\n", stderr);
+            return 1;
+        }
+        machine.memory[0x4000u] = 0x00u;
+        machine.memory[0x5800u] = 0x00u;
+        wz_machine_memory_write_at_tick(&machine, 0x4000u, 0xffu,
+                                        fetch_tick - 2u);
+        wz_machine_memory_write_at_tick(&machine, 0x5800u, 0x47u,
+                                        fetch_tick);
+        if (wz_machine_ula_fetches_at_tick(&machine, fetch_tick, fetches, 2u,
+                                           &fetch_count) != WZ_RESULT_OK ||
+            fetch_count != 2u || fetches[0u].value != 0xffu ||
+            fetches[1u].value != 0x47u) {
+            fputs("multicolor pre-fetch visibility contract failed\n", stderr);
+            return 1;
+        }
+        wz_machine_memory_write_at_tick(&machine, 0x4000u, 0x11u,
+                                        fetch_tick + 2u);
+        wz_machine_memory_write_at_tick(&machine, 0x5800u, 0x22u,
+                                        fetch_tick + 4u);
+        if (fetches[0u].value != 0xffu || fetches[1u].value != 0x47u) {
+            fputs("multicolor post-fetch non-retroactivity failed\n", stderr);
+            return 1;
+        }
+        machine.master_tick = 0u;
+    }
     if (wz_machine_memory_read(0, 0u) != 0xffu ||
         wz_machine_ula_port_fe_read(0, 0u) != 0xffu ||
         wz_machine_bus_request(0, 0) != WZ_RESULT_INVALID_ARGUMENT ||
