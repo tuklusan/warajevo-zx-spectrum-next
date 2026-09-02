@@ -447,7 +447,10 @@ def extract_zip(zip_path: Path, target_dir: Path) -> None:
 
 def decode_windows_archive(payload: bytes) -> bytes:
     """Decode native-command text without weakening ZIP integrity checks."""
-    encoded = re.sub(r"\s+", "", decode_output(payload))
+    # Native Windows transport can insert a non-data marker into a long line.
+    # Strip only characters outside the base64 alphabet; strict decoding and
+    # the ZIP checksum below still reject truncation or altered payload data.
+    encoded = re.sub(r"[^A-Za-z0-9+/=]", "", decode_output(payload))
     if not encoded or re.fullmatch(r"[A-Za-z0-9+/]*={0,2}", encoded) is None:
         raise SystemExit("remote smoke failed: Windows archive transport is not base64")
     encoded += "=" * ((-len(encoded)) % 4)
