@@ -373,6 +373,49 @@ static void test_machine_tape_playback(void)
     wz_machine_destroy(&machine);
 }
 
+static void test_tape_speed_invariance(void)
+{
+    const wz_tape_segment_t segments[3u] = {{2u, 0u}, {3u, 1u}, {1u, 0u}};
+    wz_byte_t baseline[6u] = {0u};
+    bool have_baseline = false;
+
+    for (unsigned speed_index = 0u; speed_index < WZ_SPEED_COUNT; ++speed_index) {
+        wz_machine_t machine;
+        wz_headless_runner_t runner;
+        wz_host_pacing_t pacing;
+        wz_speed_policy_t speed = (wz_speed_policy_t)speed_index;
+        wz_byte_t observed[6u] = {0u};
+
+        if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK ||
+            wz_machine_mount_tape(&machine, segments, 3u) != WZ_RESULT_OK ||
+            wz_machine_set_tape_motor(&machine, true) != WZ_RESULT_OK ||
+            wz_headless_runner_init(&runner, &machine, 0) != WZ_RESULT_OK ||
+            !wz_host_pacing_init(&pacing, 1000u, speed, 0u, 0u) ||
+            !wz_host_pacing_set_speed(&pacing, speed)) {
+            fputs("tape speed-invariance setup failed\n", stderr);
+            wz_machine_destroy(&machine);
+            exit(1);
+        }
+        for (size_t tick = 0u; tick < 6u; ++tick) {
+            if (wz_headless_runner_advance(&runner, 1u) != WZ_RESULT_OK) {
+                fputs("tape speed-invariance advancement failed\n", stderr);
+                wz_machine_destroy(&machine);
+                exit(1);
+            }
+            observed[tick] = wz_machine_tape_ear_level(&machine);
+        }
+        if (!have_baseline) {
+            memcpy(baseline, observed, sizeof(baseline));
+            have_baseline = true;
+        } else if (memcmp(baseline, observed, sizeof(baseline)) != 0) {
+            fputs("tape timing changed with runtime speed\n", stderr);
+            wz_machine_destroy(&machine);
+            exit(1);
+        }
+        wz_machine_destroy(&machine);
+    }
+}
+
 static void test_beeper_port_fe_timeline(void)
 {
     wz_machine_t machine;
@@ -776,6 +819,7 @@ int main(void)
     test_audio_speed_boundary_transitions();
     test_tape_object_and_state();
     test_machine_tape_playback();
+    test_tape_speed_invariance();
     test_beeper_port_fe_timeline();
     test_beeper_pcm_render();
     test_audio_pcm_hash();
