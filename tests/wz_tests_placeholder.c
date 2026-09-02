@@ -287,7 +287,7 @@ static void test_audio_speed_boundary_transitions(void)
     wz_master_tick_t before_tick;
 
     wz_trace_sink_init(&trace, 0, 0);
-    if (!wz_machine_init(&machine, wz_machine_profile_48k_pal()) ||
+    if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK ||
         wz_headless_runner_init(&runner, &machine, &trace) != WZ_RESULT_OK ||
         !wz_host_pacing_init(&pacing, 1000u, WZ_SPEED_200, 0u, 0u) ||
         !wz_host_pacing_wait(&pacing, 0u, 1000u, 0, 0, &requested) ||
