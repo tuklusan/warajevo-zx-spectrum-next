@@ -692,9 +692,9 @@ static void test_tzx_timing(void)
         wz_tape_expand_tzx_timing(stop_blocks, 3u, 2u, segments, 2u, &count) !=
             WZ_RESULT_OK || segments[1u].duration != 2000u ||
         wz_tape_expand_tzx_timing(jump_blocks, 4u, 2u, 0, 0u, &count) !=
-            WZ_RESULT_BUFFER_TOO_SMALL || count != 2u ||
-        wz_tape_expand_tzx_timing(jump_blocks, 4u, 2u, segments, 2u, &count) !=
-            WZ_RESULT_OK || count != 2u ||
+            WZ_RESULT_BUFFER_TOO_SMALL || count != 4u ||
+        wz_tape_expand_tzx_timing(jump_blocks, 4u, 2u, segments, 4u, &count) !=
+            WZ_RESULT_OK || count != 4u ||
         wz_tape_expand_tzx_timing(blocks, 4u, 2u, 0, 0u, &count) !=
             WZ_RESULT_BUFFER_TOO_SMALL || count != 5u ||
         wz_tape_expand_tzx_timing(blocks, 4u, 2u, segments, 5u, &count) !=
