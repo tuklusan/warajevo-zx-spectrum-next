@@ -9,6 +9,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #ifndef WZ_CORE_WZ_RASTER_H
 #define WZ_CORE_WZ_RASTER_H
 
+#include <stddef.h>
+
 #include "core/wz_types.h"
 
 #define WZ_RASTER_ACTIVE_MIN 0x00u
@@ -16,6 +18,22 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #define WZ_RASTER_BORDER_MIN 0x10u
 #define WZ_RASTER_BORDER_MAX 0x17u
 #define WZ_RASTER_BLANKING 0x18u
+
+typedef struct {
+    wz_byte_t* samples;
+    size_t width;
+    size_t height;
+} wz_raster_buffer_t;
+
+wz_result_t wz_raster_buffer_init(wz_raster_buffer_t* buffer,
+                                   size_t width, size_t height,
+                                   wz_byte_t* storage, size_t capacity);
+wz_result_t wz_raster_buffer_clear(wz_raster_buffer_t* buffer,
+                                   wz_byte_t sample);
+wz_result_t wz_raster_buffer_write(wz_raster_buffer_t* buffer,
+                                   size_t x, size_t y, wz_byte_t sample);
+wz_result_t wz_raster_buffer_read(const wz_raster_buffer_t* buffer,
+                                  size_t x, size_t y, wz_byte_t* sample);
 
 static inline bool wz_raster_sample_is_valid(wz_byte_t sample)
 {

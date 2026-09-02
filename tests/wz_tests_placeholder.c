@@ -301,6 +301,29 @@ int main(void)
         fputs("canonical raster sample encoding contract failed\n", stderr);
         return 1;
     }
+    {
+        wz_raster_buffer_t raster_buffer;
+        wz_byte_t storage[4u];
+        wz_byte_t sample = 0u;
+
+        if (wz_raster_buffer_init(&raster_buffer, 2u, 2u, storage,
+                                  sizeof(storage)) != WZ_RESULT_OK ||
+            wz_raster_buffer_read(&raster_buffer, 1u, 1u, &sample) !=
+                WZ_RESULT_OK || sample != WZ_RASTER_BLANKING ||
+            wz_raster_buffer_write(&raster_buffer, 1u, 1u,
+                                   WZ_RASTER_BORDER_MIN) != WZ_RESULT_OK ||
+            wz_raster_buffer_read(&raster_buffer, 1u, 1u, &sample) !=
+                WZ_RESULT_OK || sample != WZ_RASTER_BORDER_MIN ||
+            wz_raster_buffer_write(&raster_buffer, 2u, 0u, 0u) !=
+                WZ_RESULT_INVALID_ARGUMENT ||
+            wz_raster_buffer_write(&raster_buffer, 0u, 0u, 0x19u) !=
+                WZ_RESULT_INVALID_ARGUMENT ||
+            wz_raster_buffer_clear(&raster_buffer, 0x19u) !=
+                WZ_RESULT_INVALID_ARGUMENT) {
+            fputs("canonical raster buffer contract failed\n", stderr);
+            return 1;
+        }
+    }
     if (machine.master_tick != 0u || machine.profile != profile) {
         fputs("machine did not initialize deterministic state\n", stderr);
         return 1;
