@@ -27,7 +27,8 @@ typedef enum {
     WZ_RESULT_INVALID_STATE,
     WZ_RESULT_UNSUPPORTED_OPERATION,
     WZ_RESULT_TRACE_FAILURE,
-    WZ_RESULT_BUFFER_TOO_SMALL
+    WZ_RESULT_BUFFER_TOO_SMALL,
+    WZ_RESULT_OUT_OF_MEMORY
 } wz_result_t;
 
 _Static_assert(sizeof(wz_byte_t) == 1u, "wz_byte_t must be 8 bits");
