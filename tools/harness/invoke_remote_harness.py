@@ -9,7 +9,9 @@ from __future__ import annotations
 
 import argparse
 import base64
+import binascii
 import hashlib
+import io
 import json
 import os
 import re
@@ -443,6 +445,22 @@ def extract_zip(zip_path: Path, target_dir: Path) -> None:
         archive.extractall(target_dir)
 
 
+def decode_windows_archive(payload: bytes) -> bytes:
+    """Decode native-command text without weakening ZIP integrity checks."""
+    encoded = re.sub(r"\s+", "", decode_output(payload))
+    if not encoded or re.fullmatch(r"[A-Za-z0-9+/]*={0,2}", encoded) is None:
+        raise SystemExit("remote smoke failed: Windows archive transport is not base64")
+    encoded += "=" * ((-len(encoded)) % 4)
+    try:
+        archive_bytes = base64.b64decode(encoded, validate=True)
+        with zipfile.ZipFile(io.BytesIO(archive_bytes)) as archive:
+            if archive.testzip() is not None:
+                raise ValueError("ZIP member checksum failed")
+    except (ValueError, zipfile.BadZipFile, binascii.Error) as exc:
+        raise SystemExit("remote smoke failed: Windows archive transport is incomplete") from exc
+    return archive_bytes
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Invoke the shared remote harness.")
     parser.add_argument("action", choices=("probe", "smoke", "screenshot"))
@@ -599,7 +617,7 @@ def main() -> int:
         zip_path = local_dir / "remote-artefacts.zip"
         pulled_bytes = pulled.stdout
         if machine["kind"] == "windows":
-            pulled_bytes = base64.b64decode(decode_output(pulled.stdout).strip())
+            pulled_bytes = decode_windows_archive(pulled.stdout)
         write_bytes(zip_path, pulled_bytes)
         extract_zip(zip_path, local_dir / "unzipped")
     else:
