@@ -341,6 +341,16 @@ int main(void)
             fputs("active-pixel invalid argument contract failed\n", stderr);
             return 1;
         }
+        if (wz_machine_flash_phase(&machine, 0u) ||
+            !wz_machine_flash_phase(&machine,
+                (wz_master_tick_t)profile->tstates_per_frame * 2u * 16u) ||
+            wz_raster_decode_attribute_phase(0x87u, true, false, &sample) !=
+                WZ_RESULT_OK || sample != 7u ||
+            wz_raster_decode_attribute_phase(0x87u, true, true, &sample) !=
+                WZ_RESULT_OK || sample != 0u) {
+            fputs("deterministic FLASH phase contract failed\n", stderr);
+            return 1;
+        }
     }
     {
         wz_raster_buffer_t raster_buffer;

@@ -40,6 +40,10 @@ wz_result_t wz_raster_decode_active_pixel(wz_byte_t bitmap,
                                           wz_byte_t* sample);
 wz_result_t wz_raster_decode_attribute(wz_byte_t attribute, bool ink_selected,
                                        wz_byte_t* sample);
+wz_result_t wz_raster_decode_attribute_phase(wz_byte_t attribute,
+                                             bool ink_selected,
+                                             bool flash_phase,
+                                             wz_byte_t* sample);
 
 static inline bool wz_raster_sample_is_valid(wz_byte_t sample)
 {

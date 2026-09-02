@@ -112,5 +112,7 @@ wz_result_t wz_machine_ula_fetches_at_tick(const wz_machine_t* machine,
                                            size_t* count);
 wz_byte_t wz_machine_floating_bus_value(const wz_machine_t* machine,
                                         wz_master_tick_t master_tick);
+bool wz_machine_flash_phase(const wz_machine_t* machine,
+                            wz_master_tick_t master_tick);
 
 #endif

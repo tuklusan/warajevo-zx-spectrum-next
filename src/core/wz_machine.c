@@ -452,6 +452,26 @@ wz_byte_t wz_machine_floating_bus_value(const wz_machine_t* machine,
     return events[1u].value;
 }
 
+bool wz_machine_flash_phase(const wz_machine_t* machine,
+                            wz_master_tick_t master_tick)
+{
+    wz_qword_t frame_ticks;
+    wz_qword_t flash_period_ticks;
+
+    if (machine == 0 || machine->profile == 0 ||
+        machine->profile->master_ticks_per_cpu_tstate == 0u ||
+        machine->profile->tstates_per_frame == 0u) {
+        return false;
+    }
+    frame_ticks = (wz_qword_t)machine->profile->tstates_per_frame *
+        machine->profile->master_ticks_per_cpu_tstate;
+    flash_period_ticks = frame_ticks * 16u;
+    if (flash_period_ticks == 0u) {
+        return false;
+    }
+    return ((master_tick / flash_period_ticks) & 1u) != 0u;
+}
+
 const char* wz_machine_boot_message(void)
 {
     return "Warajevo ZX Spectrum Next bootstrap";
