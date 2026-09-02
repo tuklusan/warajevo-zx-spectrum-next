@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 126,
+  "next_cr_number": 127,
   "status_values": [
     "open",
     "in_progress",
@@ -1214,9 +1214,16 @@
     {
       "cr_number": "CR-0125",
       "title": "Freeze the host-visible crop and border rectangle",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 19.4 and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 111", "design/cr-preflight/CR-0124.md", "reference/original-warajevo/source"],
-      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-5 scope. Preflight requires a stable presentation rectangle for screenshots without changing canonical source raster contents."
+      "notes": "Closed on 2026-09-02 after CODE and DOCUMENTATION review PASS, frozen 448x312 complete-raster presentation rectangle added, Linux remote smoke CR0125-rectangle-linux-1 passed, Windows remote smoke CR0125-rectangle-windows-2 passed, hosted runs 33630726066 and 33630726045 passed, and the final upstream zero-gap scan passed."
+    },
+    {
+      "cr_number": "CR-0126",
+      "title": "Implement integer nearest-neighbor host scaling",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 19.4 and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 112", "design/cr-preflight/CR-0125.md", "reference/original-warajevo/source"],
+      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-5 scope. Preflight requires integer scaling to preserve every canonical source pixel without filtering or core mutation."
     }
   ]
 }
