@@ -563,7 +563,7 @@ static void test_native_tap_writer(void)
     records[1u].payload_length = sizeof(sample_payload);
     memset(sentinel, 0x5au, sizeof(sentinel));
     memcpy(output, sentinel, sizeof(output));
-    if (wz_tape_write_native_tap(records, 2u, sentinel, sizeof(sentinel) - 1u,
+    if (wz_tape_write_native_tap(records, 2u, sentinel, 45u,
                                  &length) != WZ_RESULT_BUFFER_TOO_SMALL ||
         length != 46u || memcmp(sentinel, output, sizeof(sentinel)) != 0 ||
         wz_tape_write_native_tap(records, 2u, output, sizeof(output), &length) !=
