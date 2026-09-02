@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 96,
+  "next_cr_number": 97,
   "status_values": [
     "open",
     "in_progress",
@@ -1007,6 +1007,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 14, 15.5, 18, 36, 44, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 081", "design/machine-timing-evidence.md", "design/cr-preflight/CR-0094.md", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
       "notes": "Closed on 2026-09-02 after CODE review PASS packet 5ea65883, DOCUMENTATION review PASS packet aa9544c7, Linux remote harness CR0095-SAME-EDGE-LINUX-R1 passed all five CTest targets, and hosted platform-smoke 33583864468 passed all five jobs for 18efff1. Final upstream zero-gap scan passed; later border, floating-bus, and pixel semantics remain ordered Phase-4 tasks."
+    },
+    {
+      "cr_number": "CR-0096",
+      "title": "Implement timed port-FE border-color changes",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 15.4, 17.2, 18, 36, 44, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 082", "design/machine-timing-evidence.md", "design/cr-preflight/CR-0095.md", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
+      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-4 scope. Preflight requires timed 3-bit border events, separation from MIC/beeper state, upstream comparison, remote validation, hosted validation, and a final zero-gap scan."
     }
   ]
 }
