@@ -7,7 +7,13 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 */
 
 #define SOKOL_IMPL
+#if defined(_WIN32)
+#define SOKOL_D3D11
+#elif defined(__APPLE__)
+#define SOKOL_METAL
+#else
 #define SOKOL_X11
+#endif
 #include "sokol_app.h"
 
 #include "core/wz_machine.h"

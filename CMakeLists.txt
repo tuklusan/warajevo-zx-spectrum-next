@@ -117,17 +117,16 @@ if(WZSN_BUILD_SOKOL_HOST)
     FetchContent_MakeAvailable(sokol)
 
     find_package(Threads REQUIRED)
-    find_package(X11 REQUIRED)
     add_executable(wz_sokol_host src/app/wz_sokol_main.c)
     target_include_directories(wz_sokol_host PRIVATE ${sokol_SOURCE_DIR} src)
-    target_link_libraries(
-        wz_sokol_host
-        PRIVATE
-        wz_core
-        wz_warnings
-        Threads::Threads
-        ${X11_LIBRARIES}
-        ${CMAKE_DL_LIBS}
-    )
-    target_compile_definitions(wz_sokol_host PRIVATE ${X11_DEFINITIONS})
+    target_link_libraries(wz_sokol_host PRIVATE wz_core wz_warnings Threads::Threads)
+    if(WIN32)
+        target_link_libraries(wz_sokol_host PRIVATE d3d11 dxgi user32 gdi32)
+    elseif(APPLE)
+        target_link_libraries(wz_sokol_host PRIVATE "-framework Cocoa" "-framework Metal" "-framework QuartzCore")
+    else()
+        find_package(X11 REQUIRED)
+        target_link_libraries(wz_sokol_host PRIVATE ${X11_LIBRARIES} ${CMAKE_DL_LIBS})
+        target_compile_definitions(wz_sokol_host PRIVATE ${X11_DEFINITIONS})
+    endif()
 endif()
