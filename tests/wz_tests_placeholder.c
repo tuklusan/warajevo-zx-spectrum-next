@@ -225,42 +225,49 @@ static void test_speed_policy(void)
     }
 }
 
+typedef struct {
+    wz_qword_t nanoseconds;
+    unsigned calls;
+} pacing_sleep_record_t;
+
 static bool record_pacing_sleep(wz_qword_t nanoseconds, void* context)
 {
-    wz_qword_t* recorded = (wz_qword_t*)context;
-    *recorded = nanoseconds;
+    pacing_sleep_record_t* recorded = (pacing_sleep_record_t*)context;
+    recorded->nanoseconds = nanoseconds;
+    recorded->calls += 1u;
     return true;
 }
 
 static void test_host_pacing(void)
 {
     wz_host_pacing_t pacing;
-    wz_qword_t sleep_ns = 0u;
+    pacing_sleep_record_t sleep = {0u, 0u};
     wz_qword_t requested = 0u;
 
     if (!wz_host_pacing_init(&pacing, 1000u, WZ_SPEED_100, 1000000000u, 0u) ||
         !wz_host_pacing_wait(&pacing, 1000000000u, 1000u,
-                             record_pacing_sleep, &sleep_ns, &requested) ||
-        requested != 1000000000u || sleep_ns != requested ||
+                             record_pacing_sleep, &sleep, &requested) ||
+        requested != 1000000000u || sleep.nanoseconds != requested || sleep.calls != 1u ||
         !wz_host_pacing_wait(&pacing, 2000000000u, 1000u,
-                             record_pacing_sleep, &sleep_ns, &requested) ||
+                             record_pacing_sleep, &sleep, &requested) ||
         requested != 0u ||
         !wz_host_pacing_set_speed(&pacing, WZ_SPEED_200) ||
         !wz_host_pacing_wait(&pacing, 1000000000u, 1000u,
-                             record_pacing_sleep, &sleep_ns, &requested) ||
+                             record_pacing_sleep, &sleep, &requested) ||
         requested != 0u ||
         !wz_host_pacing_wait(&pacing, 1000000000u, 2000u,
-                             record_pacing_sleep, &sleep_ns, &requested) ||
-        requested != 500000000u || sleep_ns != requested ||
+                             record_pacing_sleep, &sleep, &requested) ||
+        requested != 500000000u || sleep.nanoseconds != requested ||
         !wz_host_pacing_wait(&pacing, 1000000000u, 0u,
-                             record_pacing_sleep, &sleep_ns, &requested) ||
+                             record_pacing_sleep, &sleep, &requested) ||
         requested != 0u ||
         !wz_host_pacing_set_speed(&pacing, WZ_SPEED_UNLIMITED) ||
         !wz_host_pacing_wait(&pacing, 0u, UINT64_MAX,
-                             record_pacing_sleep, &sleep_ns, &requested) ||
-        requested != 0u) {
+                             record_pacing_sleep, &sleep, &requested) ||
+        requested != 0u || sleep.calls != 2u) {
         fprintf(stderr, "host pacing contract failed: request=%llu sleep=%llu\n",
-                (unsigned long long)requested, (unsigned long long)sleep_ns);
+                (unsigned long long)requested,
+                (unsigned long long)sleep.nanoseconds);
         exit(1);
     }
 }
