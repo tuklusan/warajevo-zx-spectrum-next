@@ -15,6 +15,7 @@ set(CMAKE_C_EXTENSIONS OFF)
 option(WZSN_ENABLE_WARNINGS "Enable the default developer warning set." ON)
 option(WZSN_ENABLE_SANITIZERS "Enable sanitizer flags when supported." OFF)
 option(WZSN_ENABLE_REVIEW_GATE_TESTS "Require Python and run reviewer-gate tests." OFF)
+option(WZSN_BUILD_SOKOL_HOST "Build the opt-in Sokol host shell." OFF)
 
 add_library(wz_warnings INTERFACE)
 
@@ -104,3 +105,29 @@ if(WZSN_ENABLE_REVIEW_GATE_TESTS)
 endif()
 
 add_custom_target(wz_gui_stub)
+
+if(WZSN_BUILD_SOKOL_HOST)
+    include(FetchContent)
+    FetchContent_Declare(
+        sokol
+        GIT_REPOSITORY https://github.com/floooh/sokol.git
+        GIT_TAG 1847290135f95e57e6d220b0a41208306aafc0dd
+        GIT_SHALLOW FALSE
+    )
+    FetchContent_MakeAvailable(sokol)
+
+    find_package(Threads REQUIRED)
+    find_package(X11 REQUIRED)
+    add_executable(wz_sokol_host src/app/wz_sokol_main.c)
+    target_include_directories(wz_sokol_host PRIVATE ${sokol_SOURCE_DIR} src)
+    target_link_libraries(
+        wz_sokol_host
+        PRIVATE
+        wz_core
+        wz_warnings
+        Threads::Threads
+        ${X11_LIBRARIES}
+        ${CMAKE_DL_LIBS}
+    )
+    target_compile_definitions(wz_sokol_host PRIVATE ${X11_DEFINITIONS})
+endif()
