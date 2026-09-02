@@ -573,8 +573,6 @@ def main() -> int:
                     ]
                 )
                 primary = run_windows(machine, script_text, root)
-        if args.action != "screenshot":
-            primary = run_windows(machine, script_text, root)
         command_text = script_text
         pulled = pull_windows(machine, remote_dir, root)
 
