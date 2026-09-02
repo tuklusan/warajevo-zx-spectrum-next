@@ -1347,9 +1347,9 @@
     {
       "cr_number": "CR-0144",
       "title": "Freeze canonical internal audio sample rate",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md section 20.5", "design/wzsn-architectures-1-2-developer-tasks.md task 131", "design/cr-preflight/CR-0144.md", "reference/original-warajevo/source"],
-      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-6 scope. Preflight freezes 44,100 Hz as the deterministic internal PCM rate before mixer implementation."
+      "notes": "Closed on 2026-09-02 after freezing 44,100 Hz as WZSN_CANONICAL_AUDIO_SAMPLE_RATE, documenting deterministic integer/rational conversion responsibility, and separating physical host device rates. CODE and DOCUMENTATION reviews passed for 18b0dba; Linux remote smoke CR0144-audio-rate-linux-1 passed; Windows 10 lab transport failed before execution and is explicitly not claimed; hosted platform-smoke 33646396787 and repository-gates 33646396645 passed across the configured runner set, including Windows; final upstream sound-configuration comparison found no undispositioned gap."
     }
   ]
 }
