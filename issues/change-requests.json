@@ -1459,9 +1459,9 @@
     {
       "cr_number": "CR-0160",
       "title": "Prove speed-invariant emulated tape timing",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 23.2 and 23.3", "design/wzsn-architectures-1-2-developer-tasks.md task 147", "design/cr-preflight/CR-0160.md", "reference/original-warajevo/source"],
-      "notes": "Opened on 2026-09-02 as the next ordered Phase-7 scope. Preflight requires canonical edge-tick equivalence across runtime speeds while preserving host pacing separation and explicitly deferring parser, SAVE/MIC, instant-load, trap, and networking behavior."
+      "notes": "Closed on 2026-09-02 at fd79b9a after proving canonical tape edge timing remains invariant across runtime speed settings while host pacing remains separate. CODE review for 35f6a7d..fd79b9a and final DOCUMENTATION review passed with zero findings. Remote Linux CR0160-harness-linux-2 passed all five CTest targets; prior Linux sanitizer and Windows speed-invariance runs passed. Hosted platform-smoke 33667606247 passed all 18 jobs. The earlier hosted run 33667244091 at 35f6a7d failed only on a test fixture mock signature and is superseded by the corrected fixture. Parser, SAVE/MIC, instant-load, trap, and networking behavior remain explicitly deferred to later ordered tasks; closure evidence is recorded in design/cr-preflight/CR-0160.md."
     }
   ]
 }
