@@ -16,6 +16,38 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "core/wz_runner.h"
 #include "diagnostics/wz_trace_file.h"
 
+static void test_raster_evidence(void)
+{
+    wz_byte_t samples[4] = {0u, 1u, 2u, 3u};
+    wz_raster_buffer_t buffer = {samples, 2u, 2u};
+    wz_trace_event_t event = {0};
+    wz_qword_t first_hash = 0u;
+    wz_qword_t second_hash = 0u;
+
+    if (wz_raster_buffer_hash(&buffer, &first_hash) != WZ_RESULT_OK ||
+        wz_raster_buffer_hash(&buffer, &second_hash) != WZ_RESULT_OK ||
+        first_hash != second_hash || first_hash == 0u) {
+        fputs("raster evidence hash failed\n", stderr);
+        exit(1);
+    }
+    event.kind = WZ_TRACE_CPU_BUS;
+    event.master_tick = 17u;
+    event.address = 0x4000u;
+    event.value = 0xa5u;
+    if (wz_trace_events_hash(&event, 1u, &first_hash) != WZ_RESULT_OK ||
+        wz_trace_events_hash(&event, 1u, &second_hash) != WZ_RESULT_OK ||
+        first_hash != second_hash || first_hash == 0u) {
+        fputs("trace evidence hash failed\n", stderr);
+        exit(1);
+    }
+    event.value = 0xa4u;
+    if (wz_trace_events_hash(&event, 1u, &second_hash) != WZ_RESULT_OK ||
+        first_hash == second_hash) {
+        fputs("trace evidence hash collision fixture failed\n", stderr);
+        exit(1);
+    }
+}
+
 static void record_event(void* context)
 {
     unsigned* value = (unsigned*)context;
@@ -209,6 +241,7 @@ static wz_result_t set_fixture_bus_input(wz_machine_t* machine,
 
 int main(void)
 {
+    test_raster_evidence();
     const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
     wz_machine_t machine;
     wz_machine_t restored;
@@ -4317,3 +4350,4 @@ int main(void)
     wz_machine_destroy(&restored);
     return 0;
 }
+#include "core/wz_raster_evidence.h"
