@@ -27,6 +27,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "core/wz_scheduler.h"
 #include "core/wz_state.h"
 #include "core/wz_runner.h"
+#include "core/wz_tape.h"
 #include "core/wz_raster_evidence.h"
 #include "core/wz_raster_diagnostic.h"
 #include "diagnostics/wz_trace_file.h"
@@ -311,6 +312,35 @@ static void test_audio_speed_boundary_transitions(void)
         exit(1);
     }
     wz_machine_destroy(&machine);
+}
+
+static void test_tape_object_and_state(void)
+{
+    const wz_tape_segment_t segments[2u] = {{3u, 0u}, {5u, 1u}};
+    const wz_tape_segment_t invalid[1u] = {{0u, 1u}};
+    wz_tape_t tape;
+    wz_tape_state_t state;
+
+    if (wz_tape_mount(&tape, segments, 2u) != WZ_RESULT_OK ||
+        wz_tape_mount(&tape, invalid, 1u) != WZ_RESULT_INVALID_ARGUMENT ||
+        wz_tape_state_init(&state, &tape) != WZ_RESULT_OK ||
+        wz_tape_state_ear_level(&state) != 0u ||
+        wz_tape_state_set_motor(&state, true) != WZ_RESULT_OK ||
+        wz_tape_state_advance(&state, 2u) != WZ_RESULT_OK ||
+        wz_tape_state_ear_level(&state) != 0u ||
+        wz_tape_state_advance(&state, 1u) != WZ_RESULT_OK ||
+        wz_tape_state_ear_level(&state) != 1u ||
+        wz_tape_state_set_motor(&state, false) != WZ_RESULT_OK ||
+        wz_tape_state_advance(&state, 8u) != WZ_RESULT_OK ||
+        wz_tape_state_at_end(&state) ||
+        wz_tape_state_rewind(&state) != WZ_RESULT_OK ||
+        wz_tape_state_set_motor(&state, true) != WZ_RESULT_OK ||
+        wz_tape_state_advance(&state, 8u) != WZ_RESULT_OK ||
+        !wz_tape_state_at_end(&state) || wz_tape_state_ear_level(&state) != 1u ||
+        wz_tape_state_set_motor(&state, true) != WZ_RESULT_OK) {
+        fputs("tape object/state contract failed\n", stderr);
+        exit(1);
+    }
 }
 
 static void test_beeper_port_fe_timeline(void)
@@ -714,6 +744,7 @@ int main(void)
     test_speed_policy();
     test_host_pacing();
     test_audio_speed_boundary_transitions();
+    test_tape_object_and_state();
     test_beeper_port_fe_timeline();
     test_beeper_pcm_render();
     test_audio_pcm_hash();
