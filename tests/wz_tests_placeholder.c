@@ -11,6 +11,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include <string.h>
 
 #include "core/wz_machine.h"
+#include "core/wz_keyboard_matrix.h"
 #include "core/wz_bus.h"
 #include "core/wz_scheduler.h"
 #include "core/wz_state.h"
@@ -47,6 +48,35 @@ static void test_raster_evidence(void)
     if (wz_trace_events_hash(&event, 1u, &second_hash) != WZ_RESULT_OK ||
         first_hash == second_hash) {
         fputs("trace evidence hash collision fixture failed\n", stderr);
+        exit(1);
+    }
+}
+
+static void test_complete_keyboard_matrix(void)
+{
+    wz_keyboard_matrix_t matrix;
+    size_t row;
+    size_t column;
+
+    wz_keyboard_matrix_init(&matrix);
+    for (size_t index = 0u; index < WZ_KEYBOARD_MATRIX_KEY_COUNT; ++index) {
+        if (!wz_keyboard_matrix_key_position((wz_keyboard_key_t)index, &row, &column) ||
+            row != index / WZ_KEYBOARD_MATRIX_KEYS_PER_ROW ||
+            column != index % WZ_KEYBOARD_MATRIX_KEYS_PER_ROW ||
+            !wz_keyboard_matrix_set(&matrix, (wz_keyboard_key_t)index, true) ||
+            wz_keyboard_matrix_scan(&matrix, (unsigned char)~(1u << row)) !=
+                (wz_byte_t)(0x1fu & (wz_byte_t)~(1u << column)) ||
+            !wz_keyboard_matrix_set(&matrix, (wz_keyboard_key_t)index, false)) {
+            fputs("complete keyboard matrix coverage failed\n", stderr);
+            exit(1);
+        }
+    }
+    if (wz_keyboard_matrix_scan(&matrix, 0xffu) != 0x1fu ||
+        !wz_keyboard_matrix_set(&matrix, WZ_KEY_SHIFT, true) ||
+        !wz_keyboard_matrix_set(&matrix, WZ_KEY_SPACE, true) ||
+        wz_keyboard_matrix_scan(&matrix, 0x7eu) != 0x1eu ||
+        wz_keyboard_matrix_scan(&matrix, 0x3fu) != 0x1eu) {
+        fputs("keyboard matrix multi-row scan failed\n", stderr);
         exit(1);
     }
 }
@@ -284,6 +314,7 @@ static wz_result_t set_fixture_bus_input(wz_machine_t* machine,
 int main(void)
 {
     test_raster_evidence();
+    test_complete_keyboard_matrix();
     test_raster_diagnostic();
     test_raster_invalid_state();
     const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
