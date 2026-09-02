@@ -352,6 +352,10 @@ int main(void)
         if (wz_machine_ula_fetches_at_tick(&machine, first_fetch_tick - 2u,
                                            fetches, 2u, &fetch_count) !=
                 WZ_RESULT_OK || fetch_count != 0u ||
+            wz_machine_ula_fetches_at_tick(&machine,
+                                           (14335u - 1u) * 2u,
+                                           fetches, 2u, &fetch_count) !=
+                WZ_RESULT_OK || fetch_count != 0u ||
             wz_machine_ula_fetches_at_tick(&machine, first_fetch_tick,
                                            fetches, 2u, &fetch_count) !=
                 WZ_RESULT_OK || fetch_count != 2u ||
@@ -376,6 +380,17 @@ int main(void)
             fetches[0].address != 0x4747u || fetches[0].value != 0x3cu ||
             fetches[1].address != 0x59dfu || fetches[1].value != 0x47u) {
             fputs("last ULA bitmap/attribute fetch contract failed\n", stderr);
+            return 1;
+        }
+        if (wz_machine_ula_fetches_at_tick(&machine,
+                                           (14335u + 48u * 4u) * 2u,
+                                           fetches, 2u, &fetch_count) !=
+                WZ_RESULT_OK || fetch_count != 0u ||
+            wz_machine_ula_fetches_at_tick(&machine,
+                                           (14335u + 192u + 224u) * 2u,
+                                           fetches, 2u, &fetch_count) !=
+                WZ_RESULT_OK || fetch_count != 0u) {
+            fputs("ULA blanking/non-display fetch contract failed\n", stderr);
             return 1;
         }
         machine.master_tick = 0u;
