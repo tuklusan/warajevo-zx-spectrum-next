@@ -304,6 +304,21 @@ static void test_beeper_port_fe_timeline(void)
     wz_machine_destroy(&machine);
 }
 
+static void test_beeper_pcm_render(void)
+{
+    const wz_beeper_event_t events[2u] = {{3u, 1u}, {7u, 0u}};
+    wz_audio_sample_t samples[2u] = {0, 0};
+
+    if (!wz_beeper_render_pcm(events, 2u, 0u, 0u, 10u, 2u,
+                              samples, 2u) ||
+        samples[0] != -13107 || samples[1] != 13107 ||
+        !wz_beeper_render_pcm(events, 2u, 0u, 0u, 10u, 2u,
+                               samples, 2u)) {
+        fputs("beeper PCM integration contract failed\n", stderr);
+        exit(1);
+    }
+}
+
 static void test_canonical_audio_policy(void)
 {
     if (WZ_CANONICAL_AUDIO_SAMPLE_RATE != 44100u ||
@@ -568,6 +583,7 @@ int main(void)
     test_speed_policy();
     test_host_pacing();
     test_beeper_port_fe_timeline();
+    test_beeper_pcm_render();
     test_canonical_audio_policy();
     test_ay_mixer_policy();
     test_raster_diagnostic();

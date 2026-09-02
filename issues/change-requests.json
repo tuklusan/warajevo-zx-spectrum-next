@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 147,
+  "next_cr_number": 148,
   "status_values": [
     "open",
     "in_progress",
@@ -1364,6 +1364,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md section 20.4", "design/wzsn-architectures-1-2-developer-tasks.md task 133", "design/cr-preflight/CR-0146.md", "reference/original-warajevo/source"],
       "notes": "Closed on 2026-09-02 after freezing three equal mono AY channels and the project-owned 16-level Q16.16 attenuation table, with zero/unity endpoint assertions and explicit separation from AY timing and host stereo delivery. CODE and DOCUMENTATION reviews passed for 3182e3a; Linux remote smoke CR0146-ay-policy-linux-1 passed; Windows 10 lab transport failed before execution and is explicitly not claimed; hosted platform-smoke 33647546578 and repository-gates 33647546570 passed across the configured runner set, including Windows; final upstream sound-control comparison found no undispositioned gap."
+    },
+    {
+      "cr_number": "CR-0147",
+      "title": "Implement deterministic beeper PCM integration",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 20.2 and 20.5", "design/wzsn-architectures-1-2-developer-tasks.md task 134", "design/cr-preflight/CR-0147.md", "reference/original-warajevo/source"],
+      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-6 scope. Preflight requires timestamp integration into the frozen PCM timeline without host callback sampling or canonical-state drift."
     }
   ]
 }

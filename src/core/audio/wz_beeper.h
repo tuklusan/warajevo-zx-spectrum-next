@@ -12,6 +12,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include <stddef.h>
 
 #include "core/wz_types.h"
+#include "core/audio/wz_audio_policy.h"
 
 #define WZ_BEEPER_EVENT_CAPACITY 1024u
 
@@ -37,5 +38,13 @@ wz_byte_t wz_beeper_mic_level(const wz_beeper_t* beeper);
 size_t wz_beeper_events(const wz_beeper_t* beeper,
                         wz_beeper_event_t* events,
                         size_t capacity);
+bool wz_beeper_render_pcm(const wz_beeper_event_t* events,
+                          size_t event_count,
+                          wz_byte_t initial_level,
+                          wz_master_tick_t start_tick,
+                          wz_qword_t master_ticks_per_second,
+                          wz_qword_t sample_rate,
+                          wz_audio_sample_t* samples,
+                          size_t sample_count);
 
 #endif
