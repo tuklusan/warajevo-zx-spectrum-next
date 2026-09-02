@@ -16,6 +16,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "app/wz_input_timing.h"
 #include "app/wz_input_focus.h"
 #include "app/wz_kempston_mapping.h"
+#include "app/wz_speed_policy.h"
 #include "core/wz_bus.h"
 #include "core/wz_scheduler.h"
 #include "core/wz_state.h"
@@ -196,6 +197,29 @@ static void test_kempston_mapping(void)
         !wz_kempston_mapping_unbind(&mapping, WZ_KEMPSTON_FIRE) ||
         wz_kempston_mapping_apply(&mapping, &joystick, 100u, true)) {
         fputs("Kempston host mapping failed\n", stderr);
+        exit(1);
+    }
+}
+
+static void test_speed_policy(void)
+{
+    static const unsigned expected[WZ_SPEED_COUNT] =
+        {25u, 50u, 100u, 200u, 400u, 800u, 0u};
+
+    for (unsigned index = 0u; index < WZ_SPEED_COUNT; ++index) {
+        wz_speed_policy_t policy = (wz_speed_policy_t)index;
+        if (!wz_speed_policy_valid(policy) ||
+            wz_speed_policy_percent(policy) != expected[index] ||
+            wz_speed_policy_is_unlimited(policy) !=
+                (policy == WZ_SPEED_UNLIMITED)) {
+            fputs("speed policy value contract failed\n", stderr);
+            exit(1);
+        }
+    }
+    if (wz_speed_policy_valid((wz_speed_policy_t)WZ_SPEED_COUNT) ||
+        wz_speed_policy_percent((wz_speed_policy_t)WZ_SPEED_COUNT) != 0u ||
+        wz_speed_policy_is_unlimited((wz_speed_policy_t)WZ_SPEED_COUNT)) {
+        fputs("speed policy invalid-value contract failed\n", stderr);
         exit(1);
     }
 }
@@ -438,6 +462,7 @@ int main(void)
     test_input_focus_loss();
     test_kempston_decode();
     test_kempston_mapping();
+    test_speed_policy();
     test_raster_diagnostic();
     test_raster_invalid_state();
     const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
