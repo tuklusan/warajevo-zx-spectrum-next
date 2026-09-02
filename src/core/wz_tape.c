@@ -585,6 +585,26 @@ static bool wz_tzx_target_is_valid(int32_t current,
     return target >= 0 && (size_t)target < block_count;
 }
 
+static wz_result_t wz_tzx_jump_target(size_t current,
+                                      const wz_tzx_block_t* block,
+                                      size_t block_count,
+                                      size_t* target)
+{
+    int32_t resolved;
+
+    if (block == 0 || target == 0 || block->data == 0 ||
+        block->data_length < 2u || current > (size_t)INT32_MAX ||
+        block_count > (size_t)INT32_MAX ||
+        !wz_tzx_target_is_valid((int32_t)current,
+                                (int16_t)wz_read_le16(block->data),
+                                block_count)) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    resolved = (int32_t)current + (int16_t)wz_read_le16(block->data);
+    *target = (size_t)resolved;
+    return WZ_RESULT_OK;
+}
+
 wz_result_t wz_tape_parse_tzx(const wz_byte_t* data,
                               size_t length,
                               wz_tzx_block_t* blocks,
@@ -827,6 +847,7 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
 {
     size_t required = 0u;
     size_t index = 0u;
+    size_t steps = 0u;
     wz_byte_t level = 1u;
 
     if (blocks == 0 || block_count == 0u || count == 0 ||
@@ -836,6 +857,8 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
     for (size_t block_index = 0u; block_index < block_count; ++block_index) {
         const wz_tzx_block_t* block = &blocks[block_index];
         size_t amount = 0u;
+        size_t target;
+        if (++steps > block_count) return WZ_RESULT_PARSE_ERROR;
         if (block->data == 0 && block->data_length != 0u) {
             return WZ_RESULT_INVALID_ARGUMENT;
         }
@@ -895,6 +918,13 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
             if (block->data_length < 2u) return WZ_RESULT_PARSE_ERROR;
             amount = wz_read_le16(block->data) == 0u ? 0u : 1u;
             break;
+        case 0x23u:
+            if (wz_tzx_jump_target(block_index, block, block_count, &target) !=
+                    WZ_RESULT_OK || target <= block_index) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            block_index = target - 1u;
+            break;
         case 0x2au: {
             size_t declared_length;
             if (block->data_length < 4u) return WZ_RESULT_PARSE_ERROR;
@@ -926,8 +956,11 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
     }
     *count = required;
     if (segments == 0 || capacity < required) return WZ_RESULT_BUFFER_TOO_SMALL;
+    steps = 0u;
     for (size_t block_index = 0u; block_index < block_count; ++block_index) {
         const wz_tzx_block_t* block = &blocks[block_index];
+        size_t target;
+        if (++steps > block_count) return WZ_RESULT_PARSE_ERROR;
         if (block->block_id == 0x10u) {
             if (wz_tzx_expand_standard_speed(block, master_ticks_per_tstate,
                                              segments, capacity, &index, &level) !=
@@ -1004,6 +1037,12 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
             }
         } else if (block->block_id == 0x2bu) {
             level = block->data[4u] == 0u ? 0u : 1u;
+        } else if (block->block_id == 0x23u) {
+            if (wz_tzx_jump_target(block_index, block, block_count, &target) !=
+                    WZ_RESULT_OK || target <= block_index) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            block_index = target - 1u;
         } else if (block->block_id == 0x20u) {
             wz_dword_t tstates = (wz_dword_t)wz_read_le16(block->data) * 3500u;
             if (wz_tzx_append_segment(segments, capacity, &index, tstates,
