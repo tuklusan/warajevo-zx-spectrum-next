@@ -1361,9 +1361,9 @@
     {
       "cr_number": "CR-0146",
       "title": "Freeze initial AY analog mixing model",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md section 20.4", "design/wzsn-architectures-1-2-developer-tasks.md task 133", "design/cr-preflight/CR-0146.md", "reference/original-warajevo/source"],
-      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-6 scope. Preflight freezes a three-channel equal mono AY target and project-owned Q16.16 volume gain table before AY implementation."
+      "notes": "Closed on 2026-09-02 after freezing three equal mono AY channels and the project-owned 16-level Q16.16 attenuation table, with zero/unity endpoint assertions and explicit separation from AY timing and host stereo delivery. CODE and DOCUMENTATION reviews passed for 3182e3a; Linux remote smoke CR0146-ay-policy-linux-1 passed; Windows 10 lab transport failed before execution and is explicitly not claimed; hosted platform-smoke 33647546578 and repository-gates 33647546570 passed across the configured runner set, including Windows; final upstream sound-control comparison found no undispositioned gap."
     }
   ]
 }
