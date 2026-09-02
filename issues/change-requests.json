@@ -1354,9 +1354,9 @@
     {
       "cr_number": "CR-0145",
       "title": "Freeze fixed-point mixer representation",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md section 20.4", "design/wzsn-architectures-1-2-developer-tasks.md task 132", "design/cr-preflight/CR-0145.md", "reference/original-warajevo/source"],
-      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-6 scope. Preflight freezes signed Q16.16 samples, Q64 accumulation, saturation, and tie-rounding rules before mixer implementation."
+      "notes": "Closed on 2026-09-02 after freezing signed 32-bit Q16.16 samples, signed 64-bit accumulation, representable-range saturation, and round-to-nearest ties-away-from-zero rules. CODE and DOCUMENTATION reviews passed for 5dc232c; Linux remote smoke CR0145-mixer-policy-linux-1 passed; Windows 10 lab transport failed before execution and is explicitly not claimed; hosted platform-smoke 33646915899 and repository-gates 33646915906 passed across the configured runner set, including Windows; final upstream sound-path comparison found no undispositioned gap."
     }
   ]
 }
