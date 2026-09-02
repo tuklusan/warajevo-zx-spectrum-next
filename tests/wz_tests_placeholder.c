@@ -393,6 +393,30 @@ int main(void)
             fputs("ULA blanking/non-display fetch contract failed\n", stderr);
             return 1;
         }
+        machine.memory[0x4000u] = 0x11u;
+        wz_machine_memory_write_at_tick(&machine, 0x4000u, 0x22u,
+                                        first_fetch_tick - 2u);
+        if (wz_machine_ula_fetches_at_tick(&machine, first_fetch_tick,
+                                           fetches, 2u, &fetch_count) !=
+                WZ_RESULT_OK || fetches[0].value != 0x22u) {
+            fputs("CPU-before-ULA visibility contract failed\n", stderr);
+            return 1;
+        }
+        machine.memory[0x5800u] = 0x33u;
+        wz_machine_memory_write_at_tick(&machine, 0x5800u, 0x44u,
+                                        first_fetch_tick);
+        if (wz_machine_ula_fetches_at_tick(&machine, first_fetch_tick,
+                                           fetches, 2u, &fetch_count) !=
+                WZ_RESULT_OK || fetches[1].value != 0x44u) {
+            fputs("same-edge CPU-before-ULA visibility contract failed\n", stderr);
+            return 1;
+        }
+        wz_machine_memory_write_at_tick(&machine, 0x5800u, 0x55u,
+                                        first_fetch_tick + 2u);
+        if (fetches[1].value != 0x44u) {
+            fputs("post-fetch visibility contract failed\n", stderr);
+            return 1;
+        }
         machine.master_tick = 0u;
     }
     if (wz_machine_memory_read(0, 0u) != 0xffu ||

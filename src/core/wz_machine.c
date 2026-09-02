@@ -207,6 +207,14 @@ void wz_machine_memory_write(wz_machine_t* machine, wz_word_t address,
     }
 }
 
+void wz_machine_memory_write_at_tick(wz_machine_t* machine, wz_word_t address,
+                                     wz_byte_t value, wz_master_tick_t master_tick)
+{
+    (void)master_tick;
+    /* CPU writes are applied before a same-tick ULA fetch by the scheduler contract. */
+    wz_machine_memory_write(machine, address, value);
+}
+
 bool wz_machine_ula_port_fe_selected(wz_word_t address)
 {
     return (address & 1u) == 0u;
