@@ -1067,9 +1067,9 @@
     {
       "cr_number": "CR-0104",
       "title": "Add overscan and rainbow timing transition tests",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 18, 36, and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 090", "design/machine-timing-evidence.md", "design/cr-preflight/CR-0103.md", "reference/original-warajevo/source"],
-      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-4 scope. Preflight requires timing-derived overscan transitions, deterministic event evidence, upstream comparison, remote validation, hosted validation, and a final zero-gap scan."
+      "notes": "Closed on 2026-09-02 after CODE and DOCUMENTATION review PASS, Linux remote harness CR0104-OVERSCAN-LINUX-R3 passed all five CTest targets and the complete pinned corpus for published head 1af119d, hosted platform-smoke 33590125872 passed all 18 available labels, and final upstream zero-gap scan passed."
     }
   ]
 }
