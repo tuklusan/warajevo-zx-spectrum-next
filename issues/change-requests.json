@@ -1382,9 +1382,9 @@
     {
       "cr_number": "CR-0149",
       "title": "Implement host audio enable policy",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md section 10.10", "design/wzsn-architectures-1-2-developer-tasks.md task 136", "design/cr-preflight/CR-0149.md", "reference/original-warajevo/source"],
-      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-6 scope. Preflight requires host audio enabled only at 0.5x through 2.0x inclusive, muted outside that range, with emulated audio progression unaffected."
+      "notes": "Closed on 2026-09-02 after adding the host-only audio enable predicate for 0.5x, 1.0x, and 2.0x, with mute for 0.25x, 4x, 8x, Unlimited, and invalid values; canonical/emulated audio state is untouched. CODE and DOCUMENTATION reviews passed with no confirmed findings. Linux CR0149-audio-policy-linux-1 and Windows 10 CR0149-audio-policy-windows-1 passed build and all five CTest entries. Hosted platform-smoke 33651349822 and repository-gates 33651349570 passed across the configured runner set; final upstream speed/sound comparison found no undispositioned gap."
     }
   ]
 }
