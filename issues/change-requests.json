@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 142,
+  "next_cr_number": 143,
   "status_values": [
     "open",
     "in_progress",
@@ -1329,6 +1329,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 36 and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 127", "design/cr-preflight/CR-0141.md", "reference/original-warajevo/source"],
       "notes": "Closed on 2026-09-02 after the integrated CMake smoke suite passed on Linux remote CR0141-phase5-linux-1 and Windows 10 remote CR0141-phase5-windows-2, covering raster, keyboard, Kempston, speed, pacing, serialization, and deterministic hash contracts. Hosted platform-smoke 33644108859 and repository-gates 33644108878 passed across the configured runner set; CODE and DOCUMENTATION reviews passed for 8a4639d; final upstream responsibility comparison found no undispositioned gap. GUI presentation remains explicitly host-only and is not inferred from headless hashes."
+    },
+    {
+      "cr_number": "CR-0142",
+      "title": "Close Phase-5 architecture gate",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md section 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 128", "design/cr-preflight/CR-0142.md", "reference/original-warajevo/source"],
+      "notes": "Opened and activated on 2026-09-02 after the ordered Phase-5 prerequisite audit found Tasks 105–127 closed. Preflight requires current review, remote, hosted, and upstream-completeness evidence before gate closure."
     }
   ]
 }
