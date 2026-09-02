@@ -53,14 +53,56 @@ bool wz_keyboard_matrix_set(wz_keyboard_matrix_t* matrix,
 wz_byte_t wz_keyboard_matrix_scan(const wz_keyboard_matrix_t* matrix,
                                   unsigned char row_select)
 {
+    bool reachable_rows[WZ_KEYBOARD_MATRIX_ROW_COUNT] = {false};
+    bool reachable_columns[WZ_KEYBOARD_MATRIX_KEYS_PER_ROW] = {false};
     wz_byte_t result = 0x1fu;
 
     if (matrix == 0) {
         return result;
     }
-    for (size_t row = 0u; row < WZ_KEYBOARD_MATRIX_ROW_COUNT; ++row) {
-        if ((row_select & (unsigned char)(1u << row)) == 0u) {
-            result &= matrix->rows[row];
+    for (size_t start = 0u; start < WZ_KEYBOARD_MATRIX_ROW_COUNT; ++start) {
+        bool changed;
+
+        if ((row_select & (unsigned char)(1u << start)) != 0u ||
+            reachable_rows[start]) {
+            continue;
+        }
+        reachable_rows[start] = true;
+        do {
+            changed = false;
+            for (size_t row = 0u; row < WZ_KEYBOARD_MATRIX_ROW_COUNT; ++row) {
+                if (!reachable_rows[row]) {
+                    continue;
+                }
+                for (size_t column = 0u;
+                     column < WZ_KEYBOARD_MATRIX_KEYS_PER_ROW; ++column) {
+                    if ((matrix->rows[row] & (wz_byte_t)(1u << column)) != 0u ||
+                        reachable_columns[column]) {
+                        continue;
+                    }
+                    reachable_columns[column] = true;
+                    changed = true;
+                }
+            }
+            for (size_t row = 0u; row < WZ_KEYBOARD_MATRIX_ROW_COUNT; ++row) {
+                if (reachable_rows[row]) {
+                    continue;
+                }
+                for (size_t column = 0u;
+                     column < WZ_KEYBOARD_MATRIX_KEYS_PER_ROW; ++column) {
+                    if (reachable_columns[column] &&
+                        (matrix->rows[row] & (wz_byte_t)(1u << column)) == 0u) {
+                        reachable_rows[row] = true;
+                        changed = true;
+                        break;
+                    }
+                }
+            }
+        } while (changed);
+        for (size_t column = 0u; column < WZ_KEYBOARD_MATRIX_KEYS_PER_ROW; ++column) {
+            if (reachable_columns[column]) {
+                result &= (wz_byte_t)~(1u << column);
+            }
         }
     }
     return result;

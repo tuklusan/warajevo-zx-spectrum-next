@@ -81,6 +81,14 @@ static void test_complete_keyboard_matrix(void)
         fputs("keyboard matrix multi-row scan failed\n", stderr);
         exit(1);
     }
+    wz_keyboard_matrix_init(&matrix);
+    if (!wz_keyboard_matrix_set(&matrix, WZ_KEY_SHIFT, true) ||
+        !wz_keyboard_matrix_set(&matrix, WZ_KEY_Z, true) ||
+        !wz_keyboard_matrix_set(&matrix, WZ_KEY_A, true) ||
+        wz_keyboard_matrix_scan(&matrix, 0xfdu) != 0x1cu) {
+        fputs("keyboard matrix ghosting policy failed\n", stderr);
+        exit(1);
+    }
 }
 
 static void test_input_timestamp_assignment(void)
