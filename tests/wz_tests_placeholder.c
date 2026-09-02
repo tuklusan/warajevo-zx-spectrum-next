@@ -508,11 +508,21 @@ static void test_native_tap_parser(void)
     native[23u] = 1u;
     native[24u] = 0x01u;
     native[25u] = 0x02u;
-    if (!wz_tape_is_native_tap(native, sizeof(native)) ||
-        wz_tape_parse_native_tap(native, sizeof(native), 0, 0u, &count) !=
-            WZ_RESULT_BUFFER_TOO_SMALL || count != 1u ||
-        wz_tape_parse_native_tap(native, sizeof(native), &record, 1u, &count) !=
-            WZ_RESULT_OK || record.offset != 12u || record.previous_offset != 0u ||
+    if (!wz_tape_is_native_tap(native, sizeof(native))) {
+        fputs("native TAP detection failed\n", stderr);
+        exit(1);
+    }
+    if (wz_tape_parse_native_tap(native, sizeof(native), 0, 0u, &count) !=
+            WZ_RESULT_BUFFER_TOO_SMALL || count != 1u) {
+        fputs("native TAP sizing failed\n", stderr);
+        exit(1);
+    }
+    if (wz_tape_parse_native_tap(native, sizeof(native), &record, 1u, &count) !=
+            WZ_RESULT_OK) {
+        fputs("native TAP traversal failed\n", stderr);
+        exit(1);
+    }
+    if (record.offset != 12u || record.previous_offset != 0u ||
         record.next_offset != UINT32_MAX || record.stored_length != 4u ||
         record.flag != 0xa5u || record.record_type != 1u ||
         record.payload_length != 2u || record.payload[0u] != 0x01u ||
