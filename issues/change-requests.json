@@ -1340,9 +1340,9 @@
     {
       "cr_number": "CR-0143",
       "title": "Implement timestamped beeper transitions",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 20.1-20.2", "design/wzsn-architectures-1-2-developer-tasks.md task 129", "design/cr-preflight/CR-0143.md", "reference/original-warajevo/source"],
-      "notes": "Opened and activated on 2026-09-02 as the first ordered Phase-6 scope. Preflight requires canonical port-FE beeper transitions at master ticks with separate MIC state and no host audio dependency."
+      "notes": "Closed on 2026-09-02 after adding a bounded core beeper event stream fed by timestamped port-FE writes, preserving speaker bit 3 and MIC bit 4 separately, with same-level and MIC-only coverage. CODE and DOCUMENTATION reviews passed for 6b2c826; Linux remote smoke CR0143-beeper-linux-2 passed; Windows 10 and Windows 11 lab transports failed before execution and are explicitly not claimed; hosted platform-smoke 33645661062 and repository-gates 33645660999 passed across the configured runner set, including Windows; final upstream port-FE comparison found no undispositioned gap."
     }
   ]
 }
