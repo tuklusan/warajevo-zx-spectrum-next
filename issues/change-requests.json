@@ -1319,9 +1319,9 @@
     {
       "cr_number": "CR-0140",
       "title": "Implement atomic interprocess-safe configuration writes",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md section 28.7", "design/wzsn-architectures-1-2-developer-tasks.md task 126", "design/cr-preflight/CR-0140.md", "reference/original-warajevo/source"],
-      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-5 scope. Preflight requires exclusive interprocess serialization and atomic replacement for shared host configuration writes."
+      "notes": "Closed on 2026-09-02 after adding host-only POSIX and Windows exclusive sidecar locking, same-directory exclusive temporary files, flush-before-replace, atomic replacement, and failure cleanup. CODE and DOCUMENTATION reviews passed for a772dae; Linux remote smoke CR0140-config-linux-1 and Windows 10 remote smoke CR0140-config-windows-2 passed; hosted platform-smoke 33643245291 and repository-gates 33643245229 passed across five platforms; final upstream preference/persistence comparison found no undispositioned behavior."
     }
   ]
 }
