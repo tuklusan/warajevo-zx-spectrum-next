@@ -638,6 +638,11 @@ static void test_tzx_timing(void)
 {
     const wz_byte_t standard_data[6u] = {0x00u, 0x00u, 0x02u, 0x00u,
                                          0x00u, 0xffu};
+    const wz_byte_t turbo_data[19u] = {
+        0xe8u, 0x03u, 0x9bu, 0x02u, 0xefu, 0x02u, 0x57u, 0x03u,
+        0xaeu, 0x06u, 0x02u, 0x00u, 8u, 0x00u, 0x00u, 1u, 0x00u,
+        0x00u, 0xa5u
+    };
     const wz_byte_t tone_data[4u] = {0xe8u, 0x03u, 0x02u, 0x00u};
     const wz_byte_t sequence_data[5u] = {2u, 0x01u, 0x00u, 0x02u, 0x00u};
     const wz_byte_t pause_data[2u] = {0x0au, 0x00u};
@@ -650,9 +655,13 @@ static void test_tzx_timing(void)
     size_t count = 0u;
     const wz_tzx_block_t standard =
         {0u, 11u, 0x10u, WZ_TZX_SUPPORTED, standard_data, sizeof(standard_data)};
+    const wz_tzx_block_t turbo =
+        {0u, 20u, 0x11u, WZ_TZX_SUPPORTED, turbo_data, sizeof(turbo_data)};
 
     if (wz_tape_expand_tzx_timing(&standard, 1u, 2u, 0, 0u, &count) !=
             WZ_RESULT_BUFFER_TOO_SMALL || count != 8097u ||
+        wz_tape_expand_tzx_timing(&turbo, 1u, 2u, 0, 0u, &count) !=
+            WZ_RESULT_BUFFER_TOO_SMALL || count != 20u ||
         wz_tape_expand_tzx_timing(blocks, 3u, 2u, 0, 0u, &count) !=
             WZ_RESULT_BUFFER_TOO_SMALL || count != 5u ||
         wz_tape_expand_tzx_timing(blocks, 3u, 2u, segments, 5u, &count) !=
