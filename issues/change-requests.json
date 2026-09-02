@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 161,
+  "next_cr_number": 162,
   "status_values": [
     "open",
     "in_progress",
@@ -1462,6 +1462,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 23.2 and 23.3", "design/wzsn-architectures-1-2-developer-tasks.md task 147", "design/cr-preflight/CR-0160.md", "reference/original-warajevo/source"],
       "notes": "Closed on 2026-09-02 at fd79b9a after proving canonical tape edge timing remains invariant across runtime speed settings while host pacing remains separate. CODE review for 35f6a7d..fd79b9a and final DOCUMENTATION review passed with zero findings. Remote Linux CR0160-harness-linux-2 passed all five CTest targets; prior Linux sanitizer and Windows speed-invariance runs passed. Hosted platform-smoke 33667606247 passed all 18 jobs. The earlier hosted run 33667244091 at 35f6a7d failed only on a test fixture mock signature and is superseded by the corrected fixture. Parser, SAVE/MIC, instant-load, trap, and networking behavior remain explicitly deferred to later ordered tasks; closure evidence is recorded in design/cr-preflight/CR-0160.md."
+    },
+    {
+      "cr_number": "CR-0161",
+      "title": "Implement SAVE/MIC tape output as emulated-time transitions",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 20.1, 20.2, and 23.4", "design/wzsn-architectures-1-2-developer-tasks.md task 148", "design/cr-preflight/CR-0161.md", "reference/original-warajevo/source"],
+      "notes": "Opened on 2026-09-02 as the next ordered Phase-7 scope. Preflight inventories deterministic core-side SAVE/MIC transitions at canonical master ticks, preserves host export outside the core, and explicitly defers TAP writing, native tape writing, parsing, instant loading, trap detection, and networking behavior."
     }
   ]
 }
