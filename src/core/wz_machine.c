@@ -29,6 +29,7 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     for (size_t index = 0u; index < 8u; ++index) {
         machine->keyboard_rows[index] = 0x1fu;
     }
+    wz_kempston_init(&machine->kempston);
     machine->ula_output = 0u;
     machine->maskable_interrupt_line_low = 0u;
     machine->rom_identity = 0u;
@@ -57,6 +58,7 @@ void wz_machine_destroy(wz_machine_t* machine)
         for (size_t index = 0u; index < 8u; ++index) {
             machine->keyboard_rows[index] = 0x1fu;
         }
+        wz_kempston_init(&machine->kempston);
         machine->ula_output = 0u;
         machine->maskable_interrupt_line_low = 0u;
         machine->rom_identity = 0u;
@@ -157,6 +159,26 @@ wz_result_t wz_machine_set_keyboard_key(wz_machine_t* machine,
         machine->keyboard_rows[row] |= mask;
     }
     return WZ_RESULT_OK;
+}
+
+wz_result_t wz_machine_set_kempston_control(wz_machine_t* machine,
+                                             wz_kempston_control_t control,
+                                             bool pressed)
+{
+    if (machine == 0 ||
+        !wz_kempston_set(&machine->kempston, control, pressed)) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    return WZ_RESULT_OK;
+}
+
+wz_byte_t wz_machine_kempston_read(const wz_machine_t* machine,
+                                   wz_word_t address)
+{
+    if (machine == 0) {
+        return 0u;
+    }
+    return wz_kempston_read(&machine->kempston, (wz_byte_t)address);
 }
 
 wz_result_t wz_machine_load_48k_rom(wz_machine_t* machine,

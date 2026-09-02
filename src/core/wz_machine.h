@@ -13,6 +13,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "core/wz_bus.h"
 #include "core/wz_machine_profile.h"
+#include "core/wz_kempston.h"
 #include "core/wz_raster.h"
 #include "core/wz_trace.h"
 #include "core/wz_types.h"
@@ -57,6 +58,7 @@ typedef struct wz_machine {
     wz_byte_t has_48k_rom;
     wz_byte_t hardware_io_decode_enabled;
     wz_byte_t keyboard_rows[8u];
+    wz_kempston_t kempston;
     wz_byte_t ula_output;
     wz_qword_t rom_identity;
     wz_master_tick_t master_tick;
@@ -79,6 +81,11 @@ wz_result_t wz_machine_set_keyboard_key(wz_machine_t* machine,
                                         wz_byte_t row,
                                         wz_byte_t key,
                                         bool pressed);
+wz_result_t wz_machine_set_kempston_control(wz_machine_t* machine,
+                                             wz_kempston_control_t control,
+                                             bool pressed);
+wz_byte_t wz_machine_kempston_read(const wz_machine_t* machine,
+                                   wz_word_t address);
 wz_byte_t wz_machine_contention_delay(const wz_machine_t* machine,
                                       wz_bus_cycle_t cycle,
                                       wz_word_t address,

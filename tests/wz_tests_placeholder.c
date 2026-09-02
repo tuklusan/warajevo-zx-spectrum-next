@@ -418,7 +418,7 @@ int main(void)
     wz_machine_t machine;
     wz_machine_t restored;
     wz_scheduler_t scheduler;
-    wz_byte_t serialized[65606u];
+    wz_byte_t serialized[65607u];
     wz_machine_profile_t certified_profile;
     wz_state_writer_t writer;
     wz_qword_t first_hash;
@@ -521,6 +521,13 @@ int main(void)
 
     if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
         fputs("machine initialization failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_set_kempston_control(&machine, WZ_KEMPSTON_RIGHT, true) != WZ_RESULT_OK ||
+        wz_machine_set_kempston_control(&machine, WZ_KEMPSTON_FIRE, true) != WZ_RESULT_OK ||
+        wz_machine_kempston_read(&machine, 0x1fu) != 0x14u ||
+        wz_machine_kempston_read(&machine, 0x1eu) != 0u) {
+        fputs("machine Kempston integration failed\n", stderr);
         return 1;
     }
     if (!wz_raster_sample_is_valid(0x00u) ||
@@ -4131,7 +4138,7 @@ int main(void)
     machine.ula_output_tick = 1234u;
     machine.maskable_interrupt_line_low = 1u;
     if (wz_state_serialize_machine(&machine, &writer) != WZ_RESULT_OK ||
-        writer.length != 65606u ||
+        writer.length != 65607u ||
         wz_state_hash_machine(&machine, &first_hash) != WZ_RESULT_OK) {
         fputs("canonical state serialization failed\n", stderr);
         return 1;

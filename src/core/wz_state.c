@@ -10,8 +10,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "core/wz_machine.h"
 
-#define WZ_STATE_VERSION 8u
-#define WZ_STATE_HEADER_LENGTH 70u
+#define WZ_STATE_VERSION 9u
+#define WZ_STATE_HEADER_LENGTH 71u
 #define WZ_STATE_MACHINE_LENGTH (65536u + WZ_STATE_HEADER_LENGTH)
 
 static wz_result_t wz_state_write(wz_state_writer_t* writer,
@@ -118,6 +118,8 @@ wz_result_t wz_state_serialize_machine(const wz_machine_t* machine,
         wz_state_write_u64(writer, machine->master_tick) != WZ_RESULT_OK ||
         wz_state_write(writer, machine->keyboard_rows,
                        sizeof(machine->keyboard_rows)) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, wz_kempston_read(&machine->kempston,
+                                                   WZ_KEMPSTON_PORT)) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, machine->ula_output) != WZ_RESULT_OK ||
         wz_state_write_u64(writer, machine->ula_output_tick) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, machine->maskable_interrupt_line_low) != WZ_RESULT_OK ||
@@ -228,18 +230,29 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
         }
         machine->keyboard_rows[index] = data[52u + index];
     }
-    machine->ula_output = data[60u];
+    if ((data[60u] & (wz_byte_t)~0x1fu) != 0u) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    wz_kempston_init(&machine->kempston);
+    for (size_t index = 0u; index < WZ_KEMPSTON_CONTROL_COUNT; ++index) {
+        if (!wz_kempston_set(&machine->kempston,
+                             (wz_kempston_control_t)index,
+                             (data[60u] & (wz_byte_t[]){0x10u, 0x08u, 0x02u, 0x01u, 0x04u}[index]) != 0u)) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+    }
+    machine->ula_output = data[61u];
     if ((machine->ula_output & 0xe0u) != 0u) {
         return WZ_RESULT_INVALID_STATE;
     }
     for (size_t index = 0u; index < sizeof(ula_output_tick); ++index) {
-        ula_output_tick |= (wz_qword_t)data[61u + index] << (index * 8u);
+        ula_output_tick |= (wz_qword_t)data[62u + index] << (index * 8u);
     }
     machine->ula_output_tick = ula_output_tick;
-    if (data[69u] > 1u) {
+    if (data[70u] > 1u) {
         return WZ_RESULT_INVALID_STATE;
     }
-    machine->maskable_interrupt_line_low = data[69u];
+    machine->maskable_interrupt_line_low = data[70u];
     for (size_t index = 0u; index < sizeof(machine->memory); ++index) {
         machine->memory[index] = data[WZ_STATE_HEADER_LENGTH + index];
     }
