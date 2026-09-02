@@ -291,6 +291,16 @@ int main(void)
         fputs("machine initialization failed\n", stderr);
         return 1;
     }
+    if (!wz_raster_sample_is_valid(0x00u) ||
+        !wz_raster_sample_is_valid(WZ_RASTER_BORDER_MAX) ||
+        !wz_raster_sample_is_valid(WZ_RASTER_BLANKING) ||
+        wz_raster_sample_is_valid(0x19u) ||
+        !wz_raster_sample_is_active(0x0fu) ||
+        !wz_raster_sample_is_border(0x10u) ||
+        wz_raster_sample_is_border(WZ_RASTER_BLANKING)) {
+        fputs("canonical raster sample encoding contract failed\n", stderr);
+        return 1;
+    }
     if (machine.master_tick != 0u || machine.profile != profile) {
         fputs("machine did not initialize deterministic state\n", stderr);
         return 1;

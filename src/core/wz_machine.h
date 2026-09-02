@@ -13,6 +13,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "core/wz_bus.h"
 #include "core/wz_machine_profile.h"
+#include "core/wz_raster.h"
 #include "core/wz_trace.h"
 #include "core/wz_types.h"
 #include "core/wz_z80.h"
