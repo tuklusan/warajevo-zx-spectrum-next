@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 156,
+  "next_cr_number": 157,
   "status_values": [
     "open",
     "in_progress",
@@ -1427,6 +1427,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 36 and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 142", "design/cr-preflight/CR-0155.md", "reference/original-warajevo/source"],
       "notes": "Closed on 2026-09-02 after verifying identical canonical mixer, beeper PCM, and evidence regressions on Linux x86_64 with GCC 15.2 and Windows AMD64 with Clang 22.1. CODE and DOCUMENTATION reviews passed with no confirmed findings. Linux CR0155-mixer-linux-1 and Windows 10 CR0155-mixer-windows-1 passed build and all five CTest entries with no silent skips; hosted platform-smoke 33660254725 passed all 17 configured runner lanes. Final upstream arithmetic/conversion comparison and zero-gap scan found no undispositioned gap."
+    },
+    {
+      "cr_number": "CR-0156",
+      "title": "Close Phase-6 audio gate",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md section 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 143", "design/cr-preflight/CR-0156.md", "reference/original-warajevo/source"],
+      "notes": "Opened on 2026-09-02 as the Phase-6 exit gate. Preflight requires reconciliation of CR-0143 through CR-0155, complete evidence, and a final upstream zero-gap scan before Phase 7."
     }
   ]
 }
