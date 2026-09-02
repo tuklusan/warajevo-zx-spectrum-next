@@ -689,6 +689,109 @@ static wz_result_t wz_tzx_append_segment(wz_tape_segment_t* segments,
     return WZ_RESULT_OK;
 }
 
+static wz_result_t wz_tzx_csw_validate(const wz_tzx_block_t* block,
+                                       size_t* pulse_count,
+                                       size_t* encoded_offset)
+{
+    size_t offset = 14u;
+    size_t found = 0u;
+    wz_dword_t declared;
+
+    if (block == 0 || pulse_count == 0 || encoded_offset == 0 ||
+        block->data == 0 || block->data_length < offset ||
+        block->data[9u] != 1u ||
+        wz_tzx_read_le24(block->data + 6u) == 0u) {
+        return WZ_RESULT_UNSUPPORTED_OPERATION;
+    }
+    declared = (wz_dword_t)block->data[10u] |
+        ((wz_dword_t)block->data[11u] << 8u) |
+        ((wz_dword_t)block->data[12u] << 16u) |
+        ((wz_dword_t)block->data[13u] << 24u);
+    if (declared == 0u) return WZ_RESULT_PARSE_ERROR;
+    while (offset < block->data_length && found < (size_t)declared) {
+        size_t run;
+        if (block->data[offset++] != 0u) {
+            run = 1u;
+        } else {
+            if (offset > block->data_length - 4u) return WZ_RESULT_PARSE_ERROR;
+            run = (size_t)block->data[offset] |
+                ((size_t)block->data[offset + 1u] << 8u) |
+                ((size_t)block->data[offset + 2u] << 16u) |
+                ((size_t)block->data[offset + 3u] << 24u);
+            offset += 4u;
+            if (run == 0u) return WZ_RESULT_PARSE_ERROR;
+        }
+        if (found == SIZE_MAX) return WZ_RESULT_PARSE_ERROR;
+        ++found;
+    }
+    if (found != (size_t)declared || offset != block->data_length) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    *pulse_count = found;
+    *encoded_offset = 14u;
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_tzx_count_csw(const wz_tzx_block_t* block,
+                                    size_t* amount)
+{
+    size_t pulses;
+    size_t offset;
+
+    if (amount == 0 || wz_tzx_csw_validate(block, &pulses, &offset) != WZ_RESULT_OK) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    (void)offset;
+    if (pulses == SIZE_MAX) return WZ_RESULT_PARSE_ERROR;
+    *amount = pulses + (wz_read_le16(block->data) == 0u ? 0u : 1u);
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_tzx_expand_csw(const wz_tzx_block_t* block,
+                                     wz_dword_t ticks_per_tstate,
+                                     wz_tape_segment_t* segments,
+                                     size_t capacity,
+                                     size_t* index,
+                                     wz_byte_t* level)
+{
+    size_t pulses;
+    size_t offset;
+    wz_dword_t sample_rate;
+
+    if (level == 0 || wz_tzx_csw_validate(block, &pulses, &offset) != WZ_RESULT_OK) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    sample_rate = wz_tzx_read_le24(block->data + 6u);
+    for (size_t pulse = 0u; pulse < pulses; ++pulse) {
+        uint64_t samples;
+        wz_dword_t tstates;
+        if (block->data[offset++] != 0u) {
+            samples = 1u;
+        } else {
+            samples = (uint64_t)block->data[offset] |
+                ((uint64_t)block->data[offset + 1u] << 8u) |
+                ((uint64_t)block->data[offset + 2u] << 16u) |
+                ((uint64_t)block->data[offset + 3u] << 24u);
+            offset += 4u;
+        }
+        samples = (samples * 3500000u + sample_rate / 2u) / sample_rate;
+        if (samples == 0u || samples > UINT32_MAX) return WZ_RESULT_PARSE_ERROR;
+        tstates = (wz_dword_t)samples;
+        if (wz_tzx_append_segment(segments, capacity, index, tstates,
+                                  ticks_per_tstate, *level) != WZ_RESULT_OK) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        *level ^= 1u;
+    }
+    if (wz_read_le16(block->data) != 0u) {
+        if (wz_tzx_append_segment(segments, capacity, index,
+                (wz_dword_t)wz_read_le16(block->data) * 3500u,
+                ticks_per_tstate, 0u) != WZ_RESULT_OK) return WZ_RESULT_PARSE_ERROR;
+        *level = 0u;
+    }
+    return WZ_RESULT_OK;
+}
+
 static bool wz_tzx_is_ignored_metadata(wz_byte_t block_id)
 {
     return block_id == 0x21u || block_id == 0x22u || block_id == 0x30u ||
@@ -921,6 +1024,11 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
             if (wz_read_le16(block->data + 2u) != 0u) ++amount;
             break;
         }
+        case 0x18u:
+            if (wz_tzx_count_csw(block, &amount) != WZ_RESULT_OK) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            break;
         case 0x20u:
             if (block->data_length < 2u) return WZ_RESULT_PARSE_ERROR;
             amount = wz_read_le16(block->data) == 0u ? 0u : 1u;
@@ -1060,6 +1168,11 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
                     (wz_dword_t)wz_read_le16(block->data + 2u) * 3500u,
                     master_ticks_per_tstate, 0u) != WZ_RESULT_OK) return WZ_RESULT_PARSE_ERROR;
                 level = 0u;
+            }
+        } else if (block->block_id == 0x18u) {
+            if (wz_tzx_expand_csw(block, master_ticks_per_tstate, segments,
+                                  capacity, &index, &level) != WZ_RESULT_OK) {
+                return WZ_RESULT_PARSE_ERROR;
             }
         } else if (block->block_id == 0x2bu) {
             level = block->data[4u] == 0u ? 0u : 1u;

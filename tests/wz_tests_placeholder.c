@@ -684,6 +684,15 @@ static void test_tzx_timing(void)
         {3u, 5u, 0x12u, WZ_TZX_SUPPORTED, tone_data, sizeof(tone_data)},
         {8u, 1u, 0x25u, WZ_TZX_SUPPORTED, 0, 0u}
     };
+    const wz_byte_t csw_data[20u] = {
+        0x10u, 0x00u, 0x00u, 0x00u, 0x01u, 0x00u,
+        0xe0u, 0x67u, 0x35u, 0x01u, 0x02u, 0x00u,
+        0x00u, 0x00u, 0x02u, 0x00u, 0x04u, 0x00u,
+        0x00u, 0x00u
+    };
+    const wz_tzx_block_t csw_blocks[1u] = {
+        {0u, 21u, 0x18u, WZ_TZX_SUPPORTED, csw_data, sizeof(csw_data)}
+    };
 
     if (wz_tape_expand_tzx_timing(&standard, 1u, 2u, 0, 0u, &count) !=
             WZ_RESULT_BUFFER_TOO_SMALL || count != 8097u ||
@@ -705,6 +714,11 @@ static void test_tzx_timing(void)
             WZ_RESULT_BUFFER_TOO_SMALL || count != 4u ||
         wz_tape_expand_tzx_timing(loop_blocks, 3u, 2u, segments, 4u, &count) !=
             WZ_RESULT_OK || count != 4u ||
+        wz_tape_expand_tzx_timing(csw_blocks, 1u, 2u, 0, 0u, &count) !=
+            WZ_RESULT_BUFFER_TOO_SMALL || count != 3u ||
+        wz_tape_expand_tzx_timing(csw_blocks, 1u, 2u, segments, 5u, &count) !=
+            WZ_RESULT_OK || count != 3u || segments[0u].duration != 4u ||
+        segments[1u].duration != 8u || segments[2u].duration != 7000u ||
         wz_tape_expand_tzx_timing(blocks, 4u, 2u, 0, 0u, &count) !=
             WZ_RESULT_BUFFER_TOO_SMALL || count != 5u ||
         wz_tape_expand_tzx_timing(blocks, 4u, 2u, segments, 5u, &count) !=
