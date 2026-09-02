@@ -617,6 +617,8 @@ def main() -> int:
         zip_path = local_dir / "remote-artefacts.zip"
         pulled_bytes = pulled.stdout
         if machine["kind"] == "windows":
+            write_text(local_dir / "pull-stdout.txt", decode_output(pulled.stdout))
+            write_text(local_dir / "pull-stderr.txt", decode_output(pulled.stderr))
             pulled_bytes = decode_windows_archive(pulled.stdout)
         write_bytes(zip_path, pulled_bytes)
         extract_zip(zip_path, local_dir / "unzipped")
