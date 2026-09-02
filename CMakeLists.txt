@@ -143,7 +143,19 @@ if(WZSN_BUILD_SOKOL_HOST)
         target_link_libraries(wz_sokol_host PRIVATE "-framework Cocoa" "-framework Metal" "-framework QuartzCore")
     else()
         find_package(X11 REQUIRED)
-        target_link_libraries(wz_sokol_host PRIVATE ${X11_LIBRARIES} ${CMAKE_DL_LIBS})
+        find_package(OpenGL REQUIRED)
+        find_library(WZSN_ALSA_LIBRARY asound REQUIRED)
+        target_link_libraries(
+            wz_sokol_host
+            PRIVATE
+            ${X11_LIBRARIES}
+            ${X11_Xi_LIB}
+            ${X11_Xcursor_LIB}
+            OpenGL::GL
+            ${WZSN_ALSA_LIBRARY}
+            ${CMAKE_DL_LIBS}
+            m
+        )
         target_compile_definitions(wz_sokol_host PRIVATE ${X11_DEFINITIONS})
     endif()
 endif()

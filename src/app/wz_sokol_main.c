@@ -20,6 +20,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #define SOKOL_X11
 #endif
 #include "sokol_app.h"
+#include "sokol_gfx.h"
 #include "sokol_audio.h"
 
 #include "core/wz_machine.h"
