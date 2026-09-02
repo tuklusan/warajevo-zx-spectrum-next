@@ -493,6 +493,7 @@ static void test_native_tap_parser(void)
                              0xffu, 0xffu, 0xffu, 0xffu};
     wz_native_tap_record_t record;
     size_t count = 0u;
+    wz_result_t sizing_result;
 
     native[0u] = 12u;
     native[1u] = 0u;
@@ -512,9 +513,10 @@ static void test_native_tap_parser(void)
         fputs("native TAP detection failed\n", stderr);
         exit(1);
     }
-    if (wz_tape_parse_native_tap(native, sizeof(native), 0, 0u, &count) !=
-            WZ_RESULT_BUFFER_TOO_SMALL || count != 1u) {
-        fputs("native TAP sizing failed\n", stderr);
+    sizing_result = wz_tape_parse_native_tap(native, sizeof(native), 0, 0u, &count);
+    if (sizing_result != WZ_RESULT_BUFFER_TOO_SMALL || count != 1u) {
+        fprintf(stderr, "native TAP sizing failed: result=%d count=%zu\n",
+                (int)sizing_result, count);
         exit(1);
     }
     if (wz_tape_parse_native_tap(native, sizeof(native), &record, 1u, &count) !=
