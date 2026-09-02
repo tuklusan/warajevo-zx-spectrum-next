@@ -255,6 +255,33 @@ int main(void)
     const char* timing_full_trace_path = "wz-trace-timing-full-retention.bin";
 
     {
+        static const wz_byte_t expected[] = {
+            WZ_PALETTE_BLACK, WZ_PALETTE_BLUE, WZ_PALETTE_RED,
+            WZ_PALETTE_MAGENTA, WZ_PALETTE_GREEN, WZ_PALETTE_CYAN,
+            WZ_PALETTE_YELLOW, WZ_PALETTE_WHITE,
+            WZ_PALETTE_BRIGHT_BLACK, WZ_PALETTE_BRIGHT_BLUE,
+            WZ_PALETTE_BRIGHT_RED, WZ_PALETTE_BRIGHT_MAGENTA,
+            WZ_PALETTE_BRIGHT_GREEN, WZ_PALETTE_BRIGHT_CYAN,
+            WZ_PALETTE_BRIGHT_YELLOW, WZ_PALETTE_BRIGHT_WHITE
+        };
+        wz_byte_t sample = 0u;
+        for (wz_byte_t color = 0u; color < 8u; ++color) {
+            if (wz_raster_palette_index(color, false, &sample) != WZ_RESULT_OK ||
+                sample != expected[color] ||
+                wz_raster_palette_index(color, true, &sample) != WZ_RESULT_OK ||
+                sample != expected[(size_t)color + 8u]) {
+                fputs("canonical palette table contract failed\n", stderr);
+                return 1;
+            }
+        }
+        if (wz_raster_palette_index(8u, false, &sample) != WZ_RESULT_INVALID_ARGUMENT ||
+            wz_raster_palette_index(0u, false, 0) != WZ_RESULT_INVALID_ARGUMENT) {
+            fputs("canonical palette invalid-input contract failed\n", stderr);
+            return 1;
+        }
+    }
+
+    {
         static const wz_byte_t load_store_program[] = {
             0x3eu, 0x42u, 0x32u, 0x00u, 0x40u, 0x3au, 0x00u, 0x40u
         };

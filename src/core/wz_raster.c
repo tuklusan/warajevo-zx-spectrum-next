@@ -102,9 +102,15 @@ wz_result_t wz_raster_decode_attribute_phase(wz_byte_t attribute,
     }
     color = ink_selected ? attribute & 0x07u : (attribute >> 3u) & 0x07u;
 
-    if ((attribute & 0x40u) != 0u) {
-        color = (wz_byte_t)(color + 8u);
+    return wz_raster_palette_index(color, (attribute & 0x40u) != 0u, sample);
+}
+
+wz_result_t wz_raster_palette_index(wz_byte_t base_color, bool bright,
+                                    wz_byte_t* sample)
+{
+    if (sample == 0 || base_color > WZ_PALETTE_WHITE) {
+        return WZ_RESULT_INVALID_ARGUMENT;
     }
-    *sample = color;
+    *sample = (wz_byte_t)(base_color + (bright ? 8u : 0u));
     return WZ_RESULT_OK;
 }
