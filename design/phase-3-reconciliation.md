@@ -94,10 +94,17 @@ The following are intentionally owned by later tasks and are not Phase-3 gaps:
 
 ## Zero-Gap Result
 
-Two successive source/document scans covered bus dispatch, memory and I/O
-routing, contention tables and boundaries, ULA output, interrupt assertion and
-sampling, HALT interaction, frame edges, trace serialization, canonical state,
-differential normalization, and each deferred boundary. No scoped behavior was
-found without implementation, evidence, classification, or a named later
-task. The Phase-3 gate is therefore eligible for closure pending its advisory
-review and publication gates.
+Two successive, separately recorded source/document scans covered bus
+dispatch, memory and I/O routing, contention tables and boundaries, ULA output,
+interrupt assertion and sampling, HALT interaction, frame edges, trace
+serialization, canonical state, differential normalization, and each deferred
+boundary. No scoped behavior was found without implementation, evidence,
+classification, or a named later task.
+
+| Pass | Recorded time (local) | Scope and result |
+| --- | --- | --- |
+| 1 | 2026-09-01 20:03 | `git status --short` clean; `py -3 tools/validate_project_gates.py` passed; source/task/CR mapping reviewed with no new scoped gap. |
+| 2 | 2026-09-01 20:04 | Same complete scope rescanned without repository changes; `git status --short` clean and `py -3 tools/validate_project_gates.py` passed; no new scoped gap. |
+
+The Phase-3 gate is therefore eligible for closure pending its advisory review
+and publication gates.
