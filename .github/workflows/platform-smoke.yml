@@ -23,15 +23,47 @@ jobs:
       matrix:
         include:
           - id: linux-x64
+            label: ubuntu-22.04
+          - id: linux-x64-latest
+            label: ubuntu-latest
+          - id: linux-x64-24
             label: ubuntu-24.04
+          - id: linux-x64-26
+            label: ubuntu-26.04
+          - id: linux-arm64-22
+            label: ubuntu-22.04-arm
           - id: linux-arm64
             label: ubuntu-24.04-arm
-          - id: windows-x64
+          - id: linux-arm64-26
+            label: ubuntu-26.04-arm
+          - id: windows-latest
+            label: windows-latest
+          - id: windows-server-2022
+            label: windows-2022
+          - id: windows-server-2025
             label: windows-2025
+          - id: windows-server-2025-vs2026
+            label: windows-2025-vs2026
+          - id: windows-arm64
+            label: windows-11-arm
+          - id: windows-arm64-vs2026
+            label: windows-11-vs2026-arm
+          - id: macos-arm64-latest
+            label: macos-latest
           - id: macos-arm64
             label: macos-15
+          - id: macos-arm64-14
+            label: macos-14
+          - id: macos-intel-13
+            label: macos-13
           - id: macos-intel-x64
             label: macos-15-intel
+          - id: macos-intel-26
+            label: macos-26-intel
+          - id: macos-arm64-26
+            label: macos-26
+          - id: macos-xcode-27
+            label: xcode-27
 
     name: ${{ matrix.id }}
     runs-on: ${{ matrix.label }}

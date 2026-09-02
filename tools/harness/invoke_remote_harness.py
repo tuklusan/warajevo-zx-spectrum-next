@@ -42,6 +42,13 @@ REMOTE_MACHINES = {
         "project_dir": r"C:\Users\vagab\WarajevoSpectrum.Next",
         "python_command": "py -3",
     },
+    "macos-bigsur-lab": {
+        "kind": "macos",
+        "ssh_target": "rumtuk@10.0.0.114",
+        "project_dir": "~/SOFTWARE_DEV/WARAJEVO-NEXT",
+        "python_command": "python3",
+        "max_bytes": 1073741824,
+    },
 }
 SAFE_RUN_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}\Z")
 MAINTENANCE_REF = re.compile(r"wzsn/maintenance/CR-[0-9]{4}[A-Za-z0-9._/-]*\Z")
@@ -304,7 +311,14 @@ def validate_powershell(root: Path, script_text: str) -> None:
 
 
 def run_linux(machine: dict[str, str], shell_command: str, root: Path) -> subprocess.CompletedProcess[bytes]:
-    remote_command = f"cd {shlex.quote(machine['project_dir'])} && {shell_command}"
+    remote_command = (
+        f"cd {shlex.quote(machine['project_dir'])} && "
+        f"usage_kb=$(du -sk . | awk '{{print $1}}') && "
+        f"test \"$usage_kb\" -le {machine.get('max_bytes', 0) // 1024 or 1024 * 1024} && "
+        f"{shell_command} && "
+        f"usage_kb=$(du -sk . | awk '{{print $1}}') && "
+        f"test \"$usage_kb\" -le {machine.get('max_bytes', 0) // 1024 or 1024 * 1024}"
+    )
     return subprocess.run(
         [*ssh_base(root), machine["ssh_target"], remote_command],
         cwd=root,
@@ -446,7 +460,7 @@ def main() -> int:
     local_dir.mkdir(parents=True, exist_ok=True)
     sanitizer_arg = " --sanitizers" if args.sanitizers else ""
 
-    sync = (sync_linux(machine, root, args.published_ref) if machine["kind"] == "linux"
+    sync = (sync_linux(machine, root, args.published_ref) if machine["kind"] in {"linux", "macos"}
             else sync_windows(machine, root, args.published_ref))
     write_text(local_dir / "sync-stdout.txt", decode_output(sync.stdout))
     write_text(local_dir / "sync-stderr.txt", decode_output(sync.stderr))
@@ -459,7 +473,7 @@ def main() -> int:
         )
         return sync.returncode
 
-    if machine["kind"] == "linux":
+    if machine["kind"] in {"linux", "macos"}:
         if args.action == "probe":
             primary = run_linux(
                 machine,
@@ -485,12 +499,17 @@ def main() -> int:
                 f"{fuse_command}"
             )
         else:
+            screenshot_command = (
+                f"screencapture -x {shlex.quote(remote_dir + '/desktop-screenshot.png')}"
+                if machine["kind"] == "macos"
+                else f"bash tools/harness/capture-linux-active-display.sh {shlex.quote(remote_dir + '/desktop-screenshot.png')}"
+            )
             primary = run_linux(
                 machine,
-                f"bash tools/harness/capture-linux-active-display.sh {shlex.quote(remote_dir + '/desktop-screenshot.png')}",
+                screenshot_command,
                 root,
             )
-            command_text = f"bash tools/harness/capture-linux-active-display.sh {remote_dir}/desktop-screenshot.png"
+            command_text = screenshot_command
 
         pulled = pull_linux(machine, remote_dir, root)
     else:

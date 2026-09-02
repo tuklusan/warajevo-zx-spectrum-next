@@ -56,6 +56,7 @@ Run the orchestrator from the repository root:
 python tools/harness/invoke_remote_harness.py probe linux-x64-lxqt
 python tools/harness/invoke_remote_harness.py smoke windows-10-reference
 python tools/harness/invoke_remote_harness.py screenshot windows-11-laptop
+python tools/harness/invoke_remote_harness.py probe macos-bigsur-lab
 python tools/harness/invoke_remote_windows_powershell.py windows-11-laptop tools/harness/windows-toolchain/verify-toolchain.ps1
 ```
 
@@ -88,7 +89,12 @@ As of 2026-08-09, the tracked hosted smoke matrix uses these standard labels:
 - `ubuntu-24.04-arm`
 - `windows-2025`
 - `macos-15`
+- `macos-14`
+- `macos-13`
 - `macos-15-intel`
+- `macos-26-intel`
+- `macos-26`
+- `xcode-27`
 
 The workflow lives in:
 
