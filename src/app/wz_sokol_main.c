@@ -6,12 +6,17 @@ Upstream Warajevo and third-party material retain their applicable copyrights an
 See LICENSE.txt and NOTICE.md for complete terms and provenance.
 */
 
+#if !defined(_WIN32)
+#define _POSIX_C_SOURCE 200809L
+#endif
+#define SOKOL_NO_ENTRY
 #define SOKOL_IMPL
 #if defined(_WIN32)
 #define SOKOL_D3D11
 #elif defined(__APPLE__)
 #define SOKOL_METAL
 #else
+#define SOKOL_GLCORE
 #define SOKOL_X11
 #endif
 #include "sokol_app.h"
@@ -31,7 +36,7 @@ static wz_host_session_t wz_host_session;
 static void wz_host_session_init(void)
 {
     wz_host_session.initialized =
-        wz_machine_init(&wz_host_session.machine, wz_machine_profile_48k_pal()) == WZ_OK;
+        wz_machine_init(&wz_host_session.machine, wz_machine_profile_48k_pal()) == WZ_RESULT_OK;
     if (wz_host_session.initialized) {
         (void)wz_sokol_audio_init(&wz_host_session.audio);
     }

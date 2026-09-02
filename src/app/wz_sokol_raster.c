@@ -36,12 +36,12 @@ wz_result_t wz_sokol_raster_init(wz_sokol_raster_t* target,
         .width = (int)source->width,
         .height = (int)source->height,
         .pixel_format = SG_PIXELFORMAT_R8,
-        .data.subimage[0][0] = {
+        .data.mip_levels[0] = {
             .ptr = source->samples,
             .size = source->width * source->height,
         },
     });
-    if (!sg_image_exists(backend->image)) {
+    if (sg_query_image_state(backend->image) != SG_RESOURCESTATE_VALID) {
         free(backend);
         return WZ_RESULT_INVALID_STATE;
     }
@@ -62,7 +62,7 @@ wz_result_t wz_sokol_raster_update(wz_sokol_raster_t* target,
     }
     wz_sokol_raster_backend_t* backend = target->backend;
     sg_update_image(backend->image, &(sg_image_data){
-        .subimage[0][0] = {
+        .mip_levels[0] = {
             .ptr = source->samples,
             .size = source->width * source->height,
         },
