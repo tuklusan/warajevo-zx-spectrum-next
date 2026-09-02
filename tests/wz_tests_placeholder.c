@@ -16,6 +16,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "core/wz_state.h"
 #include "core/wz_runner.h"
 #include "core/wz_raster_evidence.h"
+#include "core/wz_raster_diagnostic.h"
 #include "diagnostics/wz_trace_file.h"
 
 static void test_raster_evidence(void)
@@ -46,6 +47,29 @@ static void test_raster_evidence(void)
     if (wz_trace_events_hash(&event, 1u, &second_hash) != WZ_RESULT_OK ||
         first_hash == second_hash) {
         fputs("trace evidence hash collision fixture failed\n", stderr);
+        exit(1);
+    }
+}
+
+static void test_raster_diagnostic(void)
+{
+    wz_byte_t expected_samples[6] = {0u, 1u, 2u, 3u, 4u, 5u};
+    wz_byte_t actual_samples[6] = {0u, 1u, 9u, 3u, 4u, 5u};
+    wz_raster_buffer_t expected = {expected_samples, 3u, 2u};
+    wz_raster_buffer_t actual = {actual_samples, 3u, 2u};
+    wz_raster_mismatch_t mismatch = {0};
+
+    if (wz_raster_compare(&expected, &actual, 100u, 2u, &mismatch) != WZ_RESULT_OK ||
+        mismatch.equal || mismatch.sample_index != 2u || mismatch.x != 2u ||
+        mismatch.y != 0u || mismatch.expected != 2u || mismatch.actual != 9u ||
+        mismatch.master_tick != 104u || actual_samples[2] != 9u) {
+        fputs("raster diagnostic mismatch failed\n", stderr);
+        exit(1);
+    }
+    actual_samples[2] = 2u;
+    if (wz_raster_compare(&expected, &actual, 100u, 2u, &mismatch) != WZ_RESULT_OK ||
+        !mismatch.equal || mismatch.sample_index != 6u) {
+        fputs("raster diagnostic equality failed\n", stderr);
         exit(1);
     }
 }
@@ -244,6 +268,7 @@ static wz_result_t set_fixture_bus_input(wz_machine_t* machine,
 int main(void)
 {
     test_raster_evidence();
+    test_raster_diagnostic();
     const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
     wz_machine_t machine;
     wz_machine_t restored;
