@@ -765,8 +765,8 @@ static wz_result_t wz_tzx_expand_csw(const wz_tzx_block_t* block,
     for (size_t pulse = 0u; pulse < pulses; ++pulse) {
         uint64_t samples;
         wz_dword_t tstates;
-        if (block->data[offset++] != 0u) {
-            samples = 1u;
+        if (block->data[offset] != 0u) {
+            samples = block->data[offset++];
         } else {
             samples = (uint64_t)block->data[offset] |
                 ((uint64_t)block->data[offset + 1u] << 8u) |
