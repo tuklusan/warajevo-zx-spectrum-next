@@ -15,11 +15,14 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #define SOKOL_X11
 #endif
 #include "sokol_app.h"
+#include "sokol_audio.h"
 
 #include "core/wz_machine.h"
+#include "app/wz_sokol_audio.h"
 
 typedef struct {
     wz_machine_t machine;
+    wz_sokol_audio_t audio;
     bool initialized;
 } wz_host_session_t;
 
@@ -29,12 +32,16 @@ static void wz_host_session_init(void)
 {
     wz_host_session.initialized =
         wz_machine_init(&wz_host_session.machine, wz_machine_profile_48k_pal()) == WZ_OK;
+    if (wz_host_session.initialized) {
+        (void)wz_sokol_audio_init(&wz_host_session.audio);
+    }
 }
 
 static void wz_host_session_shutdown(void)
 {
     if (wz_host_session.initialized) {
         wz_machine_destroy(&wz_host_session.machine);
+        wz_sokol_audio_shutdown(&wz_host_session.audio);
         wz_host_session.initialized = false;
     }
 }

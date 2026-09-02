@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 153,
+  "next_cr_number": 154,
   "status_values": [
     "open",
     "in_progress",
@@ -1406,6 +1406,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 20.2, 20.5, and 38", "design/wzsn-architectures-1-2-developer-tasks.md task 139", "design/cr-preflight/CR-0152.md", "reference/original-warajevo/source"],
       "notes": "Closed on 2026-09-02 after adding byte-order-stable canonical PCM hashing over explicit sample count and signed sample values, with repeatability, sensitivity, and invalid-input regression coverage. CODE and DOCUMENTATION reviews passed with no confirmed findings. Linux CR0152-audio-hash-linux-1 and Windows 10 CR0152-audio-hash-windows-1 passed build and all five CTest entries. Hosted platform-smoke 33653031090 and repository-gates 33653031040 passed across the configured runner set; final upstream beeper/sampling comparison found no undispositioned gap."
+    },
+    {
+      "cr_number": "CR-0153",
+      "title": "Implement Sokol host audio delivery smoke boundary",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 20, 21, and 38", "design/wzsn-architectures-1-2-developer-tasks.md task 140", "design/cr-preflight/CR-0153.md", "reference/original-warajevo/source"],
+      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-6 scope. Preflight requires push-only Sokol audio delivery with backend availability recorded separately from core correctness."
     }
   ]
 }
