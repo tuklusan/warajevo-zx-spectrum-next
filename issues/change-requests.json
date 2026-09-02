@@ -1375,9 +1375,9 @@
     {
       "cr_number": "CR-0148",
       "title": "Implement host push-audio boundary",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 20.1 and 21", "design/wzsn-architectures-1-2-developer-tasks.md task 135", "design/cr-preflight/CR-0148.md", "reference/original-warajevo/source"],
-      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-6 scope. Preflight requires bounded producer-driven PCM delivery with no audio callback ownership of emulation."
+      "notes": "Closed on 2026-09-02 after adding a bounded host-only FIFO for producer-driven canonical PCM, deterministic ordering, underflow behavior, overflow drop accounting with saturation, and callback isolation from machine state. Initial remote builds found and corrected a missing core type include; subsequent Linux CR0148-push-audio-linux-3 and Windows 10 CR0148-push-audio-windows-3 runs passed build and all five CTest entries. The hosted platform-smoke run 33650839556 passed across all configured Linux, Windows, and macOS runners; repository-gates run 33650839540 passed. CODE and DOCUMENTATION reviews passed with no confirmed findings, and final upstream comparison found no undispositioned gap."
     }
   ]
 }
