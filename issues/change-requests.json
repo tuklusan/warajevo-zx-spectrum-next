@@ -983,9 +983,9 @@
     {
       "cr_number": "CR-0092",
       "title": "Close the Phase-3 architecture gate",
-      "status": "open",
+      "status": "in_progress",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 12, 13, 14, 15, 22, 36, 39, 44, 49.1, and 51", "design/wzsn-architectures-1-2-developer-tasks.md task 078", "design/cr-preflight/CR-0091.md", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM", "reference/original-warajevo/source/src/spectrum-kernel/Z80.ASM"],
-      "notes": "Opened on 2026-09-01 after CR-0091 completed the combined Phase-3 bus, contention, and interrupt evidence suite. This gate reconciles all Phase-3 behavior and explicit later-phase exclusions across the architecture documents and preserved reference."
+      "notes": "Opened on 2026-09-01 after CR-0091 completed the combined Phase-3 bus, contention, and interrupt evidence suite; activated for reconciliation. This gate reconciles all Phase-3 behavior and explicit later-phase exclusions across the architecture documents and preserved reference."
     }
   ]
 }
