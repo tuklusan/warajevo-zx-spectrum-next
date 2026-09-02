@@ -422,6 +422,12 @@ static wz_dword_t wz_tzx_read_le24(const wz_byte_t* bytes)
         ((wz_dword_t)bytes[2] << 16u);
 }
 
+static wz_dword_t wz_tzx_read_le32(const wz_byte_t* bytes)
+{
+    return (wz_dword_t)bytes[0] | ((wz_dword_t)bytes[1] << 8u) |
+        ((wz_dword_t)bytes[2] << 16u) | ((wz_dword_t)bytes[3] << 24u);
+}
+
 static wz_result_t wz_tzx_block_size(const wz_byte_t* data,
                                      size_t remaining,
                                      size_t* block_length,
@@ -793,6 +799,104 @@ static wz_result_t wz_tzx_expand_csw(const wz_tzx_block_t* block,
     return WZ_RESULT_OK;
 }
 
+static wz_result_t wz_tzx_generalized_layout(const wz_tzx_block_t* block,
+                                             size_t* symbol_size,
+                                             size_t* stream_offset,
+                                             size_t* symbol_count)
+{
+    size_t alphabet;
+    size_t size;
+    size_t offset;
+
+    if (block == 0 || symbol_size == 0 || stream_offset == 0 ||
+        symbol_count == 0 || block->data == 0 || block->data_length < 18u ||
+        wz_tzx_read_le32(block->data + 6u) != 0u ||
+        wz_tzx_read_le32(block->data + 12u) == 0u || block->data[16u] == 0u) {
+        return WZ_RESULT_UNSUPPORTED_OPERATION;
+    }
+    alphabet = block->data[17u] == 0u ? 256u : block->data[17u];
+    size = (size_t)block->data[16u] * 2u + 1u;
+    if (alphabet > SIZE_MAX / size) return WZ_RESULT_PARSE_ERROR;
+    offset = 18u + alphabet * size;
+    if (offset > block->data_length ||
+        (size_t)wz_tzx_read_le32(block->data + 12u) > block->data_length - offset) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    *symbol_size = size;
+    *stream_offset = offset;
+    *symbol_count = (size_t)wz_tzx_read_le32(block->data + 12u);
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_tzx_count_generalized(const wz_tzx_block_t* block,
+                                            size_t* amount)
+{
+    size_t symbol_size;
+    size_t stream_offset;
+    size_t symbol_count;
+    size_t total = 0u;
+
+    if (amount == 0 || wz_tzx_generalized_layout(block, &symbol_size,
+            &stream_offset, &symbol_count) != WZ_RESULT_OK) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    for (size_t index = 0u; index < symbol_count; ++index) {
+        size_t symbol_offset = 18u + (size_t)block->data[stream_offset + index] * symbol_size;
+        size_t pulses = 0u;
+        while (pulses < (size_t)block->data[16u] &&
+               block->data[symbol_offset + 1u + pulses * 2u] != 0u) ++pulses;
+        if (pulses == (size_t)block->data[16u]) return WZ_RESULT_PARSE_ERROR;
+        if (pulses > SIZE_MAX - total) return WZ_RESULT_PARSE_ERROR;
+        total += pulses;
+    }
+    if (wz_read_le16(block->data + 4u) != 0u) {
+        if (total == SIZE_MAX) return WZ_RESULT_PARSE_ERROR;
+        ++total;
+    }
+    *amount = total;
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_tzx_expand_generalized(const wz_tzx_block_t* block,
+                                             wz_dword_t ticks_per_tstate,
+                                             wz_tape_segment_t* segments,
+                                             size_t capacity,
+                                             size_t* index,
+                                             wz_byte_t* level)
+{
+    size_t symbol_size;
+    size_t stream_offset;
+    size_t symbol_count;
+
+    if (level == 0 || wz_tzx_generalized_layout(block, &symbol_size,
+            &stream_offset, &symbol_count) != WZ_RESULT_OK) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    for (size_t stream_index = 0u; stream_index < symbol_count; ++stream_index) {
+        size_t symbol_offset = 18u + (size_t)block->data[stream_offset + stream_index] * symbol_size;
+        wz_byte_t flags = block->data[symbol_offset] & 3u;
+        if (flags == 0u) *level ^= 1u;
+        else if (flags == 2u) *level = 0u;
+        else if (flags == 3u) *level = 1u;
+        for (size_t pulse = 0u; pulse < (size_t)block->data[16u]; ++pulse) {
+            wz_word_t duration = wz_read_le16(block->data + symbol_offset + 1u + pulse * 2u);
+            if (duration == 0u) break;
+            if (wz_tzx_append_segment(segments, capacity, index, duration,
+                                      ticks_per_tstate, *level) != WZ_RESULT_OK) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            *level ^= 1u;
+        }
+    }
+    if (wz_read_le16(block->data + 4u) != 0u) {
+        if (wz_tzx_append_segment(segments, capacity, index,
+                (wz_dword_t)wz_read_le16(block->data + 4u) * 3500u,
+                ticks_per_tstate, 0u) != WZ_RESULT_OK) return WZ_RESULT_PARSE_ERROR;
+        *level = 0u;
+    }
+    return WZ_RESULT_OK;
+}
+
 static bool wz_tzx_is_ignored_metadata(wz_byte_t block_id)
 {
     return block_id == 0x21u || block_id == 0x22u || block_id == 0x30u ||
@@ -1030,6 +1134,11 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
                 return WZ_RESULT_PARSE_ERROR;
             }
             break;
+        case 0x19u:
+            if (wz_tzx_count_generalized(block, &amount) != WZ_RESULT_OK) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            break;
         case 0x20u:
             if (block->data_length < 2u) return WZ_RESULT_PARSE_ERROR;
             amount = wz_read_le16(block->data) == 0u ? 0u : 1u;
@@ -1173,6 +1282,11 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
         } else if (block->block_id == 0x18u) {
             if (wz_tzx_expand_csw(block, master_ticks_per_tstate, segments,
                                   capacity, &index, &level) != WZ_RESULT_OK) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
+        } else if (block->block_id == 0x19u) {
+            if (wz_tzx_expand_generalized(block, master_ticks_per_tstate, segments,
+                                           capacity, &index, &level) != WZ_RESULT_OK) {
                 return WZ_RESULT_PARSE_ERROR;
             }
         } else if (block->block_id == 0x2bu) {
