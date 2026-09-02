@@ -69,7 +69,7 @@ is wrapped in SSH transport quoting.
 
 ### linux-x64-lxqt
 
-- SSH target: `sanyalnet@10.66.66.10`
+- SSH target: `sanyalnet@10.0.0.161`
 - Remote project directory:
   `~/SOFTWARE-DEVELOPMENT/Warajevo-Spectrum-Next`
 - Rule:
@@ -78,12 +78,12 @@ is wrapped in SSH transport quoting.
 Example session shape:
 
 ```text
-ssh sanyalnet@10.66.66.10 'cd ~/SOFTWARE-DEVELOPMENT/Warajevo-Spectrum-Next && <remote-command>'
+ssh sanyalnet@10.0.0.161 'cd ~/SOFTWARE-DEVELOPMENT/Warajevo-Spectrum-Next && <remote-command>'
 ```
 
 ### windows-10-reference
 
-- SSH target: `sanyalnet@10.66.66.11`
+- SSH target: `sanyalnet@10.0.0.106`
 - Remote project directory:
   `D:\WarajevoSpectrum.Next`
 - Rule:
@@ -92,12 +92,12 @@ ssh sanyalnet@10.66.66.10 'cd ~/SOFTWARE-DEVELOPMENT/Warajevo-Spectrum-Next && <
 Example session shape:
 
 ```text
-ssh sanyalnet@10.66.66.11 "powershell -NoProfile -Command \"Set-Location 'D:\\WarajevoSpectrum.Next'; <remote-command>\""
+ssh sanyalnet@10.0.0.106 "powershell -NoProfile -Command \"Set-Location 'D:\\WarajevoSpectrum.Next'; <remote-command>\""
 ```
 
 ### windows-11-laptop
 
-- SSH target: `vagab@10.66.66.3`
+- SSH target: `vagab@10.0.0.133`
 - Remote project directory:
   `C:\Users\vagab\WarajevoSpectrum.Next`
 - Rule:
@@ -106,7 +106,7 @@ ssh sanyalnet@10.66.66.11 "powershell -NoProfile -Command \"Set-Location 'D:\\Wa
 Example session shape:
 
 ```text
-ssh vagab@10.66.66.3 "powershell -NoProfile -Command \"Set-Location 'C:\\Users\\vagab\\WarajevoSpectrum.Next'; <remote-command>\""
+ssh vagab@10.0.0.133 "powershell -NoProfile -Command \"Set-Location 'C:\\Users\\vagab\\WarajevoSpectrum.Next'; <remote-command>\""
 ```
 
 ## Pull-back rule

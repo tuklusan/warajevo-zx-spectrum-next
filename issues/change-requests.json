@@ -990,9 +990,9 @@
     {
       "cr_number": "CR-0093",
       "title": "Implement 48K ULA raster coordinate timing",
-      "status": "open",
+      "status": "in_progress",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 15.1, 15.2, 36, 44, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 079", "design/machine-timing-evidence.md", "design/cr-preflight/CR-0092.md", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
-      "notes": "Opened on 2026-09-02 after the Phase-3 gate closed. This preflight scopes full-frame 48K ULA raster coordinate/timing state and deterministic boundaries; scheduled fetches, border, pixel decoding, FLASH, and floating-bus behavior remain later Phase-4 tasks."
+      "notes": "Opened on 2026-09-02 after the Phase-3 gate closed and activated for implementation. This preflight scopes full-frame 48K ULA raster coordinate/timing state and deterministic boundaries; scheduled fetches, border, pixel decoding, FLASH, and floating-bus behavior remain later Phase-4 tasks."
     }
   ]
 }
