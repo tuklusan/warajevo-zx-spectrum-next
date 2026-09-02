@@ -374,7 +374,7 @@ int main(void)
         machine.memory[0x4747u] = 0x3cu;
         machine.memory[0x59dfu] = 0x47u;
         if (wz_machine_ula_fetches_at_tick(&machine,
-                                           (14335u + 7u * 224u + 47u * 4u) * 2u,
+                                           (14335u + 191u * 224u + 47u * 4u) * 2u,
                                            fetches, 2u, &fetch_count) !=
                 WZ_RESULT_OK || fetch_count != 2u ||
             fetches[0].address != 0x4747u || fetches[0].value != 0x3cu ||
