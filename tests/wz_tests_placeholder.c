@@ -558,6 +558,10 @@ int main(void)
             fputs("machine-code Kempston port read failed\n", stderr);
             return 1;
         }
+        if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+            fputs("machine reinitialization after Kempston test failed\n", stderr);
+            return 1;
+        }
     }
     if (!wz_raster_sample_is_valid(0x00u) ||
         !wz_raster_sample_is_valid(WZ_RASTER_BORDER_MAX) ||
