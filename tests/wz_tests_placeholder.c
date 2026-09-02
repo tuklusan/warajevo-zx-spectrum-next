@@ -419,6 +419,35 @@ int main(void)
         }
         machine.master_tick = 0u;
     }
+    {
+        wz_border_event_t border_events[4u];
+        size_t border_count;
+
+        if (wz_machine_border_color(&machine) != 0u ||
+            wz_machine_border_events(&machine, border_events,
+                                     sizeof(border_events) /
+                                     sizeof(border_events[0u])) != 0u) {
+            fputs("initial border state contract failed\n", stderr);
+            return 1;
+        }
+        wz_machine_ula_port_fe_write(&machine, 0x00feu, 0xe5u, 1000u);
+        wz_machine_ula_port_fe_write(&machine, 0x00feu, 0x1au, 1004u);
+        border_count = wz_machine_border_events(&machine, border_events,
+                                                sizeof(border_events) /
+                                                sizeof(border_events[0u]));
+        if (wz_machine_border_color(&machine) != 2u || border_count != 2u ||
+            border_events[0u].master_tick != 1000u ||
+            border_events[0u].color != 5u ||
+            border_events[1u].master_tick != 1004u ||
+            border_events[1u].color != 2u) {
+            fputs("timed border transition contract failed\n", stderr);
+            return 1;
+        }
+        if (wz_machine_ula_port_fe_read(&machine, 0x00feu) == 0u) {
+            fputs("border state incorrectly replaced ULA input state\n", stderr);
+            return 1;
+        }
+    }
     if (wz_machine_memory_read(0, 0u) != 0xffu ||
         wz_machine_ula_port_fe_read(0, 0u) != 0xffu ||
         wz_machine_bus_request(0, 0) != WZ_RESULT_INVALID_ARGUMENT ||
