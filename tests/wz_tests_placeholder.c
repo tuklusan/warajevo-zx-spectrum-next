@@ -452,6 +452,40 @@ static void test_standard_tap_parser(void)
     }
 }
 
+static void test_standard_tap_writer(void)
+{
+    const wz_byte_t first_data[] = {0x00u, 0xaau};
+    const wz_byte_t second_data[] = {0xffu};
+    const wz_tap_block_t blocks[] = {
+        {first_data, sizeof(first_data)},
+        {second_data, sizeof(second_data)}
+    };
+    const wz_byte_t expected[] = {3u, 0u, 0u, 0xaau, 0xaau, 2u, 0u, 0xffu, 0xffu};
+    wz_byte_t output[sizeof(expected)];
+    wz_byte_t sentinel[sizeof(expected)];
+    size_t length = 0u;
+
+    memset(sentinel, 0x5au, sizeof(sentinel));
+    if (wz_tape_write_standard_tap(blocks, 2u, 0, 0u, &length) !=
+            WZ_RESULT_BUFFER_TOO_SMALL || length != sizeof(expected) ||
+        wz_tape_write_standard_tap(blocks, 2u, sentinel, sizeof(sentinel) - 1u,
+                                   &length) != WZ_RESULT_BUFFER_TOO_SMALL ||
+        memcmp(sentinel, (wz_byte_t[sizeof(sentinel)]){
+                   0x5au, 0x5au, 0x5au, 0x5au, 0x5au, 0x5au, 0x5au, 0x5au, 0x5au},
+                   sizeof(sentinel)) != 0 ||
+        wz_tape_write_standard_tap(blocks, 2u, output, sizeof(output), &length) !=
+            WZ_RESULT_OK || length != sizeof(expected) ||
+        memcmp(output, expected, sizeof(expected)) != 0) {
+        fputs("TAP writer output contract failed\n", stderr);
+        exit(1);
+    }
+    if (wz_tape_parse_standard_tap(output, length, 2u, 0, 0u, &length) !=
+            WZ_RESULT_BUFFER_TOO_SMALL) {
+        fputs("TAP writer/parser compatibility failed\n", stderr);
+        exit(1);
+    }
+}
+
 static void test_beeper_port_fe_timeline(void)
 {
     wz_machine_t machine;
@@ -902,6 +936,7 @@ int main(void)
     test_machine_tape_playback();
     test_tape_speed_invariance();
     test_standard_tap_parser();
+    test_standard_tap_writer();
     test_beeper_port_fe_timeline();
     test_mic_capture_timeline();
     test_beeper_pcm_render();

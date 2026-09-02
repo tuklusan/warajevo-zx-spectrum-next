@@ -196,6 +196,48 @@ wz_result_t wz_tape_parse_standard_tap(const wz_byte_t* data,
     return index == required ? WZ_RESULT_OK : WZ_RESULT_PARSE_ERROR;
 }
 
+wz_result_t wz_tape_write_standard_tap(const wz_tap_block_t* blocks,
+                                       size_t block_count,
+                                       wz_byte_t* output,
+                                       size_t capacity,
+                                       size_t* length)
+{
+    size_t required = 0u;
+    size_t offset = 0u;
+
+    if (blocks == 0 || block_count == 0u || length == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    for (size_t block_index = 0u; block_index < block_count; ++block_index) {
+        const wz_tap_block_t* block = &blocks[block_index];
+
+        if (block->data == 0 || block->length == 0u || block->length > 65534u ||
+            block->length > SIZE_MAX - 3u ||
+            wz_tape_tap_add_count(&required, block->length + 3u) != WZ_RESULT_OK) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+    }
+    *length = required;
+    if (output == 0 || capacity < required) {
+        return WZ_RESULT_BUFFER_TOO_SMALL;
+    }
+    for (size_t block_index = 0u; block_index < block_count; ++block_index) {
+        const wz_tap_block_t* block = &blocks[block_index];
+        wz_byte_t checksum = 0u;
+        wz_word_t encoded_length = (wz_word_t)(block->length + 1u);
+
+        wz_write_le16(&output[offset], encoded_length);
+        offset += 2u;
+        for (size_t byte_index = 0u; byte_index < block->length; ++byte_index) {
+            output[offset + byte_index] = block->data[byte_index];
+            checksum ^= block->data[byte_index];
+        }
+        offset += block->length;
+        output[offset++] = checksum;
+    }
+    return WZ_RESULT_OK;
+}
+
 wz_result_t wz_tape_validate(const wz_tape_segment_t* segments,
                              size_t segment_count)
 {

@@ -33,6 +33,11 @@ typedef struct {
     bool at_end;
 } wz_tape_state_t;
 
+typedef struct {
+    const wz_byte_t* data;
+    size_t length;
+} wz_tap_block_t;
+
 wz_result_t wz_tape_validate(const wz_tape_segment_t* segments,
                              size_t segment_count);
 wz_result_t wz_tape_mount(wz_tape_t* tape,
@@ -54,5 +59,10 @@ wz_result_t wz_tape_parse_standard_tap(const wz_byte_t* data,
                                        wz_tape_segment_t* segments,
                                        size_t capacity,
                                        size_t* count);
+wz_result_t wz_tape_write_standard_tap(const wz_tap_block_t* blocks,
+                                       size_t block_count,
+                                       wz_byte_t* output,
+                                       size_t capacity,
+                                       size_t* length);
 
 #endif
