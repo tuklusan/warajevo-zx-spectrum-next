@@ -1417,9 +1417,9 @@
     {
       "cr_number": "CR-0154",
       "title": "Test speed changes across host audio boundaries",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 10.10 and 38", "design/wzsn-architectures-1-2-developer-tasks.md task 141", "design/cr-preflight/CR-0154.md", "reference/original-warajevo/source"],
-      "notes": "Opened on 2026-09-02 as the next ordered Phase-6 scope. Preflight requires deterministic audible/muted boundary transitions with continued headless emulation and host pacing re-anchoring."
+      "notes": "Closed on 2026-09-02 after adding deterministic audible-to-muted and muted-to-audible speed-boundary coverage, explicit host pacing re-anchoring assertions, invalid-policy separation, and continued headless machine advancement. CODE review PASS covered cfe4731..16f4f78; DOCUMENTATION review PASS covered the preflight and tracker. Linux CR0154-boundary-linux-2 and Windows 10 CR0154-boundary-windows-2 passed build and all five CTest entries. Hosted platform-smoke 33659372381 passed all 17 configured runner lanes. Final upstream speed/speaker comparison and zero-gap scan found no undispositioned gap."
     }
   ]
 }
