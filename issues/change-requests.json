@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 166,
+  "next_cr_number": 167,
   "status_values": [
     "open",
     "in_progress",
@@ -1497,6 +1497,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 23.12 and 41", "design/wzsn-architectures-1-2-developer-tasks.md task 152", "design/cr-preflight/CR-0165.md", "design/media-format-support.md", "reference/original-warajevo/source/src/environment/TAPES.PAS", "reference/original-warajevo/source/src/spectrum-kernel/TAPE.ASM"],
       "notes": "Closed on 2026-09-02 at 86c0cc5 after implementing bounded native TAP serialization with recomputed linked offsets, native header markers, ordinary and special record headers, preserved sample metadata, sizing, capacity rejection without partial output, and round-trip coverage without conflating standard TAP. CODE review passed with zero findings (snapshot git:85e63f1ad2c299abfa482584855bf6af007d65ad..86c0cc5351f054c26a628ba0b99e252b7a970524:sha256:fb950d0d88b0e96c022134caf6b0ba2d5761450a30dd6c9a24a10161b7af5b65). Final DOCUMENTATION review passed with zero findings (packet e7997d4860f3ccaca82b9dd5d71a64862951ed282e72de90e06ec4c6cfc08698). Remote Linux CR0165-native-tap-write-linux-3 and Windows 10 CR0165-native-tap-write-windows-1 passed build and all 5 CTest targets. Hosted platform-smoke 33679624501 completed with all 18 jobs green. Earlier Linux failures were retained as failed evidence: linux-1 found the helper-name compile defect and linux-2 found the capacity-test fixture defect; commits 4d87b81 and 86c0cc5 corrected them. Final upstream zero-gap scan found no undispositioned gap; closure evidence is recorded in design/cr-preflight/CR-0165.md."
+    },
+    {
+      "cr_number": "CR-0166",
+      "title": "Implement TZX container and block parsing",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md section 23.12", "design/wzsn-architectures-1-2-developer-tasks.md task 153", "design/cr-preflight/CR-0166.md", "design/media-format-support.md", "reference/original-warajevo/source"],
+      "notes": "Opened on 2026-09-02 as the next ordered Phase-7 scope. Preflight covers TZX signature/version validation, frozen block classification, variable-length bounds, control-target validation, deterministic block views, and no partial publication; timing execution remains task 154."
     }
   ]
 }
