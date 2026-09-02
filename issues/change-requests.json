@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 167,
+  "next_cr_number": 168,
   "status_values": [
     "open",
     "in_progress",
@@ -1504,6 +1504,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md section 23.12", "design/wzsn-architectures-1-2-developer-tasks.md task 153", "design/cr-preflight/CR-0166.md", "design/media-format-support.md", "reference/original-warajevo/source"],
       "notes": "Closed on 2026-09-02 at c4eae75 after implementing bounded TZX signature/version validation, frozen supported/ignored/unsupported block classification, exact fixed and variable-length bounds, deterministic block views, jump and loop validation, and no partial publication. CODE review passed with zero findings (snapshot git:7d18ed176b279a4d34410ae3c691ca55174c2a18..c4eae75317bc1a53b39f0f170310e1d8011d4f3a:sha256:49c4a927df6db6435e64251a453384d640503e30cd1c0c92c424bdfa0cad015a). Final DOCUMENTATION review passed with zero findings (packet f0d8ffdcb0d6de38cbe0b285dfccea206ca8a8d9c61e8712213eb5938c8f34ee). Remote Linux CR0166-tzx-parser-linux-2 and Windows 10 CR0166-tzx-parser-windows-1 passed build and all 5 CTest targets. Hosted platform-smoke 33681058417 completed with all 18 jobs green. Earlier Linux CR0166-tzx-parser-linux-1 failed before test execution due to a test sentinel type error; c4eae75 corrected it and removed an always-false warning, while the failure remains recorded as non-green evidence. Final upstream zero-gap scan found no undispositioned gap; closure evidence is recorded in design/cr-preflight/CR-0166.md."
+    },
+    {
+      "cr_number": "CR-0167",
+      "title": "Implement TZX timing and control execution",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md section 23.12", "design/wzsn-architectures-1-2-developer-tasks.md task 154", "design/cr-preflight/CR-0167.md", "design/media-format-support.md", "design/cr-preflight/CR-0166.md", "reference/original-warajevo/source"],
+      "notes": "Opened on 2026-09-02 as the next ordered Phase-7 scope. Preflight separates TZX timing/control execution from CR-0166 parsing, covering canonical edge generation, pause/stop/signal rules, bounded control flow, deterministic traversal, and cross-host invariance."
     }
   ]
 }
