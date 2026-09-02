@@ -368,6 +368,36 @@ static void test_host_audio_policy(void)
     }
 }
 
+static void test_host_audio_backpressure_isolation(void)
+{
+    wz_machine_t machine;
+    wz_host_audio_push_queue_t queue;
+    wz_audio_sample_t input[WZ_HOST_AUDIO_QUEUE_CAPACITY] = {0};
+    wz_audio_sample_t output[WZ_HOST_AUDIO_QUEUE_CAPACITY] = {0};
+    wz_qword_t before_hash;
+    wz_qword_t after_hash;
+
+    if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK ||
+        wz_state_hash_machine(&machine, &before_hash) != WZ_RESULT_OK) {
+        fputs("host audio backpressure setup failed\n", stderr);
+        exit(1);
+    }
+    wz_host_audio_push_init(&queue);
+    if (wz_host_audio_push(&queue, input, WZ_HOST_AUDIO_QUEUE_CAPACITY) !=
+            WZ_HOST_AUDIO_QUEUE_CAPACITY ||
+        wz_host_audio_push(&queue, input, 1u) != 0u ||
+        wz_host_audio_dropped(&queue) != 1u ||
+        wz_host_audio_pop(&queue, output, WZ_HOST_AUDIO_QUEUE_CAPACITY) !=
+            WZ_HOST_AUDIO_QUEUE_CAPACITY ||
+        wz_host_audio_pop(&queue, output, 1u) != 0u ||
+        wz_state_hash_machine(&machine, &after_hash) != WZ_RESULT_OK ||
+        before_hash != after_hash) {
+        fputs("host audio backpressure isolation failed\n", stderr);
+        exit(1);
+    }
+    wz_machine_destroy(&machine);
+}
+
 static void test_ay_mixer_policy(void)
 {
     if (WZ_AY_CHANNEL_COUNT != 3u || WZ_AY_VOLUME_LEVEL_COUNT != 16u ||
@@ -624,6 +654,7 @@ int main(void)
     test_host_audio_push_queue();
     test_canonical_audio_policy();
     test_host_audio_policy();
+    test_host_audio_backpressure_isolation();
     test_ay_mixer_policy();
     test_raster_diagnostic();
     test_raster_invalid_state();

@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 151,
+  "next_cr_number": 152,
   "status_values": [
     "open",
     "in_progress",
@@ -1392,6 +1392,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 10.10 and 20.5", "design/wzsn-architectures-1-2-developer-tasks.md task 137", "design/cr-preflight/CR-0150.md", "design/host-audio-resampling.md", "reference/original-warajevo/source"],
       "notes": "Closed on 2026-09-02 after freezing host-only bounded linear interpolation with a 64-bit fixed-point source phase for the audible 0.5x through 2.0x range; canonical PCM, mixer state, machine timing, and event ordering remain untouched. CODE and both DOCUMENTATION reviews passed with no confirmed findings. Initial remote invocation was correctly refused until the code-scope review existed; authorized Linux CR0150-resampling-linux-2 and Windows 10 CR0150-resampling-windows-2 retries passed. Hosted repository-gates 33651923509 and platform-smoke 33651923384 passed across the configured runner set; final upstream speed/sound comparison found no undispositioned gap."
+    },
+    {
+      "cr_number": "CR-0151",
+      "title": "Implement bounded host audio backpressure",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 21 and 32", "design/wzsn-architectures-1-2-developer-tasks.md task 138", "design/cr-preflight/CR-0151.md", "reference/original-warajevo/source"],
+      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-6 scope. Preflight requires bounded non-blocking host buffering with explicit overflow/underflow behavior and canonical-hash isolation."
     }
   ]
 }
