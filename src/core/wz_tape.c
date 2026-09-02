@@ -888,6 +888,12 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
             if (block->data_length < 2u) return WZ_RESULT_PARSE_ERROR;
             amount = wz_read_le16(block->data) == 0u ? 0u : 1u;
             break;
+        case 0x2bu:
+            if (block->data_length < 5u) return WZ_RESULT_PARSE_ERROR;
+            if ((size_t)wz_tzx_read_le24(block->data) > block->data_length - 4u) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            break;
         default:
             return WZ_RESULT_UNSUPPORTED_OPERATION;
         }
@@ -973,6 +979,8 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
                     master_ticks_per_tstate, 0u) != WZ_RESULT_OK) return WZ_RESULT_PARSE_ERROR;
                 level = 0u;
             }
+        } else if (block->block_id == 0x2bu) {
+            level = block->data[4u] == 0u ? 0u : 1u;
         } else {
             wz_dword_t tstates = (wz_dword_t)wz_read_le16(block->data) * 3500u;
             if (wz_tzx_append_segment(segments, capacity, &index, tstates,
