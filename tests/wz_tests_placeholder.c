@@ -12,6 +12,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "core/wz_machine.h"
 #include "core/wz_keyboard_matrix.h"
+#include "app/wz_input_timing.h"
 #include "core/wz_bus.h"
 #include "core/wz_scheduler.h"
 #include "core/wz_state.h"
@@ -77,6 +78,25 @@ static void test_complete_keyboard_matrix(void)
         wz_keyboard_matrix_scan(&matrix, 0x7eu) != 0x1eu ||
         wz_keyboard_matrix_scan(&matrix, 0x3fu) != 0x1eu) {
         fputs("keyboard matrix multi-row scan failed\n", stderr);
+        exit(1);
+    }
+}
+
+static void test_input_timestamp_assignment(void)
+{
+    wz_input_timestamp_assigner_t assigner;
+    wz_input_event_t event = {0u, 3u, 1u};
+    wz_timed_input_event_t first;
+    wz_timed_input_event_t second;
+
+    wz_input_timestamp_assigner_init(&assigner);
+    if (!wz_input_timestamp_assign(&assigner, &event, 100u, &first) ||
+        !wz_input_timestamp_assign(&assigner, &event, 90u, &second) ||
+        first.master_tick != 100u || second.master_tick != 100u ||
+        first.sequence != 0u || second.sequence != 1u ||
+        !wz_input_timestamp_assign(&assigner, &event, UINT64_MAX, &second) ||
+        second.master_tick != UINT64_MAX || second.sequence != 2u) {
+        fputs("input timestamp assignment failed\n", stderr);
         exit(1);
     }
 }
@@ -315,6 +335,7 @@ int main(void)
 {
     test_raster_evidence();
     test_complete_keyboard_matrix();
+    test_input_timestamp_assignment();
     test_raster_diagnostic();
     test_raster_invalid_state();
     const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();

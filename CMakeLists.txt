@@ -75,6 +75,7 @@ target_link_libraries(wz_trace_dump PRIVATE wz_diagnostics)
 add_executable(
     wz_tests
     tests/wz_tests_placeholder.c
+    src/app/wz_input_timing.c
 )
 
 target_link_libraries(wz_tests PRIVATE wz_core wz_diagnostics)
@@ -119,9 +120,9 @@ if(WZSN_BUILD_SOKOL_HOST)
 
     find_package(Threads REQUIRED)
     if(APPLE)
-        add_executable(wz_sokol_host src/app/wz_sokol_macos.m src/app/wz_sokol_raster.c src/app/wz_host_presentation.c src/app/wz_host_scaling.c src/app/wz_host_effects.c src/app/wz_input_arbiter.c)
+        add_executable(wz_sokol_host src/app/wz_sokol_macos.m src/app/wz_sokol_raster.c src/app/wz_host_presentation.c src/app/wz_host_scaling.c src/app/wz_host_effects.c src/app/wz_input_arbiter.c src/app/wz_input_timing.c)
     else()
-        add_executable(wz_sokol_host src/app/wz_sokol_main.c src/app/wz_sokol_raster.c src/app/wz_host_presentation.c src/app/wz_host_scaling.c src/app/wz_host_effects.c src/app/wz_input_arbiter.c)
+        add_executable(wz_sokol_host src/app/wz_sokol_main.c src/app/wz_sokol_raster.c src/app/wz_host_presentation.c src/app/wz_host_scaling.c src/app/wz_host_effects.c src/app/wz_input_arbiter.c src/app/wz_input_timing.c)
     endif()
     target_include_directories(wz_sokol_host PRIVATE ${sokol_SOURCE_DIR} src)
     target_link_libraries(wz_sokol_host PRIVATE wz_core wz_warnings Threads::Threads)
