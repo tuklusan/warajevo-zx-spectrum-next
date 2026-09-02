@@ -15,6 +15,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "core/wz_kempston.h"
 #include "app/wz_input_timing.h"
 #include "app/wz_input_focus.h"
+#include "app/wz_kempston_mapping.h"
 #include "core/wz_bus.h"
 #include "core/wz_scheduler.h"
 #include "core/wz_state.h"
@@ -171,6 +172,30 @@ static void test_kempston_decode(void)
         !wz_kempston_set(&joystick, WZ_KEMPSTON_DOWN, true) ||
         wz_kempston_read(&joystick, 0x1fu) != 0x12u) {
         fputs("Kempston combination decode failed\n", stderr);
+        exit(1);
+    }
+}
+
+static void test_kempston_mapping(void)
+{
+    static const unsigned defaults[WZ_KEMPSTON_MAPPING_CONTROL_COUNT] =
+        {100u, 101u, 102u, 103u, 104u};
+    wz_kempston_mapping_t mapping;
+    wz_kempston_t joystick;
+
+    wz_kempston_mapping_init(&mapping, defaults);
+    wz_kempston_init(&joystick);
+    if (!wz_kempston_mapping_apply(&mapping, &joystick, 100u, true) ||
+        wz_kempston_read(&joystick, WZ_KEMPSTON_PORT) != 0x10u ||
+        !wz_kempston_mapping_bind(&mapping, WZ_KEMPSTON_FIRE, 100u) ||
+        !wz_kempston_mapping_apply(&mapping, &joystick, 100u, true) ||
+        wz_kempston_read(&joystick, WZ_KEMPSTON_PORT) != 0x14u ||
+        !wz_kempston_mapping_apply(&mapping, &joystick, 100u, false) ||
+        wz_kempston_read(&joystick, WZ_KEMPSTON_PORT) != 0u ||
+        !wz_kempston_mapping_unbind(&mapping, WZ_KEMPSTON_RIGHT) ||
+        !wz_kempston_mapping_unbind(&mapping, WZ_KEMPSTON_FIRE) ||
+        wz_kempston_mapping_apply(&mapping, &joystick, 100u, true)) {
+        fputs("Kempston host mapping failed\n", stderr);
         exit(1);
     }
 }
@@ -412,6 +437,7 @@ int main(void)
     test_input_timestamp_assignment();
     test_input_focus_loss();
     test_kempston_decode();
+    test_kempston_mapping();
     test_raster_diagnostic();
     test_raster_invalid_state();
     const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
