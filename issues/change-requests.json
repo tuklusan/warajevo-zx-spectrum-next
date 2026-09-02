@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 168,
+  "next_cr_number": 169,
   "status_values": [
     "open",
     "in_progress",
@@ -1512,6 +1512,13 @@
       "status": "in_progress",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md section 23.12", "design/wzsn-architectures-1-2-developer-tasks.md task 154", "design/cr-preflight/CR-0167.md", "design/media-format-support.md", "design/cr-preflight/CR-0166.md", "reference/original-warajevo/source"],
       "notes": "Opened on 2026-09-02 as the next ordered Phase-7 scope. Preflight separates TZX timing/control execution from CR-0166 parsing, covering canonical edge generation, pause/stop/signal rules, bounded control flow, deterministic traversal, and cross-host invariance."
+    },
+    {
+      "cr_number": "CR-0168",
+      "title": "Bind hosted matrix publication to one run",
+      "status": "in_progress",
+      "source_authority": ["WORKFLOW.md hosted validation and publication gates", ".github/workflows/platform-smoke.yml", "design/cr-preflight/CR-0168.md"],
+      "notes": "Opened on 2026-09-02 after a hosted matrix notification exposed that per-lane results could be misread across runs. Add a SHA- and run-bound aggregate publication gate that fails closed unless every configured lane succeeds; earlier non-green evidence remains non-green."
     }
   ]
 }

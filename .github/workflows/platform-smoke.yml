@@ -89,3 +89,21 @@ jobs:
           name: platform-smoke-${{ matrix.id }}
           path: .wzsn-harness/github/${{ matrix.id }}
           if-no-files-found: error
+
+  publication-gate:
+    name: publication-gate
+    if: always()
+    needs: smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify one run and one commit are being published
+        env:
+          EXPECTED_RUN_ID: ${{ github.run_id }}
+          EXPECTED_SHA: ${{ github.sha }}
+          MATRIX_RESULT: ${{ needs.smoke.result }}
+        run: |
+          printf 'run_id=%s\nsha=%s\nmatrix_result=%s\n' "$EXPECTED_RUN_ID" "$EXPECTED_SHA" "$MATRIX_RESULT"
+          test -n "$EXPECTED_RUN_ID"
+          test "$EXPECTED_SHA" = "${GITHUB_SHA}"
+          test "$MATRIX_RESULT" = success
