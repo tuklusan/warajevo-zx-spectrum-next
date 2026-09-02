@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 110,
+  "next_cr_number": 111,
   "status_values": [
     "open",
     "in_progress",
@@ -1102,9 +1102,16 @@
     {
       "cr_number": "CR-0109",
       "title": "Run Phase-4 ULA and raster acceptance suite",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 15, 16, 17, 18, 36, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 095", "design/cr-preflight/CR-0108.md", "reference/original-warajevo/source"],
-      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-4 scope. Preflight requires complete ULA/raster/FLASH/floating-bus acceptance evidence, upstream comparison, remote validation, hosted validation, and a final zero-gap scan."
+      "notes": "Closed on 2026-09-02 after CODE and DOCUMENTATION review PASS, Linux remote harness CR0109-phase4-acceptance-1 passed configure/build/CTest for published head ac6f297, hosted platform-smoke 33593162130 passed all 18 available labels, and final upstream zero-gap scan passed."
+    },
+    {
+      "cr_number": "CR-0110",
+      "title": "Close the Phase-4 architecture gate",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md section 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 096", "design/cr-preflight/CR-0109.md", "reference/original-warajevo/source"],
+      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-4 gate scope. Preflight requires complete acceptance evidence, upstream comparison, remote validation, hosted validation, and a final zero-gap scan."
     }
   ]
 }
