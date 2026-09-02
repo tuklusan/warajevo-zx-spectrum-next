@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 145,
+  "next_cr_number": 146,
   "status_values": [
     "open",
     "in_progress",
@@ -1350,6 +1350,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md section 20.5", "design/wzsn-architectures-1-2-developer-tasks.md task 131", "design/cr-preflight/CR-0144.md", "reference/original-warajevo/source"],
       "notes": "Closed on 2026-09-02 after freezing 44,100 Hz as WZSN_CANONICAL_AUDIO_SAMPLE_RATE, documenting deterministic integer/rational conversion responsibility, and separating physical host device rates. CODE and DOCUMENTATION reviews passed for 18b0dba; Linux remote smoke CR0144-audio-rate-linux-1 passed; Windows 10 lab transport failed before execution and is explicitly not claimed; hosted platform-smoke 33646396787 and repository-gates 33646396645 passed across the configured runner set, including Windows; final upstream sound-configuration comparison found no undispositioned gap."
+    },
+    {
+      "cr_number": "CR-0145",
+      "title": "Freeze fixed-point mixer representation",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md section 20.4", "design/wzsn-architectures-1-2-developer-tasks.md task 132", "design/cr-preflight/CR-0145.md", "reference/original-warajevo/source"],
+      "notes": "Opened and activated on 2026-09-02 as the next ordered Phase-6 scope. Preflight freezes signed Q16.16 samples, Q64 accumulation, saturation, and tie-rounding rules before mixer implementation."
     }
   ]
 }

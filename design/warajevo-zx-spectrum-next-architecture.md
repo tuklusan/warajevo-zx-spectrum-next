@@ -1545,7 +1545,11 @@ It does not advance because the host requests more audio.
 ### 20.4 Canonical mixer
 
 The preferred canonical mixer uses deterministic integer or fixed-point
-arithmetic.
+arithmetic. WZSN freezes signed 32-bit Q16.16 samples (`wz_audio_sample_t`),
+signed 64-bit accumulation (`wz_audio_accumulator_t`), saturation at the
+representable signed 32-bit range, and round-to-nearest with ties away from
+zero when reducing an accumulator to a sample. This representation is
+independent of host floating-point behavior.
 
 Conceptual pipeline:
 

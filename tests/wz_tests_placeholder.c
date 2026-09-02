@@ -305,7 +305,11 @@ static void test_beeper_port_fe_timeline(void)
 
 static void test_canonical_audio_policy(void)
 {
-    if (WZ_CANONICAL_AUDIO_SAMPLE_RATE != 44100u) {
+    if (WZ_CANONICAL_AUDIO_SAMPLE_RATE != 44100u ||
+        WZ_AUDIO_MIXER_FRACTION_BITS != 16u ||
+        sizeof(wz_audio_sample_t) != sizeof(int32_t) ||
+        sizeof(wz_audio_accumulator_t) != sizeof(int64_t) ||
+        WZ_AUDIO_MIXER_ONE != 65536) {
         fputs("canonical audio sample-rate policy failed\n", stderr);
         exit(1);
     }
