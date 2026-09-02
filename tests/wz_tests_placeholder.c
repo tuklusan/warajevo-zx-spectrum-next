@@ -18,6 +18,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "app/wz_kempston_mapping.h"
 #include "app/wz_speed_policy.h"
 #include "app/wz_host_pacing.h"
+#include "core/audio/wz_audio_policy.h"
 #include "core/wz_bus.h"
 #include "core/wz_scheduler.h"
 #include "core/wz_state.h"
@@ -302,6 +303,14 @@ static void test_beeper_port_fe_timeline(void)
     wz_machine_destroy(&machine);
 }
 
+static void test_canonical_audio_policy(void)
+{
+    if (WZ_CANONICAL_AUDIO_SAMPLE_RATE != 44100u) {
+        fputs("canonical audio sample-rate policy failed\n", stderr);
+        exit(1);
+    }
+}
+
 static void test_raster_diagnostic(void)
 {
     wz_byte_t expected_samples[6] = {0u, 1u, 2u, 3u, 4u, 5u};
@@ -543,6 +552,7 @@ int main(void)
     test_speed_policy();
     test_host_pacing();
     test_beeper_port_fe_timeline();
+    test_canonical_audio_policy();
     test_raster_diagnostic();
     test_raster_invalid_state();
     const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();

@@ -1572,7 +1572,9 @@ floating-point variation.
 ### 20.5 Internal sample timeline
 
 The internal PCM rate, or equivalent rational sampling scheme, must be fixed
-and documented.
+and documented. WZSN freezes the initial canonical internal PCM rate at
+**44,100 Hz** (`WZ_CANONICAL_AUDIO_SAMPLE_RATE`), independent of the physical
+host audio-device rate.
 
 Master-tick-to-sample conversion must use deterministic integer/rational
 accumulation.
