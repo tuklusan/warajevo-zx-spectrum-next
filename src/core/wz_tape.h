@@ -47,4 +47,12 @@ wz_result_t wz_tape_state_set_motor(wz_tape_state_t* state, bool motor_on);
 wz_byte_t wz_tape_state_ear_level(const wz_tape_state_t* state);
 bool wz_tape_state_at_end(const wz_tape_state_t* state);
 
+/* Parse standard TAP into caller-owned canonical master-tick segments. */
+wz_result_t wz_tape_parse_standard_tap(const wz_byte_t* data,
+                                       size_t length,
+                                       wz_dword_t master_ticks_per_tstate,
+                                       wz_tape_segment_t* segments,
+                                       size_t capacity,
+                                       size_t* count);
+
 #endif

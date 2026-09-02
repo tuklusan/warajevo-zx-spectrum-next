@@ -416,6 +416,42 @@ static void test_tape_speed_invariance(void)
     }
 }
 
+static void test_standard_tap_parser(void)
+{
+    const wz_byte_t tap[] = {2u, 0u, 0u, 0u};
+    const wz_byte_t bad_checksum[] = {2u, 0u, 0u, 1u};
+    wz_tape_segment_t sentinel = {77u, 1u};
+    wz_tape_segment_t* segments;
+    size_t count = 0u;
+    size_t required;
+
+    if (wz_tape_parse_standard_tap(tap, sizeof(tap), 2u, 0, 0u, &required) !=
+            WZ_RESULT_BUFFER_TOO_SMALL || required != 8098u) {
+        fputs("TAP parser sizing failed\n", stderr);
+        exit(1);
+    }
+    segments = (wz_tape_segment_t*)malloc(required * sizeof(*segments));
+    if (segments == 0 ||
+        wz_tape_parse_standard_tap(tap, sizeof(tap), 2u, segments, required, &count) !=
+            WZ_RESULT_OK || count != required || segments[0].duration != 4336u ||
+        segments[0].ear_level != 1u ||
+        segments[required - 1u].duration != 7000000u ||
+        segments[required - 1u].ear_level != 0u) {
+        fputs("TAP parser expansion failed\n", stderr);
+        free(segments);
+        exit(1);
+    }
+    free(segments);
+    if (wz_tape_parse_standard_tap(bad_checksum, sizeof(bad_checksum), 2u,
+                                   &sentinel, 1u, &count) != WZ_RESULT_PARSE_ERROR ||
+        sentinel.duration != 77u || sentinel.ear_level != 1u ||
+        wz_tape_parse_standard_tap(tap, 3u, 2u, &sentinel, 1u, &count) !=
+            WZ_RESULT_PARSE_ERROR || sentinel.duration != 77u) {
+        fputs("TAP parser rejection atomicity failed\n", stderr);
+        exit(1);
+    }
+}
+
 static void test_beeper_port_fe_timeline(void)
 {
     wz_machine_t machine;
@@ -865,6 +901,7 @@ int main(void)
     test_tape_object_and_state();
     test_machine_tape_playback();
     test_tape_speed_invariance();
+    test_standard_tap_parser();
     test_beeper_port_fe_timeline();
     test_mic_capture_timeline();
     test_beeper_pcm_render();

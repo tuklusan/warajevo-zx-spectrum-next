@@ -8,7 +8,192 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "core/wz_tape.h"
 
+#include <limits.h>
 #include <stdint.h>
+
+#define WZ_TAP_PILOT_TSTATES 2168u
+#define WZ_TAP_SYNC_FIRST_TSTATES 667u
+#define WZ_TAP_SYNC_SECOND_TSTATES 735u
+#define WZ_TAP_ZERO_TSTATES 855u
+#define WZ_TAP_ONE_TSTATES 1710u
+#define WZ_TAP_PAUSE_TSTATES 3500000u
+
+static wz_result_t wz_tape_tap_add_count(size_t* total, size_t amount)
+{
+    if (total == 0 || amount > SIZE_MAX - *total) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    *total += amount;
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_tape_tap_duration(wz_dword_t tstates,
+                                        wz_dword_t ticks_per_tstate,
+                                        wz_master_tick_t* duration)
+{
+    if (duration == 0 || ticks_per_tstate == 0u ||
+        (wz_master_tick_t)tstates > UINT64_MAX / ticks_per_tstate) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    *duration = (wz_master_tick_t)tstates * ticks_per_tstate;
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_tape_tap_count_block(const wz_byte_t* block,
+                                           size_t block_length,
+                                           size_t* total)
+{
+    size_t pulse_count;
+    size_t byte_count;
+
+    if (block == 0 || total == 0 || block_length < 2u) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    pulse_count = block[0u] == 0u ? 8063u : 3223u;
+    if (block_length > (SIZE_MAX - pulse_count - 3u) / 16u) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    byte_count = block_length * 16u;
+    if (wz_tape_tap_add_count(total, pulse_count) != WZ_RESULT_OK ||
+        wz_tape_tap_add_count(total, 2u + byte_count * 2u) != WZ_RESULT_OK ||
+        wz_tape_tap_add_count(total, 1u) != WZ_RESULT_OK) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_tape_tap_validate(const wz_byte_t* data,
+                                        size_t length,
+                                        size_t* count)
+{
+    size_t offset = 0u;
+    size_t total = 0u;
+
+    if (data == 0 || length == 0u || count == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    while (offset < length) {
+        size_t block_length;
+        wz_byte_t checksum = 0u;
+
+        if (length - offset < 2u) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        block_length = (size_t)wz_read_le16(&data[offset]);
+        offset += 2u;
+        if (block_length < 2u || block_length > length - offset) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        for (size_t index = 0u; index < block_length; ++index) {
+            checksum ^= data[offset + index];
+        }
+        if (checksum != 0u ||
+            wz_tape_tap_count_block(&data[offset], block_length, &total) != WZ_RESULT_OK) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        offset += block_length;
+    }
+    *count = total;
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_tape_tap_append(wz_tape_segment_t* segments,
+                                      size_t capacity,
+                                      size_t* index,
+                                      wz_dword_t tstates,
+                                      wz_dword_t ticks_per_tstate,
+                                      wz_byte_t level)
+{
+    wz_master_tick_t duration;
+
+    if (wz_tape_tap_duration(tstates, ticks_per_tstate, &duration) != WZ_RESULT_OK ||
+        segments == 0 || index == 0 || *index >= capacity) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    segments[*index].duration = duration;
+    segments[*index].ear_level = level;
+    *index += 1u;
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_tape_tap_expand_block(const wz_byte_t* block,
+                                            size_t block_length,
+                                            wz_dword_t ticks_per_tstate,
+                                            wz_tape_segment_t* segments,
+                                            size_t capacity,
+                                            size_t* index)
+{
+    wz_byte_t level = 1u;
+    size_t pilot_count = block[0u] == 0u ? 8063u : 3223u;
+
+    for (size_t pulse = 0u; pulse < pilot_count; ++pulse) {
+        if (wz_tape_tap_append(segments, capacity, index, WZ_TAP_PILOT_TSTATES,
+                               ticks_per_tstate, level) != WZ_RESULT_OK) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        level ^= 1u;
+    }
+    if (wz_tape_tap_append(segments, capacity, index, WZ_TAP_SYNC_FIRST_TSTATES,
+                           ticks_per_tstate, level) != WZ_RESULT_OK) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    level ^= 1u;
+    if (wz_tape_tap_append(segments, capacity, index, WZ_TAP_SYNC_SECOND_TSTATES,
+                           ticks_per_tstate, level) != WZ_RESULT_OK) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    level ^= 1u;
+    for (size_t byte_index = 0u; byte_index < block_length; ++byte_index) {
+        for (unsigned bit = 0u; bit < 8u; ++bit) {
+            wz_dword_t pulse = (block[byte_index] & (wz_byte_t)(0x80u >> bit)) != 0u ?
+                WZ_TAP_ONE_TSTATES : WZ_TAP_ZERO_TSTATES;
+            if (wz_tape_tap_append(segments, capacity, index, pulse,
+                                   ticks_per_tstate, level) != WZ_RESULT_OK) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            level ^= 1u;
+            if (wz_tape_tap_append(segments, capacity, index, pulse,
+                                   ticks_per_tstate, level) != WZ_RESULT_OK) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            level ^= 1u;
+        }
+    }
+    return wz_tape_tap_append(segments, capacity, index, WZ_TAP_PAUSE_TSTATES,
+                              ticks_per_tstate, 0u);
+}
+
+wz_result_t wz_tape_parse_standard_tap(const wz_byte_t* data,
+                                       size_t length,
+                                       wz_dword_t master_ticks_per_tstate,
+                                       wz_tape_segment_t* segments,
+                                       size_t capacity,
+                                       size_t* count)
+{
+    size_t required;
+    size_t offset = 0u;
+    size_t index = 0u;
+
+    if (master_ticks_per_tstate == 0u || count == 0 ||
+        wz_tape_tap_validate(data, length, &required) != WZ_RESULT_OK) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    *count = required;
+    if (segments == 0 || capacity < required) {
+        return WZ_RESULT_BUFFER_TOO_SMALL;
+    }
+    while (offset < length) {
+        size_t block_length = (size_t)wz_read_le16(&data[offset]);
+        offset += 2u;
+        if (wz_tape_tap_expand_block(&data[offset], block_length,
+                                     master_ticks_per_tstate, segments,
+                                     capacity, &index) != WZ_RESULT_OK) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        offset += block_length;
+    }
+    return index == required ? WZ_RESULT_OK : WZ_RESULT_PARSE_ERROR;
+}
 
 wz_result_t wz_tape_validate(const wz_tape_segment_t* segments,
                              size_t segment_count)
