@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 158,
+  "next_cr_number": 159,
   "status_values": [
     "open",
     "in_progress",
@@ -1441,6 +1441,13 @@
       "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 23.12, 23.13, and 49.2", "design/wzsn-architectures-1-2-developer-tasks.md task 144", "design/cr-preflight/CR-0157.md", "design/media-format-support.md", "reference/original-warajevo/source"],
       "notes": "Closed on 2026-09-02 after freezing the complete TZX block/variant classification, controlled-error rules, standard TAP semantics, separate Warajevo-native TAP handling, and deterministic WAV input boundaries in design/media-format-support.md. CODE and DOCUMENTATION reviews passed with no confirmed findings. Linux CR0157-format-linux-1 and Windows 10 CR0157-format-windows-1 passed the complete five-test smoke suite; hosted platform-smoke 33661739457 passed all 17 configured runner lanes. Final upstream tape-format comparison found no undispositioned gap; parser implementation is now authorized."
+    },
+    {
+      "cr_number": "CR-0158",
+      "title": "Implement in-memory tape object and state",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md sections 23.1, 23.2, and 49.2", "design/wzsn-architectures-1-2-developer-tasks.md task 145", "design/cr-preflight/CR-0158.md", "reference/original-warajevo/source"],
+      "notes": "Opened on 2026-09-02 as the next ordered Phase-7 scope. Preflight requires a validated in-memory tape/media boundary independent of host file handles and ready for synthetic headless playback."
     }
   ]
 }
