@@ -27,6 +27,18 @@ typedef struct {
     wz_dword_t raster_clock;
 } wz_raster_position_t;
 
+typedef enum {
+    WZ_ULA_FETCH_BITMAP = 0,
+    WZ_ULA_FETCH_ATTRIBUTE
+} wz_ula_fetch_kind_t;
+
+typedef struct {
+    wz_ula_fetch_kind_t kind;
+    wz_master_tick_t master_tick;
+    wz_word_t address;
+    wz_byte_t value;
+} wz_ula_fetch_event_t;
+
 typedef struct wz_machine {
     const wz_machine_profile_t* profile;
     wz_z80_state_t cpu;
@@ -78,5 +90,10 @@ void wz_machine_update_interrupt_line(wz_machine_t* machine);
 bool wz_machine_maskable_interrupt_line_low(const wz_machine_t* machine);
 wz_result_t wz_machine_raster_position(const wz_machine_t* machine,
                                        wz_raster_position_t* position);
+wz_result_t wz_machine_ula_fetches_at_tick(const wz_machine_t* machine,
+                                           wz_master_tick_t master_tick,
+                                           wz_ula_fetch_event_t* events,
+                                           size_t capacity,
+                                           size_t* count);
 
 #endif

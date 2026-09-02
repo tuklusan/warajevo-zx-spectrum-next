@@ -318,6 +318,78 @@ wz_result_t wz_machine_raster_position(const wz_machine_t* machine,
     return WZ_RESULT_OK;
 }
 
+static wz_word_t wz_ula_bitmap_address(wz_dword_t row, wz_dword_t cell)
+{
+    wz_dword_t address = 0x4000u;
+    address |= (row & 0xc0u) << 5u;
+    address |= (row & 0x07u) << 8u;
+    address |= (row & 0x38u) << 2u;
+    address |= cell;
+    return (wz_word_t)address;
+}
+
+wz_result_t wz_machine_ula_fetches_at_tick(const wz_machine_t* machine,
+                                           wz_master_tick_t master_tick,
+                                           wz_ula_fetch_event_t* events,
+                                           size_t capacity,
+                                           size_t* count)
+{
+    const wz_machine_profile_t* profile;
+    wz_dword_t tstate;
+    wz_dword_t elapsed;
+    wz_dword_t line;
+    wz_dword_t cell;
+    wz_dword_t row;
+    wz_master_tick_t bitmap_tick;
+    wz_master_tick_t attribute_tick;
+
+    if (count == 0 || machine == 0 || machine->profile == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    *count = 0u;
+    profile = machine->profile;
+    if (profile->kind != WZ_MACHINE_48K_PAL ||
+        profile->master_ticks_per_cpu_tstate == 0u ||
+        profile->ula_fetch_line_count == 0u ||
+        profile->ula_fetches_per_line == 0u ||
+        profile->ula_fetch_interval_tstates == 0u) {
+        return WZ_RESULT_OK;
+    }
+    tstate = (wz_dword_t)(master_tick / profile->master_ticks_per_cpu_tstate);
+    if (tstate < profile->ula_fetch_start_tstate) {
+        return WZ_RESULT_OK;
+    }
+    elapsed = tstate - profile->ula_fetch_start_tstate;
+    line = elapsed / profile->tstates_per_line;
+    if (line >= profile->ula_fetch_line_count) {
+        return WZ_RESULT_OK;
+    }
+    cell = (elapsed % profile->tstates_per_line) /
+        profile->ula_fetch_interval_tstates;
+    if (cell >= profile->ula_fetches_per_line ||
+        (elapsed % profile->ula_fetch_interval_tstates) != 0u) {
+        return WZ_RESULT_OK;
+    }
+    bitmap_tick = (wz_master_tick_t)tstate *
+        profile->master_ticks_per_cpu_tstate;
+    attribute_tick = bitmap_tick + profile->attribute_offset_tstates *
+        profile->master_ticks_per_cpu_tstate;
+    row = line;
+    if (capacity < 2u || events == 0) {
+        return WZ_RESULT_BUFFER_TOO_SMALL;
+    }
+    events[0].kind = WZ_ULA_FETCH_BITMAP;
+    events[0].master_tick = bitmap_tick;
+    events[0].address = wz_ula_bitmap_address(row, cell);
+    events[0].value = machine->memory[events[0].address];
+    events[1].kind = WZ_ULA_FETCH_ATTRIBUTE;
+    events[1].master_tick = attribute_tick;
+    events[1].address = (wz_word_t)(0x5800u + (row / 8u) * 32u + cell);
+    events[1].value = machine->memory[events[1].address];
+    *count = 2u;
+    return WZ_RESULT_OK;
+}
+
 const char* wz_machine_boot_message(void)
 {
     return "Warajevo ZX Spectrum Next bootstrap";

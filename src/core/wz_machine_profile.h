@@ -30,6 +30,11 @@ typedef struct {
     uint16_t active_height;
     wz_dword_t interrupt_assert_tstate;
     wz_dword_t interrupt_deassert_tstate;
+    wz_dword_t ula_fetch_start_tstate;
+    wz_dword_t ula_fetch_line_count;
+    wz_dword_t ula_fetches_per_line;
+    wz_dword_t ula_fetch_interval_tstates;
+    wz_dword_t ula_attribute_offset_tstates;
     wz_qword_t expected_rom_identity;
 } wz_machine_profile_t;
 
