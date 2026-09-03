@@ -8,6 +8,8 @@ cmake_minimum_required(VERSION 3.25)
 
 project(WarajevoZXSpectrumNext VERSION 0.1.0 LANGUAGES C)
 
+find_package(ZLIB REQUIRED)
+
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
@@ -60,7 +62,7 @@ add_library(
 )
 
 target_include_directories(wz_core PUBLIC src)
-target_link_libraries(wz_core PUBLIC wz_warnings)
+target_link_libraries(wz_core PUBLIC wz_warnings ZLIB::ZLIB)
 
 add_library(wz_diagnostics STATIC src/diagnostics/wz_trace_file.c)
 target_include_directories(wz_diagnostics PUBLIC src)

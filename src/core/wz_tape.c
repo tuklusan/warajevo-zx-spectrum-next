@@ -11,6 +11,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include <limits.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <zlib.h>
 
 #define WZ_TAP_PILOT_TSTATES 2168u
 #define WZ_TAP_SYNC_FIRST_TSTATES 667u
@@ -763,59 +765,137 @@ static wz_result_t wz_tzx_append_segment(wz_tape_segment_t* segments,
     return WZ_RESULT_OK;
 }
 
-static wz_result_t wz_tzx_csw_validate(const wz_tzx_block_t* block,
-                                       size_t* pulse_count,
-                                       size_t* encoded_offset)
+static wz_result_t wz_tzx_csw_decode(const wz_tzx_block_t* block,
+                                     const wz_byte_t** encoded,
+                                     size_t* encoded_length,
+                                     wz_byte_t** owned,
+                                     size_t* pulse_count)
 {
     size_t offset = 14u;
     size_t found = 0u;
     wz_dword_t declared;
+    wz_byte_t* expanded = 0;
 
-    if (block == 0 || pulse_count == 0 || encoded_offset == 0 ||
-        block->data == 0 || block->data_length < offset ||
-        block->data[9u] != 1u ||
+    if (block == 0 || encoded == 0 || encoded_length == 0 || owned == 0 ||
+        pulse_count == 0 || block->data == 0 || block->data_length < offset ||
+        (block->data[9u] != 1u && block->data[9u] != 2u) ||
         wz_tzx_read_le24(block->data + 6u) == 0u) {
-        return WZ_RESULT_UNSUPPORTED_OPERATION;
+        return WZ_RESULT_PARSE_ERROR;
     }
-    declared = (wz_dword_t)block->data[10u] |
-        ((wz_dword_t)block->data[11u] << 8u) |
-        ((wz_dword_t)block->data[12u] << 16u) |
-        ((wz_dword_t)block->data[13u] << 24u);
+    declared = wz_tzx_read_le32(block->data + 10u);
     if (declared == 0u) return WZ_RESULT_PARSE_ERROR;
-    while (offset < block->data_length && found < (size_t)declared) {
+    if (block->data[9u] == 1u) {
+        *encoded = block->data + offset;
+        *encoded_length = block->data_length - offset;
+        *owned = 0;
+    } else {
+        size_t maximum;
+        size_t capacity;
+        z_stream stream;
+        int status;
+
+        if ((size_t)declared > (SIZE_MAX - 4u) / 5u) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        maximum = (size_t)declared * 5u;
+        capacity = maximum < 4096u ? maximum : 4096u;
+        expanded = (wz_byte_t*)malloc(capacity);
+        if (expanded == 0) return WZ_RESULT_OUT_OF_MEMORY;
+        memset(&stream, 0, sizeof(stream));
+        if (block->data_length - offset > UINT_MAX) {
+            free(expanded);
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        stream.next_in = (Bytef*)(block->data + offset);
+        stream.avail_in = (uInt)(block->data_length - offset);
+        if (inflateInit2(&stream, 15 + 32) != Z_OK) {
+            free(expanded);
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        for (;;) {
+            stream.next_out = expanded + stream.total_out;
+            stream.avail_out = (uInt)(capacity - stream.total_out);
+            status = inflate(&stream, Z_FINISH);
+            if (status == Z_STREAM_END) break;
+            if (status != Z_OK && status != Z_BUF_ERROR) {
+                inflateEnd(&stream);
+                free(expanded);
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            if (stream.avail_out != 0u || stream.total_out == maximum) {
+                inflateEnd(&stream);
+                free(expanded);
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            capacity = capacity > maximum / 2u ? maximum : capacity * 2u;
+            {
+                wz_byte_t* resized = (wz_byte_t*)realloc(expanded, capacity);
+                if (resized == 0) {
+                    inflateEnd(&stream);
+                    free(expanded);
+                    return WZ_RESULT_OUT_OF_MEMORY;
+                }
+                expanded = resized;
+            }
+        }
+        if (stream.total_out == 0u || stream.avail_in != 0u ||
+            stream.total_out > maximum) {
+            inflateEnd(&stream);
+            free(expanded);
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        inflateEnd(&stream);
+        *encoded = expanded;
+        *encoded_length = stream.total_out;
+        *owned = expanded;
+    }
+    for (offset = 0u; offset < *encoded_length && found < (size_t)declared;) {
         size_t run;
-        if (block->data[offset++] != 0u) {
+        if ((*encoded)[offset++] != 0u) {
             run = 1u;
         } else {
-            if (offset > block->data_length - 4u) return WZ_RESULT_PARSE_ERROR;
-            run = (size_t)block->data[offset] |
-                ((size_t)block->data[offset + 1u] << 8u) |
-                ((size_t)block->data[offset + 2u] << 16u) |
-                ((size_t)block->data[offset + 3u] << 24u);
+            if (offset > *encoded_length - 4u) {
+                free(*owned);
+                *owned = 0;
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            run = (size_t)(*encoded)[offset] |
+                ((size_t)(*encoded)[offset + 1u] << 8u) |
+                ((size_t)(*encoded)[offset + 2u] << 16u) |
+                ((size_t)(*encoded)[offset + 3u] << 24u);
             offset += 4u;
-            if (run == 0u) return WZ_RESULT_PARSE_ERROR;
+            if (run == 0u) {
+                free(*owned);
+                *owned = 0;
+                return WZ_RESULT_PARSE_ERROR;
+            }
         }
-        if (found == SIZE_MAX) return WZ_RESULT_PARSE_ERROR;
         ++found;
     }
-    if (found != (size_t)declared || offset != block->data_length) {
+    if (found != (size_t)declared || offset != *encoded_length) {
+        free(*owned);
+        *owned = 0;
         return WZ_RESULT_PARSE_ERROR;
     }
     *pulse_count = found;
-    *encoded_offset = 14u;
     return WZ_RESULT_OK;
 }
 
 static wz_result_t wz_tzx_count_csw(const wz_tzx_block_t* block,
                                     size_t* amount)
 {
+    const wz_byte_t* encoded;
+    wz_byte_t* owned;
     size_t pulses;
-    size_t offset;
 
-    if (amount == 0 || wz_tzx_csw_validate(block, &pulses, &offset) != WZ_RESULT_OK) {
+    size_t encoded_length;
+
+    if (amount == 0 || wz_tzx_csw_decode(block, &encoded, &encoded_length,
+            &owned, &pulses) != WZ_RESULT_OK) {
         return WZ_RESULT_PARSE_ERROR;
     }
-    (void)offset;
+    (void)encoded;
+    free(owned);
     if (pulses == SIZE_MAX) return WZ_RESULT_PARSE_ERROR;
     *amount = pulses + (wz_read_le16(block->data + 4u) == 0u ? 0u : 1u);
     return WZ_RESULT_OK;
@@ -828,43 +908,57 @@ static wz_result_t wz_tzx_expand_csw(const wz_tzx_block_t* block,
                                      size_t* index,
                                      wz_byte_t* level)
 {
+    const wz_byte_t* encoded;
+    wz_byte_t* owned;
+    size_t encoded_length;
+    size_t offset = 0u;
     size_t pulses;
-    size_t offset;
     wz_dword_t sample_rate;
+    wz_result_t result = WZ_RESULT_OK;
 
-    if (level == 0 || wz_tzx_csw_validate(block, &pulses, &offset) != WZ_RESULT_OK) {
+    if (level == 0 || wz_tzx_csw_decode(block, &encoded, &encoded_length,
+            &owned, &pulses) != WZ_RESULT_OK) {
         return WZ_RESULT_PARSE_ERROR;
     }
     sample_rate = wz_tzx_read_le24(block->data + 6u);
     for (size_t pulse = 0u; pulse < pulses; ++pulse) {
         uint64_t samples;
         wz_dword_t tstates;
-        if (block->data[offset] != 0u) {
-            samples = block->data[offset++];
+        if (encoded[offset] != 0u) {
+            samples = encoded[offset++];
         } else {
             ++offset;
-            samples = (uint64_t)block->data[offset] |
-                ((uint64_t)block->data[offset + 1u] << 8u) |
-                ((uint64_t)block->data[offset + 2u] << 16u) |
-                ((uint64_t)block->data[offset + 3u] << 24u);
+            samples = (uint64_t)encoded[offset] |
+                ((uint64_t)encoded[offset + 1u] << 8u) |
+                ((uint64_t)encoded[offset + 2u] << 16u) |
+                ((uint64_t)encoded[offset + 3u] << 24u);
             offset += 4u;
         }
         samples = (samples * 3500000u + sample_rate / 2u) / sample_rate;
-        if (samples == 0u || samples > UINT32_MAX) return WZ_RESULT_PARSE_ERROR;
+        if (samples == 0u || samples > UINT32_MAX) {
+            result = WZ_RESULT_PARSE_ERROR;
+            goto cleanup;
+        }
         tstates = (wz_dword_t)samples;
         if (wz_tzx_append_segment(segments, capacity, index, tstates,
                                   ticks_per_tstate, *level) != WZ_RESULT_OK) {
-            return WZ_RESULT_PARSE_ERROR;
+            result = WZ_RESULT_PARSE_ERROR;
+            goto cleanup;
         }
         *level ^= 1u;
     }
     if (wz_read_le16(block->data + 4u) != 0u) {
         if (wz_tzx_append_segment(segments, capacity, index,
                 (wz_dword_t)wz_read_le16(block->data + 4u) * 3500u,
-                ticks_per_tstate, 0u) != WZ_RESULT_OK) return WZ_RESULT_PARSE_ERROR;
+                ticks_per_tstate, 0u) != WZ_RESULT_OK) {
+            result = WZ_RESULT_PARSE_ERROR;
+            goto cleanup;
+        }
         *level = 0u;
     }
-    return WZ_RESULT_OK;
+cleanup:
+    free(owned);
+    return result;
 }
 
 typedef struct {
