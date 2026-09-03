@@ -447,12 +447,12 @@ def main() -> int:
                 configure_command.append(f"-DCMAKE_RC_COMPILER={cmake_path_string(tools['rc']['path'])}")
             if tools["mt"]["path"]:
                 configure_command.append(f"-DCMAKE_MT={cmake_path_string(tools['mt']['path'])}")
-        linker_paths = windows_linker_paths(build_environment)
-        if linker_paths:
-            linker_flags = " ".join(
-                f'-Xlinker "/libpath:{cmake_path_string(str(path))}"' for path in linker_paths
-            )
-            configure_command.append(f"-DCMAKE_EXE_LINKER_FLAGS={linker_flags}")
+            linker_paths = windows_linker_paths(build_environment)
+            if linker_paths:
+                linker_flags = " ".join(
+                    f'-Xlinker "/libpath:{cmake_path_string(str(path))}"' for path in linker_paths
+                )
+                configure_command.append(f"-DCMAKE_EXE_LINKER_FLAGS={linker_flags}")
 
     if tools["ninja"]["path"]:
         configure_command.extend(["-G", "Ninja"])
