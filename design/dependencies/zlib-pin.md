@@ -14,9 +14,10 @@ Status: REQUIRED_FOR_TZX_Z_RLE
 - Immutable revision: `925af44f3cde53c6b076611c297850091b5dc7bb`
 - Release tag: `v1.3.1`
 - License: zlib license, as supplied by the zlib project.
-- Acquisition: CMake uses a system zlib when available and fetches the exact
-  release archive with the recorded SHA-256 as a fallback for remote or hosted
-  environments without headers.
+- Acquisition: the exact source release is vendored under `third_party/zlib/`;
+  CMake uses a system zlib when available, otherwise it builds that vendor
+  tree. The recorded hashed release archive remains a fallback for hosted
+  environments where the vendor tree is intentionally absent.
 - Boundary: zlib is used only by the TZX CSW Z-RLE decoder; it is not part of
   canonical machine state or host presentation behavior.
 

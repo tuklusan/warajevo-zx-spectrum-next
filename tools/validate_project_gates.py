@@ -112,6 +112,10 @@ def is_header_file(path: Path) -> bool:
     return path.name in HEADER_FILE_NAMES or path.suffix.lower() in HEADER_FILE_SUFFIXES
 
 
+def is_third_party_path(path: Path) -> bool:
+    return bool(path.parts) and path.parts[0] == "third_party"
+
+
 def is_text_file(path: Path) -> bool:
     return path.name in TEXT_FILE_NAMES or path.suffix.lower() in TEXT_FILE_SUFFIXES
 
@@ -564,7 +568,13 @@ def main() -> int:
 
         relative_path = path.relative_to(root)
 
-        if is_header_file(relative_path) and not has_notice_header(path):
+        # Upstream vendored material retains its own legal headers; provenance
+        # and licensing are enforced by the project documents instead.
+        if (
+            is_header_file(relative_path)
+            and not is_third_party_path(relative_path)
+            and not has_notice_header(path)
+        ):
             problems.append(f"{relative_path}: missing canonical notice header")
 
         if is_text_file(relative_path):
