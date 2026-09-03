@@ -8,7 +8,27 @@ cmake_minimum_required(VERSION 3.25)
 
 project(WarajevoZXSpectrumNext VERSION 0.1.0 LANGUAGES C)
 
-find_package(ZLIB REQUIRED)
+find_package(ZLIB QUIET)
+if(NOT ZLIB_FOUND)
+    include(FetchContent)
+    FetchContent_Declare(
+        zlib
+        GIT_REPOSITORY https://github.com/madler/zlib.git
+        GIT_TAG 925af44f3cde53c6b076611c297850091b5dc7bb
+        GIT_SHALLOW FALSE
+    )
+    FetchContent_MakeAvailable(zlib)
+    if(NOT TARGET ZLIB::ZLIB)
+        if(TARGET zlibstatic)
+            add_library(ZLIB::ZLIB ALIAS zlibstatic)
+        elseif(TARGET zlib)
+            add_library(ZLIB::ZLIB ALIAS zlib)
+        endif()
+    endif()
+endif()
+if(NOT TARGET ZLIB::ZLIB)
+    message(FATAL_ERROR "ZLIB::ZLIB target is unavailable")
+endif()
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
