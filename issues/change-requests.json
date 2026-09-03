@@ -1552,7 +1552,7 @@
       "cr_number": "CR-0173",
       "title": "Implement conservative tape trap eligibility reasons",
       "status": "in_progress",
-      "source_authority": ["design/cr-preflight/CR-0173.md", "design/warajevo-zx-spectrum-next-architecture.md", "design/wzsn-architectures-1-2-developer-tasks.md task 157", "src/core/wz_machine.h", "src/core/wz_machine.c", "reference/original-warajevo/source/src/spectrum-kernel/TAPE.ASM", "reference/original-warajevo/source/src/timex-kernel/TSTAPE.ASM"],
+      "source_authority": ["design/cr-preflight/CR-0173.md", "design/warajevo-zx-spectrum-next-architecture.md", "design/wzsn-architectures-1-2-developer-tasks.md task 157", "src/core/wz_machine.h", "src/core/wz_machine.c", "tests/wz_tests_placeholder.c", "reference/original-warajevo/source/src/spectrum-kernel/TAPE.ASM", "reference/original-warajevo/source/src/timex-kernel/TSTAPE.ASM"],
       "notes": "Opened on 2026-09-03 as the next ordered Phase-7 scope. Adds no-false-positive eligibility reporting; positive loader recognition and accelerated mutation remain later scopes."
     }
   ]
