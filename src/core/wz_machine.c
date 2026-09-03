@@ -161,6 +161,20 @@ wz_tape_loading_mode_t wz_machine_tape_loading_mode(const wz_machine_t* machine)
     return machine == 0 ? WZ_TAPE_LOADING_NORMAL : machine->tape_loading_mode;
 }
 
+wz_tape_trap_reason_t wz_machine_tape_trap_reason(const wz_machine_t* machine)
+{
+    if (machine == 0 || machine->tape_loading_mode == WZ_TAPE_LOADING_NORMAL) {
+        return WZ_TAPE_TRAP_REASON_NORMAL_MODE;
+    }
+    if (machine->tape_mounted == 0u) {
+        return WZ_TAPE_TRAP_REASON_NO_TAPE;
+    }
+    if (machine->has_48k_rom == 0u) {
+        return WZ_TAPE_TRAP_REASON_NO_ROM;
+    }
+    return WZ_TAPE_TRAP_REASON_NO_RECOGNIZED_LOADER;
+}
+
 wz_byte_t wz_machine_tape_ear_level(const wz_machine_t* machine)
 {
     if (machine == 0 || !machine->tape_mounted) {

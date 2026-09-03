@@ -42,6 +42,13 @@ typedef enum {
     WZ_TAPE_LOADING_INSTANT_TRAP
 } wz_tape_loading_mode_t;
 
+typedef enum {
+    WZ_TAPE_TRAP_REASON_NORMAL_MODE = 0,
+    WZ_TAPE_TRAP_REASON_NO_TAPE,
+    WZ_TAPE_TRAP_REASON_NO_ROM,
+    WZ_TAPE_TRAP_REASON_NO_RECOGNIZED_LOADER
+} wz_tape_trap_reason_t;
+
 typedef struct {
     wz_ula_fetch_kind_t kind;
     wz_master_tick_t master_tick;
@@ -107,6 +114,7 @@ wz_result_t wz_machine_advance_tape(wz_machine_t* machine,
 wz_result_t wz_machine_set_tape_loading_mode(wz_machine_t* machine,
                                               wz_tape_loading_mode_t mode);
 wz_tape_loading_mode_t wz_machine_tape_loading_mode(const wz_machine_t* machine);
+wz_tape_trap_reason_t wz_machine_tape_trap_reason(const wz_machine_t* machine);
 wz_byte_t wz_machine_tape_ear_level(const wz_machine_t* machine);
 wz_byte_t wz_machine_kempston_read(const wz_machine_t* machine,
                                    wz_word_t address);

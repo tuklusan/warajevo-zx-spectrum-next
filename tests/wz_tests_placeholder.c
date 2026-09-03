@@ -399,6 +399,32 @@ static void test_tape_loading_mode_state(void)
     wz_machine_destroy(&machine);
 }
 
+static void test_tape_trap_eligibility(void)
+{
+    const wz_tape_segment_t segment = {1u, 0u};
+    wz_machine_t machine;
+
+    if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK ||
+        wz_machine_tape_trap_reason(&machine) != WZ_TAPE_TRAP_REASON_NORMAL_MODE ||
+        wz_machine_set_tape_loading_mode(&machine, WZ_TAPE_LOADING_INSTANT_TRAP) !=
+            WZ_RESULT_OK ||
+        wz_machine_tape_trap_reason(&machine) != WZ_TAPE_TRAP_REASON_NO_TAPE ||
+        wz_machine_mount_tape(&machine, &segment, 1u) != WZ_RESULT_OK ||
+        wz_machine_tape_trap_reason(&machine) != WZ_TAPE_TRAP_REASON_NO_ROM) {
+        fputs("tape trap prerequisite eligibility failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    machine.has_48k_rom = 1u;
+    if (wz_machine_tape_trap_reason(&machine) !=
+            WZ_TAPE_TRAP_REASON_NO_RECOGNIZED_LOADER) {
+        fputs("tape trap false-positive eligibility failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_machine_destroy(&machine);
+}
+
 static void test_tape_speed_invariance(void)
 {
     const wz_tape_segment_t segments[3u] = {{2u, 0u}, {3u, 1u}, {1u, 0u}};
@@ -1337,6 +1363,7 @@ int main(void)
     test_tape_object_and_state();
     test_machine_tape_playback();
     test_tape_loading_mode_state();
+    test_tape_trap_eligibility();
     test_tape_speed_invariance();
     test_standard_tap_parser();
     test_standard_tap_writer();
