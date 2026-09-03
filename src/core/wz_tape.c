@@ -611,6 +611,31 @@ static wz_result_t wz_tzx_jump_target(size_t current,
     return WZ_RESULT_OK;
 }
 
+static wz_result_t wz_tzx_call_target(size_t current,
+                                      const wz_tzx_block_t* block,
+                                      size_t call_index,
+                                      size_t block_count,
+                                      size_t* target)
+{
+    size_t calls;
+    int16_t relative;
+    int32_t resolved;
+
+    if (block == 0 || target == 0 || block->data == 0 ||
+        block->data_length < 2u) return WZ_RESULT_PARSE_ERROR;
+    calls = wz_read_le16(block->data);
+    if (calls == 0u || call_index >= calls || calls > (SIZE_MAX - 2u) / 2u ||
+        block->data_length < 2u + calls * 2u || current > (size_t)INT32_MAX ||
+        block_count > (size_t)INT32_MAX) return WZ_RESULT_PARSE_ERROR;
+    relative = (int16_t)wz_read_le16(block->data + 2u + call_index * 2u);
+    if (!wz_tzx_target_is_valid((int32_t)current, relative, block_count)) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    resolved = (int32_t)current + relative;
+    *target = (size_t)resolved;
+    return WZ_RESULT_OK;
+}
+
 enum { WZ_TZX_MAX_LOOP_DEPTH = 64u };
 
 wz_result_t wz_tape_parse_tzx(const wz_byte_t* data,
@@ -1060,6 +1085,10 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
     size_t loop_depth = 0u;
     size_t loop_starts[WZ_TZX_MAX_LOOP_DEPTH];
     wz_word_t loop_remaining[WZ_TZX_MAX_LOOP_DEPTH];
+    size_t call_origins[WZ_TZX_MAX_LOOP_DEPTH];
+    size_t call_returns[WZ_TZX_MAX_LOOP_DEPTH];
+    size_t call_next[WZ_TZX_MAX_LOOP_DEPTH];
+    size_t call_depth = 0u;
     size_t step_limit = block_count > SIZE_MAX / 65535u ? SIZE_MAX :
         block_count * 65535u;
     wz_byte_t level = 1u;
@@ -1166,6 +1195,34 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
                 --loop_depth;
             }
             break;
+        case 0x26u:
+            if (call_depth >= WZ_TZX_MAX_LOOP_DEPTH || block->data_length < 2u ||
+                wz_read_le16(block->data) == 0u ||
+                wz_tzx_call_target(block_index, block, 0u, block_count, &target) !=
+                    WZ_RESULT_OK) return WZ_RESULT_PARSE_ERROR;
+            call_origins[call_depth] = block_index;
+            call_returns[call_depth] = block_index + 1u;
+            call_next[call_depth] = 1u;
+            ++call_depth;
+            block_index = target - 1u;
+            break;
+        case 0x27u:
+            if (block->data_length != 0u || call_depth == 0u) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            if (call_next[call_depth - 1u] < (size_t)wz_read_le16(
+                    blocks[call_origins[call_depth - 1u]].data)) {
+                if (wz_tzx_call_target(call_origins[call_depth - 1u],
+                        &blocks[call_origins[call_depth - 1u]],
+                        call_next[call_depth - 1u], block_count, &target) !=
+                        WZ_RESULT_OK) return WZ_RESULT_PARSE_ERROR;
+                ++call_next[call_depth - 1u];
+                block_index = target - 1u;
+            } else {
+                block_index = call_returns[call_depth - 1u] - 1u;
+                --call_depth;
+            }
+            break;
         case 0x2au: {
             size_t declared_length;
             if (block->data_length < 4u) return WZ_RESULT_PARSE_ERROR;
@@ -1195,11 +1252,12 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
         }
         if (block->block_id == 0x2au) break;
     }
-    if (loop_depth != 0u) return WZ_RESULT_PARSE_ERROR;
+    if (loop_depth != 0u || call_depth != 0u) return WZ_RESULT_PARSE_ERROR;
     *count = required;
     if (segments == 0 || capacity < required) return WZ_RESULT_BUFFER_TOO_SMALL;
     steps = 0u;
     loop_depth = 0u;
+    call_depth = 0u;
     for (size_t block_index = 0u; block_index < block_count; ++block_index) {
         const wz_tzx_block_t* block = &blocks[block_index];
         size_t target;
@@ -1311,6 +1369,32 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
             } else {
                 --loop_depth;
             }
+        } else if (block->block_id == 0x26u) {
+            if (call_depth >= WZ_TZX_MAX_LOOP_DEPTH || block->data_length < 2u ||
+                wz_read_le16(block->data) == 0u ||
+                wz_tzx_call_target(block_index, block, 0u, block_count, &target) !=
+                    WZ_RESULT_OK) return WZ_RESULT_PARSE_ERROR;
+            call_origins[call_depth] = block_index;
+            call_returns[call_depth] = block_index + 1u;
+            call_next[call_depth] = 1u;
+            ++call_depth;
+            block_index = target - 1u;
+        } else if (block->block_id == 0x27u) {
+            if (block->data_length != 0u || call_depth == 0u) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            if (call_next[call_depth - 1u] < (size_t)wz_read_le16(
+                    blocks[call_origins[call_depth - 1u]].data)) {
+                if (wz_tzx_call_target(call_origins[call_depth - 1u],
+                        &blocks[call_origins[call_depth - 1u]],
+                        call_next[call_depth - 1u], block_count, &target) !=
+                        WZ_RESULT_OK) return WZ_RESULT_PARSE_ERROR;
+                ++call_next[call_depth - 1u];
+                block_index = target - 1u;
+            } else {
+                block_index = call_returns[call_depth - 1u] - 1u;
+                --call_depth;
+            }
         } else if (block->block_id == 0x20u) {
             wz_dword_t tstates = (wz_dword_t)wz_read_le16(block->data) * 3500u;
             if (wz_tzx_append_segment(segments, capacity, &index, tstates,
@@ -1324,7 +1408,7 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
             return WZ_RESULT_UNSUPPORTED_OPERATION;
         }
     }
-    if (loop_depth != 0u) return WZ_RESULT_PARSE_ERROR;
+    if (loop_depth != 0u || call_depth != 0u) return WZ_RESULT_PARSE_ERROR;
     return WZ_RESULT_OK;
 }
 
