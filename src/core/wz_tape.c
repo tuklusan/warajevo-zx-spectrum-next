@@ -1257,11 +1257,14 @@ static wz_result_t wz_tzx_expand_standard_speed(const wz_tzx_block_t* block,
             wz_dword_t duration = (block->data[4u + byte_index] &
                                    (wz_byte_t)(0x80u >> bit)) != 0u ? 1710u : 855u;
             if (wz_tzx_append_segment(segments, capacity, index, duration,
-                                      ticks_per_tstate, *current_level) != WZ_RESULT_OK ||
-                wz_tzx_append_segment(segments, capacity, index, duration,
-                                      ticks_per_tstate, (wz_byte_t)(*current_level ^ 1u)) !=
-                    WZ_RESULT_OK) return WZ_RESULT_PARSE_ERROR;
+                                      ticks_per_tstate, *current_level) != WZ_RESULT_OK) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
             *current_level ^= 1u;
+            if (wz_tzx_append_segment(segments, capacity, index, duration,
+                                      ticks_per_tstate, *current_level) != WZ_RESULT_OK) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
             *current_level ^= 1u;
         }
     }
@@ -1316,11 +1319,14 @@ static wz_result_t wz_tzx_expand_turbo(const wz_tzx_block_t* block,
         *current_level ^= 1u;
     }
     if (wz_tzx_append_segment(segments, capacity, index, wz_read_le16(block->data + 2u),
-                              ticks_per_tstate, *current_level) != WZ_RESULT_OK ||
-        wz_tzx_append_segment(segments, capacity, index, wz_read_le16(block->data + 4u),
-                              ticks_per_tstate, (wz_byte_t)(*current_level ^ 1u)) !=
-            WZ_RESULT_OK) return WZ_RESULT_PARSE_ERROR;
+                              ticks_per_tstate, *current_level) != WZ_RESULT_OK) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
     *current_level ^= 1u;
+    if (wz_tzx_append_segment(segments, capacity, index, wz_read_le16(block->data + 4u),
+                              ticks_per_tstate, *current_level) != WZ_RESULT_OK) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
     *current_level ^= 1u;
     for (size_t byte_index = 0u; byte_index < data_length; ++byte_index) {
         unsigned bits = byte_index + 1u == data_length ? (unsigned)used_bits : 8u;
@@ -1329,11 +1335,14 @@ static wz_result_t wz_tzx_expand_turbo(const wz_tzx_block_t* block,
                 (wz_byte_t)(0x80u >> bit)) != 0u ? wz_read_le16(block->data + 8u) :
                 wz_read_le16(block->data + 6u);
             if (wz_tzx_append_segment(segments, capacity, index, duration,
-                                      ticks_per_tstate, *current_level) != WZ_RESULT_OK ||
-                wz_tzx_append_segment(segments, capacity, index, duration,
-                                      ticks_per_tstate, (wz_byte_t)(*current_level ^ 1u)) !=
-                    WZ_RESULT_OK) return WZ_RESULT_PARSE_ERROR;
+                                      ticks_per_tstate, *current_level) != WZ_RESULT_OK) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
             *current_level ^= 1u;
+            if (wz_tzx_append_segment(segments, capacity, index, duration,
+                                      ticks_per_tstate, *current_level) != WZ_RESULT_OK) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
             *current_level ^= 1u;
         }
     }
@@ -1579,11 +1588,14 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
                     wz_dword_t duration = (block->data[10u + byte_index] &
                         (wz_byte_t)(0x80u >> bit)) != 0u ? one_duration : zero_duration;
                     if (wz_tzx_append_segment(segments, capacity, &index, duration,
-                                              master_ticks_per_tstate, level) != WZ_RESULT_OK ||
-                        wz_tzx_append_segment(segments, capacity, &index, duration,
-                                              master_ticks_per_tstate, (wz_byte_t)(level ^ 1u)) !=
-                            WZ_RESULT_OK) return WZ_RESULT_PARSE_ERROR;
+                                              master_ticks_per_tstate, level) != WZ_RESULT_OK) {
+                        return WZ_RESULT_PARSE_ERROR;
+                    }
                     level ^= 1u;
+                    if (wz_tzx_append_segment(segments, capacity, &index, duration,
+                                              master_ticks_per_tstate, level) != WZ_RESULT_OK) {
+                        return WZ_RESULT_PARSE_ERROR;
+                    }
                     level ^= 1u;
                 }
             }
