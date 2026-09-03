@@ -1016,7 +1016,7 @@ static wz_result_t wz_tzx_count_generalized(const wz_tzx_block_t* block,
         if (repetitions == 0u || wz_tzx_generalized_symbol_pulses(block,
                 info.pilot_defs, symbol, info.pilot_pulses,
                 info.pilot_alphabet, &pulses) != WZ_RESULT_OK ||
-            pulses != 0u && repetitions > (SIZE_MAX - total) / pulses) {
+            (pulses != 0u && repetitions > (SIZE_MAX - total) / pulses)) {
             return WZ_RESULT_PARSE_ERROR;
         }
         total += pulses * repetitions;
