@@ -206,9 +206,9 @@ class GateTests(unittest.TestCase):
             "system", "review", gate.Telemetry("CODE", "x"),
             thinking="enabled", reasoning_effort="max", max_tokens=12345
         )
-        self.assertEqual(captured["model"], "deepseek-v4-pro")
-        self.assertEqual(captured["thinking"], {"type": "enabled"})
-        self.assertEqual(captured["reasoning_effort"], "max")
+        self.assertEqual(captured["model"], "nvidia/nemotron-3-ultra-550b-a55b")
+        self.assertEqual(captured["chat_template_kwargs"], {"enable_thinking": True})
+        self.assertEqual(captured["reasoning_budget"], 12345)
         self.assertEqual(captured["max_tokens"], 12345)
         self.assertEqual(captured["response_format"], {"type": "json_object"})
         self.assertNotIn("temperature", captured)
@@ -218,8 +218,8 @@ class GateTests(unittest.TestCase):
             "system", "review", gate.Telemetry("CODE", "x"),
             thinking="disabled", reasoning_effort=None, max_tokens=8192
         )
-        self.assertEqual(captured["thinking"], {"type": "disabled"})
-        self.assertNotIn("reasoning_effort", captured)
+        self.assertEqual(captured["chat_template_kwargs"], {"enable_thinking": False})
+        self.assertNotIn("reasoning_budget", captured)
 
     def test_missing_key_fails_configuration(self):
         with self.assertRaises(gate.ConfigurationError):
@@ -248,6 +248,29 @@ class GateTests(unittest.TestCase):
         self.assertEqual(telemetry.retries, 1)
         self.assertEqual([item["result_class"] for item in telemetry.api_call_records],
                          ["retryable_failure", "success"])
+
+    def test_nim_404_and_429_use_exponential_backoff(self):
+        class Response:
+            def __enter__(self): return self
+            def __exit__(self, *_): return False
+            def read(self):
+                return b'{"choices":[{"finish_reason":"stop","message":{"content":"{}"}}]}'
+
+        statuses = [404, 429]
+        delays = []
+
+        def opener(request, timeout):
+            if statuses:
+                raise urllib.error.HTTPError(request.full_url, statuses.pop(0), "retry", {}, None)
+            return Response()
+
+        telemetry = gate.Telemetry("CODE", "snap")
+        with patch.object(gate.time, "sleep", side_effect=delays.append):
+            gate.DeepSeekClient("secret", opener).request("system", "review", telemetry)
+        self.assertEqual(delays, [1, 2])
+        self.assertEqual(telemetry.retries, 2)
+        self.assertEqual([item["result_class"] for item in telemetry.api_call_records],
+                         ["retryable_failure", "retryable_failure", "success"])
 
     def test_exact_environment_variable_name_is_used(self):
         with patch.dict(gate.os.environ, {gate.KEY_NAME: "configured"}, clear=True):

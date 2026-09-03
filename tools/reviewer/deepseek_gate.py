@@ -30,9 +30,9 @@ from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
 from typing import Any
 
-API_URL = "https://api.deepseek.com/chat/completions"
-MODEL = "deepseek-v4-pro"
-KEY_NAME = "DeepSeek_API_key"
+API_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
+MODEL = "nvidia/nemotron-3-ultra-550b-a55b"
+KEY_NAME = "NVIDIA_API_KEY_CODING"
 UNIVERSAL_REQUIREMENT_SOURCE = "design/deepseek-review-gate.md"
 PROTOCOL_VERSION = 2
 MAX_CONTEXT_TOKENS = 1_000_000
@@ -50,7 +50,8 @@ ADJUDICATION_OUTPUT_TOKENS = 12_288
 DEFAULT_REVIEW_DEADLINE_SECONDS = 1200.0
 STALE_LOCK_SECONDS = 900.0
 REQUEST_TIMEOUT_SECONDS = 180
-RETRY_DELAYS = (1, 3)
+RETRY_DELAYS = (1, 2, 4, 8, 16, 32)
+RETRYABLE_HTTP_STATUS = {404, 408, 429, 500, 502, 503, 504}
 MAX_CONTEXT_CYCLES = 2
 MAX_NEW_CANDIDATE_CYCLES = 1
 NON_CALLABLE_IDENTIFIERS = {"if", "for", "while", "switch", "return", "sizeof"}
@@ -756,13 +757,13 @@ class DeepSeekClient:
         payload = {
             "model": MODEL,
             "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
-            "thinking": {"type": thinking},
             "stream": False,
             "response_format": {"type": "json_object"},
             "max_tokens": max_tokens,
+            "chat_template_kwargs": {"enable_thinking": thinking == "enabled"},
         }
         if reasoning_effort is not None:
-            payload["reasoning_effort"] = reasoning_effort
+            payload["reasoning_budget"] = max_tokens
         request = urllib.request.Request(
             API_URL, data=canonical_json(payload).encode(), method="POST",
             headers={"Authorization": f"Bearer {self._key}", "Content-Type": "application/json"},
@@ -824,7 +825,7 @@ class DeepSeekClient:
                 return result
             except urllib.error.HTTPError as exc:
                 last_error = f"API HTTP {exc.code}"
-                if exc.code not in {408, 429, 500, 502, 503, 504}:
+                if exc.code not in RETRYABLE_HTTP_STATUS:
                     telemetry.api_status = "configuration_or_permanent_failure"
                     call_record["result_class"] = "permanent_failure"
                     call_record["elapsed_seconds"] = round(time.monotonic() - call_started, 3)

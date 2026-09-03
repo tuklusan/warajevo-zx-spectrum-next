@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 169,
+  "next_cr_number": 170,
   "status_values": [
     "open",
     "in_progress",
@@ -1519,6 +1519,13 @@
       "status": "in_progress",
       "source_authority": ["WORKFLOW.md hosted validation and publication gates", ".github/workflows/platform-smoke.yml", "design/cr-preflight/CR-0168.md"],
       "notes": "Active on 2026-09-02 after adding a SHA- and run-bound aggregate publication gate that queries the current run's individual jobs and fails closed unless all 18 declared lanes succeed. The Windows archive-transfer padding defect exposed by CR0168-hosted-gate-windows-5 was corrected. Final harness validation passed on Linux CR0168-harness-fix-linux-1 and Windows CR0168-harness-fix-windows-1, and hosted platform-smoke 33689711723 passed all 18 lanes plus publication-gate for exact SHA fc2a574. Earlier non-green evidence remains non-green."
+    },
+    {
+      "cr_number": "CR-0169",
+      "title": "Migrate serialized review gate to NVIDIA NIM",
+      "status": "in_progress",
+      "source_authority": ["design/deepseek-review-gate.md", "design/cr-preflight/CR-0169.md", "tools/reviewer/deepseek_gate.py", "tests/test_deepseek_gate.py", "https://build.nvidia.com/nvidia/nemotron-3-ultra-550b-a55b/modelcard", "https://docs.nvidia.com/nim/large-language-models/latest/api-reference.html"],
+      "notes": "Opened on 2026-09-02 as a serialized infrastructure detour. Preserve CR-0167 and CR-0168 as in-progress queue items; close this CR only after the NVIDIA NIM gate is reviewed, remotely tested, hosted-validated, and reconciled."
     }
   ]
 }

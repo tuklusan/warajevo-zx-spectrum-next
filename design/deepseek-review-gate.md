@@ -171,13 +171,16 @@ behavior.
 
 ## API And Budgets
 
-The adapter uses `deepseek-v4-pro`, non-streaming JSON output, and no unsupported
-sampling controls. Normal discovery explicitly disables thinking and omits
-`reasoning_effort`, with an initial compact output budget near 8192 tokens.
-Falsification runs only when candidates survive deterministic filtering and uses
-thinking enabled with `reasoning_effort=high`, with an initial budget near 12288
-tokens. `reasoning_effort=max` is reserved for genuine evidence-backed
-adjudication. Per-phase output budgets replace a single maximum allowance, while
+The adapter uses NVIDIA NIM model `nvidia/nemotron-3-ultra-550b-a55b` at the
+NIM chat-completions endpoint, with non-streaming JSON output and no unsupported
+sampling controls. The credential is read only from `NVIDIA_API_KEY_CODING`.
+Normal discovery explicitly disables thinking through
+`chat_template_kwargs.enable_thinking=false`, with an initial compact
+output budget near 8192 tokens. Falsification runs only when candidates survive
+deterministic filtering and enables thinking with a phase `reasoning_budget`,
+with an initial budget near 12288 tokens. Adjudication uses the same explicit
+NIM mapping with its larger phase budget. Per-phase output budgets replace a
+single maximum allowance, while
 dynamic input budgeting and candidate sharding prevent silent truncation. A
 single-candidate falsification response that reaches its limit receives exactly
 one repeat over the identical immutable evidence with hidden reasoning disabled
@@ -185,7 +188,10 @@ and a compact 4096-token reply allowance. A second truncation remains
 inconclusive; the fallback never supplies review authority by itself.
 length finish, malformed JSON, incomplete pass, missing mandatory context, retry
 exhaustion, API failure, duplicate active review, or overall deadline exhaustion
-fails closed. Normal review has no separate liveness call.
+fails closed. HTTP 429 and HTTP 404, along with the existing transient service
+statuses, receive bounded exponential delays of 1, 2, 4, 8, 16, and 32 seconds;
+the gate never retries permanent authentication or billing failures. Normal
+review has no separate liveness call.
 
 For CODE candidates, deterministic context completion also examines the exact
 candidate-location line in the immutable changed-file record. When that line
