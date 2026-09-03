@@ -13,9 +13,8 @@ if(NOT ZLIB_FOUND)
     include(FetchContent)
     FetchContent_Declare(
         zlib
-        GIT_REPOSITORY https://github.com/madler/zlib.git
-        GIT_TAG 925af44f3cde53c6b076611c297850091b5dc7bb
-        GIT_SHALLOW FALSE
+        URL https://github.com/madler/zlib/archive/refs/tags/v1.3.1.tar.gz
+        URL_HASH SHA256=17e88863f3600672ab49182f217281b6fc4d3c762bde361935e436a95214d05c
     )
     FetchContent_MakeAvailable(zlib)
     if(NOT TARGET ZLIB::ZLIB)
