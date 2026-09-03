@@ -867,53 +867,166 @@ static wz_result_t wz_tzx_expand_csw(const wz_tzx_block_t* block,
     return WZ_RESULT_OK;
 }
 
-static wz_result_t wz_tzx_generalized_layout(const wz_tzx_block_t* block,
-                                             size_t* symbol_size,
-                                             size_t* stream_offset,
-                                             size_t* symbol_count)
-{
-    size_t alphabet;
-    size_t size;
-    size_t offset;
+typedef struct {
+    size_t pilot_count;
+    size_t pilot_pulses;
+    size_t pilot_alphabet;
+    size_t data_count;
+    size_t data_pulses;
+    size_t data_alphabet;
+    size_t pilot_defs;
+    size_t pilot_prle;
+    size_t data_defs;
+    size_t data_stream;
+    size_t data_stream_bytes;
+} wz_tzx_generalized_info_t;
 
-    if (block == 0 || symbol_size == 0 || stream_offset == 0 ||
-        symbol_count == 0 || block->data == 0 || block->data_length < 18u ||
-        wz_tzx_read_le32(block->data + 6u) != 0u ||
-        wz_tzx_read_le32(block->data + 12u) == 0u || block->data[16u] == 0u) {
-        return WZ_RESULT_UNSUPPORTED_OPERATION;
-    }
-    alphabet = block->data[17u] == 0u ? 256u : block->data[17u];
-    size = (size_t)block->data[16u] * 2u + 1u;
-    if (alphabet > SIZE_MAX / size) return WZ_RESULT_PARSE_ERROR;
-    offset = 18u + alphabet * size;
-    if (offset > block->data_length ||
-        (size_t)wz_tzx_read_le32(block->data + 12u) > block->data_length - offset) {
+static wz_result_t wz_tzx_generalized_layout(const wz_tzx_block_t* block,
+                                             wz_tzx_generalized_info_t* info)
+{
+    size_t pilot_symbol_size;
+    size_t data_symbol_size;
+    size_t offset;
+    size_t bits_per_symbol = 0u;
+    size_t value;
+
+    if (block == 0 || info == 0 || block->data == 0 ||
+        block->data_length < 18u ||
+        (size_t)wz_tzx_read_le32(block->data) != block->data_length - 4u) {
         return WZ_RESULT_PARSE_ERROR;
     }
-    *symbol_size = size;
-    *stream_offset = offset;
-    *symbol_count = (size_t)wz_tzx_read_le32(block->data + 12u);
+    info->pilot_count = (size_t)wz_tzx_read_le32(block->data + 6u);
+    info->pilot_pulses = block->data[10u];
+    info->pilot_alphabet = block->data[11u] == 0u ? 256u : block->data[11u];
+    info->data_count = (size_t)wz_tzx_read_le32(block->data + 12u);
+    info->data_pulses = block->data[16u];
+    info->data_alphabet = block->data[17u] == 0u ? 256u : block->data[17u];
+    if ((info->pilot_count != 0u &&
+            (info->pilot_pulses == 0u || info->pilot_alphabet == 0u)) ||
+        (info->data_count != 0u &&
+            (info->data_pulses == 0u || info->data_alphabet == 0u))) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    pilot_symbol_size = (size_t)info->pilot_pulses * 2u + 1u;
+    data_symbol_size = (size_t)info->data_pulses * 2u + 1u;
+    if (info->pilot_alphabet > SIZE_MAX / pilot_symbol_size) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    info->pilot_defs = 18u;
+    offset = info->pilot_defs;
+    if (info->pilot_count != 0u) {
+        if (info->pilot_alphabet > (SIZE_MAX - offset) / pilot_symbol_size) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        offset += info->pilot_alphabet * pilot_symbol_size;
+        if (info->pilot_count > (SIZE_MAX - offset) / 3u) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        info->pilot_prle = offset;
+        offset += info->pilot_count * 3u;
+    } else {
+        info->pilot_prle = offset;
+    }
+    if (info->data_alphabet > SIZE_MAX / data_symbol_size) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    info->data_defs = offset;
+    if (info->data_alphabet > (SIZE_MAX - offset) / data_symbol_size) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    offset += info->data_alphabet * data_symbol_size;
+    value = info->data_alphabet - 1u;
+    while (value != 0u) {
+        ++bits_per_symbol;
+        value >>= 1u;
+    }
+    if (bits_per_symbol != 0u &&
+        info->data_count > (SIZE_MAX - 7u) / bits_per_symbol) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    value = (info->data_count * bits_per_symbol + 7u) / 8u;
+    if (offset > block->data_length || value > block->data_length - offset) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    info->data_stream = offset;
+    info->data_stream_bytes = value;
+    if (offset + value != block->data_length) return WZ_RESULT_PARSE_ERROR;
+    return WZ_RESULT_OK;
+}
+
+static size_t wz_tzx_generalized_data_symbol(const wz_tzx_block_t* block,
+                                             const wz_tzx_generalized_info_t* info,
+                                             size_t index)
+{
+    size_t bits = 0u;
+    size_t value = info->data_alphabet - 1u;
+    size_t bit_offset;
+    size_t symbol = 0u;
+
+    while (value != 0u) {
+        ++bits;
+        value >>= 1u;
+    }
+    if (bits == 0u) return 0u;
+    bit_offset = index * bits;
+    for (size_t bit = 0u; bit < bits; ++bit) {
+        size_t absolute = bit_offset + bit;
+        symbol = (symbol << 1u) |
+            ((block->data[info->data_stream + absolute / 8u] >>
+              (7u - absolute % 8u)) & 1u);
+    }
+    return symbol;
+}
+
+static wz_result_t wz_tzx_generalized_symbol_pulses(
+    const wz_tzx_block_t* block, size_t definitions_offset, size_t definition,
+    size_t max_pulses, size_t alphabet, size_t* pulses)
+{
+    size_t size = max_pulses * 2u + 1u;
+    size_t offset;
+
+    if (pulses == 0 || definition >= alphabet ||
+        alphabet > SIZE_MAX / size) return WZ_RESULT_PARSE_ERROR;
+    if (definition > (SIZE_MAX - definitions_offset) / size) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    offset = definitions_offset + definition * size;
+    *pulses = 0u;
+    while (*pulses < max_pulses &&
+           wz_read_le16(block->data + offset + 1u + *pulses * 2u) != 0u) {
+        ++*pulses;
+    }
     return WZ_RESULT_OK;
 }
 
 static wz_result_t wz_tzx_count_generalized(const wz_tzx_block_t* block,
                                             size_t* amount)
 {
-    size_t symbol_size;
-    size_t stream_offset;
-    size_t symbol_count;
+    wz_tzx_generalized_info_t info;
     size_t total = 0u;
 
-    if (amount == 0 || wz_tzx_generalized_layout(block, &symbol_size,
-            &stream_offset, &symbol_count) != WZ_RESULT_OK) {
+    if (amount == 0 || wz_tzx_generalized_layout(block, &info) != WZ_RESULT_OK) {
         return WZ_RESULT_PARSE_ERROR;
     }
-    for (size_t index = 0u; index < symbol_count; ++index) {
-        size_t symbol_offset = 18u + (size_t)block->data[stream_offset + index] * symbol_size;
+    for (size_t index = 0u; index < info.pilot_count; ++index) {
+        size_t symbol = block->data[info.pilot_prle + index * 3u];
+        size_t repetitions = (size_t)wz_read_le16(
+            block->data + info.pilot_prle + index * 3u + 1u);
         size_t pulses = 0u;
-        while (pulses < (size_t)block->data[16u] &&
-               block->data[symbol_offset + 1u + pulses * 2u] != 0u) ++pulses;
-        if (pulses > SIZE_MAX - total) return WZ_RESULT_PARSE_ERROR;
+        if (repetitions == 0u || wz_tzx_generalized_symbol_pulses(block,
+                info.pilot_defs, symbol, info.pilot_pulses,
+                info.pilot_alphabet, &pulses) != WZ_RESULT_OK ||
+            pulses != 0u && repetitions > (SIZE_MAX - total) / pulses) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        total += pulses * repetitions;
+    }
+    for (size_t index = 0u; index < info.data_count; ++index) {
+        size_t pulses = 0u;
+        if (wz_tzx_generalized_symbol_pulses(block, info.data_defs,
+                wz_tzx_generalized_data_symbol(block, &info, index),
+                info.data_pulses, info.data_alphabet, &pulses) != WZ_RESULT_OK ||
+            pulses > SIZE_MAX - total) return WZ_RESULT_PARSE_ERROR;
         total += pulses;
     }
     if (wz_read_le16(block->data + 4u) != 0u) {
@@ -931,21 +1044,42 @@ static wz_result_t wz_tzx_expand_generalized(const wz_tzx_block_t* block,
                                              size_t* index,
                                              wz_byte_t* level)
 {
-    size_t symbol_size;
-    size_t stream_offset;
-    size_t symbol_count;
+    wz_tzx_generalized_info_t info;
 
-    if (level == 0 || wz_tzx_generalized_layout(block, &symbol_size,
-            &stream_offset, &symbol_count) != WZ_RESULT_OK) {
+    if (level == 0 || wz_tzx_generalized_layout(block, &info) != WZ_RESULT_OK) {
         return WZ_RESULT_PARSE_ERROR;
     }
-    for (size_t stream_index = 0u; stream_index < symbol_count; ++stream_index) {
-        size_t symbol_offset = 18u + (size_t)block->data[stream_offset + stream_index] * symbol_size;
+    for (size_t stream_index = 0u; stream_index < info.pilot_count; ++stream_index) {
+        size_t symbol = block->data[info.pilot_prle + stream_index * 3u];
+        size_t repetitions = (size_t)wz_read_le16(
+            block->data + info.pilot_prle + stream_index * 3u + 1u);
+        for (size_t repetition = 0u; repetition < repetitions; ++repetition) {
+            size_t symbol_size = (size_t)info.pilot_pulses * 2u + 1u;
+            size_t symbol_offset = info.pilot_defs + symbol * symbol_size;
+            wz_byte_t flags = block->data[symbol_offset] & 3u;
+            if (flags == 0u) *level ^= 1u;
+            else if (flags == 2u) *level = 0u;
+            else if (flags == 3u) *level = 1u;
+            for (size_t pulse = 0u; pulse < info.pilot_pulses; ++pulse) {
+                wz_word_t duration = wz_read_le16(block->data + symbol_offset + 1u + pulse * 2u);
+                if (duration == 0u) break;
+                if (wz_tzx_append_segment(segments, capacity, index, duration,
+                                          ticks_per_tstate, *level) != WZ_RESULT_OK) {
+                    return WZ_RESULT_PARSE_ERROR;
+                }
+                *level ^= 1u;
+            }
+        }
+    }
+    for (size_t stream_index = 0u; stream_index < info.data_count; ++stream_index) {
+        size_t symbol = wz_tzx_generalized_data_symbol(block, &info, stream_index);
+        size_t symbol_size = (size_t)info.data_pulses * 2u + 1u;
+        size_t symbol_offset = info.data_defs + symbol * symbol_size;
         wz_byte_t flags = block->data[symbol_offset] & 3u;
         if (flags == 0u) *level ^= 1u;
         else if (flags == 2u) *level = 0u;
         else if (flags == 3u) *level = 1u;
-        for (size_t pulse = 0u; pulse < (size_t)block->data[16u]; ++pulse) {
+        for (size_t pulse = 0u; pulse < info.data_pulses; ++pulse) {
             wz_word_t duration = wz_read_le16(block->data + symbol_offset + 1u + pulse * 2u);
             if (duration == 0u) break;
             if (wz_tzx_append_segment(segments, capacity, index, duration,

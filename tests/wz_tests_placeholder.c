@@ -693,16 +693,27 @@ static void test_tzx_timing(void)
     const wz_tzx_block_t csw_blocks[1u] = {
         {0u, 21u, 0x18u, WZ_TZX_SUPPORTED, csw_data, sizeof(csw_data)}
     };
-    const wz_byte_t generalized_data[26u] = {
-        0x16u, 0x00u, 0x00u, 0x00u, 0x01u, 0x00u,
+    const wz_byte_t generalized_data[25u] = {
+        0x15u, 0x00u, 0x00u, 0x00u, 0x01u, 0x00u,
         0x00u, 0x00u, 0x00u, 0x00u, 0x01u, 0x01u,
         0x02u, 0x00u, 0x00u, 0x00u, 0x01u, 0x02u,
         0x00u, 0x05u, 0x00u, 0x00u, 0x07u, 0x00u,
-        0x00u, 0x01u
+        0x00u, 0x40u
     };
     const wz_tzx_block_t generalized_blocks[1u] = {
-        {0u, 27u, 0x19u, WZ_TZX_SUPPORTED, generalized_data,
+        {0u, 26u, 0x19u, WZ_TZX_SUPPORTED, generalized_data,
          sizeof(generalized_data)}
+    };
+    const wz_byte_t generalized_pilot_data[27u] = {
+        0x17u, 0x00u, 0x00u, 0x00u, 0x01u, 0x00u,
+        0x01u, 0x00u, 0x00u, 0x00u, 0x01u, 0x01u,
+        0x01u, 0x00u, 0x00u, 0x00u, 0x01u, 0x01u,
+        0x00u, 0x03u, 0x00u, 0x00u, 0x02u, 0x00u,
+        0x00u, 0x05u, 0x00u
+    };
+    const wz_tzx_block_t generalized_pilot_blocks[1u] = {
+        {0u, 28u, 0x19u, WZ_TZX_SUPPORTED, generalized_pilot_data,
+         sizeof(generalized_pilot_data)}
     };
     const wz_byte_t call_data[4u] = {1u, 0u, 2u, 0u};
     const wz_byte_t call_skip_data[2u] = {3u, 0u};
@@ -753,6 +764,12 @@ static void test_tzx_timing(void)
         wz_tape_expand_tzx_timing(generalized_blocks, 1u, 2u, segments, 5u, &count) !=
             WZ_RESULT_OK || count != 3u || segments[0u].duration != 10u ||
         segments[1u].duration != 14u || segments[2u].duration != 7000u ||
+        wz_tape_expand_tzx_timing(generalized_pilot_blocks, 1u, 2u, 0, 0u, &count) !=
+            WZ_RESULT_BUFFER_TOO_SMALL || count != 4u ||
+        wz_tape_expand_tzx_timing(generalized_pilot_blocks, 1u, 2u, segments, 4u, &count) !=
+            WZ_RESULT_OK || count != 4u || segments[0u].duration != 6u ||
+        segments[1u].duration != 6u || segments[2u].duration != 10u ||
+        segments[3u].duration != 7000u ||
         wz_tape_expand_tzx_timing(call_blocks, 5u, 2u, 0, 0u, &count) !=
             WZ_RESULT_BUFFER_TOO_SMALL || count != 4u ||
         wz_tape_expand_tzx_timing(call_blocks, 5u, 2u, segments, 5u, &count) !=
