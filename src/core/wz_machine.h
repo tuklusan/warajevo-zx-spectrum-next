@@ -37,6 +37,11 @@ typedef enum {
     WZ_ULA_FETCH_ATTRIBUTE
 } wz_ula_fetch_kind_t;
 
+typedef enum {
+    WZ_TAPE_LOADING_NORMAL = 0,
+    WZ_TAPE_LOADING_INSTANT_TRAP
+} wz_tape_loading_mode_t;
+
 typedef struct {
     wz_ula_fetch_kind_t kind;
     wz_master_tick_t master_tick;
@@ -65,6 +70,7 @@ typedef struct wz_machine {
     wz_tape_t tape;
     wz_tape_state_t tape_state;
     wz_byte_t tape_mounted;
+    wz_tape_loading_mode_t tape_loading_mode;
     wz_byte_t ula_output;
     wz_qword_t rom_identity;
     wz_master_tick_t master_tick;
@@ -98,6 +104,9 @@ wz_result_t wz_machine_set_tape_motor(wz_machine_t* machine, bool motor_on);
 wz_result_t wz_machine_rewind_tape(wz_machine_t* machine);
 wz_result_t wz_machine_advance_tape(wz_machine_t* machine,
                                     wz_master_tick_t ticks);
+wz_result_t wz_machine_set_tape_loading_mode(wz_machine_t* machine,
+                                              wz_tape_loading_mode_t mode);
+wz_tape_loading_mode_t wz_machine_tape_loading_mode(const wz_machine_t* machine);
 wz_byte_t wz_machine_tape_ear_level(const wz_machine_t* machine);
 wz_byte_t wz_machine_kempston_read(const wz_machine_t* machine,
                                    wz_word_t address);

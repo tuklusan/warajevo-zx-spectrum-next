@@ -35,6 +35,7 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     machine->tape.segments = 0;
     machine->tape.segment_count = 0u;
     machine->tape_mounted = 0u;
+    machine->tape_loading_mode = WZ_TAPE_LOADING_NORMAL;
     machine->maskable_interrupt_line_low = 0u;
     machine->rom_identity = 0u;
     machine->master_tick = 0u;
@@ -67,6 +68,7 @@ void wz_machine_destroy(wz_machine_t* machine)
         machine->tape.segments = 0;
         machine->tape.segment_count = 0u;
         machine->tape_mounted = 0u;
+        machine->tape_loading_mode = WZ_TAPE_LOADING_NORMAL;
         machine->ula_output = 0u;
         machine->maskable_interrupt_line_low = 0u;
         machine->rom_identity = 0u;
@@ -142,6 +144,21 @@ wz_result_t wz_machine_advance_tape(wz_machine_t* machine,
         return WZ_RESULT_OK;
     }
     return wz_tape_state_advance(&machine->tape_state, ticks);
+}
+
+wz_result_t wz_machine_set_tape_loading_mode(wz_machine_t* machine,
+                                              wz_tape_loading_mode_t mode)
+{
+    if (machine == 0 || mode > WZ_TAPE_LOADING_INSTANT_TRAP) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    machine->tape_loading_mode = mode;
+    return WZ_RESULT_OK;
+}
+
+wz_tape_loading_mode_t wz_machine_tape_loading_mode(const wz_machine_t* machine)
+{
+    return machine == 0 ? WZ_TAPE_LOADING_NORMAL : machine->tape_loading_mode;
 }
 
 wz_byte_t wz_machine_tape_ear_level(const wz_machine_t* machine)

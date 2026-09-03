@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 172,
+  "next_cr_number": 173,
   "status_values": [
     "open",
     "in_progress",
@@ -1540,6 +1540,13 @@
       "status": "in_progress",
       "source_authority": ["design/cr-preflight/CR-0171.md", "WORKFLOW.md", "tools/harness/run_cmake_smoke.py", "tools/harness/invoke_remote_windows_powershell.py"],
       "notes": "Opened on 2026-09-03 after Windows 10 installed its complete compiler toolchain under D:\\Program Files. Scope covers external tool discovery, CRT evidence, parser-first installer diagnostics, and safe cleanup protection; no local build or test is permitted."
+    },
+    {
+      "cr_number": "CR-0172",
+      "title": "Implement explicit Normal versus Instant/Trap tape loading mode state",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0172.md", "design/warajevo-zx-spectrum-next-architecture.md", "design/wzsn-architectures-1-2-developer-tasks.md task 156", "src/core/wz_machine.h", "src/core/wz_state.c", "reference/original-warajevo/source/src/spectrum-kernel/TAPE.ASM"],
+      "notes": "Opened on 2026-09-03 as the next ordered Phase-7 scope. Adds explicit machine loading-mode state with Normal default and canonical snapshot persistence; trap eligibility, instant mutation, fallback, equivalence, and UI remain later tickets."
     }
   ]
 }
