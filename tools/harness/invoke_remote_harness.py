@@ -351,9 +351,22 @@ def sync_windows(machine: dict[str, str], root: Path, published_ref: str | None 
             "$ErrorActionPreference = 'Stop'",
             f"Set-Location '{machine['project_dir']}'",
             "$git = @((Get-Command git.exe -ErrorAction SilentlyContinue).Source, 'C:\\Program Files\\Git\\cmd\\git.exe', 'C:\\Program Files\\Git\\bin\\git.exe', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\BuildTools\\Common7\\IDE\\CommonExtensions\\Microsoft\\TeamFoundation\\Team Explorer\\Git\\cmd\\git.exe') | Where-Object { $_ -and (Test-Path -LiteralPath $_) } | Select-Object -First 1",
-            "if (-not $git) { throw 'git executable is unavailable in the approved Windows session' }",
-            (f"& git fetch origin '{published_ref}'\n& git checkout --detach FETCH_HEAD" if published_ref
-             else "& git checkout main\n& git pull --ff-only origin main"),
+            "if ($git) {",
+            (f"    & $git fetch origin '{published_ref}'\n    & $git checkout --detach FETCH_HEAD" if published_ref
+             else "    & $git checkout main\n    & $git pull --ff-only origin main"),
+            "} else {",
+            "    $archive = Join-Path (Get-Location) '.wzsn-source.zip'",
+            "    $extract = Join-Path (Get-Location) '.wzsn-source-extract'",
+            "    if (Test-Path -LiteralPath $extract) { Remove-Item -LiteralPath $extract -Recurse -Force }",
+            "    & curl.exe --fail --location --silent --show-error 'https://github.com/tuklusan/warajevo-zx-spectrum-next/archive/refs/heads/main.zip' --output $archive",
+            "    if ($LASTEXITCODE -ne 0) { throw 'source archive download failed' }",
+            "    Expand-Archive -LiteralPath $archive -DestinationPath $extract -Force",
+            "    $source = Get-ChildItem -LiteralPath $extract -Directory | Select-Object -First 1",
+            "    if (-not $source) { throw 'source archive has no root directory' }",
+            "    Copy-Item -Path (Join-Path $source.FullName '*') -Destination (Get-Location) -Recurse -Force",
+            "    Remove-Item -LiteralPath $archive -Force",
+            "    Remove-Item -LiteralPath $extract -Recurse -Force",
+            "}",
             "exit $LASTEXITCODE",
         ]
     )
