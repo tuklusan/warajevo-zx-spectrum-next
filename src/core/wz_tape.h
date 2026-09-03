@@ -116,4 +116,14 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
                                       size_t capacity,
                                       size_t* count);
 
+/* Decode bounded integer PCM WAV input into canonical master-time edges. */
+wz_result_t wz_tape_parse_wav_pcm(const wz_byte_t* data,
+                                  size_t length,
+                                  wz_dword_t master_ticks_per_second,
+                                  wz_byte_t threshold,
+                                  wz_byte_t hysteresis,
+                                  wz_tape_segment_t* segments,
+                                  size_t capacity,
+                                  size_t* count);
+
 #endif

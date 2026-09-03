@@ -1873,3 +1873,158 @@ bool wz_tape_state_at_end(const wz_tape_state_t* state)
 {
     return state != 0 && state->at_end;
 }
+
+static wz_dword_t wz_wav_le32(const wz_byte_t* value)
+{
+    return (wz_dword_t)value[0] | ((wz_dword_t)value[1] << 8u) |
+        ((wz_dword_t)value[2] << 16u) | ((wz_dword_t)value[3] << 24u);
+}
+
+static wz_result_t wz_wav_scan(const wz_byte_t* data, size_t length,
+                               wz_dword_t* sample_rate, wz_word_t* channels,
+                               wz_word_t* bits, size_t* sample_offset,
+                               size_t* sample_bytes)
+{
+    size_t offset = 12u;
+    bool format_found = false;
+    bool data_found = false;
+
+    if (data == 0 || length < 12u || memcmp(data, "RIFF", 4u) != 0 ||
+        memcmp(data + 8u, "WAVE", 4u) != 0 ||
+        (size_t)wz_wav_le32(data + 4u) > length - 8u || sample_rate == 0 ||
+        channels == 0 || bits == 0 || sample_offset == 0 || sample_bytes == 0) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    while (offset <= length && length - offset >= 8u) {
+        size_t chunk_size = (size_t)wz_wav_le32(data + offset + 4u);
+        size_t chunk_data = offset + 8u;
+        size_t padded;
+        if (chunk_size > length - chunk_data || chunk_size > SIZE_MAX - 1u) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        padded = chunk_size + (chunk_size & 1u);
+        if (padded > length - chunk_data) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        if (memcmp(data + offset, "fmt ", 4u) == 0) {
+            if (chunk_size < 16u || wz_read_le16(data + chunk_data) != 1u) {
+                return WZ_RESULT_UNSUPPORTED_OPERATION;
+            }
+            *channels = wz_read_le16(data + chunk_data + 2u);
+            *sample_rate = wz_wav_le32(data + chunk_data + 4u);
+            *bits = wz_read_le16(data + chunk_data + 14u);
+            if (*channels == 0u || *channels > 2u || *sample_rate == 0u ||
+                (*bits != 8u && *bits != 16u)) {
+                return WZ_RESULT_UNSUPPORTED_OPERATION;
+            }
+            format_found = true;
+        } else if (memcmp(data + offset, "data", 4u) == 0) {
+            *sample_offset = chunk_data;
+            *sample_bytes = chunk_size;
+            data_found = true;
+        }
+        if (format_found && data_found) return WZ_RESULT_OK;
+        if (padded > length - chunk_data) return WZ_RESULT_PARSE_ERROR;
+        offset = chunk_data + padded;
+    }
+    return format_found && data_found ? WZ_RESULT_OK : WZ_RESULT_PARSE_ERROR;
+}
+
+static int wz_wav_sample_level(const wz_byte_t* sample, wz_word_t bits,
+                               wz_word_t channels, wz_byte_t threshold,
+                               wz_byte_t hysteresis, int previous)
+{
+    int value = 0;
+    for (wz_word_t channel = 0u; channel < channels; ++channel) {
+        int sample_value = bits == 8u ? (int)sample[channel] - 128 :
+            (int)(int16_t)wz_read_le16(sample + channel * 2u);
+        value += sample_value;
+    }
+    value /= (int)channels;
+    if (bits == 8u) {
+        int high = (int)threshold + (int)hysteresis;
+        int low = (int)threshold - (int)hysteresis;
+        if (previous == 0 && value > high - 128) return 1;
+        if (previous == 1 && value < low - 128) return 0;
+    } else {
+        int high = ((int)threshold - 128) * 256 + (int)hysteresis * 256;
+        int low = ((int)threshold - 128) * 256 - (int)hysteresis * 256;
+        if (previous == 0 && value > high) return 1;
+        if (previous == 1 && value < low) return 0;
+    }
+    return previous;
+}
+
+wz_result_t wz_tape_parse_wav_pcm(const wz_byte_t* data, size_t length,
+                                  wz_dword_t master_ticks_per_second,
+                                  wz_byte_t threshold, wz_byte_t hysteresis,
+                                  wz_tape_segment_t* segments, size_t capacity,
+                                  size_t* count)
+{
+    wz_dword_t sample_rate;
+    wz_word_t channels;
+    wz_word_t bits;
+    size_t sample_offset;
+    size_t sample_bytes;
+    size_t frame_bytes;
+    size_t frames;
+    size_t required = 0u;
+    int level = 0;
+    size_t segment_start = 0u;
+
+    if (count == 0 || master_ticks_per_second == 0u ||
+        wz_wav_scan(data, length, &sample_rate, &channels, &bits,
+                    &sample_offset, &sample_bytes) != WZ_RESULT_OK) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    frame_bytes = (size_t)channels * (bits / 8u);
+    if (frame_bytes == 0u || sample_bytes % frame_bytes != 0u) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    frames = sample_bytes / frame_bytes;
+    if (frames == 0u || frames > (SIZE_MAX - 1u) / 2u ||
+        (wz_qword_t)frames > UINT64_MAX / master_ticks_per_second) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    for (size_t frame = 0u; frame < frames; ++frame) {
+        size_t tick = (size_t)(((wz_qword_t)frame * master_ticks_per_second) / sample_rate);
+        int next = wz_wav_sample_level(data + sample_offset + frame * frame_bytes,
+                                       bits, channels, threshold, hysteresis, level);
+        if (next != level && tick > segment_start) {
+            if (required == SIZE_MAX) return WZ_RESULT_PARSE_ERROR;
+            ++required;
+            level = next;
+            segment_start = tick;
+        }
+    }
+    if (((wz_qword_t)frames * master_ticks_per_second) / sample_rate > segment_start) {
+        if (required == SIZE_MAX) return WZ_RESULT_PARSE_ERROR;
+        ++required;
+    }
+    if (required == 0u) return WZ_RESULT_PARSE_ERROR;
+    *count = required;
+    if (segments == 0 || capacity < required) return WZ_RESULT_BUFFER_TOO_SMALL;
+    level = 0;
+    segment_start = 0u;
+    size_t output_index = 0u;
+    for (size_t frame = 0u; frame <= frames; ++frame) {
+        size_t tick = (size_t)(((wz_qword_t)frame * master_ticks_per_second) / sample_rate);
+        if (frame < frames) {
+            int next = wz_wav_sample_level(data + sample_offset + frame * frame_bytes,
+                                           bits, channels, threshold, hysteresis, level);
+            if (next == level) continue;
+            if (tick > segment_start) {
+                segments[output_index].duration = tick - segment_start;
+                segments[output_index].ear_level = (wz_byte_t)level;
+                ++output_index;
+            }
+            level = next;
+            segment_start = tick;
+        } else if (tick > segment_start) {
+            segments[output_index].duration = tick - segment_start;
+            segments[output_index].ear_level = (wz_byte_t)level;
+            ++output_index;
+        }
+    }
+    return output_index == required ? WZ_RESULT_OK : WZ_RESULT_PARSE_ERROR;
+}
