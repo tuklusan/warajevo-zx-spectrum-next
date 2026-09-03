@@ -117,7 +117,7 @@ def choose_compiler(system_name: str, requested: str | None = None) -> str | Non
     if requested:
         return requested if shutil.which(requested) else None
     if system_name == "Windows":
-        candidates = ["cl", "clang-cl", "clang"]
+        candidates = ["cl", "clang-cl", "clang", "gcc"]
     else:
         candidates = ["cc", "gcc", "clang"]
 
