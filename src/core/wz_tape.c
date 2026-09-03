@@ -791,13 +791,15 @@ static wz_result_t wz_tzx_csw_decode(const wz_tzx_block_t* block,
     } else {
         size_t maximum;
         size_t capacity;
+        uint64_t maximum64;
         z_stream stream;
         int status;
 
-        if ((size_t)declared > (SIZE_MAX - 4u) / 5u) {
+        maximum64 = (uint64_t)declared * 5u;
+        if (maximum64 > SIZE_MAX) {
             return WZ_RESULT_PARSE_ERROR;
         }
-        maximum = (size_t)declared * 5u;
+        maximum = (size_t)maximum64;
         capacity = maximum < 4096u ? maximum : 4096u;
         expanded = (wz_byte_t*)malloc(capacity);
         if (expanded == 0) return WZ_RESULT_OUT_OF_MEMORY;
