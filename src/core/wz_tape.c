@@ -13,7 +13,6 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include <stdint.h>
 #include <stdlib.h>
 #include <zlib.h>
-#include <stdio.h>
 
 #define WZ_TAP_PILOT_TSTATES 2168u
 #define WZ_TAP_SYNC_FIRST_TSTATES 667u
@@ -819,9 +818,6 @@ static wz_result_t wz_tzx_csw_decode(const wz_tzx_block_t* block,
             stream.next_out = expanded + stream.total_out;
             stream.avail_out = (uInt)(capacity - stream.total_out);
             status = inflate(&stream, Z_FINISH);
-            fprintf(stderr, "CSW Z-RLE inflate status=%d out=%lu in=%u avail_out=%u\\n",
-                    status, (unsigned long)stream.total_out, stream.avail_in,
-                    stream.avail_out);
             if (status == Z_STREAM_END) break;
             if (status != Z_OK && status != Z_BUF_ERROR) {
                 inflateEnd(&stream);
@@ -846,7 +842,6 @@ static wz_result_t wz_tzx_csw_decode(const wz_tzx_block_t* block,
         }
         if (stream.total_out == 0u || stream.avail_in != 0u ||
             stream.total_out > maximum) {
-            fprintf(stderr, "CSW Z-RLE post-inflate rejection\\n");
             inflateEnd(&stream);
             free(expanded);
             return WZ_RESULT_PARSE_ERROR;

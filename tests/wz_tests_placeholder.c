@@ -734,21 +734,12 @@ static void test_tzx_timing(void)
         {13u, 1u, 0x27u, WZ_TZX_SUPPORTED, 0, 0u},
         {14u, 5u, 0x12u, WZ_TZX_SUPPORTED, tone_data, sizeof(tone_data)}
     };
-    {
-        wz_result_t zrle_status = wz_tape_expand_tzx_timing(
-            csw_zrle_blocks, 1u, 2u, 0, 0u, &count);
-        fprintf(stderr, "CSW Z-RLE sizing status=%d count=%zu\\n",
-                (int)zrle_status, count);
-    }
-
     if (wz_tape_expand_tzx_timing(csw_zrle_blocks, 1u, 2u, 0, 0u, &count) !=
             WZ_RESULT_BUFFER_TOO_SMALL || count != 2u ||
         wz_tape_expand_tzx_timing(csw_zrle_blocks, 1u, 2u, segments, 2u, &count) !=
             WZ_RESULT_OK || count != 2u || segments[0u].duration != 4u ||
         segments[1u].duration != 8u) {
-        fprintf(stderr, "CSW Z-RLE timing contract failed: count=%zu d0=%llu d1=%llu\\n",
-                count, (unsigned long long)segments[0u].duration,
-                (unsigned long long)segments[1u].duration);
+        fputs("CSW Z-RLE timing contract failed\n", stderr);
         exit(1);
     }
     const wz_byte_t select_data[11u] = {
