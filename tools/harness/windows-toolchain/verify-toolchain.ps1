@@ -35,6 +35,16 @@ if (Test-Path -LiteralPath $vswhere) {
     & $vswhere -products * -format json
 }
 
+$dVsRoot = 'D:\Program Files\Microsoft Visual Studio'
+if (Test-Path -LiteralPath $dVsRoot) {
+    Get-ChildItem -Path $dVsRoot -Filter cl.exe -Recurse -ErrorAction SilentlyContinue |
+        Select-Object -ExpandProperty FullName
+    Get-ChildItem -Path $dVsRoot -Filter msvcrtd.lib -Recurse -ErrorAction SilentlyContinue |
+        Select-Object -ExpandProperty FullName
+    Get-ChildItem -Path $dVsRoot -Filter oldnames.lib -Recurse -ErrorAction SilentlyContinue |
+        Select-Object -ExpandProperty FullName
+}
+
 if ($InstallPath) {
     $msvcRoot = Join-Path $InstallPath 'VC\Tools\MSVC'
     if (Test-Path -LiteralPath $msvcRoot) {

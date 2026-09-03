@@ -234,13 +234,20 @@ def windows_developer_environment() -> dict[str, str]:
             devcmd = candidate
             installation_root = candidate.parents[2]
     if devcmd is None:
-        root = Path(environment.get("ProgramFiles", r"C:\Program Files")) / "Microsoft Visual Studio"
-        for version in ("18", "17"):
-            for edition in ("Community", "Professional", "Enterprise", "BuildTools"):
-                candidate = root / version / edition / "Common7" / "Tools" / "VsDevCmd.bat"
-                if candidate.is_file():
-                    devcmd = candidate
-                    installation_root = candidate.parents[2]
+        roots = [
+            Path(environment.get("ProgramFiles", r"C:\Program Files")),
+            Path(r"D:\Program Files"),
+        ]
+        for program_files in roots:
+            root = program_files / "Microsoft Visual Studio"
+            for version in ("18", "17"):
+                for edition in ("Community", "Professional", "Enterprise", "BuildTools"):
+                    candidate = root / version / edition / "Common7" / "Tools" / "VsDevCmd.bat"
+                    if candidate.is_file():
+                        devcmd = candidate
+                        installation_root = candidate.parents[2]
+                        break
+                if devcmd is not None:
                     break
             if devcmd is not None:
                 break
@@ -255,12 +262,19 @@ def windows_developer_environment() -> dict[str, str]:
                 if separator and key:
                     environment[key] = value
     if installation_root is None:
-        root = Path(environment.get("ProgramFiles", r"C:\Program Files")) / "Microsoft Visual Studio"
-        for version in ("18", "17"):
-            for edition in ("Community", "Professional", "Enterprise", "BuildTools"):
-                candidate = root / version / edition
-                if (candidate / "VC" / "Tools" / "MSVC").is_dir():
-                    installation_root = candidate
+        roots = [
+            Path(environment.get("ProgramFiles", r"C:\Program Files")),
+            Path(r"D:\Program Files"),
+        ]
+        for program_files in roots:
+            root = program_files / "Microsoft Visual Studio"
+            for version in ("18", "17"):
+                for edition in ("Community", "Professional", "Enterprise", "BuildTools"):
+                    candidate = root / version / edition
+                    if (candidate / "VC" / "Tools" / "MSVC").is_dir():
+                        installation_root = candidate
+                        break
+                if installation_root is not None:
                     break
             if installation_root is not None:
                 break
@@ -282,6 +296,19 @@ def windows_linker_paths(environment: dict[str, str]) -> list[Path]:
     msvc_library = environment.get("WZSN_MSVC_LIBRARY_PATH")
     if msvc_library:
         paths.append(Path(msvc_library))
+    if not msvc_library:
+        visual_studio_root = Path(r"D:\Program Files\Microsoft Visual Studio")
+        for version in ("18", "17"):
+            for edition in ("Community", "Professional", "Enterprise", "BuildTools"):
+                msvc_root = visual_studio_root / version / edition / "VC" / "Tools" / "MSVC"
+                if not msvc_root.is_dir():
+                    continue
+                versions = sorted((path for path in msvc_root.iterdir() if path.is_dir()), reverse=True)
+                if versions:
+                    library = versions[0] / "lib" / "x64"
+                    if library.is_dir():
+                        paths.append(library)
+                        return paths
     kit_root = Path(environment.get("ProgramFiles(x86)", r"C:\Program Files (x86)")) / "Windows Kits" / "10" / "Lib"
     if kit_root.is_dir():
         for version in sorted((path for path in kit_root.iterdir() if path.is_dir()), reverse=True):
