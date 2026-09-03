@@ -636,6 +636,49 @@ static wz_result_t wz_tzx_call_target(size_t current,
     return WZ_RESULT_OK;
 }
 
+static wz_result_t wz_tzx_select_target(size_t current,
+                                        const wz_tzx_block_t* block,
+                                        size_t block_count,
+                                        size_t* target)
+{
+    size_t offset = 3u;
+    size_t selections;
+    size_t selected_target = 0u;
+
+    if (block == 0 || target == 0 || block->data == 0 ||
+        block->data_length < 3u) return WZ_RESULT_PARSE_ERROR;
+    if ((size_t)wz_read_le16(block->data) != block->data_length - 2u) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    selections = block->data[2u];
+    if (selections == 0u || current > (size_t)INT32_MAX ||
+        block_count > (size_t)INT32_MAX) return WZ_RESULT_PARSE_ERROR;
+    for (size_t selection = 0u; selection < selections; ++selection) {
+        int16_t relative;
+        int32_t resolved;
+        size_t text_length;
+
+        if (offset > block->data_length || block->data_length - offset < 3u) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        relative = (int16_t)wz_read_le16(block->data + offset);
+        text_length = (size_t)block->data[offset + 2u];
+        offset += 3u;
+        if (text_length > block->data_length - offset) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        if (!wz_tzx_target_is_valid((int32_t)current, relative, block_count)) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        resolved = (int32_t)current + relative;
+        if (selection == 0u) selected_target = (size_t)resolved;
+        offset += text_length;
+    }
+    if (offset != block->data_length) return WZ_RESULT_PARSE_ERROR;
+    *target = selected_target;
+    return WZ_RESULT_OK;
+}
+
 enum { WZ_TZX_MAX_LOOP_DEPTH = 64u };
 
 wz_result_t wz_tape_parse_tzx(const wz_byte_t* data,
@@ -1206,6 +1249,11 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
             ++call_depth;
             block_index = target - 1u;
             break;
+        case 0x28u:
+            if (wz_tzx_select_target(block_index, block, block_count, &target) !=
+                    WZ_RESULT_OK) return WZ_RESULT_PARSE_ERROR;
+            block_index = target == 0u ? block_count - 1u : target - 1u;
+            break;
         case 0x27u:
             if (block->data_length != 0u || call_depth == 0u) {
                 return WZ_RESULT_PARSE_ERROR;
@@ -1379,6 +1427,10 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
             call_next[call_depth] = 1u;
             ++call_depth;
             block_index = target - 1u;
+        } else if (block->block_id == 0x28u) {
+            if (wz_tzx_select_target(block_index, block, block_count, &target) !=
+                    WZ_RESULT_OK) return WZ_RESULT_PARSE_ERROR;
+            block_index = target == 0u ? block_count - 1u : target - 1u;
         } else if (block->block_id == 0x27u) {
             if (block->data_length != 0u || call_depth == 0u) {
                 return WZ_RESULT_PARSE_ERROR;
