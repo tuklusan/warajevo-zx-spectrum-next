@@ -102,7 +102,7 @@ def run_windows_with_input(
     encoded = base64.b64encode(script_text.encode("utf-16le")).decode("ascii")
     return subprocess.run(
         [
-            *ssh_base(root),
+            *ssh_base(root, machine),
             machine["ssh_target"],
             f"powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -OutputFormat Text -EncodedCommand {encoded}",
         ],
