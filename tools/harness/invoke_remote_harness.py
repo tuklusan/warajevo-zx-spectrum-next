@@ -353,6 +353,7 @@ def sync_windows(machine: dict[str, str], root: Path, published_ref: str | None 
             "$env:Path = 'C:\\Program Files\\CMake\\bin;C:\\Program Files\\Git\\cmd;C:\\Program Files\\LLVM\\bin;' + $env:Path",
             "$git = @((Get-Command git.exe -ErrorAction SilentlyContinue).Source, 'C:\\Program Files\\Git\\cmd\\git.exe', 'C:\\Program Files\\Git\\bin\\git.exe', 'C:\\Program Files\\Microsoft Visual Studio\\2022\\BuildTools\\Common7\\IDE\\CommonExtensions\\Microsoft\\TeamFoundation\\Team Explorer\\Git\\cmd\\git.exe') | Where-Object { $_ -and (Test-Path -LiteralPath $_) } | Select-Object -First 1",
             "if ($git) {",
+            "    & $git stash push --include-untracked --message 'wzsn-harness-preserved-remote-state' | Out-Null",
             (f"    & $git fetch origin '{published_ref}'\n    & $git checkout --detach FETCH_HEAD" if published_ref
              else "    & $git checkout main\n    & $git pull --ff-only origin main"),
             "} else {",
