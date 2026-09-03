@@ -739,7 +739,9 @@ static void test_tzx_timing(void)
         wz_tape_expand_tzx_timing(csw_zrle_blocks, 1u, 2u, segments, 2u, &count) !=
             WZ_RESULT_OK || count != 2u || segments[0u].duration != 4u ||
         segments[1u].duration != 8u) {
-        fputs("CSW Z-RLE timing contract failed\n", stderr);
+        fprintf(stderr, "CSW Z-RLE timing contract failed: count=%zu d0=%llu d1=%llu\\n",
+                count, (unsigned long long)segments[0u].duration,
+                (unsigned long long)segments[1u].duration);
         exit(1);
     }
     const wz_byte_t select_data[11u] = {
