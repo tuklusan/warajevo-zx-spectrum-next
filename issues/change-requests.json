@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 170,
+  "next_cr_number": 171,
   "status_values": [
     "open",
     "in_progress",
@@ -1526,6 +1526,13 @@
       "status": "in_progress",
       "source_authority": ["design/deepseek-review-gate.md", "design/cr-preflight/CR-0169.md", "tools/reviewer/deepseek_gate.py", "tests/test_deepseek_gate.py", "https://build.nvidia.com/nvidia/nemotron-3-ultra-550b-a55b/modelcard", "https://docs.nvidia.com/nim/large-language-models/latest/api-reference.html"],
       "notes": "Opened on 2026-09-02 as a serialized infrastructure detour. Preserve CR-0167 and CR-0168 as in-progress queue items; close this CR only after the NVIDIA NIM gate is reviewed, remotely tested, hosted-validated, and reconciled."
+    },
+    {
+      "cr_number": "CR-0170",
+      "title": "Implement deterministic WAV and PCM tape decoding",
+      "status": "in_progress",
+      "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md", "design/media-format-support.md", "design/wzsn-architectures-1-2-developer-tasks.md task 155", "design/cr-preflight/CR-0170.md", "src/core/wz_tape.h", "reference/original-warajevo/source"],
+      "notes": "Opened on 2026-09-03 as the next ordered Phase-7 architecture scope. Preflight covers accepted RIFF/WAVE PCM forms, deterministic mono conversion, threshold and hysteresis edges, canonical time, malformed input, and no-partial-publication behavior. CR-0169 reviewer migration remains an active validation detour."
     }
   ]
 }
