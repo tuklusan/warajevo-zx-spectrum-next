@@ -1265,8 +1265,40 @@ static wz_result_t set_fixture_bus_input(wz_machine_t* machine,
     return wz_machine_set_bus_input(machine, input);
 }
 
+static int test_wav_pcm_decoder(void)
+{
+    static const wz_byte_t wav[] = {
+        'R','I','F','F', 40u,0u,0u,0u, 'W','A','V','E',
+        'f','m','t',' ', 16u,0u,0u,0u, 1u,0u,1u,0u,
+        0xe8u,0x03u,0u,0u, 0xe8u,0x03u,0u,0u, 1u,0u,8u,0u,
+        'd','a','t','a', 4u,0u,0u,0u, 0u,255u,0u,255u
+    };
+    wz_tape_segment_t segments[4];
+    size_t count = 0u;
+    if (wz_tape_parse_wav_pcm(wav, sizeof(wav), 1000u, 128u, 0u,
+                              0, 0u, &count) != WZ_RESULT_BUFFER_TOO_SMALL || count != 4u ||
+        wz_tape_parse_wav_pcm(wav, sizeof(wav), 1000u, 128u, 0u,
+                              segments, 4u, &count) != WZ_RESULT_OK ||
+        count != 4u || segments[0].duration != 1u || segments[0].ear_level != 0u ||
+        segments[1].duration != 1u || segments[1].ear_level != 1u ||
+        segments[2].duration != 1u || segments[2].ear_level != 0u ||
+        segments[3].duration != 1u || segments[3].ear_level != 1u) {
+        fputs("WAV PCM edge decoding failed\n", stderr);
+        return 1;
+    }
+    if (wz_tape_parse_wav_pcm(wav, sizeof(wav) - 1u, 1000u, 128u, 0u,
+                              segments, 4u, &count) != WZ_RESULT_PARSE_ERROR) {
+        fputs("WAV truncation rejection failed\n", stderr);
+        return 1;
+    }
+    return 0;
+}
+
 int main(void)
 {
+    if (test_wav_pcm_decoder() != 0) {
+        return 1;
+    }
     test_raster_evidence();
     test_complete_keyboard_matrix();
     test_input_timestamp_assignment();
