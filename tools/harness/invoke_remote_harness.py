@@ -52,6 +52,7 @@ REMOTE_MACHINES = {
         "ssh_target": "rumtuk@192.168.4.77",
         "project_dir": "/Users/rumtuk/SOFTWARE_DEV/WARAJEVO-NEXT",
         "python_command": "python3",
+        "path_prefix": "/opt/local/bin:/usr/local/bin",
         "max_bytes": 1073741824,
         "identity_file": "test-artefacts/ssh-private/macos-bigsur",
         "lab_status": "available",
@@ -323,8 +324,10 @@ def validate_powershell(root: Path, script_text: str) -> None:
 
 
 def run_linux(machine: dict[str, str], shell_command: str, root: Path) -> subprocess.CompletedProcess[bytes]:
+    path_prefix = machine.get("path_prefix")
+    path_setup = f"PATH={shlex.quote(path_prefix)}:$PATH && " if path_prefix else ""
     remote_command = (
-        f"cd {shlex.quote(machine['project_dir'])} && "
+        f"cd {shlex.quote(machine['project_dir'])} && {path_setup}"
         f"usage_kb=$(du -sk . | awk '{{print $1}}') && "
         f"test \"$usage_kb\" -le {machine.get('max_bytes', 0) // 1024 or 1024 * 1024} && "
         f"{shell_command} && "
