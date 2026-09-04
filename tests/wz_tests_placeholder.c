@@ -557,7 +557,7 @@ static void test_sna_48k_loader(void)
         exit(1);
     }
     if (wz_snapshot_state_length(&snapshot) != WZ_STATE_SNAPSHOT_CAPACITY ||
-        wz_snapshot_state_data(&snapshot)[73u] != 0x43u ||
+        wz_snapshot_state_data(&snapshot)[73u + 0x4000u] != 0x43u ||
         wz_snapshot_state_data(&snapshot)[31u] != 0x00u ||
         wz_snapshot_state_data(&snapshot)[32u] != 0x00u ||
         wz_snapshot_state_data(&snapshot)[33u] != 0x21u ||

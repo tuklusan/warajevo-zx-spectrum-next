@@ -301,18 +301,14 @@ void wz_snapshot_state_init(wz_snapshot_state_t* snapshot)
 wz_result_t wz_snapshot_state_capture(wz_snapshot_state_t* snapshot,
                                       const wz_machine_t* machine)
 {
-    wz_byte_t bytes[WZ_STATE_SNAPSHOT_CAPACITY];
     wz_state_writer_t writer;
 
     if (snapshot == 0 || machine == 0) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
-    wz_state_writer_init(&writer, bytes, sizeof(bytes));
+    wz_state_writer_init(&writer, snapshot->data, sizeof(snapshot->data));
     if (wz_state_serialize_machine(machine, &writer) != WZ_RESULT_OK) {
         return WZ_RESULT_SERIALIZATION_FAILURE;
-    }
-    for (size_t index = 0u; index < writer.length; ++index) {
-        snapshot->data[index] = bytes[index];
     }
     snapshot->length = writer.length;
     return WZ_RESULT_OK;
