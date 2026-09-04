@@ -690,6 +690,57 @@ static void test_sna_128k_image_scaffolding(void)
     }
 }
 
+static void test_z80_v1_loader(void)
+{
+    static wz_byte_t z80[WZ_Z80_V1_HEADER_LENGTH + WZ_Z80_V1_MEMORY_LENGTH + 4u];
+    static wz_snapshot_state_t snapshot;
+    static wz_snapshot_state_t original;
+
+    memset(z80, 0, sizeof(z80));
+    z80[0u] = 0x12u;
+    z80[1u] = 0x34u;
+    z80[6u] = 0x21u;
+    z80[7u] = 0x43u;
+    z80[8u] = 0x78u;
+    z80[9u] = 0x56u;
+    z80[10u] = 0x9au;
+    z80[11u] = 0x55u;
+    z80[12u] = 0x25u;
+    z80[23u] = 0x34u;
+    z80[24u] = 0x12u;
+    z80[25u] = 0x78u;
+    z80[26u] = 0x56u;
+    z80[27u] = 1u;
+    z80[28u] = 1u;
+    z80[29u] = 2u;
+    for (size_t index = WZ_Z80_V1_HEADER_LENGTH;
+         index < WZ_Z80_V1_HEADER_LENGTH + WZ_Z80_V1_MEMORY_LENGTH; ++index) {
+        z80[index] = (wz_byte_t)(index * 3u);
+    }
+    z80[12u] |= 0x20u;
+    z80[WZ_Z80_V1_HEADER_LENGTH + WZ_Z80_V1_MEMORY_LENGTH] = 0u;
+    z80[WZ_Z80_V1_HEADER_LENGTH + WZ_Z80_V1_MEMORY_LENGTH + 1u] = 0xedu;
+    z80[WZ_Z80_V1_HEADER_LENGTH + WZ_Z80_V1_MEMORY_LENGTH + 2u] = 0xedu;
+    z80[WZ_Z80_V1_HEADER_LENGTH + WZ_Z80_V1_MEMORY_LENGTH + 3u] = 0u;
+    wz_snapshot_state_init(&snapshot);
+    if (wz_snapshot_state_load_z80_v1(&snapshot, z80, sizeof(z80)) != WZ_RESULT_OK ||
+        wz_snapshot_state_data(&snapshot)[33u] != 0x21u ||
+        wz_snapshot_state_data(&snapshot)[34u] != 0x43u ||
+        wz_snapshot_state_data(&snapshot)[73u + 0x4000u] !=
+            (wz_byte_t)(WZ_Z80_V1_HEADER_LENGTH * 3u)) {
+        fputs("Z80 v1 compressed load failed\n", stderr);
+        exit(1);
+    }
+    original = snapshot;
+    z80[sizeof(z80) - 1u] = 1u;
+    if (wz_snapshot_state_load_z80_v1(&snapshot, z80, sizeof(z80)) !=
+            WZ_RESULT_PARSE_ERROR ||
+        memcmp(&snapshot, &original, sizeof(snapshot)) != 0) {
+        fputs("Z80 v1 missing end marker was published\n", stderr);
+        exit(1);
+    }
+}
+
 static void test_tape_trap_eligibility(void)
 {
     const wz_tape_segment_t segment = {1u, 0u};
@@ -1684,6 +1735,7 @@ int main(void)
     test_sna_48k_loader();
     test_sna_48k_writer();
     test_sna_128k_image_scaffolding();
+    test_z80_v1_loader();
     test_tape_trap_eligibility();
     test_tape_speed_invariance();
     test_standard_tap_parser();

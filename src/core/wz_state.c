@@ -605,3 +605,115 @@ wz_result_t wz_sna_128k_image_save(const wz_sna_128k_image_t* image,
     }
     return offset == WZ_SNA_128K_LENGTH ? WZ_RESULT_OK : WZ_RESULT_SERIALIZATION_FAILURE;
 }
+
+wz_result_t wz_snapshot_state_load_z80_v1(wz_snapshot_state_t* snapshot,
+                                           const wz_byte_t* data,
+                                           size_t length)
+{
+    static wz_machine_t candidate;
+    size_t input_offset;
+    size_t output_offset;
+    bool compressed;
+    bool marker_seen = false;
+
+    if (snapshot == 0 || data == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (length < WZ_Z80_V1_HEADER_LENGTH) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    if (data[6u] == 0u && data[7u] == 0u) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    if (data[29u] > 2u || data[27u] > 1u || data[28u] > 1u) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    compressed = (data[12u] & 0x20u) != 0u;
+    if ((!compressed && length != WZ_Z80_V1_HEADER_LENGTH + WZ_Z80_V1_MEMORY_LENGTH) ||
+        (compressed && length <= WZ_Z80_V1_HEADER_LENGTH + 4u)) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    if (wz_machine_init(&candidate, wz_machine_profile_48k_pal()) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_PROFILE;
+    }
+
+    candidate.cpu.main.a = data[0u];
+    candidate.cpu.main.f = data[1u];
+    candidate.cpu.main.c = data[2u];
+    candidate.cpu.main.b = data[3u];
+    candidate.cpu.main.l = data[4u];
+    candidate.cpu.main.h = data[5u];
+    candidate.cpu.program_counter = wz_read_le16(data + 6u);
+    candidate.cpu.stack_pointer = wz_read_le16(data + 8u);
+    candidate.cpu.i = data[10u];
+    candidate.cpu.r = (wz_byte_t)((data[11u] & 0x7fu) |
+                                  ((data[12u] & 0x01u) << 7u));
+    candidate.border_color = (wz_byte_t)((data[12u] >> 1u) & 0x07u);
+    candidate.ula_output = candidate.border_color;
+    candidate.cpu.main.e = data[13u];
+    candidate.cpu.main.d = data[14u];
+    candidate.cpu.alternate.c = data[15u];
+    candidate.cpu.alternate.b = data[16u];
+    candidate.cpu.alternate.e = data[17u];
+    candidate.cpu.alternate.d = data[18u];
+    candidate.cpu.alternate.l = data[19u];
+    candidate.cpu.alternate.h = data[20u];
+    candidate.cpu.alternate.a = data[21u];
+    candidate.cpu.alternate.f = data[22u];
+    candidate.cpu.iy = wz_read_le16(data + 23u);
+    candidate.cpu.ix = wz_read_le16(data + 25u);
+    candidate.cpu.iff1 = data[27u];
+    candidate.cpu.iff2 = data[28u];
+    candidate.cpu.interrupt_mode = data[29u];
+
+    input_offset = WZ_Z80_V1_HEADER_LENGTH;
+    output_offset = 0u;
+    while (input_offset < length) {
+        size_t remaining = length - input_offset;
+        if (remaining >= 4u && data[input_offset] == 0u &&
+            data[input_offset + 1u] == 0xedu &&
+            data[input_offset + 2u] == 0xedu &&
+            data[input_offset + 3u] == 0u) {
+            if (!compressed || output_offset != WZ_Z80_V1_MEMORY_LENGTH ||
+                input_offset + 4u != length) {
+                wz_machine_destroy(&candidate);
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            marker_seen = true;
+            input_offset += 4u;
+            break;
+        }
+        if (output_offset >= WZ_Z80_V1_MEMORY_LENGTH) {
+            wz_machine_destroy(&candidate);
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        if (compressed && remaining >= 4u && data[input_offset] == 0xedu &&
+            data[input_offset + 1u] == 0xedu) {
+            wz_byte_t count = data[input_offset + 2u];
+            wz_byte_t value = data[input_offset + 3u];
+            if (count == 0u || output_offset + count > WZ_Z80_V1_MEMORY_LENGTH) {
+                wz_machine_destroy(&candidate);
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            for (size_t repeat = 0u; repeat < count; ++repeat) {
+                candidate.memory[0x4000u + output_offset++] = value;
+            }
+            input_offset += 4u;
+        } else {
+            candidate.memory[0x4000u + output_offset++] = data[input_offset++];
+        }
+    }
+    if (output_offset != WZ_Z80_V1_MEMORY_LENGTH ||
+        (compressed && !marker_seen) ||
+        (!compressed && input_offset != length)) {
+        wz_machine_destroy(&candidate);
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    if (wz_z80_state_validate(&candidate.cpu) != WZ_RESULT_OK ||
+        wz_snapshot_state_capture(snapshot, &candidate) != WZ_RESULT_OK) {
+        wz_machine_destroy(&candidate);
+        return WZ_RESULT_INVALID_STATE;
+    }
+    wz_machine_destroy(&candidate);
+    return WZ_RESULT_OK;
+}

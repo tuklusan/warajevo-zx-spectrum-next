@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 188,
+  "next_cr_number": 189,
   "status_values": [
     "open",
     "in_progress",
@@ -1652,6 +1652,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0187.md", "design/review-gate.md", "design/wzsn-architectures-1-2-developer-tasks.md task 182", ".github/workflows/platform-smoke.yml", "tools/harness/cleanup-hosted-runner-state.sh"],
       "notes": "Closed on 2026-09-04 after excluding the dedicated deep-housekeeping job from the publication gate's 18-platform count while preserving exact job, SHA, conclusion, and macOS Intel/ARM assertions. Exact-SHA CODE, DOCUMENTATION, and bootstrap reviews passed with zero findings; hosted run 33908356927 passed all 18 matrix jobs, housekeeping, and publication gate on a8bd7e0."
+    },
+    {
+      "cr_number": "CR-0188",
+      "title": "Implement Z80 v1 loading",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0188.md", "design/media-format-support.md", "design/warajevo-zx-spectrum-next-architecture.md sections 25.1-25.3", "design/wzsn-architectures-1-2-developer-tasks.md task 174", "src/core/wz_state.h", "src/core/wz_state.c", "tests/wz_tests_placeholder.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS"],
+      "notes": "In progress: exact 30-byte Z80 v1 48K header mapping, uncompressed and RLE memory loading, terminal 00 ED ED 00 marker validation, and isolated malformed-input rejection. Higher-version parsing remains deferred to tasks 175-176."
     }
   ]
 }
