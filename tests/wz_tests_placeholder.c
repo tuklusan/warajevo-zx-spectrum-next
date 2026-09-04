@@ -545,7 +545,8 @@ static void test_sna_48k_loader(void)
     sna[27u] = 0x43u;
     sna[28u] = 0x65u;
 
-    if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK) {
+    if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK ||
+        wz_state_hash_machine(&machine, &before_hash) != WZ_RESULT_OK) {
         fputs("SNA loader setup failed\n", stderr);
         exit(1);
     }
