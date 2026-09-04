@@ -165,3 +165,10 @@ for every configured lane, including lanes that are queued or slow. Do not
 cancel, replace, or label a run failed because a lane has not started yet.
 Only GitHub's terminal job conclusions may classify a lane, and the
 publication gate must inspect all expected lanes and the exact commit SHA.
+Every configured hosted macOS lane should be attempted. The hosted acceptance
+minimum is one successful Intel macOS lane and one successful ARM macOS lane,
+plus successful non-macOS lanes. At CR closure, exact-commit test evidence
+from a reachable local or remote Intel and/or ARM lab machine may satisfy the
+corresponding architecture when the machine identity and complete results are
+recorded here. Queued or unavailable lanes remain environmental evidence and
+are never treated as passes.

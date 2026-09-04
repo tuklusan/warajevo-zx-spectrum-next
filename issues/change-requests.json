@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 180,
+  "next_cr_number": 182,
   "status_values": [
     "open",
     "in_progress",
@@ -1596,6 +1596,20 @@
       "status": "in_progress",
       "source_authority": ["design/cr-preflight/CR-0179.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24 and 25", "design/wzsn-architectures-1-2-developer-tasks.md task 179", "design/media-format-support.md", "src/core/wz_machine.h", "src/core/wz_state.h"],
       "notes": "Opened on 2026-09-04 for ordered Phase-8 task 179. Establish a reusable controlled representability error for future SNA/Z80 writers when active WZSN-only deterministic state cannot be encoded; no historical writer exists in the current checkout, so format implementation remains deferred to its ordered tasks."
+    },
+    {
+      "cr_number": "CR-0180",
+      "title": "Add deep hosted-runner housekeeping gate",
+      "status": "in_progress",
+      "source_authority": ["WORKFLOW.md hosted validation and publication gates", ".github/workflows/platform-smoke.yml", "tools/harness/README.md", "tools/harness/cleanup-hosted-runner-state.sh"],
+      "notes": "Opened on 2026-09-04 to prevent prior same-ref hosted matrix queue entries and generated build/test artifacts from contaminating or obscuring a fresh matrix run. Preserve the current run and all committed source and retained evidence; cancel only older queued/in-progress platform-smoke runs for the same ref, delete artifacts owned by those older runs, and clear generated workspace residue before each lane."
+    },
+    {
+      "cr_number": "CR-0181",
+      "title": "Define architecture-based macOS matrix acceptance",
+      "status": "in_progress",
+      "source_authority": ["WORKFLOW.md", ".github/workflows/platform-smoke.yml", "tools/harness/README.md", "test-artefacts/README.md", "README-GIT-GITHUB.md"],
+      "notes": "Opened on 2026-09-04 to keep every configured hosted macOS lane in the validation attempt while accepting macOS proof when one Intel and one ARM lane has successful exact-commit results. All non-macOS lanes remain mandatory; exact-commit local or remote lab evidence may substitute for a missing macOS architecture at CR closure."
     }
   ]
 }

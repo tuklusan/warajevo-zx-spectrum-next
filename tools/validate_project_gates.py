@@ -470,6 +470,11 @@ def validate_platform_smoke_workflow(root: Path) -> list[str]:
         "macos-15-intel",
         "python tools/harness/run_cmake_smoke.py",
         "actions/upload-artifact",
+        "deep-housekeeping",
+        "needs: housekeeping",
+        "actions: write",
+        "cleanup-hosted-runner-state.sh",
+        "Clear runner workspace build and test residue",
     )
 
     for snippet in required_snippets:
@@ -492,6 +497,9 @@ def validate_required_workflow_documents(root: Path) -> list[str]:
             "test-artefacts/",
             "Whenever a PowerShell command is about to be executed on the local machine or",
             "tools/Test-PowerShellSyntax.ps1",
+            "Cross-platform macOS acceptance is architecture-based, not count-based.",
+            "one successful Intel macOS lane",
+            "one successful ARM",
         ),
         "test-artefacts/README.md": (
             "linux-x64-lxqt",
@@ -508,6 +516,8 @@ def validate_required_workflow_documents(root: Path) -> list[str]:
             ".github/workflows/platform-smoke.yml",
             "Before executing any PowerShell command locally or on either remote Windows",
             "powershell -NoProfile -File tools/Test-PowerShellSyntax.ps1 -CommandText '<command>'",
+            "one successful Intel macOS lane",
+            "one successful ARM",
         ),
         "README-GIT-GITHUB.md": (
             "tools/harness/invoke_remote_harness.py",
@@ -517,6 +527,8 @@ def validate_required_workflow_documents(root: Path) -> list[str]:
             "windows-2025",
             "macos-15",
             "macos-15-intel",
+            "configured hosted macOS lanes should be used",
+            "successful Intel and one successful ARM macOS lane",
         ),
     }
 
@@ -527,6 +539,7 @@ def validate_required_workflow_documents(root: Path) -> list[str]:
         "tools/Test-PowerShellSyntax.ps1",
         "tools/harness/README.md",
         "tools/harness/run_cmake_smoke.py",
+        "tools/harness/cleanup-hosted-runner-state.sh",
         "tools/harness/stream_zip_tree.py",
         "tools/harness/invoke_remote_harness.py",
         "tools/harness/capture-linux-active-display.sh",

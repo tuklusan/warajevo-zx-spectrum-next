@@ -82,13 +82,32 @@ Linux `192.168.4.76`, macOS/Intel `192.168.4.77`, Windows 10
 `192.168.4.75`, and Windows 11 `192.168.4.103`. Any SSH failure must be
 recorded as an environmental result and must not be treated as evidence that
 the software failed. The complete hosted runner matrix remains required for
-multi-platform proof regardless of lab availability.
+multi-platform proof regardless of lab availability, and every configured
+hosted macOS lane should be exercised when capacity permits.
 
 Hosted-runner waiting is terminal-state based. Use one run for the exact
 published commit with `fail-fast: false`; wait for every configured lane,
 including queued or slow lanes. Never cancel or replace a live run and never
 classify a queued lane as failed. Only terminal GitHub job conclusions may
 feed the publication gate.
+
+The hosted matrix has a pre-matrix deep-housekeeping gate. It may cancel only
+older queued or in-progress `platform-smoke` runs for the same ref, and may
+delete only artifacts owned by those older runs. It must preserve the current
+run and all committed source, guidance, and retained evidence. Every matrix
+lane also clears only generated build/test residue from its checked-out
+workspace before execution using workspace-only mode; queued or slow jobs in
+the current run remain valid and must still be awaited.
+
+Cross-platform macOS acceptance is architecture-based, not count-based. The
+hosted matrix should schedule every configured macOS label, but publication
+requires only one successful Intel macOS lane and one successful ARM macOS
+lane, with all non-macOS lanes successful. A reachable local or remote Intel
+macOS result and a reachable local or remote ARM macOS result may substitute
+for the corresponding hosted lane at CR closure when the exact commit, test
+results, and machine identity are recorded under `test-artefacts/`. Missing
+or queued lanes are never silently counted as success; every configured lane
+must still reach a terminal state before acceptance.
 
 ## Private Local Artifacts
 

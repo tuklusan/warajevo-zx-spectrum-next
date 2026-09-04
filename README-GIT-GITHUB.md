@@ -146,8 +146,12 @@ are allowed by the project workflow rules.
 Never jump the gun on hosted validation: keep one run per commit, preserve
 `fail-fast: false`, and wait for all configured jobs to reach terminal states.
 A queued or slow runner is not a failure. Do not cancel or replace a live run;
-the publication aggregate is the authority for whether the complete matrix
-passed.
+the publication aggregate is the authority for whether the matrix passed. All
+configured hosted macOS lanes should be used; acceptance requires at least one
+successful Intel and one successful ARM macOS lane, with all non-macOS lanes
+successful. Exact-commit local or remote lab evidence may substitute for a
+missing macOS architecture at CR closure when its machine identity and full
+results are recorded under `test-artefacts/`.
 
 ## Reference sync
 

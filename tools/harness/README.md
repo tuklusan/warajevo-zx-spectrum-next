@@ -38,6 +38,11 @@ This directory contains the tracked baseline harness entry points for:
   Packages a remote artefact tree to stdout as ZIP bytes for pull-back
 - `capture-linux-active-display.sh`
   Captures the active Linux desktop when X11 session access is available
+- `cleanup-hosted-runner-state.sh`
+  Runs the pre-matrix housekeeping gate: it removes older same-ref
+  `platform-smoke` queue entries and their temporary Actions artifacts, then
+  clears only project-generated hosted-runner workspace residue. Matrix lanes
+  use its `--workspace-only` mode and never call the GitHub API.
 - `Capture-WindowsDesktopScreenshot.ps1`
   Captures the active Windows desktop through the screen API
 - `Invoke-WindowsInteractiveScreenshot.ps1`
@@ -116,6 +121,23 @@ The hosted matrix must be allowed to finish naturally. Keep `fail-fast: false`
 and wait for all lanes, including queued or slow lanes. A queued job is not a
 failure and must not trigger cancellation or a replacement run; the aggregate
 publication gate evaluates only terminal conclusions for the exact commit.
+
+Every configured hosted macOS lane is scheduled when capacity permits. The
+publication gate accepts macOS verification when at least one Intel lane and
+at least one ARM lane succeeds, while every non-macOS lane succeeds. At CR
+closure, an exact-commit result from a reachable local or remote Intel lab
+machine and/or ARM lab machine may substitute for the corresponding hosted
+architecture; record the machine identity and complete results under
+`test-artefacts/`. A queued, missing, or unavailable lane is environmental
+evidence, never an implicit pass, and all configured lanes must still be
+awaited to terminal state.
+
+The `deep-housekeeping` job runs before the matrix. It preserves the current
+run, cancels only older queued or in-progress `platform-smoke` runs for the
+same ref, deletes artifacts owned by those older runs, and clears generated
+build/test residue. It does not delete source, tracked guidance, or retained
+test evidence. Each matrix lane repeats only the workspace cleanup after
+checkout so reused runner workspaces cannot influence a result.
 
 ## Screenshot notes
 
