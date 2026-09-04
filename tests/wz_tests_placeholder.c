@@ -932,7 +932,7 @@ static void test_snapshot_parser_fuzz_matrix(void)
     memcpy(z80_v3, z80_v2, WZ_Z80_V2_HEADER_LENGTH);
     memmove(z80_v3 + WZ_Z80_V3_HEADER_LENGTH,
             z80_v2 + WZ_Z80_V2_HEADER_LENGTH,
-            sizeof(z80_v2) - WZ_Z80_V2_HEADER_LENGTH);
+            WZ_Z80_V2_LENGTH - WZ_Z80_V2_HEADER_LENGTH);
     memset(z80_v3 + WZ_Z80_V2_HEADER_LENGTH,
            0, WZ_Z80_V3_HEADER_LENGTH - WZ_Z80_V2_HEADER_LENGTH);
     wz_write_le16(z80_v3 + 30u, 54u);
@@ -1125,7 +1125,7 @@ static void test_snapshot_cross_host_round_trips(void)
     if (wz_state_save_z80_v2_48k(&machine, output, sizeof(output) - 1u) !=
             WZ_RESULT_BUFFER_TOO_SMALL ||
         output[0u] != 0x5au || output[sizeof(output) - 1u] != 0x5au ||
-        original_output[30u] != 23u) {
+        memcmp(output, original_output, sizeof(output)) != 0) {
         fputs("Z80 output failure was not atomic\n", stderr);
         wz_machine_destroy(&machine);
         exit(1);
