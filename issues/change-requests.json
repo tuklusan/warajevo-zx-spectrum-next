@@ -1593,9 +1593,9 @@
     {
       "cr_number": "CR-0179",
       "title": "Control loss of WZSN-only state in historical snapshot formats",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0179.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24 and 25", "design/wzsn-architectures-1-2-developer-tasks.md task 179", "design/media-format-support.md", "src/core/wz_machine.h", "src/core/wz_state.h"],
-      "notes": "Opened on 2026-09-04 for ordered Phase-8 task 179. Establish a reusable controlled representability error for future SNA/Z80 writers when active WZSN-only deterministic state cannot be encoded; no historical writer exists in the current checkout, so format implementation remains deferred to its ordered tasks."
+      "notes": "Closed on 2026-09-04 after implementing the shared historical-state representability predicate and regression coverage for normal, invalid, tape-mode, and networking-mode cases. Exact-SHA CODE and DOCUMENTATION reviews passed with zero confirmed findings; Windows 11 remote smoke CR0179-WIN11 passed. Historical format parsing and writing remain explicitly deferred to the ordered Phase-8 tasks."
     },
     {
       "cr_number": "CR-0180",
