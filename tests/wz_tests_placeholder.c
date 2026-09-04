@@ -545,8 +545,7 @@ static void test_sna_48k_loader(void)
     sna[27u] = 0x43u;
     sna[28u] = 0x65u;
 
-    if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK ||
-        wz_state_hash_machine(&machine, &before_hash) != WZ_RESULT_OK) {
+    if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK) {
         fputs("SNA loader setup failed\n", stderr);
         exit(1);
     }
@@ -599,8 +598,7 @@ static void test_sna_48k_writer(void)
     wz_qword_t before_hash;
     wz_qword_t after_hash;
 
-    if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK ||
-        wz_state_hash_machine(&machine, &before_hash) != WZ_RESULT_OK) {
+    if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK) {
         fputs("SNA writer setup failed\n", stderr);
         exit(1);
     }
@@ -611,7 +609,8 @@ static void test_sna_48k_writer(void)
     machine.border_color = 6u;
     machine.memory[0x4000u] = 0x5au;
     memset(sna, 0xa5, sizeof(sna));
-    if (wz_state_save_sna_48k(&machine, sna, sizeof(sna)) != WZ_RESULT_OK ||
+    if (wz_state_hash_machine(&machine, &before_hash) != WZ_RESULT_OK ||
+        wz_state_save_sna_48k(&machine, sna, sizeof(sna)) != WZ_RESULT_OK ||
         sna[19u] != 4u || sna[23u] != 0xfcu || sna[24u] != 0xffu ||
         sna[25u] != 2u || sna[26u] != 6u || sna[27u] != 0x5au ||
         sna[27u + 0xbffcu] != 0x21u || sna[27u + 0xbffdu] != 0x43u ||
