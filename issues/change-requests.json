@@ -1586,9 +1586,9 @@
     {
       "cr_number": "CR-0178",
       "title": "Serialize networking mode in WZSN-native state",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0178.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24 and 25", "design/wzsn-architectures-1-2-developer-tasks.md task 178", "src/core/wz_machine.h", "src/core/wz_machine.c", "src/core/wz_state.c", "tests/wz_tests_placeholder.c"],
-      "notes": "Opened on 2026-09-04 for ordered Phase-8 task 178. Add exactly one validated networking-mode field to canonical native state; defer Interface-1, Microdrive, ZX Net, cold-reconfiguration, and Architecture-3 behavior to later tasks."
+      "notes": "Closed on 2026-09-04. Added exactly one validated NONE/INTERFACE1/EAR_MIC networking-mode field to canonical native state, with versioned serialization, hashing, and atomic invalid-value rejection. Exact-SHA CODE and DOCUMENTATION reviews passed with zero confirmed findings. Linux, Windows 11, and Intel Big Sur remote smoke passed; Windows 10 192.168.4.75 timed out at the SSH banner and was not treated as a product failure. Hosted platform-smoke 33875800519 passed all 18 lanes plus publication-gate for c49b7d3."
     }
   ]
 }
