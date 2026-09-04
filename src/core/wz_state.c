@@ -414,3 +414,65 @@ wz_result_t wz_snapshot_state_load_sna_48k(wz_snapshot_state_t* snapshot,
     wz_machine_destroy(&candidate);
     return WZ_RESULT_OK;
 }
+
+static void wz_sna_write_u16(wz_byte_t* data, size_t offset, wz_word_t value)
+{
+    wz_write_le16(data + offset, value);
+}
+
+wz_result_t wz_state_save_sna_48k(const wz_machine_t* machine,
+                                  wz_byte_t* data,
+                                  size_t capacity)
+{
+    wz_word_t sna_stack_pointer;
+
+    if (machine == 0 || data == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (capacity < WZ_SNA_48K_LENGTH) {
+        return WZ_RESULT_BUFFER_TOO_SMALL;
+    }
+    if (machine->profile == 0 || machine->profile->kind != WZ_MACHINE_48K_PAL ||
+        wz_state_validate_historical_representability(
+            machine, WZ_HISTORICAL_FORMAT_SNA) != WZ_RESULT_OK ||
+        wz_z80_state_validate(&machine->cpu) != WZ_RESULT_OK) {
+        return WZ_RESULT_UNSUPPORTED_OPERATION;
+    }
+    sna_stack_pointer = (wz_word_t)(machine->cpu.stack_pointer - 2u);
+    if (sna_stack_pointer < 0x4000u || sna_stack_pointer == 0xffffu) {
+        return WZ_RESULT_UNSUPPORTED_OPERATION;
+    }
+
+    data[0u] = machine->cpu.i;
+    wz_sna_write_u16(data, 1u, (wz_word_t)((wz_word_t)machine->cpu.alternate.h << 8u |
+                                          machine->cpu.alternate.l));
+    wz_sna_write_u16(data, 3u, (wz_word_t)((wz_word_t)machine->cpu.alternate.d << 8u |
+                                          machine->cpu.alternate.e));
+    wz_sna_write_u16(data, 5u, (wz_word_t)((wz_word_t)machine->cpu.alternate.b << 8u |
+                                          machine->cpu.alternate.c));
+    wz_sna_write_u16(data, 7u, (wz_word_t)((wz_word_t)machine->cpu.alternate.a << 8u |
+                                          machine->cpu.alternate.f));
+    wz_sna_write_u16(data, 9u, (wz_word_t)((wz_word_t)machine->cpu.main.h << 8u |
+                                          machine->cpu.main.l));
+    wz_sna_write_u16(data, 11u, (wz_word_t)((wz_word_t)machine->cpu.main.d << 8u |
+                                           machine->cpu.main.e));
+    wz_sna_write_u16(data, 13u, (wz_word_t)((wz_word_t)machine->cpu.main.b << 8u |
+                                           machine->cpu.main.c));
+    wz_sna_write_u16(data, 15u, machine->cpu.iy);
+    wz_sna_write_u16(data, 17u, machine->cpu.ix);
+    data[19u] = machine->cpu.iff2 == 0u ? 0u : 4u;
+    data[20u] = machine->cpu.r;
+    data[21u] = machine->cpu.main.f;
+    data[22u] = machine->cpu.main.a;
+    wz_sna_write_u16(data, 23u, sna_stack_pointer);
+    data[25u] = machine->cpu.interrupt_mode;
+    data[26u] = machine->border_color;
+    for (size_t index = 0u; index < 49152u; ++index) {
+        data[27u + index] = machine->memory[0x4000u + index];
+    }
+    data[27u + (size_t)(sna_stack_pointer - 0x4000u)] =
+        (wz_byte_t)(machine->cpu.program_counter & 0xffu);
+    data[27u + (size_t)(sna_stack_pointer - 0x4000u) + 1u] =
+        (wz_byte_t)(machine->cpu.program_counter >> 8u);
+    return WZ_RESULT_OK;
+}

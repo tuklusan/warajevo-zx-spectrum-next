@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 185,
+  "next_cr_number": 186,
   "status_values": [
     "open",
     "in_progress",
@@ -1631,6 +1631,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0184.md", "design/media-format-support.md", "design/warajevo-zx-spectrum-next-architecture.md sections 25.1-25.2", "design/wzsn-architectures-1-2-developer-tasks.md task 171", "src/core/wz_state.h", "src/core/wz_state.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS"],
       "notes": "Closed on 2026-09-04 after implementing exact 49,179-byte SNA 48K loading into isolated temporary state, strict header/range validation, stack-based PC recovery with 16-bit SP wrap, canonical WZSN publication, and atomic malformed-input rejection. Exact-SHA CODE, independent bootstrap, and DOCUMENTATION reviews passed with zero confirmed findings. Linux, Windows 10, and Windows 11 remote smoke passed on 437a48e; Mac smoke remained unavailable. Static gates passed; no local build or test was run."
+    },
+    {
+      "cr_number": "CR-0185",
+      "title": "Implement SNA 48K saving",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0185.md", "design/media-format-support.md", "design/warajevo-zx-spectrum-next-architecture.md sections 25.1-25.2", "design/wzsn-architectures-1-2-developer-tasks.md task 172", "src/core/wz_state.h", "src/core/wz_state.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS"],
+      "notes": "Opened on 2026-09-04 for task 172. Emit the exact standard SNA 48K form without mutating the live machine, using the frozen representability and stack-placement rules."
     }
   ]
 }

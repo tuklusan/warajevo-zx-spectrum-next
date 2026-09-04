@@ -56,6 +56,9 @@ wz_result_t wz_snapshot_state_load(wz_snapshot_state_t* snapshot,
 wz_result_t wz_snapshot_state_load_sna_48k(wz_snapshot_state_t* snapshot,
                                            const wz_byte_t* data,
                                            size_t length);
+wz_result_t wz_state_save_sna_48k(const wz_machine_t* machine,
+                                  wz_byte_t* data,
+                                  size_t capacity);
 const wz_byte_t* wz_snapshot_state_data(const wz_snapshot_state_t* snapshot);
 size_t wz_snapshot_state_length(const wz_snapshot_state_t* snapshot);
 

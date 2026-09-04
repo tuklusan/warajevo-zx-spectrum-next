@@ -590,6 +590,59 @@ static void test_sna_48k_loader(void)
     wz_machine_destroy(&machine);
 }
 
+static void test_sna_48k_writer(void)
+{
+    static wz_byte_t sna[WZ_SNA_48K_LENGTH];
+    static wz_byte_t original[WZ_SNA_48K_LENGTH];
+    wz_machine_t machine;
+    wz_snapshot_state_t snapshot;
+    wz_qword_t before_hash;
+    wz_qword_t after_hash;
+
+    if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK ||
+        wz_state_hash_machine(&machine, &before_hash) != WZ_RESULT_OK) {
+        fputs("SNA writer setup failed\n", stderr);
+        exit(1);
+    }
+    machine.cpu.program_counter = 0x4321u;
+    machine.cpu.stack_pointer = 0xfffeu;
+    machine.cpu.iff2 = 1u;
+    machine.cpu.interrupt_mode = WZ_Z80_INTERRUPT_MODE_2;
+    machine.border_color = 6u;
+    machine.memory[0x4000u] = 0x5au;
+    memset(sna, 0xa5, sizeof(sna));
+    if (wz_state_save_sna_48k(&machine, sna, sizeof(sna)) != WZ_RESULT_OK ||
+        sna[19u] != 4u || sna[23u] != 0xfcu || sna[24u] != 0xffu ||
+        sna[25u] != 2u || sna[26u] != 6u || sna[27u] != 0x5au ||
+        sna[27u + 0xbffcu] != 0x21u || sna[27u + 0xbffdu] != 0x43u ||
+        wz_state_hash_machine(&machine, &after_hash) != WZ_RESULT_OK ||
+        before_hash != after_hash) {
+        fputs("SNA writer encoding or immutability failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    memcpy(original, sna, sizeof(sna));
+    wz_snapshot_state_init(&snapshot);
+    if (wz_snapshot_state_load_sna_48k(&snapshot, sna, sizeof(sna)) != WZ_RESULT_OK ||
+        wz_snapshot_state_data(&snapshot)[33u] != 0x21u ||
+        wz_snapshot_state_data(&snapshot)[34u] != 0x43u) {
+        fputs("SNA writer round-trip failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    machine.networking_mode = WZ_NETWORKING_INTERFACE1;
+    if (wz_state_save_sna_48k(&machine, sna, sizeof(sna)) !=
+            WZ_RESULT_UNSUPPORTED_OPERATION ||
+        memcmp(sna, original, sizeof(sna)) != 0 ||
+        wz_state_save_sna_48k(&machine, sna, sizeof(sna) - 1u) !=
+            WZ_RESULT_BUFFER_TOO_SMALL) {
+        fputs("SNA writer rejection was not atomic\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_machine_destroy(&machine);
+}
+
 static void test_tape_trap_eligibility(void)
 {
     const wz_tape_segment_t segment = {1u, 0u};
@@ -1582,6 +1635,7 @@ int main(void)
     test_historical_state_representability();
     test_snapshot_state_isolated_validation();
     test_sna_48k_loader();
+    test_sna_48k_writer();
     test_tape_trap_eligibility();
     test_tape_speed_invariance();
     test_standard_tap_parser();
