@@ -1572,9 +1572,9 @@
     {
       "cr_number": "CR-0176",
       "title": "Extend default external review deadline for slow responses",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0176.md", "design/review-gate.md", "tools/reviewer/review_gate.py", "tools/reviewer/legacy_bootstrap_gate.py", "tests/test_review_gate.py"],
-      "notes": "Opened on 2026-09-04 after valid serialized reviews repeatedly reached the 20-minute default while the configured service is known to take an hour or more. Scope raises the shared normal/bootstrap default to 3,600 seconds while preserving explicit overrides, retry behavior, health checks, serialized locking, telemetry, and fail-closed expiry."
+      "notes": "Closed on 2026-09-04 at 32256bd after raising the shared normal/bootstrap default to 3,600 seconds while preserving explicit overrides, retry behavior, health checks, serialized locking, telemetry, and fail-closed expiry. Exact-SHA CODE review passed with zero confirmed findings (packet 4bd8f1e47...); DOCUMENTATION review passed with zero confirmed findings (packet a48d5c3d6...). Hosted platform-smoke 33841087107 completed all 18 lanes plus publication-gate for 32256bd. Static repository gates passed; no local build or test was run."
     }
   ]
 }
