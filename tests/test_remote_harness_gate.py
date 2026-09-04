@@ -138,7 +138,7 @@ class HarnessGateTests(unittest.TestCase):
             "snapshot_id": f"git:base..head:sha256:{digest}",
         })
         def read_bytes(path):
-            if path == ROOT / "issues" / "change-requests.json":
+            if Path(path).resolve() == (ROOT / "issues" / "change-requests.json").resolve():
                 return tracker_data
             return original_read_bytes(path)
 
