@@ -643,6 +643,53 @@ static void test_sna_48k_writer(void)
     wz_machine_destroy(&machine);
 }
 
+static void test_sna_128k_image_scaffolding(void)
+{
+    static wz_sna_128k_image_t image;
+    static wz_sna_128k_image_t decoded;
+    static wz_sna_128k_image_t original_image;
+    static wz_byte_t data[WZ_SNA_128K_LENGTH];
+    static wz_byte_t original[WZ_SNA_128K_LENGTH];
+
+    if (wz_sna_128k_image_init(&image) != WZ_RESULT_OK ||
+        wz_sna_128k_image_init(&decoded) != WZ_RESULT_OK) {
+        fputs("SNA 128K image initialization failed\n", stderr);
+        exit(1);
+    }
+    for (size_t index = 0u; index < sizeof(image.header); ++index) {
+        image.header[index] = (wz_byte_t)(index + 1u);
+    }
+    image.program_counter = 0x4321u;
+    image.paging_7ffd = 0x03u;
+    image.trdos_active = 1u;
+    for (wz_byte_t page = 0u; page < WZ_SNA_128K_PAGE_COUNT; ++page) {
+        image.page_present[page] = 1u;
+        for (size_t index = 0u; index < WZ_SNA_128K_PAGE_SIZE; ++index) {
+            image.pages[page][index] = (wz_byte_t)(page * 17u + index);
+        }
+    }
+    if (wz_sna_128k_image_save(&image, data, sizeof(data)) != WZ_RESULT_OK ||
+        wz_sna_128k_image_load(&decoded, data, sizeof(data)) != WZ_RESULT_OK ||
+        memcmp(&image, &decoded, sizeof(image)) != 0) {
+        fputs("SNA 128K image round-trip failed\n", stderr);
+        exit(1);
+    }
+    original_image = decoded;
+    memcpy(original, data, sizeof(data));
+    data[49181u] = 0x05u;
+    if (wz_sna_128k_image_load(&decoded, data, sizeof(data)) != WZ_RESULT_PARSE_ERROR ||
+        memcmp(&decoded, &original_image, sizeof(decoded)) != 0) {
+        fputs("SNA 128K malformed image was not rejected\n", stderr);
+        exit(1);
+    }
+    memcpy(data, original, sizeof(data));
+    if (wz_sna_128k_image_save(&image, data, WZ_SNA_128K_LENGTH - 1u) !=
+            WZ_RESULT_BUFFER_TOO_SMALL) {
+        fputs("SNA 128K output capacity was not enforced\n", stderr);
+        exit(1);
+    }
+}
+
 static void test_tape_trap_eligibility(void)
 {
     const wz_tape_segment_t segment = {1u, 0u};
@@ -1636,6 +1683,7 @@ int main(void)
     test_snapshot_state_isolated_validation();
     test_sna_48k_loader();
     test_sna_48k_writer();
+    test_sna_128k_image_scaffolding();
     test_tape_trap_eligibility();
     test_tape_speed_invariance();
     test_standard_tap_parser();
