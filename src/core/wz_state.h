@@ -16,6 +16,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 typedef struct wz_machine wz_machine_t;
 
 #define WZ_STATE_SNAPSHOT_CAPACITY (65536u + 73u)
+#define WZ_SNA_48K_LENGTH (27u + 49152u)
 
 typedef enum {
     WZ_HISTORICAL_FORMAT_SNA = 0,
@@ -52,6 +53,9 @@ wz_result_t wz_snapshot_state_capture(wz_snapshot_state_t* snapshot,
 wz_result_t wz_snapshot_state_load(wz_snapshot_state_t* snapshot,
                                    const wz_byte_t* data,
                                    size_t length);
+wz_result_t wz_snapshot_state_load_sna_48k(wz_snapshot_state_t* snapshot,
+                                           const wz_byte_t* data,
+                                           size_t length);
 const wz_byte_t* wz_snapshot_state_data(const wz_snapshot_state_t* snapshot);
 size_t wz_snapshot_state_length(const wz_snapshot_state_t* snapshot);
 

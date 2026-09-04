@@ -517,6 +517,79 @@ static void test_snapshot_state_isolated_validation(void)
     wz_machine_destroy(&machine);
 }
 
+static void test_sna_48k_loader(void)
+{
+    static wz_byte_t sna[WZ_SNA_48K_LENGTH];
+    wz_machine_t machine;
+    wz_snapshot_state_t snapshot;
+    wz_snapshot_state_t original;
+    wz_qword_t before_hash;
+    wz_qword_t after_hash;
+
+    memset(sna, 0, sizeof(sna));
+    sna[0u] = 0x3au;
+    sna[1u] = 0x12u;
+    sna[2u] = 0x34u;
+    sna[15u] = 0x78u;
+    sna[16u] = 0x56u;
+    sna[19u] = 4u;
+    sna[20u] = 0x9au;
+    sna[21u] = 0x5au;
+    sna[22u] = 0xa5u;
+    sna[23u] = 0xfeu;
+    sna[24u] = 0xffu;
+    sna[25u] = 2u;
+    sna[26u] = 6u;
+    sna[27u + 0xfffeu - 0x4000u] = 0x21u;
+    sna[27u + 0xffffu - 0x4000u] = 0x43u;
+    sna[27u] = 0x43u;
+    sna[28u] = 0x65u;
+
+    if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK ||
+        wz_state_hash_machine(&machine, &before_hash) != WZ_RESULT_OK) {
+        fputs("SNA loader setup failed\n", stderr);
+        exit(1);
+    }
+    wz_snapshot_state_init(&snapshot);
+    if (wz_snapshot_state_load_sna_48k(&snapshot, sna, sizeof(sna)) != WZ_RESULT_OK) {
+        fputs("SNA 48K valid image rejected\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    if (wz_snapshot_state_length(&snapshot) != WZ_STATE_SNAPSHOT_CAPACITY ||
+        wz_snapshot_state_data(&snapshot)[27u] != 0x43u ||
+        wz_snapshot_state_data(&snapshot)[31u] != 0x00u ||
+        wz_snapshot_state_data(&snapshot)[32u] != 0x00u ||
+        wz_snapshot_state_data(&snapshot)[33u] != 0x21u ||
+        wz_snapshot_state_data(&snapshot)[34u] != 0x43u ||
+        wz_snapshot_state_data(&snapshot)[29u] != 0x78u ||
+        wz_snapshot_state_data(&snapshot)[30u] != 0x56u) {
+        fputs("SNA 48K register or RAM mapping failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    original = snapshot;
+    sna[25u] = 3u;
+    if (wz_snapshot_state_load_sna_48k(&snapshot, sna, sizeof(sna)) !=
+            WZ_RESULT_INVALID_STATE ||
+        memcmp(&snapshot, &original, sizeof(snapshot)) != 0 ||
+        wz_state_hash_machine(&machine, &after_hash) != WZ_RESULT_OK ||
+        before_hash != after_hash) {
+        fputs("SNA 48K malformed image was published\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    if (wz_snapshot_state_load_sna_48k(&snapshot, sna, sizeof(sna) - 1u) !=
+            WZ_RESULT_INVALID_STATE ||
+        wz_snapshot_state_load_sna_48k(0, sna, sizeof(sna)) !=
+            WZ_RESULT_INVALID_ARGUMENT) {
+        fputs("SNA 48K argument validation failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_machine_destroy(&machine);
+}
+
 static void test_tape_trap_eligibility(void)
 {
     const wz_tape_segment_t segment = {1u, 0u};
@@ -1508,6 +1581,7 @@ int main(void)
     test_networking_mode_state();
     test_historical_state_representability();
     test_snapshot_state_isolated_validation();
+    test_sna_48k_loader();
     test_tape_trap_eligibility();
     test_tape_speed_invariance();
     test_standard_tap_parser();

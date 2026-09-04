@@ -354,3 +354,67 @@ size_t wz_snapshot_state_length(const wz_snapshot_state_t* snapshot)
 {
     return snapshot == 0 ? 0u : snapshot->length;
 }
+
+wz_result_t wz_snapshot_state_load_sna_48k(wz_snapshot_state_t* snapshot,
+                                           const wz_byte_t* data,
+                                           size_t length)
+{
+    wz_machine_t candidate;
+    wz_word_t stack_pointer;
+
+    if (snapshot == 0 || data == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (length != WZ_SNA_48K_LENGTH || data[19u] > 4u ||
+        (data[19u] != 0u && data[19u] != 4u) || data[25u] > 2u ||
+        data[26u] > 7u) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    if (wz_machine_init(&candidate, wz_machine_profile_48k_pal()) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_PROFILE;
+    }
+
+    candidate.cpu.alternate.h = data[1u];
+    candidate.cpu.alternate.l = data[2u];
+    candidate.cpu.alternate.d = data[3u];
+    candidate.cpu.alternate.e = data[4u];
+    candidate.cpu.alternate.b = data[5u];
+    candidate.cpu.alternate.c = data[6u];
+    candidate.cpu.alternate.a = data[7u];
+    candidate.cpu.alternate.f = data[8u];
+    candidate.cpu.main.h = data[9u];
+    candidate.cpu.main.l = data[10u];
+    candidate.cpu.main.d = data[11u];
+    candidate.cpu.main.e = data[12u];
+    candidate.cpu.main.b = data[13u];
+    candidate.cpu.main.c = data[14u];
+    candidate.cpu.iy = wz_read_le16(data + 15u);
+    candidate.cpu.ix = wz_read_le16(data + 17u);
+    candidate.cpu.i = data[0u];
+    candidate.cpu.iff1 = data[19u] == 4u ? 1u : 0u;
+    candidate.cpu.iff2 = candidate.cpu.iff1;
+    candidate.cpu.r = data[20u];
+    candidate.cpu.main.f = data[21u];
+    candidate.cpu.main.a = data[22u];
+    stack_pointer = wz_read_le16(data + 23u);
+    candidate.cpu.stack_pointer = (wz_word_t)(stack_pointer + 2u);
+    candidate.cpu.interrupt_mode = data[25u];
+    candidate.border_color = data[26u];
+    candidate.ula_output = data[26u];
+    for (size_t index = 0u; index < 49152u; ++index) {
+        candidate.memory[0x4000u + index] = data[27u + index];
+    }
+    candidate.cpu.program_counter =
+        (wz_word_t)(candidate.memory[stack_pointer] |
+                    ((wz_word_t)candidate.memory[(wz_word_t)(stack_pointer + 1u)] << 8u));
+    if (wz_z80_state_validate(&candidate.cpu) != WZ_RESULT_OK) {
+        wz_machine_destroy(&candidate);
+        return WZ_RESULT_INVALID_STATE;
+    }
+    if (wz_snapshot_state_capture(snapshot, &candidate) != WZ_RESULT_OK) {
+        wz_machine_destroy(&candidate);
+        return WZ_RESULT_SERIALIZATION_FAILURE;
+    }
+    wz_machine_destroy(&candidate);
+    return WZ_RESULT_OK;
+}

@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 184,
+  "next_cr_number": 185,
   "status_values": [
     "open",
     "in_progress",
@@ -1624,6 +1624,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0183.md", "design/media-format-support.md", "design/warajevo-zx-spectrum-next-architecture.md sections 25.1-25.3", "design/wzsn-architectures-1-2-developer-tasks.md task 169", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS"],
       "notes": "Closed on 2026-09-04 after freezing exact SNA 48K/128K and Z80 v1/v2/v3 byte-level forms, compression, paging, PC encoding, malformed-input errors, and canonical writer boundaries before historical parser implementation. Exact-SHA DOCUMENTATION review passed with zero confirmed findings; static repository gates passed; matrix was pushed before task 171 implementation."
+    },
+    {
+      "cr_number": "CR-0184",
+      "title": "Implement SNA 48K loading",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0184.md", "design/media-format-support.md", "design/warajevo-zx-spectrum-next-architecture.md sections 25.1-25.2", "design/wzsn-architectures-1-2-developer-tasks.md task 171", "src/core/wz_state.h", "src/core/wz_state.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS"],
+      "notes": "Opened on 2026-09-04 for task 171. Parse the exact standard SNA 48K form into isolated temporary state, recover PC from the temporary stack, and publish only canonical WZSN bytes after complete validation."
     }
   ]
 }
