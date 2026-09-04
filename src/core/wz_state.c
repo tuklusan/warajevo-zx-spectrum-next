@@ -717,3 +717,222 @@ wz_result_t wz_snapshot_state_load_z80_v1(wz_snapshot_state_t* snapshot,
     wz_machine_destroy(&candidate);
     return WZ_RESULT_OK;
 }
+
+static wz_result_t wz_z80_v2_decode_page(wz_byte_t* destination,
+                                         const wz_byte_t* data,
+                                         size_t length)
+{
+    size_t input_offset = 0u;
+    size_t output_offset = 0u;
+
+    if (destination == 0 || data == 0 || length == 0u) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    while (input_offset < length) {
+        if (input_offset + 4u <= length && data[input_offset] == 0xedu &&
+            data[input_offset + 1u] == 0xedu) {
+            wz_byte_t count = data[input_offset + 2u];
+            wz_byte_t value = data[input_offset + 3u];
+            if (count == 0u || output_offset + count > WZ_Z80_V2_PAGE_SIZE) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            for (size_t repeat = 0u; repeat < count; ++repeat) {
+                destination[output_offset++] = value;
+            }
+            input_offset += 4u;
+        } else {
+            if (output_offset >= WZ_Z80_V2_PAGE_SIZE) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            destination[output_offset++] = data[input_offset++];
+        }
+    }
+    return output_offset == WZ_Z80_V2_PAGE_SIZE ? WZ_RESULT_OK :
+           WZ_RESULT_PARSE_ERROR;
+}
+
+static wz_result_t wz_z80_v2_map_header(wz_machine_t* machine,
+                                        const wz_byte_t* data)
+{
+    if (machine == 0 || data == 0 || data[6u] != 0u || data[7u] != 0u ||
+        wz_read_le16(data + 30u) != 23u || data[34u] != 0u ||
+        data[35u] != 0u || data[36u] != 0u || data[54u] != 0u) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    if (data[27u] > 1u || data[28u] > 1u || data[53u] > 15u) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    for (size_t index = 37u; index < 53u; ++index) {
+        if (data[index] != 0u) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+    }
+
+    machine->cpu.main.a = data[0u];
+    machine->cpu.main.f = data[1u];
+    machine->cpu.main.c = data[2u];
+    machine->cpu.main.b = data[3u];
+    machine->cpu.main.l = data[4u];
+    machine->cpu.main.h = data[5u];
+    machine->cpu.stack_pointer = wz_read_le16(data + 8u);
+    machine->cpu.i = data[10u];
+    machine->cpu.r = (wz_byte_t)((data[11u] & 0x7fu) |
+                                  ((data[12u] & 0x01u) << 7u));
+    machine->border_color = (wz_byte_t)((data[12u] >> 1u) & 0x07u);
+    machine->ula_output = machine->border_color;
+    machine->cpu.main.e = data[13u];
+    machine->cpu.main.d = data[14u];
+    machine->cpu.alternate.c = data[15u];
+    machine->cpu.alternate.b = data[16u];
+    machine->cpu.alternate.e = data[17u];
+    machine->cpu.alternate.d = data[18u];
+    machine->cpu.alternate.l = data[19u];
+    machine->cpu.alternate.h = data[20u];
+    machine->cpu.alternate.a = data[21u];
+    machine->cpu.alternate.f = data[22u];
+    machine->cpu.iy = wz_read_le16(data + 23u);
+    machine->cpu.ix = wz_read_le16(data + 25u);
+    machine->cpu.iff1 = data[27u];
+    machine->cpu.iff2 = data[28u];
+    machine->cpu.interrupt_mode = data[29u];
+    machine->cpu.program_counter = wz_read_le16(data + 32u);
+    return wz_z80_state_validate(&machine->cpu);
+}
+
+wz_result_t wz_snapshot_state_load_z80_v2(wz_snapshot_state_t* snapshot,
+                                           const wz_byte_t* data,
+                                           size_t length)
+{
+    static wz_machine_t candidate;
+    wz_byte_t seen_pages[WZ_Z80_V2_PAGE_COUNT] = {0u};
+    size_t offset = WZ_Z80_V2_HEADER_LENGTH;
+
+    if (snapshot == 0 || data == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (length < WZ_Z80_V2_HEADER_LENGTH) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    if (wz_machine_init(&candidate, wz_machine_profile_48k_pal()) != WZ_RESULT_OK ||
+        wz_z80_v2_map_header(&candidate, data) != WZ_RESULT_OK) {
+        wz_machine_destroy(&candidate);
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    while (offset < length) {
+        wz_word_t block_length;
+        wz_byte_t page_number;
+        size_t page_index;
+
+        if (length - offset < 3u) {
+            wz_machine_destroy(&candidate);
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        block_length = wz_read_le16(data + offset);
+        page_number = data[offset + 2u];
+        if (page_number == 8u) {
+            page_index = 0u;
+        } else if (page_number == 4u) {
+            page_index = 1u;
+        } else if (page_number == 5u) {
+            page_index = 2u;
+        } else {
+            wz_machine_destroy(&candidate);
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        if (seen_pages[page_index] != 0u ||
+            (block_length != WZ_Z80_V2_UNCOMPRESSED_PAGE_LENGTH &&
+             block_length == 0u) ||
+            (block_length == WZ_Z80_V2_UNCOMPRESSED_PAGE_LENGTH &&
+             length - offset - 3u < WZ_Z80_V2_PAGE_SIZE) ||
+            block_length != WZ_Z80_V2_UNCOMPRESSED_PAGE_LENGTH &&
+             (size_t)block_length > length - offset - 3u) {
+            wz_machine_destroy(&candidate);
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        if (block_length == WZ_Z80_V2_UNCOMPRESSED_PAGE_LENGTH) {
+            for (size_t index = 0u; index < WZ_Z80_V2_PAGE_SIZE; ++index) {
+                candidate.memory[0x4000u + (page_index * WZ_Z80_V2_PAGE_SIZE) + index] =
+                    data[offset + 3u + index];
+            }
+        } else if (wz_z80_v2_decode_page(
+                       candidate.memory + 0x4000u + (page_index * WZ_Z80_V2_PAGE_SIZE),
+                       data + offset + 3u, (size_t)block_length) != WZ_RESULT_OK) {
+            wz_machine_destroy(&candidate);
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        seen_pages[page_index] = 1u;
+        offset += 3u + (block_length == WZ_Z80_V2_UNCOMPRESSED_PAGE_LENGTH ?
+                        WZ_Z80_V2_PAGE_SIZE : (size_t)block_length);
+    }
+    if (offset != length || seen_pages[0u] == 0u || seen_pages[1u] == 0u ||
+        seen_pages[2u] == 0u || wz_snapshot_state_capture(snapshot, &candidate) !=
+        WZ_RESULT_OK) {
+        wz_machine_destroy(&candidate);
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    wz_machine_destroy(&candidate);
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_state_save_z80_v2_48k(const wz_machine_t* machine,
+                                     wz_byte_t* data,
+                                     size_t capacity)
+{
+    if (machine == 0 || data == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (capacity < WZ_Z80_V2_LENGTH) {
+        return WZ_RESULT_BUFFER_TOO_SMALL;
+    }
+    if (machine->profile == 0 || machine->profile->kind != WZ_MACHINE_48K_PAL ||
+        wz_state_validate_historical_representability(
+            machine, WZ_HISTORICAL_FORMAT_Z80) != WZ_RESULT_OK ||
+        wz_z80_state_validate(&machine->cpu) != WZ_RESULT_OK) {
+        return WZ_RESULT_UNSUPPORTED_OPERATION;
+    }
+    for (size_t index = 0u; index < WZ_Z80_V2_LENGTH; ++index) {
+        data[index] = 0u;
+    }
+    data[0u] = machine->cpu.main.a;
+    data[1u] = machine->cpu.main.f;
+    data[2u] = machine->cpu.main.c;
+    data[3u] = machine->cpu.main.b;
+    data[4u] = machine->cpu.main.l;
+    data[5u] = machine->cpu.main.h;
+    wz_write_le16(data + 8u, machine->cpu.stack_pointer);
+    data[10u] = machine->cpu.i;
+    data[11u] = (wz_byte_t)(machine->cpu.r & 0x7fu);
+    data[12u] = (wz_byte_t)(((machine->cpu.r >> 7u) & 1u) |
+                            (machine->border_color << 1u));
+    data[13u] = machine->cpu.main.e;
+    data[14u] = machine->cpu.main.d;
+    data[15u] = machine->cpu.alternate.c;
+    data[16u] = machine->cpu.alternate.b;
+    data[17u] = machine->cpu.alternate.e;
+    data[18u] = machine->cpu.alternate.d;
+    data[19u] = machine->cpu.alternate.l;
+    data[20u] = machine->cpu.alternate.h;
+    data[21u] = machine->cpu.alternate.a;
+    data[22u] = machine->cpu.alternate.f;
+    wz_write_le16(data + 23u, machine->cpu.iy);
+    wz_write_le16(data + 25u, machine->cpu.ix);
+    data[27u] = machine->cpu.iff1;
+    data[28u] = machine->cpu.iff2;
+    data[29u] = machine->cpu.interrupt_mode;
+    wz_write_le16(data + 30u, 23u);
+    wz_write_le16(data + 32u, machine->cpu.program_counter);
+    {
+        const wz_byte_t pages[WZ_Z80_V2_PAGE_COUNT] = {8u, 4u, 5u};
+        size_t offset = WZ_Z80_V2_HEADER_LENGTH;
+        for (size_t page = 0u; page < WZ_Z80_V2_PAGE_COUNT; ++page) {
+            wz_write_le16(data + offset, WZ_Z80_V2_UNCOMPRESSED_PAGE_LENGTH);
+            data[offset + 2u] = pages[page];
+            for (size_t index = 0u; index < WZ_Z80_V2_PAGE_SIZE; ++index) {
+                data[offset + 3u + index] =
+                    machine->memory[0x4000u + (page * WZ_Z80_V2_PAGE_SIZE) + index];
+            }
+            offset += 3u + WZ_Z80_V2_PAGE_SIZE;
+        }
+    }
+    return WZ_RESULT_OK;
+}

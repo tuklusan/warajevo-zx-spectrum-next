@@ -741,6 +741,111 @@ static void test_z80_v1_loader(void)
     }
 }
 
+static void test_z80_v2_loader_and_writer(void)
+{
+    static wz_byte_t z80[WZ_Z80_V2_LENGTH];
+    static wz_byte_t output[WZ_Z80_V2_LENGTH];
+    static wz_byte_t original_output[WZ_Z80_V2_LENGTH];
+    static wz_snapshot_state_t snapshot;
+    static wz_snapshot_state_t original_snapshot;
+    wz_machine_t machine;
+    size_t offset;
+
+    memset(z80, 0, sizeof(z80));
+    z80[8u] = 0x78u;
+    z80[9u] = 0x56u;
+    z80[27u] = 1u;
+    z80[28u] = 1u;
+    z80[29u] = 2u;
+    z80[30u] = 23u;
+    z80[32u] = 0x21u;
+    z80[33u] = 0x43u;
+    wz_write_le16(z80 + WZ_Z80_V2_HEADER_LENGTH, 260u);
+    z80[WZ_Z80_V2_HEADER_LENGTH + 2u] = 8u;
+    offset = WZ_Z80_V2_HEADER_LENGTH + 3u;
+    for (size_t run = 0u; run < 64u; ++run) {
+        z80[offset++] = 0xedu;
+        z80[offset++] = 0xedu;
+        z80[offset++] = 0xffu;
+        z80[offset++] = 0xa5u;
+    }
+    z80[offset++] = 0xedu;
+    z80[offset++] = 0xedu;
+    z80[offset++] = 64u;
+    z80[offset++] = 0xa5u;
+    {
+        size_t page4 = WZ_Z80_V2_HEADER_LENGTH + 263u;
+        wz_write_le16(z80 + page4, WZ_Z80_V2_UNCOMPRESSED_PAGE_LENGTH);
+        z80[page4 + 2u] = 4u;
+        for (size_t index = 0u; index < WZ_Z80_V2_PAGE_SIZE; ++index) {
+            z80[page4 + 3u + index] = (wz_byte_t)index;
+        }
+        page4 += 3u + WZ_Z80_V2_PAGE_SIZE;
+        wz_write_le16(z80 + page4, WZ_Z80_V2_UNCOMPRESSED_PAGE_LENGTH);
+        z80[page4 + 2u] = 5u;
+        for (size_t index = 0u; index < WZ_Z80_V2_PAGE_SIZE; ++index) {
+            z80[page4 + 3u + index] = (wz_byte_t)(index ^ 0x5au);
+        }
+        offset = page4 + 3u + WZ_Z80_V2_PAGE_SIZE;
+    }
+    wz_snapshot_state_init(&snapshot);
+    if (wz_snapshot_state_load_z80_v2(&snapshot, z80, offset) != WZ_RESULT_OK ||
+        wz_snapshot_state_data(&snapshot)[33u] != 0x21u ||
+        wz_snapshot_state_data(&snapshot)[34u] != 0x43u ||
+        wz_snapshot_state_data(&snapshot)[73u + 0x4000u] != 0xa5u ||
+        wz_snapshot_state_data(&snapshot)[73u + 0x8000u] != 0u ||
+        wz_snapshot_state_data(&snapshot)[73u + 0xc000u] != 0x5au) {
+        fputs("Z80 v2 load or page mapping failed\n", stderr);
+        exit(1);
+    }
+    original_snapshot = snapshot;
+    z80[WZ_Z80_V2_HEADER_LENGTH + 262u] = 4u;
+    if (wz_snapshot_state_load_z80_v2(&snapshot, z80, offset) !=
+            WZ_RESULT_PARSE_ERROR ||
+        memcmp(&snapshot, &original_snapshot, sizeof(snapshot)) != 0) {
+        fputs("Z80 v2 duplicate page was published\n", stderr);
+        exit(1);
+    }
+
+    if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK) {
+        fputs("Z80 v2 writer setup failed\n", stderr);
+        exit(1);
+    }
+    machine.cpu.program_counter = 0x4321u;
+    machine.cpu.stack_pointer = 0x8765u;
+    machine.cpu.iff1 = 1u;
+    machine.cpu.iff2 = 1u;
+    machine.cpu.interrupt_mode = WZ_Z80_INTERRUPT_MODE_1;
+    machine.border_color = 6u;
+    machine.memory[0x4000u] = 0x11u;
+    machine.memory[0x8000u] = 0x22u;
+    machine.memory[0xc000u] = 0x33u;
+    memset(output, 0x5au, sizeof(output));
+    if (wz_state_save_z80_v2_48k(&machine, output, sizeof(output)) != WZ_RESULT_OK ||
+        output[6u] != 0u || output[7u] != 0u || output[30u] != 23u ||
+        output[32u] != 0x21u || output[33u] != 0x43u || output[57u] != 8u ||
+        wz_snapshot_state_load_z80_v2(&snapshot, output, sizeof(output)) !=
+            WZ_RESULT_OK || wz_snapshot_state_data(&snapshot)[73u + 0x4000u] != 0x11u ||
+        wz_snapshot_state_data(&snapshot)[73u + 0x8000u] != 0x22u ||
+        wz_snapshot_state_data(&snapshot)[73u + 0xc000u] != 0x33u) {
+        fputs("Z80 v2 canonical writer failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    memcpy(original_output, output, sizeof(output));
+    machine.networking_mode = WZ_NETWORKING_EAR_MIC;
+    if (wz_state_save_z80_v2_48k(&machine, output, sizeof(output)) !=
+            WZ_RESULT_UNSUPPORTED_OPERATION ||
+        memcmp(output, original_output, sizeof(output)) != 0 ||
+        wz_state_save_z80_v2_48k(&machine, output, sizeof(output) - 1u) !=
+            WZ_RESULT_BUFFER_TOO_SMALL) {
+        fputs("Z80 v2 writer rejection was not atomic\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_machine_destroy(&machine);
+}
+
 static void test_tape_trap_eligibility(void)
 {
     const wz_tape_segment_t segment = {1u, 0u};
@@ -1736,6 +1841,7 @@ int main(void)
     test_sna_48k_writer();
     test_sna_128k_image_scaffolding();
     test_z80_v1_loader();
+    test_z80_v2_loader_and_writer();
     test_tape_trap_eligibility();
     test_tape_speed_invariance();
     test_standard_tap_parser();
