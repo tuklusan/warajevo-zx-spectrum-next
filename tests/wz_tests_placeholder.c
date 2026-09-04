@@ -473,9 +473,9 @@ static void test_historical_state_representability(void)
 static void test_snapshot_state_isolated_validation(void)
 {
     wz_machine_t machine;
-    wz_snapshot_state_t snapshot;
-    wz_snapshot_state_t original;
-    wz_byte_t serialized[WZ_STATE_SNAPSHOT_CAPACITY];
+    static wz_snapshot_state_t snapshot;
+    static wz_snapshot_state_t original;
+    static wz_byte_t serialized[WZ_STATE_SNAPSHOT_CAPACITY];
     wz_state_writer_t writer;
     wz_qword_t before_hash;
     wz_qword_t after_hash;
