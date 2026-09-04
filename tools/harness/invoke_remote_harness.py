@@ -28,17 +28,17 @@ from pathlib import Path
 REMOTE_MACHINES = {
     "linux-x64-lxqt": {
         "kind": "linux",
-        "ssh_target": "sanyalnet@10.0.0.161",
+        "ssh_target": "sanyalnet@192.168.4.76",
         "project_dir": "/home/sanyalnet/SOFTWARE-DEVELOPMENT/Warajevo-Spectrum-Next",
         "python_command": "python3",
-        "lab_status": "unavailable",
+        "lab_status": "available",
     },
     "windows-10-reference": {
         "kind": "windows",
-        "ssh_target": "sanyalnet@10.0.0.106",
+        "ssh_target": "sanyalnet@192.168.4.75",
         "project_dir": r"D:\WarajevoSpectrum.Next",
         "python_command": "py -3",
-        "lab_status": "unavailable",
+        "lab_status": "available",
     },
     "windows-11-laptop": {
         "kind": "windows",
@@ -49,12 +49,12 @@ REMOTE_MACHINES = {
     },
     "macos-bigsur-lab": {
         "kind": "macos",
-        "ssh_target": "rumtuk@10.0.0.114",
+        "ssh_target": "rumtuk@192.168.4.77",
         "project_dir": "/Users/rumtuk/SOFTWARE_DEV/WARAJEVO-NEXT",
         "python_command": "python3",
         "max_bytes": 1073741824,
         "identity_file": "test-artefacts/ssh-private/macos-bigsur",
-        "lab_status": "unavailable",
+        "lab_status": "available",
     },
 }
 REMOTE_REPOSITORY = "https://github.com/tuklusan/warajevo-zx-spectrum-next.git"

@@ -495,10 +495,10 @@ def validate_required_workflow_documents(root: Path) -> list[str]:
         ),
         "test-artefacts/README.md": (
             "linux-x64-lxqt",
-            "sanyalnet@10.0.0.161",
+            "sanyalnet@192.168.4.76",
             "~/SOFTWARE-DEVELOPMENT/Warajevo-Spectrum-Next",
             "windows-10-reference",
-            "sanyalnet@10.0.0.106",
+            "sanyalnet@192.168.4.75",
             r"D:\WarajevoSpectrum.Next",
             "windows-11-laptop",
             "vagab@192.168.4.103",

@@ -60,10 +60,10 @@ python tools/harness/invoke_remote_harness.py probe macos-bigsur-lab
 python tools/harness/invoke_remote_windows_powershell.py windows-11-laptop tools/harness/windows-toolchain/verify-toolchain.ps1
 ```
 
-The current lab snapshot has only `windows-11-laptop` available at
-`vagab@192.168.4.103`; Linux, Windows 10, and Big Sur Intel are unavailable.
-Record unavailable-host transport results and continue with the available host
-and the complete hosted runner matrix.
+The current lab snapshot has all four hosts available: Linux at
+`192.168.4.76`, macOS/Intel at `192.168.4.77`, Windows 10 at `192.168.4.75`,
+and Windows 11 at `192.168.4.103`. Record any unavailable-host transport
+results as environmental and continue with the complete hosted runner matrix.
 
 Before probes and tests, the orchestrator updates the approved remote checkout
 with `git pull --ff-only origin main`; it refuses to proceed if the checkout

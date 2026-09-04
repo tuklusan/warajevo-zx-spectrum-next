@@ -53,11 +53,11 @@ are documented in `test-artefacts/README.md`.
 
 ## Remote harness baseline
 
-The lab availability snapshot currently has only `windows-11-laptop` online at
-`vagab@192.168.4.103`. `linux-x64-lxqt`, `windows-10-reference`, and
-`macos-bigsur-lab` are unavailable for now. Treat their transport failures as
-environmental and continue with the available Windows host plus the complete
-hosted runner matrix.
+The current lab availability snapshot has all four approved hosts online:
+Linux at `sanyalnet@192.168.4.76`, macOS/Intel at `rumtuk@192.168.4.77`,
+Windows 10 at `sanyalnet@192.168.4.75`, and Windows 11 at
+`vagab@192.168.4.103`. If any host is unreachable, treat its transport result
+as environmental and continue with the complete hosted runner matrix.
 
 The tracked remote harness entry points live in:
 

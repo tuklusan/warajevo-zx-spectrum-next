@@ -67,15 +67,14 @@ is wrapped in SSH transport quoting.
 
 ## Approved remote machines
 
-The current lab availability snapshot is: only `windows-11-laptop` is
-available. The Linux, Windows 10, and Big Sur Intel hosts are currently
-unavailable. Unavailable-host SSH failures are environmental evidence, not
-project correctness failures; record them and continue with the hosted matrix
-and any available lab host.
+The current lab availability snapshot has all four approved hosts available.
+If a host becomes unreachable, record the transport result as environmental
+evidence, not a project correctness failure, and continue with the hosted
+matrix plus any available lab host.
 
-### linux-x64-lxqt (currently unavailable)
+### linux-x64-lxqt (currently available)
 
-- SSH target: `sanyalnet@10.0.0.161`
+- SSH target: `sanyalnet@192.168.4.76`
 - Remote project directory:
   `~/SOFTWARE-DEVELOPMENT/Warajevo-Spectrum-Next`
 - Rule:
@@ -84,12 +83,12 @@ and any available lab host.
 Example session shape:
 
 ```text
-ssh sanyalnet@10.0.0.161 'cd ~/SOFTWARE-DEVELOPMENT/Warajevo-Spectrum-Next && <remote-command>'
+ssh sanyalnet@192.168.4.76 'cd ~/SOFTWARE-DEVELOPMENT/Warajevo-Spectrum-Next && <remote-command>'
 ```
 
-### windows-10-reference (currently unavailable)
+### windows-10-reference (currently available)
 
-- SSH target: `sanyalnet@10.0.0.106`
+- SSH target: `sanyalnet@192.168.4.75`
 - Remote project directory:
   `D:\WarajevoSpectrum.Next`
 - Rule:
@@ -98,7 +97,7 @@ ssh sanyalnet@10.0.0.161 'cd ~/SOFTWARE-DEVELOPMENT/Warajevo-Spectrum-Next && <r
 Example session shape:
 
 ```text
-ssh sanyalnet@10.0.0.106 "powershell -NoProfile -Command \"Set-Location 'D:\\WarajevoSpectrum.Next'; <remote-command>\""
+ssh sanyalnet@192.168.4.75 "powershell -NoProfile -Command \"Set-Location 'D:\\WarajevoSpectrum.Next'; <remote-command>\""
 ```
 
 ### windows-11-laptop (currently available)
@@ -115,9 +114,9 @@ Example session shape:
 ssh vagab@192.168.4.103 "powershell -NoProfile -Command \"Set-Location 'C:\\Users\\vagab\\WarajevoSpectrum.Next'; <remote-command>\""
 ```
 
-### macos-bigsur-lab (currently unavailable)
+### macos-bigsur-lab (currently available)
 
-- SSH target: `rumtuk@10.0.0.114`
+- SSH target: `rumtuk@192.168.4.77`
 - Remote project directory: `/Users/rumtuk/SOFTWARE_DEV/WARAJEVO-NEXT`
 - Rule: every file operation, build, test, and pulled-result staging operation
   must remain below this directory; total occupied space must never exceed 1 GiB

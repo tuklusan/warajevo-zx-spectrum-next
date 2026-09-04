@@ -77,11 +77,12 @@ The public harness contract for those machines lives in
 `test-artefacts/README.md`, and the tracked shared harness entry points live in
 `tools/harness/`.
 
-The current lab availability snapshot has only the Windows 11 host available
-at `vagab@192.168.4.103`. Linux, Windows 10, and Big Sur Intel are currently
-unavailable. Their SSH failures must be recorded as environmental results and
-must not be treated as evidence that the software failed. The complete hosted
-runner matrix is the required multi-platform proof while those hosts are down.
+The current lab availability snapshot has all four approved hosts available:
+Linux `192.168.4.76`, macOS/Intel `192.168.4.77`, Windows 10
+`192.168.4.75`, and Windows 11 `192.168.4.103`. Any SSH failure must be
+recorded as an environmental result and must not be treated as evidence that
+the software failed. The complete hosted runner matrix remains required for
+multi-platform proof regardless of lab availability.
 
 Hosted-runner waiting is terminal-state based. Use one run for the exact
 published commit with `fail-fast: false`; wait for every configured lane,
