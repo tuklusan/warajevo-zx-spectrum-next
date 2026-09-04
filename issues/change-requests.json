@@ -1670,9 +1670,9 @@
     {
       "cr_number": "CR-0190",
       "title": "Implement Z80 v3 loading for frozen supported variants",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0190.md", "design/media-format-support.md", "design/warajevo-zx-spectrum-next-architecture.md sections 25.1-25.3", "design/wzsn-architectures-1-2-developer-tasks.md task 176", "src/core/wz_state.h", "src/core/wz_state.c", "tests/wz_tests_placeholder.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS"],
-      "notes": "Opened on 2026-09-04 for strict supported Z80 v3 48K loading with 54-byte extended-header validation, bounded page parsing, isolated publication, and no change to the canonical v2 writer. Requires exact-SHA review, remote and hosted validation, and a second upstream zero-gap scan before closure."
+      "notes": "Closed on 2026-09-04 after strict supported Z80 v3 48K loading with 54/55-byte extended-header validation, bounded page parsing, isolated publication, and no change to the canonical v2 writer. Exact-SHA CODE and independent bootstrap reviews passed with zero findings for 4a3dbf8..6932a75. Linux, Windows 10, Windows 11, and Intel Mac runs CR0190-LINUX-R1, CR0190-WIN10-R1, CR0190-WIN11-R1, and CR0190-MAC-R1 passed with no missing tools. Hosted run 33919331349 passed at 6932a75, including housekeeping, all 18 matrix lanes, and publication gate. Second upstream zero-gap scan found no missing v3 behavior."
     }
   ]
 }
