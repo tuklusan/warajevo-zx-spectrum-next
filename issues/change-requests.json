@@ -1635,9 +1635,9 @@
     {
       "cr_number": "CR-0185",
       "title": "Implement SNA 48K saving",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0185.md", "design/media-format-support.md", "design/warajevo-zx-spectrum-next-architecture.md sections 25.1-25.2", "design/wzsn-architectures-1-2-developer-tasks.md task 172", "src/core/wz_state.h", "src/core/wz_state.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS"],
-      "notes": "Opened on 2026-09-04 for task 172. Emit the exact standard SNA 48K form without mutating the live machine, using the frozen representability and stack-placement rules."
+      "notes": "Closed on 2026-09-04 after implementing exact 49,179-byte SNA 48K saving, non-mutating stack-PC synthesis at SP-2, strict 48K/representability/stack validation, atomic output rejection, and round-trip coverage. Exact-SHA CODE and independent reviews passed with zero confirmed findings. Linux, Windows 10, and Windows 11 remote smoke passed on 20f4396; Mac smoke remained unavailable. Static gates passed; no local build or test was run."
     }
   ]
 }
