@@ -1600,16 +1600,16 @@
     {
       "cr_number": "CR-0180",
       "title": "Add deep hosted-runner housekeeping gate",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["WORKFLOW.md hosted validation and publication gates", ".github/workflows/platform-smoke.yml", "tools/harness/README.md", "tools/harness/cleanup-hosted-runner-state.sh"],
-      "notes": "Opened on 2026-09-04 to prevent prior same-ref hosted matrix queue entries and generated build/test artifacts from contaminating or obscuring a fresh matrix run. Preserve the current run and all committed source and retained evidence; cancel only older queued/in-progress platform-smoke runs for the same ref, delete artifacts owned by those older runs, and clear generated workspace residue before each lane."
+      "notes": "Closed on 2026-09-04 after hosted run 33914657804 preserved the current same-ref run, completed deep housekeeping, cleared bounded stale runner state and generated residue, and passed publication at the validated commit."
     },
     {
       "cr_number": "CR-0181",
       "title": "Define architecture-based macOS matrix acceptance",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["WORKFLOW.md", ".github/workflows/platform-smoke.yml", "tools/harness/README.md", "test-artefacts/README.md", "README-GIT-GITHUB.md"],
-      "notes": "Opened on 2026-09-04 to keep every configured hosted macOS lane in the validation attempt while accepting macOS proof when one Intel and one ARM lane has successful exact-commit results. All non-macOS lanes remain mandatory; exact-commit local or remote lab evidence may substitute for a missing macOS architecture at CR closure."
+      "notes": "Closed on 2026-09-04 after hosted run 33914657804 reached terminal state for all configured lanes, passed all non-macOS lanes, and supplied successful Intel and ARM macOS evidence at the validated commit."
     },
     {
       "cr_number": "CR-0182",
