@@ -1509,9 +1509,9 @@
     {
       "cr_number": "CR-0167",
       "title": "Implement TZX timing and control execution",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md section 23.12", "design/wzsn-architectures-1-2-developer-tasks.md task 154", "design/cr-preflight/CR-0167.md", "design/media-format-support.md", "design/cr-preflight/CR-0166.md", "reference/original-warajevo/source"],
-      "notes": "Opened on 2026-09-02 as the next ordered Phase-7 scope. Preflight separates TZX timing/control execution from CR-0166 parsing, covering canonical edge generation, pause/stop/signal rules, bounded control flow, deterministic traversal, and cross-host invariance."
+      "notes": "Closed on 2026-09-04 after completing canonical TZX edge generation, pause/stop/signal rules, bounded control flow, deterministic traversal, and cross-host invariance. Exact-SHA CODE and DOCUMENTATION reviews passed with zero confirmed findings after the one-hour slow-service deadline correction. Linux, Windows 10, and Windows 11 remote harness evidence passed; hosted platform-smoke 33841533764 completed all 18 lanes plus publication-gate for cd56746. Earlier review deadline expirations remain recorded as unavailable evidence rather than findings."
     },
     {
       "cr_number": "CR-0168",
