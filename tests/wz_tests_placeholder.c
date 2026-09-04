@@ -1133,6 +1133,76 @@ static void test_snapshot_cross_host_round_trips(void)
     wz_machine_destroy(&machine);
 }
 
+static void test_128k_banked_memory_and_paging(void)
+{
+    wz_machine_t machine;
+    wz_bus_request_t request;
+
+    if (wz_machine_init(&machine, wz_machine_profile_128k_pal()) != WZ_RESULT_OK) {
+        fputs("128K paging setup failed\n", stderr);
+        exit(1);
+    }
+    wz_machine_memory_write(&machine, 0x4000u, 0x15u);
+    wz_machine_memory_write(&machine, 0x8000u, 0x22u);
+    wz_machine_memory_write(&machine, 0xc000u, 0x00u);
+    wz_bus_request_init(&request, WZ_BUS_IO_WRITE, 0u, 0x7ffdu, 0x03u, 4u);
+    if (wz_machine_bus_request(&machine, &request) != WZ_RESULT_OK ||
+        wz_machine_128k_paging_value(&machine) != 0x03u ||
+        wz_machine_memory_read(&machine, 0x4000u) != 0x15u ||
+        wz_machine_memory_read(&machine, 0x8000u) != 0x22u) {
+        fputs("128K fixed bank mapping failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_machine_memory_write(&machine, 0xc000u, 0x33u);
+    wz_bus_request_init(&request, WZ_BUS_IO_WRITE, 0u, 0x7ffdu, 0x04u, 4u);
+    if (wz_machine_bus_request(&machine, &request) != WZ_RESULT_OK ||
+        wz_machine_memory_read(&machine, 0xc000u) != 0u) {
+        fputs("128K selected bank isolation failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_machine_memory_write(&machine, 0xc000u, 0x44u);
+    if (wz_machine_128k_screen_bank(&machine) != 5u ||
+        wz_machine_128k_rom_bank(&machine) != 0u) {
+        fputs("128K default screen or ROM selection failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_bus_request_init(&request, WZ_BUS_IO_WRITE, 0u, 0x7ffdu, 0x3cu, 4u);
+    if (wz_machine_bus_request(&machine, &request) != WZ_RESULT_OK ||
+        wz_machine_128k_paging_value(&machine) != 0x3cu ||
+        wz_machine_128k_screen_bank(&machine) != 7u ||
+        wz_machine_128k_rom_bank(&machine) != 1u) {
+        fputs("128K paging latch fields failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_bus_request_init(&request, WZ_BUS_IO_WRITE, 0u, 0x7ffdu, 0x24u, 4u);
+    if (wz_machine_bus_request(&machine, &request) != WZ_RESULT_OK ||
+        wz_machine_128k_paging_value(&machine) != 0x24u) {
+        fputs("128K paging lock setup failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_bus_request_init(&request, WZ_BUS_IO_WRITE, 0u, 0x7ffdu, 0x01u, 4u);
+    if (wz_machine_bus_request(&machine, &request) != WZ_RESULT_OK ||
+        wz_machine_128k_paging_value(&machine) != 0x24u ||
+        wz_machine_memory_read(&machine, 0xc000u) != 0x44u) {
+        fputs("128K paging lock was not enforced\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_bus_request_init(&request, WZ_BUS_IO_WRITE, 0u, 0xfffdu, 0x02u, 4u);
+    if (wz_machine_bus_request(&machine, &request) != WZ_RESULT_OK ||
+        wz_machine_128k_paging_value(&machine) != 0x24u) {
+        fputs("128K paging partial decode failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_machine_destroy(&machine);
+}
+
 static void test_tape_trap_eligibility(void)
 {
     const wz_tape_segment_t segment = {1u, 0u};
@@ -2132,6 +2202,7 @@ int main(void)
     test_z80_v3_loader();
     test_snapshot_parser_fuzz_matrix();
     test_snapshot_cross_host_round_trips();
+    test_128k_banked_memory_and_paging();
     test_tape_trap_eligibility();
     test_tape_speed_invariance();
     test_standard_tap_parser();

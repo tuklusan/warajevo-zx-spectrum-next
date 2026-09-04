@@ -172,6 +172,11 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
         break;
     case WZ_BUS_IO_WRITE:
         if (machine->hardware_io_decode_enabled &&
+            machine->profile != 0 && machine->profile->kind == WZ_MACHINE_128K_PAL &&
+            wz_machine_128k_paging_write(machine, request->address, request->value) ==
+                WZ_RESULT_OK) {
+            request->source = WZ_BUS_SOURCE_MEMORY;
+        } else if (machine->hardware_io_decode_enabled &&
             wz_machine_ula_port_fe_selected(request->address)) {
             wz_machine_ula_port_fe_write(machine, request->address, request->value,
                                          request->master_tick);

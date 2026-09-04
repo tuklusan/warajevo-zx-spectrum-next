@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 194,
+  "next_cr_number": 195,
   "status_values": [
     "open",
     "in_progress",
@@ -1694,6 +1694,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0193.md", "design/machine-timing-evidence.md", "design/warajevo-zx-spectrum-next-architecture.md sections 9, 12, 15, 20, 25, and 49", "design/wzsn-architectures-1-2-developer-tasks.md task 183", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS", "https://worldofspectrum.org/faq/reference/128kreference.htm"],
       "notes": "Closed on 2026-09-04 after freezing the base 128K PAL/+2 timing, contention, paging, and variant-boundary evidence before Tasks 184-187 implementation. Exact-SHA DOCUMENTATION review and bootstrap review passed with zero findings for d60109e..b7cba4c; the second upstream scan covered SNAPSHOT.PAS and the 128K-conditioned Z80 path with no missing initial-profile behavior."
+    },
+    {
+      "cr_number": "CR-0194",
+      "title": "Implement 128K banked memory and paging latch",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0194.md", "design/machine-timing-evidence.md", "design/warajevo-zx-spectrum-next-architecture.md sections 9 and 12", "design/wzsn-architectures-1-2-developer-tasks.md task 184", "src/core/wz_machine.h", "src/core/wz_machine.c", "src/core/wz_bus.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS"],
+      "notes": "Opened on 2026-09-04 to implement the base 128K eight-bank RAM map and write-once 0x7ffd paging latch while preserving the 48K path. Requires exact-SHA review, remote and hosted validation, and a second upstream zero-gap scan before closure."
     }
   ]
 }

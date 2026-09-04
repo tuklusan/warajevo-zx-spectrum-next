@@ -25,6 +25,8 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     wz_bus_data_source_init(&machine->bus_data_source, 0, 0);
     machine->timing_trace = 0;
     machine->has_48k_rom = 0u;
+    machine->paging_7ffd = 0u;
+    machine->paging_7ffd_locked = 0u;
     machine->hardware_io_decode_enabled = 1u;
     for (size_t index = 0u; index < 8u; ++index) {
         machine->keyboard_rows[index] = 0x1fu;
@@ -48,6 +50,9 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     for (size_t index = 0u; index < sizeof(machine->memory); ++index) {
         machine->memory[index] = 0u;
     }
+    for (size_t index = 0u; index < sizeof(machine->ram_128k); ++index) {
+        ((wz_byte_t*)machine->ram_128k)[index] = 0u;
+    }
     return WZ_RESULT_OK;
 }
 
@@ -60,6 +65,8 @@ void wz_machine_destroy(wz_machine_t* machine)
         wz_bus_data_source_init(&machine->bus_data_source, 0, 0);
         machine->timing_trace = 0;
         machine->has_48k_rom = 0u;
+        machine->paging_7ffd = 0u;
+        machine->paging_7ffd_locked = 0u;
         machine->hardware_io_decode_enabled = 1u;
         for (size_t index = 0u; index < 8u; ++index) {
             machine->keyboard_rows[index] = 0x1fu;
@@ -343,16 +350,75 @@ wz_qword_t wz_machine_rom_identity(const wz_byte_t* bytes, size_t length)
 
 wz_byte_t wz_machine_memory_read(const wz_machine_t* machine, wz_word_t address)
 {
-    return machine == 0 ? 0xffu : machine->memory[address];
+    if (machine == 0) {
+        return 0xffu;
+    }
+    if (machine->profile != 0 && machine->profile->kind == WZ_MACHINE_128K_PAL) {
+        if (address >= 0xc000u) {
+            return machine->ram_128k[machine->paging_7ffd & 0x07u][address - 0xc000u];
+        }
+        if (address >= 0x8000u) {
+            return machine->ram_128k[2u][address - 0x8000u];
+        }
+        if (address >= 0x4000u) {
+            return machine->ram_128k[5u][address - 0x4000u];
+        }
+    }
+    return machine->memory[address];
 }
 
 void wz_machine_memory_write(wz_machine_t* machine, wz_word_t address,
                              wz_byte_t value)
 {
-    if (machine != 0 &&
-        (!machine->has_48k_rom || address >= WZ_48K_ROM_SIZE)) {
+    if (machine != 0 && machine->profile != 0 &&
+        machine->profile->kind == WZ_MACHINE_128K_PAL) {
+        if (address >= 0xc000u) {
+            machine->ram_128k[machine->paging_7ffd & 0x07u][address - 0xc000u] = value;
+        } else if (address >= 0x8000u) {
+            machine->ram_128k[2u][address - 0x8000u] = value;
+        } else if (address >= 0x4000u) {
+            machine->ram_128k[5u][address - 0x4000u] = value;
+        }
+    } else if (machine != 0 &&
+               (!machine->has_48k_rom || address >= WZ_48K_ROM_SIZE)) {
         machine->memory[address] = value;
     }
+}
+
+wz_result_t wz_machine_128k_paging_write(wz_machine_t* machine,
+                                         wz_word_t address,
+                                         wz_byte_t value)
+{
+    if (machine == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (machine->profile == 0 || machine->profile->kind != WZ_MACHINE_128K_PAL) {
+        return WZ_RESULT_UNSUPPORTED_OPERATION;
+    }
+    if ((address & 0x8002u) != 0u) {
+        return WZ_RESULT_UNSUPPORTED_OPERATION;
+    }
+    if (machine->paging_7ffd_locked != 0u) {
+        return WZ_RESULT_OK;
+    }
+    machine->paging_7ffd = (wz_byte_t)(value & 0x3fu);
+    machine->paging_7ffd_locked = (wz_byte_t)((value >> 5u) & 1u);
+    return WZ_RESULT_OK;
+}
+
+wz_byte_t wz_machine_128k_paging_value(const wz_machine_t* machine)
+{
+    return machine == 0 ? 0u : machine->paging_7ffd;
+}
+
+wz_byte_t wz_machine_128k_screen_bank(const wz_machine_t* machine)
+{
+    return machine == 0 ? 5u : (wz_byte_t)(((machine->paging_7ffd >> 3u) & 1u) != 0u ? 7u : 5u);
+}
+
+wz_byte_t wz_machine_128k_rom_bank(const wz_machine_t* machine)
+{
+    return machine == 0 ? 0u : (wz_byte_t)((machine->paging_7ffd >> 4u) & 1u);
 }
 
 void wz_machine_memory_write_at_tick(wz_machine_t* machine, wz_word_t address,

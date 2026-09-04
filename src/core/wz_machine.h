@@ -23,6 +23,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #define WZ_48K_ROM_SIZE 16384u
 #define WZ_48K_RAM_SIZE 49152u
+#define WZ_128K_RAM_BANK_COUNT 8u
+#define WZ_128K_RAM_BANK_SIZE 16384u
 #define WZ_BORDER_EVENT_CAPACITY 1024u
 
 typedef struct {
@@ -76,6 +78,9 @@ typedef struct wz_machine {
     wz_trace_sink_t* timing_trace;
     wz_byte_t memory[65536u];
     wz_byte_t has_48k_rom;
+    wz_byte_t ram_128k[WZ_128K_RAM_BANK_COUNT][WZ_128K_RAM_BANK_SIZE];
+    wz_byte_t paging_7ffd;
+    wz_byte_t paging_7ffd_locked;
     wz_byte_t hardware_io_decode_enabled;
     wz_byte_t keyboard_rows[8u];
     wz_kempston_t kempston;
@@ -140,6 +145,12 @@ wz_qword_t wz_machine_rom_identity(const wz_byte_t* bytes, size_t length);
 wz_byte_t wz_machine_memory_read(const wz_machine_t* machine, wz_word_t address);
 void wz_machine_memory_write(wz_machine_t* machine, wz_word_t address,
                              wz_byte_t value);
+wz_result_t wz_machine_128k_paging_write(wz_machine_t* machine,
+                                         wz_word_t address,
+                                         wz_byte_t value);
+wz_byte_t wz_machine_128k_paging_value(const wz_machine_t* machine);
+wz_byte_t wz_machine_128k_screen_bank(const wz_machine_t* machine);
+wz_byte_t wz_machine_128k_rom_bank(const wz_machine_t* machine);
 void wz_machine_memory_write_at_tick(wz_machine_t* machine, wz_word_t address,
                                      wz_byte_t value, wz_master_tick_t master_tick);
 bool wz_machine_ula_port_fe_selected(wz_word_t address);
