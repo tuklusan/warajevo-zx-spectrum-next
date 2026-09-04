@@ -1537,9 +1537,9 @@
     {
       "cr_number": "CR-0171",
       "title": "Harden Windows tool-drive discovery and installer evidence",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0171.md", "WORKFLOW.md", "tools/harness/run_cmake_smoke.py", "tools/harness/invoke_remote_windows_powershell.py"],
-      "notes": "Opened on 2026-09-03 after Windows 10 installed its complete compiler toolchain under D:\\Program Files. Scope covers external tool discovery, CRT evidence, parser-first installer diagnostics, and safe cleanup protection; no local build or test is permitted."
+      "notes": "Closed on 2026-09-04 after confirming external tool discovery and parser-first installer evidence on the designated Windows tool drive. Windows 10 CR0171-toolchain-windows10-3 and Windows 11 CR0171-toolchain-windows11-1 returned primary and artefact-pull code 0; Windows 10 evidence confirmed cl.exe, msvcrtd.lib, and oldnames.lib under D:\\Program Files. Exact-SHA CODE and DOCUMENTATION reviews passed with zero confirmed findings. Hosted platform-smoke 33848044467 completed all 18 lanes plus publication-gate successfully."
     },
     {
       "cr_number": "CR-0172",
