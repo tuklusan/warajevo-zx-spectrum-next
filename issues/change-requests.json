@@ -1551,9 +1551,9 @@
     {
       "cr_number": "CR-0173",
       "title": "Implement conservative tape trap eligibility reasons",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0173.md", "design/warajevo-zx-spectrum-next-architecture.md", "design/wzsn-architectures-1-2-developer-tasks.md task 157", "src/core/wz_machine.h", "src/core/wz_machine.c", "tests/wz_tests_placeholder.c", "reference/original-warajevo/source/src/spectrum-kernel/TAPE.ASM", "reference/original-warajevo/source/src/timex-kernel/TSTAPE.ASM"],
-      "notes": "Opened on 2026-09-03 as the next ordered Phase-7 scope. Adds no-false-positive eligibility reporting; positive loader recognition and accelerated mutation remain later scopes."
+      "notes": "Closed on 2026-09-04 after implementing machine-readable conservative trap-eligibility reasons for Normal mode, absent tape, absent ROM, and unrecognized loaders without mutating machine state. Exact-SHA CODE and DOCUMENTATION reviews passed with zero confirmed findings. Linux CR0173-trap-linux-1, Windows 10 CR0173-trap-windows10-1, and Windows 11 CR0173-trap-windows11-1 remote smoke runs passed; hosted platform-smoke 33851510728 completed all 18 lanes plus publication-gate. Positive loader recognition and accelerated mutation remain later ordered scopes."
     },
     {
       "cr_number": "CR-0174",
