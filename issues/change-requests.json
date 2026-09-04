@@ -1621,9 +1621,9 @@
     {
       "cr_number": "CR-0183",
       "title": "Freeze SNA and Z80 snapshot format matrix",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0183.md", "design/media-format-support.md", "design/warajevo-zx-spectrum-next-architecture.md sections 25.1-25.3", "design/wzsn-architectures-1-2-developer-tasks.md task 169", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS"],
-      "notes": "Opened on 2026-09-04 before task 171. Freeze exact SNA 48K/128K and Z80 v1/v2/v3 byte-level forms, compression, paging, PC encoding, malformed-input errors, and canonical writer boundaries before historical parser implementation."
+      "notes": "Closed on 2026-09-04 after freezing exact SNA 48K/128K and Z80 v1/v2/v3 byte-level forms, compression, paging, PC encoding, malformed-input errors, and canonical writer boundaries before historical parser implementation. Exact-SHA DOCUMENTATION review passed with zero confirmed findings; static repository gates passed; matrix was pushed before task 171 implementation."
     }
   ]
 }
