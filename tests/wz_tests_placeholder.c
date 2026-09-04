@@ -470,6 +470,53 @@ static void test_historical_state_representability(void)
     wz_machine_destroy(&machine);
 }
 
+static void test_snapshot_state_isolated_validation(void)
+{
+    wz_machine_t machine;
+    wz_snapshot_state_t snapshot;
+    wz_snapshot_state_t original;
+    wz_byte_t serialized[WZ_STATE_SNAPSHOT_CAPACITY];
+    wz_state_writer_t writer;
+    wz_qword_t before_hash;
+    wz_qword_t after_hash;
+
+    if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK ||
+        wz_state_hash_machine(&machine, &before_hash) != WZ_RESULT_OK) {
+        fputs("snapshot state setup failed\n", stderr);
+        exit(1);
+    }
+    wz_snapshot_state_init(&snapshot);
+    wz_state_writer_init(&writer, serialized, sizeof(serialized));
+    if (wz_state_serialize_machine(&machine, &writer) != WZ_RESULT_OK ||
+        wz_snapshot_state_load(&snapshot, serialized, writer.length) != WZ_RESULT_OK ||
+        wz_snapshot_state_length(&snapshot) != writer.length ||
+        wz_snapshot_state_data(&snapshot) == 0) {
+        fputs("snapshot state load failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    original = snapshot;
+    serialized[0u] = 0u;
+    if (wz_snapshot_state_load(&snapshot, serialized, writer.length) !=
+            WZ_RESULT_INVALID_STATE ||
+        memcmp(&snapshot, &original, sizeof(snapshot)) != 0 ||
+        wz_state_hash_machine(&machine, &after_hash) != WZ_RESULT_OK ||
+        before_hash != after_hash) {
+        fputs("snapshot state validation was not isolated\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    if (wz_snapshot_state_load(&snapshot, 0, writer.length) !=
+            WZ_RESULT_INVALID_ARGUMENT ||
+        wz_snapshot_state_length(0) != 0u ||
+        wz_snapshot_state_data(0) != 0) {
+        fputs("snapshot state argument validation failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_machine_destroy(&machine);
+}
+
 static void test_tape_trap_eligibility(void)
 {
     const wz_tape_segment_t segment = {1u, 0u};
@@ -1460,6 +1507,7 @@ int main(void)
     test_tape_loading_mode_state();
     test_networking_mode_state();
     test_historical_state_representability();
+    test_snapshot_state_isolated_validation();
     test_tape_trap_eligibility();
     test_tape_speed_invariance();
     test_standard_tap_parser();

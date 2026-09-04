@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 182,
+  "next_cr_number": 183,
   "status_values": [
     "open",
     "in_progress",
@@ -1610,6 +1610,13 @@
       "status": "in_progress",
       "source_authority": ["WORKFLOW.md", ".github/workflows/platform-smoke.yml", "tools/harness/README.md", "test-artefacts/README.md", "README-GIT-GITHUB.md"],
       "notes": "Opened on 2026-09-04 to keep every configured hosted macOS lane in the validation attempt while accepting macOS proof when one Intel and one ARM lane has successful exact-commit results. All non-macOS lanes remain mandatory; exact-commit local or remote lab evidence may substitute for a missing macOS architecture at CR closure."
+    },
+    {
+      "cr_number": "CR-0182",
+      "title": "Implement isolated temporary snapshot state",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0182.md", "design/media-format-support.md", "design/wzsn-architectures-1-2-developer-tasks.md task 170", "src/core/wz_state.h", "src/core/wz_state.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS"],
+      "notes": "Opened on 2026-09-04 for Phase-8 task 170. Add a fixed serialized temporary snapshot-state object whose validation/deserialization target is separate from the live machine; parser and atomic commit integration remain ordered follow-on work."
     }
   ]
 }

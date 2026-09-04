@@ -290,3 +290,67 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
     }
     return WZ_RESULT_OK;
 }
+
+void wz_snapshot_state_init(wz_snapshot_state_t* snapshot)
+{
+    if (snapshot != 0) {
+        snapshot->length = 0u;
+    }
+}
+
+wz_result_t wz_snapshot_state_capture(wz_snapshot_state_t* snapshot,
+                                      const wz_machine_t* machine)
+{
+    wz_byte_t bytes[WZ_STATE_SNAPSHOT_CAPACITY];
+    wz_state_writer_t writer;
+
+    if (snapshot == 0 || machine == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    wz_state_writer_init(&writer, bytes, sizeof(bytes));
+    if (wz_state_serialize_machine(machine, &writer) != WZ_RESULT_OK) {
+        return WZ_RESULT_SERIALIZATION_FAILURE;
+    }
+    for (size_t index = 0u; index < writer.length; ++index) {
+        snapshot->data[index] = bytes[index];
+    }
+    snapshot->length = writer.length;
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_snapshot_state_load(wz_snapshot_state_t* snapshot,
+                                   const wz_byte_t* data,
+                                   size_t length)
+{
+    wz_machine_t candidate = {0};
+
+    if (snapshot == 0 || data == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (length > WZ_STATE_SNAPSHOT_CAPACITY) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    if (wz_state_deserialize_machine(&candidate, data, length) != WZ_RESULT_OK) {
+        wz_machine_destroy(&candidate);
+        return WZ_RESULT_INVALID_STATE;
+    }
+    wz_machine_destroy(&candidate);
+    for (size_t index = 0u; index < length; ++index) {
+        snapshot->data[index] = data[index];
+    }
+    snapshot->length = length;
+    return WZ_RESULT_OK;
+}
+
+const wz_byte_t* wz_snapshot_state_data(const wz_snapshot_state_t* snapshot)
+{
+    if (snapshot == 0 || snapshot->length == 0u) {
+        return 0;
+    }
+    return snapshot->data;
+}
+
+size_t wz_snapshot_state_length(const wz_snapshot_state_t* snapshot)
+{
+    return snapshot == 0 ? 0u : snapshot->length;
+}
