@@ -101,7 +101,7 @@ class HarnessGateTests(unittest.TestCase):
     def test_extended_precision_receipt_remains_compatible(self):
         diff = b"reviewed diff"
         digest = hashlib.sha256(diff).hexdigest()
-        original_read_text = Path.read_text
+        original_read_bytes = Path.read_bytes
         tracker = json.loads((ROOT / "issues" / "change-requests.json").read_bytes())
         cr = {
             "cr_number": "CR-TEST-REMOTE-HARNESS",
@@ -137,11 +137,14 @@ class HarnessGateTests(unittest.TestCase):
             "review_complete": True,
             "snapshot_id": f"git:base..head:sha256:{digest}",
         })
+        def read_bytes(path):
+            if path == ROOT / "issues" / "change-requests.json":
+                return tracker_data
+            return original_read_bytes(path)
+
         with patch.object(Path, "is_file", return_value=True), \
-             patch.object(Path, "read_text", side_effect=[
-                 receipt,
-                 original_read_text(ROOT / "issues" / "change-requests.json", encoding="utf-8"),
-             ]), \
+             patch.object(Path, "read_text", return_value=receipt), \
+             patch.object(Path, "read_bytes", side_effect=read_bytes), \
              patch.object(remote.subprocess, "run", side_effect=[
                  Result(text_stdout="head\n"), Result(text_stdout="head\trefs/heads/main\n"),
                  Result(stdout=diff),
