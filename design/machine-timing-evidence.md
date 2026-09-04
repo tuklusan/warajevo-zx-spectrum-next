@@ -48,6 +48,32 @@ same-edge ordering for CPU bus activity, ULA fetches, contention, and interrupt
 edges remains subject to the dedicated Phase 3/4 evidence tables and must not
 be inferred solely from C call order.
 
+## Frozen Phase-9 128K PAL baseline
+
+The initial 128K PAL/+2 profile uses the same integer master-tick abstraction as 48K,
+with profile-defined conversion factors rather than a second timeline implementation:
+
+| Constant | Frozen value | Authority and rationale |
+| --- | ---: | --- |
+| CPU clock baseline | 3.54690 MHz nominal | [128K ZX Spectrum Technical Information](https://worldofspectrum.org/faq/reference/128kreference.htm) |
+| CPU T-states per line | 228 | 128K technical reference |
+| Lines per frame | 311 | 128K technical reference |
+| CPU T-states per frame | 70,908 | `228 * 311`, 128K technical reference |
+| Lines before television picture | 63 | 128K technical reference |
+| Active picture lines | 192 | 128K/+2 display geometry |
+| Master ticks per T-state | 2 | Profile-preserving project integer timeline; no host wall-clock dependency |
+| Master ticks per line/frame | 456 / 141,816 | Derived from the project master-tick ratio |
+
+For the base 128K/+2 profile, the contention delay pattern `6,5,4,3,2,1,0,0`
+starts at T-state 14,361 after the interrupt and repeats every 228 T-states. RAM
+banks 1, 3, 5, and 7 are contended; even ULA ports remain contended, while port
+`0x7ffd` is partially decoded and its high-byte access timing follows the reference
+I/O rules. The +2A/+3 timing, port decode, and special paging differences are not part
+of this initial profile.
+
+Primary authority: [128K ZX Spectrum Technical Information](https://worldofspectrum.org/faq/reference/128kreference.htm),
+sections “Timing” and “Memory”.
+
 ## Frozen 48K interrupt sampling order
 
 For the project-owned 48K boundary model, an interrupt edge at a sampled
