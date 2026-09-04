@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 192,
+  "next_cr_number": 193,
   "status_values": [
     "open",
     "in_progress",
@@ -1680,6 +1680,13 @@
       "status": "in_progress",
       "source_authority": ["design/cr-preflight/CR-0191.md", "design/media-format-support.md", "design/warajevo-zx-spectrum-next-architecture.md sections 25.1-25.3 and 46", "design/wzsn-architectures-1-2-developer-tasks.md task 180", "design/cr-preflight/CR-0089.md", "src/core/wz_state.c", "tests/wz_tests_placeholder.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS"],
       "notes": "Opened on 2026-09-04 for deterministic bounded fuzz-style coverage of SNA/Z80 malformed compression, lengths, paging, unsupported variants, and atomic parser behavior. Requires exact-SHA review, remote sanitizer and cross-platform validation, hosted publication, and a second upstream zero-gap scan before closure."
+    },
+    {
+      "cr_number": "CR-0192",
+      "title": "Add cross-host snapshot round-trip and atomic-failure regressions",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0192.md", "design/media-format-support.md", "design/warajevo-zx-spectrum-next-architecture.md sections 25 and 36", "design/wzsn-architectures-1-2-developer-tasks.md task 181", "src/core/wz_state.h", "src/core/wz_state.c", "tests/wz_tests_placeholder.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS"],
+      "notes": "Opened on 2026-09-04 for deterministic cross-host SNA/Z80 round-trip, portable byte-boundary, wrong-format/model, truncation, and save/load failure-atomicity coverage. Requires exact-SHA review, remote sanitizer and cross-platform validation, hosted publication, and a second upstream zero-gap scan before closure."
     }
   ]
 }

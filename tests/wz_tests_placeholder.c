@@ -1021,6 +1021,118 @@ static void test_snapshot_parser_fuzz_matrix(void)
     }
 }
 
+static void test_snapshot_cross_host_round_trips(void)
+{
+    static wz_byte_t sna[WZ_SNA_48K_LENGTH];
+    static wz_byte_t z80[WZ_Z80_V2_LENGTH];
+    static wz_byte_t output[WZ_Z80_V2_LENGTH];
+    static wz_byte_t original_output[WZ_Z80_V2_LENGTH];
+    static wz_snapshot_state_t snapshot;
+    static wz_snapshot_state_t original_snapshot;
+    wz_machine_t machine;
+
+    if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK) {
+        fputs("cross-host snapshot setup failed\n", stderr);
+        exit(1);
+    }
+    machine.cpu.program_counter = 0x4321u;
+    machine.cpu.stack_pointer = 0x8765u;
+    machine.cpu.main.a = 0x12u;
+    machine.cpu.main.f = 0x34u;
+    machine.cpu.ix = 0xabcdU;
+    machine.cpu.iy = 0x2345u;
+    machine.border_color = 6u;
+    machine.memory[0x4000u] = 0x11u;
+    machine.memory[0x8000u] = 0x22u;
+    machine.memory[0xc000u] = 0x33u;
+
+    memset(sna, 0x5au, sizeof(sna));
+    if (wz_state_save_sna_48k(&machine, sna, sizeof(sna)) != WZ_RESULT_OK ||
+        sna[19u] != 0u || sna[23u] != 0x63u || sna[24u] != 0x87u ||
+        sna[26u] != 6u || sna[27u + 0x0000u] != 0x11u) {
+        fputs("portable SNA golden boundary failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_snapshot_state_init(&snapshot);
+    if (wz_snapshot_state_load_sna_48k(&snapshot, sna, sizeof(sna)) !=
+            WZ_RESULT_OK ||
+        wz_snapshot_state_data(&snapshot)[33u] != 0x21u ||
+        wz_snapshot_state_data(&snapshot)[34u] != 0x43u ||
+        wz_snapshot_state_data(&snapshot)[73u + 0x4000u] != 0x11u) {
+        fputs("cross-host SNA round-trip failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    original_snapshot = snapshot;
+    if (wz_snapshot_state_load_sna_48k(&snapshot, sna, sizeof(sna) - 1u) !=
+            WZ_RESULT_INVALID_STATE ||
+        memcmp(&snapshot, &original_snapshot, sizeof(snapshot)) != 0 ||
+        wz_snapshot_state_load_sna_48k(&snapshot, z80, sizeof(z80)) !=
+            WZ_RESULT_INVALID_STATE ||
+        memcmp(&snapshot, &original_snapshot, sizeof(snapshot)) != 0) {
+        fputs("SNA truncation or wrong-format failure was not atomic\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+
+    memset(z80, 0xa5, sizeof(z80));
+    if (wz_state_save_z80_v2_48k(&machine, z80, sizeof(z80)) != WZ_RESULT_OK ||
+        z80[6u] != 0u || z80[7u] != 0u || z80[30u] != 23u ||
+        z80[32u] != 0x21u || z80[33u] != 0x43u || z80[57u] != 8u) {
+        fputs("portable Z80 golden boundary failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    if (wz_snapshot_state_load_z80_v2(&snapshot, z80, sizeof(z80)) !=
+            WZ_RESULT_OK ||
+        wz_snapshot_state_data(&snapshot)[73u + 0x4000u] != 0x11u ||
+        wz_snapshot_state_data(&snapshot)[73u + 0x8000u] != 0x22u ||
+        wz_snapshot_state_data(&snapshot)[73u + 0xc000u] != 0x33u) {
+        fputs("cross-host Z80 round-trip failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    original_snapshot = snapshot;
+    z80[34u] = 1u;
+    if (wz_snapshot_state_load_z80_v2(&snapshot, z80, sizeof(z80)) !=
+            WZ_RESULT_PARSE_ERROR ||
+        memcmp(&snapshot, &original_snapshot, sizeof(snapshot)) != 0) {
+        fputs("Z80 wrong-model failure was not atomic\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    z80[34u] = 0u;
+    if (wz_snapshot_state_load_z80_v2(&snapshot, z80, sizeof(z80) - 1u) !=
+            WZ_RESULT_PARSE_ERROR ||
+        memcmp(&snapshot, &original_snapshot, sizeof(snapshot)) != 0) {
+        fputs("Z80 truncation failure was not atomic\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+
+    machine.networking_mode = WZ_NETWORKING_INTERFACE1;
+    memset(output, 0x5au, sizeof(output));
+    memcpy(original_output, output, sizeof(original_output));
+    if (wz_state_save_z80_v2_48k(&machine, output, sizeof(output)) !=
+            WZ_RESULT_UNSUPPORTED_OPERATION ||
+        memcmp(output, original_output, sizeof(output)) != 0) {
+        fputs("Z80 unsupported-state save was accepted\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    memset(output, 0x5au, sizeof(output));
+    if (wz_state_save_z80_v2_48k(&machine, output, sizeof(output) - 1u) !=
+            WZ_RESULT_BUFFER_TOO_SMALL ||
+        output[0u] != 0x5au || output[sizeof(output) - 1u] != 0x5au ||
+        original_output[30u] != 23u) {
+        fputs("Z80 output failure was not atomic\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_machine_destroy(&machine);
+}
+
 static void test_tape_trap_eligibility(void)
 {
     const wz_tape_segment_t segment = {1u, 0u};
@@ -2019,6 +2131,7 @@ int main(void)
     test_z80_v2_loader_and_writer();
     test_z80_v3_loader();
     test_snapshot_parser_fuzz_matrix();
+    test_snapshot_cross_host_round_trips();
     test_tape_trap_eligibility();
     test_tape_speed_invariance();
     test_standard_tap_parser();
