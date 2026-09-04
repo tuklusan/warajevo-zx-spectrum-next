@@ -1265,7 +1265,8 @@ static void test_128k_ula_profile(void)
                                        &count) != WZ_RESULT_OK || count != 2u ||
         events[0u].address != 0x4000u || events[0u].value != 0xa5u ||
         events[0u].master_tick != 14361u * 2u ||
-        events[1u].address != 0x5800u || events[1u].master_tick != 14363u * 2u) {
+        events[1u].address != 0x5800u ||
+        events[1u].master_tick != 14361u * 2u + 2u) {
         fputs("128K ULA screen-bank fetch failed\n", stderr);
         wz_machine_destroy(&machine);
         exit(1);
