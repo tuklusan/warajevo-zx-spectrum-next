@@ -15,6 +15,11 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 typedef struct wz_machine wz_machine_t;
 
+typedef enum {
+    WZ_HISTORICAL_FORMAT_SNA = 0,
+    WZ_HISTORICAL_FORMAT_Z80
+} wz_historical_state_format_t;
+
 typedef struct {
     wz_byte_t* data;
     size_t capacity;
@@ -31,5 +36,8 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
                                          size_t length);
 wz_result_t wz_state_hash_machine(const wz_machine_t* machine,
                                   wz_qword_t* hash);
+wz_result_t wz_state_validate_historical_representability(
+    const wz_machine_t* machine,
+    wz_historical_state_format_t format);
 
 #endif

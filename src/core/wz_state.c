@@ -156,6 +156,23 @@ wz_result_t wz_state_hash_machine(const wz_machine_t* machine,
     return WZ_RESULT_OK;
 }
 
+wz_result_t wz_state_validate_historical_representability(
+    const wz_machine_t* machine,
+    wz_historical_state_format_t format)
+{
+    if (machine == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (format > WZ_HISTORICAL_FORMAT_Z80) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (machine->tape_loading_mode != WZ_TAPE_LOADING_NORMAL ||
+        machine->networking_mode != WZ_NETWORKING_NONE) {
+        return WZ_RESULT_UNSUPPORTED_OPERATION;
+    }
+    return WZ_RESULT_OK;
+}
+
 wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
                                          const wz_byte_t* data,
                                          size_t length)

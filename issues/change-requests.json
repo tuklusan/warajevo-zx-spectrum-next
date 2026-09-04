@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 179,
+  "next_cr_number": 180,
   "status_values": [
     "open",
     "in_progress",
@@ -1589,6 +1589,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0178.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24 and 25", "design/wzsn-architectures-1-2-developer-tasks.md task 178", "src/core/wz_machine.h", "src/core/wz_machine.c", "src/core/wz_state.c", "tests/wz_tests_placeholder.c"],
       "notes": "Closed on 2026-09-04. Added exactly one validated NONE/INTERFACE1/EAR_MIC networking-mode field to canonical native state, with versioned serialization, hashing, and atomic invalid-value rejection. Exact-SHA CODE and DOCUMENTATION reviews passed with zero confirmed findings. Linux, Windows 11, and Intel Big Sur remote smoke passed; Windows 10 192.168.4.75 timed out at the SSH banner and was not treated as a product failure. Hosted platform-smoke 33875800519 passed all 18 lanes plus publication-gate for c49b7d3."
+    },
+    {
+      "cr_number": "CR-0179",
+      "title": "Control loss of WZSN-only state in historical snapshot formats",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0179.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24 and 25", "design/wzsn-architectures-1-2-developer-tasks.md task 179", "design/media-format-support.md", "src/core/wz_machine.h", "src/core/wz_state.h"],
+      "notes": "Opened on 2026-09-04 for ordered Phase-8 task 179. Establish a reusable controlled representability error for future SNA/Z80 writers when active WZSN-only deterministic state cannot be encoded; no historical writer exists in the current checkout, so format implementation remains deferred to its ordered tasks."
     }
   ]
 }

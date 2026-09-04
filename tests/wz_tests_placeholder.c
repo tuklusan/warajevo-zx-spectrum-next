@@ -425,6 +425,51 @@ static void test_networking_mode_state(void)
     wz_machine_destroy(&machine);
 }
 
+static void test_historical_state_representability(void)
+{
+    wz_machine_t machine;
+    wz_tape_loading_mode_t tape_mode;
+    wz_networking_mode_t networking_mode;
+
+    if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK ||
+        wz_state_validate_historical_representability(
+            &machine, WZ_HISTORICAL_FORMAT_SNA) != WZ_RESULT_OK ||
+        wz_state_validate_historical_representability(
+            &machine, WZ_HISTORICAL_FORMAT_Z80) != WZ_RESULT_OK ||
+        wz_state_validate_historical_representability(
+            &machine, (wz_historical_state_format_t)2u) !=
+            WZ_RESULT_INVALID_ARGUMENT ||
+        wz_state_validate_historical_representability(0,
+            WZ_HISTORICAL_FORMAT_SNA) != WZ_RESULT_INVALID_ARGUMENT) {
+        fputs("historical state baseline validation failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    tape_mode = machine.tape_loading_mode;
+    networking_mode = machine.networking_mode;
+    machine.tape_loading_mode = WZ_TAPE_LOADING_INSTANT_TRAP;
+    if (wz_state_validate_historical_representability(
+            &machine, WZ_HISTORICAL_FORMAT_SNA) !=
+            WZ_RESULT_UNSUPPORTED_OPERATION ||
+        machine.tape_loading_mode != WZ_TAPE_LOADING_INSTANT_TRAP) {
+        fputs("historical tape state was not rejected\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    machine.tape_loading_mode = tape_mode;
+    machine.networking_mode = WZ_NETWORKING_INTERFACE1;
+    if (wz_state_validate_historical_representability(
+            &machine, WZ_HISTORICAL_FORMAT_Z80) !=
+            WZ_RESULT_UNSUPPORTED_OPERATION ||
+        machine.networking_mode != WZ_NETWORKING_INTERFACE1) {
+        fputs("historical networking state was not rejected\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    machine.networking_mode = networking_mode;
+    wz_machine_destroy(&machine);
+}
+
 static void test_tape_trap_eligibility(void)
 {
     const wz_tape_segment_t segment = {1u, 0u};
@@ -1414,6 +1459,7 @@ int main(void)
     test_machine_tape_playback();
     test_tape_loading_mode_state();
     test_networking_mode_state();
+    test_historical_state_representability();
     test_tape_trap_eligibility();
     test_tape_speed_invariance();
     test_standard_tap_parser();
