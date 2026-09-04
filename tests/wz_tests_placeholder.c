@@ -1163,6 +1163,34 @@ static void test_128k_banked_memory_and_paging(void)
         exit(1);
     }
     wz_machine_memory_write(&machine, 0xc000u, 0x44u);
+    wz_bus_request_init(&request, WZ_BUS_IO_WRITE, 0u, 0x1ffdu, 0x04u, 4u);
+    if (wz_machine_bus_request(&machine, &request) != WZ_RESULT_OK ||
+        wz_machine_128k_paging_value(&machine) != 0x04u) {
+        fputs("128K paging alias decode failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_bus_request_init(&request, WZ_BUS_IO_WRITE, 0u, 0x7ffbu, 0x07u, 4u);
+    if (wz_machine_bus_request(&machine, &request) != WZ_RESULT_OK ||
+        wz_machine_128k_paging_value(&machine) != 0x04u) {
+        fputs("128K paging A1 rejection failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_bus_request_init(&request, WZ_BUS_IO_WRITE, 0u, 0xffffu, 0x07u, 4u);
+    if (wz_machine_bus_request(&machine, &request) != WZ_RESULT_OK ||
+        wz_machine_128k_paging_value(&machine) != 0x04u) {
+        fputs("128K paging A15 rejection failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_bus_request_init(&request, WZ_BUS_IO_READ, 0u, 0x7ffdu, 0u, 4u);
+    if (wz_machine_bus_request(&machine, &request) != WZ_RESULT_OK ||
+        wz_machine_128k_paging_value(&machine) != 0x04u) {
+        fputs("128K paging read interference failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
     if (wz_machine_128k_screen_bank(&machine) != 5u ||
         wz_machine_128k_rom_bank(&machine) != 0u) {
         fputs("128K default screen or ROM selection failed\n", stderr);
