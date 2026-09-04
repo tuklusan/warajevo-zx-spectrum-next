@@ -359,7 +359,7 @@ wz_result_t wz_snapshot_state_load_sna_48k(wz_snapshot_state_t* snapshot,
                                            const wz_byte_t* data,
                                            size_t length)
 {
-    wz_machine_t candidate;
+    static wz_machine_t candidate;
     wz_word_t stack_pointer;
 
     if (snapshot == 0 || data == 0) {
