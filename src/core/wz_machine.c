@@ -634,6 +634,18 @@ static wz_word_t wz_ula_bitmap_address(wz_dword_t row, wz_dword_t cell)
     return (wz_word_t)address;
 }
 
+static wz_byte_t wz_machine_ula_memory_read(const wz_machine_t* machine,
+                                            wz_word_t address)
+{
+    if (machine->profile->kind == WZ_MACHINE_128K_PAL &&
+        address >= 0x4000u && address < 0x5b00u &&
+        machine->ram_128k != 0) {
+        return machine->ram_128k[wz_machine_128k_screen_bank(machine) *
+                                 WZ_128K_RAM_BANK_SIZE + address - 0x4000u];
+    }
+    return machine->memory[address];
+}
+
 wz_result_t wz_machine_ula_fetches_at_tick(const wz_machine_t* machine,
                                            wz_master_tick_t master_tick,
                                            wz_ula_fetch_event_t* events,
@@ -654,7 +666,8 @@ wz_result_t wz_machine_ula_fetches_at_tick(const wz_machine_t* machine,
     }
     *count = 0u;
     profile = machine->profile;
-    if (profile->kind != WZ_MACHINE_48K_PAL ||
+    if ((profile->kind != WZ_MACHINE_48K_PAL &&
+         profile->kind != WZ_MACHINE_128K_PAL) ||
         profile->master_ticks_per_cpu_tstate == 0u ||
         profile->ula_fetch_line_count == 0u ||
         profile->ula_fetches_per_line == 0u ||
@@ -687,11 +700,11 @@ wz_result_t wz_machine_ula_fetches_at_tick(const wz_machine_t* machine,
     events[0].kind = WZ_ULA_FETCH_BITMAP;
     events[0].master_tick = bitmap_tick;
     events[0].address = wz_ula_bitmap_address(row, cell);
-    events[0].value = machine->memory[events[0].address];
+    events[0].value = wz_machine_ula_memory_read(machine, events[0].address);
     events[1].kind = WZ_ULA_FETCH_ATTRIBUTE;
     events[1].master_tick = attribute_tick;
     events[1].address = (wz_word_t)(0x5800u + (row / 8u) * 32u + cell);
-    events[1].value = machine->memory[events[1].address];
+    events[1].value = wz_machine_ula_memory_read(machine, events[1].address);
     *count = 2u;
     return WZ_RESULT_OK;
 }

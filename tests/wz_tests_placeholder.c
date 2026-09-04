@@ -1231,6 +1231,63 @@ static void test_128k_banked_memory_and_paging(void)
     wz_machine_destroy(&machine);
 }
 
+static void test_128k_ula_profile(void)
+{
+    wz_machine_t machine;
+    wz_bus_request_t request;
+    wz_ula_fetch_event_t events[2u];
+    size_t count = 0u;
+
+    if (wz_machine_init(&machine, wz_machine_profile_128k_pal()) != WZ_RESULT_OK ||
+        machine.profile->tstates_per_line != 228u ||
+        machine.profile->lines_per_frame != 311u ||
+        machine.profile->tstates_per_frame != 70908u ||
+        machine.profile->raster_clocks_per_line != 456u ||
+        machine.profile->ula_fetch_start_tstate != 14361u ||
+        machine.profile->ula_fetch_line_count != 192u ||
+        machine.profile->ula_fetches_per_line != 32u ||
+        machine.profile->ula_fetch_interval_tstates != 4u) {
+        fputs("128K ULA profile geometry failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_bus_request_init(&request, WZ_BUS_IO_WRITE, 0u, 0x7ffdu, 0x0fu, 4u);
+    if (wz_machine_bus_request(&machine, &request) != WZ_RESULT_OK) {
+        fputs("128K ULA screen-bank setup failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_machine_memory_write(&machine, 0xc000u, 0xa5u);
+    wz_bus_request_init(&request, WZ_BUS_IO_WRITE, 0u, 0x7ffdu, 0x08u, 4u);
+    if (wz_machine_bus_request(&machine, &request) != WZ_RESULT_OK ||
+        wz_machine_ula_fetches_at_tick(&machine, 14361u * 2u, events,
+                                       sizeof(events) / sizeof(events[0u]),
+                                       &count) != WZ_RESULT_OK || count != 2u ||
+        events[0u].address != 0x4000u || events[0u].value != 0xa5u ||
+        events[0u].master_tick != 14361u * 2u ||
+        events[1u].address != 0x5800u || events[1u].master_tick != 14363u * 2u) {
+        fputs("128K ULA screen-bank fetch failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_bus_request_init(&request, WZ_BUS_IO_WRITE, 0u, 0x7ffdu, 0x00u, 4u);
+    if (wz_machine_bus_request(&machine, &request) != WZ_RESULT_OK) {
+        fputs("128K ULA fixed-screen setup failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_machine_memory_write(&machine, 0x4000u, 0x5au);
+    if (wz_machine_ula_fetches_at_tick(&machine, 14361u * 2u, events,
+                                       sizeof(events) / sizeof(events[0u]),
+                                       &count) != WZ_RESULT_OK ||
+        events[0u].value != 0x5au) {
+        fputs("128K ULA fixed-screen fetch failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_machine_destroy(&machine);
+}
+
 static void test_tape_trap_eligibility(void)
 {
     const wz_tape_segment_t segment = {1u, 0u};
@@ -2231,6 +2288,7 @@ int main(void)
     test_snapshot_parser_fuzz_matrix();
     test_snapshot_cross_host_round_trips();
     test_128k_banked_memory_and_paging();
+    test_128k_ula_profile();
     test_tape_trap_eligibility();
     test_tape_speed_invariance();
     test_standard_tap_parser();

@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 196,
+  "next_cr_number": 197,
   "status_values": [
     "open",
     "in_progress",
@@ -1708,6 +1708,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0195.md", "design/machine-timing-evidence.md", "design/warajevo-zx-spectrum-next-architecture.md sections 9 and 12", "design/wzsn-architectures-1-2-developer-tasks.md task 185", "src/core/wz_machine.c", "src/core/wz_bus.c", "tests/wz_tests_placeholder.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS", "reference/original-warajevo/source/src/spectrum-kernel/Z80.ASM"],
       "notes": "Closed on 2026-09-04 after adding alias, A15/A1 rejection, read non-interference, and lock persistence coverage. Exact-SHA CODE and bootstrap reviews passed with zero findings for bef5744..4e32931; remote Linux sanitizer, Windows 10/11, Intel macOS, and hosted run 33929332340 at 4e3293196e9ec41352a8456344c1e56c35551915 all passed. Second upstream zero-gap scan found no missing base-profile behavior."
+    },
+    {
+      "cr_number": "CR-0196",
+      "title": "Implement 128K ULA timing and display-bank profile",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0196.md", "design/machine-timing-evidence.md", "design/warajevo-zx-spectrum-next-architecture.md sections 9, 15, and 16", "design/wzsn-architectures-1-2-developer-tasks.md task 186", "src/core/wz_machine_profile.c", "src/core/wz_machine.c", "tests/wz_tests_placeholder.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS", "reference/original-warajevo/source/src/spectrum-kernel/Z80.ASM"],
+      "notes": "Opened on 2026-09-04 to enable the frozen 128K ULA fetch schedule and display-bank selection through the shared profile-driven raster path, while deferring contention and out-of-profile variants. Requires exact-SHA review, remote and hosted validation, and a second upstream zero-gap scan before closure."
     }
   ]
 }

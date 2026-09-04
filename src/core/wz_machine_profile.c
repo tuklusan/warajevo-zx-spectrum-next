@@ -44,11 +44,11 @@ static const wz_machine_profile_t wz_profile_128k = {
     192u,
     0u,
     32u,
-    0u,
-    0u,
-    0u,
-    0u,
-    0u,
+    14361u,
+    192u,
+    32u,
+    4u,
+    1u,
     0u
 };
 
