@@ -799,7 +799,7 @@ static void test_z80_v2_loader_and_writer(void)
         exit(1);
     }
     original_snapshot = snapshot;
-    z80[WZ_Z80_V2_HEADER_LENGTH + 262u] = 4u;
+    z80[WZ_Z80_V2_HEADER_LENGTH + 2u] = 4u;
     if (wz_snapshot_state_load_z80_v2(&snapshot, z80, offset) !=
             WZ_RESULT_PARSE_ERROR ||
         memcmp(&snapshot, &original_snapshot, sizeof(snapshot)) != 0) {
