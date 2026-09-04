@@ -1169,9 +1169,9 @@ static void test_128k_banked_memory_and_paging(void)
         wz_machine_destroy(&machine);
         exit(1);
     }
-    wz_bus_request_init(&request, WZ_BUS_IO_WRITE, 0u, 0x7ffdu, 0x3cu, 4u);
+    wz_bus_request_init(&request, WZ_BUS_IO_WRITE, 0u, 0x7ffdu, 0x1cu, 4u);
     if (wz_machine_bus_request(&machine, &request) != WZ_RESULT_OK ||
-        wz_machine_128k_paging_value(&machine) != 0x3cu ||
+        wz_machine_128k_paging_value(&machine) != 0x1cu ||
         wz_machine_128k_screen_bank(&machine) != 7u ||
         wz_machine_128k_rom_bank(&machine) != 1u) {
         fputs("128K paging latch fields failed\n", stderr);
