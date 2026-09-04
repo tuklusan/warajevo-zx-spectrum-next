@@ -1614,9 +1614,9 @@
     {
       "cr_number": "CR-0182",
       "title": "Implement isolated temporary snapshot state",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0182.md", "design/media-format-support.md", "design/wzsn-architectures-1-2-developer-tasks.md task 170", "src/core/wz_state.h", "src/core/wz_state.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS"],
-      "notes": "Opened on 2026-09-04 for Phase-8 task 170. Add a fixed serialized temporary snapshot-state object whose validation/deserialization target is separate from the live machine; parser and atomic commit integration remain ordered follow-on work."
+      "notes": "Closed on 2026-09-04 at fc1d52a. Added a fixed allocation-free serialized snapshot object, isolated candidate validation through a zeroed temporary machine, bounded accessors, and regression coverage proving malformed input preserves both the snapshot and live machine. Exact-SHA normal CODE and independent bootstrap reviews passed with zero confirmed findings. Linux, Windows 10, and Windows 11 remote smoke passed on the corrected snapshot; Intel Mac smoke returned no harness output and remains an unavailable environmental lane under the temporary macOS acceptance override. Static repository gates passed; no local build or test was run."
     }
   ]
 }
