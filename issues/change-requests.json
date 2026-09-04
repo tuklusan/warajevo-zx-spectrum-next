@@ -1677,16 +1677,16 @@
     {
       "cr_number": "CR-0191",
       "title": "Add deterministic SNA and Z80 parser fuzz coverage",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0191.md", "design/media-format-support.md", "design/warajevo-zx-spectrum-next-architecture.md sections 25.1-25.3 and 46", "design/wzsn-architectures-1-2-developer-tasks.md task 180", "design/cr-preflight/CR-0089.md", "src/core/wz_state.c", "tests/wz_tests_placeholder.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS"],
-      "notes": "Opened on 2026-09-04 for deterministic bounded fuzz-style coverage of SNA/Z80 malformed compression, lengths, paging, unsupported variants, and atomic parser behavior. Requires exact-SHA review, remote sanitizer and cross-platform validation, hosted publication, and a second upstream zero-gap scan before closure."
+      "notes": "Closed on 2026-09-04 after deterministic bounded SNA/Z80 malformed-input and atomic-publication coverage passed exact-SHA CODE and bootstrap reviews for 2644e64..342fd8c, remote Linux sanitizer plus Windows 10/11 and Intel Mac runs CR0192-LINUX-SAN-R2, CR0192-WIN10-R2, CR0192-WIN11-R2, CR0192-MAC-R2, and hosted run 33923651802 at 342fd8c. The sanitizer caught and the candidate fixed a one-byte fuzz-fixture overrun; the second upstream scan found no missing parser-fuzz behavior."
     },
     {
       "cr_number": "CR-0192",
       "title": "Add cross-host snapshot round-trip and atomic-failure regressions",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0192.md", "design/media-format-support.md", "design/warajevo-zx-spectrum-next-architecture.md sections 25 and 36", "design/wzsn-architectures-1-2-developer-tasks.md task 181", "src/core/wz_state.h", "src/core/wz_state.c", "tests/wz_tests_placeholder.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS"],
-      "notes": "Opened on 2026-09-04 for deterministic cross-host SNA/Z80 round-trip, portable byte-boundary, wrong-format/model, truncation, and save/load failure-atomicity coverage. Requires exact-SHA review, remote sanitizer and cross-platform validation, hosted publication, and a second upstream zero-gap scan before closure."
+      "notes": "Closed on 2026-09-04 after deterministic cross-host SNA/Z80 round-trip, portable byte-boundary, wrong-format/model, truncation, and save/load failure-atomicity coverage passed exact-SHA CODE and bootstrap reviews for 80d4377..342fd8c, remote runs CR0192-LINUX-SAN-R2, CR0192-WIN10-R2, CR0192-WIN11-R2, CR0192-MAC-R2, and hosted run 33923651802 at 342fd8c. The second upstream scan found no missing 48K behavior."
     }
   ]
 }
