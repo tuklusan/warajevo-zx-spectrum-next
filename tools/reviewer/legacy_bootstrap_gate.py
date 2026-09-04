@@ -14,7 +14,7 @@ import json
 import sys
 from pathlib import Path
 
-from deepseek_gate import (
+from review_gate import (
     DeepSeekClient,
     DEFAULT_REVIEW_DEADLINE_SECONDS,
     ReviewError,
