@@ -1530,9 +1530,9 @@
     {
       "cr_number": "CR-0170",
       "title": "Implement deterministic WAV and PCM tape decoding",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/warajevo-zx-spectrum-next-architecture.md", "design/media-format-support.md", "design/wzsn-architectures-1-2-developer-tasks.md task 155", "design/cr-preflight/CR-0170.md", "src/core/wz_tape.h", "reference/original-warajevo/source"],
-      "notes": "Opened on 2026-09-03 as the next ordered Phase-7 architecture scope. Preflight covers accepted RIFF/WAVE PCM forms, deterministic mono conversion, threshold and hysteresis edges, canonical time, malformed input, and no-partial-publication behavior. CR-0169 reviewer migration remains an active validation detour."
+      "notes": "Closed on 2026-09-04 after implementing deterministic RIFF/WAVE PCM integer decoding, multi-channel mono conversion, threshold/hysteresis edge generation on canonical time, malformed-input rejection, and no-partial-publication behavior. Exact-SHA CODE and DOCUMENTATION reviews passed with zero confirmed findings. Linux CR0170-wav-linux-4, Windows 10 CR0170-wav-windows10-1, and Windows 11 CR0170-wav-windows11-1 remote smoke runs passed; hosted platform-smoke 33847141010 completed all 18 lanes plus publication-gate for 3812dc1. Earlier non-green runs remain recorded as diagnostic evidence."
     },
     {
       "cr_number": "CR-0171",
