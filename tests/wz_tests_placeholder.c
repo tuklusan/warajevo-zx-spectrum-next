@@ -905,6 +905,122 @@ static void test_z80_v3_loader(void)
     }
 }
 
+static void test_snapshot_parser_fuzz_matrix(void)
+{
+    static wz_byte_t random_data[2048u];
+    static wz_byte_t z80_v2[WZ_Z80_V2_LENGTH + 1u];
+    static wz_byte_t z80_v3[WZ_Z80_V3_HEADER_LENGTH +
+                            3u * (3u + WZ_Z80_V2_PAGE_SIZE)];
+    static wz_snapshot_state_t snapshot;
+    static wz_snapshot_state_t original_snapshot;
+    wz_sna_128k_image_t image;
+    wz_dword_t seed = 0x6d2b79f5u;
+
+    memset(z80_v2, 0, sizeof(z80_v2));
+    z80_v2[27u] = 1u;
+    z80_v2[28u] = 1u;
+    z80_v2[29u] = 2u;
+    z80_v2[30u] = 23u;
+    z80_v2[32u] = 1u;
+    for (size_t page = 0u; page < WZ_Z80_V2_PAGE_COUNT; ++page) {
+        const wz_byte_t page_numbers[WZ_Z80_V2_PAGE_COUNT] = {8u, 4u, 5u};
+        size_t offset = WZ_Z80_V2_HEADER_LENGTH +
+                        page * (3u + WZ_Z80_V2_PAGE_SIZE);
+        wz_write_le16(z80_v2 + offset, WZ_Z80_V2_UNCOMPRESSED_PAGE_LENGTH);
+        z80_v2[offset + 2u] = page_numbers[page];
+    }
+    memcpy(z80_v3, z80_v2, WZ_Z80_V2_HEADER_LENGTH);
+    memmove(z80_v3 + WZ_Z80_V3_HEADER_LENGTH,
+            z80_v2 + WZ_Z80_V2_HEADER_LENGTH,
+            sizeof(z80_v2) - WZ_Z80_V2_HEADER_LENGTH);
+    memset(z80_v3 + WZ_Z80_V2_HEADER_LENGTH,
+           0, WZ_Z80_V3_HEADER_LENGTH - WZ_Z80_V2_HEADER_LENGTH);
+    wz_write_le16(z80_v3 + 30u, 54u);
+
+    wz_snapshot_state_init(&snapshot);
+    memset(snapshot.data, 0x5au, sizeof(snapshot.data));
+    snapshot.length = sizeof(snapshot.data);
+    for (size_t iteration = 0u; iteration < 1024u; ++iteration) {
+        size_t length;
+        seed = seed * 1664525u + 1013904223u;
+        for (size_t index = 0u; index < sizeof(random_data); ++index) {
+            seed = seed * 1664525u + 1013904223u;
+            random_data[index] = (wz_byte_t)(seed >> 24u);
+        }
+        length = (size_t)(seed % (sizeof(random_data) + 1u));
+        original_snapshot = snapshot;
+        if (wz_snapshot_state_load_sna_48k(&snapshot, random_data, length) !=
+                WZ_RESULT_OK && memcmp(&snapshot, &original_snapshot,
+                                       sizeof(snapshot)) != 0) {
+            fputs("SNA parser published malformed fuzz input\n", stderr);
+            exit(1);
+        }
+        original_snapshot = snapshot;
+        if (wz_snapshot_state_load_z80_v1(&snapshot, random_data, length) !=
+                WZ_RESULT_OK && memcmp(&snapshot, &original_snapshot,
+                                       sizeof(snapshot)) != 0) {
+            fputs("Z80 v1 parser published malformed fuzz input\n", stderr);
+            exit(1);
+        }
+        original_snapshot = snapshot;
+        if (wz_snapshot_state_load_z80_v2(&snapshot, random_data, length) !=
+                WZ_RESULT_OK && memcmp(&snapshot, &original_snapshot,
+                                       sizeof(snapshot)) != 0) {
+            fputs("Z80 v2 parser published malformed fuzz input\n", stderr);
+            exit(1);
+        }
+        original_snapshot = snapshot;
+        if (wz_snapshot_state_load_z80_v3(&snapshot, random_data, length) !=
+                WZ_RESULT_OK && memcmp(&snapshot, &original_snapshot,
+                                       sizeof(snapshot)) != 0) {
+            fputs("Z80 v3 parser published malformed fuzz input\n", stderr);
+            exit(1);
+        }
+    }
+    if (wz_sna_128k_image_init(&image) != WZ_RESULT_OK) {
+        fputs("SNA 128K fuzz setup failed\n", stderr);
+        exit(1);
+    }
+    for (size_t iteration = 0u; iteration < 1024u; ++iteration) {
+        seed = seed * 1664525u + 1013904223u;
+        for (size_t index = 0u; index < sizeof(random_data); ++index) {
+            seed = seed * 1664525u + 1013904223u;
+            random_data[index] = (wz_byte_t)(seed >> 24u);
+        }
+        (void)wz_sna_128k_image_load(&image, random_data,
+                                     (size_t)(seed % (sizeof(random_data) + 1u)));
+    }
+
+    wz_write_le16(z80_v2 + WZ_Z80_V2_HEADER_LENGTH, 0u);
+    wz_snapshot_state_init(&snapshot);
+    if (wz_snapshot_state_load_z80_v2(&snapshot, z80_v2,
+                                      WZ_Z80_V2_LENGTH) != WZ_RESULT_PARSE_ERROR) {
+        fputs("Z80 v2 zero-length fuzz case was accepted\n", stderr);
+        exit(1);
+    }
+    memset(z80_v2, 0, sizeof(z80_v2));
+    z80_v2[27u] = 1u;
+    z80_v2[28u] = 1u;
+    z80_v2[29u] = 2u;
+    z80_v2[30u] = 23u;
+    wz_write_le16(z80_v2 + WZ_Z80_V2_HEADER_LENGTH, 4u);
+    z80_v2[WZ_Z80_V2_HEADER_LENGTH + 2u] = 8u;
+    z80_v2[WZ_Z80_V2_HEADER_LENGTH + 3u] = 0xedu;
+    z80_v2[WZ_Z80_V2_HEADER_LENGTH + 4u] = 0xedu;
+    if (wz_snapshot_state_load_z80_v2(&snapshot, z80_v2,
+                                      WZ_Z80_V2_HEADER_LENGTH + 7u) !=
+            WZ_RESULT_PARSE_ERROR) {
+        fputs("Z80 v2 truncated run fuzz case was accepted\n", stderr);
+        exit(1);
+    }
+    z80_v3[34u] = 1u;
+    if (wz_snapshot_state_load_z80_v3(&snapshot, z80_v3,
+                                      sizeof(z80_v3)) != WZ_RESULT_PARSE_ERROR) {
+        fputs("Z80 v3 unsupported hardware fuzz case was accepted\n", stderr);
+        exit(1);
+    }
+}
+
 static void test_tape_trap_eligibility(void)
 {
     const wz_tape_segment_t segment = {1u, 0u};
@@ -1902,6 +2018,7 @@ int main(void)
     test_z80_v1_loader();
     test_z80_v2_loader_and_writer();
     test_z80_v3_loader();
+    test_snapshot_parser_fuzz_matrix();
     test_tape_trap_eligibility();
     test_tape_speed_invariance();
     test_standard_tap_parser();

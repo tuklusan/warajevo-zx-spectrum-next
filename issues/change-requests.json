@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 191,
+  "next_cr_number": 192,
   "status_values": [
     "open",
     "in_progress",
@@ -1673,6 +1673,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0190.md", "design/media-format-support.md", "design/warajevo-zx-spectrum-next-architecture.md sections 25.1-25.3", "design/wzsn-architectures-1-2-developer-tasks.md task 176", "src/core/wz_state.h", "src/core/wz_state.c", "tests/wz_tests_placeholder.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS"],
       "notes": "Closed on 2026-09-04 after strict supported Z80 v3 48K loading with 54/55-byte extended-header validation, bounded page parsing, isolated publication, and no change to the canonical v2 writer. Exact-SHA CODE and independent bootstrap reviews passed with zero findings for 4a3dbf8..6932a75. Linux, Windows 10, Windows 11, and Intel Mac runs CR0190-LINUX-R1, CR0190-WIN10-R1, CR0190-WIN11-R1, and CR0190-MAC-R1 passed with no missing tools. Hosted run 33919331349 passed at 6932a75, including housekeeping, all 18 matrix lanes, and publication gate. Second upstream zero-gap scan found no missing v3 behavior."
+    },
+    {
+      "cr_number": "CR-0191",
+      "title": "Add deterministic SNA and Z80 parser fuzz coverage",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0191.md", "design/media-format-support.md", "design/warajevo-zx-spectrum-next-architecture.md sections 25.1-25.3 and 46", "design/wzsn-architectures-1-2-developer-tasks.md task 180", "design/cr-preflight/CR-0089.md", "src/core/wz_state.c", "tests/wz_tests_placeholder.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS"],
+      "notes": "Opened on 2026-09-04 for deterministic bounded fuzz-style coverage of SNA/Z80 malformed compression, lengths, paging, unsupported variants, and atomic parser behavior. Requires exact-SHA review, remote sanitizer and cross-platform validation, hosted publication, and a second upstream zero-gap scan before closure."
     }
   ]
 }
