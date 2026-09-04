@@ -1347,7 +1347,7 @@ static int test_wav_pcm_decoder(void)
     static const wz_byte_t three_channel_wav[] = {
         'R','I','F','F', 42u,0u,0u,0u, 'W','A','V','E',
         'f','m','t',' ', 16u,0u,0u,0u, 1u,0u,3u,0u,
-        0xe8u,0x03u,0u,0u, 0xbbu,0x0bu,0u,0u, 3u,0u,8u,0u,
+        0xe8u,0x03u,0u,0u, 0xb8u,0x0bu,0u,0u, 3u,0u,8u,0u,
         'd','a','t','a', 6u,0u,0u,0u, 0u,0u,0u,255u,255u,255u
     };
     if (wz_tape_parse_wav_pcm(three_channel_wav, sizeof(three_channel_wav),
