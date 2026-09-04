@@ -33,7 +33,7 @@ from typing import Any
 API_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
 MODEL = "nvidia/nemotron-3-ultra-550b-a55b"
 KEY_NAME = "NVIDIA_API_KEY_CODING"
-UNIVERSAL_REQUIREMENT_SOURCE = "design/deepseek-review-gate.md"
+UNIVERSAL_REQUIREMENT_SOURCE = "design/review-gate.md"
 PROTOCOL_VERSION = 2
 MAX_CONTEXT_TOKENS = 1_000_000
 INPUT_BUDGET_BYTES = 520_000

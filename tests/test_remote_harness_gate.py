@@ -114,7 +114,7 @@ class HarnessGateTests(unittest.TestCase):
             "tracker_sha256": hashlib.sha256(tracker_data).hexdigest(),
             "record_sha256": hashlib.sha256(remote.canonical_json(cr).encode()).hexdigest(),
         }
-        requirement_path = "design/deepseek-review-gate.md"
+        requirement_path = "design/review-gate.md"
         requirement_digest = hashlib.sha256((ROOT / requirement_path).read_bytes()).hexdigest()
         requirement_sources = [{"source": requirement_path, "sha256": requirement_digest}]
         receipt = json.dumps({
@@ -147,7 +147,7 @@ class HarnessGateTests(unittest.TestCase):
         receipt = {
             "review_protocol_version": 2,
             "cr_number": "CR-0020",
-            "requirement_sources": [{"source": "design/deepseek-review-gate.md", "sha256": "stale"}],
+            "requirement_sources": [{"source": "design/review-gate.md", "sha256": "stale"}],
             "requirements_manifest_hash": "stale",
             "scope_manifest_hash": "stale",
             "scope_private_source": None,

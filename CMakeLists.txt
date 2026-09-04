@@ -127,8 +127,8 @@ add_test(NAME wz_tests_placeholder COMMAND wz_tests)
 if(WZSN_ENABLE_REVIEW_GATE_TESTS)
     find_package(Python3 COMPONENTS Interpreter REQUIRED)
     add_test(
-        NAME deepseek_gate_tests
-        COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tests/test_deepseek_gate.py
+        NAME review_gate_tests
+        COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tests/test_review_gate.py
     )
     add_test(
         NAME remote_harness_gate_tests

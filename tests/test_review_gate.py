@@ -21,7 +21,7 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools" / "reviewer"))
-import deepseek_gate as gate
+import review_gate as gate
 import legacy_bootstrap_gate as bootstrap_gate
 
 
@@ -1110,7 +1110,7 @@ class GateTests(unittest.TestCase):
         for path in ("test-artefacts/remote-machine-secrets.local.txt", ".env.local", "keys/reviewer.pem"):
             with self.subTest(path=path), self.assertRaises(gate.ReviewError):
                 gate.enforce_external_review_data_policy(path)
-        gate.enforce_external_review_data_policy("design/deepseek-review-gate.md")
+        gate.enforce_external_review_data_policy("design/review-gate.md")
 
     def test_secret_absent_from_body_error_console_and_telemetry(self):
         key = "do-not-leak-this-value"

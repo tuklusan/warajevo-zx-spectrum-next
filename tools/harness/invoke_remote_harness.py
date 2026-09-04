@@ -220,9 +220,9 @@ def require_bootstrap_maintenance_pass(root: Path, cr_number: str, published_ref
     if receipt.get("verdict") != "PASS" or receipt.get("review_complete") is not True or receipt.get("cr_number") != cr_number:
         raise SystemExit("remote smoke blocked: bootstrap PASS receipt is not authorized for this CR")
     sources = receipt.get("requirement_sources")
-    if not isinstance(sources, list) or len(sources) != 1 or sources[0].get("source") != "design/deepseek-review-gate.md":
+    if not isinstance(sources, list) or len(sources) != 1 or sources[0].get("source") != "design/review-gate.md":
         raise SystemExit("remote smoke blocked: bootstrap authority is not the review-gate specification")
-    source = root / "design" / "deepseek-review-gate.md"
+    source = root / "design" / "review-gate.md"
     if hashlib.sha256(source.read_bytes()).hexdigest() != sources[0].get("sha256"):
         raise SystemExit("remote smoke blocked: bootstrap authority changed after review")
     head = run_git(root, "rev-parse", "HEAD")

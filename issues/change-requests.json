@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-    "next_cr_number": 175,
+    "next_cr_number": 176,
   "status_values": [
     "open",
     "in_progress",
@@ -205,7 +205,7 @@
       "source_authority": [
         "DeepSeek-Review-Gate-Efficient-Harness.txt supplied 2026-08-11",
         "Private precision-hardening scope supplied 2026-08-11",
-        "design/deepseek-review-gate.md",
+        "design/review-gate.md",
         "project workflow rule"
       ],
       "notes": "Closed on 2026-08-12. The final f3d7056 fixture correction and fea9492 diagnostic hardening were independently bootstrap-reviewed; the production CODE gate passed fea9492 with zero confirmed findings. The complete reviewer and remote-harness suites passed on windows-11-laptop and the five-platform hosted matrix (Linux x64/ARM64, Windows x64, macOS ARM64/Intel). TEST_ARTIFACT and cross-document DOCUMENTATION reviews passed with zero confirmed findings. linux-x64-lxqt and windows-10-reference were unreachable during final retries at SSH transport, before execution; their earlier run reproduced the corrected fixture-only failure, while equivalent final Linux/Windows hosted suites passed. The deployed gate now binds active CR scope and exact requirement provenance to immutable evidence and protected receipts; uses candidate discovery, hostile falsification, independent severity confirmation, deterministic blocker synthesis, truthful artifact handling, bounded retries, private telemetry, and stale-receipt invalidation; and retains the independent bootstrap path."
@@ -216,7 +216,7 @@
       "status": "closed",
       "source_authority": [
         "attached gate-maintenance request supplied 2026-08-13",
-        "design/deepseek-review-gate.md",
+        "design/review-gate.md",
         "design/FRESH-PROJECT-DEEPSEEK-REVIEW-GATE.md",
         "project workflow rule"
       ],
@@ -554,7 +554,7 @@
       "title": "Auto-resolve declaration implementation context for review candidates",
       "status": "closed",
       "source_authority": [
-        "design/deepseek-review-gate.md",
+        "design/review-gate.md",
         "design/FRESH-PROJECT-DEEPSEEK-REVIEW-GATE.md sections on deterministic context completion and bootstrap maintenance"
       ],
       "notes": "Opened on 2026-08-20 after CR-0038 produced two consecutive inconclusive CODE reviews while reviewer health remained available. Closed on 2026-08-22 after implementing declaration-only bounded symbol context, process-terminated deadline transport, bounded bootstrap discovery, and a maintenance-only remote authorization path. The isolated maintenance commit 7e8074a passed bootstrap and normal CODE reviews, Linux remote run CR0039-GATE-LINUX-R2, Windows remote runs CR0039-GATE-WIN10 and CR0039-GATE-WIN11, hosted run 32546464584 on five platforms, and TEST_ARTIFACT review with zero findings."
@@ -645,7 +645,7 @@
       "status": "closed",
       "source_authority": [
         "user-reported deepseek-v4-pro empty-content behavior",
-        "design/deepseek-review-gate.md",
+        "design/review-gate.md",
         "project reviewer workflow"
       ],
       "notes": "Opened on 2026-08-22 to require disabled thinking for discovery, falsification, and adjudication because the configured provider returns empty content otherwise. Closed after zero-finding CODE review, passing remote smoke runs on Linux, Windows 10, and Windows 11, hosted platform-smoke 32803893775 across five platforms, and zero-finding TEST_ARTIFACT review. JSON-schema validation, evidence binding, retries, and fail-closed handling remain unchanged."
@@ -656,7 +656,7 @@
       "status": "closed",
       "source_authority": [
         "CR-0044 inconclusive review evidence",
-        "design/deepseek-review-gate.md",
+        "design/review-gate.md",
         "project reviewer workflow"
       ],
       "notes": "Opened on 2026-08-25 after an otherwise healthy CODE review recorded an unresolved candidate only in process output. The gate now retains the complete final verdict privately in telemetry without changing review semantics. CODE review passed; Linux, Windows 10, and Windows 11 remote harness runs passed; hosted platform-smoke 32805278008 passed across five platforms; TEST_ARTIFACT review passed."
@@ -666,7 +666,7 @@
       "title": "Bound single-candidate external-review evidence",
       "status": "closed",
       "source_authority": [
-        "design/deepseek-review-gate.md",
+        "design/review-gate.md",
         "CR-0042 reviewer telemetry"
       ],
       "notes": "Opened on 2026-08-25 after CR-0042 CODE review became inconclusive before falsification because full resolved source context was serialized twice and exceeded the input ceiling. Closed on 2026-08-25 after compacting only transmitted falsification context while retaining immutable hashes and exact bounded excerpts, and removing duplicate full context from candidate transport. Bootstrap and normal CODE review passed. Linux, Windows 10, and Windows 11 smoke suites passed, including the external-review regression suite. Hosted platform-smoke 32808655077 passed across Linux x64/ARM64, Windows x64, and macOS Intel/ARM64; TEST_ARTIFACT review passed with zero findings."
@@ -781,7 +781,7 @@
       "cr_number": "CR-0063",
       "title": "Produce bounded provenance-bound Fuse review summaries",
       "status": "closed",
-      "source_authority": ["design/deepseek-review-gate.md Review Types And Artifacts and Verdict Contract", "design/fuse-z80-test-suite.md", "WORKFLOW.md external review and remote-validation gates"],
+      "source_authority": ["design/review-gate.md Review Types And Artifacts and Verdict Contract", "design/fuse-z80-test-suite.md", "WORKFLOW.md external review and remote-validation gates"],
       "notes": "Opened after CR-0062 demonstrated that raw multi-platform Fuse manifests can exceed useful review context despite containing complete results. Add a deterministic harness-owned summary producer that reads only pulled remote manifests and session records, emits the project notice and exact source identities, captures required cases, baseline comparison, unexpected failures, silent skips, and per-machine totals, and fails closed on malformed, inconsistent, or incomplete evidence. The summary is private review input, never a substitute for raw artifacts, and must not alter emulator behavior or validation execution. Required functional inventory and upstream non-applicability scan are recorded in design/cr-preflight/CR-0063.md. Immutable CODE review passed for 6a5bd89a8f4b75a0c2562cfa2c5613bbe444b25f..c7cd1bf4ae377d3602c153ea701a155a84289a16. Linux CR0063-EVIDENCE-LINUX-R1, Windows 10 CR0063-EVIDENCE-WIN10-R2, and Windows 11 CR0063-EVIDENCE-WIN11-R1 passed all five CTest gates. The generated compact three-platform TEST_ARTIFACT review CR0063-EVIDENCE-3PLAT-R1 passed. Hosted platform-smoke 33233855624 and repository-gates 33233855599 passed. Final upstream boundary scan confirmed no emulator functionality changed. DOCUMENTATION review passed with packet manifest hash 972557fc8c0c820d507fa5516716b3d595defec7155eb7cce656ad9940cff155; CR closed."
     },
     {
@@ -865,7 +865,7 @@
       "cr_number": "CR-0075",
       "title": "Preserve reviewer HTTP failure status through deadline transport",
       "status": "closed",
-      "source_authority": ["design/deepseek-review-gate.md", "tools/reviewer/deepseek_gate.py"],
+      "source_authority": ["design/review-gate.md", "tools/reviewer/review_gate.py"],
       "notes": "Opened on 2026-08-30 after an authenticated health probe established HTTP 402 insufficient balance while the deadline subprocess reported only a generic transport failure. Preserve an actionable non-secret HTTP status so the gate remains fail-closed with diagnosable evidence."
     },
     {
@@ -1524,7 +1524,7 @@
       "cr_number": "CR-0169",
       "title": "Migrate serialized review gate to NVIDIA NIM",
       "status": "in_progress",
-      "source_authority": ["design/deepseek-review-gate.md", "design/cr-preflight/CR-0169.md", "tools/reviewer/deepseek_gate.py", "tests/test_deepseek_gate.py", "https://build.nvidia.com/nvidia/nemotron-3-ultra-550b-a55b/modelcard", "https://docs.nvidia.com/nim/large-language-models/latest/api-reference.html"],
+      "source_authority": ["design/review-gate.md", "design/cr-preflight/CR-0169.md", "tools/reviewer/review_gate.py", "tests/test_review_gate.py", "https://build.nvidia.com/nvidia/nemotron-3-ultra-550b-a55b/modelcard", "https://docs.nvidia.com/nim/large-language-models/latest/api-reference.html"],
       "notes": "Opened on 2026-09-02 as a serialized infrastructure detour. Preserve CR-0167 and CR-0168 as in-progress queue items; close this CR only after the NVIDIA NIM gate is reviewed, remotely tested, hosted-validated, and reconciled."
     },
     {
@@ -1561,6 +1561,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0174.md", "WORKFLOW.md", "test-artefacts/README.md", "README-GIT-GITHUB.md", "tools/harness/README.md", "tools/harness/invoke_remote_harness.py", ".github/workflows/platform-smoke.yml", "tools/validate_project_gates.py"],
       "notes": "Closed after exact-SHA CODE and DOCUMENTATION reviews passed with zero confirmed findings, all four lab probes succeeded, Linux/Windows 10/Windows 11 remote smoke passed, and hosted platform-smoke 33833502574 completed all 18 lanes plus publication-gate for 4a38685. macOS smoke reached the host but reported missing cmake/ctest as an environmental toolchain result; the hosted matrix supplied the complete multi-platform proof."
+    },
+    {
+      "cr_number": "CR-0175",
+      "title": "Genericize external review gate artifact names",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0175.md", "WORKFLOW.md", "design/review-gate.md", "tools/reviewer/review_gate.py", "tests/test_review_gate.py", "tools/harness/invoke_remote_harness.py", "CMakeLists.txt"],
+      "notes": "Opened on 2026-09-03 to remove provider-specific names from active review-gate filenames and documentation while preserving the configured reviewer behavior and historical provenance."
     }
   ]
 }

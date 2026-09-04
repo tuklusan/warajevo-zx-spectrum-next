@@ -225,10 +225,10 @@ normal reviews of the same snapshot while safely recovering stale locks.
 ## Commands
 
 ```text
-python tools/reviewer/deepseek_gate.py review --type CODE --cr CR-0020 --base <base> --head <head> --requirements design/deepseek-review-gate.md --scope-file test-artefacts/reviewer/requirements/CR-0020-review-harness-hardening.local.txt
-python tools/reviewer/deepseek_gate.py review --type DOCUMENTATION --requirements design/deepseek-review-gate.md --path <document>
-python tools/reviewer/deepseek_gate.py review --type TEST_ARTIFACT --requirements design/deepseek-review-gate.md --run-id <test-run-id> --build-id <build-identity> --path <artifact>
-python tools/reviewer/deepseek_gate.py health-check --requirements design/deepseek-review-gate.md --deadline-seconds 60
+python tools/reviewer/review_gate.py review --type CODE --cr CR-0020 --base <base> --head <head> --requirements design/review-gate.md --scope-file test-artefacts/reviewer/requirements/CR-0020-review-harness-hardening.local.txt
+python tools/reviewer/review_gate.py review --type DOCUMENTATION --requirements design/review-gate.md --path <document>
+python tools/reviewer/review_gate.py review --type TEST_ARTIFACT --requirements design/review-gate.md --run-id <test-run-id> --build-id <build-identity> --path <artifact>
+python tools/reviewer/review_gate.py health-check --requirements design/review-gate.md --deadline-seconds 60
 ```
 
 The retained bootstrap gate is an architecturally independent one-pass audit
@@ -246,7 +246,7 @@ fresh repair attempts and then remains inconclusive.
 
 Bootstrap maintenance may authorize remote validation only through an exact
 `wzsn/maintenance/CR-####` published ref, an immutable matching bootstrap PASS
-receipt, and an unchanged `design/deepseek-review-gate.md` authority digest.
+receipt, and an unchanged `design/review-gate.md` authority digest.
 This path is unavailable to normal smoke runs and never authorizes `main`.
 
 ## Verdict Contract
