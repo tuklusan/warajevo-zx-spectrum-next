@@ -846,6 +846,65 @@ static void test_z80_v2_loader_and_writer(void)
     wz_machine_destroy(&machine);
 }
 
+static void test_z80_v3_loader(void)
+{
+    static wz_byte_t z80[WZ_Z80_V3_HEADER_LENGTH +
+                         3u * (3u + WZ_Z80_V2_PAGE_SIZE) + 1u];
+    static wz_snapshot_state_t snapshot;
+    static wz_snapshot_state_t original_snapshot;
+    size_t offset = WZ_Z80_V3_HEADER_LENGTH;
+    size_t length;
+
+    memset(z80, 0, sizeof(z80));
+    z80[8u] = 0x78u;
+    z80[9u] = 0x56u;
+    z80[27u] = 1u;
+    z80[28u] = 1u;
+    z80[29u] = 2u;
+    wz_write_le16(z80 + 30u, 54u);
+    z80[32u] = 0x21u;
+    z80[33u] = 0x43u;
+    for (size_t page = 0u; page < WZ_Z80_V2_PAGE_COUNT; ++page) {
+        const wz_byte_t page_numbers[WZ_Z80_V2_PAGE_COUNT] = {8u, 4u, 5u};
+        wz_write_le16(z80 + offset, WZ_Z80_V2_UNCOMPRESSED_PAGE_LENGTH);
+        z80[offset + 2u] = page_numbers[page];
+        for (size_t index = 0u; index < WZ_Z80_V2_PAGE_SIZE; ++index) {
+            z80[offset + 3u + index] = (wz_byte_t)(page * 0x40u + index);
+        }
+        offset += 3u + WZ_Z80_V2_PAGE_SIZE;
+    }
+    length = offset;
+    wz_snapshot_state_init(&snapshot);
+    if (wz_snapshot_state_load_z80_v3(&snapshot, z80, length) != WZ_RESULT_OK ||
+        wz_snapshot_state_data(&snapshot)[33u] != 0x21u ||
+        wz_snapshot_state_data(&snapshot)[34u] != 0x43u ||
+        wz_snapshot_state_data(&snapshot)[73u + 0x4000u] != 0u ||
+        wz_snapshot_state_data(&snapshot)[73u + 0x8000u] != 0x40u ||
+        wz_snapshot_state_data(&snapshot)[73u + 0xc000u] != 0x80u) {
+        fputs("Z80 v3 load or page mapping failed\n", stderr);
+        exit(1);
+    }
+    original_snapshot = snapshot;
+    z80[37u] = 1u;
+    if (wz_snapshot_state_load_z80_v3(&snapshot, z80, length) !=
+            WZ_RESULT_PARSE_ERROR ||
+        memcmp(&snapshot, &original_snapshot, sizeof(snapshot)) != 0) {
+        fputs("Z80 v3 device state was published\n", stderr);
+        exit(1);
+    }
+    z80[37u] = 0u;
+    memmove(z80 + WZ_Z80_V3_HEADER_LENGTH_EXTENDED,
+            z80 + WZ_Z80_V3_HEADER_LENGTH,
+            length - WZ_Z80_V3_HEADER_LENGTH);
+    memset(z80 + WZ_Z80_V3_HEADER_LENGTH, 0, 1u);
+    wz_write_le16(z80 + 30u, 55u);
+    if (wz_snapshot_state_load_z80_v3(&snapshot, z80,
+                                      length + 1u) != WZ_RESULT_OK) {
+        fputs("Z80 v3 extended header load failed\n", stderr);
+        exit(1);
+    }
+}
+
 static void test_tape_trap_eligibility(void)
 {
     const wz_tape_segment_t segment = {1u, 0u};
@@ -1842,6 +1901,7 @@ int main(void)
     test_sna_128k_image_scaffolding();
     test_z80_v1_loader();
     test_z80_v2_loader_and_writer();
+    test_z80_v3_loader();
     test_tape_trap_eligibility();
     test_tape_speed_invariance();
     test_standard_tap_parser();

@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 190,
+  "next_cr_number": 191,
   "status_values": [
     "open",
     "in_progress",
@@ -1666,6 +1666,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0189.md", "design/media-format-support.md", "design/warajevo-zx-spectrum-next-architecture.md sections 25.1-25.3", "design/wzsn-architectures-1-2-developer-tasks.md task 175", "src/core/wz_state.h", "src/core/wz_state.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS"],
       "notes": "Closed on 2026-09-04 after strict Z80 v2 48K loading, bounded per-page RLE, isolated publication, and the frozen deterministic uncompressed canonical writer. Exact-SHA CODE and independent bootstrap reviews passed with zero findings for 5ff5d7d..dc207fe. Linux, Windows 10, Windows 11, Intel Mac runs CR0189-LINUX-R2, CR0189-WIN10-R2, CR0189-WIN11-R2, CR0189-MAC-R2, and hosted run 33914657804 passed, including housekeeping and publication gates. Second upstream zero-gap scan found no missing v2 behavior."
+    },
+    {
+      "cr_number": "CR-0190",
+      "title": "Implement Z80 v3 loading for frozen supported variants",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0190.md", "design/media-format-support.md", "design/warajevo-zx-spectrum-next-architecture.md sections 25.1-25.3", "design/wzsn-architectures-1-2-developer-tasks.md task 176", "src/core/wz_state.h", "src/core/wz_state.c", "tests/wz_tests_placeholder.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS"],
+      "notes": "Opened on 2026-09-04 for strict supported Z80 v3 48K loading with 54-byte extended-header validation, bounded page parsing, isolated publication, and no change to the canonical v2 writer. Requires exact-SHA review, remote and hosted validation, and a second upstream zero-gap scan before closure."
     }
   ]
 }

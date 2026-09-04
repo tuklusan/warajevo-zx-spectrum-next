@@ -23,6 +23,8 @@ typedef struct wz_machine wz_machine_t;
 #define WZ_Z80_V1_HEADER_LENGTH 30u
 #define WZ_Z80_V1_MEMORY_LENGTH 49152u
 #define WZ_Z80_V2_HEADER_LENGTH 55u
+#define WZ_Z80_V3_HEADER_LENGTH 86u
+#define WZ_Z80_V3_HEADER_LENGTH_EXTENDED 87u
 #define WZ_Z80_V2_PAGE_SIZE 16384u
 #define WZ_Z80_V2_PAGE_COUNT 3u
 #define WZ_Z80_V2_UNCOMPRESSED_PAGE_LENGTH 0xffffu
@@ -91,6 +93,9 @@ wz_result_t wz_snapshot_state_load_z80_v1(wz_snapshot_state_t* snapshot,
                                            const wz_byte_t* data,
                                            size_t length);
 wz_result_t wz_snapshot_state_load_z80_v2(wz_snapshot_state_t* snapshot,
+                                           const wz_byte_t* data,
+                                           size_t length);
+wz_result_t wz_snapshot_state_load_z80_v3(wz_snapshot_state_t* snapshot,
                                            const wz_byte_t* data,
                                            size_t length);
 wz_result_t wz_state_save_z80_v2_48k(const wz_machine_t* machine,
