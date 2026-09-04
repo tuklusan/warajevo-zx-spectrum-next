@@ -36,6 +36,7 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     machine->tape.segment_count = 0u;
     machine->tape_mounted = 0u;
     machine->tape_loading_mode = WZ_TAPE_LOADING_NORMAL;
+    machine->networking_mode = WZ_NETWORKING_NONE;
     machine->maskable_interrupt_line_low = 0u;
     machine->rom_identity = 0u;
     machine->master_tick = 0u;
@@ -69,6 +70,7 @@ void wz_machine_destroy(wz_machine_t* machine)
         machine->tape.segment_count = 0u;
         machine->tape_mounted = 0u;
         machine->tape_loading_mode = WZ_TAPE_LOADING_NORMAL;
+        machine->networking_mode = WZ_NETWORKING_NONE;
         machine->ula_output = 0u;
         machine->maskable_interrupt_line_low = 0u;
         machine->rom_identity = 0u;
@@ -159,6 +161,21 @@ wz_result_t wz_machine_set_tape_loading_mode(wz_machine_t* machine,
 wz_tape_loading_mode_t wz_machine_tape_loading_mode(const wz_machine_t* machine)
 {
     return machine == 0 ? WZ_TAPE_LOADING_NORMAL : machine->tape_loading_mode;
+}
+
+wz_result_t wz_machine_set_networking_mode(wz_machine_t* machine,
+                                            wz_networking_mode_t mode)
+{
+    if (machine == 0 || mode > WZ_NETWORKING_EAR_MIC) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    machine->networking_mode = mode;
+    return WZ_RESULT_OK;
+}
+
+wz_networking_mode_t wz_machine_networking_mode(const wz_machine_t* machine)
+{
+    return machine == 0 ? WZ_NETWORKING_NONE : machine->networking_mode;
 }
 
 wz_tape_trap_reason_t wz_machine_tape_trap_reason(const wz_machine_t* machine)

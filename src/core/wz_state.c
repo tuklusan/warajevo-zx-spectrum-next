@@ -10,8 +10,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "core/wz_machine.h"
 
-#define WZ_STATE_VERSION 10u
-#define WZ_STATE_HEADER_LENGTH 72u
+#define WZ_STATE_VERSION 11u
+#define WZ_STATE_HEADER_LENGTH 73u
 #define WZ_STATE_MACHINE_LENGTH (65536u + WZ_STATE_HEADER_LENGTH)
 
 static wz_result_t wz_state_write(wz_state_writer_t* writer,
@@ -96,6 +96,9 @@ wz_result_t wz_state_serialize_machine(const wz_machine_t* machine,
     if (wz_z80_state_validate(&machine->cpu) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_STATE;
     }
+    if (machine->networking_mode > WZ_NETWORKING_EAR_MIC) {
+        return WZ_RESULT_INVALID_STATE;
+    }
 
     if (wz_state_write_u8(writer, WZ_STATE_VERSION) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, (wz_byte_t)machine->profile->kind) != WZ_RESULT_OK ||
@@ -124,6 +127,7 @@ wz_result_t wz_state_serialize_machine(const wz_machine_t* machine,
         wz_state_write_u64(writer, machine->ula_output_tick) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, machine->maskable_interrupt_line_low) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, (wz_byte_t)machine->tape_loading_mode) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, (wz_byte_t)machine->networking_mode) != WZ_RESULT_OK ||
         wz_state_write(writer, machine->memory, sizeof(machine->memory)) != WZ_RESULT_OK) {
         return WZ_RESULT_SERIALIZATION_FAILURE;
     }
@@ -160,6 +164,7 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
     wz_z80_state_t cpu;
     wz_qword_t tick = 0u;
     wz_qword_t ula_output_tick = 0u;
+    wz_networking_mode_t networking_mode;
 
     if (machine == 0 || data == 0) {
         return WZ_RESULT_INVALID_ARGUMENT;
@@ -170,6 +175,10 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
     if (data[71u] > (wz_byte_t)WZ_TAPE_LOADING_INSTANT_TRAP) {
         return WZ_RESULT_INVALID_STATE;
     }
+    if (data[72u] > (wz_byte_t)WZ_NETWORKING_EAR_MIC) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    networking_mode = (wz_networking_mode_t)data[72u];
     if (data[1] == (wz_byte_t)WZ_MACHINE_48K_PAL) {
         profile = wz_machine_profile_48k_pal();
     } else if (data[1] == (wz_byte_t)WZ_MACHINE_128K_PAL) {
@@ -258,6 +267,7 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
     }
     machine->maskable_interrupt_line_low = data[70u];
     machine->tape_loading_mode = (wz_tape_loading_mode_t)data[71u];
+    machine->networking_mode = networking_mode;
     for (size_t index = 0u; index < sizeof(machine->memory); ++index) {
         machine->memory[index] = data[WZ_STATE_HEADER_LENGTH + index];
     }

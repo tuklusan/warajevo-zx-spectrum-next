@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 178,
+  "next_cr_number": 179,
   "status_values": [
     "open",
     "in_progress",
@@ -1582,6 +1582,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0177.md", "tests/test_remote_harness_gate.py", "tools/harness/invoke_remote_harness.py", "WORKFLOW.md"],
       "notes": "Closed on 2026-09-04 after isolating the compatibility fixture's synthetic active tracker record, correcting the tracker-byte method binding, and exposing MacPorts tools to the noninteractive Mac harness PATH. Exact-SHA CODE and DOCUMENTATION reviews passed with zero confirmed findings. Intel Big Sur remote smoke CR0177-MAC-2 passed with no missing tools, and hosted platform-smoke 33872641685 passed all 18 lanes plus publication-gate for 63a413e."
+    },
+    {
+      "cr_number": "CR-0178",
+      "title": "Serialize networking mode in WZSN-native state",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0178.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24 and 25", "design/wzsn-architectures-1-2-developer-tasks.md task 178", "src/core/wz_machine.h", "src/core/wz_machine.c", "src/core/wz_state.c", "tests/wz_tests_placeholder.c"],
+      "notes": "Opened on 2026-09-04 for ordered Phase-8 task 178. Add exactly one validated networking-mode field to canonical native state; defer Interface-1, Microdrive, ZX Net, cold-reconfiguration, and Architecture-3 behavior to later tasks."
     }
   ]
 }

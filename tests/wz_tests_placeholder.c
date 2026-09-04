@@ -399,6 +399,32 @@ static void test_tape_loading_mode_state(void)
     wz_machine_destroy(&machine);
 }
 
+static void test_networking_mode_state(void)
+{
+    wz_machine_t machine;
+    wz_networking_mode_t mode;
+
+    if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK ||
+        wz_machine_networking_mode(&machine) != WZ_NETWORKING_NONE ||
+        wz_machine_set_networking_mode(&machine, WZ_NETWORKING_INTERFACE1) !=
+            WZ_RESULT_OK ||
+        wz_machine_networking_mode(&machine) != WZ_NETWORKING_INTERFACE1) {
+        fputs("networking mode transition failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    mode = wz_machine_networking_mode(&machine);
+    if (wz_machine_set_networking_mode(&machine,
+            (wz_networking_mode_t)3u) != WZ_RESULT_INVALID_ARGUMENT ||
+        wz_machine_networking_mode(&machine) != mode ||
+        wz_machine_networking_mode(0) != WZ_NETWORKING_NONE) {
+        fputs("networking mode validation failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_machine_destroy(&machine);
+}
+
 static void test_tape_trap_eligibility(void)
 {
     const wz_tape_segment_t segment = {1u, 0u};
@@ -1387,6 +1413,7 @@ int main(void)
     test_tape_object_and_state();
     test_machine_tape_playback();
     test_tape_loading_mode_state();
+    test_networking_mode_state();
     test_tape_trap_eligibility();
     test_tape_speed_invariance();
     test_standard_tap_parser();
@@ -1410,7 +1437,7 @@ int main(void)
     wz_machine_t machine;
     wz_machine_t restored;
     wz_scheduler_t scheduler;
-    wz_byte_t serialized[65608u];
+    wz_byte_t serialized[65609u];
     wz_machine_profile_t certified_profile;
     wz_state_writer_t writer;
     wz_qword_t first_hash;
@@ -5168,7 +5195,7 @@ int main(void)
     machine.ula_output_tick = 1234u;
     machine.maskable_interrupt_line_low = 1u;
     if (wz_state_serialize_machine(&machine, &writer) != WZ_RESULT_OK ||
-        writer.length != 65608u ||
+        writer.length != 65609u ||
         wz_state_hash_machine(&machine, &first_hash) != WZ_RESULT_OK) {
         fputs("canonical state serialization failed\n", stderr);
         return 1;
@@ -5188,6 +5215,11 @@ int main(void)
     if (wz_machine_set_tape_loading_mode(&machine,
             WZ_TAPE_LOADING_INSTANT_TRAP) != WZ_RESULT_OK) {
         fputs("tape loading mode setup for state round trip failed\n", stderr);
+        return 1;
+    }
+    if (wz_machine_set_networking_mode(&machine, WZ_NETWORKING_EAR_MIC) !=
+            WZ_RESULT_OK) {
+        fputs("networking mode setup for state round trip failed\n", stderr);
         return 1;
     }
     if (wz_machine_set_keyboard_key(&machine, 2u, 1u, true) != WZ_RESULT_OK) {
@@ -5212,7 +5244,8 @@ int main(void)
         restored.keyboard_rows[2u] != 0x1du ||
         restored.ula_output != 0x1bu || restored.ula_output_tick != 1234u ||
         restored.maskable_interrupt_line_low != 1u ||
-        restored.tape_loading_mode != WZ_TAPE_LOADING_INSTANT_TRAP) {
+        restored.tape_loading_mode != WZ_TAPE_LOADING_INSTANT_TRAP ||
+        restored.networking_mode != WZ_NETWORKING_EAR_MIC) {
         fputs("Z80 state round trip failed\n", stderr);
         return 1;
     }
@@ -5221,6 +5254,12 @@ int main(void)
     if (wz_state_deserialize_machine(&restored, serialized, writer.length) !=
             WZ_RESULT_INVALID_STATE || restored.cpu.main.a != 0x7eu) {
         fputs("invalid tape loading mode was not rejected atomically\n", stderr);
+        return 1;
+    }
+    serialized[72u] = 3u;
+    if (wz_state_deserialize_machine(&restored, serialized, writer.length) !=
+            WZ_RESULT_INVALID_STATE || restored.cpu.main.a != 0x7eu) {
+        fputs("invalid networking mode was not rejected atomically\n", stderr);
         return 1;
     }
     serialized[71u] = (wz_byte_t)WZ_TAPE_LOADING_INSTANT_TRAP;
