@@ -1516,9 +1516,9 @@
     {
       "cr_number": "CR-0168",
       "title": "Bind hosted matrix publication to one run",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["WORKFLOW.md hosted validation and publication gates", ".github/workflows/platform-smoke.yml", "design/cr-preflight/CR-0168.md"],
-      "notes": "Active on 2026-09-02 after adding a SHA- and run-bound aggregate publication gate that queries the current run's individual jobs and fails closed unless all 18 declared lanes succeed. The Windows archive-transfer padding defect exposed by CR0168-hosted-gate-windows-5 was corrected. Final harness validation passed on Linux CR0168-harness-fix-linux-1 and Windows CR0168-harness-fix-windows-1, and hosted platform-smoke 33689711723 passed all 18 lanes plus publication-gate for exact SHA fc2a574. Earlier non-green evidence remains non-green."
+      "notes": "Closed on 2026-09-04 after adding a SHA- and run-bound aggregate publication gate that queries the current run's individual jobs and fails closed unless all 18 declared lanes succeed. The Windows archive-transfer padding defect exposed by CR0168-hosted-gate-windows-5 was corrected. Final harness validation passed on Linux CR0168-harness-fix-linux-1 and Windows CR0168-harness-fix-windows-1, and hosted platform-smoke 33689711723 passed all 18 lanes plus publication-gate for exact SHA fc2a574. Earlier non-green evidence remains non-green."
     },
     {
       "cr_number": "CR-0169",
