@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 187,
+  "next_cr_number": 188,
   "status_values": [
     "open",
     "in_progress",
@@ -1645,6 +1645,13 @@
       "status": "in_progress",
       "source_authority": ["design/cr-preflight/CR-0186.md", "design/media-format-support.md", "design/warajevo-zx-spectrum-next-architecture.md sections 25.1-25.2", "design/wzsn-architectures-1-2-developer-tasks.md task 173", "src/core/wz_state.h", "src/core/wz_state.c", "tests/wz_tests_placeholder.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS"],
       "notes": "In progress: isolated exact-length SNA 128K eight-page representation, strict page-selection and extension validation, canonical round-trip writer, and malformed-input regression coverage. Live 128K paging remains deferred to Phase 9."
+    },
+    {
+      "cr_number": "CR-0187",
+      "title": "Correct hosted publication gate job classification",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0187.md", "design/review-gate.md", "design/wzsn-architectures-1-2-developer-tasks.md task 182", ".github/workflows/platform-smoke.yml", "tools/harness/cleanup-hosted-runner-state.sh"],
+      "notes": "In progress: exclude the dedicated deep-housekeeping job from the publication gate's 18-platform count while preserving exact job, SHA, conclusion, and macOS Intel/ARM assertions."
     }
   ]
 }
