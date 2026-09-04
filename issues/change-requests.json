@@ -1523,9 +1523,9 @@
     {
       "cr_number": "CR-0169",
       "title": "Migrate serialized review gate to NVIDIA NIM",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/review-gate.md", "design/cr-preflight/CR-0169.md", "tools/reviewer/review_gate.py", "tests/test_review_gate.py", "https://build.nvidia.com/nvidia/nemotron-3-ultra-550b-a55b/modelcard", "https://docs.nvidia.com/nim/large-language-models/latest/api-reference.html"],
-      "notes": "Opened on 2026-09-02 as a serialized infrastructure detour. Preserve CR-0167 and CR-0168 as in-progress queue items; close this CR only after the NVIDIA NIM gate is reviewed, remotely tested, hosted-validated, and reconciled."
+      "notes": "Closed on 2026-09-04 after migrating the serialized review gate to the NVIDIA NIM endpoint and exact model while preserving packet identity, schema validation, disabled reasoning, exponential retries including 404/429, lock serialization, deadline enforcement, and fail-closed behavior. Exact-SHA CODE and DOCUMENTATION reviews passed with zero confirmed findings. Linux CR0169-review-linux-1, Windows 10 CR0169-review-windows10-1, and Windows 11 CR0169-review-windows11-1 remote smoke runs returned primary and artefact-pull code 0. Hosted platform-smoke 33843395900 completed all 18 lanes plus publication-gate for 9cc34fd."
     },
     {
       "cr_number": "CR-0170",
