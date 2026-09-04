@@ -27,6 +27,38 @@ implementation planning table.
 The architecture documents remain the source of truth. This file is a working
 summary for early repository and backlog organization.
 
+## Phase-8 Frozen Snapshot Matrix
+
+Snapshot loaders must parse into the isolated temporary state object and must
+not publish any field to the live machine until the complete input has passed
+length, range, model, and representability checks. All unrecognized or
+unsupported variants are controlled errors; no best-effort truncation is
+permitted.
+
+| Format / variant | Exact accepted form | Compression / paging | Disposition |
+| --- | --- | --- | --- |
+| SNA 48K | 27-byte header plus exactly 49,152 RAM bytes; total 49,179 bytes | Uncompressed; RAM maps 0x4000-0xffff | SUPPORTED |
+| SNA 128K | 27-byte base header plus paging extension and complete 16 KiB pages | Uncompressed; page-selection fields must be validated | SCAFFOLD_REQUIRED |
+| Z80 v1 | 30-byte header plus exactly 48 KiB RAM, or compressed payload with valid end marker | Optional v1 RLE; 48K model only | SUPPORTED_INPUT |
+| Z80 v2 | 30-byte base header, 23-byte extended header, and length-prefixed 16 KiB pages | Per-page uncompressed or Z80 RLE | SUPPORTED_INPUT_AND_CANONICAL_SAVE |
+| Z80 v3 | 30-byte base header, 54-byte or 55-byte extended header, and validated pages | Per-page uncompressed or Z80 RLE | SUPPORTED_INPUT |
+| Timex/other hardware variants | Any header or hardware code outside the frozen 48K/128K set | Variant-specific paging or device state | UNSUPPORTED_CONTROLLED_ERROR |
+
+The SNA 48K header fields are read in the historical order: I, alternate and
+main register pairs, IY, IX, IFF2, R, F, A, SP, IM, and border. The loader
+recovers PC from the little-endian word at the current SP and advances the
+temporary SP by two; a missing or out-of-range stack word is invalid. IFF1 is
+initialized from IFF2 because SNA does not carry an independent IFF1 field.
+The border value is limited to the three-bit color and IM is limited to 0, 1,
+or 2. The 48K RAM bytes are copied only after all header and stack checks pass.
+
+For Z80 input, v1 PC is the base-header PC and v2/v3 PC is the extended-header
+PC. A compressed stream must terminate exactly at the declared page boundary;
+truncated runs, overlong runs, missing v1 end markers, duplicate page numbers,
+invalid page lengths, and trailing bytes are controlled errors. The initial
+canonical writer is the frozen Z80 v2 48K representation and must reject any
+active state covered by the historical representability predicate.
+
 ## Phase-7 Frozen Tape Matrix
 
 The following dispositions are the parser contract. `SUPPORTED` means the
