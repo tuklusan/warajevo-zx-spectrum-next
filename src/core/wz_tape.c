@@ -1976,11 +1976,15 @@ wz_result_t wz_tape_parse_wav_pcm(const wz_byte_t* data, size_t length,
     size_t required = 0u;
     int level = 0;
     size_t segment_start = 0u;
+    wz_result_t scan_result;
 
-    if (count == 0 || master_ticks_per_second == 0u ||
-        wz_wav_scan(data, length, &sample_rate, &channels, &bits,
-                    &sample_offset, &sample_bytes) != WZ_RESULT_OK) {
+    if (count == 0 || master_ticks_per_second == 0u) {
         return WZ_RESULT_PARSE_ERROR;
+    }
+    scan_result = wz_wav_scan(data, length, &sample_rate, &channels, &bits,
+                              &sample_offset, &sample_bytes);
+    if (scan_result != WZ_RESULT_OK) {
+        return scan_result;
     }
     frame_bytes = (size_t)channels * (bits / 8u);
     if (frame_bytes == 0u || sample_bytes % frame_bytes != 0u) {
