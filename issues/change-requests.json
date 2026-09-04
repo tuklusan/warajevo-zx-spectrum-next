@@ -1705,9 +1705,9 @@
     {
       "cr_number": "CR-0195",
       "title": "Verify 128K paging-port decode and lock semantics",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0195.md", "design/machine-timing-evidence.md", "design/warajevo-zx-spectrum-next-architecture.md sections 9 and 12", "design/wzsn-architectures-1-2-developer-tasks.md task 185", "src/core/wz_machine.c", "src/core/wz_bus.c", "tests/wz_tests_placeholder.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS", "reference/original-warajevo/source/src/spectrum-kernel/Z80.ASM"],
-      "notes": "Opened on 2026-09-04 to prove all base 128K paging aliases, rejected A15/A1 addresses, read non-interference, and lock persistence without expanding into +2A/+3 or timing behavior. Requires exact-SHA review, remote and hosted validation, and a second upstream zero-gap scan before closure."
+      "notes": "Closed on 2026-09-04 after adding alias, A15/A1 rejection, read non-interference, and lock persistence coverage. Exact-SHA CODE and bootstrap reviews passed with zero findings for bef5744..4e32931; remote Linux sanitizer, Windows 10/11, Intel macOS, and hosted run 33929332340 at 4e3293196e9ec41352a8456344c1e56c35551915 all passed. Second upstream zero-gap scan found no missing base-profile behavior."
     }
   ]
 }
