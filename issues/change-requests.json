@@ -1656,9 +1656,9 @@
     {
       "cr_number": "CR-0188",
       "title": "Implement Z80 v1 loading",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0188.md", "design/media-format-support.md", "design/warajevo-zx-spectrum-next-architecture.md sections 25.1-25.3", "design/wzsn-architectures-1-2-developer-tasks.md task 174", "src/core/wz_state.h", "src/core/wz_state.c", "tests/wz_tests_placeholder.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS"],
-      "notes": "In progress: exact 30-byte Z80 v1 48K header mapping, uncompressed and RLE memory loading, terminal 00 ED ED 00 marker validation, and isolated malformed-input rejection. Higher-version parsing remains deferred to tasks 175-176."
+      "notes": "Closed on 2026-09-04 after implementing exact 30-byte Z80 v1 48K header mapping, uncompressed and RLE memory loading, terminal 00 ED ED 00 marker validation, and isolated malformed-input rejection. Exact-SHA CODE, DOCUMENTATION, and bootstrap reviews passed with zero findings. Linux, Windows 10, Windows 11, Intel Mac, and hosted run 33910567836 passed; higher-version parsing remains deferred to tasks 175-176."
     }
   ]
 }
