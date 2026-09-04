@@ -144,7 +144,7 @@ class HarnessGateTests(unittest.TestCase):
 
         with patch.object(Path, "is_file", return_value=True), \
              patch.object(Path, "read_text", return_value=receipt), \
-             patch.object(Path, "read_bytes", side_effect=read_bytes), \
+             patch.object(Path, "read_bytes", autospec=True, side_effect=read_bytes), \
              patch.object(remote.subprocess, "run", side_effect=[
                  Result(text_stdout="head\n"), Result(text_stdout="head\trefs/heads/main\n"),
                  Result(stdout=diff),
