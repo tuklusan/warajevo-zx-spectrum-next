@@ -78,7 +78,7 @@ typedef struct wz_machine {
     wz_trace_sink_t* timing_trace;
     wz_byte_t memory[65536u];
     wz_byte_t has_48k_rom;
-    wz_byte_t ram_128k[WZ_128K_RAM_BANK_COUNT][WZ_128K_RAM_BANK_SIZE];
+    wz_byte_t* ram_128k;
     wz_byte_t paging_7ffd;
     wz_byte_t paging_7ffd_locked;
     wz_byte_t hardware_io_decode_enabled;

@@ -8,6 +8,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "core/wz_machine.h"
 
+#include <stdlib.h>
+
 wz_result_t wz_machine_init(wz_machine_t* machine,
                             const wz_machine_profile_t* profile)
 {
@@ -18,6 +20,14 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
         return WZ_RESULT_INVALID_PROFILE;
     }
 
+    machine->ram_128k = 0;
+    if (profile->kind == WZ_MACHINE_128K_PAL) {
+        machine->ram_128k = (wz_byte_t*)calloc(
+            WZ_128K_RAM_BANK_COUNT, WZ_128K_RAM_BANK_SIZE);
+        if (machine->ram_128k == 0) {
+            return WZ_RESULT_OUT_OF_MEMORY;
+        }
+    }
     machine->profile = profile;
     wz_z80_state_init(&machine->cpu);
     wz_bus_observer_init(&machine->bus_observer, 0, 0);
@@ -50,15 +60,14 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     for (size_t index = 0u; index < sizeof(machine->memory); ++index) {
         machine->memory[index] = 0u;
     }
-    for (size_t index = 0u; index < sizeof(machine->ram_128k); ++index) {
-        ((wz_byte_t*)machine->ram_128k)[index] = 0u;
-    }
     return WZ_RESULT_OK;
 }
 
 void wz_machine_destroy(wz_machine_t* machine)
 {
     if (machine != 0) {
+        free(machine->ram_128k);
+        machine->ram_128k = 0;
         machine->profile = 0;
         wz_bus_observer_init(&machine->bus_observer, 0, 0);
         wz_bus_input_init(&machine->bus_input, 0, 0);
@@ -355,13 +364,14 @@ wz_byte_t wz_machine_memory_read(const wz_machine_t* machine, wz_word_t address)
     }
     if (machine->profile != 0 && machine->profile->kind == WZ_MACHINE_128K_PAL) {
         if (address >= 0xc000u) {
-            return machine->ram_128k[machine->paging_7ffd & 0x07u][address - 0xc000u];
+            return machine->ram_128k[(machine->paging_7ffd & 0x07u) *
+                                     WZ_128K_RAM_BANK_SIZE + address - 0xc000u];
         }
         if (address >= 0x8000u) {
-            return machine->ram_128k[2u][address - 0x8000u];
+            return machine->ram_128k[2u * WZ_128K_RAM_BANK_SIZE + address - 0x8000u];
         }
         if (address >= 0x4000u) {
-            return machine->ram_128k[5u][address - 0x4000u];
+            return machine->ram_128k[5u * WZ_128K_RAM_BANK_SIZE + address - 0x4000u];
         }
     }
     return machine->memory[address];
@@ -373,11 +383,12 @@ void wz_machine_memory_write(wz_machine_t* machine, wz_word_t address,
     if (machine != 0 && machine->profile != 0 &&
         machine->profile->kind == WZ_MACHINE_128K_PAL) {
         if (address >= 0xc000u) {
-            machine->ram_128k[machine->paging_7ffd & 0x07u][address - 0xc000u] = value;
+            machine->ram_128k[(machine->paging_7ffd & 0x07u) *
+                              WZ_128K_RAM_BANK_SIZE + address - 0xc000u] = value;
         } else if (address >= 0x8000u) {
-            machine->ram_128k[2u][address - 0x8000u] = value;
+            machine->ram_128k[2u * WZ_128K_RAM_BANK_SIZE + address - 0x8000u] = value;
         } else if (address >= 0x4000u) {
-            machine->ram_128k[5u][address - 0x4000u] = value;
+            machine->ram_128k[5u * WZ_128K_RAM_BANK_SIZE + address - 0x4000u] = value;
         }
     } else if (machine != 0 &&
                (!machine->has_48k_rom || address >= WZ_48K_ROM_SIZE)) {
