@@ -1913,8 +1913,13 @@ static wz_result_t wz_wav_scan(const wz_byte_t* data, size_t length,
             *channels = wz_read_le16(data + chunk_data + 2u);
             *sample_rate = wz_wav_le32(data + chunk_data + 4u);
             *bits = wz_read_le16(data + chunk_data + 14u);
-            if (*channels == 0u || *channels > 2u || *sample_rate == 0u ||
-                (*bits != 8u && *bits != 16u)) {
+            size_t format_frame_bytes = (size_t)*channels * (*bits / 8u);
+            wz_qword_t expected_byte_rate = (wz_qword_t)*sample_rate * format_frame_bytes;
+            if (*channels == 0u || *sample_rate == 0u ||
+                (*bits != 8u && *bits != 16u) || format_frame_bytes == 0u ||
+                format_frame_bytes > UINT16_MAX || expected_byte_rate > UINT32_MAX ||
+                wz_read_le16(data + chunk_data + 12u) != format_frame_bytes ||
+                wz_wav_le32(data + chunk_data + 8u) != expected_byte_rate) {
                 return WZ_RESULT_UNSUPPORTED_OPERATION;
             }
             format_found = true;
@@ -1934,7 +1939,7 @@ static int wz_wav_sample_level(const wz_byte_t* sample, wz_word_t bits,
                                wz_word_t channels, wz_byte_t threshold,
                                wz_byte_t hysteresis, int previous)
 {
-    int value = 0;
+    int64_t value = 0;
     for (wz_word_t channel = 0u; channel < channels; ++channel) {
         int sample_value = bits == 8u ? (int)sample[channel] - 128 :
             (int)(int16_t)wz_read_le16(sample + channel * 2u);
@@ -1942,13 +1947,13 @@ static int wz_wav_sample_level(const wz_byte_t* sample, wz_word_t bits,
     }
     value /= (int)channels;
     if (bits == 8u) {
-        int high = (int)threshold + (int)hysteresis;
-        int low = (int)threshold - (int)hysteresis;
+        int64_t high = (int)threshold + (int)hysteresis;
+        int64_t low = (int)threshold - (int)hysteresis;
         if (previous == 0 && value > high - 128) return 1;
         if (previous == 1 && value < low - 128) return 0;
     } else {
-        int high = ((int)threshold - 128) * 256 + (int)hysteresis * 256;
-        int low = ((int)threshold - 128) * 256 - (int)hysteresis * 256;
+        int64_t high = ((int64_t)threshold - 128) * 256 + (int64_t)hysteresis * 256;
+        int64_t low = ((int64_t)threshold - 128) * 256 - (int64_t)hysteresis * 256;
         if (previous == 0 && value > high) return 1;
         if (previous == 1 && value < low) return 0;
     }

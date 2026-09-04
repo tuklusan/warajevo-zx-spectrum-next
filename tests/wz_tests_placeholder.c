@@ -1343,6 +1343,30 @@ static int test_wav_pcm_decoder(void)
         fputs("WAV truncation rejection failed\n", stderr);
         return 1;
     }
+
+    static const wz_byte_t three_channel_wav[] = {
+        'R','I','F','F', 42u,0u,0u,0u, 'W','A','V','E',
+        'f','m','t',' ', 16u,0u,0u,0u, 1u,0u,3u,0u,
+        0xe8u,0x03u,0u,0u, 0xbbu,0x0bu,0u,0u, 3u,0u,8u,0u,
+        'd','a','t','a', 6u,0u,0u,0u, 0u,0u,0u,255u,255u,255u
+    };
+    if (wz_tape_parse_wav_pcm(three_channel_wav, sizeof(three_channel_wav),
+                              1000u, 128u, 0u, segments, 4u, &count) != WZ_RESULT_OK ||
+        count != 2u || segments[0].duration != 1u || segments[0].ear_level != 0u ||
+        segments[1].duration != 1u || segments[1].ear_level != 1u) {
+        fputs("WAV multi-channel conversion failed\n", stderr);
+        return 1;
+    }
+
+    wz_byte_t malformed_format[sizeof(wav)];
+    memcpy(malformed_format, wav, sizeof(wav));
+    malformed_format[28u] = 0u;
+    if (wz_tape_parse_wav_pcm(malformed_format, sizeof(malformed_format),
+                              1000u, 128u, 0u, segments, 4u, &count) !=
+        WZ_RESULT_UNSUPPORTED_OPERATION) {
+        fputs("WAV format metadata validation failed\n", stderr);
+        return 1;
+    }
     return 0;
 }
 
