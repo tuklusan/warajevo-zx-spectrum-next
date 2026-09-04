@@ -1565,9 +1565,9 @@
     {
       "cr_number": "CR-0175",
       "title": "Genericize external review gate artifact names",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0175.md", "WORKFLOW.md", "design/review-gate.md", "tools/reviewer/review_gate.py", "tests/test_review_gate.py", "tools/harness/invoke_remote_harness.py", "CMakeLists.txt"],
-      "notes": "Opened on 2026-09-03 to remove provider-specific names from active review-gate filenames and documentation while preserving the configured reviewer behavior and historical provenance."
+      "notes": "Closed on 2026-09-04 after genericizing the active review-gate script, test module, authority document, imports, CMake hook, harness checks, workflow references, and historical source-authority paths without changing reviewer behavior. Initial hosted run 33834550089 exposed a retained legacy bootstrap import; d8886b3 corrected it. Exact-SHA CODE and DOCUMENTATION reviews passed with zero confirmed findings, and hosted platform-smoke 33835167151 passed all 18 lanes plus publication-gate for d8886b3."
     }
   ]
 }
