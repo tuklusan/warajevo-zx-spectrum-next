@@ -102,11 +102,16 @@ class HarnessGateTests(unittest.TestCase):
         diff = b"reviewed diff"
         digest = hashlib.sha256(diff).hexdigest()
         original_read_text = Path.read_text
-        tracker_data = (ROOT / "issues" / "change-requests.json").read_bytes()
-        tracker = json.loads(tracker_data)
-        active = [item for item in tracker["change_requests"] if item.get("status") == "in_progress"]
-        self.assertTrue(active)
-        cr = active[-1]
+        tracker = json.loads((ROOT / "issues" / "change-requests.json").read_bytes())
+        cr = {
+            "cr_number": "CR-TEST-REMOTE-HARNESS",
+            "title": "Synthetic remote harness compatibility fixture",
+            "status": "in_progress",
+            "source_authority": ["design/review-gate.md"],
+            "notes": "Isolated test fixture.",
+        }
+        tracker["change_requests"].append(cr)
+        tracker_data = json.dumps(tracker, separators=(",", ":"), sort_keys=True).encode()
         scope = {
             "cr_number": cr["cr_number"], "title": cr.get("title"), "status": cr.get("status"),
             "source_authority": cr.get("source_authority", []), "notes": cr.get("notes", ""),
