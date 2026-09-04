@@ -956,6 +956,10 @@ class GateTests(unittest.TestCase):
                                      deadline)
         self.assertEqual(result["verdict"], "REVIEW_UNAVAILABLE")
 
+    def test_default_review_deadline_supports_slow_external_service(self):
+        self.assertEqual(gate.DEFAULT_REVIEW_DEADLINE_SECONDS, 3600.0)
+        self.assertEqual(bootstrap_gate.DEFAULT_REVIEW_DEADLINE_SECONDS, 3600.0)
+
     def test_blocked_transport_cannot_outlive_review_deadline(self):
         release = threading.Event()
 

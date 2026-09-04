@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-    "next_cr_number": 176,
+  "next_cr_number": 177,
   "status_values": [
     "open",
     "in_progress",
@@ -1568,6 +1568,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0175.md", "WORKFLOW.md", "design/review-gate.md", "tools/reviewer/review_gate.py", "tests/test_review_gate.py", "tools/harness/invoke_remote_harness.py", "CMakeLists.txt"],
       "notes": "Closed on 2026-09-04 after genericizing the active review-gate script, test module, authority document, imports, CMake hook, harness checks, workflow references, and historical source-authority paths without changing reviewer behavior. Initial hosted run 33834550089 exposed a retained legacy bootstrap import; d8886b3 corrected it. Exact-SHA CODE and DOCUMENTATION reviews passed with zero confirmed findings, and hosted platform-smoke 33835167151 passed all 18 lanes plus publication-gate for d8886b3."
+    },
+    {
+      "cr_number": "CR-0176",
+      "title": "Extend default external review deadline for slow responses",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0176.md", "design/review-gate.md", "tools/reviewer/review_gate.py", "tools/reviewer/legacy_bootstrap_gate.py", "tests/test_review_gate.py"],
+      "notes": "Opened on 2026-09-04 after valid serialized reviews repeatedly reached the 20-minute default while the configured service is known to take an hour or more. Scope raises the shared normal/bootstrap default to 3,600 seconds while preserving explicit overrides, retry behavior, health checks, serialized locking, telemetry, and fail-closed expiry."
     }
   ]
 }
