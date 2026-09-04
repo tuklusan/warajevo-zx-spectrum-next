@@ -1579,9 +1579,9 @@
     {
       "cr_number": "CR-0177",
       "title": "Make remote-harness compatibility fixtures queue-independent",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0177.md", "tests/test_remote_harness_gate.py", "tools/harness/invoke_remote_harness.py", "WORKFLOW.md"],
-      "notes": "Opened on 2026-09-04 after hosted validation exposed that a compatibility test depended on the live tracker containing an in-progress CR. Scope isolates the test fixture while preserving production active-CR authorization."
+      "notes": "Closed on 2026-09-04 after isolating the compatibility fixture's synthetic active tracker record, correcting the tracker-byte method binding, and exposing MacPorts tools to the noninteractive Mac harness PATH. Exact-SHA CODE and DOCUMENTATION reviews passed with zero confirmed findings. Intel Big Sur remote smoke CR0177-MAC-2 passed with no missing tools, and hosted platform-smoke 33872641685 passed all 18 lanes plus publication-gate for 63a413e."
     }
   ]
 }
