@@ -60,6 +60,11 @@ python tools/harness/invoke_remote_harness.py probe macos-bigsur-lab
 python tools/harness/invoke_remote_windows_powershell.py windows-11-laptop tools/harness/windows-toolchain/verify-toolchain.ps1
 ```
 
+The current lab snapshot has only `windows-11-laptop` available at
+`vagab@192.168.4.103`; Linux, Windows 10, and Big Sur Intel are unavailable.
+Record unavailable-host transport results and continue with the available host
+and the complete hosted runner matrix.
+
 Before probes and tests, the orchestrator updates the approved remote checkout
 with `git pull --ff-only origin main`; it refuses to proceed if the checkout
 cannot be advanced safely. The orchestrator always pulls results back into:
@@ -106,6 +111,11 @@ It runs the same CMake smoke and pinned Fuse ED conformance entry points as the
 SSH remotes and uploads the resulting manifest and smoke artefact tree for each
 runner. The acquired upstream source remains under ignored `test-artefacts/`
 and is not uploaded.
+
+The hosted matrix must be allowed to finish naturally. Keep `fail-fast: false`
+and wait for all lanes, including queued or slow lanes. A queued job is not a
+failure and must not trigger cancellation or a replacement run; the aggregate
+publication gate evaluates only terminal conclusions for the exact commit.
 
 ## Screenshot notes
 

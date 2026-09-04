@@ -67,7 +67,13 @@ is wrapped in SSH transport quoting.
 
 ## Approved remote machines
 
-### linux-x64-lxqt
+The current lab availability snapshot is: only `windows-11-laptop` is
+available. The Linux, Windows 10, and Big Sur Intel hosts are currently
+unavailable. Unavailable-host SSH failures are environmental evidence, not
+project correctness failures; record them and continue with the hosted matrix
+and any available lab host.
+
+### linux-x64-lxqt (currently unavailable)
 
 - SSH target: `sanyalnet@10.0.0.161`
 - Remote project directory:
@@ -81,7 +87,7 @@ Example session shape:
 ssh sanyalnet@10.0.0.161 'cd ~/SOFTWARE-DEVELOPMENT/Warajevo-Spectrum-Next && <remote-command>'
 ```
 
-### windows-10-reference
+### windows-10-reference (currently unavailable)
 
 - SSH target: `sanyalnet@10.0.0.106`
 - Remote project directory:
@@ -95,9 +101,9 @@ Example session shape:
 ssh sanyalnet@10.0.0.106 "powershell -NoProfile -Command \"Set-Location 'D:\\WarajevoSpectrum.Next'; <remote-command>\""
 ```
 
-### windows-11-laptop
+### windows-11-laptop (currently available)
 
-- SSH target: `vagab@10.0.0.133`
+- SSH target: `vagab@192.168.4.103`
 - Remote project directory:
   `C:\Users\vagab\WarajevoSpectrum.Next`
 - Rule:
@@ -106,10 +112,10 @@ ssh sanyalnet@10.0.0.106 "powershell -NoProfile -Command \"Set-Location 'D:\\War
 Example session shape:
 
 ```text
-ssh vagab@10.0.0.133 "powershell -NoProfile -Command \"Set-Location 'C:\\Users\\vagab\\WarajevoSpectrum.Next'; <remote-command>\""
+ssh vagab@192.168.4.103 "powershell -NoProfile -Command \"Set-Location 'C:\\Users\\vagab\\WarajevoSpectrum.Next'; <remote-command>\""
 ```
 
-### macos-bigsur-lab
+### macos-bigsur-lab (currently unavailable)
 
 - SSH target: `rumtuk@10.0.0.114`
 - Remote project directory: `/Users/rumtuk/SOFTWARE_DEV/WARAJEVO-NEXT`
@@ -153,3 +159,10 @@ The current hosted smoke matrix is defined in:
 When hosted-runner logs, screenshots, or packaged artefacts are pulled back to
 this machine for inspection, they must also be stored only under
 `test-artefacts/`.
+
+Hosted-runner waiting is fail-closed and terminal-state based. Start one
+validated run for the exact published commit, set `fail-fast: false`, and wait
+for every configured lane, including lanes that are queued or slow. Do not
+cancel, replace, or label a run failed because a lane has not started yet.
+Only GitHub's terminal job conclusions may classify a lane, and the
+publication gate must inspect all expected lanes and the exact commit SHA.

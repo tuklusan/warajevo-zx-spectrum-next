@@ -501,7 +501,7 @@ def validate_required_workflow_documents(root: Path) -> list[str]:
             "sanyalnet@10.0.0.106",
             r"D:\WarajevoSpectrum.Next",
             "windows-11-laptop",
-            "vagab@10.0.0.133",
+            "vagab@192.168.4.103",
             r"C:\Users\vagab\WarajevoSpectrum.Next",
             "Never build or test on this local machine.",
             "test-artefacts/remote-runs/<machine>/<run-id>/",

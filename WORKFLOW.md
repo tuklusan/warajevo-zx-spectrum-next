@@ -77,6 +77,18 @@ The public harness contract for those machines lives in
 `test-artefacts/README.md`, and the tracked shared harness entry points live in
 `tools/harness/`.
 
+The current lab availability snapshot has only the Windows 11 host available
+at `vagab@192.168.4.103`. Linux, Windows 10, and Big Sur Intel are currently
+unavailable. Their SSH failures must be recorded as environmental results and
+must not be treated as evidence that the software failed. The complete hosted
+runner matrix is the required multi-platform proof while those hosts are down.
+
+Hosted-runner waiting is terminal-state based. Use one run for the exact
+published commit with `fail-fast: false`; wait for every configured lane,
+including queued or slow lanes. Never cancel or replace a live run and never
+classify a queued lane as failed. Only terminal GitHub job conclusions may
+feed the publication gate.
+
 ## Private Local Artifacts
 
 Private local-only material still belongs inside the project directory.

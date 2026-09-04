@@ -31,18 +31,21 @@ REMOTE_MACHINES = {
         "ssh_target": "sanyalnet@10.0.0.161",
         "project_dir": "/home/sanyalnet/SOFTWARE-DEVELOPMENT/Warajevo-Spectrum-Next",
         "python_command": "python3",
+        "lab_status": "unavailable",
     },
     "windows-10-reference": {
         "kind": "windows",
         "ssh_target": "sanyalnet@10.0.0.106",
         "project_dir": r"D:\WarajevoSpectrum.Next",
         "python_command": "py -3",
+        "lab_status": "unavailable",
     },
     "windows-11-laptop": {
         "kind": "windows",
-        "ssh_target": "vagab@10.0.0.133",
+        "ssh_target": "vagab@192.168.4.103",
         "project_dir": r"C:\Users\vagab\WarajevoSpectrum.Next",
         "python_command": "py -3",
+        "lab_status": "available",
     },
     "macos-bigsur-lab": {
         "kind": "macos",
@@ -51,6 +54,7 @@ REMOTE_MACHINES = {
         "python_command": "python3",
         "max_bytes": 1073741824,
         "identity_file": "test-artefacts/ssh-private/macos-bigsur",
+        "lab_status": "unavailable",
     },
 }
 REMOTE_REPOSITORY = "https://github.com/tuklusan/warajevo-zx-spectrum-next.git"

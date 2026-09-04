@@ -53,6 +53,12 @@ are documented in `test-artefacts/README.md`.
 
 ## Remote harness baseline
 
+The lab availability snapshot currently has only `windows-11-laptop` online at
+`vagab@192.168.4.103`. `linux-x64-lxqt`, `windows-10-reference`, and
+`macos-bigsur-lab` are unavailable for now. Treat their transport failures as
+environmental and continue with the available Windows host plus the complete
+hosted runner matrix.
+
 The tracked remote harness entry points live in:
 
 ```text
@@ -136,6 +142,12 @@ pull back logs, traces, screenshots, and other outputs into `test-artefacts/`.
 Pushes and pull requests also trigger the hosted smoke matrix in
 `.github/workflows/platform-smoke.yml`. Those jobs are remote CI execution and
 are allowed by the project workflow rules.
+
+Never jump the gun on hosted validation: keep one run per commit, preserve
+`fail-fast: false`, and wait for all configured jobs to reach terminal states.
+A queued or slow runner is not a failure. Do not cancel or replace a live run;
+the publication aggregate is the authority for whether the complete matrix
+passed.
 
 ## Reference sync
 
