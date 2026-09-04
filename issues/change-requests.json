@@ -1691,9 +1691,9 @@
     {
       "cr_number": "CR-0193",
       "title": "Freeze 128K PAL timing and profile evidence",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0193.md", "design/machine-timing-evidence.md", "design/warajevo-zx-spectrum-next-architecture.md sections 9, 12, 15, 20, 25, and 49", "design/wzsn-architectures-1-2-developer-tasks.md task 183", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS", "https://worldofspectrum.org/faq/reference/128kreference.htm"],
-      "notes": "Opened on 2026-09-04 to freeze the base 128K PAL/+2 timing, contention, paging, and variant-boundary evidence before Tasks 184-187 implementation. Requires exact-SHA documentation review, bootstrap review, and a second upstream zero-gap scan before closure."
+      "notes": "Closed on 2026-09-04 after freezing the base 128K PAL/+2 timing, contention, paging, and variant-boundary evidence before Tasks 184-187 implementation. Exact-SHA DOCUMENTATION review and bootstrap review passed with zero findings for d60109e..b7cba4c; the second upstream scan covered SNAPSHOT.PAS and the 128K-conditioned Z80 path with no missing initial-profile behavior."
     }
   ]
 }
