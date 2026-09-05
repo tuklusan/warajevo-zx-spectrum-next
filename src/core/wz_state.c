@@ -445,7 +445,7 @@ wz_result_t wz_snapshot_state_load(wz_snapshot_state_t* snapshot,
                                    const wz_byte_t* data,
                                    size_t length)
 {
-    wz_machine_t candidate = {0};
+    wz_machine_t* candidate;
 
     if (snapshot == 0 || data == 0) {
         return WZ_RESULT_INVALID_ARGUMENT;
@@ -453,11 +453,17 @@ wz_result_t wz_snapshot_state_load(wz_snapshot_state_t* snapshot,
     if (length > WZ_STATE_SNAPSHOT_CAPACITY) {
         return WZ_RESULT_INVALID_STATE;
     }
-    if (wz_state_deserialize_machine(&candidate, data, length) != WZ_RESULT_OK) {
-        wz_machine_destroy(&candidate);
+    candidate = (wz_machine_t*)calloc(1u, sizeof(*candidate));
+    if (candidate == 0) {
+        return WZ_RESULT_OUT_OF_MEMORY;
+    }
+    if (wz_state_deserialize_machine(candidate, data, length) != WZ_RESULT_OK) {
+        wz_machine_destroy(candidate);
+        free(candidate);
         return WZ_RESULT_INVALID_STATE;
     }
-    wz_machine_destroy(&candidate);
+    wz_machine_destroy(candidate);
+    free(candidate);
     for (size_t index = 0u; index < length; ++index) {
         snapshot->data[index] = data[index];
     }
