@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 197,
+  "next_cr_number": 199,
   "status_values": [
     "open",
     "in_progress",
@@ -1715,6 +1715,20 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0196.md", "design/machine-timing-evidence.md", "design/warajevo-zx-spectrum-next-architecture.md sections 9, 15, and 16", "design/wzsn-architectures-1-2-developer-tasks.md task 186", "src/core/wz_machine_profile.c", "src/core/wz_machine.c", "tests/wz_tests_placeholder.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS", "reference/original-warajevo/source/src/spectrum-kernel/Z80.ASM"],
       "notes": "Closed on 2026-09-04 after correcting the attribute-fetch master-tick assertion from 14363*2 to the profile-defined one-T-state offset 14361*2+2. Exact-SHA CODE and bootstrap reviews passed with zero findings for 4a6c458..ef02567; remote CR0196-LINUX-SAN-R2, CR0196-WIN10-R2, CR0196-WIN11-R2, and CR0196-MAC-R2 passed; hosted platform-smoke 33931477809 passed all 18 matrix lanes, deep housekeeping, and publication at ef0256735e3c2857937f0187baafe3e4e627d8cd. Second upstream zero-gap scan found no missing base-profile behavior; contention and out-of-profile variants remain deferred."
+    },
+    {
+      "cr_number": "CR-0197",
+      "title": "Verify 128K master-tick, T-state, and frame relationships",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0197.md", "design/machine-timing-evidence.md", "design/warajevo-zx-spectrum-next-architecture.md sections 9 and 10", "design/wzsn-architectures-1-2-developer-tasks.md task 187", "src/core/wz_machine_profile.c", "src/core/wz_machine.c", "tests/wz_tests_placeholder.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS"],
+      "notes": "Opened on 2026-09-04 to verify the frozen 128K master-tick, T-state, line, and frame relationships through the existing profile and raster-position APIs. Requires exact-SHA review, remote and hosted validation, and a second upstream zero-gap scan before closure."
+    },
+    {
+      "cr_number": "CR-0198",
+      "title": "Import public 48K and 128K reference ROM disassemblies",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0198.md", "reference/rom-disassemblies/README.md", "https://github.com/ZXSpectrumVault/rom-disassemblies"],
+      "notes": "Opened on 2026-09-04 to import the base Spectrum 48K and 128K reference disassembly trees plus the two Interface 1 disassembly files from upstream revision 38e96bf14b89e01eb3f011c1925df4e9491cea50. Spanish, +2, +3, ZX80, and ZX81 material is explicitly excluded from this initial corpus."
     }
   ]
 }
