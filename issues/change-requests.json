@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 233,
+  "next_cr_number": 234,
   "status_values": [
     "open",
     "in_progress",
@@ -1967,6 +1967,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0232.md", "design/interface1-microdrive-zxnet.md sections 3, 5, 9, and 10", "design/warajevo-zx-spectrum-next-architecture.md sections 24.5 and 28.7", "design/wzsn-architectures-1-2-developer-tasks.md task 214", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
       "notes": "Closed on 2026-09-05 at implementation commit fe242940b1bd9658acd64bffbb39ae55bfcf1a31. Exact-SHA CODE, independent bootstrap, and DOCUMENTATION reviews passed with zero findings. Remote Linux sanitizer, Intel macOS sanitizer, Windows 10, and Windows 11 lanes passed with no missing tools. Hosted run 33992315190 passed all 20 lanes, including both Windows ARM lanes, deep housekeeping, and publication evidence verification. Private closure evidence is retained under test-artefacts/remote-runs/ and test-artefacts/hosted/CR-0232-33992315190/. Shared host transport remains deferred to the later orchestrator work."
+    },
+    {
+      "cr_number": "CR-0233",
+      "title": "Implement deterministic ZX Net loopback harness",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0233.md", "design/interface1-microdrive-zxnet.md sections 9 and 11", "design/warajevo-zx-spectrum-next-architecture.md section 24.5", "design/wzsn-architectures-1-2-developer-tasks.md task 215", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM"],
+      "notes": "Opened on 2026-09-05 after re-reading the complete upstream network handlers. Build a deterministic in-process loopback harness with named scenarios and retained manifests; shared host transport remains deferred."
     }
   ]
 }
