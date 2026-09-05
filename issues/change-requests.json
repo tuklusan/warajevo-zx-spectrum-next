@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 213,
+  "next_cr_number": 214,
   "status_values": [
     "open",
     "in_progress",
@@ -1827,6 +1827,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0212.md", "design/warajevo-zx-spectrum-next-architecture.md sections 20.3, 20.4, 20.5, 38, 49.1, and 49.2", "design/wzsn-architectures-1-2-developer-tasks.md task 197", "src/core/audio/wz_ay.c", "src/core/audio/wz_audio_mixer.c", "src/core/audio/wz_beeper.c", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
       "notes": "Closed on 2026-09-05 at implementation range 7016f37..e181228. Exact-SHA CODE, bootstrap, and DOCUMENTATION reviews passed with zero findings. Remote runs CR0212-1 Linux sanitizer, CR0212-2 Intel macOS, CR0212-3 Windows 10, and CR0212-4 Windows 11 passed with primary and pull status zero. Hosted platform-smoke run 33953363959 passed deep housekeeping, all 18 matrix lanes, and publication at e181228. The second upstream zero-gap scan found no missing scoped deterministic AY register-write or PCM-hash behavior."
+    },
+    {
+      "cr_number": "CR-0213",
+      "title": "Differential-test representative 128K state behavior",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0213.md", "design/warajevo-zx-spectrum-next-architecture.md sections 36, 38, 39, 40, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 198", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
+      "notes": "Opened on 2026-09-05 after CR-0212 closure. Add representative normalized 128K state differential fixtures against preserved Warajevo and hardware/reference evidence, with explicit disagreement dispositions and deterministic provenance."
     }
   ]
 }
