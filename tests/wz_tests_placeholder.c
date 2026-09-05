@@ -17,6 +17,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "app/wz_input_timing.h"
 #include "app/wz_input_focus.h"
 #include "app/wz_kempston_mapping.h"
+#include "app/wz_host_media_ownership.h"
 #include "app/wz_speed_policy.h"
 #include "app/wz_host_pacing.h"
 #include "app/wz_host_audio_push.h"
@@ -899,6 +900,44 @@ static void test_sna_48k_loader(void)
         exit(1);
     }
     wz_machine_destroy(&machine);
+}
+
+static void test_host_media_ownership(void)
+{
+    const char* path = "wz-host-media-ownership.tmp";
+    FILE* file = fopen(path, "wb");
+    wz_host_media_claim_t first = {0};
+    wz_host_media_claim_t second = {0};
+    wz_host_media_claim_t read_only = {0};
+    bool success = false;
+
+    if (file == 0) {
+        fputs("media ownership fixture creation failed\n", stderr);
+        return;
+    }
+    fclose(file);
+    if (!wz_host_media_claim_acquire(path, true, &first) ||
+        wz_host_media_claim_acquire(path, true, &second) ||
+        !wz_host_media_claim_acquire(path, false, &read_only) ||
+        read_only.held || read_only.writable) {
+        fputs("media ownership claim policy failed\n", stderr);
+        goto cleanup;
+    }
+    wz_host_media_claim_release(&first);
+    if (!wz_host_media_claim_acquire(path, true, &second)) {
+        fputs("media ownership release failed\n", stderr);
+        goto cleanup;
+    }
+    success = true;
+
+cleanup:
+    wz_host_media_claim_release(&first);
+    wz_host_media_claim_release(&second);
+    wz_host_media_claim_release(&read_only);
+    remove(path);
+    if (!success) {
+        return;
+    }
 }
 
 static void test_sna_48k_writer(void)
@@ -3239,6 +3278,7 @@ int main(void)
     test_kempston_mapping();
     test_speed_policy();
     test_host_pacing();
+    test_host_media_ownership();
     test_audio_speed_boundary_transitions();
     test_tape_object_and_state();
     test_machine_tape_playback();
