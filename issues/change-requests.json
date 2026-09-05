@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 210,
+  "next_cr_number": 211,
   "status_values": [
     "open",
     "in_progress",
@@ -1806,6 +1806,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0209.md", "design/warajevo-zx-spectrum-next-architecture.md sections 8, 20.5, 25, and 38", "design/wzsn-architectures-1-2-developer-tasks.md task 194", "src/core/wz_state.c", "src/core/wz_state.h", "src/core/wz_machine.c", "tests/wz_tests_placeholder.c", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
       "notes": "Closed on 2026-09-05 at implementation range bfe18e8..f0a5049. Exact-SHA CODE, bootstrap, and DOCUMENTATION reviews passed with zero findings. Remote runs CR0209-1 Linux sanitizer, CR0209-2 Intel macOS, CR0209-3 Windows 10, and CR0209-4 Windows 11 passed with CTest and snapshot corpus green. Hosted platform-smoke run 33949514507 passed deep housekeeping, all 18 matrix lanes, and publication at f0a5049. The second upstream zero-gap scan found no missing scoped 128K SNA state behavior; unsupported TR-DOS execution state remains explicitly deferred."
+    },
+    {
+      "cr_number": "CR-0210",
+      "title": "Complete 128K Z80 snapshot variant validation",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0210.md", "design/warajevo-zx-spectrum-next-architecture.md sections 8, 25, 25.1, 25.2, 38, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 195", "src/core/wz_state.c", "src/core/wz_state.h", "src/core/wz_machine.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
+      "notes": "Opened on 2026-09-05 after CR-0209 closure. Integrate lossless 128K v2-class Z80 loading and representable saving with exact header, page, compression, hardware-mode, and atomic-validation behavior; preserve v1/v3 compatibility and defer unsupported hardware extensions explicitly."
     }
   ]
 }
