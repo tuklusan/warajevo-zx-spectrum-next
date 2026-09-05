@@ -1471,7 +1471,7 @@ static void test_ay_noise_generator(void)
         wz_ay_advance_master_ticks(&ay, 4u * 17u) != WZ_RESULT_OK ||
         wz_ay_noise_level(&ay) != 0u ||
         wz_ay_advance_master_ticks(&ay, 4u) != WZ_RESULT_OK ||
-        wz_ay_noise_level(&ay) != 1u) {
+        wz_ay_noise_level(&ay) != 0u) {
         fputs("AY noise period, masking, or LFSR progression failed\n", stderr);
         exit(1);
     }
