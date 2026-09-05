@@ -32,6 +32,44 @@
       "reference_boundary": "Z80.ASM:primary arithmetic dispatch",
       "classification": "source_reviewed_match",
       "compared_fields": ["register_a", "flags", "program_counter", "master_tick"]
+    },
+    {
+      "id": "128k-all-bank-selection",
+      "profile": "WZ_MACHINE_128K_PAL",
+      "setup": {
+        "paging_7ffd_sequence": [0, 1, 2, 3, 4, 5, 6, 7],
+        "banked_address": "0xc000",
+        "bank_values": [160, 161, 162, 163, 164, 165, 166, 167]
+      },
+      "reference_boundary": "SPECSIM.ASM:SNAP7FFD and 128K MMU dispatch",
+      "classification": "source_reviewed_match",
+      "compared_fields": ["paging_7ffd", "selected_ram_bank", "memory_c000", "master_tick"]
+    },
+    {
+      "id": "128k-raster-screen-selection",
+      "profile": "WZ_MACHINE_128K_PAL",
+      "setup": {
+        "paging_7ffd": 8,
+        "raster_master_tick": 28722,
+        "screen_bank": 7,
+        "screen_byte": 165
+      },
+      "reference_boundary": "SPECSIM.ASM:128K screen-page selection and ULA fetch",
+      "classification": "source_reviewed_match",
+      "compared_fields": ["screen_bank", "raster_address", "raster_value", "master_tick"]
+    },
+    {
+      "id": "128k-snapshot-state-normalization",
+      "profile": "WZ_MACHINE_128K_PAL",
+      "setup": {
+        "snapshot_format": "SNA_128K",
+        "paging_7ffd": 43,
+        "program_counter": 17767,
+        "all_ram_banks": "deterministic_page_pattern"
+      },
+      "reference_boundary": "SNAPSHOT.PAS:load128Kpage and paging-state restoration",
+      "classification": "source_reviewed_match",
+      "compared_fields": ["paging_7ffd", "program_counter", "all_ram_banks", "border"]
     }
   ]
 }
