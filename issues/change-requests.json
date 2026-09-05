@@ -1768,9 +1768,9 @@
     {
       "cr_number": "CR-0204",
       "title": "Implement AY tone generators",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0204.md", "design/warajevo-zx-spectrum-next-architecture.md sections 20.3 and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md tasks 189 and 197", "src/core/audio/wz_ay.c", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
-      "notes": "Opened on 2026-09-05 after CR-0199 closure. Implement three deterministic AY tone dividers from the six tone-period registers through the canonical master-tick domain; noise, envelope, mixer, PCM, and serialization remain ordered follow-on work."
+      "notes": "Closed on 2026-09-05 after CODE, bootstrap, and DOCUMENTATION reviews passed with zero findings. Remote soaks CR0204-5 Linux sanitizer, CR0204-2 Intel macOS, CR0204-3 Windows 10, and CR0204-4 Windows 11 passed. Hosted platform-smoke run 33939359243 passed deep housekeeping, all 18 matrix lanes, and publication for 14a5238. Three deterministic AY tone dividers now advance from the canonical master-tick domain; noise, envelope, mixer, PCM, and serialization remain ordered follow-on work."
     }
   ]
 }
