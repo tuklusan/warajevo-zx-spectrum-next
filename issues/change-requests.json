@@ -1859,9 +1859,9 @@
     {
       "cr_number": "CR-0217",
       "title": "Resolve Interface 1 ROM test and redistribution handling",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0217.md", "design/interface1-microdrive-zxnet.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24.4, 25, 28, 29, 36, and 51", "design/warajevo-zx-spectrum-next-ui-architecture.md sections 22.1, 23.4, 39.1, and 44", "design/wzsn-architectures-1-2-developer-tasks.md task 201", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM", "reference/rom-disassemblies/README.md", "LICENSE.txt", "NOTICE.md"],
-      "notes": "Opened on 2026-09-05 after confirming that the repository contains no Interface-1 ROM binaries, only reference disassemblies, while preserved source expects an external ZXI1.ROM. The CR freezes external-ROM-only handling and no-publication policy before runtime implementation depends on ROM bytes."
+      "notes": "Opened and closed on 2026-09-05 after confirming that the repository contains no Interface-1 ROM binaries, only reference disassemblies, while preserved source expects an external ZXI1.ROM. Exact-SHA DOCUMENTATION and independent bootstrap reviews passed with zero findings. The CR freezes external-ROM-only handling and no-publication policy before runtime implementation depends on ROM bytes."
     }
   ]
 }
