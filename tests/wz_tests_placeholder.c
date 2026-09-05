@@ -599,16 +599,13 @@ static void test_snapshot_state_isolated_validation(void)
     wz_qword_t before_hash;
     wz_qword_t after_hash;
 
-    fputs("SNAPSHOT before_init\n", stderr);
     if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK ||
         wz_state_hash_machine(&machine, &before_hash) != WZ_RESULT_OK) {
         fputs("snapshot state setup failed\n", stderr);
         exit(1);
     }
-    fputs("SNAPSHOT after_hash\n", stderr);
     wz_snapshot_state_init(&snapshot);
     wz_state_writer_init(&writer, serialized, sizeof(serialized));
-    fputs("SNAPSHOT before_serialize\n", stderr);
     if (wz_state_serialize_machine(&machine, &writer) != WZ_RESULT_OK ||
         wz_snapshot_state_load(&snapshot, serialized, writer.length) != WZ_RESULT_OK ||
         wz_snapshot_state_length(&snapshot) != writer.length ||
@@ -617,7 +614,6 @@ static void test_snapshot_state_isolated_validation(void)
         wz_machine_destroy(&machine);
         exit(1);
     }
-    fputs("SNAPSHOT after_load\n", stderr);
     original = snapshot;
     serialized[0u] = 0u;
     if (wz_snapshot_state_load(&snapshot, serialized, writer.length) !=
