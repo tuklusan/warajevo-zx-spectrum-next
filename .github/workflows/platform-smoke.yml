@@ -106,11 +106,31 @@ jobs:
       - name: Run pinned Fuse ED conformance
         run: python tools/harness/run_fuse_ed_platform.py --runner-root .wzsn-harness/github/${{ matrix.id }}/build --private-root test-artefacts/github/${{ matrix.id }} --manifest .wzsn-harness/github/${{ matrix.id }}/fuse-complete-manifest.json --unresolved-baseline tools/harness/fuse-unresolved-baseline.json
 
-      - name: Upload smoke artefacts
+      - name: Upload smoke artefacts (attempt 1)
+        id: upload-smoke-1
         if: always()
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: platform-smoke-${{ matrix.id }}
+          path: .wzsn-harness/github/${{ matrix.id }}
+          if-no-files-found: error
+
+      - name: Upload smoke artefacts (attempt 2)
+        id: upload-smoke-2
+        if: always() && steps.upload-smoke-1.outcome == 'failure'
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: platform-smoke-${{ matrix.id }}-retry-2
+          path: .wzsn-harness/github/${{ matrix.id }}
+          if-no-files-found: error
+
+      - name: Upload smoke artefacts (attempt 3)
+        if: always() && steps.upload-smoke-1.outcome == 'failure' && steps.upload-smoke-2.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: platform-smoke-${{ matrix.id }}-retry-3
           path: .wzsn-harness/github/${{ matrix.id }}
           if-no-files-found: error
 
