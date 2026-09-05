@@ -1873,9 +1873,9 @@
     {
       "cr_number": "CR-0219",
       "title": "Implement cold networking-mode reconfiguration",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0219.md", "design/interface1-microdrive-zxnet.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24.1, 24.6, 26, 36, 39, and 49.1", "design/warajevo-zx-spectrum-next-ui-architecture.md sections 23.5 and 40", "design/wzsn-architectures-1-2-developer-tasks.md task 205", "src/core/wz_machine.h", "src/core/wz_machine.c", "src/core/wz_state.c", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM"],
-      "notes": "Opened on 2026-09-05 after the CR-0218 audit confirmed that the public networking setter only changes an enum and does not perform the architecture-required cold machine-context replacement. The implementation must recreate the same profile for NONE/INTERFACE1, preserve application pause/run state outside the core, remain idempotent for the active mode, and reject reserved EAR_MIC atomically."
+      "notes": "Opened and closed on 2026-09-05 after adding atomic candidate-context replacement for NONE/INTERFACE1 networking-mode changes, preserving the profile and leaving application pause/run state outside the core. Same-mode requests are idempotent and EAR_MIC remains rejected without mutation. Exact-SHA CODE, DOCUMENTATION, and independent bootstrap reviews passed with zero findings. Remote Linux CR0219-LINUX-1 and Intel Mac CR0219-MAC-1 passed with sanitizers; Windows 10 CR0219-WIN10-1 and Windows 11 CR0219-WIN11-1 passed without sanitizers. Hosted platform-smoke run 33958350968 passed all 18 lanes, deep housekeeping, and publication gate."
     }
   ]
 }
