@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 203,
+  "next_cr_number": 204,
   "status_values": [
     "open",
     "in_progress",
@@ -1756,7 +1756,14 @@
       "title": "Reactivate local test-machine soaks before the next implementation CR",
       "status": "in_progress",
       "source_authority": ["WORKFLOW.md", "tools/harness/README.md", "design/cr-preflight/CR-0202.md"],
-      "notes": "Closed on 2026-09-05 after explicit operator direction withdrew the temporary hosted-only restriction. Local harnesses and machine definitions remain unchanged; hosted matrix validation remains mandatory."
+      "notes": "Closed on 2026-09-05 after explicit operator direction withdrew the temporary hosted-only restriction. Local harnesses and machine definitions remain unchanged; hosted matrix validation remains mandatory. Documentation review PASS covered fda5d63..9dbca14 (scope manifest 8b2b6ce33f354e3bbc0b81deda16ffa3fa82e0da4ff13f6e1ea53c467b89801b)."
+    },
+    {
+      "cr_number": "CR-0203",
+      "title": "Refresh the unreachable Fuse corpus revision pin",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0203.md", "design/fuse-z80-test-suite.md", "tools/harness/run_fuse_ed_platform.py", "tools/harness/run_fuse_ed_corpus.py", "tools/harness/fuse-unresolved-baseline.json", "https://git.code.sf.net/p/fuse-emulator/fuse"],
+      "notes": "Opened on 2026-09-05 after hosted run 33936821735 showed fresh Linux runners could not acquire the formerly pinned Fuse revision. Current upstream HEAD e7fe9a0f3625b0aef649b114fc98323c7d241840 is reachable and contains z80/tests; complete local and hosted validation remains required."
     }
   ]
 }

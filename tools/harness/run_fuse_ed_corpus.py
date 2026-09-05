@@ -16,7 +16,7 @@ import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
-PINNED_COMMIT = "9cbab635f5c9dfdfc5cb769aa89048c7e624d6b7"
+PINNED_COMMIT = "e7fe9a0f3625b0aef649b114fc98323c7d241840"
 REGISTER_COUNT = 13
 STACK_SUBROUTINE_OPCODES = frozenset({
     "c0", "c1", "c4", "c5", "c7", "c8", "c9", "cc", "cd", "cf",

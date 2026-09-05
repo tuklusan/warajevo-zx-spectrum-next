@@ -17,7 +17,7 @@ source control.
 ```text
 Repository: https://git.code.sf.net/p/fuse-emulator/fuse
 Reference: refs/heads/master
-Commit: 9cbab635f5c9dfdfc5cb769aa89048c7e624d6b7
+Commit: e7fe9a0f3625b0aef649b114fc98323c7d241840
 Suite path: z80/tests/
 ```
 
@@ -33,7 +33,7 @@ run-local directory under `test-artefacts/`, for example:
 
 ```text
 git clone --filter=blob:none https://git.code.sf.net/p/fuse-emulator/fuse fuse-source
-git -C fuse-source checkout 9cbab635f5c9dfdfc5cb769aa89048c7e624d6b7
+git -C fuse-source checkout e7fe9a0f3625b0aef649b114fc98323c7d241840
 ```
 
 The runner must verify `git -C fuse-source rev-parse HEAD` equals the pinned
