@@ -596,12 +596,36 @@ static void test_interface1_machine_registers(void)
     wz_machine_destroy(&machine);
 }
 
+typedef struct {
+    wz_result_t result;
+    size_t sector;
+    size_t length;
+    wz_byte_t first_byte;
+    unsigned int calls;
+} microdrive_flush_test_context_t;
+
+static wz_result_t record_microdrive_flush(size_t sector,
+                                            const wz_byte_t* data,
+                                            size_t length,
+                                            void* context)
+{
+    microdrive_flush_test_context_t* record =
+        (microdrive_flush_test_context_t*)context;
+    record->calls++;
+    record->sector = sector;
+    record->length = length;
+    record->first_byte = data[WZ_MDR_HEADER_OFFSET];
+    return record->result;
+}
+
 static void test_microdrive_image_validation(void)
 {
     static wz_byte_t image_data[WZ_MDR_MAX_SECTORS * WZ_MDR_SECTOR_SIZE];
     wz_mdr_image_t image = {0};
     wz_mdr_image_t original;
     wz_mdr_transport_t transport;
+    microdrive_flush_test_context_t flush_record = {WZ_RESULT_PARSE_ERROR, 0u,
+                                                     0u, 0u, 0u};
     const wz_byte_t* sector_data = 0;
     wz_byte_t value = 0u;
 
@@ -690,6 +714,24 @@ static void test_microdrive_image_validation(void)
     wz_mdr_transport_discard(&transport);
     if (wz_mdr_transport_is_dirty(&transport) != 0u) {
         fputs("MDR write discard failed\n", stderr);
+        exit(1);
+    }
+    if (wz_mdr_transport_set_write_mode(&transport, 1u) != WZ_RESULT_OK ||
+        wz_mdr_transport_write(&transport, 0x66u) != WZ_RESULT_OK ||
+        wz_mdr_transport_flush(&transport, record_microdrive_flush,
+                                &flush_record) != WZ_RESULT_PARSE_ERROR ||
+        flush_record.calls != 1u || flush_record.sector != 1u ||
+        flush_record.length != WZ_MDR_SECTOR_SIZE ||
+        flush_record.first_byte != 0xa2u ||
+        wz_mdr_transport_is_dirty(&transport) != 1u) {
+        fputs("MDR failed flush recovery failed\n", stderr);
+        exit(1);
+    }
+    flush_record.result = WZ_RESULT_OK;
+    if (wz_mdr_transport_flush(&transport, record_microdrive_flush,
+                               &flush_record) != WZ_RESULT_OK ||
+        flush_record.calls != 2u || wz_mdr_transport_is_dirty(&transport) != 0u) {
+        fputs("MDR successful flush commit failed\n", stderr);
         exit(1);
     }
 }

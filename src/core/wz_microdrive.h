@@ -44,6 +44,11 @@ typedef struct {
     wz_mdr_phase_t phase;
 } wz_mdr_transport_t;
 
+typedef wz_result_t (*wz_mdr_flush_callback_t)(size_t sector,
+                                               const wz_byte_t* data,
+                                               size_t length,
+                                               void* context);
+
 wz_result_t wz_mdr_image_init(wz_mdr_image_t* image,
                               const wz_byte_t* data,
                               size_t length);
@@ -65,6 +70,9 @@ wz_result_t wz_mdr_transport_read(wz_mdr_transport_t* transport,
 wz_result_t wz_mdr_transport_write(wz_mdr_transport_t* transport,
                                    wz_byte_t value);
 wz_byte_t wz_mdr_transport_is_dirty(const wz_mdr_transport_t* transport);
+wz_result_t wz_mdr_transport_flush(wz_mdr_transport_t* transport,
+                                    wz_mdr_flush_callback_t callback,
+                                    void* context);
 void wz_mdr_transport_discard(wz_mdr_transport_t* transport);
 
 #endif

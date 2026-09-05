@@ -183,6 +183,26 @@ wz_byte_t wz_mdr_transport_is_dirty(const wz_mdr_transport_t* transport)
     return transport == 0 ? 0u : transport->dirty;
 }
 
+wz_result_t wz_mdr_transport_flush(wz_mdr_transport_t* transport,
+                                    wz_mdr_flush_callback_t callback,
+                                    void* context)
+{
+    wz_result_t result;
+
+    if (transport == 0 || callback == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (transport->dirty == 0u) {
+        return WZ_RESULT_OK;
+    }
+    result = callback(transport->sector, transport->buffer,
+                      WZ_MDR_SECTOR_SIZE, context);
+    if (result == WZ_RESULT_OK) {
+        transport->dirty = 0u;
+    }
+    return result;
+}
+
 void wz_mdr_transport_discard(wz_mdr_transport_t* transport)
 {
     if (transport != 0) {
