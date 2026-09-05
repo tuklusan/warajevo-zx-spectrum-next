@@ -70,11 +70,10 @@ The current lab snapshot has all four hosts available: Linux at
 and Windows 11 at `192.168.4.103`. Record any unavailable-host transport
 results as environmental and continue with the complete hosted runner matrix.
 
-Temporary validation mode: local test-machine soaks are currently disabled by
-operator direction. Do not invoke the local SSH soak path during this mode;
-the harness and machine definitions remain unchanged for later reactivation.
-Use and fully await the complete GitHub-hosted matrix instead. A skipped local
-soak is a recorded policy/environmental disposition, never an implicit pass.
+The temporary hosted-only validation mode has been withdrawn by operator
+direction. Local test-machine soaks are enabled again; use the existing SSH
+harness and machine definitions without changing their safety contracts.
+Continue to run and fully await the complete GitHub-hosted matrix as required.
 
 Before probes and tests, the orchestrator updates the approved remote checkout
 with `git pull --ff-only origin main`; it refuses to proceed if the checkout
