@@ -544,6 +544,57 @@ static void test_interface1_rom_paging(void)
     wz_machine_destroy(&machine);
 }
 
+static void test_interface1_machine_registers(void)
+{
+    static wz_machine_t machine;
+    static wz_byte_t interface1_rom[WZ_INTERFACE1_ROM_SIZE];
+    wz_bus_request_t request;
+
+    for (size_t index = 0u; index < sizeof(interface1_rom); ++index) {
+        interface1_rom[index] = (wz_byte_t)(index ^ 0x71u);
+    }
+    if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK ||
+        wz_machine_load_interface1_rom(&machine, interface1_rom,
+            sizeof(interface1_rom), WZ_INTERFACE1_ROM_NEW) != WZ_RESULT_OK ||
+        wz_machine_reconfigure_networking_mode(&machine, WZ_NETWORKING_INTERFACE1) !=
+            WZ_RESULT_OK ||
+        wz_machine_interface1_control_latch(&machine) !=
+            WZ_INTERFACE1_CONTROL_RESET ||
+        wz_machine_interface1_previous_control_latch(&machine) !=
+            WZ_INTERFACE1_CONTROL_RESET ||
+        wz_machine_interface1_motor_shift(&machine) != 0xffu ||
+        wz_machine_interface1_active_motor(&machine) != 0xffu ||
+        wz_machine_interface1_control_latch_tick(&machine) != 0u ||
+        !wz_machine_interface1_port_selected(0x20efu, 0xefu) ||
+        wz_machine_interface1_port_selected(0x20eeu, 0xefu)) {
+        fputs("Interface 1 register reset or alias state failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_bus_request_init(&request, WZ_BUS_IO_WRITE, 400u, 0x20efu, 0xecu, 4u);
+    if (wz_machine_bus_request(&machine, &request) != WZ_RESULT_OK ||
+        request.source != WZ_BUS_SOURCE_INPUT ||
+        wz_machine_interface1_control_latch(&machine) != 0xecu ||
+        wz_machine_interface1_previous_control_latch(&machine) != 0xeeu ||
+        wz_machine_interface1_motor_shift(&machine) != 0xfeu ||
+        wz_machine_interface1_active_motor(&machine) != 0u ||
+        wz_machine_interface1_control_latch_tick(&machine) != 400u) {
+        fputs("Interface 1 control latch falling-edge state failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    if (wz_machine_interface1_control_write(&machine, 0xefu, 401u) != WZ_RESULT_OK ||
+        wz_machine_interface1_control_write(&machine, 0xedu, 402u) != WZ_RESULT_OK ||
+        wz_machine_interface1_motor_shift(&machine) != 0xfdu ||
+        wz_machine_interface1_active_motor(&machine) != 1u ||
+        wz_machine_interface1_previous_control_latch(&machine) != 0xefu) {
+        fputs("Interface 1 repeated latch transition state failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_machine_destroy(&machine);
+}
+
 static void test_historical_state_representability(void)
 {
     wz_machine_t machine;
@@ -3054,6 +3105,7 @@ int main(void)
     test_networking_mode_state();
     test_networking_mode_cold_reconfiguration();
     test_interface1_rom_paging();
+    test_interface1_machine_registers();
     test_historical_state_representability();
     test_snapshot_state_isolated_validation();
     test_sna_48k_loader();

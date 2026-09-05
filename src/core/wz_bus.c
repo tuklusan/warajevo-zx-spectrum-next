@@ -197,6 +197,14 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
             wz_machine_ula_port_fe_write(machine, request->address, request->value,
                                          request->master_tick);
             request->source = WZ_BUS_SOURCE_ULA;
+        } else if (machine->hardware_io_decode_enabled &&
+                   machine->networking_mode == WZ_NETWORKING_INTERFACE1 &&
+                   wz_machine_interface1_port_selected(request->address, 0xefu)) {
+            if (wz_machine_interface1_control_write(
+                    machine, request->value, request->master_tick) != WZ_RESULT_OK) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+            request->source = WZ_BUS_SOURCE_INPUT;
         } else {
             request->source = WZ_BUS_SOURCE_FALLBACK;
         }

@@ -28,6 +28,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #define WZ_128K_RAM_BANK_COUNT 8u
 #define WZ_128K_RAM_BANK_SIZE 16384u
 #define WZ_BORDER_EVENT_CAPACITY 1024u
+#define WZ_INTERFACE1_CONTROL_RESET 0xeeu
 
 typedef struct {
     wz_qword_t frame_number;
@@ -90,6 +91,11 @@ typedef struct wz_machine {
     wz_interface1_rom_variant_t interface1_rom_variant;
     wz_byte_t interface1_rom_page;
     wz_qword_t interface1_rom_identity;
+    wz_byte_t interface1_control_latch;
+    wz_byte_t interface1_previous_control_latch;
+    wz_byte_t interface1_motor_shift;
+    wz_byte_t interface1_active_motor;
+    wz_master_tick_t interface1_control_latch_tick;
     wz_byte_t* ram_128k;
     wz_byte_t paging_7ffd;
     wz_byte_t paging_7ffd_locked;
@@ -168,6 +174,16 @@ wz_interface1_rom_variant_t wz_machine_interface1_rom_variant(
 bool wz_machine_has_interface1_rom(const wz_machine_t* machine);
 wz_byte_t wz_machine_interface1_rom_page(const wz_machine_t* machine);
 wz_qword_t wz_machine_interface1_rom_identity(const wz_machine_t* machine);
+wz_result_t wz_machine_interface1_control_write(wz_machine_t* machine,
+                                                wz_byte_t value,
+                                                wz_master_tick_t master_tick);
+wz_byte_t wz_machine_interface1_control_latch(const wz_machine_t* machine);
+wz_byte_t wz_machine_interface1_previous_control_latch(const wz_machine_t* machine);
+wz_byte_t wz_machine_interface1_motor_shift(const wz_machine_t* machine);
+wz_byte_t wz_machine_interface1_active_motor(const wz_machine_t* machine);
+wz_master_tick_t wz_machine_interface1_control_latch_tick(
+    const wz_machine_t* machine);
+bool wz_machine_interface1_port_selected(wz_word_t address, wz_byte_t port_low);
 wz_qword_t wz_machine_rom_identity(const wz_byte_t* bytes, size_t length);
 wz_byte_t wz_machine_memory_read(const wz_machine_t* machine, wz_word_t address);
 void wz_machine_memory_write(wz_machine_t* machine, wz_word_t address,

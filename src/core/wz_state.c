@@ -13,7 +13,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include <stdlib.h>
 
 #define WZ_STATE_VERSION 12u
-#define WZ_STATE_HEADER_LENGTH 113u
+#define WZ_STATE_HEADER_LENGTH 125u
 #define WZ_STATE_MACHINE_LENGTH (65536u + WZ_STATE_HEADER_LENGTH)
 
 static wz_result_t wz_state_write(wz_state_writer_t* writer,
@@ -211,6 +211,11 @@ wz_result_t wz_state_serialize_machine(const wz_machine_t* machine,
         wz_state_write_u8(writer, (wz_byte_t)machine->tape_loading_mode) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, (wz_byte_t)machine->networking_mode) != WZ_RESULT_OK ||
         wz_state_write_ay(writer, &machine->ay) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, machine->interface1_control_latch) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, machine->interface1_previous_control_latch) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, machine->interface1_motor_shift) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, machine->interface1_active_motor) != WZ_RESULT_OK ||
+        wz_state_write_u64(writer, machine->interface1_control_latch_tick) != WZ_RESULT_OK ||
         wz_state_write(writer, machine->memory, sizeof(machine->memory)) != WZ_RESULT_OK) {
         return WZ_RESULT_SERIALIZATION_FAILURE;
     }
@@ -419,9 +424,23 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
             machine->ay.tone_master_tick_phase >= WZ_AY_MASTER_TICKS_PER_CLOCK) {
             return WZ_RESULT_INVALID_STATE;
         }
+        machine->interface1_control_latch = data[offset++];
+        machine->interface1_previous_control_latch = data[offset++];
+        machine->interface1_motor_shift = data[offset++];
+        machine->interface1_active_motor = data[offset++];
+        machine->interface1_control_latch_tick = 0u;
+        for (size_t index = 0u; index < sizeof(machine->interface1_control_latch_tick); ++index) {
+            machine->interface1_control_latch_tick |=
+                (wz_qword_t)data[offset++] << (index * 8u);
+        }
+        if (machine->interface1_active_motor > 7u &&
+            machine->interface1_active_motor != 0xfeu &&
+            machine->interface1_active_motor != 0xffu) {
+            return WZ_RESULT_INVALID_STATE;
+        }
     }
     for (size_t index = 0u; index < sizeof(machine->memory); ++index) {
-        machine->memory[index] = data[113u + index];
+        machine->memory[index] = data[WZ_STATE_HEADER_LENGTH + index];
     }
     return WZ_RESULT_OK;
 }

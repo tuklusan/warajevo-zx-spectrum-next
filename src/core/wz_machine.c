@@ -40,6 +40,11 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     machine->interface1_rom_variant = WZ_INTERFACE1_ROM_NEW;
     machine->interface1_rom_page = 0u;
     machine->interface1_rom_identity = 0u;
+    machine->interface1_control_latch = WZ_INTERFACE1_CONTROL_RESET;
+    machine->interface1_previous_control_latch = WZ_INTERFACE1_CONTROL_RESET;
+    machine->interface1_motor_shift = 0xffu;
+    machine->interface1_active_motor = 0xffu;
+    machine->interface1_control_latch_tick = 0u;
     machine->paging_7ffd = 0u;
     machine->paging_7ffd_locked = 0u;
     machine->hardware_io_decode_enabled = 1u;
@@ -84,6 +89,11 @@ void wz_machine_destroy(wz_machine_t* machine)
         machine->interface1_rom_variant = WZ_INTERFACE1_ROM_NEW;
         machine->interface1_rom_page = 0u;
         machine->interface1_rom_identity = 0u;
+        machine->interface1_control_latch = WZ_INTERFACE1_CONTROL_RESET;
+        machine->interface1_previous_control_latch = WZ_INTERFACE1_CONTROL_RESET;
+        machine->interface1_motor_shift = 0xffu;
+        machine->interface1_active_motor = 0xffu;
+        machine->interface1_control_latch_tick = 0u;
         machine->paging_7ffd = 0u;
         machine->paging_7ffd_locked = 0u;
         machine->hardware_io_decode_enabled = 1u;
@@ -492,6 +502,73 @@ wz_byte_t wz_machine_interface1_rom_page(const wz_machine_t* machine)
 wz_qword_t wz_machine_interface1_rom_identity(const wz_machine_t* machine)
 {
     return machine == 0 ? 0u : machine->interface1_rom_identity;
+}
+
+wz_result_t wz_machine_interface1_control_write(wz_machine_t* machine,
+                                                 wz_byte_t value,
+                                                 wz_master_tick_t master_tick)
+{
+    wz_byte_t previous;
+
+    if (machine == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (machine->networking_mode != WZ_NETWORKING_INTERFACE1) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    previous = machine->interface1_control_latch;
+    machine->interface1_previous_control_latch = previous;
+    machine->interface1_control_latch = value;
+    machine->interface1_control_latch_tick = master_tick;
+    if ((previous & 0x02u) != 0u && (value & 0x02u) == 0u) {
+        machine->interface1_motor_shift =
+            (wz_byte_t)((machine->interface1_motor_shift << 1u) |
+                        (value & 0x01u));
+        machine->interface1_active_motor = 0xffu;
+        for (wz_byte_t motor = 0u; motor < 8u; ++motor) {
+            if ((machine->interface1_motor_shift & (wz_byte_t)(1u << motor)) == 0u) {
+                if (machine->interface1_active_motor != 0xffu) {
+                    machine->interface1_active_motor = 0xfeu;
+                    break;
+                }
+                machine->interface1_active_motor = motor;
+            }
+        }
+    }
+    return WZ_RESULT_OK;
+}
+
+wz_byte_t wz_machine_interface1_control_latch(const wz_machine_t* machine)
+{
+    return machine == 0 ? WZ_INTERFACE1_CONTROL_RESET :
+                          machine->interface1_control_latch;
+}
+
+wz_byte_t wz_machine_interface1_previous_control_latch(const wz_machine_t* machine)
+{
+    return machine == 0 ? WZ_INTERFACE1_CONTROL_RESET :
+                          machine->interface1_previous_control_latch;
+}
+
+wz_byte_t wz_machine_interface1_motor_shift(const wz_machine_t* machine)
+{
+    return machine == 0 ? 0xffu : machine->interface1_motor_shift;
+}
+
+wz_byte_t wz_machine_interface1_active_motor(const wz_machine_t* machine)
+{
+    return machine == 0 ? 0xffu : machine->interface1_active_motor;
+}
+
+wz_master_tick_t wz_machine_interface1_control_latch_tick(
+    const wz_machine_t* machine)
+{
+    return machine == 0 ? 0u : machine->interface1_control_latch_tick;
+}
+
+bool wz_machine_interface1_port_selected(wz_word_t address, wz_byte_t port_low)
+{
+    return (address & 0x001fu) == ((wz_word_t)port_low & 0x001fu);
 }
 
 wz_qword_t wz_machine_rom_identity(const wz_byte_t* bytes, size_t length)
