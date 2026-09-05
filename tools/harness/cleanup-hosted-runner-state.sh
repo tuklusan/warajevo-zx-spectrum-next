@@ -36,15 +36,10 @@ if [ "$workspace_only" != "--workspace-only" ]; then
         ;;
     esac
 
-    artifact_ids="$({
-      gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/artifacts?per_page=100" \
-        --jq '.artifacts[].id'
-    } || true)"
-    while IFS= read -r artifact_id; do
-      [ -n "$artifact_id" ] || continue
-      echo "Deleting prior temporary artifact ${artifact_id} from run ${run_id}."
-      gh api --method DELETE "repos/${GITHUB_REPOSITORY}/actions/artifacts/${artifact_id}"
-    done <<< "$artifact_ids"
+    # Delete all artifacts for a run in one API operation. Per-artifact
+    # deletion is prohibitively slow when the repository has a long backlog.
+    echo "Deleting prior temporary artifacts from run ${run_id}."
+    gh api --method DELETE "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/artifacts"
   done <<< "$prior_runs"
 fi
 
