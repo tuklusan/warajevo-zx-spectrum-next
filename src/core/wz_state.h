@@ -89,6 +89,12 @@ wz_result_t wz_sna_128k_image_load(wz_sna_128k_image_t* image,
 wz_result_t wz_sna_128k_image_save(const wz_sna_128k_image_t* image,
                                     wz_byte_t* data,
                                     size_t capacity);
+wz_result_t wz_state_load_sna_128k(wz_machine_t* machine,
+                                   const wz_byte_t* data,
+                                   size_t length);
+wz_result_t wz_state_save_sna_128k(const wz_machine_t* machine,
+                                   wz_byte_t* data,
+                                   size_t capacity);
 wz_result_t wz_snapshot_state_load_z80_v1(wz_snapshot_state_t* snapshot,
                                            const wz_byte_t* data,
                                            size_t length);

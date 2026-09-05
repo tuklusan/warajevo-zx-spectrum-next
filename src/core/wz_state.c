@@ -733,6 +733,201 @@ wz_result_t wz_sna_128k_image_save(const wz_sna_128k_image_t* image,
     return offset == WZ_SNA_128K_LENGTH ? WZ_RESULT_OK : WZ_RESULT_SERIALIZATION_FAILURE;
 }
 
+static wz_result_t wz_sna_128k_decode_cpu(const wz_byte_t* data,
+                                          wz_z80_state_t* cpu,
+                                          wz_byte_t* border_color)
+{
+    if (data == 0 || cpu == 0 || border_color == 0 ||
+        (data[19u] != 0u && data[19u] != 4u) || data[25u] > 2u ||
+        data[26u] > 7u) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    cpu->alternate.h = (wz_byte_t)(wz_read_le16(data + 1u) >> 8u);
+    cpu->alternate.l = (wz_byte_t)wz_read_le16(data + 1u);
+    cpu->alternate.d = (wz_byte_t)(wz_read_le16(data + 3u) >> 8u);
+    cpu->alternate.e = (wz_byte_t)wz_read_le16(data + 3u);
+    cpu->alternate.b = (wz_byte_t)(wz_read_le16(data + 5u) >> 8u);
+    cpu->alternate.c = (wz_byte_t)wz_read_le16(data + 5u);
+    cpu->alternate.a = (wz_byte_t)(wz_read_le16(data + 7u) >> 8u);
+    cpu->alternate.f = (wz_byte_t)wz_read_le16(data + 7u);
+    cpu->main.h = (wz_byte_t)(wz_read_le16(data + 9u) >> 8u);
+    cpu->main.l = (wz_byte_t)wz_read_le16(data + 9u);
+    cpu->main.d = (wz_byte_t)(wz_read_le16(data + 11u) >> 8u);
+    cpu->main.e = (wz_byte_t)wz_read_le16(data + 11u);
+    cpu->main.b = (wz_byte_t)(wz_read_le16(data + 13u) >> 8u);
+    cpu->main.c = (wz_byte_t)wz_read_le16(data + 13u);
+    cpu->iy = wz_read_le16(data + 15u);
+    cpu->ix = wz_read_le16(data + 17u);
+    cpu->i = data[0u];
+    cpu->iff1 = data[19u] == 4u ? 1u : 0u;
+    cpu->iff2 = cpu->iff1;
+    cpu->r = data[20u];
+    cpu->main.f = data[21u];
+    cpu->main.a = data[22u];
+    cpu->stack_pointer = wz_read_le16(data + 23u);
+    cpu->program_counter = wz_read_le16(data + 49179u);
+    cpu->interrupt_mode = data[25u];
+    *border_color = data[26u];
+    return wz_z80_state_validate(cpu);
+}
+
+static void wz_sna_128k_apply_candidate(wz_machine_t* machine,
+                                         const wz_machine_t* candidate)
+{
+    wz_byte_t* ram_128k = machine->ram_128k;
+
+    for (size_t index = 0u; index < sizeof(machine->memory); ++index) {
+        machine->memory[index] = candidate->memory[index];
+    }
+    for (size_t index = 0u;
+         index < WZ_128K_RAM_BANK_COUNT * WZ_128K_RAM_BANK_SIZE; ++index) {
+        ram_128k[index] = candidate->ram_128k[index];
+    }
+    machine->cpu = candidate->cpu;
+    machine->has_48k_rom = candidate->has_48k_rom;
+    machine->paging_7ffd = candidate->paging_7ffd;
+    machine->paging_7ffd_locked = candidate->paging_7ffd_locked;
+    machine->hardware_io_decode_enabled = candidate->hardware_io_decode_enabled;
+    for (size_t index = 0u; index < sizeof(machine->keyboard_rows); ++index) {
+        machine->keyboard_rows[index] = candidate->keyboard_rows[index];
+    }
+    machine->kempston = candidate->kempston;
+    machine->beeper = candidate->beeper;
+    machine->ay = candidate->ay;
+    machine->tape_loading_mode = candidate->tape_loading_mode;
+    machine->networking_mode = candidate->networking_mode;
+    machine->ula_output = candidate->ula_output;
+    machine->rom_identity = candidate->rom_identity;
+    machine->master_tick = candidate->master_tick;
+    machine->ula_output_tick = candidate->ula_output_tick;
+    machine->border_color = candidate->border_color;
+    for (size_t index = 0u; index < WZ_BORDER_EVENT_CAPACITY; ++index) {
+        machine->border_events[index] = candidate->border_events[index];
+    }
+    machine->border_event_count = candidate->border_event_count;
+    machine->maskable_interrupt_line_low = candidate->maskable_interrupt_line_low;
+    machine->im0_injected_opcode = candidate->im0_injected_opcode;
+    machine->im0_injected_opcode_pending = candidate->im0_injected_opcode_pending;
+    machine->tape.segments = 0;
+    machine->tape.segment_count = 0u;
+    machine->tape_state = candidate->tape_state;
+    machine->tape_state.tape = &machine->tape;
+    machine->tape_mounted = 0u;
+}
+
+wz_result_t wz_state_load_sna_128k(wz_machine_t* machine,
+                                   const wz_byte_t* data,
+                                   size_t length)
+{
+    static wz_machine_t candidate;
+    static wz_sna_128k_image_t image;
+    wz_byte_t border_color = 0u;
+
+    if (machine == 0 || data == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (machine->profile == 0 ||
+        machine->profile->kind != WZ_MACHINE_128K_PAL ||
+        machine->ram_128k == 0) {
+        return WZ_RESULT_UNSUPPORTED_OPERATION;
+    }
+    if (wz_sna_128k_image_load(&image, data, length) != WZ_RESULT_OK ||
+        image.trdos_active != 0u ||
+        wz_machine_init(&candidate, wz_machine_profile_128k_pal()) != WZ_RESULT_OK ||
+        wz_sna_128k_decode_cpu(data, &candidate.cpu, &border_color) !=
+            WZ_RESULT_OK) {
+        wz_machine_destroy(&candidate);
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    for (wz_byte_t page = 0u; page < WZ_128K_RAM_BANK_COUNT; ++page) {
+        for (size_t index = 0u; index < WZ_128K_RAM_BANK_SIZE; ++index) {
+            candidate.ram_128k[page * WZ_128K_RAM_BANK_SIZE + index] =
+                image.pages[page][index];
+        }
+    }
+    candidate.paging_7ffd = image.paging_7ffd;
+    candidate.paging_7ffd_locked = (wz_byte_t)((image.paging_7ffd >> 5u) & 1u);
+    candidate.border_color = border_color;
+    candidate.ula_output = border_color;
+    wz_sna_128k_apply_candidate(machine, &candidate);
+    wz_machine_destroy(&candidate);
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_state_save_sna_128k(const wz_machine_t* machine,
+                                   wz_byte_t* data,
+                                   size_t capacity)
+{
+    wz_byte_t current_page;
+    size_t offset;
+
+    if (machine == 0 || data == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (capacity < WZ_SNA_128K_LENGTH) {
+        return WZ_RESULT_BUFFER_TOO_SMALL;
+    }
+    if (machine->profile == 0 || machine->profile->kind != WZ_MACHINE_128K_PAL ||
+        machine->ram_128k == 0 || machine->tape_loading_mode != WZ_TAPE_LOADING_NORMAL ||
+        machine->networking_mode != WZ_NETWORKING_NONE ||
+        machine->paging_7ffd > 0x3fu ||
+        wz_z80_state_validate(&machine->cpu) != WZ_RESULT_OK) {
+        return WZ_RESULT_UNSUPPORTED_OPERATION;
+    }
+    current_page = (wz_byte_t)(machine->paging_7ffd & 0x07u);
+    if (current_page == 2u || current_page == 5u || machine->border_color > 7u) {
+        return WZ_RESULT_UNSUPPORTED_OPERATION;
+    }
+    data[0u] = machine->cpu.i;
+    wz_sna_write_u16(data, 1u, (wz_word_t)((wz_word_t)machine->cpu.alternate.h << 8u |
+                                          machine->cpu.alternate.l));
+    wz_sna_write_u16(data, 3u, (wz_word_t)((wz_word_t)machine->cpu.alternate.d << 8u |
+                                          machine->cpu.alternate.e));
+    wz_sna_write_u16(data, 5u, (wz_word_t)((wz_word_t)machine->cpu.alternate.b << 8u |
+                                          machine->cpu.alternate.c));
+    wz_sna_write_u16(data, 7u, (wz_word_t)((wz_word_t)machine->cpu.alternate.a << 8u |
+                                          machine->cpu.alternate.f));
+    wz_sna_write_u16(data, 9u, (wz_word_t)((wz_word_t)machine->cpu.main.h << 8u |
+                                          machine->cpu.main.l));
+    wz_sna_write_u16(data, 11u, (wz_word_t)((wz_word_t)machine->cpu.main.d << 8u |
+                                           machine->cpu.main.e));
+    wz_sna_write_u16(data, 13u, (wz_word_t)((wz_word_t)machine->cpu.main.b << 8u |
+                                           machine->cpu.main.c));
+    wz_sna_write_u16(data, 15u, machine->cpu.iy);
+    wz_sna_write_u16(data, 17u, machine->cpu.ix);
+    data[19u] = machine->cpu.iff2 == 0u ? 0u : 4u;
+    data[20u] = machine->cpu.r;
+    data[21u] = machine->cpu.main.f;
+    data[22u] = machine->cpu.main.a;
+    wz_sna_write_u16(data, 23u, machine->cpu.stack_pointer);
+    data[25u] = machine->cpu.interrupt_mode;
+    data[26u] = machine->border_color;
+    for (size_t index = 0u; index < 3u * WZ_SNA_128K_PAGE_SIZE; ++index) {
+        wz_byte_t page = index < WZ_SNA_128K_PAGE_SIZE ? 5u :
+            index < 2u * WZ_SNA_128K_PAGE_SIZE ? 2u : current_page;
+        size_t page_offset = index % WZ_SNA_128K_PAGE_SIZE;
+        data[27u + index] = machine->ram_128k[
+            page * WZ_128K_RAM_BANK_SIZE + page_offset];
+    }
+    offset = 27u + 3u * WZ_SNA_128K_PAGE_SIZE;
+    wz_write_le16(data + offset, machine->cpu.program_counter);
+    data[offset + 2u] = machine->paging_7ffd;
+    data[offset + 3u] = 0u;
+    offset += 4u;
+    for (wz_byte_t page = 0u; page < WZ_128K_RAM_BANK_COUNT; ++page) {
+        if (page == 2u || page == 5u || page == current_page) {
+            continue;
+        }
+        for (size_t index = 0u; index < WZ_SNA_128K_PAGE_SIZE; ++index) {
+            data[offset + index] = machine->ram_128k[
+                page * WZ_128K_RAM_BANK_SIZE + index];
+        }
+        offset += WZ_SNA_128K_PAGE_SIZE;
+    }
+    return offset == WZ_SNA_128K_LENGTH ? WZ_RESULT_OK :
+           WZ_RESULT_SERIALIZATION_FAILURE;
+}
+
 wz_result_t wz_snapshot_state_load_z80_v1(wz_snapshot_state_t* snapshot,
                                            const wz_byte_t* data,
                                            size_t length)
