@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 204,
+  "next_cr_number": 205,
   "status_values": [
     "open",
     "in_progress",
@@ -1764,6 +1764,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0203.md", "design/fuse-z80-test-suite.md", "tools/harness/run_fuse_ed_platform.py", "tools/harness/run_fuse_ed_corpus.py", "tools/harness/fuse-unresolved-baseline.json", "https://git.code.sf.net/p/fuse-emulator/fuse"],
       "notes": "Closed on 2026-09-05 after CODE and bootstrap review PASS with zero findings for 9dbca14..3ed325b. Local soaks CR0203-1 Linux, CR0203-2 macOS Intel, CR0203-3 Windows 10, and CR0203-4 Windows 11 all passed. Hosted run 33937694320 passed deep housekeeping, all 18 matrix lanes, and publication at 3ed325b. The reachable upstream revision e7fe9a0f3625b0aef649b114fc98323c7d241840 is now pinned consistently."
+    },
+    {
+      "cr_number": "CR-0204",
+      "title": "Implement AY tone generators",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0204.md", "design/warajevo-zx-spectrum-next-architecture.md sections 20.3 and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md tasks 189 and 197", "src/core/audio/wz_ay.c", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
+      "notes": "Opened on 2026-09-05 after CR-0199 closure. Implement three deterministic AY tone dividers from the six tone-period registers through the canonical master-tick domain; noise, envelope, mixer, PCM, and serialization remain ordered follow-on work."
     }
   ]
 }

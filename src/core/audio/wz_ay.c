@@ -23,6 +23,34 @@ static void wz_ay_record(wz_ay_t* ay, wz_ay_event_kind_t kind,
     ay->event_count += 1u;
 }
 
+static wz_word_t wz_ay_period(const wz_ay_t* ay, wz_byte_t channel)
+{
+    wz_byte_t low_register = (wz_byte_t)(channel * 2u);
+    wz_word_t period;
+
+    period = (wz_word_t)ay->registers[low_register];
+    period |= (wz_word_t)(ay->registers[(wz_byte_t)(low_register + 1u)] & 0x0fu) << 8u;
+    return period == 0u ? 1u : period;
+}
+
+static void wz_ay_advance_clock(wz_ay_t* ay)
+{
+    wz_byte_t channel;
+
+    for (channel = 0u; channel < WZ_AY_CHANNEL_COUNT; ++channel) {
+        wz_word_t period = wz_ay_period(ay, channel);
+        if (ay->tone_counters[channel] == 0u ||
+            ay->tone_counters[channel] > period) {
+            ay->tone_counters[channel] = period;
+        }
+        ay->tone_counters[channel] -= 1u;
+        if (ay->tone_counters[channel] == 0u) {
+            ay->tone_counters[channel] = period;
+            ay->tone_levels[channel] ^= 1u;
+        }
+    }
+}
+
 void wz_ay_init(wz_ay_t* ay)
 {
     if (ay == 0) {
@@ -78,4 +106,36 @@ size_t wz_ay_events(const wz_ay_t* ay, wz_ay_event_t* events, size_t capacity)
         memcpy(events, ay->events, count * sizeof(*events));
     }
     return count;
+}
+
+wz_result_t wz_ay_advance_master_ticks(wz_ay_t* ay, wz_master_tick_t ticks)
+{
+    if (ay == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    while (ticks != 0u) {
+        ++ay->tone_master_tick_phase;
+        if (ay->tone_master_tick_phase >= WZ_AY_MASTER_TICKS_PER_CLOCK) {
+            ay->tone_master_tick_phase = 0u;
+            wz_ay_advance_clock(ay);
+        }
+        --ticks;
+    }
+    return WZ_RESULT_OK;
+}
+
+wz_word_t wz_ay_tone_period(const wz_ay_t* ay, wz_byte_t channel)
+{
+    if (ay == 0 || channel >= WZ_AY_CHANNEL_COUNT) {
+        return 0u;
+    }
+    return wz_ay_period(ay, channel);
+}
+
+wz_byte_t wz_ay_tone_level(const wz_ay_t* ay, wz_byte_t channel)
+{
+    if (ay == 0 || channel >= WZ_AY_CHANNEL_COUNT) {
+        return 0u;
+    }
+    return ay->tone_levels[channel];
 }
