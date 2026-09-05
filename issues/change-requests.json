@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 228,
+  "next_cr_number": 229,
   "status_values": [
     "open",
     "in_progress",
@@ -1932,6 +1932,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0227.md", "design/interface1-microdrive-zxnet.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24.3, 36, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 210", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM"],
       "notes": "Closed on 2026-09-05 at implementation commit 878fa2900c5003f53230a46e8f74f1c3dbb1f818 after complete upstream MOTOR, NEXT, MDV_IN, MDV_TIMER, and status-path discovery. Exact-SHA CODE, independent bootstrap, and DOCUMENTATION reviews passed with zero findings. Remote Linux sanitizer, Intel macOS sanitizer, Windows 10, and Windows 11 harnesses passed. Hosted run 33984078143 passed all 20 lanes, including both Windows ARM lanes, deep housekeeping, and publication evidence verification. Private closure evidence is retained under test-artefacts/remote-runs/ and test-artefacts/hosted/CR-0227-33984078143/. Checksum/GAP generation, writes, cache, and flush remain later CRs."
+    },
+    {
+      "cr_number": "CR-0228",
+      "title": "Implement Microdrive write protection and buffered writes",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0228.md", "design/interface1-microdrive-zxnet.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24.3, 36, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 211", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM"],
+      "notes": "Opened on 2026-09-05 after complete upstream MDV_OUT, MDV_IN, FLUSH, and MOTOR discovery. Implement deterministic write protection, mode/device restrictions, bounded in-memory writes, and dirty state; defer atomic host save/flush and ownership to later CRs."
     }
   ]
 }
