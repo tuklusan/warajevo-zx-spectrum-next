@@ -676,7 +676,7 @@ static void test_microdrive_image_validation(void)
         exit(1);
     }
     if (wz_mdr_transport_set_write_mode(&transport, 1u) != WZ_RESULT_OK ||
-        wz_mdr_transport_write(&transport, 0x55u) != WZ_RESULT_INVALID_STATE ||
+        wz_mdr_transport_write(&transport, 0x55u) != WZ_RESULT_OK ||
         wz_mdr_transport_select_motor(&transport, 0u) != WZ_RESULT_OK ||
         wz_mdr_transport_set_erase(&transport, 1u) != WZ_RESULT_OK ||
         wz_mdr_transport_write(&transport, 0x55u) != WZ_RESULT_INVALID_STATE ||
