@@ -1971,9 +1971,9 @@
     {
       "cr_number": "CR-0233",
       "title": "Implement deterministic ZX Net loopback harness",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0233.md", "design/interface1-microdrive-zxnet.md sections 9 and 11", "design/warajevo-zx-spectrum-next-architecture.md section 24.5", "design/wzsn-architectures-1-2-developer-tasks.md task 215", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM"],
-      "notes": "Opened on 2026-09-05 after re-reading the complete upstream network handlers. Build a deterministic in-process loopback harness with named scenarios and retained manifests; shared host transport remains deferred."
+      "notes": "Closed on 2026-09-05 at implementation commit d1c4ed7f9df561b2c0983dbd079804849672575b. The first candidate exposed a test-vector framing defect, which was corrected without changing the device implementation. Exact-SHA CODE, independent bootstrap, and DOCUMENTATION reviews passed with zero findings. Corrected Linux, Windows 10, Windows 11, and Intel macOS remote runs passed with no missing tools. Hosted run 33993781012 passed all 20 lanes, including both Windows ARM lanes, deep housekeeping, and publication evidence verification. Private closure evidence is retained under test-artefacts/remote-runs/ and test-artefacts/hosted/CR-0233-33993781012/. Shared host transport remains deferred."
     }
   ]
 }
