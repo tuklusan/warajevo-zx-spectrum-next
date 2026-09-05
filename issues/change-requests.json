@@ -1922,9 +1922,9 @@
     {
       "cr_number": "CR-0226",
       "title": "Provider-neutral reviewer naming cleanup",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0226.md", "design/review-gate.md", "tools/reviewer/review_gate.py", "tools/reviewer/legacy_bootstrap_gate.py", "tests/test_review_gate.py"],
-      "notes": "Opened on 2026-09-05 as a mechanical provider-neutral naming cleanup. Rename the active reviewer abstraction to CodeReviewerClient, update direct bootstrap/test references, rename the reusable fresh-project review standard, and remove obsolete provider naming from that standard without changing review behavior or current runtime configuration."
+      "notes": "Closed on 2026-09-05 at implementation commit 1ff8582ffa39489b5d7d05f369bdd72be7288644. Exact-SHA CODE, independent bootstrap, and DOCUMENTATION reviews passed with zero findings. Remote Linux sanitizer, Intel macOS sanitizer, Windows 10, and Windows 11 harnesses passed. Hosted run 33982374485 passed all 20 lanes, including both Windows ARM lanes, deep housekeeping, and publication evidence verification. Private closure evidence is retained under test-artefacts/remote-runs/ and test-artefacts/hosted/CR-0226-33982374485/. The cleanup preserved active runtime configuration, retry, timeout, model, prompt, and verdict behavior."
     }
   ]
 }
