@@ -220,14 +220,19 @@ wz_result_t wz_state_serialize_machine(const wz_machine_t* machine,
 wz_result_t wz_state_hash_machine(const wz_machine_t* machine,
                                   wz_qword_t* hash)
 {
-    wz_byte_t bytes[WZ_STATE_MACHINE_LENGTH];
+    wz_byte_t* bytes;
     wz_state_writer_t writer;
 
     if (hash == 0) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
-    wz_state_writer_init(&writer, bytes, sizeof(bytes));
+    bytes = (wz_byte_t*)malloc(WZ_STATE_MACHINE_LENGTH);
+    if (bytes == 0) {
+        return WZ_RESULT_OUT_OF_MEMORY;
+    }
+    wz_state_writer_init(&writer, bytes, WZ_STATE_MACHINE_LENGTH);
     if (wz_state_serialize_machine(machine, &writer) != WZ_RESULT_OK) {
+        free(bytes);
         return WZ_RESULT_SERIALIZATION_FAILURE;
     }
 
@@ -236,6 +241,7 @@ wz_result_t wz_state_hash_machine(const wz_machine_t* machine,
         *hash ^= (wz_qword_t)bytes[index];
         *hash *= UINT64_C(1099511628211);
     }
+    free(bytes);
     return WZ_RESULT_OK;
 }
 
