@@ -48,3 +48,77 @@ wz_result_t wz_mdr_image_sector(const wz_mdr_image_t* image,
     *data = image->data + sector * WZ_MDR_SECTOR_SIZE;
     return WZ_RESULT_OK;
 }
+
+void wz_mdr_transport_init(wz_mdr_transport_t* transport)
+{
+    if (transport != 0) {
+        transport->image = 0;
+        transport->sector = 0u;
+        transport->offset = 0u;
+        transport->active_motor = 0xffu;
+        transport->phase = WZ_MDR_PHASE_HEADER;
+    }
+}
+
+wz_result_t wz_mdr_transport_mount(wz_mdr_transport_t* transport,
+                                    const wz_mdr_image_t* image)
+{
+    if (transport == 0 || image == 0 || image->data == 0 ||
+        image->sector_count < WZ_MDR_MIN_SECTORS ||
+        image->sector_count > WZ_MDR_MAX_SECTORS ||
+        image->length != image->sector_count * WZ_MDR_SECTOR_SIZE) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    transport->image = image;
+    transport->sector = 0u;
+    transport->offset = WZ_MDR_HEADER_OFFSET;
+    transport->active_motor = 0xffu;
+    transport->phase = WZ_MDR_PHASE_HEADER;
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_mdr_transport_select_motor(wz_mdr_transport_t* transport,
+                                           wz_byte_t motor)
+{
+    if (transport == 0 || motor > 7u) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    transport->active_motor = motor;
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_mdr_transport_read(wz_mdr_transport_t* transport,
+                                  wz_byte_t* value)
+{
+    const wz_byte_t* sector_data;
+    size_t end;
+
+    if (transport == 0 || value == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (transport->image == 0 || transport->active_motor > 7u ||
+        wz_mdr_image_sector(transport->image, transport->sector,
+                            &sector_data) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    end = transport->phase == WZ_MDR_PHASE_HEADER
+        ? WZ_MDR_DATA_OFFSET
+        : WZ_MDR_SECTOR_SIZE;
+    if (transport->offset >= end) {
+        if (transport->phase == WZ_MDR_PHASE_HEADER) {
+            transport->phase = WZ_MDR_PHASE_DATA;
+            transport->offset = WZ_MDR_DATA_OFFSET;
+        } else {
+            transport->sector = (transport->sector + 1u) %
+                transport->image->sector_count;
+            transport->phase = WZ_MDR_PHASE_HEADER;
+            transport->offset = WZ_MDR_HEADER_OFFSET;
+            if (wz_mdr_image_sector(transport->image, transport->sector,
+                                    &sector_data) != WZ_RESULT_OK) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+        }
+    }
+    *value = sector_data[transport->offset++];
+    return WZ_RESULT_OK;
+}

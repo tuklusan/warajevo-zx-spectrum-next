@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 227,
+  "next_cr_number": 228,
   "status_values": [
     "open",
     "in_progress",
@@ -1925,6 +1925,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0226.md", "design/review-gate.md", "tools/reviewer/review_gate.py", "tools/reviewer/legacy_bootstrap_gate.py", "tests/test_review_gate.py"],
       "notes": "Closed on 2026-09-05 at implementation commit 1ff8582ffa39489b5d7d05f369bdd72be7288644. Exact-SHA CODE, independent bootstrap, and DOCUMENTATION reviews passed with zero findings. Remote Linux sanitizer, Intel macOS sanitizer, Windows 10, and Windows 11 harnesses passed. Hosted run 33982374485 passed all 20 lanes, including both Windows ARM lanes, deep housekeeping, and publication evidence verification. Private closure evidence is retained under test-artefacts/remote-runs/ and test-artefacts/hosted/CR-0226-33982374485/. The cleanup preserved active runtime configuration, retry, timeout, model, prompt, and verdict behavior."
+    },
+    {
+      "cr_number": "CR-0227",
+      "title": "Implement deterministic Microdrive position and sector/header/data visibility",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0227.md", "design/interface1-microdrive-zxnet.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24.3, 36, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 210", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM"],
+      "notes": "Opened on 2026-09-05 after complete upstream MOTOR, NEXT, MDV_IN, MDV_TIMER, and status-path discovery. Implement deterministic transport position, motor/cartridge selection, sector wrap, and bounded header/data visibility; defer checksum, GAP generation, writes, cache, and flush behavior to later CRs."
     }
   ]
 }

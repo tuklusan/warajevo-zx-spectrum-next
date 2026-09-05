@@ -601,7 +601,9 @@ static void test_microdrive_image_validation(void)
     static wz_byte_t image_data[WZ_MDR_MAX_SECTORS * WZ_MDR_SECTOR_SIZE];
     wz_mdr_image_t image = {0};
     wz_mdr_image_t original;
+    wz_mdr_transport_t transport;
     const wz_byte_t* sector_data = 0;
+    wz_byte_t value = 0u;
 
     for (size_t index = 0u; index < sizeof(image_data); ++index) {
         image_data[index] = (wz_byte_t)index;
@@ -633,6 +635,44 @@ static void test_microdrive_image_validation(void)
         wz_mdr_image_sector(&image, WZ_MDR_MAX_SECTORS, &sector_data) !=
             WZ_RESULT_INVALID_STATE) {
         fputs("MDR malformed-input or bounds handling failed\n", stderr);
+        exit(1);
+    }
+    image_data[WZ_MDR_HEADER_OFFSET] = 0xa1u;
+    image_data[WZ_MDR_DATA_OFFSET] = 0xb1u;
+    image_data[WZ_MDR_SECTOR_SIZE + WZ_MDR_HEADER_OFFSET] = 0xa2u;
+    if (wz_mdr_image_init(&image, image_data,
+            WZ_MDR_MIN_SECTORS * WZ_MDR_SECTOR_SIZE) != WZ_RESULT_OK) {
+        fputs("MDR transport image setup failed\n", stderr);
+        exit(1);
+    }
+    wz_mdr_transport_init(&transport);
+    if (wz_mdr_transport_mount(&transport, &image) != WZ_RESULT_OK ||
+        wz_mdr_transport_select_motor(&transport, 0u) != WZ_RESULT_OK ||
+        wz_mdr_transport_read(&transport, &value) != WZ_RESULT_OK ||
+        value != 0xa1u) {
+        fputs("MDR header visibility failed\n", stderr);
+        exit(1);
+    }
+    for (size_t index = 1u; index < WZ_MDR_HEADER_SIZE; ++index) {
+        if (wz_mdr_transport_read(&transport, &value) != WZ_RESULT_OK) {
+            fputs("MDR header traversal failed\n", stderr);
+            exit(1);
+        }
+    }
+    if (wz_mdr_transport_read(&transport, &value) != WZ_RESULT_OK ||
+        value != 0xb1u) {
+        fputs("MDR data visibility failed\n", stderr);
+        exit(1);
+    }
+    for (size_t index = 1u; index < WZ_MDR_DATA_SIZE; ++index) {
+        if (wz_mdr_transport_read(&transport, &value) != WZ_RESULT_OK) {
+            fputs("MDR data traversal failed\n", stderr);
+            exit(1);
+        }
+    }
+    if (wz_mdr_transport_read(&transport, &value) != WZ_RESULT_OK ||
+        value != 0xa2u) {
+        fputs("MDR sector wrap failed\n", stderr);
         exit(1);
     }
 }
