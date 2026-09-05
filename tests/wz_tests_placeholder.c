@@ -675,6 +675,23 @@ static void test_microdrive_image_validation(void)
         fputs("MDR sector wrap failed\n", stderr);
         exit(1);
     }
+    if (wz_mdr_transport_set_write_mode(&transport, 1u) != WZ_RESULT_OK ||
+        wz_mdr_transport_write(&transport, 0x55u) != WZ_RESULT_INVALID_STATE ||
+        wz_mdr_transport_select_motor(&transport, 0u) != WZ_RESULT_OK ||
+        wz_mdr_transport_set_erase(&transport, 1u) != WZ_RESULT_OK ||
+        wz_mdr_transport_write(&transport, 0x55u) != WZ_RESULT_INVALID_STATE ||
+        wz_mdr_transport_set_erase(&transport, 0u) != WZ_RESULT_OK ||
+        wz_mdr_transport_write(&transport, 0x55u) != WZ_RESULT_OK ||
+        wz_mdr_transport_is_dirty(&transport) != 1u ||
+        image_data[WZ_MDR_SECTOR_SIZE + WZ_MDR_HEADER_OFFSET] != 0xa2u) {
+        fputs("MDR protected/buffered write behavior failed\n", stderr);
+        exit(1);
+    }
+    wz_mdr_transport_discard(&transport);
+    if (wz_mdr_transport_is_dirty(&transport) != 0u) {
+        fputs("MDR write discard failed\n", stderr);
+        exit(1);
+    }
 }
 
 static void test_historical_state_representability(void)

@@ -8,6 +8,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "core/wz_microdrive.h"
 
+#include <string.h>
 #include <stdint.h>
 
 wz_result_t wz_mdr_image_init(wz_mdr_image_t* image,
@@ -56,6 +57,10 @@ void wz_mdr_transport_init(wz_mdr_transport_t* transport)
         transport->sector = 0u;
         transport->offset = 0u;
         transport->active_motor = 0xffu;
+        transport->write_enabled = 0u;
+        transport->erase_enabled = 0u;
+        transport->dirty = 0u;
+        memset(transport->buffer, 0, sizeof(transport->buffer));
         transport->phase = WZ_MDR_PHASE_HEADER;
     }
 }
@@ -73,6 +78,10 @@ wz_result_t wz_mdr_transport_mount(wz_mdr_transport_t* transport,
     transport->sector = 0u;
     transport->offset = WZ_MDR_HEADER_OFFSET;
     transport->active_motor = 0xffu;
+    transport->write_enabled = 0u;
+    transport->erase_enabled = 0u;
+    transport->dirty = 0u;
+    memset(transport->buffer, 0, sizeof(transport->buffer));
     transport->phase = WZ_MDR_PHASE_HEADER;
     return WZ_RESULT_OK;
 }
@@ -84,6 +93,26 @@ wz_result_t wz_mdr_transport_select_motor(wz_mdr_transport_t* transport,
         return WZ_RESULT_INVALID_ARGUMENT;
     }
     transport->active_motor = motor;
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_mdr_transport_set_write_mode(wz_mdr_transport_t* transport,
+                                             wz_byte_t enabled)
+{
+    if (transport == 0 || enabled > 1u) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    transport->write_enabled = enabled;
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_mdr_transport_set_erase(wz_mdr_transport_t* transport,
+                                       wz_byte_t enabled)
+{
+    if (transport == 0 || enabled > 1u) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    transport->erase_enabled = enabled;
     return WZ_RESULT_OK;
 }
 
@@ -121,4 +150,44 @@ wz_result_t wz_mdr_transport_read(wz_mdr_transport_t* transport,
     }
     *value = sector_data[transport->offset++];
     return WZ_RESULT_OK;
+}
+
+wz_result_t wz_mdr_transport_write(wz_mdr_transport_t* transport,
+                                   wz_byte_t value)
+{
+    const wz_byte_t* sector_data;
+
+    if (transport == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (transport->image == 0 || transport->active_motor > 7u ||
+        transport->write_enabled == 0u || transport->erase_enabled != 0u ||
+        wz_mdr_image_sector(transport->image, transport->sector,
+                            &sector_data) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    if (transport->dirty == 0u) {
+        memcpy(transport->buffer, sector_data, WZ_MDR_SECTOR_SIZE);
+        transport->dirty = 1u;
+    }
+    if (transport->offset >= WZ_MDR_SECTOR_SIZE) {
+        transport->offset = WZ_MDR_SECTOR_SIZE;
+        return WZ_RESULT_OK;
+    }
+    transport->buffer[transport->offset++] = value;
+    return WZ_RESULT_OK;
+}
+
+wz_byte_t wz_mdr_transport_is_dirty(const wz_mdr_transport_t* transport)
+{
+    return transport == 0 ? 0u : transport->dirty;
+}
+
+void wz_mdr_transport_discard(wz_mdr_transport_t* transport)
+{
+    if (transport != 0) {
+        transport->dirty = 0u;
+        transport->offset = WZ_MDR_HEADER_OFFSET;
+        transport->phase = WZ_MDR_PHASE_HEADER;
+    }
 }

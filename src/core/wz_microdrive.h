@@ -37,6 +37,10 @@ typedef struct {
     size_t sector;
     size_t offset;
     wz_byte_t active_motor;
+    wz_byte_t write_enabled;
+    wz_byte_t erase_enabled;
+    wz_byte_t dirty;
+    wz_byte_t buffer[WZ_MDR_SECTOR_SIZE];
     wz_mdr_phase_t phase;
 } wz_mdr_transport_t;
 
@@ -52,7 +56,15 @@ wz_result_t wz_mdr_transport_mount(wz_mdr_transport_t* transport,
                                     const wz_mdr_image_t* image);
 wz_result_t wz_mdr_transport_select_motor(wz_mdr_transport_t* transport,
                                            wz_byte_t motor);
+wz_result_t wz_mdr_transport_set_write_mode(wz_mdr_transport_t* transport,
+                                             wz_byte_t enabled);
+wz_result_t wz_mdr_transport_set_erase(wz_mdr_transport_t* transport,
+                                       wz_byte_t enabled);
 wz_result_t wz_mdr_transport_read(wz_mdr_transport_t* transport,
                                   wz_byte_t* value);
+wz_result_t wz_mdr_transport_write(wz_mdr_transport_t* transport,
+                                   wz_byte_t value);
+wz_byte_t wz_mdr_transport_is_dirty(const wz_mdr_transport_t* transport);
+void wz_mdr_transport_discard(wz_mdr_transport_t* transport);
 
 #endif
