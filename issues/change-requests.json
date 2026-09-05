@@ -1747,23 +1747,23 @@
     {
       "cr_number": "CR-0201",
       "title": "Retry transient hosted artifact uploads without masking persistent failure",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0201.md", ".github/workflows/platform-smoke.yml", "tools/harness/cleanup-hosted-runner-state.sh"],
-      "notes": "Opened on 2026-09-05 after hosted run 33936436420 showed macos-intel-x64 product steps passing but artifact upload failing with ENOTFOUND. Add two bounded retries while keeping missing-artifact and persistent-upload failure fatal."
+      "notes": "Closed on 2026-09-05 after CODE and bootstrap review PASS for fda5d63. Hosted run 33937694320 validated the reviewed upload contract across all 18 matrix lanes: first-attempt uploads succeeded where available, retries remained bounded and skipped when unnecessary, and publication passed. Missing-artifact and persistent-upload failures remain fatal."
     },
     {
       "cr_number": "CR-0202",
       "title": "Reactivate local test-machine soaks before the next implementation CR",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["WORKFLOW.md", "tools/harness/README.md", "design/cr-preflight/CR-0202.md"],
       "notes": "Closed on 2026-09-05 after explicit operator direction withdrew the temporary hosted-only restriction. Local harnesses and machine definitions remain unchanged; hosted matrix validation remains mandatory. Documentation review PASS covered fda5d63..9dbca14 (scope manifest 8b2b6ce33f354e3bbc0b81deda16ffa3fa82e0da4ff13f6e1ea53c467b89801b)."
     },
     {
       "cr_number": "CR-0203",
       "title": "Refresh the unreachable Fuse corpus revision pin",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0203.md", "design/fuse-z80-test-suite.md", "tools/harness/run_fuse_ed_platform.py", "tools/harness/run_fuse_ed_corpus.py", "tools/harness/fuse-unresolved-baseline.json", "https://git.code.sf.net/p/fuse-emulator/fuse"],
-      "notes": "Opened on 2026-09-05 after hosted run 33936821735 showed fresh Linux runners could not acquire the formerly pinned Fuse revision. Current upstream HEAD e7fe9a0f3625b0aef649b114fc98323c7d241840 is reachable and contains z80/tests; complete local and hosted validation remains required."
+      "notes": "Closed on 2026-09-05 after CODE and bootstrap review PASS with zero findings for 9dbca14..3ed325b. Local soaks CR0203-1 Linux, CR0203-2 macOS Intel, CR0203-3 Windows 10, and CR0203-4 Windows 11 all passed. Hosted run 33937694320 passed deep housekeeping, all 18 matrix lanes, and publication at 3ed325b. The reachable upstream revision e7fe9a0f3625b0aef649b114fc98323c7d241840 is now pinned consistently."
     }
   ]
 }
