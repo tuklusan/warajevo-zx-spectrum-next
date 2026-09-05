@@ -1894,9 +1894,9 @@
     {
       "cr_number": "CR-0222",
       "title": "Harden review adjudication against compliance false positives",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0222.md", "design/review-gate.md", "tools/reviewer/review_gate.py", "tests/test_review_gate.py", "design/cr-preflight/CR-0221.md"],
-      "notes": "Opened on 2026-09-05 after CR-0221 code review promoted multiple findings whose evidence explicitly demonstrated compliance. Feature implementation is paused until adjudication requires positive proof of an actual requirement violation."
+      "notes": "Opened and closed on 2026-09-05 after enforcing positive violation evidence for confirmed findings. Exact source review of 9ad100f..befe0a0 passed with no findings; current-checkpoint bootstrap and documentation review passed for 3928b00; remote Windows 10 Clang-CL smoke CR0222-WIN10-13 passed all six tests and auxiliary evidence gates. The review process remains serial, long-wait, and snapshot guarded."
     }
   ]
 }
