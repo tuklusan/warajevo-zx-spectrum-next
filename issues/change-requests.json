@@ -1880,9 +1880,9 @@
     {
       "cr_number": "CR-0220",
       "title": "Add networking-mode transition atomicity tests",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0220.md", "design/interface1-microdrive-zxnet.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24.1, 24.6, 36, 39, and 49.1", "design/warajevo-zx-spectrum-next-ui-architecture.md sections 23.5 and 40", "design/wzsn-architectures-1-2-developer-tasks.md task 206", "src/core/wz_machine.h", "src/core/wz_machine.c", "tests/wz_tests_placeholder.c", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM"],
-      "notes": "Opened on 2026-09-05 because CR-0219 covered valid transitions and idempotence but did not explicitly prove that rejected EAR_MIC requests preserve stale machine state from both valid networking modes. This CR adds those failure-atomicity assertions without changing the core implementation."
+      "notes": "Opened and closed on 2026-09-05 after adding explicit failure-atomicity assertions for rejected EAR_MIC requests from NONE and INTERFACE1, covering stale RAM and master-tick state on both 48K and 128K profiles. Exact-SHA CODE, DOCUMENTATION, and independent bootstrap reviews passed with zero findings. Remote Linux CR0220-LINUX-1 and Intel Mac CR0220-MAC-1 passed with sanitizers; Windows 10 CR0220-WIN10-1 and Windows 11 CR0220-WIN11-1 passed without sanitizers. Hosted platform-smoke run 33959449059 passed all 18 lanes, deep housekeeping, and publication gate."
     }
   ]
 }
