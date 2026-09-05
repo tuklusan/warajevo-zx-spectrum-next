@@ -36,10 +36,17 @@ if [ "$workspace_only" != "--workspace-only" ]; then
         ;;
     esac
 
-    # Delete all artifacts for a run in one API operation. Per-artifact
-    # deletion is prohibitively slow when the repository has a long backlog.
-    echo "Deleting prior temporary artifacts from run ${run_id}."
-    gh api --method DELETE "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/artifacts"
+    artifact_ids="$( {
+      gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/artifacts?per_page=100" \
+        --jq '.artifacts[].id'
+    } || true)"
+    if [ -n "$artifact_ids" ]; then
+      echo "Deleting prior temporary artifacts from run ${run_id}."
+      # GitHub exposes only per-artifact deletion. Use bounded parallelism so
+      # a large backlog completes without flooding the API or runner.
+      printf '%s\n' "$artifact_ids" | xargs -r -P 8 -n 1 sh -c \
+        'gh api --method DELETE "repos/${GITHUB_REPOSITORY}/actions/artifacts/$1"' _
+    fi
   done <<< "$prior_runs"
 fi
 
