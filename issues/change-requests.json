@@ -1964,9 +1964,9 @@
     {
       "cr_number": "CR-0232",
       "title": "Implement deterministic original ZX Net state machine",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0232.md", "design/interface1-microdrive-zxnet.md sections 3, 5, 9, and 10", "design/warajevo-zx-spectrum-next-architecture.md sections 24.5 and 28.7", "design/wzsn-architectures-1-2-developer-tasks.md task 214", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
-      "notes": "Opened on 2026-09-05 after complete upstream network state-machine and Interface-1 dispatch discovery. Implement the six deterministic states, bounded loopback/device boundary, and canonical timing while deferring shared host transport."
+      "notes": "Closed on 2026-09-05 at implementation commit fe242940b1bd9658acd64bffbb39ae55bfcf1a31. Exact-SHA CODE, independent bootstrap, and DOCUMENTATION reviews passed with zero findings. Remote Linux sanitizer, Intel macOS sanitizer, Windows 10, and Windows 11 lanes passed with no missing tools. Hosted run 33992315190 passed all 20 lanes, including both Windows ARM lanes, deep housekeeping, and publication evidence verification. Private closure evidence is retained under test-artefacts/remote-runs/ and test-artefacts/hosted/CR-0232-33992315190/. Shared host transport remains deferred to the later orchestrator work."
     }
   ]
 }
