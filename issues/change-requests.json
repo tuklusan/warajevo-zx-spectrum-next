@@ -1866,9 +1866,9 @@
     {
       "cr_number": "CR-0218",
       "title": "Keep EAR_MIC reserved and unavailable",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0218.md", "design/interface1-microdrive-zxnet.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24.1 and 24.6", "design/warajevo-zx-spectrum-next-ui-architecture.md section 23.5", "design/wzsn-architectures-1-2-developer-tasks.md tasks 204 and 206", "src/core/wz_machine.h", "src/core/wz_machine.c", "src/core/wz_state.c", "tests/wz_tests_placeholder.c"],
-      "notes": "Opened on 2026-09-05 after audit found that the single networking enum exists but the core setter accepts reserved EAR_MIC activation. The implementation will reject that request atomically until Architecture #3 certifies the allowed profile."
+      "notes": "Opened and closed on 2026-09-05 after the setter was changed to reject reserved EAR_MIC activation atomically while preserving native-state representation. Exact-SHA CODE, DOCUMENTATION, and independent bootstrap reviews passed with zero findings. Remote Linux CR0218-LINUX-2 and Intel Mac CR0218-MAC-2 passed with sanitizers; Windows 10 CR0218-WIN10-2 and Windows 11 CR0218-WIN11-3 passed without sanitizers. Windows MinGW sanitizer-link failures were classified as missing runner libraries. Hosted platform-smoke run 33957112165 passed all 18 lanes, deep housekeeping, and publication gate."
     }
   ]
 }
