@@ -1504,9 +1504,14 @@ static void test_ay_envelope_generator(void)
         wz_ay_write_data(&ay, 1u, 0u) != WZ_RESULT_OK ||
         wz_ay_select_register(&ay, 12u, 0u) != WZ_RESULT_OK ||
         wz_ay_write_data(&ay, 0u, 0u) != WZ_RESULT_OK ||
-        wz_ay_advance_master_ticks(&ay, 4u * 16u) != WZ_RESULT_OK ||
+        wz_ay_advance_master_ticks(&ay, 4u * 15u) != WZ_RESULT_OK ||
         wz_ay_envelope_level(&ay) != 15u) {
         fputs("AY envelope attack progression failed\n", stderr);
+        exit(1);
+    }
+    if (wz_ay_advance_master_ticks(&ay, 4u) != WZ_RESULT_OK ||
+        wz_ay_envelope_level(&ay) != 0u) {
+        fputs("AY envelope cycle transition failed\n", stderr);
         exit(1);
     }
     if (wz_ay_select_register(&ay, 13u, 0u) != WZ_RESULT_OK ||
