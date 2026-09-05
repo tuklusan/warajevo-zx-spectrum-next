@@ -1754,7 +1754,7 @@
     {
       "cr_number": "CR-0202",
       "title": "Reactivate local test-machine soaks before the next implementation CR",
-      "status": "closed",
+      "status": "in_progress",
       "source_authority": ["WORKFLOW.md", "tools/harness/README.md", "design/cr-preflight/CR-0202.md"],
       "notes": "Closed on 2026-09-05 after explicit operator direction withdrew the temporary hosted-only restriction. Local harnesses and machine definitions remain unchanged; hosted matrix validation remains mandatory."
     }
