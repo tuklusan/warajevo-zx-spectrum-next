@@ -408,8 +408,6 @@ wz_result_t wz_machine_load_48k_rom(wz_machine_t* machine,
         return WZ_RESULT_INVALID_PROFILE;
     }
     identity = wz_machine_rom_identity(bytes, length);
-    identity ^= variant == WZ_INTERFACE1_ROM_OLD ?
-        UINT64_C(0x494e544552464143) : UINT64_C(0x494e54455246414e);
     if (identity != machine->profile->expected_rom_identity) {
         return WZ_RESULT_ROM_IDENTITY_MISMATCH;
     }
@@ -434,6 +432,8 @@ wz_result_t wz_machine_load_interface1_rom(wz_machine_t* machine,
         return WZ_RESULT_INVALID_ARGUMENT;
     }
     identity = wz_machine_rom_identity(bytes, length);
+    identity ^= variant == WZ_INTERFACE1_ROM_OLD ?
+        UINT64_C(0x494e544552464143) : UINT64_C(0x494e54455246414e);
     memcpy(machine->interface1_rom, bytes, WZ_INTERFACE1_ROM_SIZE);
     machine->has_interface1_rom = 1u;
     machine->interface1_rom_variant = variant;
