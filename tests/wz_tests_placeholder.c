@@ -423,6 +423,13 @@ static void test_networking_mode_state(void)
         wz_machine_destroy(&machine);
         exit(1);
     }
+    if (wz_machine_set_networking_mode(&machine, WZ_NETWORKING_EAR_MIC) !=
+            WZ_RESULT_UNSUPPORTED_OPERATION ||
+        wz_machine_networking_mode(&machine) != mode) {
+        fputs("reserved EAR_MIC mode was activated or mutated state\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
     wz_machine_destroy(&machine);
 }
 

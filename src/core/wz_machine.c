@@ -187,6 +187,9 @@ wz_result_t wz_machine_set_networking_mode(wz_machine_t* machine,
     if (machine == 0 || mode > WZ_NETWORKING_EAR_MIC) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
+    if (mode == WZ_NETWORKING_EAR_MIC) {
+        return WZ_RESULT_UNSUPPORTED_OPERATION;
+    }
     machine->networking_mode = mode;
     return WZ_RESULT_OK;
 }
