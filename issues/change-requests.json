@@ -1936,9 +1936,9 @@
     {
       "cr_number": "CR-0228",
       "title": "Implement Microdrive write protection and buffered writes",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0228.md", "design/interface1-microdrive-zxnet.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24.3, 36, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 211", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM"],
-      "notes": "Opened on 2026-09-05 after complete upstream MDV_OUT, MDV_IN, FLUSH, and MOTOR discovery. Implement deterministic write protection, mode/device restrictions, bounded in-memory writes, and dirty state; defer atomic host save/flush and ownership to later CRs."
+      "notes": "Closed on 2026-09-05 at implementation commit dcaa2f758db9e69849ee11572fb1c8d008b4da03 with corrected test setup commit b91a4ae70320dffa660a855634b3d15ab8e10b97. Exact-SHA CODE, independent bootstrap, and DOCUMENTATION reviews passed with zero findings. The first remote attempt exposed an invalid test expectation caused by the preceding test leaving motor 0 selected; the corrected retry passed on remote Linux sanitizer, Intel macOS sanitizer, Windows 10, and Windows 11. Hosted run 33986386422 passed all 20 lanes, including both Windows ARM lanes, deep housekeeping, and publication evidence verification. Private closure evidence is retained under test-artefacts/remote-runs/ and test-artefacts/hosted/CR-0228-33986386422/. Atomic host save/flush and ownership remain later CRs."
     }
   ]
 }
