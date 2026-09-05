@@ -1838,9 +1838,9 @@
     {
       "cr_number": "CR-0214",
       "title": "Close the Phase-9 architecture gate",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0214.md", "design/warajevo-zx-spectrum-next-architecture.md sections 9, 20, 25, 36, 38, 39, 40, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md tasks 183-199", "issues/change-requests.json", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
-      "notes": "Opened on 2026-09-05 after CR-0213 closure. Reconcile every Phase-9 task and acceptance criterion against concrete implementation, upstream comparison, review, remote, hosted, and publication evidence before advancing."
+      "notes": "Closed on 2026-09-05 after reconciling tasks 183-199 against closed CRs 0193-0199 and 0203-0213 plus their implementation, review, remote, hosted, and publication evidence. The independent second upstream zero-gap scan found no missing initial-profile Phase-9 behavior. Unsupported non-base hardware variants, TR-DOS execution state, unevidenced analog behavior, and future host audio/UI delivery remain explicitly deferred."
     }
   ]
 }
