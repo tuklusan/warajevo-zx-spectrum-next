@@ -1712,9 +1712,9 @@
     {
       "cr_number": "CR-0196",
       "title": "Implement 128K ULA timing and display-bank profile",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0196.md", "design/machine-timing-evidence.md", "design/warajevo-zx-spectrum-next-architecture.md sections 9, 15, and 16", "design/wzsn-architectures-1-2-developer-tasks.md task 186", "src/core/wz_machine_profile.c", "src/core/wz_machine.c", "tests/wz_tests_placeholder.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS", "reference/original-warajevo/source/src/spectrum-kernel/Z80.ASM"],
-      "notes": "Opened on 2026-09-04 to enable the frozen 128K ULA fetch schedule and display-bank selection through the shared profile-driven raster path, while deferring contention and out-of-profile variants. Requires exact-SHA review, remote and hosted validation, and a second upstream zero-gap scan before closure."
+      "notes": "Closed on 2026-09-04 after correcting the attribute-fetch master-tick assertion from 14363*2 to the profile-defined one-T-state offset 14361*2+2. Exact-SHA CODE and bootstrap reviews passed with zero findings for 4a6c458..ef02567; remote CR0196-LINUX-SAN-R2, CR0196-WIN10-R2, CR0196-WIN11-R2, and CR0196-MAC-R2 passed; hosted platform-smoke 33931477809 passed all 18 matrix lanes, deep housekeeping, and publication at ef0256735e3c2857937f0187baafe3e4e627d8cd. Second upstream zero-gap scan found no missing base-profile behavior; contention and out-of-profile variants remain deferred."
     }
   ]
 }
