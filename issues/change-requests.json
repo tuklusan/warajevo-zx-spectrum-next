@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 214,
+  "next_cr_number": 215,
   "status_values": [
     "open",
     "in_progress",
@@ -1834,6 +1834,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0213.md", "design/warajevo-zx-spectrum-next-architecture.md sections 36, 38, 39, 40, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 198", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
       "notes": "Closed on 2026-09-05 at implementation range f847294..f890792. Exact-SHA CODE, bootstrap, and DOCUMENTATION reviews passed with zero findings. Remote runs CR0213-1 Linux sanitizer, CR0213-2 Intel macOS, CR0213-3 Windows 10, and CR0213-4 Windows 11 passed with primary and pull status zero. Hosted platform-smoke run 33954030647 passed deep housekeeping, all 18 matrix lanes, and publication at f890792. The second upstream zero-gap scan found no missing selected 128K differential scenario behavior; future non-comparable hardware remains explicitly deferred."
+    },
+    {
+      "cr_number": "CR-0214",
+      "title": "Close the Phase-9 architecture gate",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0214.md", "design/warajevo-zx-spectrum-next-architecture.md sections 9, 20, 25, 36, 38, 39, 40, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md tasks 183-199", "issues/change-requests.json", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
+      "notes": "Opened on 2026-09-05 after CR-0213 closure. Reconcile every Phase-9 task and acceptance criterion against concrete implementation, upstream comparison, review, remote, hosted, and publication evidence before advancing."
     }
   ]
 }
