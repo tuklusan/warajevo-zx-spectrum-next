@@ -36,17 +36,20 @@ if [ "$workspace_only" != "--workspace-only" ]; then
         ;;
     esac
 
-    artifact_ids="$( {
-      gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/artifacts?per_page=100" \
-        --jq '.artifacts[].id'
-    } || true)"
-    if [ -n "$artifact_ids" ]; then
-      echo "Deleting prior temporary artifacts from run ${run_id}."
-      # GitHub exposes only per-artifact deletion. Use bounded parallelism so
-      # a large backlog completes without flooding the API or runner.
-      printf '%s\n' "$artifact_ids" | xargs -r -P 8 -n 1 sh -c \
-        'gh api --method DELETE "repos/${GITHUB_REPOSITORY}/actions/artifacts/$1"' _
-    fi
+    # Delete the stale run as one repository-scoped operation. This removes
+    # its temporary artifacts without one API request per artifact.
+    echo "Deleting stale prior run ${run_id} and its temporary artifacts."
+    deleted=0
+    for attempt in 1 2 3 4 5; do
+      if gh api --method DELETE "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}"; then
+        deleted=1
+        break
+      fi
+      if [ "$attempt" -lt 5 ]; then
+        sleep $((attempt * 5))
+      fi
+    done
+    test "$deleted" -eq 1
   done <<< "$prior_runs"
 fi
 

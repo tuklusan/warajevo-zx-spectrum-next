@@ -91,13 +91,14 @@ including queued or slow lanes. Never cancel or replace a live run and never
 classify a queued lane as failed. Only terminal GitHub job conclusions may
 feed the publication gate.
 
-The hosted matrix has a pre-matrix deep-housekeeping gate. It may cancel only
-older queued or in-progress `platform-smoke` runs for the same ref, and may
-delete only artifacts owned by those older runs. It must preserve the current
-run and all committed source, guidance, and retained evidence. Every matrix
-lane also clears only generated build/test residue from its checked-out
-workspace before execution using workspace-only mode; queued or slow jobs in
-the current run remain valid and must still be awaited.
+The hosted matrix has a pre-matrix deep-housekeeping gate. It may cancel and
+delete only older `platform-smoke` workflow runs for the same ref; deleting the
+run also removes its temporary Actions artifacts without a per-artifact API
+request storm. It must preserve the current run and all committed source,
+guidance, and retained evidence. Every matrix lane also clears only generated
+build/test residue from its checked-out workspace before execution using
+workspace-only mode; queued or slow jobs in the current run remain valid and
+must still be awaited.
 
 Cross-platform macOS acceptance is architecture-based, not count-based. The
 hosted matrix should schedule every configured macOS label, but publication
