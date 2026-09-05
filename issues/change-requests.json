@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-    "next_cr_number": 224,
+  "next_cr_number": 225,
   "status_values": [
     "open",
     "in_progress",
@@ -1904,6 +1904,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0223.md", "WORKFLOW.md", "README-GIT-GITHUB.md", ".github/workflows/platform-smoke.yml", "tools/harness/run_cmake_smoke.py", "tools/validate_project_gates.py"],
       "notes": "Closed on 2026-09-05 at commit 3f5cb7cb9994719effb39924b883c8d0c993dcc9. Exact CODE and independent bootstrap reviews passed with no findings. Hosted run 33974987098 passed all 20 matrix lanes, including windows-arm-11 and windows-arm-11-vs2026, plus deep housekeeping and the publication gate. The first hosted attempt exposed windows-arm-11-vs2026 linking ARM64 objects against x64 MSVC/SDK libraries; the shared CMake smoke harness now selects native ARM64 developer-environment and linker paths. Every lane emitted and passed result-manifest evidence; private retained closure artifacts are under test-artefacts/hosted/CR-0223-33974987098/."
+    },
+    {
+      "cr_number": "CR-0224",
+      "title": "Implement Interface 1 machine-visible registers and state",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0224.md", "design/interface1-microdrive-zxnet.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24.2, 24.4, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 208", "src/core/wz_machine.h", "src/core/wz_machine.c", "src/core/wz_bus.c", "src/core/wz_state.c", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
+      "notes": "Opened on 2026-09-05 after the upstream preflight identified the missing Interface 1 control-latch, prior-latch, motor-shift, and timestamped machine-visible state boundary. Microdrive image behavior, full status/data semantics, and ZX Net transitions remain later CRs."
     }
   ]
 }
