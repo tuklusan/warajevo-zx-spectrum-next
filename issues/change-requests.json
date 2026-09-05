@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 232,
+  "next_cr_number": 233,
   "status_values": [
     "open",
     "in_progress",
@@ -1960,6 +1960,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0231.md", "design/warajevo-zx-spectrum-next-architecture.md section 28.7", "design/interface1-microdrive-zxnet.md sections 6 and 8", "design/wzsn-architectures-1-2-developer-tasks.md task 213", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM"],
       "notes": "Closed on 2026-09-05 at implementation commit 04b1e35871c04d6a1e79e32b592735077e05305b. Exact-SHA CODE, independent bootstrap, and DOCUMENTATION reviews passed with zero findings. Remote Linux sanitizer, Intel macOS sanitizer, Windows 10, and Windows 11 lanes passed with no missing tools. Hosted run 33990525939 passed all 20 lanes, including both Windows ARM lanes, deep housekeeping, and publication evidence verification. Private closure evidence is retained under test-artefacts/remote-runs/ and test-artefacts/hosted/CR-0231-33990525939/."
+    },
+    {
+      "cr_number": "CR-0232",
+      "title": "Implement deterministic original ZX Net state machine",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0232.md", "design/interface1-microdrive-zxnet.md sections 3, 5, 9, and 10", "design/warajevo-zx-spectrum-next-architecture.md sections 24.5 and 28.7", "design/wzsn-architectures-1-2-developer-tasks.md task 214", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
+      "notes": "Opened on 2026-09-05 after complete upstream network state-machine and Interface-1 dispatch discovery. Implement the six deterministic states, bounded loopback/device boundary, and canonical timing while deferring shared host transport."
     }
   ]
 }
