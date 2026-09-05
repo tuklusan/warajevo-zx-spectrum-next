@@ -6767,11 +6767,8 @@ int main(void)
         fputs("tape loading mode setup for state round trip failed\n", stderr);
         return 1;
     }
-    if (wz_machine_set_networking_mode(&machine, WZ_NETWORKING_EAR_MIC) !=
-            WZ_RESULT_OK) {
-        fputs("networking mode setup for state round trip failed\n", stderr);
-        return 1;
-    }
+    /* Construct the reserved value only to exercise native-state persistence. */
+    machine.networking_mode = WZ_NETWORKING_EAR_MIC;
     if (wz_machine_set_keyboard_key(&machine, 2u, 1u, true) != WZ_RESULT_OK) {
         fputs("keyboard state setup failed\n", stderr);
         return 1;
