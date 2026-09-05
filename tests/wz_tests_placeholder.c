@@ -769,6 +769,81 @@ static void test_sna_128k_machine_round_trip(void)
     wz_machine_destroy(&target);
 }
 
+static void test_z80_128k_machine_round_trip(void)
+{
+    static wz_machine_t source;
+    static wz_machine_t target;
+    static wz_byte_t z80[WZ_Z80_128K_V2_LENGTH];
+    static wz_byte_t invalid[WZ_Z80_128K_V2_LENGTH];
+
+    if (wz_machine_init(&source, wz_machine_profile_128k_pal()) != WZ_RESULT_OK ||
+        wz_machine_init(&target, wz_machine_profile_128k_pal()) != WZ_RESULT_OK) {
+        fputs("128K Z80 machine setup failed\n", stderr);
+        exit(1);
+    }
+    for (wz_byte_t page = 0u; page < WZ_128K_RAM_BANK_COUNT; ++page) {
+        for (size_t index = 0u; index < WZ_128K_RAM_BANK_SIZE; ++index) {
+            source.ram_128k[page * WZ_128K_RAM_BANK_SIZE + index] =
+                (wz_byte_t)(page * 29u + index);
+        }
+    }
+    source.cpu.main.a = 0x42u;
+    source.cpu.main.f = 0x24u;
+    source.cpu.alternate.a = 0x81u;
+    source.cpu.stack_pointer = 0x8123u;
+    source.cpu.program_counter = 0x4567u;
+    source.cpu.interrupt_mode = WZ_Z80_INTERRUPT_MODE_2;
+    source.cpu.iff1 = 1u;
+    source.cpu.iff2 = 1u;
+    source.border_color = 6u;
+    source.ay.selected_register = 13u;
+    source.ay.registers[13u] = 0x0bu;
+    if (wz_machine_128k_paging_write(&source, 0x7ffdu, 0x2bu) != WZ_RESULT_OK ||
+        wz_state_save_z80_v2_128k(&source, z80, sizeof(z80)) != WZ_RESULT_OK ||
+        wz_state_load_z80_v2_128k(&target, z80, sizeof(z80)) != WZ_RESULT_OK ||
+        target.cpu.main.a != source.cpu.main.a ||
+        target.cpu.main.f != source.cpu.main.f ||
+        target.cpu.alternate.a != source.cpu.alternate.a ||
+        target.cpu.stack_pointer != source.cpu.stack_pointer ||
+        target.cpu.program_counter != source.cpu.program_counter ||
+        target.cpu.interrupt_mode != source.cpu.interrupt_mode ||
+        target.cpu.iff1 != source.cpu.iff1 || target.cpu.iff2 != source.cpu.iff2 ||
+        target.border_color != source.border_color ||
+        target.paging_7ffd != source.paging_7ffd ||
+        target.paging_7ffd_locked != source.paging_7ffd_locked ||
+        target.ay.selected_register != source.ay.selected_register ||
+        target.ay.registers[13u] != source.ay.registers[13u]) {
+        fputs("128K Z80 machine state round trip failed\n", stderr);
+        wz_machine_destroy(&source);
+        wz_machine_destroy(&target);
+        exit(1);
+    }
+    for (wz_byte_t page = 0u; page < WZ_128K_RAM_BANK_COUNT; ++page) {
+        if (memcmp(target.ram_128k + page * WZ_128K_RAM_BANK_SIZE,
+                   source.ram_128k + page * WZ_128K_RAM_BANK_SIZE,
+                   WZ_128K_RAM_BANK_SIZE) != 0) {
+            fputs("128K Z80 RAM bank round trip failed\n", stderr);
+            wz_machine_destroy(&source);
+            wz_machine_destroy(&target);
+            exit(1);
+        }
+    }
+    memcpy(invalid, z80, sizeof(invalid));
+    invalid[WZ_Z80_V2_HEADER_LENGTH + 2u] = 10u;
+    target.cpu.main.a = 0x99u;
+    if (wz_state_load_z80_v2_128k(&target, invalid, sizeof(invalid)) == WZ_RESULT_OK ||
+        target.cpu.main.a != 0x99u ||
+        wz_state_save_z80_v2_128k(&source, z80, sizeof(z80) - 1u) !=
+            WZ_RESULT_BUFFER_TOO_SMALL) {
+        fputs("128K Z80 rejection atomicity failed\n", stderr);
+        wz_machine_destroy(&source);
+        wz_machine_destroy(&target);
+        exit(1);
+    }
+    wz_machine_destroy(&source);
+    wz_machine_destroy(&target);
+}
+
 static void test_z80_v1_loader(void)
 {
     static wz_byte_t z80[WZ_Z80_V1_HEADER_LENGTH + WZ_Z80_V1_MEMORY_LENGTH + 4u];
@@ -2762,6 +2837,7 @@ int main(void)
     test_sna_48k_writer();
     test_sna_128k_image_scaffolding();
     test_sna_128k_machine_round_trip();
+    test_z80_128k_machine_round_trip();
     test_z80_v1_loader();
     test_z80_v2_loader_and_writer();
     test_z80_v3_loader();

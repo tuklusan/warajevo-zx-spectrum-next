@@ -27,9 +27,13 @@ typedef struct wz_machine wz_machine_t;
 #define WZ_Z80_V3_HEADER_LENGTH_EXTENDED 87u
 #define WZ_Z80_V2_PAGE_SIZE 16384u
 #define WZ_Z80_V2_PAGE_COUNT 3u
+#define WZ_Z80_128K_PAGE_COUNT 8u
 #define WZ_Z80_V2_UNCOMPRESSED_PAGE_LENGTH 0xffffu
 #define WZ_Z80_V2_LENGTH (WZ_Z80_V2_HEADER_LENGTH + \
                          (WZ_Z80_V2_PAGE_COUNT * (3u + WZ_Z80_V2_PAGE_SIZE)))
+#define WZ_Z80_128K_V2_LENGTH (WZ_Z80_V2_HEADER_LENGTH + \
+                               (WZ_Z80_128K_PAGE_COUNT * \
+                                (3u + WZ_Z80_V2_PAGE_SIZE)))
 
 typedef enum {
     WZ_HISTORICAL_FORMAT_SNA = 0,
@@ -107,6 +111,12 @@ wz_result_t wz_snapshot_state_load_z80_v3(wz_snapshot_state_t* snapshot,
 wz_result_t wz_state_save_z80_v2_48k(const wz_machine_t* machine,
                                      wz_byte_t* data,
                                      size_t capacity);
+wz_result_t wz_state_load_z80_v2_128k(wz_machine_t* machine,
+                                      const wz_byte_t* data,
+                                      size_t length);
+wz_result_t wz_state_save_z80_v2_128k(const wz_machine_t* machine,
+                                      wz_byte_t* data,
+                                      size_t capacity);
 const wz_byte_t* wz_snapshot_state_data(const wz_snapshot_state_t* snapshot);
 size_t wz_snapshot_state_length(const wz_snapshot_state_t* snapshot);
 

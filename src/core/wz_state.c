@@ -1388,3 +1388,196 @@ wz_result_t wz_state_save_z80_v2_48k(const wz_machine_t* machine,
     }
     return WZ_RESULT_OK;
 }
+
+static wz_result_t wz_z80_128k_map_header(wz_machine_t* machine,
+                                           const wz_byte_t* data)
+{
+    if (machine == 0 || data == 0 || data[6u] != 0u || data[7u] != 0u ||
+        wz_read_le16(data + 30u) != 23u || data[34u] != 4u ||
+        data[35u] > 0x3fu || data[36u] != 0u || data[53u] > 15u ||
+        data[54u] != 0u) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+
+    machine->cpu.main.a = data[0u];
+    machine->cpu.main.f = data[1u];
+    machine->cpu.main.c = data[2u];
+    machine->cpu.main.b = data[3u];
+    machine->cpu.main.l = data[4u];
+    machine->cpu.main.h = data[5u];
+    machine->cpu.stack_pointer = wz_read_le16(data + 8u);
+    machine->cpu.i = data[10u];
+    machine->cpu.r = (wz_byte_t)((data[11u] & 0x7fu) |
+                                  ((data[12u] & 0x01u) << 7u));
+    machine->border_color = (wz_byte_t)((data[12u] >> 1u) & 0x07u);
+    machine->ula_output = machine->border_color;
+    machine->cpu.main.e = data[13u];
+    machine->cpu.main.d = data[14u];
+    machine->cpu.alternate.c = data[15u];
+    machine->cpu.alternate.b = data[16u];
+    machine->cpu.alternate.e = data[17u];
+    machine->cpu.alternate.d = data[18u];
+    machine->cpu.alternate.l = data[19u];
+    machine->cpu.alternate.h = data[20u];
+    machine->cpu.alternate.a = data[21u];
+    machine->cpu.alternate.f = data[22u];
+    machine->cpu.iy = wz_read_le16(data + 23u);
+    machine->cpu.ix = wz_read_le16(data + 25u);
+    machine->cpu.iff1 = data[27u];
+    machine->cpu.iff2 = data[28u];
+    machine->cpu.interrupt_mode = data[29u];
+    machine->cpu.program_counter = wz_read_le16(data + 32u);
+    machine->paging_7ffd = data[35u];
+    machine->paging_7ffd_locked = (wz_byte_t)((data[35u] >> 5u) & 1u);
+    machine->ay.selected_register = data[53u];
+    for (size_t index = 0u; index < WZ_AY_REGISTER_COUNT; ++index) {
+        machine->ay.registers[index] = data[37u + index];
+    }
+    return wz_z80_state_validate(&machine->cpu);
+}
+
+wz_result_t wz_state_load_z80_v2_128k(wz_machine_t* machine,
+                                      const wz_byte_t* data,
+                                      size_t length)
+{
+    static wz_machine_t candidate;
+    wz_byte_t seen_pages[WZ_Z80_128K_PAGE_COUNT] = {0u};
+    size_t offset = WZ_Z80_V2_HEADER_LENGTH;
+
+    if (machine == 0 || data == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (machine->profile == 0 ||
+        machine->profile->kind != WZ_MACHINE_128K_PAL ||
+        machine->ram_128k == 0 || length < WZ_Z80_V2_HEADER_LENGTH ||
+        wz_machine_init(&candidate, wz_machine_profile_128k_pal()) != WZ_RESULT_OK ||
+        wz_z80_128k_map_header(&candidate, data) != WZ_RESULT_OK) {
+        wz_machine_destroy(&candidate);
+        return WZ_RESULT_PARSE_ERROR;
+    }
+
+    while (offset < length) {
+        wz_word_t block_length;
+        wz_byte_t page_number;
+        size_t page_index;
+        wz_byte_t* destination;
+
+        if (length - offset < 3u) {
+            wz_machine_destroy(&candidate);
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        block_length = wz_read_le16(data + offset);
+        page_number = data[offset + 2u];
+        if (page_number < 3u || page_number > 10u) {
+            wz_machine_destroy(&candidate);
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        page_index = (size_t)(page_number - 3u);
+        destination = candidate.ram_128k +
+                      page_index * WZ_128K_RAM_BANK_SIZE;
+        if (seen_pages[page_index] != 0u ||
+            (block_length != WZ_Z80_V2_UNCOMPRESSED_PAGE_LENGTH &&
+             block_length == 0u) ||
+            (block_length == WZ_Z80_V2_UNCOMPRESSED_PAGE_LENGTH &&
+             length - offset - 3u < WZ_Z80_V2_PAGE_SIZE) ||
+            (block_length != WZ_Z80_V2_UNCOMPRESSED_PAGE_LENGTH &&
+             (size_t)block_length > length - offset - 3u)) {
+            wz_machine_destroy(&candidate);
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        if (block_length == WZ_Z80_V2_UNCOMPRESSED_PAGE_LENGTH) {
+            for (size_t index = 0u; index < WZ_Z80_V2_PAGE_SIZE; ++index) {
+                destination[index] = data[offset + 3u + index];
+            }
+            offset += 3u + WZ_Z80_V2_PAGE_SIZE;
+        } else {
+            if (wz_z80_v2_decode_page(destination, data + offset + 3u,
+                                       (size_t)block_length) != WZ_RESULT_OK) {
+                wz_machine_destroy(&candidate);
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            offset += 3u + (size_t)block_length;
+        }
+        seen_pages[page_index] = 1u;
+    }
+    for (size_t page = 0u; page < WZ_Z80_128K_PAGE_COUNT; ++page) {
+        if (seen_pages[page] == 0u) {
+            wz_machine_destroy(&candidate);
+            return WZ_RESULT_PARSE_ERROR;
+        }
+    }
+    wz_sna_128k_apply_candidate(machine, &candidate);
+    wz_machine_destroy(&candidate);
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_state_save_z80_v2_128k(const wz_machine_t* machine,
+                                      wz_byte_t* data,
+                                      size_t capacity)
+{
+    if (machine == 0 || data == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (capacity < WZ_Z80_128K_V2_LENGTH) {
+        return WZ_RESULT_BUFFER_TOO_SMALL;
+    }
+    if (machine->profile == 0 ||
+        machine->profile->kind != WZ_MACHINE_128K_PAL ||
+        machine->ram_128k == 0 ||
+        wz_state_validate_historical_representability(
+            machine, WZ_HISTORICAL_FORMAT_Z80) != WZ_RESULT_OK ||
+        machine->paging_7ffd > 0x3fu || machine->border_color > 7u ||
+        wz_z80_state_validate(&machine->cpu) != WZ_RESULT_OK) {
+        return WZ_RESULT_UNSUPPORTED_OPERATION;
+    }
+    for (size_t index = 0u; index < WZ_Z80_128K_V2_LENGTH; ++index) {
+        data[index] = 0u;
+    }
+    data[0u] = machine->cpu.main.a;
+    data[1u] = machine->cpu.main.f;
+    data[2u] = machine->cpu.main.c;
+    data[3u] = machine->cpu.main.b;
+    data[4u] = machine->cpu.main.l;
+    data[5u] = machine->cpu.main.h;
+    wz_write_le16(data + 8u, machine->cpu.stack_pointer);
+    data[10u] = machine->cpu.i;
+    data[11u] = (wz_byte_t)(machine->cpu.r & 0x7fu);
+    data[12u] = (wz_byte_t)(((machine->cpu.r >> 7u) & 1u) |
+                            (machine->border_color << 1u));
+    data[13u] = machine->cpu.main.e;
+    data[14u] = machine->cpu.main.d;
+    data[15u] = machine->cpu.alternate.c;
+    data[16u] = machine->cpu.alternate.b;
+    data[17u] = machine->cpu.alternate.e;
+    data[18u] = machine->cpu.alternate.d;
+    data[19u] = machine->cpu.alternate.l;
+    data[20u] = machine->cpu.alternate.h;
+    data[21u] = machine->cpu.alternate.a;
+    data[22u] = machine->cpu.alternate.f;
+    wz_write_le16(data + 23u, machine->cpu.iy);
+    wz_write_le16(data + 25u, machine->cpu.ix);
+    data[27u] = machine->cpu.iff1;
+    data[28u] = machine->cpu.iff2;
+    data[29u] = machine->cpu.interrupt_mode;
+    wz_write_le16(data + 30u, 23u);
+    wz_write_le16(data + 32u, machine->cpu.program_counter);
+    data[34u] = 4u;
+    data[35u] = machine->paging_7ffd;
+    data[53u] = machine->ay.selected_register;
+    for (size_t index = 0u; index < WZ_AY_REGISTER_COUNT; ++index) {
+        data[37u + index] = machine->ay.registers[index];
+    }
+    {
+        size_t offset = WZ_Z80_V2_HEADER_LENGTH;
+        for (wz_byte_t page = 0u; page < WZ_Z80_128K_PAGE_COUNT; ++page) {
+            wz_write_le16(data + offset, WZ_Z80_V2_UNCOMPRESSED_PAGE_LENGTH);
+            data[offset + 2u] = (wz_byte_t)(page + 3u);
+            for (size_t index = 0u; index < WZ_Z80_V2_PAGE_SIZE; ++index) {
+                data[offset + 3u + index] =
+                    machine->ram_128k[page * WZ_128K_RAM_BANK_SIZE + index];
+            }
+            offset += 3u + WZ_Z80_V2_PAGE_SIZE;
+        }
+    }
+    return WZ_RESULT_OK;
+}
