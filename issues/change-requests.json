@@ -1733,9 +1733,9 @@
     {
       "cr_number": "CR-0199",
       "title": "Implement AY register-select and data-write timing",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0199.md", "design/warajevo-zx-spectrum-next-architecture.md sections 10, 20.3, and 38", "design/wzsn-architectures-1-2-developer-tasks.md tasks 188 and 197", "src/core/wz_bus.c", "src/core/wz_machine.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS"],
-      "notes": "Opened on 2026-09-04 to implement the 128K AY-3-8912 register-select/data-write bus boundary as master-timestamped deterministic events. Tone, noise, envelope, mixer, serialization, and PCM integration remain ordered follow-on work."
+      "notes": "Closed on 2026-09-05 after CODE/bootstrap PASS with zero findings for 9dbca14..c7be94c (snapshot sha256 e40cda9d1f708828eba553d0a6c35f0212ab9d43110fddee3d69dc5b91a20b7e). Remote soaks CR0199-1 Linux, CR0199-2 Intel macOS, CR0199-3 Windows 10, and CR0199-4 Windows 11 all passed. Hosted platform-smoke run 33938313220 passed deep housekeeping, all 18 matrix lanes, and publication at c7be94c. Deferred AY synthesis and serialization remain follow-on work."
     },
     {
       "cr_number": "CR-0200",
