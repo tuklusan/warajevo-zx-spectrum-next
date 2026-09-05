@@ -1580,11 +1580,24 @@ static void test_ay_audio_mixer(void)
     }
     if (wz_audio_mixer_sample(WZ_AUDIO_MIXER_MAX, &ay) !=
             WZ_AUDIO_MIXER_MAX ||
-        wz_audio_mixer_sample(WZ_AUDIO_MIXER_MIN, &ay) !=
-            WZ_AUDIO_MIXER_MIN ||
         wz_audio_mixer_sample(12345, &ay) !=
             (wz_audio_sample_t)(12345 + 65536)) {
         fputs("AY mixer saturation or beeper composition failed\n", stderr);
+        exit(1);
+    }
+    if (wz_ay_select_register(&ay, 8u, 0u) != WZ_RESULT_OK ||
+        wz_ay_write_data(&ay, 15u, 0u) != WZ_RESULT_OK ||
+        wz_ay_select_register(&ay, 9u, 0u) != WZ_RESULT_OK ||
+        wz_ay_write_data(&ay, 15u, 0u) != WZ_RESULT_OK ||
+        wz_ay_select_register(&ay, 10u, 0u) != WZ_RESULT_OK ||
+        wz_ay_write_data(&ay, 15u, 0u) != WZ_RESULT_OK ||
+        wz_ay_select_register(&ay, 7u, 0u) != WZ_RESULT_OK ||
+        wz_ay_write_data(&ay, 0u, 0u) != WZ_RESULT_OK ||
+        wz_ay_advance_master_ticks(&ay, WZ_AY_MASTER_TICKS_PER_CLOCK) !=
+            WZ_RESULT_OK ||
+        wz_audio_mixer_sample(WZ_AUDIO_MIXER_MIN, &ay) !=
+            WZ_AUDIO_MIXER_MIN) {
+        fputs("AY mixer negative saturation failed\n", stderr);
         exit(1);
     }
 }
