@@ -1289,6 +1289,78 @@ static void test_128k_ula_profile(void)
     wz_machine_destroy(&machine);
 }
 
+static void test_128k_timing_relationships(void)
+{
+    const wz_machine_profile_t* profile = wz_machine_profile_128k_pal();
+    const wz_machine_profile_t* profile_48k = wz_machine_profile_48k_pal();
+    wz_machine_t machine;
+    wz_raster_position_t position;
+    const wz_qword_t line_ticks = 456u;
+    const wz_qword_t frame_ticks = 141816u;
+
+    if (profile->master_ticks_per_cpu_tstate != 2u ||
+        profile->tstates_per_line * profile->master_ticks_per_cpu_tstate !=
+            profile->raster_clocks_per_line ||
+        profile->tstates_per_frame * profile->master_ticks_per_cpu_tstate !=
+            frame_ticks ||
+        profile->raster_clocks_per_line * profile->lines_per_frame !=
+            frame_ticks ||
+        wz_profile_cpu_tstate(0u, profile) != 0u ||
+        wz_profile_cpu_tstate(1u, profile) != 0u ||
+        wz_profile_cpu_tstate(2u, profile) != 1u ||
+        wz_profile_cpu_tstate(3u, profile) != 1u ||
+        wz_profile_cpu_phase(0u, profile) != 0u ||
+        wz_profile_cpu_phase(1u, profile) != 1u ||
+        wz_profile_cpu_phase(2u, profile) != 0u ||
+        wz_profile_cpu_phase(3u, profile) != 1u ||
+        profile_48k->tstates_per_line *
+            profile_48k->master_ticks_per_cpu_tstate !=
+            profile_48k->raster_clocks_per_line ||
+        profile_48k->tstates_per_frame *
+            profile_48k->master_ticks_per_cpu_tstate !=
+            profile_48k->raster_clocks_per_line * profile_48k->lines_per_frame) {
+        fputs("128K master-tick relationship failed\n", stderr);
+        exit(1);
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        fputs("128K raster relationship setup failed\n", stderr);
+        exit(1);
+    }
+    machine.master_tick = line_ticks - 1u;
+    if (wz_machine_raster_position(&machine, &position) != WZ_RESULT_OK ||
+        position.frame_number != 0u || position.frame_raster_clock != 455u ||
+        position.line != 0u || position.raster_clock != 455u) {
+        fputs("128K final raster clock relationship failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    machine.master_tick = line_ticks;
+    if (wz_machine_raster_position(&machine, &position) != WZ_RESULT_OK ||
+        position.frame_number != 0u || position.frame_raster_clock != 456u ||
+        position.line != 1u || position.raster_clock != 0u) {
+        fputs("128K line boundary relationship failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    machine.master_tick = frame_ticks - 1u;
+    if (wz_machine_raster_position(&machine, &position) != WZ_RESULT_OK ||
+        position.frame_number != 0u || position.frame_raster_clock != 141815u ||
+        position.line != 310u || position.raster_clock != 455u) {
+        fputs("128K final frame clock relationship failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    machine.master_tick = frame_ticks;
+    if (wz_machine_raster_position(&machine, &position) != WZ_RESULT_OK ||
+        position.frame_number != 1u || position.frame_raster_clock != 0u ||
+        position.line != 0u || position.raster_clock != 0u) {
+        fputs("128K frame wrap relationship failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_machine_destroy(&machine);
+}
+
 static void test_tape_trap_eligibility(void)
 {
     const wz_tape_segment_t segment = {1u, 0u};
@@ -2290,6 +2362,7 @@ int main(void)
     test_snapshot_cross_host_round_trips();
     test_128k_banked_memory_and_paging();
     test_128k_ula_profile();
+    test_128k_timing_relationships();
     test_tape_trap_eligibility();
     test_tape_speed_invariance();
     test_standard_tap_parser();
