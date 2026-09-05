@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 199,
+  "next_cr_number": 200,
   "status_values": [
     "open",
     "in_progress",
@@ -1729,6 +1729,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0198.md", "reference/rom-disassemblies/README.md", "https://github.com/ZXSpectrumVault/rom-disassemblies"],
       "notes": "Closed on 2026-09-04 after importing the base Spectrum 48K, Interface 1, and base Spectrum 128K reference files from upstream revision 38e96bf14b89e01eb3f011c1925df4e9491cea50. Static gates and final scope/provenance scans passed; Spanish, +2, +3, ZX80, and ZX81 material remains excluded."
+    },
+    {
+      "cr_number": "CR-0199",
+      "title": "Implement AY register-select and data-write timing",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0199.md", "design/warajevo-zx-spectrum-next-architecture.md sections 10, 20.3, and 38", "design/wzsn-architectures-1-2-developer-tasks.md tasks 188 and 197", "src/core/wz_bus.c", "src/core/wz_machine.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS"],
+      "notes": "Opened on 2026-09-04 to implement the 128K AY-3-8912 register-select/data-write bus boundary as master-timestamped deterministic events. Tone, noise, envelope, mixer, serialization, and PCM integration remain ordered follow-on work."
     }
   ]
 }
