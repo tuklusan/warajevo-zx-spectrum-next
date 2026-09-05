@@ -1742,7 +1742,7 @@
       "title": "Temporarily disable local test-machine soaks and use hosted runners only",
       "status": "closed",
       "source_authority": ["WORKFLOW.md", "tools/harness/README.md", "design/cr-preflight/CR-0200.md"],
-      "notes": "Local test-machine harnesses and machine definitions remain unchanged, but local soak invocation is temporarily disabled by operator direction. Complete GitHub-hosted matrix validation remains required; reactivation requires fresh operator direction."
+      "notes": "Closed on 2026-09-05 after documentation review PASS for 2998234..d9d1cce (scope manifest d40081a8bcc449489c761c066839072996877c1330bbdda6f0cac417249852b9). Hosted platform-smoke run 33934718881 passed housekeeping, all 18 lanes, and publication for d9d1cce. Local test-machine harnesses and machine definitions remain unchanged, but local soak invocation is temporarily disabled by operator direction; reactivation requires fresh operator direction."
     }
   ]
 }
