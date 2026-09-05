@@ -1602,6 +1602,93 @@ static void test_ay_audio_mixer(void)
     }
 }
 
+static void test_ay_state_round_trip(void)
+{
+    wz_machine_t first;
+    wz_machine_t second;
+    wz_state_writer_t writer;
+    wz_state_writer_t writer_again;
+    wz_byte_t data[WZ_STATE_SNAPSHOT_CAPACITY];
+    wz_byte_t data_again[WZ_STATE_SNAPSHOT_CAPACITY];
+    wz_byte_t invalid[WZ_STATE_SNAPSHOT_CAPACITY];
+    wz_qword_t first_hash = 0u;
+    wz_qword_t second_hash = 0u;
+    wz_audio_sample_t first_sample;
+    wz_audio_sample_t second_sample;
+    size_t length;
+
+    if (wz_machine_init(&first, wz_machine_profile_128k_pal()) != WZ_RESULT_OK ||
+        wz_machine_init(&second, wz_machine_profile_48k_pal()) != WZ_RESULT_OK) {
+        fputs("AY state round-trip setup failed\n", stderr);
+        exit(1);
+    }
+    first.ay.selected_register = 13u;
+    first.ay.registers[7u] = 0x09u;
+    first.ay.registers[8u] = 0x10u;
+    first.ay.registers[9u] = 7u;
+    first.ay.registers[10u] = 3u;
+    first.ay.registers[11u] = 0x34u;
+    first.ay.registers[12u] = 0x12u;
+    first.ay.registers[13u] = 0x0eu;
+    first.ay.tone_counters[0u] = 9u;
+    first.ay.tone_counters[1u] = 10u;
+    first.ay.tone_counters[2u] = 11u;
+    first.ay.tone_levels[0u] = 1u;
+    first.ay.tone_levels[1u] = 0u;
+    first.ay.tone_levels[2u] = 1u;
+    first.ay.noise_counter = 4u;
+    first.ay.noise_lfsr = 0x13579u;
+    first.ay.noise_level = 1u;
+    first.ay.envelope_counter = 5u;
+    first.ay.envelope_period = 0x1234u;
+    first.ay.envelope_level = 6u;
+    first.ay.envelope_attack = 1u;
+    first.ay.envelope_holding = 0u;
+    first.ay.tone_master_tick_phase = 2u;
+    wz_state_writer_init(&writer, data, sizeof(data));
+    if (wz_state_serialize_machine(&first, &writer) != WZ_RESULT_OK ||
+        writer.length != WZ_STATE_MACHINE_LENGTH ||
+        wz_state_hash_machine(&first, &first_hash) != WZ_RESULT_OK) {
+        fputs("AY state serialization failed\n", stderr);
+        wz_machine_destroy(&first);
+        wz_machine_destroy(&second);
+        exit(1);
+    }
+    first_sample = wz_audio_mixer_sample(1234, &first.ay);
+    if (wz_state_deserialize_machine(&second, data, writer.length) != WZ_RESULT_OK ||
+        wz_state_hash_machine(&second, &second_hash) != WZ_RESULT_OK ||
+        first_hash != second_hash) {
+        fputs("AY state hash round-trip failed\n", stderr);
+        wz_machine_destroy(&first);
+        wz_machine_destroy(&second);
+        exit(1);
+    }
+    wz_state_writer_init(&writer_again, data_again, sizeof(data_again));
+    second_sample = wz_audio_mixer_sample(1234, &second.ay);
+    if (wz_state_serialize_machine(&second, &writer_again) != WZ_RESULT_OK ||
+        writer_again.length != writer.length ||
+        memcmp(data, data_again, writer.length) != 0 ||
+        first_sample != second_sample) {
+        fputs("AY state byte or mixer round-trip failed\n", stderr);
+        wz_machine_destroy(&first);
+        wz_machine_destroy(&second);
+        exit(1);
+    }
+    length = writer.length;
+    memcpy(invalid, data, length);
+    invalid[73u] = WZ_AY_REGISTER_COUNT;
+    if (wz_state_deserialize_machine(&second, invalid, length) == WZ_RESULT_OK ||
+        wz_state_hash_machine(&second, &second_hash) != WZ_RESULT_OK ||
+        second_hash != first_hash) {
+        fputs("AY state invalid-input atomicity failed\n", stderr);
+        wz_machine_destroy(&first);
+        wz_machine_destroy(&second);
+        exit(1);
+    }
+    wz_machine_destroy(&first);
+    wz_machine_destroy(&second);
+}
+
 static void test_tape_trap_eligibility(void)
 {
     const wz_tape_segment_t segment = {1u, 0u};
@@ -2609,6 +2696,7 @@ int main(void)
     test_ay_noise_generator();
     test_ay_envelope_generator();
     test_ay_audio_mixer();
+    test_ay_state_round_trip();
     test_tape_trap_eligibility();
     test_tape_speed_invariance();
     test_standard_tap_parser();

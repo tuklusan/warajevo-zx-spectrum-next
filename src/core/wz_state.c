@@ -10,8 +10,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "core/wz_machine.h"
 
-#define WZ_STATE_VERSION 11u
-#define WZ_STATE_HEADER_LENGTH 73u
+#define WZ_STATE_VERSION 12u
+#define WZ_STATE_HEADER_LENGTH 113u
 #define WZ_STATE_MACHINE_LENGTH (65536u + WZ_STATE_HEADER_LENGTH)
 
 static wz_result_t wz_state_write(wz_state_writer_t* writer,
@@ -73,6 +73,86 @@ static wz_result_t wz_state_write_u64(wz_state_writer_t* writer, wz_qword_t valu
     return wz_state_write(writer, bytes, sizeof(bytes));
 }
 
+static wz_result_t wz_state_write_u32(wz_state_writer_t* writer, wz_dword_t value)
+{
+    wz_byte_t bytes[4];
+    for (size_t index = 0u; index < sizeof(bytes); ++index) {
+        bytes[index] = (wz_byte_t)(value >> (index * 8u));
+    }
+    return wz_state_write(writer, bytes, sizeof(bytes));
+}
+
+static wz_result_t wz_state_write_ay(wz_state_writer_t* writer,
+                                     const wz_ay_t* ay)
+{
+    if (writer == 0 || ay == 0 || ay->selected_register >= WZ_AY_REGISTER_COUNT ||
+        ay->noise_level > 1u || ay->noise_lfsr > 0x1ffffu ||
+        ay->envelope_level >= WZ_AY_ENVELOPE_LEVEL_COUNT ||
+        ay->envelope_attack > 1u || ay->envelope_holding > 1u ||
+        ay->tone_master_tick_phase >= WZ_AY_MASTER_TICKS_PER_CLOCK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    for (wz_byte_t channel = 0u; channel < WZ_AY_CHANNEL_COUNT; ++channel) {
+        if (ay->tone_levels[channel] > 1u) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+    }
+    if (wz_state_write_u8(writer, ay->selected_register) != WZ_RESULT_OK ||
+        wz_state_write(writer, ay->registers, sizeof(ay->registers)) != WZ_RESULT_OK) {
+        return WZ_RESULT_SERIALIZATION_FAILURE;
+    }
+    for (wz_byte_t channel = 0u; channel < WZ_AY_CHANNEL_COUNT; ++channel) {
+        if (wz_state_write_u16(writer, ay->tone_counters[channel]) != WZ_RESULT_OK) {
+            return WZ_RESULT_SERIALIZATION_FAILURE;
+        }
+    }
+    if (wz_state_write(writer, ay->tone_levels, sizeof(ay->tone_levels)) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, ay->noise_counter) != WZ_RESULT_OK ||
+        wz_state_write_u32(writer, ay->noise_lfsr) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, ay->noise_level) != WZ_RESULT_OK ||
+        wz_state_write_u16(writer, ay->envelope_counter) != WZ_RESULT_OK ||
+        wz_state_write_u16(writer, ay->envelope_period) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, ay->envelope_level) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, ay->envelope_attack) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, ay->envelope_holding) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, ay->tone_master_tick_phase) != WZ_RESULT_OK) {
+        return WZ_RESULT_SERIALIZATION_FAILURE;
+    }
+    return WZ_RESULT_OK;
+}
+
+static bool wz_state_ay_data_valid(const wz_byte_t* data)
+{
+    size_t offset = 73u;
+    wz_dword_t noise_lfsr = 0u;
+
+    if (data[offset++] >= WZ_AY_REGISTER_COUNT) {
+        return false;
+    }
+    offset += sizeof(((wz_ay_t*)0)->registers);
+    offset += WZ_AY_CHANNEL_COUNT * sizeof(wz_word_t);
+    for (size_t index = 0u; index < WZ_AY_CHANNEL_COUNT; ++index) {
+        if (data[offset++] > 1u) {
+            return false;
+        }
+    }
+    ++offset;
+    for (size_t index = 0u; index < sizeof(noise_lfsr); ++index) {
+        noise_lfsr |= (wz_dword_t)data[offset++] << (index * 8u);
+    }
+    if (noise_lfsr > 0x1ffffu || data[offset++] > 1u) {
+        return false;
+    }
+    offset += 2u;
+    offset += 2u;
+    if (data[offset++] >= WZ_AY_ENVELOPE_LEVEL_COUNT ||
+        data[offset++] > 1u || data[offset++] > 1u ||
+        data[offset] >= WZ_AY_MASTER_TICKS_PER_CLOCK) {
+        return false;
+    }
+    return true;
+}
+
 void wz_state_writer_init(wz_state_writer_t* writer,
                           wz_byte_t* data,
                           size_t capacity)
@@ -128,6 +208,7 @@ wz_result_t wz_state_serialize_machine(const wz_machine_t* machine,
         wz_state_write_u8(writer, machine->maskable_interrupt_line_low) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, (wz_byte_t)machine->tape_loading_mode) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, (wz_byte_t)machine->networking_mode) != WZ_RESULT_OK ||
+        wz_state_write_ay(writer, &machine->ay) != WZ_RESULT_OK ||
         wz_state_write(writer, machine->memory, sizeof(machine->memory)) != WZ_RESULT_OK) {
         return WZ_RESULT_SERIALIZATION_FAILURE;
     }
@@ -193,6 +274,9 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
         return WZ_RESULT_INVALID_STATE;
     }
     if (data[72u] > (wz_byte_t)WZ_NETWORKING_EAR_MIC) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    if (!wz_state_ay_data_valid(data)) {
         return WZ_RESULT_INVALID_STATE;
     }
     networking_mode = (wz_networking_mode_t)data[72u];
@@ -285,8 +369,51 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
     machine->maskable_interrupt_line_low = data[70u];
     machine->tape_loading_mode = (wz_tape_loading_mode_t)data[71u];
     machine->networking_mode = networking_mode;
+    {
+        size_t offset = 73u;
+        wz_dword_t noise_lfsr = 0u;
+
+        machine->ay.selected_register = data[offset++];
+        if (machine->ay.selected_register >= WZ_AY_REGISTER_COUNT) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        for (size_t index = 0u; index < sizeof(machine->ay.registers); ++index) {
+            machine->ay.registers[index] = data[offset++];
+        }
+        for (wz_byte_t channel = 0u; channel < WZ_AY_CHANNEL_COUNT; ++channel) {
+            machine->ay.tone_counters[channel] = wz_read_le16(data + offset);
+            offset += 2u;
+        }
+        for (size_t index = 0u; index < sizeof(machine->ay.tone_levels); ++index) {
+            machine->ay.tone_levels[index] = data[offset++];
+            if (machine->ay.tone_levels[index] > 1u) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+        }
+        machine->ay.noise_counter = data[offset++];
+        for (size_t index = 0u; index < sizeof(noise_lfsr); ++index) {
+            noise_lfsr |= (wz_dword_t)data[offset++] << (index * 8u);
+        }
+        machine->ay.noise_lfsr = noise_lfsr;
+        machine->ay.noise_level = data[offset++];
+        machine->ay.envelope_counter = wz_read_le16(data + offset);
+        offset += 2u;
+        machine->ay.envelope_period = wz_read_le16(data + offset);
+        offset += 2u;
+        machine->ay.envelope_level = data[offset++];
+        machine->ay.envelope_attack = data[offset++];
+        machine->ay.envelope_holding = data[offset++];
+        machine->ay.tone_master_tick_phase = data[offset++];
+        machine->ay.event_count = 0u;
+        if (machine->ay.noise_lfsr > 0x1ffffu || machine->ay.noise_level > 1u ||
+            machine->ay.envelope_level >= WZ_AY_ENVELOPE_LEVEL_COUNT ||
+            machine->ay.envelope_attack > 1u || machine->ay.envelope_holding > 1u ||
+            machine->ay.tone_master_tick_phase >= WZ_AY_MASTER_TICKS_PER_CLOCK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+    }
     for (size_t index = 0u; index < sizeof(machine->memory); ++index) {
-        machine->memory[index] = data[WZ_STATE_HEADER_LENGTH + index];
+        machine->memory[index] = data[113u + index];
     }
     return WZ_RESULT_OK;
 }
