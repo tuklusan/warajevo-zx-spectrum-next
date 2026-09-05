@@ -44,6 +44,7 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     wz_kempston_init(&machine->kempston);
     machine->ula_output = 0u;
     wz_beeper_init(&machine->beeper);
+    wz_ay_init(&machine->ay);
     machine->tape.segments = 0;
     machine->tape.segment_count = 0u;
     machine->tape_mounted = 0u;
@@ -82,6 +83,7 @@ void wz_machine_destroy(wz_machine_t* machine)
         }
         wz_kempston_init(&machine->kempston);
         wz_beeper_init(&machine->beeper);
+        wz_ay_init(&machine->ay);
         machine->tape.segments = 0;
         machine->tape.segment_count = 0u;
         machine->tape_mounted = 0u;
@@ -525,6 +527,23 @@ size_t wz_machine_mic_events(const wz_machine_t* machine,
                              size_t capacity)
 {
     return machine == 0 ? 0u : wz_beeper_mic_events(&machine->beeper, events, capacity);
+}
+
+size_t wz_machine_ay_events(const wz_machine_t* machine,
+                            wz_ay_event_t* events, size_t capacity)
+{
+    return machine == 0 ? 0u : wz_ay_events(&machine->ay, events, capacity);
+}
+
+wz_byte_t wz_machine_ay_selected_register(const wz_machine_t* machine)
+{
+    return machine == 0 ? 0u : wz_ay_selected_register(&machine->ay);
+}
+
+wz_byte_t wz_machine_ay_register_value(const wz_machine_t* machine,
+                                       wz_byte_t register_index)
+{
+    return machine == 0 ? 0u : wz_ay_register_value(&machine->ay, register_index);
 }
 
 bool wz_machine_mic_capture_overflowed(const wz_machine_t* machine)

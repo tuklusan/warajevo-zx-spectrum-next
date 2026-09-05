@@ -1361,6 +1361,61 @@ static void test_128k_timing_relationships(void)
     wz_machine_destroy(&machine);
 }
 
+static void test_128k_ay_register_timing(void)
+{
+    wz_machine_t machine;
+    wz_machine_t machine_48k;
+    wz_bus_request_t select_request;
+    wz_bus_request_t write_request;
+    wz_ay_event_t events[2u];
+
+    if (wz_machine_init(&machine, wz_machine_profile_128k_pal()) != WZ_RESULT_OK) {
+        fputs("AY timing setup failed\n", stderr);
+        exit(1);
+    }
+    wz_bus_request_init(&select_request, WZ_BUS_IO_WRITE, 100u, 0xfffdu,
+                        0x1fu, 4u);
+    if (wz_machine_bus_request(&machine, &select_request) != WZ_RESULT_OK ||
+        select_request.source != WZ_BUS_SOURCE_AY ||
+        wz_machine_ay_selected_register(&machine) != 0x0fu) {
+        fputs("AY register-select port decode failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_bus_request_init(&write_request, WZ_BUS_IO_WRITE, 102u, 0xbffdu,
+                        0xa5u, 4u);
+    if (wz_machine_bus_request(&machine, &write_request) != WZ_RESULT_OK ||
+        write_request.source != WZ_BUS_SOURCE_AY ||
+        wz_machine_ay_register_value(&machine, 0x0fu) != 0xa5u ||
+        wz_machine_ay_register_value(&machine, 0x00u) != 0u ||
+        wz_machine_ay_events(&machine, events, 2u) != 2u ||
+        events[0u].kind != WZ_AY_EVENT_REGISTER_SELECT ||
+        events[0u].master_tick != 100u || events[0u].register_index != 0x0fu ||
+        events[0u].value != 0x1fu ||
+        events[1u].kind != WZ_AY_EVENT_REGISTER_WRITE ||
+        events[1u].master_tick != 102u || events[1u].register_index != 0x0fu ||
+        events[1u].value != 0xa5u) {
+        fputs("AY register-write timing failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_machine_destroy(&machine);
+    if (wz_machine_init(&machine_48k, wz_machine_profile_48k_pal()) != WZ_RESULT_OK) {
+        fputs("48K AY isolation setup failed\n", stderr);
+        exit(1);
+    }
+    wz_bus_request_init(&write_request, WZ_BUS_IO_WRITE, 100u, 0xbffdu,
+                        0x5au, 4u);
+    if (wz_machine_bus_request(&machine_48k, &write_request) != WZ_RESULT_OK ||
+        write_request.source == WZ_BUS_SOURCE_AY ||
+        wz_machine_ay_events(&machine_48k, events, 2u) != 0u) {
+        fputs("48K AY isolation failed\n", stderr);
+        wz_machine_destroy(&machine_48k);
+        exit(1);
+    }
+    wz_machine_destroy(&machine_48k);
+}
+
 static void test_tape_trap_eligibility(void)
 {
     const wz_tape_segment_t segment = {1u, 0u};
@@ -2363,6 +2418,7 @@ int main(void)
     test_128k_banked_memory_and_paging();
     test_128k_ula_profile();
     test_128k_timing_relationships();
+    test_128k_ay_register_timing();
     test_tape_trap_eligibility();
     test_tape_speed_invariance();
     test_standard_tap_parser();

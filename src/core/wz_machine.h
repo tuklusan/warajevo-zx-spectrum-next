@@ -13,6 +13,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "core/wz_bus.h"
 #include "core/audio/wz_beeper.h"
+#include "core/audio/wz_ay.h"
 #include "core/wz_machine_profile.h"
 #include "core/wz_kempston.h"
 #include "core/wz_raster.h"
@@ -85,6 +86,7 @@ typedef struct wz_machine {
     wz_byte_t keyboard_rows[8u];
     wz_kempston_t kempston;
     wz_beeper_t beeper;
+    wz_ay_t ay;
     wz_tape_t tape;
     wz_tape_state_t tape_state;
     wz_byte_t tape_mounted;
@@ -164,6 +166,11 @@ wz_result_t wz_machine_mic_capture_end(wz_machine_t* machine);
 size_t wz_machine_mic_events(const wz_machine_t* machine,
                              wz_mic_event_t* events,
                              size_t capacity);
+size_t wz_machine_ay_events(const wz_machine_t* machine,
+                            wz_ay_event_t* events, size_t capacity);
+wz_byte_t wz_machine_ay_selected_register(const wz_machine_t* machine);
+wz_byte_t wz_machine_ay_register_value(const wz_machine_t* machine,
+                                       wz_byte_t register_index);
 bool wz_machine_mic_capture_overflowed(const wz_machine_t* machine);
 wz_byte_t wz_machine_ula_port_fe_read(const wz_machine_t* machine,
                                        wz_word_t address);

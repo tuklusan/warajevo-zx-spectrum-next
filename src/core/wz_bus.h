@@ -33,7 +33,8 @@ typedef enum {
     WZ_BUS_SOURCE_ULA,
     WZ_BUS_SOURCE_DATA_SOURCE,
     WZ_BUS_SOURCE_INPUT,
-    WZ_BUS_SOURCE_FALLBACK
+    WZ_BUS_SOURCE_FALLBACK,
+    WZ_BUS_SOURCE_AY
 } wz_bus_source_t;
 
 typedef struct {

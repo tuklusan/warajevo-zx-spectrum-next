@@ -173,6 +173,22 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
     case WZ_BUS_IO_WRITE:
         if (machine->hardware_io_decode_enabled &&
             machine->profile != 0 && machine->profile->kind == WZ_MACHINE_128K_PAL &&
+            (request->address & 0xc002u) == 0xc000u) {
+            request->source = WZ_BUS_SOURCE_AY;
+            if (wz_ay_select_register(&machine->ay, request->value,
+                                      request->master_tick) != WZ_RESULT_OK) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+        } else if (machine->hardware_io_decode_enabled &&
+            machine->profile != 0 && machine->profile->kind == WZ_MACHINE_128K_PAL &&
+            (request->address & 0xc002u) == 0x8000u) {
+            request->source = WZ_BUS_SOURCE_AY;
+            if (wz_ay_write_data(&machine->ay, request->value,
+                                 request->master_tick) != WZ_RESULT_OK) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+        } else if (machine->hardware_io_decode_enabled &&
+            machine->profile != 0 && machine->profile->kind == WZ_MACHINE_128K_PAL &&
             wz_machine_128k_paging_write(machine, request->address, request->value) ==
                 WZ_RESULT_OK) {
             request->source = WZ_BUS_SOURCE_MEMORY;
