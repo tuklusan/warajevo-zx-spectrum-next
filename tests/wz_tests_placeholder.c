@@ -11,6 +11,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include <string.h>
 
 #include "core/wz_machine.h"
+#include "core/wz_microdrive.h"
 #include "core/wz_keyboard_matrix.h"
 #include "core/wz_kempston.h"
 #include "app/wz_input_timing.h"
@@ -593,6 +594,47 @@ static void test_interface1_machine_registers(void)
         exit(1);
     }
     wz_machine_destroy(&machine);
+}
+
+static void test_microdrive_image_validation(void)
+{
+    static wz_byte_t image_data[WZ_MDR_MAX_SECTORS * WZ_MDR_SECTOR_SIZE];
+    wz_mdr_image_t image = {0};
+    wz_mdr_image_t original;
+    const wz_byte_t* sector_data = 0;
+
+    for (size_t index = 0u; index < sizeof(image_data); ++index) {
+        image_data[index] = (wz_byte_t)index;
+    }
+    if (wz_mdr_image_init(&image, image_data,
+            WZ_MDR_MIN_SECTORS * WZ_MDR_SECTOR_SIZE) != WZ_RESULT_OK ||
+        image.sector_count != WZ_MDR_MIN_SECTORS ||
+        wz_mdr_image_sector(&image, WZ_MDR_MIN_SECTORS - 1u, &sector_data) !=
+            WZ_RESULT_OK ||
+        sector_data != image_data + (WZ_MDR_MIN_SECTORS - 1u) * WZ_MDR_SECTOR_SIZE ||
+        wz_mdr_image_init(&image, image_data,
+            WZ_MDR_MAX_SECTORS * WZ_MDR_SECTOR_SIZE) != WZ_RESULT_OK ||
+        image.sector_count != WZ_MDR_MAX_SECTORS) {
+        fputs("MDR valid geometry or sector addressing failed\n", stderr);
+        exit(1);
+    }
+    original = image;
+    if (wz_mdr_image_init(&image, image_data, 8u * WZ_MDR_SECTOR_SIZE) !=
+            WZ_RESULT_PARSE_ERROR ||
+        memcmp(&image, &original, sizeof(image)) != 0 ||
+        wz_mdr_image_init(&image, image_data,
+            (WZ_MDR_MAX_SECTORS + 1u) * WZ_MDR_SECTOR_SIZE) !=
+            WZ_RESULT_PARSE_ERROR ||
+        memcmp(&image, &original, sizeof(image)) != 0 ||
+        wz_mdr_image_init(&image, image_data,
+            WZ_MDR_MIN_SECTORS * WZ_MDR_SECTOR_SIZE - 1u) !=
+            WZ_RESULT_PARSE_ERROR ||
+        memcmp(&image, &original, sizeof(image)) != 0 ||
+        wz_mdr_image_sector(&image, WZ_MDR_MAX_SECTORS, &sector_data) !=
+            WZ_RESULT_INVALID_STATE) {
+        fputs("MDR malformed-input or bounds handling failed\n", stderr);
+        exit(1);
+    }
 }
 
 static void test_historical_state_representability(void)
@@ -3106,6 +3148,7 @@ int main(void)
     test_networking_mode_cold_reconfiguration();
     test_interface1_rom_paging();
     test_interface1_machine_registers();
+    test_microdrive_image_validation();
     test_historical_state_representability();
     test_snapshot_state_isolated_validation();
     test_sna_48k_loader();
