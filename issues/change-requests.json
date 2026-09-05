@@ -1719,16 +1719,16 @@
     {
       "cr_number": "CR-0197",
       "title": "Verify 128K master-tick, T-state, and frame relationships",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0197.md", "design/machine-timing-evidence.md", "design/warajevo-zx-spectrum-next-architecture.md sections 9 and 10", "design/wzsn-architectures-1-2-developer-tasks.md task 187", "src/core/wz_machine_profile.c", "src/core/wz_machine.c", "tests/wz_tests_placeholder.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS"],
-      "notes": "Opened on 2026-09-04 to verify the frozen 128K master-tick, T-state, line, and frame relationships through the existing profile and raster-position APIs. Requires exact-SHA review, remote and hosted validation, and a second upstream zero-gap scan before closure."
+      "notes": "Closed on 2026-09-04 after adding deterministic 128K master-tick, T-state, line, frame, and wrap-boundary assertions without changing the timing engine. Exact-SHA CODE and bootstrap reviews passed with zero findings for 4533ec7..218bcae; remote CR0197-LINUX-SAN-R1, CR0197-WIN10-R1, CR0197-WIN11-R1, and CR0197-MAC-R1 passed; hosted platform-smoke 33932832267 passed all 18 matrix lanes, deep housekeeping, and publication at 218bcae2bfd847647ed6fa0642d7bd9179913e0d. Second upstream zero-gap scan found no missing base-profile relationship."
     },
     {
       "cr_number": "CR-0198",
       "title": "Import public 48K and 128K reference ROM disassemblies",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0198.md", "reference/rom-disassemblies/README.md", "https://github.com/ZXSpectrumVault/rom-disassemblies"],
-      "notes": "Opened on 2026-09-04 to import the base Spectrum 48K and 128K reference disassembly trees plus the two Interface 1 disassembly files from upstream revision 38e96bf14b89e01eb3f011c1925df4e9491cea50. Spanish, +2, +3, ZX80, and ZX81 material is explicitly excluded from this initial corpus."
+      "notes": "Closed on 2026-09-04 after importing the base Spectrum 48K, Interface 1, and base Spectrum 128K reference files from upstream revision 38e96bf14b89e01eb3f011c1925df4e9491cea50. Static gates and final scope/provenance scans passed; Spanish, +2, +3, ZX80, and ZX81 material remains excluded."
     }
   ]
 }
