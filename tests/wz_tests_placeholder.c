@@ -402,9 +402,9 @@ static void test_tape_loading_mode_state(void)
 
 static void test_networking_mode_state(void)
 {
-    wz_machine_t machine;
+    static wz_machine_t machine;
     wz_networking_mode_t mode;
-    wz_byte_t interface1_rom[WZ_INTERFACE1_ROM_SIZE];
+    static wz_byte_t interface1_rom[WZ_INTERFACE1_ROM_SIZE];
 
     for (size_t index = 0u; index < sizeof(interface1_rom); ++index) {
         interface1_rom[index] = (wz_byte_t)(index ^ 0x5au);
@@ -449,9 +449,9 @@ static void test_networking_mode_cold_reconfiguration(void)
     };
 
     for (size_t index = 0u; index < 2u; ++index) {
-        wz_machine_t machine;
+        static wz_machine_t machine;
         const wz_machine_profile_t* profile = profiles[index];
-        wz_byte_t interface1_rom[WZ_INTERFACE1_ROM_SIZE];
+        static wz_byte_t interface1_rom[WZ_INTERFACE1_ROM_SIZE];
         for (size_t rom_index = 0u; rom_index < sizeof(interface1_rom); ++rom_index) {
             interface1_rom[rom_index] = (wz_byte_t)(rom_index ^ 0xa5u);
         }
@@ -514,8 +514,8 @@ static void test_networking_mode_cold_reconfiguration(void)
 
 static void test_interface1_rom_paging(void)
 {
-    wz_machine_t machine;
-    wz_byte_t interface1_rom[WZ_INTERFACE1_ROM_SIZE];
+    static wz_machine_t machine;
+    static wz_byte_t interface1_rom[WZ_INTERFACE1_ROM_SIZE];
 
     for (size_t index = 0u; index < sizeof(interface1_rom); ++index) {
         interface1_rom[index] = (wz_byte_t)(index ^ 0x22u);
