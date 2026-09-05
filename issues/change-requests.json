@@ -1803,9 +1803,9 @@
     {
       "cr_number": "CR-0209",
       "title": "Complete 128K SNA snapshot load and save",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0209.md", "design/warajevo-zx-spectrum-next-architecture.md sections 8, 20.5, 25, and 38", "design/wzsn-architectures-1-2-developer-tasks.md task 194", "src/core/wz_state.c", "src/core/wz_state.h", "src/core/wz_machine.c", "tests/wz_tests_placeholder.c", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
-      "notes": "Opened on 2026-09-05 after CR-0208 closure. Integrate exact 128K SNA load/save with live banked memory, 7FFD paging and lock state, CPU/register/border state, atomic validation, and deterministic cross-platform evidence without changing the historical SNA layout."
+      "notes": "Closed on 2026-09-05 at implementation range bfe18e8..f0a5049. Exact-SHA CODE, bootstrap, and DOCUMENTATION reviews passed with zero findings. Remote runs CR0209-1 Linux sanitizer, CR0209-2 Intel macOS, CR0209-3 Windows 10, and CR0209-4 Windows 11 passed with CTest and snapshot corpus green. Hosted platform-smoke run 33949514507 passed deep housekeeping, all 18 matrix lanes, and publication at f0a5049. The second upstream zero-gap scan found no missing scoped 128K SNA state behavior; unsupported TR-DOS execution state remains explicitly deferred."
     }
   ]
 }
