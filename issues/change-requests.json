@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 229,
+  "next_cr_number": 230,
   "status_values": [
     "open",
     "in_progress",
@@ -1939,6 +1939,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0228.md", "design/interface1-microdrive-zxnet.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24.3, 36, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 211", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM"],
       "notes": "Closed on 2026-09-05 at implementation commit dcaa2f758db9e69849ee11572fb1c8d008b4da03 with corrected test setup commit b91a4ae70320dffa660a855634b3d15ab8e10b97. Exact-SHA CODE, independent bootstrap, and DOCUMENTATION reviews passed with zero findings. The first remote attempt exposed an invalid test expectation caused by the preceding test leaving motor 0 selected; the corrected retry passed on remote Linux sanitizer, Intel macOS sanitizer, Windows 10, and Windows 11. Hosted run 33986386422 passed all 20 lanes, including both Windows ARM lanes, deep housekeeping, and publication evidence verification. Private closure evidence is retained under test-artefacts/remote-runs/ and test-artefacts/hosted/CR-0228-33986386422/. Atomic host save/flush and ownership remain later CRs."
+    },
+    {
+      "cr_number": "CR-0229",
+      "title": "Reconcile external review gate configuration and documentation",
+      "status": "open",
+      "source_authority": ["design/cr-preflight/CR-0229.md", "design/review-gate.md", "design/FRESH-PROJECT-EXTERNAL-REVIEW-GATE.md", "tools/reviewer/review_gate.py", "tools/validate_project_gates.py", "user-supplied historical CR-0180 attachment"],
+      "notes": "Tracked on 2026-09-05 from the supplied CR-0180 proposal as a current-tree CR-0229 because CR-0180 is historical and its baseline is obsolete. Low-priority detour: audit and, when scheduled, centralize current reviewer deployment configuration, reconcile candidate-ID/prior-finding compatibility and documentation, and validate configuration structure without changing the selected deployment or historical records."
     }
   ]
 }
