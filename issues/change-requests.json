@@ -1950,9 +1950,9 @@
     {
       "cr_number": "CR-0230",
       "title": "Implement atomic MDR save and flush",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0230.md", "design/interface1-microdrive-zxnet.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24.3, 36, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 212", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM"],
-      "notes": "Opened on 2026-09-05 after complete upstream FLUSH, MDV_CACHE, MOTOR, and shutdown discovery. Implement explicit atomic save/flush and dirty-state failure recovery; defer cross-process ownership to task 213."
+      "notes": "Closed on 2026-09-05 at corrected implementation commit eff17a3391457dd245a8f021d30dad11860b8056; implementation commit 9084946cbf1f84d9b1f7584754c94a42cd402445 preceded a corrected test expectation after the first remote attempt. Exact-SHA CODE, independent bootstrap, and DOCUMENTATION reviews passed with zero findings. Corrected remote retries passed on Linux sanitizer, Intel macOS sanitizer, Windows 10, and Windows 11. Hosted run 33988619847 passed all 20 lanes, including both Windows ARM lanes, deep housekeeping, and publication evidence verification. Private closure evidence is retained under test-artefacts/remote-runs/ and test-artefacts/hosted/CR-0230-33988619847/. Cross-process writer ownership remains deferred to task 213."
     }
   ]
 }
