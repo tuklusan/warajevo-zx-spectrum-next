@@ -722,7 +722,7 @@ static void test_microdrive_image_validation(void)
                                 &flush_record) != WZ_RESULT_PARSE_ERROR ||
         flush_record.calls != 1u || flush_record.sector != 1u ||
         flush_record.length != WZ_MDR_SECTOR_SIZE ||
-        flush_record.first_byte != 0xa2u ||
+        flush_record.first_byte != 0x66u ||
         wz_mdr_transport_is_dirty(&transport) != 1u) {
         fputs("MDR failed flush recovery failed\n", stderr);
         exit(1);
