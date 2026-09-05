@@ -1810,9 +1810,9 @@
     {
       "cr_number": "CR-0210",
       "title": "Complete 128K Z80 snapshot variant validation",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0210.md", "design/warajevo-zx-spectrum-next-architecture.md sections 8, 25, 25.1, 25.2, 38, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 195", "src/core/wz_state.c", "src/core/wz_state.h", "src/core/wz_machine.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
-      "notes": "Opened on 2026-09-05 after CR-0209 closure. Integrate lossless 128K v2-class Z80 loading and representable saving with exact header, page, compression, hardware-mode, and atomic-validation behavior; preserve v1/v3 compatibility and defer unsupported hardware extensions explicitly."
+      "notes": "Closed on 2026-09-05 at implementation range f846b4f..60cac72. Exact-SHA CODE, bootstrap, and DOCUMENTATION reviews passed with zero findings. Remote runs CR0210-1 Linux sanitizer, CR0210-2 Intel macOS, CR0210-4 Windows 10 retry, and CR0210-5 Windows 11 all passed with primary and pull status zero. Hosted platform-smoke run 33951047314 passed deep housekeeping, all 18 matrix lanes, and publication at 60cac72. The second upstream zero-gap scan found no missing scoped 128K Z80 behavior; Timex, Interface-1, Disciple, and other hardware extensions remain explicitly deferred."
     }
   ]
 }
