@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 218,
+  "next_cr_number": 219,
   "status_values": [
     "open",
     "in_progress",
@@ -1862,6 +1862,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0217.md", "design/interface1-microdrive-zxnet.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24.4, 25, 28, 29, 36, and 51", "design/warajevo-zx-spectrum-next-ui-architecture.md sections 22.1, 23.4, 39.1, and 44", "design/wzsn-architectures-1-2-developer-tasks.md task 201", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM", "reference/rom-disassemblies/README.md", "LICENSE.txt", "NOTICE.md"],
       "notes": "Opened and closed on 2026-09-05 after confirming that the repository contains no Interface-1 ROM binaries, only reference disassemblies, while preserved source expects an external ZXI1.ROM. Exact-SHA DOCUMENTATION and independent bootstrap reviews passed with zero findings. The CR freezes external-ROM-only handling and no-publication policy before runtime implementation depends on ROM bytes."
+    },
+    {
+      "cr_number": "CR-0218",
+      "title": "Keep EAR_MIC reserved and unavailable",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0218.md", "design/interface1-microdrive-zxnet.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24.1 and 24.6", "design/warajevo-zx-spectrum-next-ui-architecture.md section 23.5", "design/wzsn-architectures-1-2-developer-tasks.md tasks 204 and 206", "src/core/wz_machine.h", "src/core/wz_machine.c", "src/core/wz_state.c", "tests/wz_tests_placeholder.c"],
+      "notes": "Opened on 2026-09-05 after audit found that the single networking enum exists but the core setter accepts reserved EAR_MIC activation. The implementation will reject that request atomically until Architecture #3 certifies the allowed profile."
     }
   ]
 }
