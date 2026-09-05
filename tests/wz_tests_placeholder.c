@@ -3059,8 +3059,12 @@ int main(void)
     fputs("BEGIN interface1_rom_paging\n", stderr);
     test_interface1_rom_paging();
     fputs("END interface1_rom_paging\n", stderr);
+    fputs("BEGIN historical_state_representability\n", stderr);
     test_historical_state_representability();
+    fputs("END historical_state_representability\n", stderr);
+    fputs("BEGIN snapshot_state_isolated_validation\n", stderr);
     test_snapshot_state_isolated_validation();
+    fputs("END snapshot_state_isolated_validation\n", stderr);
     test_sna_48k_loader();
     test_sna_48k_writer();
     test_sna_128k_image_scaffolding();
