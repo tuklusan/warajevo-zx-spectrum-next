@@ -1647,7 +1647,7 @@ static void test_ay_state_round_trip(void)
     first.ay.tone_master_tick_phase = 2u;
     wz_state_writer_init(&writer, data, sizeof(data));
     if (wz_state_serialize_machine(&first, &writer) != WZ_RESULT_OK ||
-        writer.length != WZ_STATE_MACHINE_LENGTH ||
+        writer.length != WZ_STATE_SNAPSHOT_CAPACITY ||
         wz_state_hash_machine(&first, &first_hash) != WZ_RESULT_OK) {
         fputs("AY state serialization failed\n", stderr);
         wz_machine_destroy(&first);
