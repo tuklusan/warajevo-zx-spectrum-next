@@ -16,6 +16,22 @@ This directory contains the tracked baseline harness entry points for:
 
 ## Public entry points
 
+## Windows Debugger Prerequisite
+
+Windows remote validation requires the Windows SDK Debugging Tools for native
+crash diagnosis. At minimum, install `cdb.exe` and `windbg.exe`; the standard
+installation location is:
+
+```text
+C:\Program Files (x86)\Windows Kits\10\Debuggers\<architecture>\
+```
+
+The debugger probe checks that tree as well as `PATH`. Debugger binaries are
+third-party platform components and are intentionally not stored in this
+public repository. Obtain them through Microsoft's official Windows SDK
+installer. `procdump.exe` and `llvm-addr2line.exe` are optional diagnostics,
+not prerequisites for the standard smoke gate.
+
 - `invoke_remote_harness.py`
   Local orchestrator for the approved SSH remotes
 - `invoke_remote_windows_powershell.py`

@@ -155,3 +155,14 @@ tools/Test-PowerShellSyntax.ps1
 ```
 
 The parser check must succeed before the actual PowerShell command is executed.
+
+## Windows Debugger Requirement
+
+Windows 10 and Windows 11 validation machines must have the Windows SDK
+Debugging Tools installed. The required debugger entry points are `cdb.exe`
+and `windbg.exe`; the harness searches the Windows Kits 10 Debuggers tree,
+including its `x64`, `x86`, `arm`, and `arm64` subdirectories. These tools are
+used for native crash capture and stack analysis when a compiler-specific
+failure needs diagnosis. Install them from Microsoft's official Windows SDK
+or Windows SDK Debugging Tools package; the executables themselves are not
+copied into or redistributed by this repository.
