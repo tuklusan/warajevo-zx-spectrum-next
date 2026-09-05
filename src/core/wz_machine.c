@@ -9,6 +9,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "core/wz_machine.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 wz_result_t wz_machine_init(wz_machine_t* machine,
                             const wz_machine_profile_t* profile)
@@ -35,6 +36,10 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     wz_bus_data_source_init(&machine->bus_data_source, 0, 0);
     machine->timing_trace = 0;
     machine->has_48k_rom = 0u;
+    machine->has_interface1_rom = 0u;
+    machine->interface1_rom_variant = WZ_INTERFACE1_ROM_NEW;
+    machine->interface1_rom_page = 0u;
+    machine->interface1_rom_identity = 0u;
     machine->paging_7ffd = 0u;
     machine->paging_7ffd_locked = 0u;
     machine->hardware_io_decode_enabled = 1u;
@@ -75,6 +80,10 @@ void wz_machine_destroy(wz_machine_t* machine)
         wz_bus_data_source_init(&machine->bus_data_source, 0, 0);
         machine->timing_trace = 0;
         machine->has_48k_rom = 0u;
+        machine->has_interface1_rom = 0u;
+        machine->interface1_rom_variant = WZ_INTERFACE1_ROM_NEW;
+        machine->interface1_rom_page = 0u;
+        machine->interface1_rom_identity = 0u;
         machine->paging_7ffd = 0u;
         machine->paging_7ffd_locked = 0u;
         machine->hardware_io_decode_enabled = 1u;
@@ -190,6 +199,9 @@ wz_result_t wz_machine_set_networking_mode(wz_machine_t* machine,
     if (mode == WZ_NETWORKING_EAR_MIC) {
         return WZ_RESULT_UNSUPPORTED_OPERATION;
     }
+    if (mode == WZ_NETWORKING_INTERFACE1 && machine->has_interface1_rom == 0u) {
+        return WZ_RESULT_INVALID_STATE;
+    }
     machine->networking_mode = mode;
     return WZ_RESULT_OK;
 }
@@ -199,12 +211,21 @@ wz_result_t wz_machine_reconfigure_networking_mode(wz_machine_t* machine,
 {
     wz_machine_t replacement;
     const wz_machine_profile_t* profile;
+    wz_byte_t normal_rom[WZ_48K_ROM_SIZE];
+    wz_byte_t interface1_rom[WZ_INTERFACE1_ROM_SIZE];
+    wz_byte_t has_normal_rom;
+    wz_byte_t has_interface1_rom;
+    wz_interface1_rom_variant_t interface1_rom_variant;
+    wz_qword_t interface1_rom_identity;
 
     if (machine == 0 || mode > WZ_NETWORKING_EAR_MIC) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
     if (mode == WZ_NETWORKING_EAR_MIC) {
         return WZ_RESULT_UNSUPPORTED_OPERATION;
+    }
+    if (mode == WZ_NETWORKING_INTERFACE1 && machine->has_interface1_rom == 0u) {
+        return WZ_RESULT_INVALID_STATE;
     }
     if (machine->profile == 0) {
         return WZ_RESULT_INVALID_PROFILE;
@@ -214,8 +235,29 @@ wz_result_t wz_machine_reconfigure_networking_mode(wz_machine_t* machine,
     }
 
     profile = machine->profile;
+    has_normal_rom = machine->has_48k_rom;
+    has_interface1_rom = machine->has_interface1_rom;
+    interface1_rom_variant = machine->interface1_rom_variant;
+    interface1_rom_identity = machine->interface1_rom_identity;
+    if (has_normal_rom != 0u) {
+        memcpy(normal_rom, machine->memory, sizeof(normal_rom));
+    }
+    if (has_interface1_rom != 0u) {
+        memcpy(interface1_rom, machine->interface1_rom, sizeof(interface1_rom));
+    }
     if (wz_machine_init(&replacement, profile) != WZ_RESULT_OK) {
         return WZ_RESULT_OUT_OF_MEMORY;
+    }
+    if (has_normal_rom != 0u) {
+        memcpy(replacement.memory, normal_rom, sizeof(normal_rom));
+        replacement.has_48k_rom = 1u;
+        replacement.rom_identity = machine->rom_identity;
+    }
+    if (has_interface1_rom != 0u) {
+        memcpy(replacement.interface1_rom, interface1_rom, sizeof(interface1_rom));
+        replacement.has_interface1_rom = 1u;
+        replacement.interface1_rom_variant = interface1_rom_variant;
+        replacement.interface1_rom_identity = interface1_rom_identity;
     }
     replacement.networking_mode = mode;
     wz_machine_destroy(machine);
@@ -366,6 +408,8 @@ wz_result_t wz_machine_load_48k_rom(wz_machine_t* machine,
         return WZ_RESULT_INVALID_PROFILE;
     }
     identity = wz_machine_rom_identity(bytes, length);
+    identity ^= variant == WZ_INTERFACE1_ROM_OLD ?
+        UINT64_C(0x494e544552464143) : UINT64_C(0x494e54455246414e);
     if (identity != machine->profile->expected_rom_identity) {
         return WZ_RESULT_ROM_IDENTITY_MISMATCH;
     }
@@ -375,6 +419,77 @@ wz_result_t wz_machine_load_48k_rom(wz_machine_t* machine,
     machine->has_48k_rom = 1u;
     machine->rom_identity = identity;
     return WZ_RESULT_OK;
+}
+
+wz_result_t wz_machine_load_interface1_rom(wz_machine_t* machine,
+                                           const wz_byte_t* bytes,
+                                           size_t length,
+                                           wz_interface1_rom_variant_t variant)
+{
+    wz_qword_t identity;
+
+    if (machine == 0 || bytes == 0 || length != WZ_INTERFACE1_ROM_SIZE ||
+        variant > WZ_INTERFACE1_ROM_NEW ||
+        machine->networking_mode == WZ_NETWORKING_INTERFACE1) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    identity = wz_machine_rom_identity(bytes, length);
+    memcpy(machine->interface1_rom, bytes, WZ_INTERFACE1_ROM_SIZE);
+    machine->has_interface1_rom = 1u;
+    machine->interface1_rom_variant = variant;
+    machine->interface1_rom_page = 0u;
+    machine->interface1_rom_identity = identity;
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_machine_clear_interface1_rom(wz_machine_t* machine)
+{
+    if (machine == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (machine->networking_mode == WZ_NETWORKING_INTERFACE1) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    memset(machine->interface1_rom, 0, sizeof(machine->interface1_rom));
+    machine->has_interface1_rom = 0u;
+    machine->interface1_rom_page = 0u;
+    machine->interface1_rom_identity = 0u;
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_machine_set_interface1_rom_page(wz_machine_t* machine,
+                                               wz_byte_t page)
+{
+    if (machine == 0 || page > 1u) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (machine->networking_mode != WZ_NETWORKING_INTERFACE1 ||
+        machine->has_interface1_rom == 0u) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    machine->interface1_rom_page = page;
+    return WZ_RESULT_OK;
+}
+
+wz_interface1_rom_variant_t wz_machine_interface1_rom_variant(
+    const wz_machine_t* machine)
+{
+    return machine == 0 ? WZ_INTERFACE1_ROM_NEW : machine->interface1_rom_variant;
+}
+
+bool wz_machine_has_interface1_rom(const wz_machine_t* machine)
+{
+    return machine != 0 && machine->has_interface1_rom != 0u;
+}
+
+wz_byte_t wz_machine_interface1_rom_page(const wz_machine_t* machine)
+{
+    return machine == 0 ? 0u : machine->interface1_rom_page;
+}
+
+wz_qword_t wz_machine_interface1_rom_identity(const wz_machine_t* machine)
+{
+    return machine == 0 ? 0u : machine->interface1_rom_identity;
 }
 
 wz_qword_t wz_machine_rom_identity(const wz_byte_t* bytes, size_t length)
@@ -395,6 +510,11 @@ wz_byte_t wz_machine_memory_read(const wz_machine_t* machine, wz_word_t address)
 {
     if (machine == 0) {
         return 0xffu;
+    }
+    if (machine->networking_mode == WZ_NETWORKING_INTERFACE1 &&
+        machine->has_interface1_rom != 0u && machine->interface1_rom_page != 0u &&
+        address < 0x2000u) {
+        return machine->interface1_rom[address];
     }
     if (machine->profile != 0 && machine->profile->kind == WZ_MACHINE_128K_PAL) {
         if (address >= 0xc000u) {

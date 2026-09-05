@@ -404,9 +404,18 @@ static void test_networking_mode_state(void)
 {
     wz_machine_t machine;
     wz_networking_mode_t mode;
+    wz_byte_t interface1_rom[WZ_INTERFACE1_ROM_SIZE];
+
+    for (size_t index = 0u; index < sizeof(interface1_rom); ++index) {
+        interface1_rom[index] = (wz_byte_t)(index ^ 0x5au);
+    }
 
     if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK ||
         wz_machine_networking_mode(&machine) != WZ_NETWORKING_NONE ||
+        wz_machine_set_networking_mode(&machine, WZ_NETWORKING_INTERFACE1) !=
+            WZ_RESULT_INVALID_STATE ||
+        wz_machine_load_interface1_rom(&machine, interface1_rom,
+            sizeof(interface1_rom), WZ_INTERFACE1_ROM_OLD) != WZ_RESULT_OK ||
         wz_machine_set_networking_mode(&machine, WZ_NETWORKING_INTERFACE1) !=
             WZ_RESULT_OK ||
         wz_machine_networking_mode(&machine) != WZ_NETWORKING_INTERFACE1) {
@@ -442,7 +451,13 @@ static void test_networking_mode_cold_reconfiguration(void)
     for (size_t index = 0u; index < 2u; ++index) {
         wz_machine_t machine;
         const wz_machine_profile_t* profile = profiles[index];
+        wz_byte_t interface1_rom[WZ_INTERFACE1_ROM_SIZE];
+        for (size_t rom_index = 0u; rom_index < sizeof(interface1_rom); ++rom_index) {
+            interface1_rom[rom_index] = (wz_byte_t)(rom_index ^ 0xa5u);
+        }
         wz_machine_init(&machine, profile);
+        wz_machine_load_interface1_rom(&machine, interface1_rom,
+            sizeof(interface1_rom), WZ_INTERFACE1_ROM_NEW);
         wz_machine_memory_write(&machine, 0x8000u, 0xa5u);
         machine.master_tick = 1234u;
         machine.paging_7ffd = 0x1fu;
@@ -495,6 +510,38 @@ static void test_networking_mode_cold_reconfiguration(void)
         }
         wz_machine_destroy(&machine);
     }
+}
+
+static void test_interface1_rom_paging(void)
+{
+    wz_machine_t machine;
+    wz_byte_t interface1_rom[WZ_INTERFACE1_ROM_SIZE];
+
+    for (size_t index = 0u; index < sizeof(interface1_rom); ++index) {
+        interface1_rom[index] = (wz_byte_t)(index ^ 0x22u);
+    }
+    if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK ||
+        wz_machine_load_interface1_rom(&machine, interface1_rom,
+            sizeof(interface1_rom), WZ_INTERFACE1_ROM_NEW) != WZ_RESULT_OK ||
+        wz_machine_reconfigure_networking_mode(&machine, WZ_NETWORKING_INTERFACE1) !=
+            WZ_RESULT_OK ||
+        wz_machine_set_interface1_rom_page(&machine, 1u) != WZ_RESULT_OK ||
+        wz_machine_memory_read(&machine, 0x0000u) != interface1_rom[0] ||
+        wz_machine_memory_read(&machine, 0x1fffu) != interface1_rom[0x1fffu] ||
+        wz_machine_memory_read(&machine, 0x2000u) != 0u) {
+        fputs("Interface 1 shadow page mapping failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    if (wz_machine_reconfigure_networking_mode(&machine, WZ_NETWORKING_NONE) !=
+            WZ_RESULT_OK ||
+        wz_machine_memory_read(&machine, 0x0000u) != 0u ||
+        wz_machine_interface1_rom_page(&machine) != 0u) {
+        fputs("Interface 1 normal mapping restoration failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_machine_destroy(&machine);
 }
 
 static void test_historical_state_representability(void)
@@ -3006,6 +3053,7 @@ int main(void)
     test_tape_loading_mode_state();
     test_networking_mode_state();
     test_networking_mode_cold_reconfiguration();
+    test_interface1_rom_paging();
     test_historical_state_representability();
     test_snapshot_state_isolated_validation();
     test_sna_48k_loader();

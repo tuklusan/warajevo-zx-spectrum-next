@@ -23,6 +23,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "core/wz_z80.h"
 
 #define WZ_48K_ROM_SIZE 16384u
+#define WZ_INTERFACE1_ROM_SIZE 16384u
 #define WZ_48K_RAM_SIZE 49152u
 #define WZ_128K_RAM_BANK_COUNT 8u
 #define WZ_128K_RAM_BANK_SIZE 16384u
@@ -52,6 +53,11 @@ typedef enum {
 } wz_networking_mode_t;
 
 typedef enum {
+    WZ_INTERFACE1_ROM_OLD = 0,
+    WZ_INTERFACE1_ROM_NEW
+} wz_interface1_rom_variant_t;
+
+typedef enum {
     WZ_TAPE_TRAP_REASON_NORMAL_MODE = 0,
     WZ_TAPE_TRAP_REASON_NO_TAPE,
     WZ_TAPE_TRAP_REASON_NO_ROM,
@@ -79,6 +85,11 @@ typedef struct wz_machine {
     wz_trace_sink_t* timing_trace;
     wz_byte_t memory[65536u];
     wz_byte_t has_48k_rom;
+    wz_byte_t interface1_rom[WZ_INTERFACE1_ROM_SIZE];
+    wz_byte_t has_interface1_rom;
+    wz_interface1_rom_variant_t interface1_rom_variant;
+    wz_byte_t interface1_rom_page;
+    wz_qword_t interface1_rom_identity;
     wz_byte_t* ram_128k;
     wz_byte_t paging_7ffd;
     wz_byte_t paging_7ffd_locked;
@@ -145,6 +156,18 @@ wz_byte_t wz_machine_contention_delay(const wz_machine_t* machine,
 wz_result_t wz_machine_load_48k_rom(wz_machine_t* machine,
                                     const wz_byte_t* bytes,
                                     size_t length);
+wz_result_t wz_machine_load_interface1_rom(wz_machine_t* machine,
+                                           const wz_byte_t* bytes,
+                                           size_t length,
+                                           wz_interface1_rom_variant_t variant);
+wz_result_t wz_machine_clear_interface1_rom(wz_machine_t* machine);
+wz_result_t wz_machine_set_interface1_rom_page(wz_machine_t* machine,
+                                               wz_byte_t page);
+wz_interface1_rom_variant_t wz_machine_interface1_rom_variant(
+    const wz_machine_t* machine);
+bool wz_machine_has_interface1_rom(const wz_machine_t* machine);
+wz_byte_t wz_machine_interface1_rom_page(const wz_machine_t* machine);
+wz_qword_t wz_machine_interface1_rom_identity(const wz_machine_t* machine);
 wz_qword_t wz_machine_rom_identity(const wz_byte_t* bytes, size_t length);
 wz_byte_t wz_machine_memory_read(const wz_machine_t* machine, wz_word_t address);
 void wz_machine_memory_write(wz_machine_t* machine, wz_word_t address,
