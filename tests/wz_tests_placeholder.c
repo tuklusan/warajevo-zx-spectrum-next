@@ -1556,7 +1556,7 @@ static void test_ay_audio_mixer(void)
         exit(1);
     }
     if (wz_ay_select_register(&ay, 7u, 0u) != WZ_RESULT_OK ||
-        wz_ay_write_data(&ay, 0u, 0u) != WZ_RESULT_OK ||
+        wz_ay_write_data(&ay, 0x08u, 0u) != WZ_RESULT_OK ||
         wz_ay_advance_master_ticks(&ay, WZ_AY_MASTER_TICKS_PER_CLOCK) !=
             WZ_RESULT_OK ||
         wz_audio_mixer_ay_sample(&ay) != -(wz_audio_sample_t)65536) {
