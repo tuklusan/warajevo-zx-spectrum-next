@@ -77,6 +77,7 @@ add_library(
     src/core/wz_bus.c
     src/core/wz_machine.c
     src/core/wz_microdrive.c
+    src/core/wz_zxnet.c
     src/core/wz_raster.c
     src/core/wz_raster_diagnostic.c
     src/core/wz_raster_evidence.c

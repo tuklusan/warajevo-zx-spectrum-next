@@ -12,6 +12,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "core/wz_machine.h"
 #include "core/wz_microdrive.h"
+#include "core/wz_zxnet.h"
 #include "core/wz_keyboard_matrix.h"
 #include "core/wz_kempston.h"
 #include "app/wz_input_timing.h"
@@ -442,6 +443,96 @@ static void test_networking_mode_state(void)
         exit(1);
     }
     wz_machine_destroy(&machine);
+}
+
+typedef struct {
+    unsigned calls;
+    wz_word_t block_id;
+    size_t length;
+    wz_byte_t first_byte;
+    wz_result_t result;
+} zxnet_write_capture_t;
+
+static wz_result_t record_zxnet_write(wz_word_t block_id,
+                                      const wz_byte_t* data,
+                                      size_t length,
+                                      void* context)
+{
+    zxnet_write_capture_t* capture = (zxnet_write_capture_t*)context;
+    capture->calls += 1u;
+    capture->block_id = block_id;
+    capture->length = length;
+    capture->first_byte = length == 0u ? 0u : data[0];
+    return capture->result;
+}
+
+static void test_zxnet_state_machine(void)
+{
+    wz_zxnet_t network;
+    wz_zxnet_snapshot_t snapshot;
+    zxnet_write_capture_t capture = {0u, 0u, 0u, 0u, WZ_RESULT_OK};
+    wz_byte_t value = 0u;
+    wz_byte_t block[WZ_ZXNET_DATA_CAPACITY];
+
+    for (size_t index = 0u; index < sizeof(block); ++index) {
+        block[index] = (wz_byte_t)(index ^ 0x5au);
+    }
+    wz_zxnet_init(&network);
+    if (wz_zxnet_read(&network, &value) != WZ_RESULT_OK || value != 30u ||
+        wz_zxnet_begin_claim(&network, 0x42u) != WZ_RESULT_OK ||
+        wz_zxnet_read(&network, &value) != WZ_RESULT_OK || value != 0x42u ||
+        wz_zxnet_begin_claim(&network, 0x17u) != WZ_RESULT_OK ||
+        wz_zxnet_accept_claim(&network, false) != WZ_RESULT_OK) {
+        fputs("ZX Net claim state failed\n", stderr);
+        return;
+    }
+    for (size_t count = 0u; count < WZ_ZXNET_DEFAULT_FREE_LENGTH; ++count) {
+        if (wz_zxnet_read(&network, &value) != WZ_RESULT_OK || value != 30u) {
+            fputs("ZX Net FREE count failed\n", stderr);
+            return;
+        }
+    }
+    if (wz_zxnet_begin_claim(&network, 0x21u) != WZ_RESULT_OK ||
+        wz_zxnet_accept_claim(&network, true) != WZ_RESULT_OK ||
+        wz_zxnet_snapshot(&network, &snapshot) != WZ_RESULT_OK ||
+        snapshot.state != WZ_ZXNET_COLLWRITE) {
+        fputs("ZX Net write collection state failed\n", stderr);
+        return;
+    }
+    wz_zxnet_set_write_callback(&network, record_zxnet_write, &capture);
+    for (size_t count = 0u; count < 9u; ++count) {
+        if (wz_zxnet_write_bit(&network, (count & 1u) != 0u) != WZ_RESULT_OK) {
+            fputs("ZX Net write bit collection failed\n", stderr);
+            return;
+        }
+    }
+    if (wz_zxnet_write_bit(&network, false) != WZ_RESULT_OK ||
+        wz_zxnet_finish_write(&network) != WZ_RESULT_OK || capture.calls != 1u ||
+        capture.block_id != 1u || capture.length != 1u ||
+        wz_zxnet_snapshot(&network, &snapshot) != WZ_RESULT_OK ||
+        snapshot.state != WZ_ZXNET_IDLE) {
+        fputs("ZX Net write flush failed\n", stderr);
+        return;
+    }
+    if (wz_zxnet_feed_read_block(&network, 2u, block, sizeof(block) - 1u) !=
+            WZ_RESULT_INVALID_ARGUMENT ||
+        wz_zxnet_feed_read_block(&network, 2u, block, sizeof(block)) != WZ_RESULT_OK ||
+        wz_zxnet_read(&network, &value) != WZ_RESULT_OK || value != 30u ||
+        wz_zxnet_snapshot(&network, &snapshot) != WZ_RESULT_OK ||
+        snapshot.state != WZ_ZXNET_BUSY ||
+        wz_zxnet_start_read_collection(&network) != WZ_RESULT_OK) {
+        fputs("ZX Net read collection setup failed\n", stderr);
+        return;
+    }
+    if (wz_zxnet_read(&network, &value) != WZ_RESULT_OK || value != block[0] ||
+        wz_zxnet_snapshot(&network, &snapshot) != WZ_RESULT_OK ||
+        snapshot.state != WZ_ZXNET_COLLREAD) {
+        fputs("ZX Net collision read failed\n", stderr);
+        return;
+    }
+    if (wz_zxnet_begin_claim(&network, 0x11u) != WZ_RESULT_INVALID_STATE) {
+        fputs("ZX Net collection isolation failed\n", stderr);
+    }
 }
 
 static void test_networking_mode_cold_reconfiguration(void)
@@ -3284,6 +3375,7 @@ int main(void)
     test_machine_tape_playback();
     test_tape_loading_mode_state();
     test_networking_mode_state();
+    test_zxnet_state_machine();
     test_networking_mode_cold_reconfiguration();
     test_interface1_rom_paging();
     test_interface1_machine_registers();
