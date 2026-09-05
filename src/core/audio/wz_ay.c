@@ -39,6 +39,58 @@ static wz_byte_t wz_ay_noise_period_value(const wz_ay_t* ay)
     return period == 0u ? 1u : period;
 }
 
+static wz_word_t wz_ay_envelope_period_value(const wz_ay_t* ay)
+{
+    wz_word_t period = (wz_word_t)ay->registers[11u];
+    period |= (wz_word_t)ay->registers[12u] << 8u;
+    return period == 0u ? 1u : period;
+}
+
+static void wz_ay_restart_envelope(wz_ay_t* ay)
+{
+    ay->envelope_period = wz_ay_envelope_period_value(ay);
+    ay->envelope_counter = ay->envelope_period;
+    ay->envelope_attack = (wz_byte_t)((ay->registers[13u] >> 2u) & 1u);
+    ay->envelope_level = ay->envelope_attack != 0u ? 0u : 15u;
+    ay->envelope_holding = 0u;
+}
+
+static void wz_ay_finish_envelope_cycle(wz_ay_t* ay)
+{
+    wz_byte_t shape = (wz_byte_t)(ay->registers[13u] & 0x0fu);
+
+    if ((shape & 8u) == 0u) {
+        ay->envelope_level = 0u;
+        ay->envelope_holding = 1u;
+    } else if ((shape & 1u) != 0u) {
+        ay->envelope_level = ay->envelope_attack != 0u ? 15u : 0u;
+        ay->envelope_holding = 1u;
+    } else {
+        if ((shape & 2u) != 0u) {
+            ay->envelope_attack ^= 1u;
+        }
+        ay->envelope_level = ay->envelope_attack != 0u ? 0u : 15u;
+    }
+}
+
+static void wz_ay_advance_envelope(wz_ay_t* ay)
+{
+    if (ay->envelope_holding != 0u) {
+        return;
+    }
+    if (ay->envelope_attack != 0u) {
+        if (ay->envelope_level < WZ_AY_ENVELOPE_LEVEL_COUNT - 1u) {
+            ++ay->envelope_level;
+        } else {
+            wz_ay_finish_envelope_cycle(ay);
+        }
+    } else if (ay->envelope_level != 0u) {
+        --ay->envelope_level;
+    } else {
+        wz_ay_finish_envelope_cycle(ay);
+    }
+}
+
 static void wz_ay_advance_clock(wz_ay_t* ay)
 {
     wz_byte_t channel;
@@ -69,6 +121,22 @@ static void wz_ay_advance_clock(wz_ay_t* ay)
             ay->noise_level = (wz_byte_t)(ay->noise_lfsr & 1u);
         }
     }
+    {
+        wz_word_t period = wz_ay_envelope_period_value(ay);
+        if (ay->envelope_period != period) {
+            ay->envelope_period = period;
+        }
+        if (ay->envelope_counter == 0u || ay->envelope_counter > period) {
+            ay->envelope_counter = period;
+        }
+        if (ay->envelope_holding == 0u) {
+            --ay->envelope_counter;
+            if (ay->envelope_counter == 0u) {
+                ay->envelope_counter = period;
+                wz_ay_advance_envelope(ay);
+            }
+        }
+    }
 }
 
 void wz_ay_init(wz_ay_t* ay)
@@ -79,6 +147,10 @@ void wz_ay_init(wz_ay_t* ay)
     memset(ay, 0, sizeof(*ay));
     ay->noise_lfsr = 0x1ffffu;
     ay->noise_level = 1u;
+    ay->envelope_period = 1u;
+    ay->envelope_counter = 1u;
+    ay->envelope_level = 0u;
+    ay->envelope_holding = 1u;
 }
 
 wz_result_t wz_ay_select_register(wz_ay_t* ay, wz_byte_t value,
@@ -99,6 +171,10 @@ wz_result_t wz_ay_write_data(wz_ay_t* ay, wz_byte_t value,
         return WZ_RESULT_INVALID_ARGUMENT;
     }
     ay->registers[ay->selected_register] = value;
+    if (ay->selected_register == 13u) {
+        ay->registers[13u] &= 0x0fu;
+        wz_ay_restart_envelope(ay);
+    }
     wz_ay_record(ay, WZ_AY_EVENT_REGISTER_WRITE, master_tick, value);
     return WZ_RESULT_OK;
 }
@@ -170,4 +246,14 @@ wz_byte_t wz_ay_noise_period(const wz_ay_t* ay)
 wz_byte_t wz_ay_noise_level(const wz_ay_t* ay)
 {
     return ay == 0 ? 0u : ay->noise_level;
+}
+
+wz_word_t wz_ay_envelope_period(const wz_ay_t* ay)
+{
+    return ay == 0 ? 0u : wz_ay_envelope_period_value(ay);
+}
+
+wz_byte_t wz_ay_envelope_level(const wz_ay_t* ay)
+{
+    return ay == 0 ? 0u : ay->envelope_level;
 }

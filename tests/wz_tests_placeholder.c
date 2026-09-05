@@ -1477,6 +1477,49 @@ static void test_ay_noise_generator(void)
     }
 }
 
+static void test_ay_envelope_generator(void)
+{
+    wz_ay_t ay;
+
+    wz_ay_init(&ay);
+    if (wz_ay_envelope_period(&ay) != 1u ||
+        wz_ay_envelope_level(&ay) != 0u ||
+        wz_ay_envelope_period(0) != 0u) {
+        fputs("AY envelope reset contract failed\n", stderr);
+        exit(1);
+    }
+    if (wz_ay_select_register(&ay, 11u, 0u) != WZ_RESULT_OK ||
+        wz_ay_write_data(&ay, 2u, 0u) != WZ_RESULT_OK ||
+        wz_ay_select_register(&ay, 12u, 0u) != WZ_RESULT_OK ||
+        wz_ay_write_data(&ay, 1u, 0u) != WZ_RESULT_OK ||
+        wz_ay_envelope_period(&ay) != 0x0102u ||
+        wz_ay_select_register(&ay, 13u, 0u) != WZ_RESULT_OK ||
+        wz_ay_write_data(&ay, 0x1cu, 0u) != WZ_RESULT_OK ||
+        wz_ay_register_value(&ay, 13u) != 0x0cu ||
+        wz_ay_envelope_level(&ay) != 0u) {
+        fputs("AY envelope period or restart failed\n", stderr);
+        exit(1);
+    }
+    if (wz_ay_select_register(&ay, 11u, 0u) != WZ_RESULT_OK ||
+        wz_ay_write_data(&ay, 1u, 0u) != WZ_RESULT_OK ||
+        wz_ay_select_register(&ay, 12u, 0u) != WZ_RESULT_OK ||
+        wz_ay_write_data(&ay, 0u, 0u) != WZ_RESULT_OK ||
+        wz_ay_advance_master_ticks(&ay, 4u * 16u) != WZ_RESULT_OK ||
+        wz_ay_envelope_level(&ay) != 15u) {
+        fputs("AY envelope attack progression failed\n", stderr);
+        exit(1);
+    }
+    if (wz_ay_select_register(&ay, 13u, 0u) != WZ_RESULT_OK ||
+        wz_ay_write_data(&ay, 0x09u, 0u) != WZ_RESULT_OK ||
+        wz_ay_advance_master_ticks(&ay, 4u * 16u) != WZ_RESULT_OK ||
+        wz_ay_envelope_level(&ay) != 0u ||
+        wz_ay_advance_master_ticks(&ay, 4u) != WZ_RESULT_OK ||
+        wz_ay_envelope_level(&ay) != 0u) {
+        fputs("AY envelope hold behavior failed\n", stderr);
+        exit(1);
+    }
+}
+
 static void test_tape_trap_eligibility(void)
 {
     const wz_tape_segment_t segment = {1u, 0u};
@@ -2482,6 +2525,7 @@ int main(void)
     test_128k_ay_register_timing();
     test_ay_tone_generators();
     test_ay_noise_generator();
+    test_ay_envelope_generator();
     test_tape_trap_eligibility();
     test_tape_speed_invariance();
     test_standard_tap_parser();

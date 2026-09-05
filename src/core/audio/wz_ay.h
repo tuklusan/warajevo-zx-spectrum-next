@@ -17,6 +17,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #define WZ_AY_EVENT_CAPACITY 1024u
 #define WZ_AY_CHANNEL_COUNT 3u
 #define WZ_AY_MASTER_TICKS_PER_CLOCK 4u
+#define WZ_AY_ENVELOPE_LEVEL_COUNT 16u
 
 typedef enum {
     WZ_AY_EVENT_REGISTER_SELECT = 0,
@@ -38,6 +39,11 @@ typedef struct {
     wz_byte_t noise_counter;
     wz_dword_t noise_lfsr;
     wz_byte_t noise_level;
+    wz_word_t envelope_counter;
+    wz_word_t envelope_period;
+    wz_byte_t envelope_level;
+    wz_byte_t envelope_attack;
+    wz_byte_t envelope_holding;
     wz_byte_t tone_master_tick_phase;
     wz_ay_event_t events[WZ_AY_EVENT_CAPACITY];
     size_t event_count;
@@ -56,5 +62,7 @@ wz_word_t wz_ay_tone_period(const wz_ay_t* ay, wz_byte_t channel);
 wz_byte_t wz_ay_tone_level(const wz_ay_t* ay, wz_byte_t channel);
 wz_byte_t wz_ay_noise_period(const wz_ay_t* ay);
 wz_byte_t wz_ay_noise_level(const wz_ay_t* ay);
+wz_word_t wz_ay_envelope_period(const wz_ay_t* ay);
+wz_byte_t wz_ay_envelope_level(const wz_ay_t* ay);
 
 #endif
