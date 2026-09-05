@@ -466,6 +466,8 @@ def validate_platform_smoke_workflow(root: Path) -> list[str]:
         "ubuntu-24.04",
         "ubuntu-24.04-arm",
         "windows-2025",
+        "windows-11-arm",
+        "windows-11-vs2026-arm",
         "macos-15",
         "macos-15-intel",
         "python tools/harness/run_cmake_smoke.py",
@@ -475,6 +477,8 @@ def validate_platform_smoke_workflow(root: Path) -> list[str]:
         "actions: write",
         "cleanup-hosted-runner-state.sh",
         "Clear runner workspace build and test residue",
+        "verify_platform_evidence.py",
+        "Inspect every retained result manifest and evidence hash",
     )
 
     for snippet in required_snippets:
@@ -497,6 +501,8 @@ def validate_required_workflow_documents(root: Path) -> list[str]:
             "test-artefacts/",
             "Whenever a PowerShell command is about to be executed on the local machine or",
             "tools/Test-PowerShellSyntax.ps1",
+            "Every hosted matrix lane must complete its build and tests",
+            "The publication gate downloads and re-verifies every bundle",
             "Cross-platform macOS acceptance is architecture-based, not count-based.",
             "one successful Intel macOS lane",
             "one successful ARM",
@@ -525,10 +531,13 @@ def validate_required_workflow_documents(root: Path) -> list[str]:
             "ubuntu-24.04",
             "ubuntu-24.04-arm",
             "windows-2025",
+            "windows-11-arm",
+            "windows-11-vs2026-arm",
             "macos-15",
             "macos-15-intel",
             "configured hosted macOS lanes should be used",
             "successful Intel and one successful ARM macOS lane",
+            "20 lanes",
         ),
     }
 
@@ -544,6 +553,7 @@ def validate_required_workflow_documents(root: Path) -> list[str]:
         "tools/harness/invoke_remote_harness.py",
         "tools/harness/capture-linux-active-display.sh",
         "tools/harness/Capture-WindowsDesktopScreenshot.ps1",
+        "tools/harness/verify_platform_evidence.py",
         "test-artefacts/README.md",
         "WZSN-PRIVATE-TEST-MEDIA/README.md",
         "WZSN-PRIVATE-TEST-MEDIA/.gitignore",

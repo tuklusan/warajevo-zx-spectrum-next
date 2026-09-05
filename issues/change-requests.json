@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-    "next_cr_number": 223,
+    "next_cr_number": 224,
   "status_values": [
     "open",
     "in_progress",
@@ -1897,6 +1897,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0222.md", "design/review-gate.md", "tools/reviewer/review_gate.py", "tests/test_review_gate.py", "design/cr-preflight/CR-0221.md"],
       "notes": "Opened and closed on 2026-09-05 after enforcing positive violation evidence for confirmed findings. Exact source review of 9ad100f..befe0a0 passed with no findings; current-checkpoint bootstrap and documentation review passed for 3928b00; remote Windows 10 Clang-CL smoke CR0222-WIN10-13 passed all six tests and auxiliary evidence gates. The review process remains serial, long-wait, and snapshot guarded."
+    },
+    {
+      "cr_number": "CR-0223",
+      "title": "Add Windows ARM hosted validation and per-lane evidence gate",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0223.md", "WORKFLOW.md", "README-GIT-GITHUB.md", ".github/workflows/platform-smoke.yml", "tools/harness/run_cmake_smoke.py", "tools/validate_project_gates.py"],
+      "notes": "Opened on 2026-09-05 as the workflow detour before returning to the architecture queue. Add both Windows ARM hosted labels, discover ARM-specific toolchain behavior, and require per-lane manifests plus inspected visual/trace evidence where supported."
     }
   ]
 }

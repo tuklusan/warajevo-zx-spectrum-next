@@ -65,6 +65,10 @@ jobs:
             label: windows-2025
           - id: windows-server-2025-vs2026
             label: windows-2025-vs2026
+          - id: windows-arm-11
+            label: windows-11-arm
+          - id: windows-arm-11-vs2026
+            label: windows-11-vs2026-arm
           - id: macos-arm64-latest
             label: macos-latest
           - id: macos-arm64
@@ -105,6 +109,9 @@ jobs:
 
       - name: Run pinned Fuse ED conformance
         run: python tools/harness/run_fuse_ed_platform.py --runner-root .wzsn-harness/github/${{ matrix.id }}/build --private-root test-artefacts/github/${{ matrix.id }} --manifest .wzsn-harness/github/${{ matrix.id }}/fuse-complete-manifest.json --unresolved-baseline tools/harness/fuse-unresolved-baseline.json
+
+      - name: Verify and record lane evidence
+        run: python tools/harness/verify_platform_evidence.py --artifact-dir .wzsn-harness/github/${{ matrix.id }} --lane-id ${{ matrix.id }}
 
       - name: Upload smoke artefacts (attempt 1)
         id: upload-smoke-1
@@ -151,9 +158,9 @@ jobs:
           printf 'run_id=%s\nsha=%s\nmatrix_result=%s\n' "$EXPECTED_RUN_ID" "$EXPECTED_SHA" "$MATRIX_RESULT"
           test -n "$EXPECTED_RUN_ID"
           test "$EXPECTED_SHA" = "${GITHUB_SHA}"
-          expected='linux-x64 linux-x64-latest linux-x64-24 linux-x64-26 linux-arm64-22 linux-arm64 linux-arm64-26 windows-latest windows-server-2022 windows-server-2025 windows-server-2025-vs2026 macos-arm64-latest macos-arm64 macos-arm64-14 macos-intel-x64 macos-intel-26 macos-arm64-26 macos-xcode-27'
+          expected='linux-x64 linux-x64-latest linux-x64-24 linux-x64-26 linux-arm64-22 linux-arm64 linux-arm64-26 windows-latest windows-server-2022 windows-server-2025 windows-server-2025-vs2026 windows-arm-11 windows-arm-11-vs2026 macos-arm64-latest macos-arm64 macos-arm64-14 macos-intel-x64 macos-intel-26 macos-arm64-26 macos-xcode-27'
           actual=$(gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/runs/${EXPECTED_RUN_ID}/jobs?per_page=100" --jq '.jobs[] | select(.name != "publication-gate" and .name != "deep-housekeeping") | [.name, .head_sha, .conclusion] | @tsv')
-          test "$(printf '%s\n' "$actual" | wc -l)" -eq 18
+          test "$(printf '%s\n' "$actual" | wc -l)" -eq 20
           intel_success=0
           arm_success=0
           while IFS=$'\t' read -r name sha conclusion; do
@@ -175,3 +182,18 @@ jobs:
           done <<< "$actual"
           test "$intel_success" -eq 1
           test "$arm_success" -eq 1
+
+      - name: Check out repository for retained evidence verification
+        uses: actions/checkout@v4
+
+      - name: Download every lane evidence bundle
+        uses: actions/download-artifact@v4
+        with:
+          pattern: platform-smoke-*
+          path: .wzsn-published-artifacts
+          merge-multiple: false
+
+      - name: Inspect every retained result manifest and evidence hash
+        run: |
+          test "$(find .wzsn-published-artifacts -name result-manifest.json -type f | wc -l)" -eq 20
+          python tools/harness/verify_platform_evidence.py --verify-tree .wzsn-published-artifacts

@@ -156,6 +156,16 @@ tools/Test-PowerShellSyntax.ps1
 
 The parser check must succeed before the actual PowerShell command is executed.
 
+## Hosted Runner Evidence Rule
+
+Every hosted matrix lane must complete its build and tests, emit its
+machine-readable result manifest, and upload the complete lane bundle. The
+The publication gate downloads and re-verifies every bundle before accepting the run.
+Screenshots and traces are inspected by hash when produced; visual
+capture is required for a lane only when that platform/application supports an
+interactive host. Unsupported capture must be recorded explicitly, never
+silently treated as a passing visual result.
+
 ## Windows Debugger Requirement
 
 Windows 10 and Windows 11 validation machines must have the Windows SDK

@@ -41,6 +41,9 @@ not prerequisites for the standard smoke gate.
 - `run_cmake_smoke.py`
   Shared probe and CMake smoke-build entry point used both remotely and by
   GitHub Actions
+- `verify_platform_evidence.py`
+  Verifies each lane's summary, inventory, conformance manifest, and optional
+  screenshot/trace evidence, then writes the machine-readable result manifest.
 - `run_fuse_ed_platform.py`
   Acquires the pinned Fuse source privately and gates every platform on the
   complete ED corpus, the complete DDCB/FDCB indexed-bit corpus, all ordinary
