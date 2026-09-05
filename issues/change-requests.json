@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 225,
+  "next_cr_number": 226,
   "status_values": [
     "open",
     "in_progress",
@@ -1911,6 +1911,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0224.md", "design/interface1-microdrive-zxnet.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24.2, 24.4, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 208", "src/core/wz_machine.h", "src/core/wz_machine.c", "src/core/wz_bus.c", "src/core/wz_state.c", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
       "notes": "Closed on 2026-09-05 at commit cb9db0d0bd29c8b97c2bb22a9da291f39ab35b52 after implementing the deterministic Interface 1 control-latch, prior-latch, motor-shift, selected-motor result, timestamp, `$EF` bus dispatch, and canonical state round-trip. Exact-SHA CODE, independent bootstrap, and DOCUMENTATION reviews passed with zero findings. Remote Linux and Intel Mac sanitizer runs plus Windows 10 and Windows 11 parser-first runs passed. Hosted run 33979208832 passed all 20 lanes, including both Windows ARM lanes, deep housekeeping, and publication evidence verification. Private closure evidence is retained under test-artefacts/remote-runs/ and test-artefacts/hosted/CR-0224-33979208832/. Microdrive image behavior, full status/data semantics, and ZX Net transitions remain later CRs."
+    },
+    {
+      "cr_number": "CR-0225",
+      "title": "Implement Microdrive cartridge image parsing and validation",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0225.md", "design/interface1-microdrive-zxnet.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24.3, 36, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 209", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM"],
+      "notes": "Opened on 2026-09-05 after the upstream preflight confirmed exact 543-byte sector geometry and inclusive 9–254 sector-count validation in MDVINIT. Cache, checksum, motor, write, and host-media behavior remain later CRs."
     }
   ]
 }
