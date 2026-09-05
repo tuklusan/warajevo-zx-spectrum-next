@@ -1413,7 +1413,7 @@ static void test_128k_paging_all_bank_fixture(void)
             exit(1);
         }
     }
-    wz_bus_request_init(&request, WZ_BUS_IO_WRITE, 0u, 0x7ffdu, 0x3fu, 4u);
+    wz_bus_request_init(&request, WZ_BUS_IO_WRITE, 0u, 0x7ffdu, 0x1fu, 4u);
     if (wz_machine_bus_request(&machine, &request) != WZ_RESULT_OK ||
         wz_machine_128k_screen_bank(&machine) != 7u ||
         wz_machine_128k_rom_bank(&machine) != 1u) {
