@@ -449,7 +449,6 @@ static void test_networking_mode_cold_reconfiguration(void)
     };
 
     for (size_t index = 0u; index < 2u; ++index) {
-        fprintf(stderr, "BEGIN cold_reconfiguration_%zu\n", index);
         static wz_machine_t machine;
         const wz_machine_profile_t* profile = profiles[index];
         static wz_byte_t interface1_rom[WZ_INTERFACE1_ROM_SIZE];
@@ -592,7 +591,7 @@ static void test_historical_state_representability(void)
 
 static void test_snapshot_state_isolated_validation(void)
 {
-    wz_machine_t machine;
+    static wz_machine_t machine;
     static wz_snapshot_state_t snapshot;
     static wz_snapshot_state_t original;
     static wz_byte_t serialized[WZ_STATE_SNAPSHOT_CAPACITY];
@@ -3052,19 +3051,11 @@ int main(void)
     test_tape_object_and_state();
     test_machine_tape_playback();
     test_tape_loading_mode_state();
-    fputs("BEGIN networking_mode_state\n", stderr);
     test_networking_mode_state();
-    fputs("BEGIN networking_mode_cold_reconfiguration\n", stderr);
     test_networking_mode_cold_reconfiguration();
-    fputs("BEGIN interface1_rom_paging\n", stderr);
     test_interface1_rom_paging();
-    fputs("END interface1_rom_paging\n", stderr);
-    fputs("BEGIN historical_state_representability\n", stderr);
     test_historical_state_representability();
-    fputs("END historical_state_representability\n", stderr);
-    fputs("BEGIN snapshot_state_isolated_validation\n", stderr);
     test_snapshot_state_isolated_validation();
-    fputs("END snapshot_state_isolated_validation\n", stderr);
     test_sna_48k_loader();
     test_sna_48k_writer();
     test_sna_128k_image_scaffolding();
