@@ -1782,9 +1782,9 @@
     {
       "cr_number": "CR-0206",
       "title": "Implement AY envelope generator",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0206.md", "design/warajevo-zx-spectrum-next-architecture.md sections 20.3 and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md tasks 191 and 197", "src/core/audio/wz_ay.c", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
-      "notes": "Opened on 2026-09-05 after CR-0205 closure. Implement the deterministic AY R11/R12 envelope divider, R13 restart, and all sixteen shape transitions from the canonical master-tick domain; mixer, PCM, and serialization remain ordered follow-on work."
+      "notes": "Closed on 2026-09-05 after exact-SHA CODE, bootstrap, and DOCUMENTATION reviews passed with zero findings for 68c01ac..7ca825e. Remote soaks CR0206-2 Linux sanitizer, CR0206-3 Intel Mac, CR0206-6 Windows 10, and CR0206-5 Windows 11 passed; CR0206-4 was superseded after a transient archive-transport-incomplete result. Hosted platform-smoke run 33943830548 passed deep housekeeping, all 18 matrix lanes, and publication at 7ca825e. The second upstream zero-gap scan found no missing scoped AY envelope behavior; mixer integration, PCM delivery, and AY serialization remain ordered follow-on work."
     }
   ]
 }
