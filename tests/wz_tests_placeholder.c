@@ -1455,6 +1455,28 @@ static void test_ay_tone_generators(void)
     }
 }
 
+static void test_ay_noise_generator(void)
+{
+    wz_ay_t ay;
+
+    wz_ay_init(&ay);
+    if (wz_ay_noise_period(&ay) != 1u || wz_ay_noise_level(&ay) != 1u ||
+        wz_ay_advance_master_ticks(0, 1u) != WZ_RESULT_INVALID_ARGUMENT) {
+        fputs("AY noise reset contract failed\n", stderr);
+        exit(1);
+    }
+    if (wz_ay_select_register(&ay, 6u, 0u) != WZ_RESULT_OK ||
+        wz_ay_write_data(&ay, 0x20u, 0u) != WZ_RESULT_OK ||
+        wz_ay_noise_period(&ay) != 1u ||
+        wz_ay_advance_master_ticks(&ay, 4u * 17u) != WZ_RESULT_OK ||
+        wz_ay_noise_level(&ay) != 0u ||
+        wz_ay_advance_master_ticks(&ay, 4u) != WZ_RESULT_OK ||
+        wz_ay_noise_level(&ay) != 1u) {
+        fputs("AY noise period, masking, or LFSR progression failed\n", stderr);
+        exit(1);
+    }
+}
+
 static void test_tape_trap_eligibility(void)
 {
     const wz_tape_segment_t segment = {1u, 0u};
@@ -2459,6 +2481,7 @@ int main(void)
     test_128k_timing_relationships();
     test_128k_ay_register_timing();
     test_ay_tone_generators();
+    test_ay_noise_generator();
     test_tape_trap_eligibility();
     test_tape_speed_invariance();
     test_standard_tap_parser();

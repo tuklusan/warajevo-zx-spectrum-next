@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 205,
+  "next_cr_number": 206,
   "status_values": [
     "open",
     "in_progress",
@@ -1771,6 +1771,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0204.md", "design/warajevo-zx-spectrum-next-architecture.md sections 20.3 and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md tasks 189 and 197", "src/core/audio/wz_ay.c", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
       "notes": "Closed on 2026-09-05 after CODE, bootstrap, and DOCUMENTATION reviews passed with zero findings. Remote soaks CR0204-5 Linux sanitizer, CR0204-2 Intel macOS, CR0204-3 Windows 10, and CR0204-4 Windows 11 passed. Hosted platform-smoke run 33939359243 passed deep housekeeping, all 18 matrix lanes, and publication for 14a5238. Three deterministic AY tone dividers now advance from the canonical master-tick domain; noise, envelope, mixer, PCM, and serialization remain ordered follow-on work."
+    },
+    {
+      "cr_number": "CR-0205",
+      "title": "Implement AY noise generator",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0205.md", "design/warajevo-zx-spectrum-next-architecture.md sections 20.3 and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md tasks 190 and 197", "src/core/audio/wz_ay.c", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
+      "notes": "Opened on 2026-09-05 after CR-0204 closure. Implement the deterministic AY R6 noise divider and 17-bit LFSR from the canonical master-tick domain; envelope, mixer, PCM, and serialization remain ordered follow-on work."
     }
   ]
 }

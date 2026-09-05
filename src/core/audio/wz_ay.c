@@ -33,6 +33,12 @@ static wz_word_t wz_ay_period(const wz_ay_t* ay, wz_byte_t channel)
     return period == 0u ? 1u : period;
 }
 
+static wz_byte_t wz_ay_noise_period_value(const wz_ay_t* ay)
+{
+    wz_byte_t period = (wz_byte_t)(ay->registers[6u] & 0x1fu);
+    return period == 0u ? 1u : period;
+}
+
 static void wz_ay_advance_clock(wz_ay_t* ay)
 {
     wz_byte_t channel;
@@ -49,6 +55,20 @@ static void wz_ay_advance_clock(wz_ay_t* ay)
             ay->tone_levels[channel] ^= 1u;
         }
     }
+    {
+        wz_byte_t period = wz_ay_noise_period_value(ay);
+        if (ay->noise_counter == 0u || ay->noise_counter > period) {
+            ay->noise_counter = period;
+        }
+        ay->noise_counter -= 1u;
+        if (ay->noise_counter == 0u) {
+            wz_dword_t feedback = (ay->noise_lfsr ^
+                (ay->noise_lfsr >> 3u)) & 1u;
+            ay->noise_counter = period;
+            ay->noise_lfsr = (ay->noise_lfsr >> 1u) | (feedback << 16u);
+            ay->noise_level = (wz_byte_t)(ay->noise_lfsr & 1u);
+        }
+    }
 }
 
 void wz_ay_init(wz_ay_t* ay)
@@ -57,6 +77,8 @@ void wz_ay_init(wz_ay_t* ay)
         return;
     }
     memset(ay, 0, sizeof(*ay));
+    ay->noise_lfsr = 0x1ffffu;
+    ay->noise_level = 1u;
 }
 
 wz_result_t wz_ay_select_register(wz_ay_t* ay, wz_byte_t value,
@@ -138,4 +160,14 @@ wz_byte_t wz_ay_tone_level(const wz_ay_t* ay, wz_byte_t channel)
         return 0u;
     }
     return ay->tone_levels[channel];
+}
+
+wz_byte_t wz_ay_noise_period(const wz_ay_t* ay)
+{
+    return ay == 0 ? 0u : wz_ay_noise_period_value(ay);
+}
+
+wz_byte_t wz_ay_noise_level(const wz_ay_t* ay)
+{
+    return ay == 0 ? 0u : ay->noise_level;
 }

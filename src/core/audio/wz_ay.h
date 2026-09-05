@@ -35,6 +35,9 @@ typedef struct {
     wz_byte_t registers[WZ_AY_REGISTER_COUNT];
     wz_word_t tone_counters[WZ_AY_CHANNEL_COUNT];
     wz_byte_t tone_levels[WZ_AY_CHANNEL_COUNT];
+    wz_byte_t noise_counter;
+    wz_dword_t noise_lfsr;
+    wz_byte_t noise_level;
     wz_byte_t tone_master_tick_phase;
     wz_ay_event_t events[WZ_AY_EVENT_CAPACITY];
     size_t event_count;
@@ -51,5 +54,7 @@ size_t wz_ay_events(const wz_ay_t* ay, wz_ay_event_t* events, size_t capacity);
 wz_result_t wz_ay_advance_master_ticks(wz_ay_t* ay, wz_master_tick_t ticks);
 wz_word_t wz_ay_tone_period(const wz_ay_t* ay, wz_byte_t channel);
 wz_byte_t wz_ay_tone_level(const wz_ay_t* ay, wz_byte_t channel);
+wz_byte_t wz_ay_noise_period(const wz_ay_t* ay);
+wz_byte_t wz_ay_noise_level(const wz_ay_t* ay);
 
 #endif
