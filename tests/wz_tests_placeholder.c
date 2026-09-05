@@ -6478,7 +6478,7 @@ int main(void)
     machine.ula_output_tick = 1234u;
     machine.maskable_interrupt_line_low = 1u;
     if (wz_state_serialize_machine(&machine, &writer) != WZ_RESULT_OK ||
-        writer.length != 65609u ||
+        writer.length != WZ_STATE_SNAPSHOT_CAPACITY ||
         wz_state_hash_machine(&machine, &first_hash) != WZ_RESULT_OK) {
         fputs("canonical state serialization failed\n", stderr);
         return 1;
