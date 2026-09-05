@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 211,
+  "next_cr_number": 212,
   "status_values": [
     "open",
     "in_progress",
@@ -1813,6 +1813,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0210.md", "design/warajevo-zx-spectrum-next-architecture.md sections 8, 25, 25.1, 25.2, 38, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 195", "src/core/wz_state.c", "src/core/wz_state.h", "src/core/wz_machine.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
       "notes": "Closed on 2026-09-05 at implementation range f846b4f..60cac72. Exact-SHA CODE, bootstrap, and DOCUMENTATION reviews passed with zero findings. Remote runs CR0210-1 Linux sanitizer, CR0210-2 Intel macOS, CR0210-4 Windows 10 retry, and CR0210-5 Windows 11 all passed with primary and pull status zero. Hosted platform-smoke run 33951047314 passed deep housekeeping, all 18 matrix lanes, and publication at 60cac72. The second upstream zero-gap scan found no missing scoped 128K Z80 behavior; Timex, Interface-1, Disciple, and other hardware extensions remain explicitly deferred."
+    },
+    {
+      "cr_number": "CR-0211",
+      "title": "Add deterministic 128K paging, interrupt, and raster fixtures",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0211.md", "design/warajevo-zx-spectrum-next-architecture.md sections 9, 15, 16, 36, 38, 40, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 196", "src/core/wz_machine.c", "src/core/wz_machine.h", "src/core/wz_bus.c", "src/core/wz_raster.c", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
+      "notes": "Opened on 2026-09-05 after CR-0210 closure. Add deterministic 128K paging, interrupt, frame-boundary, and raster-visible fixtures against the shared profile/timing model, with upstream and hardware evidence gates."
     }
   ]
 }
