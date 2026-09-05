@@ -218,8 +218,22 @@ def run_logged(command: list[str], log_path: Path, environment: dict[str, str] |
     return subprocess.CompletedProcess(command, returncode)
 
 
+def windows_target_architecture(environment: dict[str, str]) -> str:
+    """Return the native Windows library layout required by this runner."""
+    declared_architectures = (
+        environment.get("PROCESSOR_ARCHITEW6432", ""),
+        environment.get("PROCESSOR_ARCHITECTURE", ""),
+        platform.machine(),
+    )
+    if any("arm64" in value.lower() or "aarch64" in value.lower()
+           for value in declared_architectures):
+        return "arm64"
+    return "x64"
+
+
 def windows_developer_environment() -> dict[str, str]:
     environment = os.environ.copy()
+    target_architecture = windows_target_architecture(environment)
     vswhere = Path(environment.get("ProgramFiles(x86)", r"C:\Program Files (x86)")) / \
         "Microsoft Visual Studio" / "Installer" / "vswhere.exe"
     devcmd = None
@@ -253,7 +267,7 @@ def windows_developer_environment() -> dict[str, str]:
                 break
     if devcmd is not None:
         loaded = subprocess.run(
-            ["cmd", "/d", "/s", "/c", f'call "{devcmd}" -arch=x64 >nul && set'],
+            ["cmd", "/d", "/s", "/c", f'call "{devcmd}" -arch={target_architecture} >nul && set'],
             check=False, capture_output=True, text=True, env=environment,
         )
         if loaded.returncode == 0:
@@ -284,7 +298,7 @@ def windows_developer_environment() -> dict[str, str]:
     if msvc_root.is_dir():
         versions = sorted((path for path in msvc_root.iterdir() if path.is_dir()), reverse=True)
         if versions:
-            library = versions[0] / "lib" / "x64"
+            library = versions[0] / "lib" / target_architecture
             if library.is_dir():
                 environment["LIB"] = str(library) + ";" + environment.get("LIB", "")
                 environment["WZSN_MSVC_LIBRARY_PATH"] = str(library)
@@ -292,6 +306,7 @@ def windows_developer_environment() -> dict[str, str]:
 
 
 def windows_linker_paths(environment: dict[str, str]) -> list[Path]:
+    target_architecture = windows_target_architecture(environment)
     paths = []
     msvc_library = environment.get("WZSN_MSVC_LIBRARY_PATH")
     if msvc_library:
@@ -305,14 +320,17 @@ def windows_linker_paths(environment: dict[str, str]) -> list[Path]:
                     continue
                 versions = sorted((path for path in msvc_root.iterdir() if path.is_dir()), reverse=True)
                 if versions:
-                    library = versions[0] / "lib" / "x64"
+                    library = versions[0] / "lib" / target_architecture
                     if library.is_dir():
                         paths.append(library)
                         return paths
     kit_root = Path(environment.get("ProgramFiles(x86)", r"C:\Program Files (x86)")) / "Windows Kits" / "10" / "Lib"
     if kit_root.is_dir():
         for version in sorted((path for path in kit_root.iterdir() if path.is_dir()), reverse=True):
-            candidates = (version / "um" / "x64", version / "ucrt" / "x64")
+            candidates = (
+                version / "um" / target_architecture,
+                version / "ucrt" / target_architecture,
+            )
             if all(candidate.is_dir() for candidate in candidates):
                 paths.extend(candidates)
                 break

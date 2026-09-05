@@ -1903,7 +1903,7 @@
       "title": "Add Windows ARM hosted validation and per-lane evidence gate",
       "status": "in_progress",
       "source_authority": ["design/cr-preflight/CR-0223.md", "WORKFLOW.md", "README-GIT-GITHUB.md", ".github/workflows/platform-smoke.yml", "tools/harness/run_cmake_smoke.py", "tools/validate_project_gates.py"],
-      "notes": "Opened on 2026-09-05 as the workflow detour before returning to the architecture queue. Add both Windows ARM hosted labels, discover ARM-specific toolchain behavior, and require per-lane manifests plus inspected visual/trace evidence where supported."
+      "notes": "Opened on 2026-09-05 as the workflow detour before returning to the architecture queue. Add both Windows ARM hosted labels, discover ARM-specific toolchain behavior, and require per-lane manifests plus inspected visual/trace evidence where supported. First 20-lane hosted run passed windows-arm-11 but exposed windows-arm-11-vs2026 linking ARM64 objects against x64 MSVC/SDK libraries; the shared CMake smoke harness now selects native ARM64 developer-environment and linker paths."
     }
   ]
 }
