@@ -1831,9 +1831,9 @@
     {
       "cr_number": "CR-0213",
       "title": "Differential-test representative 128K state behavior",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0213.md", "design/warajevo-zx-spectrum-next-architecture.md sections 36, 38, 39, 40, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 198", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
-      "notes": "Opened on 2026-09-05 after CR-0212 closure. Add representative normalized 128K state differential fixtures against preserved Warajevo and hardware/reference evidence, with explicit disagreement dispositions and deterministic provenance."
+      "notes": "Closed on 2026-09-05 at implementation range f847294..f890792. Exact-SHA CODE, bootstrap, and DOCUMENTATION reviews passed with zero findings. Remote runs CR0213-1 Linux sanitizer, CR0213-2 Intel macOS, CR0213-3 Windows 10, and CR0213-4 Windows 11 passed with primary and pull status zero. Hosted platform-smoke run 33954030647 passed deep housekeeping, all 18 matrix lanes, and publication at f890792. The second upstream zero-gap scan found no missing selected 128K differential scenario behavior; future non-comparable hardware remains explicitly deferred."
     }
   ]
 }
