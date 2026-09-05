@@ -10,6 +10,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "core/wz_machine.h"
 
+#include <stdlib.h>
+
 #define WZ_STATE_VERSION 12u
 #define WZ_STATE_HEADER_LENGTH 113u
 #define WZ_STATE_MACHINE_LENGTH (65536u + WZ_STATE_HEADER_LENGTH)
