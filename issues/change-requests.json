@@ -1845,9 +1845,9 @@
     {
       "cr_number": "CR-0215",
       "title": "Freeze Interface 1 Microdrive and original ZX Net specification",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/interface1-microdrive-zxnet.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24, 25, 26, 36, 38, 39, 40, and 49.1", "design/warajevo-zx-spectrum-next-ui-architecture.md sections 5, 11, 14, 15, 23.5, 24, 25, 39, 44, and 48", "design/wzsn-architectures-1-2-developer-tasks.md task 200", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
-      "notes": "Opened on 2026-09-05 to replace the short Phase-10 notes scaffold with a frozen byte-level Interface-1, Microdrive, and original ZX Net contract. Implementation remains gated on exact-SHA review, independent upstream zero-gap scan, remote validation, hosted validation, and publication evidence."
+      "notes": "Opened and closed on 2026-09-05 after replacing the short Phase-10 notes scaffold with a frozen byte-level Interface-1, Microdrive, and original ZX Net contract. Exact-SHA DOCUMENTATION and independent bootstrap reviews passed with zero findings; the complete upstream MDRIVE.ASM/SPECSIM.ASM scan found no undispositioned specification behavior. Runtime implementation, ROM provenance, remote validation, and hosted validation remain ordered follow-on CRs."
     }
   ]
 }

@@ -8,7 +8,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 # Interface 1, Microdrive, and ZX Net Specification
 
-Status: FROZEN_FOR_IMPLEMENTATION
+Status: CLOSED
 
 This document freezes the Phase-10 core contract for authentic Sinclair
 Interface 1, Microdrive cartridge images, and the original Warajevo ZX Net
@@ -244,3 +244,19 @@ This freeze does not implement or decide:
 
 Any change to the frozen port, latch, sector, timing, state, serialization, or
 authority contract requires a new architecture CR.
+
+## 13. Closure evidence
+
+CR-0215 closed on 2026-09-05 after the complete `MDRIVE.ASM` scan and the
+independent second scan of its port handlers, motor/cache/flush routines,
+network state machine, and `SPECSIM.ASM` Interface-1 dispatch, activation,
+ROM-variant, and snapshot-restore paths. The architecture and UI contracts,
+migration ledger, and test authorities were reconciled with no undispositioned
+Phase-10 specification behavior.
+
+The exact-SHA DOCUMENTATION review for `a3b6795..48b227f` passed with zero
+findings, and the independent bootstrap review for the same range passed with
+zero findings. Static repository gates, JSON validation, and whitespace checks
+passed locally; no local build or test was performed. Device implementation,
+ROM redistribution, and remote/hosted runtime evidence remain ordered under
+the follow-on CRs and are not claimed by this documentation CR.
