@@ -517,7 +517,6 @@ static void test_interface1_rom_paging(void)
     wz_machine_t machine;
     wz_byte_t interface1_rom[WZ_INTERFACE1_ROM_SIZE];
 
-    fputs("interface1: begin\\n", stderr);
     for (size_t index = 0u; index < sizeof(interface1_rom); ++index) {
         interface1_rom[index] = (wz_byte_t)(index ^ 0x22u);
     }
@@ -542,7 +541,6 @@ static void test_interface1_rom_paging(void)
         wz_machine_destroy(&machine);
         exit(1);
     }
-    fputs("interface1: end\\n", stderr);
     wz_machine_destroy(&machine);
 }
 
@@ -3055,9 +3053,7 @@ int main(void)
     test_tape_loading_mode_state();
     test_networking_mode_state();
     test_networking_mode_cold_reconfiguration();
-    fputs("before interface1\\n", stderr);
     test_interface1_rom_paging();
-    fputs("after interface1\\n", stderr);
     test_historical_state_representability();
     test_snapshot_state_isolated_validation();
     test_sna_48k_loader();

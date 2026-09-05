@@ -209,14 +209,13 @@ wz_result_t wz_machine_set_networking_mode(wz_machine_t* machine,
 wz_result_t wz_machine_reconfigure_networking_mode(wz_machine_t* machine,
                                                    wz_networking_mode_t mode)
 {
-    wz_machine_t replacement;
+    wz_machine_t* replacement;
     const wz_machine_profile_t* profile;
-    wz_byte_t normal_rom[WZ_48K_ROM_SIZE];
-    wz_byte_t interface1_rom[WZ_INTERFACE1_ROM_SIZE];
     wz_byte_t has_normal_rom;
     wz_byte_t has_interface1_rom;
     wz_interface1_rom_variant_t interface1_rom_variant;
     wz_qword_t interface1_rom_identity;
+    wz_qword_t normal_rom_identity;
 
     if (machine == 0 || mode > WZ_NETWORKING_EAR_MIC) {
         return WZ_RESULT_INVALID_ARGUMENT;
@@ -239,29 +238,32 @@ wz_result_t wz_machine_reconfigure_networking_mode(wz_machine_t* machine,
     has_interface1_rom = machine->has_interface1_rom;
     interface1_rom_variant = machine->interface1_rom_variant;
     interface1_rom_identity = machine->interface1_rom_identity;
-    if (has_normal_rom != 0u) {
-        memcpy(normal_rom, machine->memory, sizeof(normal_rom));
+    normal_rom_identity = machine->rom_identity;
+    replacement = (wz_machine_t*)calloc(1u, sizeof(*replacement));
+    if (replacement == 0) {
+        return WZ_RESULT_OUT_OF_MEMORY;
     }
-    if (has_interface1_rom != 0u) {
-        memcpy(interface1_rom, machine->interface1_rom, sizeof(interface1_rom));
-    }
-    if (wz_machine_init(&replacement, profile) != WZ_RESULT_OK) {
+    if (wz_machine_init(replacement, profile) != WZ_RESULT_OK) {
+        wz_machine_destroy(replacement);
+        free(replacement);
         return WZ_RESULT_OUT_OF_MEMORY;
     }
     if (has_normal_rom != 0u) {
-        memcpy(replacement.memory, normal_rom, sizeof(normal_rom));
-        replacement.has_48k_rom = 1u;
-        replacement.rom_identity = machine->rom_identity;
+        memcpy(replacement->memory, machine->memory, WZ_48K_ROM_SIZE);
+        replacement->has_48k_rom = 1u;
+        replacement->rom_identity = normal_rom_identity;
     }
     if (has_interface1_rom != 0u) {
-        memcpy(replacement.interface1_rom, interface1_rom, sizeof(interface1_rom));
-        replacement.has_interface1_rom = 1u;
-        replacement.interface1_rom_variant = interface1_rom_variant;
-        replacement.interface1_rom_identity = interface1_rom_identity;
+        memcpy(replacement->interface1_rom, machine->interface1_rom,
+               WZ_INTERFACE1_ROM_SIZE);
+        replacement->has_interface1_rom = 1u;
+        replacement->interface1_rom_variant = interface1_rom_variant;
+        replacement->interface1_rom_identity = interface1_rom_identity;
     }
-    replacement.networking_mode = mode;
+    replacement->networking_mode = mode;
     wz_machine_destroy(machine);
-    *machine = replacement;
+    *machine = *replacement;
+    free(replacement);
     return WZ_RESULT_OK;
 }
 
