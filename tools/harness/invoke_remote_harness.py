@@ -566,9 +566,14 @@ def main() -> int:
             )
         else:
             screenshot_command = (
+                f"mkdir -p {shlex.quote(remote_dir)} && "
                 f"screencapture -x {shlex.quote(remote_dir + '/desktop-screenshot.png')}"
                 if machine["kind"] == "macos"
-                else f"bash tools/harness/capture-linux-active-display.sh {shlex.quote(remote_dir + '/desktop-screenshot.png')}"
+                else (
+                    f"mkdir -p {shlex.quote(remote_dir)} && "
+                    f"bash tools/harness/capture-linux-active-display.sh "
+                    f"{shlex.quote(remote_dir + '/desktop-screenshot.png')}"
+                )
             )
             primary = run_linux(
                 machine,
