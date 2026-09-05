@@ -70,8 +70,8 @@ static int run_loopback(void)
     }
     for (size_t index = 0u; index < sizeof(expected); ++index) {
         for (unsigned bit = 0u; bit < 9u; ++bit) {
-            bool data_bit = bit < 8u &&
-                ((expected[index] & (wz_byte_t)(1u << bit)) != 0u);
+            bool data_bit = bit > 0u &&
+                ((expected[index] & (wz_byte_t)(1u << (bit - 1u))) != 0u);
             if (wz_zxnet_write_bit(&receiver, data_bit) != WZ_RESULT_OK) {
                 fputs("ZX Net loopback write collection failed\n", stderr);
                 return 1;
