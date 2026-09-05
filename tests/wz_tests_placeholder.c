@@ -1604,13 +1604,13 @@ static void test_ay_audio_mixer(void)
 
 static void test_ay_state_round_trip(void)
 {
-    wz_machine_t first;
-    wz_machine_t second;
+    static wz_machine_t first;
+    static wz_machine_t second;
     wz_state_writer_t writer;
     wz_state_writer_t writer_again;
-    wz_byte_t data[WZ_STATE_SNAPSHOT_CAPACITY];
-    wz_byte_t data_again[WZ_STATE_SNAPSHOT_CAPACITY];
-    wz_byte_t invalid[WZ_STATE_SNAPSHOT_CAPACITY];
+    static wz_byte_t data[WZ_STATE_SNAPSHOT_CAPACITY];
+    static wz_byte_t data_again[WZ_STATE_SNAPSHOT_CAPACITY];
+    static wz_byte_t invalid[WZ_STATE_SNAPSHOT_CAPACITY];
     wz_qword_t first_hash = 0u;
     wz_qword_t second_hash = 0u;
     wz_audio_sample_t first_sample;
