@@ -671,7 +671,7 @@ def split_review_unit(packet: ReviewPacket, unit: str, prefix: str) -> list[str]
     ]
 
 
-class DeepSeekClient:
+class CodeReviewerClient:
     def __init__(self, key: str | None = None, opener: Any = None):
         self._key = key if key is not None else os.environ.get(KEY_NAME, "")
         if not self._key.strip():
@@ -706,10 +706,10 @@ class DeepSeekClient:
     @staticmethod
     def _transport_worker(request: urllib.request.Request, timeout: int, connection: Any) -> None:
         try:
-            with DeepSeekClient._open(request, timeout=timeout) as response:
+            with CodeReviewerClient._open(request, timeout=timeout) as response:
                 connection.send((True, response.read()))
         except Exception as exc:
-            connection.send((False, DeepSeekClient._transport_failure_record(exc)))
+            connection.send((False, CodeReviewerClient._transport_failure_record(exc)))
         finally:
             connection.close()
 
@@ -719,11 +719,11 @@ class DeepSeekClient:
         if deadline is None:
             with opener(request, timeout=timeout) as response:
                 return response.read()
-        if opener is not DeepSeekClient._open:
+        if opener is not CodeReviewerClient._open:
             raise ReviewError("deadline-enforced transport requires the built-in opener")
         receiver, sender = multiprocessing.get_context("spawn").Pipe(duplex=False)
         worker = multiprocessing.get_context("spawn").Process(
-            target=DeepSeekClient._transport_worker, args=(request, timeout, sender), daemon=True
+            target=CodeReviewerClient._transport_worker, args=(request, timeout, sender), daemon=True
         )
         worker.start()
         sender.close()
@@ -740,7 +740,7 @@ class DeepSeekClient:
             worker.terminate()
             worker.join(timeout=5)
         if not succeeded:
-            DeepSeekClient._raise_transport_failure(request, value)
+            CodeReviewerClient._raise_transport_failure(request, value)
         return value
 
     def request(self, system: str, user: str, telemetry: Telemetry,
@@ -853,7 +853,7 @@ class DeepSeekClient:
         raise ReviewError(last_error)
 
 
-def request_validated(client: DeepSeekClient, system: str, prompt: str, telemetry: Telemetry,
+def request_validated(client: CodeReviewerClient, system: str, prompt: str, telemetry: Telemetry,
                       validator: Any, label: str, thinking: str = "disabled",
                       reasoning_effort: str | None = None,
                       max_tokens: int = DISCOVERY_OUTPUT_TOKENS,
@@ -1387,7 +1387,7 @@ def compact_result(review_type: str, cr_number: str, packet: ReviewPacket, verdi
     return result
 
 
-def perform_review(client: DeepSeekClient, root: Path, review_type: str, packet: ReviewPacket,
+def perform_review(client: CodeReviewerClient, root: Path, review_type: str, packet: ReviewPacket,
                    scope: dict[str, Any], requirements: list[dict[str, str]], prior: list[dict[str, Any]],
                    telemetry: Telemetry, deadline: ReviewDeadline | None = None) -> dict[str, Any]:
     if packet.insufficient_evidence:
@@ -1942,7 +1942,7 @@ def main() -> int:
     root = Path.cwd().resolve()
     if args.command == "health-check":
         try:
-            client = DeepSeekClient()
+            client = CodeReviewerClient()
             telemetry = Telemetry("DOCUMENTATION", "manual-health-check")
             result = client.request("Return JSON only.", "Return {\"status\":\"available\"} as JSON.", telemetry,
                                     "disabled", None, DISCOVERY_OUTPUT_TOKENS, "HEALTH-CHECK",
@@ -1997,7 +1997,7 @@ def main() -> int:
         lock_path = acquire_review_lock(root, packet.snapshot_id, args.type, telemetry.cr_number, args.deadline_seconds)
         telemetry.status_path = lock_path
         update_review_lock(lock_path, telemetry, "packet-prepared", "RUNNING")
-        client = DeepSeekClient()
+        client = CodeReviewerClient()
         deadline = ReviewDeadline(args.deadline_seconds)
         final = perform_review(client, root, args.type, packet, scope, requirements, prior, telemetry, deadline)
         final["requirements_manifest_hash"] = requirements_hash

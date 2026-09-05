@@ -203,7 +203,7 @@ class GateTests(unittest.TestCase):
             captured.update(json.loads(request.data))
             return Response()
 
-        gate.DeepSeekClient("secret", opener).request(
+        gate.CodeReviewerClient("secret", opener).request(
             "system", "review", gate.Telemetry("CODE", "x"),
             thinking="enabled", reasoning_effort="max", max_tokens=12345
         )
@@ -215,7 +215,7 @@ class GateTests(unittest.TestCase):
         self.assertNotIn("temperature", captured)
         self.assertNotIn("top_p", captured)
         captured.clear()
-        gate.DeepSeekClient("secret", opener).request(
+        gate.CodeReviewerClient("secret", opener).request(
             "system", "review", gate.Telemetry("CODE", "x"),
             thinking="disabled", reasoning_effort=None, max_tokens=8192
         )
@@ -224,7 +224,7 @@ class GateTests(unittest.TestCase):
 
     def test_missing_key_fails_configuration(self):
         with self.assertRaises(gate.ConfigurationError):
-            gate.DeepSeekClient("")
+            gate.CodeReviewerClient("")
 
     def test_remote_disconnect_is_retried(self):
         class Response:
@@ -244,7 +244,7 @@ class GateTests(unittest.TestCase):
 
         telemetry = gate.Telemetry("CODE", "snap")
         with patch.object(gate.time, "sleep"):
-            gate.DeepSeekClient("secret", opener).request("system", "review", telemetry)
+            gate.CodeReviewerClient("secret", opener).request("system", "review", telemetry)
         self.assertEqual(attempts, 2)
         self.assertEqual(telemetry.retries, 1)
         self.assertEqual([item["result_class"] for item in telemetry.api_call_records],
@@ -267,7 +267,7 @@ class GateTests(unittest.TestCase):
 
         telemetry = gate.Telemetry("CODE", "snap")
         with patch.object(gate.time, "sleep", side_effect=delays.append):
-            gate.DeepSeekClient("secret", opener).request("system", "review", telemetry)
+            gate.CodeReviewerClient("secret", opener).request("system", "review", telemetry)
         self.assertEqual(delays, [1, 2])
         self.assertEqual(telemetry.retries, 2)
         self.assertEqual([item["result_class"] for item in telemetry.api_call_records],
@@ -275,7 +275,7 @@ class GateTests(unittest.TestCase):
 
     def test_exact_environment_variable_name_is_used(self):
         with patch.dict(gate.os.environ, {gate.KEY_NAME: "configured"}, clear=True):
-            self.assertIsInstance(gate.DeepSeekClient(), gate.DeepSeekClient)
+            self.assertIsInstance(gate.CodeReviewerClient(), gate.CodeReviewerClient)
 
     def test_empty_malformed_and_truncated_api_output_fail_closed(self):
         class Response:
@@ -291,7 +291,7 @@ class GateTests(unittest.TestCase):
         ]
         for envelope in cases:
             with self.subTest(envelope=envelope), patch.object(gate.time, "sleep"):
-                client = gate.DeepSeekClient("secret", lambda request, timeout, value=envelope: Response(value))
+                client = gate.CodeReviewerClient("secret", lambda request, timeout, value=envelope: Response(value))
                 with self.assertRaises(gate.ReviewError):
                     client.request("system", "substantive review", gate.Telemetry("CODE", "snap"))
 
@@ -970,7 +970,7 @@ class GateTests(unittest.TestCase):
         def blocked_opener(request, timeout):
             release.wait(5.0)
 
-        client = gate.DeepSeekClient("secret", blocked_opener)
+        client = gate.CodeReviewerClient("secret", blocked_opener)
         started = time.monotonic()
         try:
             with self.assertRaisesRegex(gate.ReviewError, "deadline-enforced transport"):
@@ -982,12 +982,12 @@ class GateTests(unittest.TestCase):
 
     def test_deadline_transport_preserves_http_failure_status(self):
         request = urllib.request.Request("https://example.invalid")
-        record = gate.DeepSeekClient._transport_failure_record(
+        record = gate.CodeReviewerClient._transport_failure_record(
             urllib.error.HTTPError(request.full_url, 402, "payment required", {}, None)
         )
         self.assertEqual(record, {"kind": "http", "status": 402})
         with self.assertRaises(urllib.error.HTTPError) as raised:
-            gate.DeepSeekClient._raise_transport_failure(request, record)
+            gate.CodeReviewerClient._raise_transport_failure(request, record)
         self.assertEqual(raised.exception.code, 402)
 
     def test_deadline_exhaustion_after_clean_discovery_cannot_pass(self):
@@ -1131,7 +1131,7 @@ class GateTests(unittest.TestCase):
 
         telemetry = gate.Telemetry("CODE", "snap")
         with self.assertRaises(gate.ConfigurationError) as raised:
-            gate.DeepSeekClient(key, rejected).request("system", "review", telemetry)
+            gate.CodeReviewerClient(key, rejected).request("system", "review", telemetry)
         failure = gate.failure_result("CODE", "CR", "snap", "REVIEW_UNAVAILABLE", str(raised.exception))
         console = io.StringIO()
         with redirect_stdout(console):
@@ -1148,7 +1148,7 @@ class GateTests(unittest.TestCase):
 
     def test_api_key_in_review_material_is_rejected_before_transport(self):
         key = "api-key-that-must-not-leave"
-        client = gate.DeepSeekClient(key, lambda *_: self.fail("transport must not be called"))
+        client = gate.CodeReviewerClient(key, lambda *_: self.fail("transport must not be called"))
         with self.assertRaises(gate.ConfigurationError):
             client.request("system", f"review data contains {key}", gate.Telemetry("CODE", "snap"))
 

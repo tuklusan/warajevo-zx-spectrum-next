@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 
 from review_gate import (
-    DeepSeekClient,
+    CodeReviewerClient,
     DEFAULT_REVIEW_DEADLINE_SECONDS,
     ReviewError,
     ReviewDeadline,
@@ -148,7 +148,7 @@ def main() -> int:
         return 2
     telemetry = Telemetry("CODE", packet.snapshot_id, packet_manifest_hash=packet.packet_manifest_hash)
     try:
-        client = DeepSeekClient()
+        client = CodeReviewerClient()
         deadline = ReviewDeadline(args.deadline_seconds)
         result: dict[str, object] = {}
         for repair_attempt in range(3):

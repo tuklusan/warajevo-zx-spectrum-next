@@ -8,9 +8,9 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 # Fresh-Project Independent Review Gate Standard
 
-**Purpose:** establish a reusable, high-precision DeepSeek review gate for a new software project without recreating the long developer/reviewer argument loops that an over-aggressive reviewer can cause.
+**Purpose:** establish a reusable, high-precision external review gate for a new software project without recreating the long developer/reviewer argument loops that an over-aggressive reviewer can cause.
 
-**Status of API facts:** verified against official DeepSeek API documentation on 2026-08-11. The integration values are centralized so they can be updated deliberately if the API changes.
+**Status of API facts:** provider-specific API facts must be verified against the selected review service before installation. Integration values are centralized so they can be updated deliberately if the API changes.
 
 **Primary goals, in order:**
 
@@ -85,16 +85,16 @@ This standard assumes:
 
 - a Git repository;
 - a development agent working in the repository;
-- DeepSeek as an independent external reviewer;
+- an independent external reviewer;
 - a project-level task/change-request record with explicit acceptance criteria;
-- an environment variable containing the DeepSeek API key;
+- an environment variable containing the review-service API key;
 - review artifacts stored privately or ignored by Git;
 - tests/builds performed according to the project's own execution policy.
 
 The recommended default secret name in the examples is:
 
 ```text
-DeepSeek_API_key
+EXTERNAL_REVIEW_API_KEY
 ```
 
 If a project standardizes a different name, change it in exactly one configuration location. Never duplicate the key or embed it in prompts, source, command lines, telemetry, or committed configuration.
@@ -109,14 +109,14 @@ The same proof discipline applies to all three, but their evidence packets diffe
 
 ---
 
-## 3. Current DeepSeek API baseline
+## 3. Current External Review API Baseline
 
 As verified on 2026-08-11, the reference integration uses:
 
 ```text
-Base URL:           https://api.deepseek.com
+Base URL:           provider-specific review endpoint
 Endpoint:           POST /chat/completions
-Model:              deepseek-v4-pro
+Model:              provider-specific configured model
 Discovery:         thinking disabled, no reasoning_effort
 Falsification:     thinking enabled, reasoning_effort=high
 Adjudication:      thinking enabled, reasoning_effort=max only for evidence-backed ambiguity
@@ -124,24 +124,24 @@ Streaming:          false
 Output format:      JSON object
 ```
 
-DeepSeek currently documents `deepseek-v4-pro` and `deepseek-v4-flash` for the Chat Completions endpoint. Thinking mode supports `reasoning_effort` values `high` and `max`; when thinking is disabled, omit `reasoning_effort`. JSON Output requires both `response_format={"type":"json_object"}` and an instruction to produce JSON. Thinking mode does not use the usual sampling controls such as `temperature` or `top_p`.
+The selected provider may document model variants for a Chat Completions-compatible endpoint. Record its supported reasoning controls; when reasoning is disabled, omit unsupported reasoning fields. JSON Output requires both `response_format={"type":"json_object"}` and an instruction to produce JSON. Do not send sampling controls that the selected provider disallows.
 
 Do **not** set the model's maximum possible output allowance as the routine default. Use bounded per-phase output budgets and shard work when necessary. A huge output allowance reduces available context headroom and encourages unnecessarily large responses.
 
-DeepSeek's context cache is automatic. Cache hits depend on matching previously persisted prefixes, so put stable common material before pass-specific instructions. The normal path is one combined non-thinking discovery call, deterministic candidate/evidence processing, high-thinking falsification only if candidates survive, and max-thinking adjudication only for genuine evidence-backed ambiguity.
+If the selected provider offers context caching, cache hits depend on matching previously persisted prefixes, so put stable common material before pass-specific instructions. The normal path is one combined discovery call, deterministic candidate/evidence processing, a stronger falsification call only if candidates survive, and adjudication only for genuine evidence-backed ambiguity.
 
 ### Official source URLs
 
-- <https://api-docs.deepseek.com/api/create-chat-completion>
-- <https://api-docs.deepseek.com/guides/thinking_mode>
-- <https://api-docs.deepseek.com/guides/json_mode>
-- <https://api-docs.deepseek.com/guides/kv_cache>
-- <https://api-docs.deepseek.com/quick_start/rate_limit>
-- <https://api-docs.deepseek.com/quick_start/pricing/>
+- provider API documentation for chat completion requests
+- provider documentation for reasoning controls
+- provider documentation for JSON output
+- provider documentation for context caching, if available
+- provider documentation for rate limits
+- provider documentation for pricing
 
 ### Maintenance rule
 
-Verify these API facts when the gate is first installed. After that, do not make the developer agent browse DeepSeek documentation before every review. Re-verify only when:
+Verify these API facts when the gate is first installed. After that, do not make the developer agent browse provider documentation before every review. Re-verify only when:
 
 - the API rejects the pinned request shape;
 - the configured model becomes unavailable;
@@ -320,7 +320,7 @@ A candidate relying on this baseline cites the exact baseline clause just like a
 
 ### 6B. External-review data policy and prompt-injection boundary
 
-DeepSeek is a third-party service. Before enabling the gate for a fresh project, explicitly decide what project material is authorized to leave the local environment for this reviewer. Do not assume every repository can send every source file, secret, customer datum, credential, private key, production dump, or regulated record to an external model.
+The reviewer is a third-party service. Before enabling the gate for a fresh project, explicitly decide what project material is authorized to leave the local environment for this reviewer. Do not assume every repository can send every source file, secret, customer datum, credential, private key, production dump, or regulated record to an external model.
 
 The project should define:
 
@@ -456,7 +456,7 @@ When the exact packet is too large:
 7. If the complete CODE packet fits one review unit, perform per-file, caller/callee, cross-file integration, regression, and test-adequacy analysis inside that one combined discovery inference. If genuine multi-unit sharding itself could hide integration defects, run a separate **integration discovery** pass over the change manifest plus exact interface/header/contract material. Any model-generated navigation summary used for this pass is non-authoritative; an integration candidate must still acquire exact source evidence and survive falsification.
 8. If a single indivisible evidence item is too large for the configured safe budget, return `INCONCLUSIVE` unless a deterministic approved extractor/partitioner can preserve its semantics.
 
-Sharding may increase DeepSeek API calls. That is acceptable when required for correctness because those calls remain inside the harness rather than becoming developer/reviewer dialogue.
+Sharding may increase external review API calls. That is acceptable when required for correctness because those calls remain inside the harness rather than becoming developer/reviewer dialogue.
 
 Do not use model-generated requirement summaries as substitutes for original requirement shards.
 
@@ -638,7 +638,7 @@ Rules:
 
 ## 13. Hostile falsification
 
-After discovery, validation, deduplication, and context completion, submit the candidate batch to an independent DeepSeek falsification call. If the combined mandatory discovery pass completes successfully and the validated candidate set is empty, no falsification call is needed; the harness may proceed to final PASS checks.
+After discovery, validation, deduplication, and context completion, submit the candidate batch to an independent external falsification call. If the combined mandatory discovery pass completes successfully and the validated candidate set is empty, no falsification call is needed; the harness may proceed to final PASS checks.
 
 Use thinking enabled with `reasoning_effort=high` for this phase by default. Use `reasoning_effort=max` only for later adjudication when a genuine evidence-backed ambiguity or dispute remains.
 
@@ -834,7 +834,7 @@ Example:
   "task_id": "TASK-0001",
   "snapshot_id": "git:<base>..<head>:sha256:<diffhash>",
   "packet_manifest_hash": "<sha256 covering task/scope, authorities, and evidence manifest>",
-  "model": "deepseek-v4-pro",
+  "model": "<configured-review-model>",
   "prompt_schema_version": 1,
   "verdict": "PASS",
   "review_complete": true
@@ -881,7 +881,7 @@ If two authoritative documents conflict, return `HUMAN_DECISION_REQUIRED` or `IN
 
 ## 20. Test-artifact review
 
-DeepSeek's documented Chat Completions message schema accepts text content. Do not pretend arbitrary binary files or screenshots are directly understood as text.
+The selected provider's documented Chat Completions message schema accepts text content. Do not pretend arbitrary binary files or screenshots are directly understood as text.
 
 Classify every artifact first.
 
@@ -911,10 +911,10 @@ Do not UTF-8-decode or base64-dump the image and claim visual review.
 
 Use either:
 
-1. an explicitly configured vision-capable analysis component that produces a provenance-bound textual description for DeepSeek's second opinion; or
+1. an explicitly configured vision-capable analysis component that produces a provenance-bound textual description for the external reviewer's second opinion; or
 2. `EVIDENCE_INSUFFICIENT` / `INCONCLUSIVE` for visual-only claims.
 
-If the visual description is produced by the same developer agent whose conclusion is being second-opinioned, DeepSeek is independently reviewing the **description**, not independently inspecting the pixels. Do not label that as independent visual verification. If independent visual verification is required, use an independently configured vision-capable reviewer or a deterministic image-analysis tool suitable for the acceptance criterion.
+If the visual description is produced by the same developer agent whose conclusion is being second-opinioned, the external reviewer is independently reviewing the **description**, not independently inspecting the pixels. Do not label that as independent visual verification. If independent visual verification is required, use an independently configured vision-capable reviewer or a deterministic image-analysis tool suitable for the acceptance criterion.
 
 ### Unknown binary
 
@@ -960,7 +960,7 @@ Examples commonly treated as retryable:
 
 Use bounded retry/backoff. Do not create an unbounded loop.
 
-DeepSeek's documentation currently lists 429 as rate limiting and 500/503 as server-side conditions where retry is appropriate. Its non-streaming requests may keep the HTTP connection alive while waiting; a separate inference-level "are you alive?" call is unnecessary in the normal review path.
+The selected provider's documentation should be checked for rate limiting and server-side retry conditions. Non-streaming requests may keep the HTTP connection alive while waiting; a separate inference-level "are you alive?" call is unnecessary in the normal review path.
 
 ### Output failure
 
@@ -973,7 +973,7 @@ Fail closed on:
 - output truncation;
 - incomplete mandatory phase.
 
-JSON mode can occasionally return empty content according to DeepSeek's own documentation, so bounded internal retry/repair is appropriate. Empty content is never PASS.
+JSON mode can occasionally return empty content, so bounded internal retry/repair is appropriate. Empty content is never PASS.
 
 ---
 
@@ -1018,7 +1018,7 @@ Record, when returned:
 
 Caching is an optimization, not a correctness condition.
 
-DeepSeek also documents an optional `user_id` parameter that isolates KV cache/scheduling state by caller identity. If multiple projects share one API account and project policy wants stronger cache separation, use a stable non-PII project identifier; do not put personal/customer information in `user_id`. This is optional and must not change review semantics.
+Some providers document an optional `user_id` parameter that isolates cache/scheduling state by caller identity. If multiple projects share one API account and project policy wants stronger cache separation, use a stable non-PII project identifier; do not put personal/customer information in `user_id`. This is optional and must not change review semantics.
 
 Keep developer-visible output compact. Do not cap the number of valid confirmed findings, but bound individual prose fields and use exact path/line references instead of pasting large source excerpts. If a confirmed set is too large for one structured response, return deterministic batches under one review result rather than dropping findings.
 
@@ -1065,7 +1065,7 @@ Never log:
 
 - API key;
 - Authorization header;
-- DeepSeek reasoning content;
+- external reviewer reasoning content;
 - full source files;
 - full prompts by default.
 
@@ -1302,7 +1302,7 @@ The following code is intentionally a **reference implementation skeleton**, not
 - strict committed-snapshot validation;
 - full changed-file packet construction from Git objects;
 - exact requirement provenance;
-- safe DeepSeek JSON calls;
+- safe external-review JSON calls;
 - candidate validation;
 - deterministic final blocker synthesis.
 
@@ -1322,9 +1322,9 @@ from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from typing import Any
 
-API_URL = "https://api.deepseek.com/chat/completions"
-MODEL = "deepseek-v4-pro"
-KEY_ENV = "DeepSeek_API_key"
+API_URL = "<provider-chat-completions-endpoint>"
+MODEL = "<configured-review-model>"
+KEY_ENV = "EXTERNAL_REVIEW_API_KEY"
 
 DISCOVERY_MAX_TOKENS = 24_000
 FALSIFY_MAX_TOKENS = 32_000
@@ -1542,7 +1542,7 @@ def requirement_quote_valid(candidate: dict[str, Any], authorities: dict[str, Au
     return authority is not None and quote in authority.content
 
 
-class DeepSeekClient:
+class CodeReviewerClient:
     def __init__(self, key: str | None = None):
         self._key = key if key is not None else os.environ.get(KEY_ENV, "")
         if not self._key.strip():
@@ -1877,7 +1877,7 @@ A minimal bootstrap script may:
 
 1. validate a clean committed candidate;
 2. construct its own simple diff + full changed-file packet;
-3. call `deepseek-v4-pro` once with thinking enabled at `reasoning_effort=high`;
+3. call the configured review model once with the selected reasoning setting;
 4. require exact requirement evidence and concrete failure scenarios;
 5. return `PASS`, `FAIL`, or `INCONCLUSIVE`;
 6. fail closed on API/output error.
@@ -1960,7 +1960,7 @@ Use this sequence for every new project.
 ### Ready-to-paste fresh-project installation prompt
 
 ```text
-Install the project's independent DeepSeek review gate according to docs/REVIEW-GATE.md.
+Install the project's independent external review gate according to docs/REVIEW-GATE.md.
 
 First inspect the repository and existing workflow. Do not overwrite an existing gate blindly.
 Create/confirm the task-scope schema, private review-artifact area, concise AGENTS.md rule, committed-snapshot policy, external-review data policy, normal review harness, independent bootstrap reviewer, regression tests, precision fixtures, and protected-stage PASS receipt integration.
@@ -2017,7 +2017,7 @@ After several tasks, inspect:
 - unresolved rate;
 - number of developer-visible review rounds;
 - confirmed findings discovered only on later corrected snapshots;
-- DeepSeek API calls/tokens per task;
+- external review API calls/tokens per task;
 - cache hit ratio.
 
 Interpretation examples:
@@ -2117,7 +2117,7 @@ A fresh project has a production-ready review gate when all of the following are
 - the gate itself was bootstrapped independently without creating a permanent bypass;
 - telemetry can distinguish confirmed defects, false allegations, real non-blocking issues, unresolved candidates, and recall proxies.
 
-The standard should make DeepSeek difficult to satisfy for evidence-backed reasons, not because it is allowed to convert uncertainty into blockers.
+The standard should make the external reviewer difficult to satisfy for evidence-backed reasons, not because it is allowed to convert uncertainty into blockers.
 
 ---
 
