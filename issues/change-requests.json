@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 200,
+  "next_cr_number": 201,
   "status_values": [
     "open",
     "in_progress",
@@ -1736,6 +1736,13 @@
       "status": "in_progress",
       "source_authority": ["design/cr-preflight/CR-0199.md", "design/warajevo-zx-spectrum-next-architecture.md sections 10, 20.3, and 38", "design/wzsn-architectures-1-2-developer-tasks.md tasks 188 and 197", "src/core/wz_bus.c", "src/core/wz_machine.c", "reference/original-warajevo/source/src/environment/SNAPSHOT.PAS"],
       "notes": "Opened on 2026-09-04 to implement the 128K AY-3-8912 register-select/data-write bus boundary as master-timestamped deterministic events. Tone, noise, envelope, mixer, serialization, and PCM integration remain ordered follow-on work."
+    },
+    {
+      "cr_number": "CR-0200",
+      "title": "Temporarily disable local test-machine soaks and use hosted runners only",
+      "status": "closed",
+      "source_authority": ["WORKFLOW.md", "tools/harness/README.md", "design/cr-preflight/CR-0200.md"],
+      "notes": "Local test-machine harnesses and machine definitions remain unchanged, but local soak invocation is temporarily disabled by operator direction. Complete GitHub-hosted matrix validation remains required; reactivation requires fresh operator direction."
     }
   ]
 }

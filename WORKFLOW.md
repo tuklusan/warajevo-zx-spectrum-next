@@ -111,6 +111,19 @@ must still reach a terminal state before acceptance.
 
 ## Private Local Artifacts
 
+## Temporary Hosted-Only Validation Mode
+
+By current operator direction, local test-machine soaks are temporarily
+disabled. Keep the local test-machine harness, machine definitions, SSH
+credentials, and screenshot paths unchanged for later reactivation, but do not
+invoke local soak builds or tests while this mode is active. Use the complete
+GitHub-hosted matrix as the validation path, wait for every configured lane to
+reach a terminal state, and record any intentionally skipped local soak as an
+environmental/policy disposition rather than as a software pass or failure.
+
+This exception is reversible: local soaks may resume only after an explicit
+operator direction and a fresh workflow-state update.
+
 Private local-only material still belongs inside the project directory.
 
 For the difficult-media regression corpus, use:
