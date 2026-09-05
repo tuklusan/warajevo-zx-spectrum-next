@@ -639,9 +639,9 @@ static void test_snapshot_state_isolated_validation(void)
 static void test_sna_48k_loader(void)
 {
     static wz_byte_t sna[WZ_SNA_48K_LENGTH];
-    wz_machine_t machine;
-    wz_snapshot_state_t snapshot;
-    wz_snapshot_state_t original;
+    static wz_machine_t machine;
+    static wz_snapshot_state_t snapshot;
+    static wz_snapshot_state_t original;
     wz_qword_t before_hash;
     wz_qword_t after_hash;
 
@@ -713,8 +713,8 @@ static void test_sna_48k_writer(void)
 {
     static wz_byte_t sna[WZ_SNA_48K_LENGTH];
     static wz_byte_t original[WZ_SNA_48K_LENGTH];
-    wz_machine_t machine;
-    wz_snapshot_state_t snapshot;
+    static wz_machine_t machine;
+    static wz_snapshot_state_t snapshot;
     wz_qword_t before_hash;
     wz_qword_t after_hash;
 
@@ -1185,7 +1185,7 @@ static void test_snapshot_parser_fuzz_matrix(void)
                             3u * (3u + WZ_Z80_V2_PAGE_SIZE)];
     static wz_snapshot_state_t snapshot;
     static wz_snapshot_state_t original_snapshot;
-    wz_sna_128k_image_t image;
+    static wz_sna_128k_image_t image;
     wz_dword_t seed = 0x6d2b79f5u;
 
     memset(z80_v2, 0, sizeof(z80_v2));
@@ -1301,7 +1301,7 @@ static void test_snapshot_cross_host_round_trips(void)
     static wz_byte_t original_output[WZ_Z80_V2_LENGTH];
     static wz_snapshot_state_t snapshot;
     static wz_snapshot_state_t original_snapshot;
-    wz_machine_t machine;
+    static wz_machine_t machine;
 
     if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK) {
         fputs("cross-host snapshot setup failed\n", stderr);
@@ -1407,7 +1407,7 @@ static void test_snapshot_cross_host_round_trips(void)
 
 static void test_128k_banked_memory_and_paging(void)
 {
-    wz_machine_t machine;
+    static wz_machine_t machine;
     wz_bus_request_t request;
 
     if (wz_machine_init(&machine, wz_machine_profile_128k_pal()) != WZ_RESULT_OK) {
@@ -1687,8 +1687,8 @@ static void test_128k_timing_relationships(void)
 
 static void test_128k_ay_register_timing(void)
 {
-    wz_machine_t machine;
-    wz_machine_t machine_48k;
+    static wz_machine_t machine;
+    static wz_machine_t machine_48k;
     wz_bus_request_t select_request;
     wz_bus_request_t write_request;
     wz_ay_event_t events[2u];
