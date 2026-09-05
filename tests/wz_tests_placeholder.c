@@ -2494,6 +2494,57 @@ static void test_audio_pcm_hash(void)
     }
 }
 
+static void test_ay_pcm_hash(void)
+{
+    static wz_audio_sample_t first[64u];
+    static wz_audio_sample_t second[64u];
+    wz_ay_t first_ay;
+    wz_ay_t second_ay;
+    wz_qword_t first_hash;
+    wz_qword_t second_hash;
+
+    wz_ay_init(&first_ay);
+    wz_ay_init(&second_ay);
+    if (wz_ay_select_register(&first_ay, 0u, 0u) != WZ_RESULT_OK ||
+        wz_ay_write_data(&first_ay, 1u, 0u) != WZ_RESULT_OK ||
+        wz_ay_select_register(&first_ay, 7u, 0u) != WZ_RESULT_OK ||
+        wz_ay_write_data(&first_ay, 0u, 0u) != WZ_RESULT_OK ||
+        wz_ay_select_register(&first_ay, 8u, 0u) != WZ_RESULT_OK ||
+        wz_ay_write_data(&first_ay, 15u, 0u) != WZ_RESULT_OK ||
+        wz_ay_select_register(&second_ay, 0u, 0u) != WZ_RESULT_OK ||
+        wz_ay_write_data(&second_ay, 1u, 0u) != WZ_RESULT_OK ||
+        wz_ay_select_register(&second_ay, 7u, 0u) != WZ_RESULT_OK ||
+        wz_ay_write_data(&second_ay, 0u, 0u) != WZ_RESULT_OK ||
+        wz_ay_select_register(&second_ay, 8u, 0u) != WZ_RESULT_OK ||
+        wz_ay_write_data(&second_ay, 15u, 0u) != WZ_RESULT_OK) {
+        fputs("AY PCM fixture register writes failed\n", stderr);
+        exit(1);
+    }
+    for (size_t index = 0u; index < 64u; ++index) {
+        first[index] = wz_audio_mixer_ay_sample(&first_ay);
+        second[index] = wz_audio_mixer_ay_sample(&second_ay);
+        if (wz_ay_advance_master_ticks(&first_ay, WZ_AY_MASTER_TICKS_PER_CLOCK) !=
+                WZ_RESULT_OK ||
+            wz_ay_advance_master_ticks(&second_ay, WZ_AY_MASTER_TICKS_PER_CLOCK) !=
+                WZ_RESULT_OK) {
+            fputs("AY PCM fixture advancement failed\n", stderr);
+            exit(1);
+        }
+    }
+    if (wz_audio_samples_hash(first, 64u, &first_hash) != WZ_RESULT_OK ||
+        wz_audio_samples_hash(second, 64u, &second_hash) != WZ_RESULT_OK ||
+        first_hash == 0u || first_hash != second_hash) {
+        fputs("AY PCM hash repeatability failed\n", stderr);
+        exit(1);
+    }
+    second[63u] += 1;
+    if (wz_audio_samples_hash(second, 64u, &second_hash) != WZ_RESULT_OK ||
+        first_hash == second_hash) {
+        fputs("AY PCM hash sensitivity failed\n", stderr);
+        exit(1);
+    }
+}
+
 static void test_host_audio_push_queue(void)
 {
     wz_host_audio_push_queue_t queue;
@@ -2917,6 +2968,7 @@ int main(void)
     test_mic_capture_timeline();
     test_beeper_pcm_render();
     test_audio_pcm_hash();
+    test_ay_pcm_hash();
     test_host_audio_push_queue();
     test_canonical_audio_policy();
     test_host_audio_policy();
