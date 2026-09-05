@@ -1385,6 +1385,58 @@ static void test_128k_banked_memory_and_paging(void)
     wz_machine_destroy(&machine);
 }
 
+static void test_128k_paging_all_bank_fixture(void)
+{
+    static wz_machine_t machine;
+    wz_bus_request_t request;
+
+    if (wz_machine_init(&machine, wz_machine_profile_128k_pal()) != WZ_RESULT_OK) {
+        fputs("128K all-bank fixture setup failed\n", stderr);
+        exit(1);
+    }
+    for (wz_byte_t bank = 0u; bank < WZ_128K_RAM_BANK_COUNT; ++bank) {
+        wz_bus_request_init(&request, WZ_BUS_IO_WRITE, 0u, 0x7ffdu, bank, 4u);
+        if (wz_machine_bus_request(&machine, &request) != WZ_RESULT_OK) {
+            fputs("128K all-bank select failed\n", stderr);
+            wz_machine_destroy(&machine);
+            exit(1);
+        }
+        wz_machine_memory_write(&machine, 0xc000u, (wz_byte_t)(0xa0u + bank));
+    }
+    for (wz_byte_t bank = 0u; bank < WZ_128K_RAM_BANK_COUNT; ++bank) {
+        wz_bus_request_init(&request, WZ_BUS_IO_WRITE, 0u, 0x7ffdu, bank, 4u);
+        if (wz_machine_bus_request(&machine, &request) != WZ_RESULT_OK ||
+            wz_machine_memory_read(&machine, 0xc000u) !=
+                (wz_byte_t)(0xa0u + bank)) {
+            fputs("128K all-bank isolation fixture failed\n", stderr);
+            wz_machine_destroy(&machine);
+            exit(1);
+        }
+    }
+    wz_bus_request_init(&request, WZ_BUS_IO_WRITE, 0u, 0x7ffdu, 0x3fu, 4u);
+    if (wz_machine_bus_request(&machine, &request) != WZ_RESULT_OK ||
+        wz_machine_128k_screen_bank(&machine) != 7u ||
+        wz_machine_128k_rom_bank(&machine) != 1u) {
+        fputs("128K screen and ROM fixture failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_bus_request_init(&request, WZ_BUS_IO_WRITE, 0u, 0x7ffdu, 0x20u, 4u);
+    if (wz_machine_bus_request(&machine, &request) != WZ_RESULT_OK) {
+        fputs("128K lock fixture setup failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_bus_request_init(&request, WZ_BUS_IO_WRITE, 0u, 0x7ffdu, 0x01u, 4u);
+    if (wz_machine_bus_request(&machine, &request) != WZ_RESULT_OK ||
+        wz_machine_128k_paging_value(&machine) != 0x20u) {
+        fputs("128K lock fixture failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_machine_destroy(&machine);
+}
+
 static void test_128k_ula_profile(void)
 {
     wz_machine_t machine;
@@ -2844,6 +2896,7 @@ int main(void)
     test_snapshot_parser_fuzz_matrix();
     test_snapshot_cross_host_round_trips();
     test_128k_banked_memory_and_paging();
+    test_128k_paging_all_bank_fixture();
     test_128k_ula_profile();
     test_128k_timing_relationships();
     test_128k_ay_register_timing();
