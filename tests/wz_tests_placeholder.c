@@ -1560,7 +1560,11 @@ static void test_ay_audio_mixer(void)
         wz_ay_advance_master_ticks(&ay, WZ_AY_MASTER_TICKS_PER_CLOCK) !=
             WZ_RESULT_OK ||
         wz_audio_mixer_ay_sample(&ay) != -(wz_audio_sample_t)65536) {
-        fputs("AY mixer oscillator sampling failed\n", stderr);
+        fprintf(stderr, "AY mixer oscillator sampling failed: sample=%ld tone=%u noise=%u r7=%u\\n",
+                (long)wz_audio_mixer_ay_sample(&ay),
+                (unsigned)wz_ay_tone_level(&ay, 0u),
+                (unsigned)wz_ay_noise_level(&ay),
+                (unsigned)wz_ay_register_value(&ay, 7u));
         exit(1);
     }
     if (wz_ay_select_register(&ay, 8u, 0u) != WZ_RESULT_OK ||
