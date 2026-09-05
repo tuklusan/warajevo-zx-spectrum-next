@@ -1817,9 +1817,9 @@
     {
       "cr_number": "CR-0211",
       "title": "Add deterministic 128K paging, interrupt, and raster fixtures",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0211.md", "design/warajevo-zx-spectrum-next-architecture.md sections 9, 15, 16, 36, 38, 40, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 196", "src/core/wz_machine.c", "src/core/wz_machine.h", "src/core/wz_bus.c", "src/core/wz_raster.c", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
-      "notes": "Opened on 2026-09-05 after CR-0210 closure. Add deterministic 128K paging, interrupt, frame-boundary, and raster-visible fixtures against the shared profile/timing model, with upstream and hardware evidence gates."
+      "notes": "Closed on 2026-09-05 at corrected implementation range 2cb49ed..2cb91ea. Exact-SHA CODE, bootstrap, and DOCUMENTATION reviews passed with zero findings. Initial Linux diagnostic CR0211-1 exposed a fixture lock-sequencing error, which was corrected and re-reviewed. Corrected remote runs CR0211-6 Linux sanitizer, CR0211-7 Intel macOS, CR0211-8 Windows 10, and CR0211-9 Windows 11 passed with primary and pull status zero. Hosted platform-smoke run 33952617236 passed deep housekeeping, all 18 matrix lanes, and publication at 2cb91ea. The second upstream zero-gap scan found no missing scoped 128K paging, interrupt, or raster fixture behavior."
     }
   ]
 }
