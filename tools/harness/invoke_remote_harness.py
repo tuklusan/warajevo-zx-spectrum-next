@@ -326,13 +326,20 @@ def validate_powershell(root: Path, script_text: str) -> None:
 def run_linux(machine: dict[str, str], shell_command: str, root: Path) -> subprocess.CompletedProcess[bytes]:
     path_prefix = machine.get("path_prefix")
     path_setup = f"PATH={shlex.quote(path_prefix)}:$PATH && " if path_prefix else ""
+    max_bytes = machine.get("max_bytes")
+    size_guard = ""
+    if max_bytes is not None:
+        max_kb = max_bytes // 1024
+        size_guard = (
+            f"usage_kb=$(du -sk . | awk '{{print $1}}') && "
+            f"test \"$usage_kb\" -le {max_kb} && "
+        )
+    post_size_guard = size_guard[:-4] if size_guard else "true"
     remote_command = (
         f"cd {shlex.quote(machine['project_dir'])} && {path_setup}"
-        f"usage_kb=$(du -sk . | awk '{{print $1}}') && "
-        f"test \"$usage_kb\" -le {machine.get('max_bytes', 0) // 1024 or 1024 * 1024} && "
+        f"{size_guard}"
         f"{shell_command} && "
-        f"usage_kb=$(du -sk . | awk '{{print $1}}') && "
-        f"test \"$usage_kb\" -le {machine.get('max_bytes', 0) // 1024 or 1024 * 1024}"
+        f"{post_size_guard}"
     )
     return subprocess.run(
         [*ssh_base(root, machine), machine["ssh_target"], remote_command],
