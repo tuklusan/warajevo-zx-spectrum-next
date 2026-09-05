@@ -13,7 +13,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include <stdlib.h>
 
 #define WZ_STATE_VERSION 12u
-#define WZ_STATE_HEADER_LENGTH 125u
+#define WZ_STATE_HEADER_LENGTH WZ_STATE_MACHINE_MEMORY_OFFSET
 #define WZ_STATE_MACHINE_LENGTH (65536u + WZ_STATE_HEADER_LENGTH)
 
 static wz_result_t wz_state_write(wz_state_writer_t* writer,

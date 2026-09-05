@@ -727,7 +727,7 @@ static void test_sna_48k_loader(void)
         exit(1);
     }
     if (wz_snapshot_state_length(&snapshot) != WZ_STATE_SNAPSHOT_CAPACITY ||
-        wz_snapshot_state_data(&snapshot)[113u + 0x4000u] != 0x43u ||
+        wz_snapshot_state_data(&snapshot)[WZ_STATE_MACHINE_MEMORY_OFFSET + 0x4000u] != 0x43u ||
         wz_snapshot_state_data(&snapshot)[31u] != 0x00u ||
         wz_snapshot_state_data(&snapshot)[32u] != 0x00u ||
         wz_snapshot_state_data(&snapshot)[33u] != 0x21u ||
@@ -1049,7 +1049,7 @@ static void test_z80_v1_loader(void)
     if (wz_snapshot_state_load_z80_v1(&snapshot, z80, sizeof(z80)) != WZ_RESULT_OK ||
         wz_snapshot_state_data(&snapshot)[33u] != 0x21u ||
         wz_snapshot_state_data(&snapshot)[34u] != 0x43u ||
-        wz_snapshot_state_data(&snapshot)[113u + 0x4000u] !=
+        wz_snapshot_state_data(&snapshot)[WZ_STATE_MACHINE_MEMORY_OFFSET + 0x4000u] !=
             (wz_byte_t)(WZ_Z80_V1_HEADER_LENGTH * 3u)) {
         fputs("Z80 v1 compressed load failed\n", stderr);
         exit(1);
@@ -1115,9 +1115,9 @@ static void test_z80_v2_loader_and_writer(void)
     if (wz_snapshot_state_load_z80_v2(&snapshot, z80, offset) != WZ_RESULT_OK ||
         wz_snapshot_state_data(&snapshot)[33u] != 0x21u ||
         wz_snapshot_state_data(&snapshot)[34u] != 0x43u ||
-        wz_snapshot_state_data(&snapshot)[113u + 0x4000u] != 0xa5u ||
-        wz_snapshot_state_data(&snapshot)[113u + 0x8000u] != 0u ||
-        wz_snapshot_state_data(&snapshot)[113u + 0xc000u] != 0x5au) {
+        wz_snapshot_state_data(&snapshot)[WZ_STATE_MACHINE_MEMORY_OFFSET + 0x4000u] != 0xa5u ||
+        wz_snapshot_state_data(&snapshot)[WZ_STATE_MACHINE_MEMORY_OFFSET + 0x8000u] != 0u ||
+        wz_snapshot_state_data(&snapshot)[WZ_STATE_MACHINE_MEMORY_OFFSET + 0xc000u] != 0x5au) {
         fputs("Z80 v2 load or page mapping failed\n", stderr);
         exit(1);
     }
@@ -1148,9 +1148,9 @@ static void test_z80_v2_loader_and_writer(void)
         output[6u] != 0u || output[7u] != 0u || output[30u] != 23u ||
         output[32u] != 0x21u || output[33u] != 0x43u || output[57u] != 8u ||
         wz_snapshot_state_load_z80_v2(&snapshot, output, sizeof(output)) !=
-            WZ_RESULT_OK || wz_snapshot_state_data(&snapshot)[113u + 0x4000u] != 0x11u ||
-        wz_snapshot_state_data(&snapshot)[113u + 0x8000u] != 0x22u ||
-        wz_snapshot_state_data(&snapshot)[113u + 0xc000u] != 0x33u) {
+            WZ_RESULT_OK || wz_snapshot_state_data(&snapshot)[WZ_STATE_MACHINE_MEMORY_OFFSET + 0x4000u] != 0x11u ||
+        wz_snapshot_state_data(&snapshot)[WZ_STATE_MACHINE_MEMORY_OFFSET + 0x8000u] != 0x22u ||
+        wz_snapshot_state_data(&snapshot)[WZ_STATE_MACHINE_MEMORY_OFFSET + 0xc000u] != 0x33u) {
         fputs("Z80 v2 canonical writer failed\n", stderr);
         wz_machine_destroy(&machine);
         exit(1);
@@ -1201,9 +1201,9 @@ static void test_z80_v3_loader(void)
     if (wz_snapshot_state_load_z80_v3(&snapshot, z80, length) != WZ_RESULT_OK ||
         wz_snapshot_state_data(&snapshot)[33u] != 0x21u ||
         wz_snapshot_state_data(&snapshot)[34u] != 0x43u ||
-        wz_snapshot_state_data(&snapshot)[113u + 0x4000u] != 0u ||
-        wz_snapshot_state_data(&snapshot)[113u + 0x8000u] != 0x40u ||
-        wz_snapshot_state_data(&snapshot)[113u + 0xc000u] != 0x80u) {
+        wz_snapshot_state_data(&snapshot)[WZ_STATE_MACHINE_MEMORY_OFFSET + 0x4000u] != 0u ||
+        wz_snapshot_state_data(&snapshot)[WZ_STATE_MACHINE_MEMORY_OFFSET + 0x8000u] != 0x40u ||
+        wz_snapshot_state_data(&snapshot)[WZ_STATE_MACHINE_MEMORY_OFFSET + 0xc000u] != 0x80u) {
         fputs("Z80 v3 load or page mapping failed\n", stderr);
         exit(1);
     }
@@ -1382,7 +1382,7 @@ static void test_snapshot_cross_host_round_trips(void)
             WZ_RESULT_OK ||
         wz_snapshot_state_data(&snapshot)[33u] != 0x21u ||
         wz_snapshot_state_data(&snapshot)[34u] != 0x43u ||
-        wz_snapshot_state_data(&snapshot)[113u + 0x4000u] != 0x11u) {
+        wz_snapshot_state_data(&snapshot)[WZ_STATE_MACHINE_MEMORY_OFFSET + 0x4000u] != 0x11u) {
         fputs("cross-host SNA round-trip failed\n", stderr);
         wz_machine_destroy(&machine);
         exit(1);
@@ -1409,9 +1409,9 @@ static void test_snapshot_cross_host_round_trips(void)
     }
     if (wz_snapshot_state_load_z80_v2(&snapshot, z80, sizeof(z80)) !=
             WZ_RESULT_OK ||
-        wz_snapshot_state_data(&snapshot)[113u + 0x4000u] != 0x11u ||
-        wz_snapshot_state_data(&snapshot)[113u + 0x8000u] != 0x22u ||
-        wz_snapshot_state_data(&snapshot)[113u + 0xc000u] != 0x33u) {
+        wz_snapshot_state_data(&snapshot)[WZ_STATE_MACHINE_MEMORY_OFFSET + 0x4000u] != 0x11u ||
+        wz_snapshot_state_data(&snapshot)[WZ_STATE_MACHINE_MEMORY_OFFSET + 0x8000u] != 0x22u ||
+        wz_snapshot_state_data(&snapshot)[WZ_STATE_MACHINE_MEMORY_OFFSET + 0xc000u] != 0x33u) {
         fputs("cross-host Z80 round-trip failed\n", stderr);
         wz_machine_destroy(&machine);
         exit(1);
