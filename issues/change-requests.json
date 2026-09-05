@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 222,
+    "next_cr_number": 223,
   "status_values": [
     "open",
     "in_progress",
@@ -1890,6 +1890,13 @@
       "status": "in_progress",
       "source_authority": ["design/cr-preflight/CR-0221.md", "design/interface1-microdrive-zxnet.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24.1, 24.2, 24.4, 25, 29, 36, 39, and 49.1", "design/warajevo-zx-spectrum-next-ui-architecture.md sections 23.5, 39, and 44", "design/wzsn-architectures-1-2-developer-tasks.md task 207", "src/core/wz_machine.h", "src/core/wz_machine.c", "src/core/wz_state.c", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM"],
       "notes": "Opened on 2026-09-05 after the upstream scan confirmed that Interface-1 activation requires external ROM presence/identity, old/new variant distinction, active-page state, and conditional address mapping. Control-latch/register/device behavior remains ordered under later Phase-10 CRs."
+    },
+    {
+      "cr_number": "CR-0222",
+      "title": "Harden review adjudication against compliance false positives",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0222.md", "design/review-gate.md", "tools/reviewer/review_gate.py", "tests/test_review_gate.py", "design/cr-preflight/CR-0221.md"],
+      "notes": "Opened on 2026-09-05 after CR-0221 code review promoted multiple findings whose evidence explicitly demonstrated compliance. Feature implementation is paused until adjudication requires positive proof of an actual requirement violation."
     }
   ]
 }

@@ -59,6 +59,7 @@ VERDICTS = {"PASS", "FAIL", "INCONCLUSIVE", "REVIEW_UNAVAILABLE", "HUMAN_DECISIO
 SEVERITIES = {"BLOCKER", "HIGH"}
 PRIOR_STATUSES = {"OPEN", "RESOLVED", "DISPUTED"}
 DECISIONS = {"CONFIRMED", "REJECTED", "NON_BLOCKING", "UNRESOLVED"}
+EVIDENCE_CONCLUSIONS = {"VIOLATION", "COMPLIANCE", "INCONCLUSIVE"}
 ARTIFACT_CATEGORIES = {"PRODUCT_DEFECT", "TEST_DEFECT", "EVIDENCE_INSUFFICIENT", "INTERPRETATION_ERROR"}
 IMAGE_SUFFIXES = {".bmp", ".gif", ".jpeg", ".jpg", ".png", ".tif", ".tiff", ".webp"}
 BINARY_SUFFIXES = {
@@ -925,7 +926,9 @@ def decision_schema_valid(value: Any, expected_ids: set[str]) -> bool:
         and isinstance(item.get("reason"), str) and item["reason"].strip()
         and isinstance(item.get("negative_check"), str) and item["negative_check"].strip()
         and isinstance(item.get("proof"), str)
+        and item.get("evidence_conclusion") in EVIDENCE_CONCLUSIONS
         and (item["decision"] != "CONFIRMED" or bool(item["proof"].strip()))
+        and (item["decision"] != "CONFIRMED" or item["evidence_conclusion"] == "VIOLATION")
         and ((item.get("confirmed_severity") in SEVERITIES) if item["decision"] == "CONFIRMED"
              else item.get("confirmed_severity") is None)
         and isinstance(item.get("authority_conflict", False), bool)
@@ -1311,12 +1314,15 @@ def falsification_prompt(prefix: str, packet: ReviewPacket, candidates: list[dic
         "is not present in those sources; request the exact missing source and return UNRESOLVED instead. "
         "For each candidate, inspect alternate callers/callees, initialization, cleanup, invariants, reachability, language and "
         "platform behavior, assumptions, current CR scope, future-work boundaries, and the gate severity contract. Return "
-        "exactly one CONFIRMED, REJECTED, NON_BLOCKING, or UNRESOLVED decision per candidate. CONFIRMED requires positive "
-        "proof that the defect is real and independently meets BLOCKER/HIGH severity; set confirmed_severity accordingly. "
+        "exactly one CONFIRMED, REJECTED, NON_BLOCKING, or UNRESOLVED decision per candidate. Include "
+        "evidence_conclusion as VIOLATION, COMPLIANCE, or INCONCLUSIVE. CONFIRMED requires "
+        "evidence_conclusion=VIOLATION plus positive proof that the defect is real and independently meets BLOCKER/HIGH "
+        "severity; set confirmed_severity accordingly. A candidate whose evidence proves compliance must be REJECTED or "
+        "NON_BLOCKING, never CONFIRMED. "
         "A real issue below HIGH is NON_BLOCKING, not REJECTED. Missing evidence is UNRESOLVED. Set "
         "authority_conflict=true only when exact authoritative sources conflict. New suspicions "
         "may appear only as new_candidates and do not skip this proof pipeline. Return {\"review_complete\":true,\"decisions\":["
-        "{\"candidate_id\":\"ID\",\"decision\":\"REJECTED\",\"reason\":\"reason\",\"proof\":\"pointer\","
+        "{\"candidate_id\":\"ID\",\"decision\":\"REJECTED\",\"evidence_conclusion\":\"COMPLIANCE\",\"reason\":\"reason\",\"proof\":\"pointer\","
         "\"confirmed_severity\":null,\"authority_conflict\":false,"
         "\"negative_check\":\"attempt to disprove\"}],\"new_candidates\":[]} as JSON."
     )
@@ -1614,6 +1620,7 @@ def perform_review(client: DeepSeekClient, root: Path, review_type: str, packet:
             prompt = prefix + "ADJUDICATION_PACKET\n" + canonical_json(packet_data) + (
                 "\nUse only decisive evidence in this packet. Return {\"review_complete\":true,\"candidate_id\":\"ID\","
                 "\"decision\":\"CONFIRMED|REJECTED|NON_BLOCKING|HUMAN_DECISION_REQUIRED\","
+                "\"evidence_conclusion\":\"VIOLATION|COMPLIANCE|INCONCLUSIVE\","
                 "\"confirmed_severity\":null,\"reason\":\"factual reason\","
                 "\"proof\":\"decisive evidence pointer or empty for human decision\","
                 "\"negative_check\":\"attempt made to disprove\"}. "
@@ -1633,9 +1640,11 @@ def perform_review(client: DeepSeekClient, root: Path, review_type: str, packet:
                 and item.get("decision") in {"CONFIRMED", "REJECTED", "NON_BLOCKING", "HUMAN_DECISION_REQUIRED"}
                 and isinstance(item.get("reason"), str) and bool(item["reason"].strip())
                 and isinstance(item.get("proof"), str)
+                and item.get("evidence_conclusion") in EVIDENCE_CONCLUSIONS
                 and isinstance(item.get("negative_check"), str)
                 and ((item.get("confirmed_severity") in SEVERITIES) if item["decision"] == "CONFIRMED"
                      else item.get("confirmed_severity") is None)
+                and (item["decision"] != "CONFIRMED" or item["evidence_conclusion"] == "VIOLATION")
                 and (item["decision"] == "HUMAN_DECISION_REQUIRED"
                      or bool(item["proof"].strip()) and bool(item["negative_check"].strip())),
                 "ADJUDICATION", "disabled", None, ADJUDICATION_OUTPUT_TOKENS, deadline,
@@ -1649,6 +1658,7 @@ def perform_review(client: DeepSeekClient, root: Path, review_type: str, packet:
                 decisions[identifier] = {
                     "candidate_id": identifier,
                     "decision": "CONFIRMED",
+                    "evidence_conclusion": "VIOLATION",
                     "reason": adjudication["reason"],
                     "proof": adjudication["proof"],
                     "negative_check": adjudication["negative_check"],

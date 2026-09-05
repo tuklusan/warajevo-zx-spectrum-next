@@ -134,6 +134,7 @@ def falsification(identifier, decision, conflict=False, new_candidates=None):
     return {
         "review_complete": True,
         "decisions": [{"candidate_id": identifier, "decision": decision,
+                       "evidence_conclusion": "VIOLATION" if decision == "CONFIRMED" else "COMPLIANCE",
                        "reason": "Evidence-based decision", "proof": "src/item.c:1",
                        "negative_check": "Checked current caller and callee paths",
                        "confirmed_severity": "HIGH" if decision == "CONFIRMED" else None,
@@ -706,9 +707,11 @@ class GateTests(unittest.TestCase):
         responses = [discovery("CODE-DISCOVERY", [future, real]),
                      {"review_complete": True, "decisions": [
                          {"candidate_id": future_id, "decision": "REJECTED", "reason": "Future work",
+                          "evidence_conclusion": "INCONCLUSIVE",
                           "proof": "CR scope", "negative_check": "Checked current scope",
                           "confirmed_severity": None, "authority_conflict": False},
                          {"candidate_id": real_id, "decision": "CONFIRMED", "reason": "Reachable",
+                          "evidence_conclusion": "VIOLATION",
                           "proof": "src/other.c:1", "negative_check": "Checked guards",
                           "confirmed_severity": "HIGH", "authority_conflict": False},
                      ], "new_candidates": []}]
@@ -881,7 +884,8 @@ class GateTests(unittest.TestCase):
             "source": "src/other.c", "location": "1", "claim": "guard exists"
         }]}])
         adjudicated = {"review_complete": True, "candidate_id": candidate_id(),
-                       "decision": "REJECTED", "reason": "Decisive guard", "proof": "src/other.c:1",
+                       "decision": "REJECTED", "evidence_conclusion": "COMPLIANCE",
+                       "reason": "Decisive guard", "proof": "src/other.c:1",
                        "negative_check": "Checked current guard path", "confirmed_severity": None}
         responses = [discovery("CODE-DISCOVERY", [candidate()]),
                      falsification(candidate_id(), "CONFIRMED"), adjudicated]
@@ -1036,7 +1040,8 @@ class GateTests(unittest.TestCase):
             "source": "src/other.c", "location": "1", "claim": "guard exists"
         }]}])
         adjudicated = {"review_complete": True, "candidate_id": candidate_id(),
-                       "decision": "REJECTED", "reason": "Decisive guard", "proof": "src/other.c:1",
+                       "decision": "REJECTED", "evidence_conclusion": "COMPLIANCE",
+                       "reason": "Decisive guard", "proof": "src/other.c:1",
                        "negative_check": "Checked current guard path", "confirmed_severity": None}
         responses = [discovery("CODE-DISCOVERY", [candidate()]),
                      falsification(candidate_id(), "CONFIRMED"), adjudicated]
