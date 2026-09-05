@@ -1852,9 +1852,9 @@
     {
       "cr_number": "CR-0216",
       "title": "Reconcile the single networking-mode state",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0216.md", "design/interface1-microdrive-zxnet.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24.1, 24.2, 24.6, and 25", "design/warajevo-zx-spectrum-next-ui-architecture.md sections 5 and 23.5", "design/wzsn-architectures-1-2-developer-tasks.md task 202", "src/core/wz_machine.h", "src/core/wz_machine.c", "src/core/wz_state.c", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
-      "notes": "Opened on 2026-09-05 to audit and, if necessary, complete the single deterministic NONE/INTERFACE1/EAR_MIC state boundary before mode availability and cold-reconfiguration implementation. Runtime evidence and publication remain gated by exact-SHA review and remote/hosted validation."
+      "notes": "Opened and closed on 2026-09-05 after auditing the single deterministic NONE/INTERFACE1/EAR_MIC state boundary against the frozen Phase-10 specification and preserved Interface-1 activation. Exact-SHA DOCUMENTATION and independent bootstrap reviews passed with zero findings; availability rejection and cold reconfiguration remain ordered follow-on CRs."
     }
   ]
 }
