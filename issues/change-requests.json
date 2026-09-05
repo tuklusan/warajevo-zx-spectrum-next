@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 216,
+  "next_cr_number": 217,
   "status_values": [
     "open",
     "in_progress",
@@ -1848,6 +1848,13 @@
       "status": "closed",
       "source_authority": ["design/interface1-microdrive-zxnet.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24, 25, 26, 36, 38, 39, 40, and 49.1", "design/warajevo-zx-spectrum-next-ui-architecture.md sections 5, 11, 14, 15, 23.5, 24, 25, 39, 44, and 48", "design/wzsn-architectures-1-2-developer-tasks.md task 200", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
       "notes": "Opened and closed on 2026-09-05 after replacing the short Phase-10 notes scaffold with a frozen byte-level Interface-1, Microdrive, and original ZX Net contract. Exact-SHA DOCUMENTATION and independent bootstrap reviews passed with zero findings; the complete upstream MDRIVE.ASM/SPECSIM.ASM scan found no undispositioned specification behavior. Runtime implementation, ROM provenance, remote validation, and hosted validation remain ordered follow-on CRs."
+    },
+    {
+      "cr_number": "CR-0216",
+      "title": "Reconcile the single networking-mode state",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0216.md", "design/interface1-microdrive-zxnet.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24.1, 24.2, 24.6, and 25", "design/warajevo-zx-spectrum-next-ui-architecture.md sections 5 and 23.5", "design/wzsn-architectures-1-2-developer-tasks.md task 202", "src/core/wz_machine.h", "src/core/wz_machine.c", "src/core/wz_state.c", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
+      "notes": "Opened on 2026-09-05 to audit and, if necessary, complete the single deterministic NONE/INTERFACE1/EAR_MIC state boundary before mode availability and cold-reconfiguration implementation. Runtime evidence and publication remain gated by exact-SHA review and remote/hosted validation."
     }
   ]
 }
