@@ -130,6 +130,8 @@ wz_result_t wz_machine_set_tape_loading_mode(wz_machine_t* machine,
 wz_tape_loading_mode_t wz_machine_tape_loading_mode(const wz_machine_t* machine);
 wz_result_t wz_machine_set_networking_mode(wz_machine_t* machine,
                                             wz_networking_mode_t mode);
+wz_result_t wz_machine_reconfigure_networking_mode(wz_machine_t* machine,
+                                                   wz_networking_mode_t mode);
 wz_networking_mode_t wz_machine_networking_mode(const wz_machine_t* machine);
 wz_tape_trap_reason_t wz_machine_tape_trap_reason(const wz_machine_t* machine);
 wz_byte_t wz_machine_tape_ear_level(const wz_machine_t* machine);

@@ -194,6 +194,35 @@ wz_result_t wz_machine_set_networking_mode(wz_machine_t* machine,
     return WZ_RESULT_OK;
 }
 
+wz_result_t wz_machine_reconfigure_networking_mode(wz_machine_t* machine,
+                                                   wz_networking_mode_t mode)
+{
+    wz_machine_t replacement;
+    const wz_machine_profile_t* profile;
+
+    if (machine == 0 || mode > WZ_NETWORKING_EAR_MIC) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (mode == WZ_NETWORKING_EAR_MIC) {
+        return WZ_RESULT_UNSUPPORTED_OPERATION;
+    }
+    if (machine->profile == 0) {
+        return WZ_RESULT_INVALID_PROFILE;
+    }
+    if (machine->networking_mode == mode) {
+        return WZ_RESULT_OK;
+    }
+
+    profile = machine->profile;
+    if (wz_machine_init(&replacement, profile) != WZ_RESULT_OK) {
+        return WZ_RESULT_OUT_OF_MEMORY;
+    }
+    replacement.networking_mode = mode;
+    wz_machine_destroy(machine);
+    *machine = replacement;
+    return WZ_RESULT_OK;
+}
+
 wz_networking_mode_t wz_machine_networking_mode(const wz_machine_t* machine)
 {
     return machine == 0 ? WZ_NETWORKING_NONE : machine->networking_mode;

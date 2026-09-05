@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 219,
+  "next_cr_number": 220,
   "status_values": [
     "open",
     "in_progress",
@@ -1869,6 +1869,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0218.md", "design/interface1-microdrive-zxnet.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24.1 and 24.6", "design/warajevo-zx-spectrum-next-ui-architecture.md section 23.5", "design/wzsn-architectures-1-2-developer-tasks.md tasks 204 and 206", "src/core/wz_machine.h", "src/core/wz_machine.c", "src/core/wz_state.c", "tests/wz_tests_placeholder.c"],
       "notes": "Opened and closed on 2026-09-05 after the setter was changed to reject reserved EAR_MIC activation atomically while preserving native-state representation. Exact-SHA CODE, DOCUMENTATION, and independent bootstrap reviews passed with zero findings. Remote Linux CR0218-LINUX-2 and Intel Mac CR0218-MAC-2 passed with sanitizers; Windows 10 CR0218-WIN10-2 and Windows 11 CR0218-WIN11-3 passed without sanitizers. Windows MinGW sanitizer-link failures were classified as missing runner libraries. Hosted platform-smoke run 33957112165 passed all 18 lanes, deep housekeeping, and publication gate."
+    },
+    {
+      "cr_number": "CR-0219",
+      "title": "Implement cold networking-mode reconfiguration",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0219.md", "design/interface1-microdrive-zxnet.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24.1, 24.6, 26, 36, 39, and 49.1", "design/warajevo-zx-spectrum-next-ui-architecture.md sections 23.5 and 40", "design/wzsn-architectures-1-2-developer-tasks.md task 205", "src/core/wz_machine.h", "src/core/wz_machine.c", "src/core/wz_state.c", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM"],
+      "notes": "Opened on 2026-09-05 after the CR-0218 audit confirmed that the public networking setter only changes an enum and does not perform the architecture-required cold machine-context replacement. The implementation must recreate the same profile for NONE/INTERFACE1, preserve application pause/run state outside the core, remain idempotent for the active mode, and reject reserved EAR_MIC atomically."
     }
   ]
 }

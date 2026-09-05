@@ -433,6 +433,55 @@ static void test_networking_mode_state(void)
     wz_machine_destroy(&machine);
 }
 
+static void test_networking_mode_cold_reconfiguration(void)
+{
+    const wz_machine_profile_t* profiles[2u] = {
+        wz_machine_profile_48k_pal(), wz_machine_profile_128k_pal()
+    };
+
+    for (size_t index = 0u; index < 2u; ++index) {
+        wz_machine_t machine;
+        const wz_machine_profile_t* profile = profiles[index];
+        wz_machine_init(&machine, profile);
+        wz_machine_memory_write(&machine, 0x8000u, 0xa5u);
+        machine.master_tick = 1234u;
+        machine.paging_7ffd = 0x1fu;
+        machine.networking_mode = WZ_NETWORKING_NONE;
+        if (wz_machine_reconfigure_networking_mode(&machine,
+                WZ_NETWORKING_INTERFACE1) != WZ_RESULT_OK ||
+            machine.profile != profile ||
+            wz_machine_networking_mode(&machine) != WZ_NETWORKING_INTERFACE1 ||
+            wz_machine_memory_read(&machine, 0x8000u) != 0u ||
+            machine.master_tick != 0u || machine.paging_7ffd != 0u) {
+            fputs("cold networking reconfiguration did not reset context\n", stderr);
+            wz_machine_destroy(&machine);
+            exit(1);
+        }
+        if (wz_machine_reconfigure_networking_mode(&machine,
+                WZ_NETWORKING_INTERFACE1) != WZ_RESULT_OK ||
+            wz_machine_networking_mode(&machine) != WZ_NETWORKING_INTERFACE1) {
+            fputs("same networking mode was not idempotent\n", stderr);
+            wz_machine_destroy(&machine);
+            exit(1);
+        }
+        if (wz_machine_reconfigure_networking_mode(&machine,
+                WZ_NETWORKING_EAR_MIC) != WZ_RESULT_UNSUPPORTED_OPERATION ||
+            wz_machine_networking_mode(&machine) != WZ_NETWORKING_INTERFACE1) {
+            fputs("reserved networking mode mutated cold context\n", stderr);
+            wz_machine_destroy(&machine);
+            exit(1);
+        }
+        if (wz_machine_reconfigure_networking_mode(&machine,
+                WZ_NETWORKING_NONE) != WZ_RESULT_OK ||
+            wz_machine_networking_mode(&machine) != WZ_NETWORKING_NONE) {
+            fputs("cold networking mode return transition failed\n", stderr);
+            wz_machine_destroy(&machine);
+            exit(1);
+        }
+        wz_machine_destroy(&machine);
+    }
+}
+
 static void test_historical_state_representability(void)
 {
     wz_machine_t machine;
@@ -2941,6 +2990,7 @@ int main(void)
     test_machine_tape_playback();
     test_tape_loading_mode_state();
     test_networking_mode_state();
+    test_networking_mode_cold_reconfiguration();
     test_historical_state_representability();
     test_snapshot_state_isolated_validation();
     test_sna_48k_loader();
