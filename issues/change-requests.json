@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 230,
+  "next_cr_number": 231,
   "status_values": [
     "open",
     "in_progress",
@@ -1946,6 +1946,13 @@
       "status": "open",
       "source_authority": ["design/cr-preflight/CR-0229.md", "design/review-gate.md", "design/FRESH-PROJECT-EXTERNAL-REVIEW-GATE.md", "tools/reviewer/review_gate.py", "tools/validate_project_gates.py", "user-supplied historical CR-0180 attachment"],
       "notes": "Tracked on 2026-09-05 from the supplied CR-0180 proposal as a current-tree CR-0229 because CR-0180 is historical and its baseline is obsolete. Low-priority detour: audit and, when scheduled, centralize current reviewer deployment configuration, reconcile candidate-ID/prior-finding compatibility and documentation, and validate configuration structure without changing the selected deployment or historical records."
+    },
+    {
+      "cr_number": "CR-0230",
+      "title": "Implement atomic MDR save and flush",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0230.md", "design/interface1-microdrive-zxnet.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24.3, 36, and 49.1", "design/wzsn-architectures-1-2-developer-tasks.md task 212", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM"],
+      "notes": "Opened on 2026-09-05 after complete upstream FLUSH, MDV_CACHE, MOTOR, and shutdown discovery. Implement explicit atomic save/flush and dirty-state failure recovery; defer cross-process ownership to task 213."
     }
   ]
 }
