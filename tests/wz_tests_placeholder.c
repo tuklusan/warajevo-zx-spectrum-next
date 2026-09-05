@@ -22,6 +22,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "app/wz_host_audio_policy.h"
 #include "core/audio/wz_audio_policy.h"
 #include "core/audio/wz_audio_evidence.h"
+#include "core/audio/wz_audio_mixer.h"
 #include "core/audio/wz_ay_mixer_policy.h"
 #include "core/wz_bus.h"
 #include "core/wz_scheduler.h"
@@ -1525,6 +1526,69 @@ static void test_ay_envelope_generator(void)
     }
 }
 
+static void test_ay_audio_mixer(void)
+{
+    wz_ay_t ay;
+
+    wz_ay_init(&ay);
+    if (wz_audio_mixer_ay_sample(0) != 0 ||
+        wz_audio_mixer_sample(0, 0) != 0) {
+        fputs("AY mixer null-state contract failed\n", stderr);
+        exit(1);
+    }
+    for (wz_byte_t channel = 0u; channel < WZ_AY_CHANNEL_COUNT; ++channel) {
+        if (wz_ay_select_register(&ay, (wz_byte_t)(8u + channel), 0u) !=
+                WZ_RESULT_OK ||
+            wz_ay_write_data(&ay, 15u, 0u) != WZ_RESULT_OK) {
+            fputs("AY mixer volume setup failed\n", stderr);
+            exit(1);
+        }
+    }
+    if (wz_audio_mixer_ay_sample(&ay) !=
+            -(wz_audio_sample_t)(3u * 65536u)) {
+        fputs("AY mixer low-level summation failed\n", stderr);
+        exit(1);
+    }
+    if (wz_ay_select_register(&ay, 7u, 0u) != WZ_RESULT_OK ||
+        wz_ay_write_data(&ay, 1u, 0u) != WZ_RESULT_OK ||
+        wz_audio_mixer_ay_sample(&ay) != -(wz_audio_sample_t)65536) {
+        fputs("AY mixer tone-enable inversion failed\n", stderr);
+        exit(1);
+    }
+    if (wz_ay_select_register(&ay, 7u, 0u) != WZ_RESULT_OK ||
+        wz_ay_write_data(&ay, 0u, 0u) != WZ_RESULT_OK ||
+        wz_ay_advance_master_ticks(&ay, WZ_AY_MASTER_TICKS_PER_CLOCK) !=
+            WZ_RESULT_OK ||
+        wz_audio_mixer_ay_sample(&ay) != -(wz_audio_sample_t)65536) {
+        fputs("AY mixer oscillator sampling failed\n", stderr);
+        exit(1);
+    }
+    if (wz_ay_select_register(&ay, 8u, 0u) != WZ_RESULT_OK ||
+        wz_ay_write_data(&ay, 0x10u, 0u) != WZ_RESULT_OK ||
+        wz_ay_select_register(&ay, 9u, 0u) != WZ_RESULT_OK ||
+        wz_ay_write_data(&ay, 0u, 0u) != WZ_RESULT_OK ||
+        wz_ay_select_register(&ay, 10u, 0u) != WZ_RESULT_OK ||
+        wz_ay_write_data(&ay, 0u, 0u) != WZ_RESULT_OK ||
+        wz_ay_select_register(&ay, 13u, 0u) != WZ_RESULT_OK ||
+        wz_ay_write_data(&ay, 0x0cu, 0u) != WZ_RESULT_OK ||
+        wz_ay_select_register(&ay, 7u, 0u) != WZ_RESULT_OK ||
+        wz_ay_write_data(&ay, 0x09u, 0u) != WZ_RESULT_OK ||
+        wz_ay_advance_master_ticks(&ay, 4u * 12u) != WZ_RESULT_OK ||
+        wz_audio_mixer_ay_sample(&ay) != (wz_audio_sample_t)65536) {
+        fputs("AY mixer envelope-volume selection failed\n", stderr);
+        exit(1);
+    }
+    if (wz_audio_mixer_sample(WZ_AUDIO_MIXER_MAX, &ay) !=
+            WZ_AUDIO_MIXER_MAX ||
+        wz_audio_mixer_sample(WZ_AUDIO_MIXER_MIN, &ay) !=
+            WZ_AUDIO_MIXER_MIN ||
+        wz_audio_mixer_sample(12345, &ay) !=
+            (wz_audio_sample_t)(12345 + 65536)) {
+        fputs("AY mixer saturation or beeper composition failed\n", stderr);
+        exit(1);
+    }
+}
+
 static void test_tape_trap_eligibility(void)
 {
     const wz_tape_segment_t segment = {1u, 0u};
@@ -2531,6 +2595,7 @@ int main(void)
     test_ay_tone_generators();
     test_ay_noise_generator();
     test_ay_envelope_generator();
+    test_ay_audio_mixer();
     test_tape_trap_eligibility();
     test_tape_speed_invariance();
     test_standard_tap_parser();
