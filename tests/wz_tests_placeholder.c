@@ -23,6 +23,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "app/wz_host_pacing.h"
 #include "app/wz_host_audio_push.h"
 #include "app/wz_host_audio_policy.h"
+#include "app/wz_zxnet_transport.h"
 #include "core/audio/wz_audio_policy.h"
 #include "core/audio/wz_audio_evidence.h"
 #include "core/audio/wz_audio_mixer.h"
@@ -464,6 +465,59 @@ static wz_result_t record_zxnet_write(wz_word_t block_id,
     capture->length = length;
     capture->first_byte = length == 0u ? 0u : data[0];
     return capture->result;
+}
+
+static void test_zxnet_transport_boundary(void)
+{
+    wz_zxnet_transport_queue_t queue;
+    wz_zxnet_transport_packet_t packet;
+    wz_byte_t block[WZ_ZXNET_DATA_CAPACITY];
+
+    for (size_t index = 0u; index < sizeof(block); ++index) {
+        block[index] = (wz_byte_t)(index ^ 0xa5u);
+    }
+    wz_zxnet_transport_queue_init(&queue);
+    if (wz_zxnet_transport_dequeue_due(&queue, 0u, &packet) !=
+            WZ_RESULT_INVALID_STATE ||
+        wz_zxnet_transport_enqueue(&queue, 1u, block, sizeof(block) - 1u,
+                                    10u) != WZ_RESULT_INVALID_ARGUMENT ||
+        wz_zxnet_transport_enqueue(&queue, 1u, block, sizeof(block), 10u) !=
+            WZ_RESULT_OK ||
+        wz_zxnet_transport_enqueue(&queue, 2u, block, sizeof(block), 9u) !=
+            WZ_RESULT_OK || wz_zxnet_transport_queue_size(&queue) != 2u) {
+        fputs("ZX Net transport normalization failed\n", stderr);
+        exit(1);
+    }
+    if (wz_zxnet_transport_dequeue_due(&queue, 9u, &packet) !=
+            WZ_RESULT_INVALID_STATE ||
+        wz_zxnet_transport_dequeue_due(&queue, 10u, &packet) != WZ_RESULT_OK ||
+        packet.block_id != 1u || packet.master_tick != 10u ||
+        packet.sequence != 0u || packet.length != sizeof(block) ||
+        memcmp(packet.data, block, sizeof(block)) != 0 ||
+        wz_zxnet_transport_dequeue_due(&queue, 10u, &packet) != WZ_RESULT_OK ||
+        packet.block_id != 2u || packet.master_tick != 10u ||
+        packet.sequence != 1u ||
+        wz_zxnet_transport_dequeue_due(&queue, 10u, &packet) !=
+            WZ_RESULT_INVALID_STATE) {
+        fputs("ZX Net transport due ordering failed\n", stderr);
+        exit(1);
+    }
+    for (size_t index = 0u; index < WZ_ZXNET_TRANSPORT_QUEUE_CAPACITY;
+         ++index) {
+        if (wz_zxnet_transport_enqueue(&queue, (wz_word_t)index, block,
+                                       sizeof(block), 20u + index) !=
+            WZ_RESULT_OK) {
+            fputs("ZX Net transport queue fill failed\n", stderr);
+            exit(1);
+        }
+    }
+    if (wz_zxnet_transport_enqueue(&queue, 99u, block, sizeof(block), 30u) !=
+            WZ_RESULT_INVALID_STATE ||
+        wz_zxnet_transport_queue_size(&queue) !=
+            WZ_ZXNET_TRANSPORT_QUEUE_CAPACITY) {
+        fputs("ZX Net transport saturation guard failed\n", stderr);
+        exit(1);
+    }
 }
 
 static void test_zxnet_state_machine(void)
@@ -3376,6 +3430,7 @@ int main(void)
     test_tape_loading_mode_state();
     test_networking_mode_state();
     test_zxnet_state_machine();
+    test_zxnet_transport_boundary();
     test_networking_mode_cold_reconfiguration();
     test_interface1_rom_paging();
     test_interface1_machine_registers();

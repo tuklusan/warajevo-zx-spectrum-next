@@ -119,6 +119,7 @@ add_executable(
     src/app/wz_host_media_ownership.c
     src/app/wz_host_audio_push.c
     src/app/wz_host_audio_policy.c
+    src/app/wz_zxnet_transport.c
 )
 
 target_link_libraries(wz_tests PRIVATE wz_core wz_diagnostics)

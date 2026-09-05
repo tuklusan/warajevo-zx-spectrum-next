@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 234,
+  "next_cr_number": 235,
   "status_values": [
     "open",
     "in_progress",
@@ -1974,6 +1974,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0233.md", "design/interface1-microdrive-zxnet.md sections 9 and 11", "design/warajevo-zx-spectrum-next-architecture.md section 24.5", "design/wzsn-architectures-1-2-developer-tasks.md task 215", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM"],
       "notes": "Closed on 2026-09-05 at implementation commit d1c4ed7f9df561b2c0983dbd079804849672575b. The first candidate exposed a test-vector framing defect, which was corrected without changing the device implementation. Exact-SHA CODE, independent bootstrap, and DOCUMENTATION reviews passed with zero findings. Corrected Linux, Windows 10, Windows 11, and Intel macOS remote runs passed with no missing tools. Hosted run 33993781012 passed all 20 lanes, including both Windows ARM lanes, deep housekeeping, and publication evidence verification. Private closure evidence is retained under test-artefacts/remote-runs/ and test-artefacts/hosted/CR-0233-33993781012/. Shared host transport remains deferred."
+    },
+    {
+      "cr_number": "CR-0234",
+      "title": "Define the application ZX Net transport normalization boundary",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0234.md", "design/warajevo-zx-spectrum-next-architecture.md section 24.5", "design/warajevo-zx-spectrum-next-ui-architecture.md sections 4 and 23.5", "design/wzsn-architectures-1-2-developer-tasks.md task 216", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM"],
+      "notes": "Opened on 2026-09-05 after re-reading the complete upstream ZX Net handlers. Keep future cross-process transport outside the deterministic core and normalize received blocks through a bounded application-layer queue before emulated-time delivery."
     }
   ]
 }

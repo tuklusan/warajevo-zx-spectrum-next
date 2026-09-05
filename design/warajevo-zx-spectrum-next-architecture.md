@@ -2212,6 +2212,16 @@ If a later multi-instance host transport is added, received host data is
 normalized and scheduled through the application/orchestrator before it affects
 emulated ZX Net state.
 
+The application-layer normalization boundary is represented by a bounded
+`wz_zxnet_transport_queue_t`. It accepts only complete 256-byte blocks, assigns
+each accepted block a nondecreasing emulated `master_tick` and a monotonic
+sequence number, and exposes delivery only when the normalized tick is due.
+Equal-tick blocks retain FIFO sequence order. Queue saturation and malformed
+blocks are rejected without partial mutation. This boundary performs no socket,
+file, thread, or wall-clock operation and has no callback into `wz_zxnet_t`;
+the future orchestrator drains due packets and invokes ordinary core operations
+on its owner thread.
+
 ### 24.6 Phase-10 specification gate
 
 Before Phase 10 implementation tickets are assigned,
