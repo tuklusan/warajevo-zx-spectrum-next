@@ -464,9 +464,13 @@ static void test_networking_mode_cold_reconfiguration(void)
             wz_machine_destroy(&machine);
             exit(1);
         }
+        wz_machine_memory_write(&machine, 0x8000u, 0x5au);
+        machine.master_tick = 4321u;
         if (wz_machine_reconfigure_networking_mode(&machine,
                 WZ_NETWORKING_EAR_MIC) != WZ_RESULT_UNSUPPORTED_OPERATION ||
-            wz_machine_networking_mode(&machine) != WZ_NETWORKING_INTERFACE1) {
+            wz_machine_networking_mode(&machine) != WZ_NETWORKING_INTERFACE1 ||
+            wz_machine_memory_read(&machine, 0x8000u) != 0x5au ||
+            machine.master_tick != 4321u) {
             fputs("reserved networking mode mutated cold context\n", stderr);
             wz_machine_destroy(&machine);
             exit(1);
@@ -475,6 +479,17 @@ static void test_networking_mode_cold_reconfiguration(void)
                 WZ_NETWORKING_NONE) != WZ_RESULT_OK ||
             wz_machine_networking_mode(&machine) != WZ_NETWORKING_NONE) {
             fputs("cold networking mode return transition failed\n", stderr);
+            wz_machine_destroy(&machine);
+            exit(1);
+        }
+        wz_machine_memory_write(&machine, 0x8000u, 0x3cu);
+        machine.master_tick = 8765u;
+        if (wz_machine_reconfigure_networking_mode(&machine,
+                WZ_NETWORKING_EAR_MIC) != WZ_RESULT_UNSUPPORTED_OPERATION ||
+            wz_machine_networking_mode(&machine) != WZ_NETWORKING_NONE ||
+            wz_machine_memory_read(&machine, 0x8000u) != 0x3cu ||
+            machine.master_tick != 8765u) {
+            fputs("reserved networking mode mutated NONE context\n", stderr);
             wz_machine_destroy(&machine);
             exit(1);
         }
