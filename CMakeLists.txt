@@ -141,11 +141,17 @@ target_link_libraries(wz_syslog_udp_tests PRIVATE wz_diagnostics)
 add_executable(wz_printer_tests tests/wz_printer_tests.c)
 target_link_libraries(wz_printer_tests PRIVATE wz_core)
 
+add_executable(wz_printer_export_tests
+    tests/wz_printer_export_tests.c
+    src/app/wz_printer_export.c)
+target_link_libraries(wz_printer_export_tests PRIVATE wz_core)
+
 enable_testing()
 add_test(NAME wz_tests_placeholder COMMAND wz_tests)
 add_test(NAME wz_zxnet_loopback COMMAND wz_zxnet_loopback)
 add_test(NAME wz_syslog_udp_tests COMMAND wz_syslog_udp_tests)
 add_test(NAME wz_printer_tests COMMAND wz_printer_tests)
+add_test(NAME wz_printer_export_tests COMMAND wz_printer_export_tests)
 
 if(WZSN_ENABLE_REVIEW_GATE_TESTS)
     find_package(Python3 COMPONENTS Interpreter REQUIRED)

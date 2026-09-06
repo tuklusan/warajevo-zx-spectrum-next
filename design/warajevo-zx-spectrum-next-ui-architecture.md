@@ -1095,6 +1095,9 @@ Settings > Peripherals > ZX Printer
 ```
 
 The manager may expose captured virtual printer output and export functions.
+Those functions consume the shared printer event stream and host-side bitmap
+projection; they must not access BIOS/LPT devices or duplicate core printer
+semantics.
 Historical LPT/printer-port routing is not reproduced as a host requirement.
 
 ---

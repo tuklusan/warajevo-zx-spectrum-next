@@ -2211,6 +2211,11 @@ exposing completed output as bounded core events for a later host presentation
 adapter. BIOS, LPT, printer handles, host paths, and host availability remain
 outside canonical machine state and cannot affect emulated timing.
 
+The host-side printer export boundary consumes completed flush events and may
+project them into caller-owned monochrome bitmap buffers. It performs no hidden
+allocation or filesystem/device output; GUI and persistent export policy remain
+application/UI responsibilities.
+
 ### 24.5 Original ZX Net contract
 
 Original ZX Net emulation must preserve the Spectrum-visible state machine and
