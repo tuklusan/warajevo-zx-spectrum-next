@@ -153,6 +153,10 @@ wz_result_t wz_machine_set_networking_mode(wz_machine_t* machine,
                                             wz_networking_mode_t mode);
 wz_result_t wz_machine_reconfigure_networking_mode(wz_machine_t* machine,
                                                    wz_networking_mode_t mode);
+wz_result_t wz_machine_reconfigure_networking_mode_with_mdr_resolution(
+    wz_machine_t* machine, wz_networking_mode_t mode,
+    wz_mdr_flush_callback_t flush_callback, void* flush_context,
+    bool discard_dirty_media);
 wz_networking_mode_t wz_machine_networking_mode(const wz_machine_t* machine);
 wz_tape_trap_reason_t wz_machine_tape_trap_reason(const wz_machine_t* machine);
 wz_byte_t wz_machine_tape_ear_level(const wz_machine_t* machine);

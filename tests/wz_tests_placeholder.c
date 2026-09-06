@@ -925,6 +925,54 @@ static void test_peripheral_state_serialization(void)
     wz_machine_destroy(&restored);
 }
 
+static void test_dirty_microdrive_mode_guard(void)
+{
+    static wz_machine_t machine;
+    microdrive_flush_test_context_t flush_record = {WZ_RESULT_PARSE_ERROR,
+                                                     0u, 0u, 0u, 0u};
+
+    if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK) {
+        fputs("dirty MDR guard initialization failed\n", stderr);
+        exit(1);
+    }
+    machine.has_interface1_rom = 1u;
+    machine.networking_mode = WZ_NETWORKING_INTERFACE1;
+    machine.microdrive.dirty = 1u;
+    machine.microdrive.buffer[WZ_MDR_HEADER_OFFSET] = 0x77u;
+    if (wz_machine_reconfigure_networking_mode_with_mdr_resolution(
+            &machine, WZ_NETWORKING_NONE, record_microdrive_flush,
+            &flush_record, false) != WZ_RESULT_PARSE_ERROR ||
+        machine.networking_mode != WZ_NETWORKING_INTERFACE1 ||
+        wz_mdr_transport_is_dirty(&machine.microdrive) == 0u ||
+        flush_record.calls != 1u) {
+        fputs("dirty MDR failed-flush guard failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    flush_record.result = WZ_RESULT_OK;
+    if (wz_machine_reconfigure_networking_mode_with_mdr_resolution(
+            &machine, WZ_NETWORKING_NONE, record_microdrive_flush,
+            &flush_record, false) != WZ_RESULT_OK ||
+        machine.networking_mode != WZ_NETWORKING_NONE ||
+        wz_mdr_transport_is_dirty(&machine.microdrive) != 0u ||
+        flush_record.calls != 2u) {
+        fputs("dirty MDR successful-flush guard failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    machine.networking_mode = WZ_NETWORKING_INTERFACE1;
+    machine.microdrive.dirty = 1u;
+    if (wz_machine_reconfigure_networking_mode_with_mdr_resolution(
+            &machine, WZ_NETWORKING_NONE, 0, 0, true) != WZ_RESULT_OK ||
+        machine.networking_mode != WZ_NETWORKING_NONE ||
+        wz_mdr_transport_is_dirty(&machine.microdrive) != 0u) {
+        fputs("dirty MDR explicit-discard guard failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_machine_destroy(&machine);
+}
+
 static void test_historical_state_representability(void)
 {
     wz_machine_t machine;
@@ -3478,6 +3526,7 @@ int main(void)
     test_interface1_rom_paging();
     test_interface1_machine_registers();
     test_microdrive_image_validation();
+    test_dirty_microdrive_mode_guard();
     test_peripheral_state_serialization();
     test_historical_state_representability();
     test_snapshot_state_isolated_validation();

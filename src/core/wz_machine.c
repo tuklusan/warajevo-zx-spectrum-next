@@ -223,6 +223,15 @@ wz_result_t wz_machine_set_networking_mode(wz_machine_t* machine,
 wz_result_t wz_machine_reconfigure_networking_mode(wz_machine_t* machine,
                                                    wz_networking_mode_t mode)
 {
+    return wz_machine_reconfigure_networking_mode_with_mdr_resolution(
+        machine, mode, 0, 0, false);
+}
+
+wz_result_t wz_machine_reconfigure_networking_mode_with_mdr_resolution(
+    wz_machine_t* machine, wz_networking_mode_t mode,
+    wz_mdr_flush_callback_t flush_callback, void* flush_context,
+    bool discard_dirty_media)
+{
     wz_machine_t* replacement;
     const wz_machine_profile_t* profile;
     wz_byte_t has_normal_rom;
@@ -230,6 +239,7 @@ wz_result_t wz_machine_reconfigure_networking_mode(wz_machine_t* machine,
     wz_interface1_rom_variant_t interface1_rom_variant;
     wz_qword_t interface1_rom_identity;
     wz_qword_t normal_rom_identity;
+    wz_result_t resolution_result;
 
     if (machine == 0 || mode > WZ_NETWORKING_EAR_MIC) {
         return WZ_RESULT_INVALID_ARGUMENT;
@@ -261,6 +271,26 @@ wz_result_t wz_machine_reconfigure_networking_mode(wz_machine_t* machine,
         wz_machine_destroy(replacement);
         free(replacement);
         return WZ_RESULT_OUT_OF_MEMORY;
+    }
+    if (machine->networking_mode == WZ_NETWORKING_INTERFACE1 &&
+        mode != WZ_NETWORKING_INTERFACE1 &&
+        wz_mdr_transport_is_dirty(&machine->microdrive) != 0u) {
+        if (discard_dirty_media) {
+            wz_mdr_transport_discard(&machine->microdrive);
+        } else {
+            if (flush_callback == 0) {
+                wz_machine_destroy(replacement);
+                free(replacement);
+                return WZ_RESULT_INVALID_STATE;
+            }
+            resolution_result = wz_mdr_transport_flush(
+                &machine->microdrive, flush_callback, flush_context);
+            if (resolution_result != WZ_RESULT_OK) {
+                wz_machine_destroy(replacement);
+                free(replacement);
+                return resolution_result;
+            }
+        }
     }
     if (has_normal_rom != 0u) {
         memcpy(replacement->memory, machine->memory, WZ_48K_ROM_SIZE);
