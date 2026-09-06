@@ -2195,7 +2195,7 @@
     {
       "cr_number": "CR-0257",
       "title": "Implement debugger jump and register undo controls",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/cr-preflight/CR-0257.md",
         "design/phase-11-regression-coverage-matrix.md",
@@ -2205,7 +2205,7 @@
         "design/wzsn-architectures-1-2-developer-tasks.md tasks 225, 227, 235, and 236",
         "reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM"
       ],
-      "notes": "Opened on 2026-09-06 from the CR-0254 coverage gaps. Add paused-state program-counter jump and one-level register mutation undo through the shared debugger boundary, with atomic validation and deterministic traceability."
+      "notes": "Closed on 2026-09-06 at commit 8d43d4c55dfd2ffecf3309248063336ccd38144d. Added paused PC jump and one-level register-state undo with explicit result semantics and trace markers, plus focused rejection and trace regressions. Exact-SHA CODE and TEST_ARTIFACT reviews passed with zero findings. Linux, Mac Intel, and Windows 11 remote lanes passed; Windows 10 build/tests passed but its frozen archive transport was incomplete twice. Hosted run 34032243561 passed all 20 lanes, housekeeping, and publication. Final DOCUMENTATION reviews are recorded in the preflight closure record."
     },
     {
       "cr_number": "CR-0258",
