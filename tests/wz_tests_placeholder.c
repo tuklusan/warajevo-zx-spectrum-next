@@ -688,6 +688,18 @@ static void test_interface1_rom_paging(void)
         wz_machine_destroy(&machine);
         exit(1);
     }
+    if (wz_machine_load_interface1_rom(&machine, interface1_rom,
+            sizeof(interface1_rom), WZ_INTERFACE1_ROM_OLD) != WZ_RESULT_OK ||
+        wz_machine_reconfigure_networking_mode(&machine,
+            WZ_NETWORKING_INTERFACE1) != WZ_RESULT_OK ||
+        wz_machine_set_interface1_rom_page(&machine, 3u) != WZ_RESULT_OK ||
+        wz_machine_interface1_rom_variant(&machine) != WZ_INTERFACE1_ROM_OLD ||
+        wz_machine_interface1_rom_page(&machine) != 3u ||
+        wz_machine_memory_read(&machine, 0x0000u) != interface1_rom[0]) {
+        fputs("Interface 1 old-ROM paging state failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
     wz_machine_destroy(&machine);
 }
 
@@ -748,6 +760,7 @@ typedef struct {
     size_t length;
     wz_byte_t first_byte;
     unsigned int calls;
+    wz_byte_t* committed_image;
 } microdrive_flush_test_context_t;
 
 static wz_result_t record_microdrive_flush(size_t sector,
@@ -761,6 +774,10 @@ static wz_result_t record_microdrive_flush(size_t sector,
     record->sector = sector;
     record->length = length;
     record->first_byte = data[WZ_MDR_HEADER_OFFSET];
+    if (record->result == WZ_RESULT_OK && record->committed_image != 0) {
+        memcpy(record->committed_image + sector * WZ_MDR_SECTOR_SIZE,
+               data, length);
+    }
     return record->result;
 }
 
@@ -771,7 +788,7 @@ static void test_microdrive_image_validation(void)
     wz_mdr_image_t original;
     wz_mdr_transport_t transport;
     microdrive_flush_test_context_t flush_record = {WZ_RESULT_PARSE_ERROR, 0u,
-                                                     0u, 0u, 0u};
+                                                     0u, 0u, 0u, 0};
     const wz_byte_t* sector_data = 0;
     wz_byte_t value = 0u;
 
@@ -874,10 +891,29 @@ static void test_microdrive_image_validation(void)
         exit(1);
     }
     flush_record.result = WZ_RESULT_OK;
+    flush_record.committed_image = image_data;
     if (wz_mdr_transport_flush(&transport, record_microdrive_flush,
                                &flush_record) != WZ_RESULT_OK ||
         flush_record.calls != 2u || wz_mdr_transport_is_dirty(&transport) != 0u) {
         fputs("MDR successful flush commit failed\n", stderr);
+        exit(1);
+    }
+    wz_mdr_transport_init(&transport);
+    if (wz_mdr_transport_mount(&transport, &image) != WZ_RESULT_OK ||
+        wz_mdr_transport_select_motor(&transport, 0u) != WZ_RESULT_OK) {
+        fputs("MDR remount after flush failed\n", stderr);
+        exit(1);
+    }
+    for (size_t index = 0u; index < WZ_MDR_SECTOR_SIZE - WZ_MDR_HEADER_OFFSET;
+         ++index) {
+        if (wz_mdr_transport_read(&transport, &value) != WZ_RESULT_OK) {
+            fputs("MDR remount traversal failed\n", stderr);
+            exit(1);
+        }
+    }
+    if (wz_mdr_transport_read(&transport, &value) != WZ_RESULT_OK ||
+        value != 0x66u) {
+        fputs("MDR flushed sector was not observable after remount\n", stderr);
         exit(1);
     }
 }
@@ -929,7 +965,7 @@ static void test_dirty_microdrive_mode_guard(void)
 {
     static wz_machine_t machine;
     microdrive_flush_test_context_t flush_record = {WZ_RESULT_PARSE_ERROR,
-                                                     0u, 0u, 0u, 0u};
+                                                     0u, 0u, 0u, 0u, 0};
 
     if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK) {
         fputs("dirty MDR guard initialization failed\n", stderr);
