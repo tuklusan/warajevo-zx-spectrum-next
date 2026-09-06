@@ -27,6 +27,11 @@ typedef enum {
     WZ_DEBUGGER_PAUSED_MUTATION = 1
 } wz_debugger_access_mode_t;
 
+enum {
+    WZ_DEBUGGER_TRACE_ACCESS_MODE = 1,
+    WZ_DEBUGGER_TRACE_CPU_MUTATION = 2
+};
+
 /* Inspection always reads the one live machine; it does not clone execution state. */
 wz_result_t wz_debugger_snapshot(const wz_machine_t* machine,
                                  wz_debugger_snapshot_t* snapshot);

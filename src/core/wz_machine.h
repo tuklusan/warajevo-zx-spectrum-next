@@ -86,6 +86,8 @@ typedef struct wz_machine {
     wz_bus_input_t bus_input;
     wz_bus_data_source_t bus_data_source;
     wz_trace_sink_t* timing_trace;
+    /* Zero means read-only debugger access; mutation is an explicit opt-in. */
+    wz_byte_t debugger_access_mode;
     wz_byte_t memory[65536u];
     wz_byte_t has_48k_rom;
     wz_byte_t interface1_rom[WZ_INTERFACE1_ROM_SIZE];

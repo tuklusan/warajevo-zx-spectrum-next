@@ -10,6 +10,32 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include <stdint.h>
 
+static void wz_debugger_trace_result(wz_machine_t* machine,
+                                     wz_byte_t operation,
+                                     wz_result_t result,
+                                     const wz_z80_state_t* state)
+{
+    wz_trace_event_t event;
+
+    if (machine == 0 || machine->timing_trace == 0) {
+        return;
+    }
+    event.kind = WZ_TRACE_DEVELOPER_MARKER;
+    event.master_tick = machine->master_tick;
+    event.sequence = 0u;
+    event.address = 0u;
+    event.program_counter = state == 0 ? machine->cpu.program_counter
+                                       : state->program_counter;
+    event.stack_pointer = state == 0 ? machine->cpu.stack_pointer
+                                     : state->stack_pointer;
+    event.register_snapshot = 0u;
+    event.value = (wz_byte_t)result;
+    event.auxiliary = operation;
+    event.cycle = 0u;
+    event.t_states = 0u;
+    wz_trace_emit_detail(machine->timing_trace, &event);
+}
+
 wz_result_t wz_debugger_snapshot(const wz_machine_t* machine,
                                  wz_debugger_snapshot_t* snapshot)
 {
@@ -49,5 +75,49 @@ wz_result_t wz_debugger_read_memory_block(const wz_machine_t* machine,
         values[index] = wz_machine_memory_read(machine,
                                                (wz_word_t)(address + index));
     }
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_debugger_set_access_mode(wz_machine_t* machine,
+                                         wz_debugger_access_mode_t mode)
+{
+    if (machine == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (mode != WZ_DEBUGGER_READ_ONLY &&
+        mode != WZ_DEBUGGER_PAUSED_MUTATION) {
+        wz_debugger_trace_result(machine, WZ_DEBUGGER_TRACE_ACCESS_MODE,
+                                 WZ_RESULT_INVALID_ARGUMENT, 0);
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    machine->debugger_access_mode = (wz_byte_t)mode;
+    wz_debugger_trace_result(machine, WZ_DEBUGGER_TRACE_ACCESS_MODE,
+                             WZ_RESULT_OK, 0);
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_debugger_set_cpu_state(wz_machine_t* machine,
+                                      const wz_z80_state_t* state)
+{
+    wz_result_t result;
+
+    if (machine == 0 || state == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (machine->debugger_access_mode != WZ_DEBUGGER_PAUSED_MUTATION) {
+        result = WZ_RESULT_INVALID_STATE;
+        wz_debugger_trace_result(machine, WZ_DEBUGGER_TRACE_CPU_MUTATION,
+                                 result, state);
+        return result;
+    }
+    result = wz_z80_state_validate(state);
+    if (result != WZ_RESULT_OK) {
+        wz_debugger_trace_result(machine, WZ_DEBUGGER_TRACE_CPU_MUTATION,
+                                 result, state);
+        return result;
+    }
+    machine->cpu = *state;
+    wz_debugger_trace_result(machine, WZ_DEBUGGER_TRACE_CPU_MUTATION,
+                             WZ_RESULT_OK, state);
     return WZ_RESULT_OK;
 }

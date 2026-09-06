@@ -1922,11 +1922,30 @@ static void test_malformed_mdr_and_device_transition_fuzz(void)
     }
 }
 
+typedef struct {
+    unsigned count;
+    wz_trace_event_t events[8u];
+} debugger_trace_log_t;
+
+static void record_debugger_trace(const wz_trace_event_t* event, void* context)
+{
+    debugger_trace_log_t* log = (debugger_trace_log_t*)context;
+
+    if (log->count < sizeof(log->events) / sizeof(log->events[0])) {
+        log->events[log->count] = *event;
+    }
+    log->count += 1u;
+}
+
 static void test_debugger_read_only_inspection(void)
 {
     static wz_machine_t machine;
     static wz_debugger_snapshot_t snapshot;
     static wz_byte_t values[4u];
+    static wz_z80_state_t candidate;
+    static wz_z80_state_t original;
+    static wz_trace_sink_t trace;
+    static debugger_trace_log_t trace_log;
 
     if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK) {
         fputs("debugger inspection setup failed\n", stderr);
@@ -1948,6 +1967,40 @@ static void test_debugger_read_only_inspection(void)
         wz_debugger_snapshot(0, &snapshot) != WZ_RESULT_INVALID_ARGUMENT ||
         wz_debugger_read_memory(&machine, 0u, 0) != WZ_RESULT_INVALID_ARGUMENT) {
         fputs("debugger read-only inspection failed\n", stderr);
+        exit(1);
+    }
+    memset(&trace_log, 0, sizeof(trace_log));
+    wz_trace_sink_init(&trace, record_debugger_trace, &trace_log);
+    wz_machine_set_timing_trace(&machine, &trace);
+    candidate = machine.cpu;
+    candidate.program_counter = 0x2468u;
+    if (wz_debugger_set_cpu_state(&machine, &candidate) != WZ_RESULT_INVALID_STATE ||
+        machine.cpu.program_counter != 0x1234u ||
+        wz_debugger_set_access_mode(&machine, WZ_DEBUGGER_PAUSED_MUTATION) !=
+            WZ_RESULT_OK ||
+        wz_debugger_set_cpu_state(&machine, &candidate) != WZ_RESULT_OK ||
+        machine.cpu.program_counter != 0x2468u) {
+        fputs("debugger mutation access boundary failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    original = machine.cpu;
+    candidate.interrupt_mode = 3u;
+    if (wz_debugger_set_cpu_state(&machine, &candidate) != WZ_RESULT_INVALID_STATE ||
+        memcmp(&machine.cpu, &original, sizeof(original)) != 0 ||
+        wz_debugger_set_access_mode(&machine, WZ_DEBUGGER_READ_ONLY) !=
+            WZ_RESULT_OK ||
+        wz_debugger_set_cpu_state(&machine, &candidate) != WZ_RESULT_INVALID_STATE ||
+        trace_log.count != 5u ||
+        trace_log.events[0].auxiliary != WZ_DEBUGGER_TRACE_CPU_MUTATION ||
+        trace_log.events[0].value != WZ_RESULT_INVALID_STATE ||
+        trace_log.events[1].auxiliary != WZ_DEBUGGER_TRACE_ACCESS_MODE ||
+        trace_log.events[2].auxiliary != WZ_DEBUGGER_TRACE_CPU_MUTATION ||
+        trace_log.events[2].value != WZ_RESULT_OK ||
+        trace_log.events[3].value != WZ_RESULT_INVALID_STATE ||
+        trace_log.events[4].auxiliary != WZ_DEBUGGER_TRACE_ACCESS_MODE) {
+        fputs("debugger mutation atomicity or traceability failed\n", stderr);
+        wz_machine_destroy(&machine);
         exit(1);
     }
     wz_machine_destroy(&machine);
