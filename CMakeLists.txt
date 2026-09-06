@@ -81,6 +81,7 @@ add_library(
     src/core/wz_printer.c
     src/core/wz_zxnet.c
     src/core/wz_raster.c
+    src/core/wz_presentation_snapshot.c
     src/core/wz_raster_diagnostic.c
     src/core/wz_raster_evidence.c
     src/core/wz_runner.c
@@ -197,6 +198,11 @@ add_test(NAME wz_printer_export_tests COMMAND wz_printer_export_tests)
 add_test(NAME wz_diagnostic_block_tests COMMAND wz_diagnostic_block_tests)
 add_test(NAME wz_application_lifecycle_tests COMMAND wz_application_lifecycle_tests)
 add_test(NAME wz_screen_inspection_tests COMMAND wz_screen_inspection_tests)
+
+add_executable(wz_presentation_snapshot_tests
+    tests/wz_presentation_snapshot_tests.c)
+target_link_libraries(wz_presentation_snapshot_tests PRIVATE wz_core)
+add_test(NAME wz_presentation_snapshot_tests COMMAND wz_presentation_snapshot_tests)
 
 if(WZSN_ENABLE_REVIEW_GATE_TESTS)
     find_package(Python3 COMPONENTS Interpreter REQUIRED)
