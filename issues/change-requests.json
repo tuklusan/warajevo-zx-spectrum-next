@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 255,
+  "next_cr_number": 256,
   "status_values": [
     "open",
     "in_progress",
@@ -2161,6 +2161,21 @@
         "reference/original-warajevo/source/src/spectrum-kernel/ZXPRINT.ASM"
       ],
       "notes": "Opened on 2026-09-06 for Phase-11 task 235. Reconcile every REQUIRED monitor/debugger and ZX Printer workflow against the inventories and existing regression tests; add only missing coverage and retain explicit dispositions for non-required or host-only behavior."
+    },
+    {
+      "cr_number": "CR-0255",
+      "title": "Implement bounded debugger memory data tools",
+      "status": "open",
+      "source_authority": [
+        "design/cr-preflight/CR-0255.md",
+        "design/phase-11-regression-coverage-matrix.md",
+        "design/monitor-debugger-inventory.md",
+        "design/warajevo-zx-spectrum-next-architecture.md sections 41, 44, and 49.2",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md sections 21 and 45",
+        "design/wzsn-architectures-1-2-developer-tasks.md tasks 228, 229, and 235",
+        "reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM"
+      ],
+      "notes": "Opened on 2026-09-06 from the CR-0254 coverage gap. Add bounded shared debugger APIs and regressions for copy, find, fill, and byte/word memory data operations without bypassing machine ownership or exposing host paths."
     }
   ]
 }
