@@ -19,8 +19,10 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "core/wz_raster.h"
 #include "core/wz_trace.h"
 #include "core/wz_tape.h"
+#include "core/wz_microdrive.h"
 #include "core/wz_types.h"
 #include "core/wz_z80.h"
+#include "core/wz_zxnet.h"
 
 #define WZ_48K_ROM_SIZE 16384u
 #define WZ_INTERFACE1_ROM_SIZE 16384u
@@ -109,6 +111,8 @@ typedef struct wz_machine {
     wz_byte_t tape_mounted;
     wz_tape_loading_mode_t tape_loading_mode;
     wz_networking_mode_t networking_mode;
+    wz_mdr_transport_t microdrive;
+    wz_zxnet_t zxnet;
     wz_byte_t ula_output;
     wz_qword_t rom_identity;
     wz_master_tick_t master_tick;

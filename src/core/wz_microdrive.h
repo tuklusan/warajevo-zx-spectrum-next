@@ -25,6 +25,7 @@ typedef struct {
     const wz_byte_t* data;
     size_t length;
     size_t sector_count;
+    wz_qword_t identity;
 } wz_mdr_image_t;
 
 typedef enum {
@@ -34,6 +35,10 @@ typedef enum {
 
 typedef struct {
     const wz_mdr_image_t* image;
+    wz_byte_t image_present;
+    wz_qword_t image_identity;
+    size_t image_length;
+    size_t image_sector_count;
     size_t sector;
     size_t offset;
     wz_byte_t active_motor;

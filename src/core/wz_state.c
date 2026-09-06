@@ -12,9 +12,12 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include <stdlib.h>
 
-#define WZ_STATE_VERSION 12u
+#define WZ_STATE_VERSION 13u
 #define WZ_STATE_HEADER_LENGTH WZ_STATE_MACHINE_MEMORY_OFFSET
-#define WZ_STATE_MACHINE_LENGTH (65536u + WZ_STATE_HEADER_LENGTH)
+#define WZ_STATE_EXTENSION_MAGIC UINT32_C(0x4e535a57)
+#define WZ_STATE_EXTENSION_VERSION 1u
+#define WZ_STATE_EXTENSION_OFFSET (WZ_STATE_HEADER_LENGTH + 65536u)
+#define WZ_STATE_MACHINE_LENGTH (WZ_STATE_EXTENSION_OFFSET + WZ_STATE_EXTENSION_CAPACITY)
 
 static wz_result_t wz_state_write(wz_state_writer_t* writer,
                                   const wz_byte_t* data,
@@ -82,6 +85,112 @@ static wz_result_t wz_state_write_u32(wz_state_writer_t* writer, wz_dword_t valu
         bytes[index] = (wz_byte_t)(value >> (index * 8u));
     }
     return wz_state_write(writer, bytes, sizeof(bytes));
+}
+
+static wz_dword_t wz_state_read_u32(const wz_byte_t* data)
+{
+    wz_dword_t value = 0u;
+    for (size_t index = 0u; index < 4u; ++index) {
+        value |= (wz_dword_t)data[index] << (index * 8u);
+    }
+    return value;
+}
+
+static wz_qword_t wz_state_read_u64(const wz_byte_t* data)
+{
+    wz_qword_t value = 0u;
+    for (size_t index = 0u; index < 8u; ++index) {
+        value |= (wz_qword_t)data[index] << (index * 8u);
+    }
+    return value;
+}
+
+static wz_result_t wz_state_write_mdr(wz_state_writer_t* writer,
+                                      const wz_mdr_transport_t* transport)
+{
+    if (writer == 0 || transport == 0 || transport->sector > UINT32_MAX ||
+        transport->offset > UINT32_MAX || transport->active_motor > 0xffu ||
+        transport->image_present > 1u ||
+        transport->write_enabled > 1u || transport->erase_enabled > 1u ||
+        transport->dirty > 1u || transport->phase > WZ_MDR_PHASE_DATA) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    if (wz_state_write_u8(writer, transport->image_present) != WZ_RESULT_OK ||
+        wz_state_write_u64(writer, transport->image_identity) != WZ_RESULT_OK ||
+        wz_state_write_u32(writer, (wz_dword_t)transport->image_length) != WZ_RESULT_OK ||
+        wz_state_write_u32(writer, (wz_dword_t)transport->image_sector_count) != WZ_RESULT_OK ||
+        wz_state_write_u32(writer, (wz_dword_t)transport->sector) != WZ_RESULT_OK ||
+        wz_state_write_u32(writer, (wz_dword_t)transport->offset) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, transport->active_motor) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, transport->write_enabled) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, transport->erase_enabled) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, transport->dirty) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, (wz_byte_t)transport->phase) != WZ_RESULT_OK ||
+        wz_state_write(writer, transport->buffer, sizeof(transport->buffer)) != WZ_RESULT_OK) {
+        return WZ_RESULT_SERIALIZATION_FAILURE;
+    }
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_state_write_zxnet(wz_state_writer_t* writer,
+                                        const wz_zxnet_t* network)
+{
+    const wz_zxnet_snapshot_t* state;
+
+    if (writer == 0 || network == 0) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    state = &network->state;
+    if (state->state < WZ_ZXNET_CLAIM || state->state > WZ_ZXNET_COLLWRITE ||
+        state->bit_count > 9u || state->buffer_position > WZ_ZXNET_DATA_CAPACITY ||
+        state->buffer_length > WZ_ZXNET_DATA_CAPACITY ||
+        state->read_block_ready > 1u) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    if (wz_state_write_u8(writer, (wz_byte_t)state->state) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, state->claim_byte) != WZ_RESULT_OK ||
+        wz_state_write_u16(writer, state->block_id) != WZ_RESULT_OK ||
+        wz_state_write_u16(writer, state->last_block_id) != WZ_RESULT_OK ||
+        wz_state_write_u16(writer, state->network_delay) != WZ_RESULT_OK ||
+        wz_state_write_u16(writer, state->busy_length) != WZ_RESULT_OK ||
+        wz_state_write_u16(writer, state->free_length) != WZ_RESULT_OK ||
+        wz_state_write_u16(writer, state->network_count) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, state->network_byte) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, state->bit_count) != WZ_RESULT_OK ||
+        wz_state_write_u32(writer, (wz_dword_t)state->buffer_position) != WZ_RESULT_OK ||
+        wz_state_write_u32(writer, (wz_dword_t)state->buffer_length) != WZ_RESULT_OK ||
+        wz_state_write(writer, state->buffer, sizeof(state->buffer)) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, state->read_block_ready ? 1u : 0u) != WZ_RESULT_OK) {
+        return WZ_RESULT_SERIALIZATION_FAILURE;
+    }
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_state_write_extension(wz_state_writer_t* writer,
+                                             const wz_machine_t* machine)
+{
+    size_t start;
+
+    if (writer == 0 || machine == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    start = writer->length;
+    if (wz_state_write_u32(writer, WZ_STATE_EXTENSION_MAGIC) != WZ_RESULT_OK ||
+        wz_state_write_u16(writer, WZ_STATE_EXTENSION_VERSION) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, machine->has_interface1_rom) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, (wz_byte_t)machine->interface1_rom_variant) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, machine->interface1_rom_page) != WZ_RESULT_OK ||
+        wz_state_write_u64(writer, machine->interface1_rom_identity) != WZ_RESULT_OK ||
+        wz_state_write_mdr(writer, &machine->microdrive) != WZ_RESULT_OK ||
+        wz_state_write_zxnet(writer, &machine->zxnet) != WZ_RESULT_OK) {
+        return WZ_RESULT_SERIALIZATION_FAILURE;
+    }
+    while (writer->length - start < WZ_STATE_EXTENSION_CAPACITY) {
+        if (wz_state_write_u8(writer, 0u) != WZ_RESULT_OK) {
+            return WZ_RESULT_SERIALIZATION_FAILURE;
+        }
+    }
+    return WZ_RESULT_OK;
 }
 
 static wz_result_t wz_state_write_ay(wz_state_writer_t* writer,
@@ -217,6 +326,9 @@ wz_result_t wz_state_serialize_machine(const wz_machine_t* machine,
         wz_state_write_u8(writer, machine->interface1_active_motor) != WZ_RESULT_OK ||
         wz_state_write_u64(writer, machine->interface1_control_latch_tick) != WZ_RESULT_OK ||
         wz_state_write(writer, machine->memory, sizeof(machine->memory)) != WZ_RESULT_OK) {
+        return WZ_RESULT_SERIALIZATION_FAILURE;
+    }
+    if (wz_state_write_extension(writer, machine) != WZ_RESULT_OK) {
         return WZ_RESULT_SERIALIZATION_FAILURE;
     }
     return WZ_RESULT_OK;
@@ -441,6 +553,105 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
     }
     for (size_t index = 0u; index < sizeof(machine->memory); ++index) {
         machine->memory[index] = data[WZ_STATE_HEADER_LENGTH + index];
+    }
+    {
+        size_t offset = WZ_STATE_EXTENSION_OFFSET;
+        wz_mdr_transport_t microdrive;
+        wz_zxnet_t zxnet;
+        wz_byte_t image_present;
+        wz_byte_t read_ready;
+
+        if (wz_state_read_u32(data + offset) != WZ_STATE_EXTENSION_MAGIC) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        offset += 4u;
+        if (wz_read_le16(data + offset) != WZ_STATE_EXTENSION_VERSION) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        offset += 2u;
+        machine->has_interface1_rom = data[offset++];
+        machine->interface1_rom_variant = (wz_interface1_rom_variant_t)data[offset++];
+        machine->interface1_rom_page = data[offset++];
+        machine->interface1_rom_identity = wz_state_read_u64(data + offset);
+        offset += 8u;
+        if (machine->has_interface1_rom > 1u ||
+            machine->interface1_rom_variant > WZ_INTERFACE1_ROM_NEW ||
+            machine->interface1_rom_page > 3u ||
+            (machine->has_interface1_rom == 0u && machine->interface1_rom_identity != 0u) ||
+            (machine->has_interface1_rom != 0u && machine->interface1_rom_identity == 0u)) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+
+        wz_mdr_transport_init(&microdrive);
+        image_present = data[offset++];
+        microdrive.image_present = image_present;
+        microdrive.image_identity = wz_state_read_u64(data + offset);
+        offset += 8u;
+        microdrive.image_length = (size_t)wz_state_read_u32(data + offset);
+        offset += 4u;
+        microdrive.image_sector_count = (size_t)wz_state_read_u32(data + offset);
+        offset += 4u;
+        microdrive.sector = (size_t)wz_state_read_u32(data + offset);
+        offset += 4u;
+        microdrive.offset = (size_t)wz_state_read_u32(data + offset);
+        offset += 4u;
+        microdrive.active_motor = data[offset++];
+        microdrive.write_enabled = data[offset++];
+        microdrive.erase_enabled = data[offset++];
+        microdrive.dirty = data[offset++];
+        microdrive.phase = (wz_mdr_phase_t)data[offset++];
+        memcpy(microdrive.buffer, data + offset, sizeof(microdrive.buffer));
+        offset += sizeof(microdrive.buffer);
+        if (image_present > 1u || microdrive.image_identity == 0u && image_present != 0u ||
+            microdrive.image_length > UINT32_MAX ||
+            (image_present != 0u &&
+             (microdrive.image_sector_count < WZ_MDR_MIN_SECTORS ||
+              microdrive.image_sector_count > WZ_MDR_MAX_SECTORS ||
+              microdrive.image_length != microdrive.image_sector_count * WZ_MDR_SECTOR_SIZE ||
+              microdrive.sector >= microdrive.image_sector_count)) ||
+            microdrive.offset > WZ_MDR_SECTOR_SIZE ||
+            microdrive.active_motor > 7u && microdrive.active_motor != 0xfeu &&
+                microdrive.active_motor != 0xffu ||
+            microdrive.write_enabled > 1u || microdrive.erase_enabled > 1u ||
+            microdrive.dirty > 1u || microdrive.phase > WZ_MDR_PHASE_DATA) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+
+        wz_zxnet_init(&zxnet);
+        zxnet.state.state = (wz_zxnet_state_t)data[offset++];
+        zxnet.state.claim_byte = data[offset++];
+        zxnet.state.block_id = wz_read_le16(data + offset);
+        offset += 2u;
+        zxnet.state.last_block_id = wz_read_le16(data + offset);
+        offset += 2u;
+        zxnet.state.network_delay = wz_read_le16(data + offset);
+        offset += 2u;
+        zxnet.state.busy_length = wz_read_le16(data + offset);
+        offset += 2u;
+        zxnet.state.free_length = wz_read_le16(data + offset);
+        offset += 2u;
+        zxnet.state.network_count = wz_read_le16(data + offset);
+        offset += 2u;
+        zxnet.state.network_byte = data[offset++];
+        zxnet.state.bit_count = data[offset++];
+        zxnet.state.buffer_position = (size_t)wz_state_read_u32(data + offset);
+        offset += 4u;
+        zxnet.state.buffer_length = (size_t)wz_state_read_u32(data + offset);
+        offset += 4u;
+        memcpy(zxnet.state.buffer, data + offset, sizeof(zxnet.state.buffer));
+        offset += sizeof(zxnet.state.buffer);
+        read_ready = data[offset++];
+        zxnet.state.read_block_ready = read_ready != 0u;
+        if (zxnet.state.state < WZ_ZXNET_CLAIM ||
+            zxnet.state.state > WZ_ZXNET_COLLWRITE ||
+            zxnet.state.bit_count > 9u ||
+            zxnet.state.buffer_position > WZ_ZXNET_DATA_CAPACITY ||
+            zxnet.state.buffer_length > WZ_ZXNET_DATA_CAPACITY ||
+            read_ready > 1u) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->microdrive = microdrive;
+        machine->zxnet = zxnet;
     }
     return WZ_RESULT_OK;
 }

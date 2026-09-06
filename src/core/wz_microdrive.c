@@ -11,6 +11,16 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include <string.h>
 #include <stdint.h>
 
+static wz_qword_t wz_mdr_identity(const wz_byte_t* data, size_t length)
+{
+    wz_qword_t identity = UINT64_C(14695981039346656037);
+    for (size_t index = 0u; index < length; ++index) {
+        identity ^= (wz_qword_t)data[index];
+        identity *= UINT64_C(1099511628211);
+    }
+    return identity;
+}
+
 wz_result_t wz_mdr_image_init(wz_mdr_image_t* image,
                               const wz_byte_t* data,
                               size_t length)
@@ -30,6 +40,7 @@ wz_result_t wz_mdr_image_init(wz_mdr_image_t* image,
     image->data = data;
     image->length = length;
     image->sector_count = sector_count;
+    image->identity = wz_mdr_identity(data, length);
     return WZ_RESULT_OK;
 }
 
@@ -54,6 +65,10 @@ void wz_mdr_transport_init(wz_mdr_transport_t* transport)
 {
     if (transport != 0) {
         transport->image = 0;
+        transport->image_present = 0u;
+        transport->image_identity = 0u;
+        transport->image_length = 0u;
+        transport->image_sector_count = 0u;
         transport->sector = 0u;
         transport->offset = 0u;
         transport->active_motor = 0xffu;
@@ -75,6 +90,10 @@ wz_result_t wz_mdr_transport_mount(wz_mdr_transport_t* transport,
         return WZ_RESULT_INVALID_ARGUMENT;
     }
     transport->image = image;
+    transport->image_present = 1u;
+    transport->image_identity = image->identity;
+    transport->image_length = image->length;
+    transport->image_sector_count = image->sector_count;
     transport->sector = 0u;
     transport->offset = WZ_MDR_HEADER_OFFSET;
     transport->active_motor = 0xffu;

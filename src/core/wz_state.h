@@ -15,7 +15,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 typedef struct wz_machine wz_machine_t;
 
-#define WZ_STATE_SNAPSHOT_CAPACITY (65536u + 125u)
+#define WZ_STATE_EXTENSION_CAPACITY 1024u
+#define WZ_STATE_SNAPSHOT_CAPACITY (65536u + 125u + WZ_STATE_EXTENSION_CAPACITY)
 #define WZ_STATE_MACHINE_MEMORY_OFFSET 125u
 #define WZ_SNA_48K_LENGTH (27u + 49152u)
 #define WZ_SNA_128K_PAGE_SIZE 16384u

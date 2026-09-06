@@ -882,6 +882,49 @@ static void test_microdrive_image_validation(void)
     }
 }
 
+static void test_peripheral_state_serialization(void)
+{
+    wz_machine_t machine;
+    wz_machine_t restored;
+    wz_byte_t serialized[WZ_STATE_SNAPSHOT_CAPACITY];
+    wz_state_writer_t writer;
+    wz_qword_t first_hash;
+    wz_qword_t second_hash;
+
+    if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK ||
+        wz_machine_init(&restored, wz_machine_profile_48k_pal()) != WZ_RESULT_OK) {
+        fputs("peripheral serialization initialization failed\n", stderr);
+        return;
+    }
+    machine.has_interface1_rom = 1u;
+    machine.interface1_rom_variant = WZ_INTERFACE1_ROM_OLD;
+    machine.interface1_rom_page = 1u;
+    machine.interface1_rom_identity = 0x1234u;
+    machine.microdrive.active_motor = 2u;
+    machine.microdrive.offset = 19u;
+    machine.zxnet.state.state = WZ_ZXNET_CLAIM;
+    machine.zxnet.state.claim_byte = 0x5au;
+    wz_state_writer_init(&writer, serialized, sizeof(serialized));
+    if (wz_state_serialize_machine(&machine, &writer) != WZ_RESULT_OK ||
+        wz_state_hash_machine(&machine, &first_hash) != WZ_RESULT_OK ||
+        wz_state_deserialize_machine(&restored, serialized, writer.length) !=
+            WZ_RESULT_OK ||
+        wz_state_hash_machine(&restored, &second_hash) != WZ_RESULT_OK ||
+        first_hash != second_hash ||
+        restored.interface1_rom_identity != machine.interface1_rom_identity ||
+        restored.microdrive.active_motor != machine.microdrive.active_motor ||
+        restored.zxnet.state.claim_byte != machine.zxnet.state.claim_byte) {
+        fputs("peripheral serialization round-trip failed\n", stderr);
+    }
+    machine.zxnet.state.claim_byte ^= 1u;
+    if (wz_state_hash_machine(&machine, &second_hash) != WZ_RESULT_OK ||
+        first_hash == second_hash) {
+        fputs("peripheral serialization hash sensitivity failed\n", stderr);
+    }
+    wz_machine_destroy(&machine);
+    wz_machine_destroy(&restored);
+}
+
 static void test_historical_state_representability(void)
 {
     wz_machine_t machine;
@@ -3435,6 +3478,7 @@ int main(void)
     test_interface1_rom_paging();
     test_interface1_machine_registers();
     test_microdrive_image_validation();
+    test_peripheral_state_serialization();
     test_historical_state_representability();
     test_snapshot_state_isolated_validation();
     test_sna_48k_loader();

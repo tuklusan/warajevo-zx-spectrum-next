@@ -60,6 +60,8 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     machine->tape_mounted = 0u;
     machine->tape_loading_mode = WZ_TAPE_LOADING_NORMAL;
     machine->networking_mode = WZ_NETWORKING_NONE;
+    wz_mdr_transport_init(&machine->microdrive);
+    wz_zxnet_init(&machine->zxnet);
     machine->maskable_interrupt_line_low = 0u;
     machine->rom_identity = 0u;
     machine->master_tick = 0u;
@@ -108,6 +110,8 @@ void wz_machine_destroy(wz_machine_t* machine)
         machine->tape_mounted = 0u;
         machine->tape_loading_mode = WZ_TAPE_LOADING_NORMAL;
         machine->networking_mode = WZ_NETWORKING_NONE;
+        wz_mdr_transport_init(&machine->microdrive);
+        wz_zxnet_init(&machine->zxnet);
         machine->ula_output = 0u;
         machine->maskable_interrupt_line_low = 0u;
         machine->rom_identity = 0u;
