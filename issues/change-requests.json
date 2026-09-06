@@ -2269,7 +2269,7 @@
     {
       "cr_number": "CR-0262",
       "title": "Add explicit application quit and lifecycle boundary",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/cr-preflight/CR-0262.md",
         "design/phase-11-regression-coverage-matrix.md",
@@ -2279,7 +2279,7 @@
         "design/wzsn-architectures-1-2-developer-tasks.md tasks 235 and 236",
         "reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM"
       ],
-      "notes": "Implementation and CODE/TEST_ARTIFACT validation are complete at commit de34c621561aedce2bfce2c0f64e32dd98ffd918. Documentation reviews remain to be completed before final closure."
+      "notes": "Closed on 2026-09-06 at commit de34c621561aedce2bfce2c0f64e32dd98ffd918. Added an explicit application-boundary quit request and lifecycle state contract with running, quit-requested, and terminated states, idempotent repeated requests, invalid-transition rejection, one-shot teardown notification, and host/UI teardown kept outside deterministic core state. Exact-SHA CODE, TEST_ARTIFACT, and DOCUMENTATION reviews passed with zero findings; all four remote lanes and hosted run 34042209174 passed all 20 platform lanes and publication."
     }
   ]
 }
