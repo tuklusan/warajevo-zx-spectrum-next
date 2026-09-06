@@ -2329,7 +2329,7 @@
     {
       "cr_number": "CR-0266",
       "title": "Implement the shared application command registry foundation",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/cr-preflight/CR-0266.md",
         "design/warajevo-zx-spectrum-next-architecture.md sections 30, 31, 49.2, 51, and 55",
@@ -2341,7 +2341,7 @@
         "reference/original-warajevo/source/src/environment/SETUP.PAS",
         "reference/original-warajevo/source/src/environment/WARAJEVO.PAS"
       ],
-      "notes": "Opened on 2026-09-06 for the Phase-12A command-registry foundation. The CR freezes the application-layer C API and implements bounded metadata, validation, lookup, enumeration, and dispatch without introducing UI, host, socket, or deterministic-core dependencies."
+      "notes": "Closed on 2026-09-06 at implementation commit 894674b882acf63be3736498ebf564dc727d3a12. Froze the application-layer C API and implemented bounded metadata, validation, lookup, enumeration, availability, result semantics, and dispatch without introducing UI, host, socket, or deterministic-core dependencies. Exact-SHA CODE review passed with zero confirmed findings; packet 0bbe0fd1e11cdfa278ed5a088d53dfb56e642f4d3c30e9b876e0a274f6553997. TEST_ARTIFACT review passed with zero confirmed findings; packet eb1f3c05989b4f9d36b81e5f713fbf7fe14770df47607b42c20dcbbef0a23676. Final DOCUMENTATION review passed with zero confirmed findings; packet 48e146562ae8d3732e81136dc1c55b4260187fcf7981d16506e35b2b4841b464. Linux, Mac Intel, Windows 10, and Windows 11 remote lanes passed; hosted run 34057708961 passed all 20 lanes, housekeeping, and publication. No local build or test was performed."
     },
     {
       "cr_number": "CR-0267",
