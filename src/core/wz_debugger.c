@@ -215,3 +215,59 @@ void wz_debugger_clear_breakpoint_hit(wz_machine_t* machine)
         machine->debugger_breakpoint_hit = 0u;
     }
 }
+
+wz_result_t wz_debugger_step(wz_machine_t* machine, size_t* executed)
+{
+    wz_result_t result;
+
+    if (machine == 0 || executed == 0u) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    *executed = 0u;
+    if (machine->debugger_access_mode != WZ_DEBUGGER_PAUSED_MUTATION) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    result = wz_z80_step(machine);
+    if (result != WZ_RESULT_OK) {
+        return result;
+    }
+    if (machine->debugger_breakpoint_hit != 0u) {
+        wz_debugger_trace_result(machine, WZ_DEBUGGER_TRACE_STEP,
+                                 WZ_RESULT_BREAKPOINT_HIT, 0);
+        return WZ_RESULT_BREAKPOINT_HIT;
+    }
+    *executed = 1u;
+    wz_debugger_trace_result(machine, WZ_DEBUGGER_TRACE_STEP,
+                             WZ_RESULT_OK, 0);
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_debugger_continue(wz_machine_t* machine,
+                                 size_t max_instructions,
+                                 size_t* executed)
+{
+    wz_result_t result;
+
+    if (machine == 0 || executed == 0u || max_instructions == 0u) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    *executed = 0u;
+    if (machine->debugger_access_mode != WZ_DEBUGGER_PAUSED_MUTATION) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    while (*executed < max_instructions) {
+        result = wz_z80_step(machine);
+        if (result != WZ_RESULT_OK) {
+            return result;
+        }
+        if (machine->debugger_breakpoint_hit != 0u) {
+            wz_debugger_trace_result(machine, WZ_DEBUGGER_TRACE_CONTINUE,
+                                     WZ_RESULT_BREAKPOINT_HIT, 0);
+            return WZ_RESULT_BREAKPOINT_HIT;
+        }
+        ++*executed;
+    }
+    wz_debugger_trace_result(machine, WZ_DEBUGGER_TRACE_CONTINUE,
+                             WZ_RESULT_OK, 0);
+    return WZ_RESULT_OK;
+}

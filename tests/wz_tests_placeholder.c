@@ -2097,6 +2097,36 @@ static void test_debugger_breakpoint(void)
     wz_machine_destroy(&machine);
 }
 
+static void test_debugger_step_continue(void)
+{
+    static wz_machine_t machine;
+    size_t executed = 0u;
+
+    if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK ||
+        wz_debugger_set_access_mode(&machine, WZ_DEBUGGER_PAUSED_MUTATION) !=
+            WZ_RESULT_OK ||
+        wz_debugger_step(&machine, &executed) != WZ_RESULT_OK || executed != 1u ||
+        machine.cpu.program_counter != 1u || machine.master_tick != 8u ||
+        wz_debugger_continue(&machine, 2u, &executed) != WZ_RESULT_OK ||
+        executed != 2u || machine.cpu.program_counter != 3u ||
+        machine.master_tick != 24u) {
+        fputs("debugger step/continue execution boundary failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    if (wz_debugger_set_breakpoint(&machine, 4u) != WZ_RESULT_OK ||
+        wz_debugger_continue(&machine, 4u, &executed) != WZ_RESULT_BREAKPOINT_HIT ||
+        executed != 1u || machine.cpu.program_counter != 4u ||
+        wz_debugger_continue(&machine, 1u, &executed) != WZ_RESULT_BREAKPOINT_HIT ||
+        executed != 0u ||
+        wz_debugger_continue(&machine, 0u, &executed) != WZ_RESULT_INVALID_ARGUMENT) {
+        fputs("debugger breakpoint continue boundary failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_machine_destroy(&machine);
+}
+
 static void test_snapshot_cross_host_round_trips(void)
 {
     static wz_byte_t sna[WZ_SNA_48K_LENGTH];
@@ -3868,6 +3898,7 @@ int main(void)
     test_debugger_read_only_inspection();
     test_debugger_memory_mutation();
     test_debugger_breakpoint();
+    test_debugger_step_continue();
     test_peripheral_state_serialization();
     test_historical_state_representability();
     test_snapshot_state_isolated_validation();

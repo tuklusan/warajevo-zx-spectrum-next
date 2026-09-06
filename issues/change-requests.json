@@ -2090,7 +2090,7 @@
     {
       "cr_number": "CR-0250",
       "title": "Implement scheduler-backed single-step and continue",
-      "status": "open",
+      "status": "in_progress",
       "source_authority": ["design/cr-preflight/CR-0250.md", "design/debugger-api.md", "design/monitor-debugger-inventory.md", "design/warajevo-zx-spectrum-next-architecture.md sections 41, 44, and 49.2", "design/warajevo-zx-spectrum-next-ui-architecture.md section 21", "design/wzsn-architectures-1-2-developer-tasks.md task 231", "reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM"],
       "notes": "Opened on 2026-09-06 after upstream step, continue, breakpoint, halt, interrupt, and monitor-loop paths were reconciled."
     }

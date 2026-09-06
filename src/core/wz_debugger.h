@@ -31,7 +31,9 @@ typedef enum {
 enum {
     WZ_DEBUGGER_TRACE_ACCESS_MODE = 1,
     WZ_DEBUGGER_TRACE_CPU_MUTATION = 2,
-    WZ_DEBUGGER_TRACE_MEMORY_MUTATION = 3
+    WZ_DEBUGGER_TRACE_MEMORY_MUTATION = 3,
+    WZ_DEBUGGER_TRACE_STEP = 4,
+    WZ_DEBUGGER_TRACE_CONTINUE = 5
 };
 
 /* Inspection always reads the one live machine; it does not clone execution state. */
@@ -59,5 +61,9 @@ wz_result_t wz_debugger_clear_breakpoint(wz_machine_t* machine);
 bool wz_debugger_breakpoint_active(const wz_machine_t* machine);
 bool wz_debugger_breakpoint_hit(const wz_machine_t* machine);
 void wz_debugger_clear_breakpoint_hit(wz_machine_t* machine);
+wz_result_t wz_debugger_step(wz_machine_t* machine, size_t* executed);
+wz_result_t wz_debugger_continue(wz_machine_t* machine,
+                                 size_t max_instructions,
+                                 size_t* executed);
 
 #endif
