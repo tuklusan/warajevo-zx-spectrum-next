@@ -73,7 +73,8 @@ static void send_raw(wz_syslog_udp_t* transport, const char* packet, int length)
                  (const struct sockaddr*)transport->address,
                  (int)transport->address_size);
 #else
-    (void)sendto((int)transport->socket_handle, packet, (size_t)length, MSG_DONTWAIT,
+    /* The socket is configured nonblocking during open; zero flags is portable across POSIX hosts. */
+    (void)sendto((int)transport->socket_handle, packet, (size_t)length, 0,
                  (const struct sockaddr*)transport->address, transport->address_size);
 #endif
 }
