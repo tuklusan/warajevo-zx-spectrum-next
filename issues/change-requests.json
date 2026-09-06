@@ -2013,9 +2013,9 @@
     {
       "cr_number": "CR-0239",
       "title": "Fuzz malformed MDR images and invalid device transitions",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0239.md", "design/warajevo-zx-spectrum-next-architecture.md sections 36, 39, and 46", "design/interface1-microdrive-zxnet.md sections 6-11", "design/wzsn-architectures-1-2-developer-tasks.md task 221", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM"],
-      "notes": "Opened on 2026-09-06 for deterministic seeded malformed-MDR and invalid Interface 1/ZX Net transition coverage under remote sanitizers. Host transport fuzzing remains outside the core."
+      "notes": "Closed on 2026-09-06 at c855e0ddcf62703618c629680ba72dfeeb10d653 after adding 4096 deterministic seeded malformed-MDR and invalid Microdrive/ZX Net transition iterations with bounded post-operation state checks. Exact CODE, TEST_ARTIFACT, and DOCUMENTATION reviews passed with zero findings. Linux sanitizer, Intel macOS sanitizer, Windows 10 sanitizer retry, and Windows 11 remote lanes passed. Hosted platform-smoke run 34009604530 passed all matrix and publication gates. The first Windows 10 attempt had incomplete archive transport; retry R2 passed and is the authoritative lane evidence. Private closure evidence is retained under test-artefacts/reviewer/CR-0239-test-evidence.local.json and test-artefacts/remote-runs/. Remote and hosted harnesses remain frozen unless a concrete validation blocker appears."
     }
   ]
 }
