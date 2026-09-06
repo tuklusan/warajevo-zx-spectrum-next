@@ -2299,7 +2299,7 @@
     {
       "cr_number": "CR-0264",
       "title": "Add refresh and monitor presentation boundary",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/cr-preflight/CR-0264.md",
         "design/phase-11-regression-coverage-matrix.md",
@@ -2308,7 +2308,7 @@
         "design/wzsn-architectures-1-2-developer-tasks.md tasks 085-094 and 107-113",
         "reference/original-warajevo/source/src/environment/WARAJEVO.PAS"
       ],
-      "notes": "Opened on 2026-09-06 for the Phase-11 missing Refresh/monitor presentation workflow. Add an immutable presentation snapshot/publication boundary using the canonical raster while preserving host scheduling and GPU ownership outside deterministic core state."
+      "notes": "Closed on 2026-09-06 at commit 8c5e4714ba6c5403054a64390280316ab1cdff33. Added an immutable validated presentation snapshot/publication boundary with sequence tracking and const-only reads, preserving host scheduling and GPU ownership outside deterministic core state. Exact-SHA CODE and TEST_ARTIFACT reviews passed with zero findings; all four remote lanes and hosted run 34048552789 passed all 20 platform lanes and publication. Documentation reviews remain before final closure."
     }
   ]
 }

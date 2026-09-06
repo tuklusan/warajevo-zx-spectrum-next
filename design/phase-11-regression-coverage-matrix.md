@@ -36,7 +36,7 @@ closure pass.
 | Memory pointer/page configuration | COVERED | `wz_debugger_page_controls_tests` through CR-0261 |
 | Quit/lifecycle command | COVERED | `wz_application_lifecycle_tests` through CR-0262 |
 | Screen inspection | COVERED | `wz_screen_inspection_tests` through CR-0263 |
-| Refresh/monitor presentation | MISSING | UI queue owns presentation; add boundary test |
+| Refresh/monitor presentation | COVERED | `wz_presentation_snapshot_tests` through CR-0264 |
 
 ## ZX Printer
 
