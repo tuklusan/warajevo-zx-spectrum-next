@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 261,
+  "next_cr_number": 262,
   "status_values": [
     "open",
     "in_progress",
@@ -2250,6 +2250,21 @@
         "reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM"
       ],
       "notes": "Closed on 2026-09-06 at commit 36fca786c9a1b5a2a93869b660fc833159242e79. Added the bounded application diagnostic block save/load boundary with isolated candidate validation, atomic publication, and focused round-trip/capacity/malformed-input regressions. Exact-SHA CODE and TEST_ARTIFACT reviews passed with zero findings; Linux, Mac Intel, Windows 10, and Windows 11 execution passed (Windows 10 archive transport limitation recorded). Hosted run 34037939699 passed all 20 lanes and publication. Final DOCUMENTATION reviews are recorded in the preflight closure record."
+    },
+    {
+      "cr_number": "CR-0261",
+      "title": "Add model-aware debugger memory pointer and page controls",
+      "status": "in_progress",
+      "source_authority": [
+        "design/cr-preflight/CR-0261.md",
+        "design/phase-11-regression-coverage-matrix.md",
+        "design/monitor-debugger-inventory.md",
+        "design/warajevo-zx-spectrum-next-architecture.md sections 41, 44, and 49.2",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md sections 21 and 45",
+        "design/wzsn-architectures-1-2-developer-tasks.md tasks 235 and 236",
+        "reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM"
+      ],
+      "notes": "Opened on 2026-09-06 from the CR-0254 missing Memory pointer/page configuration workflow. Add bounded model-aware debugger inspection and configuration controls by delegating to the existing 48K/128K memory and paging boundaries, with no second memory model or unchecked page access."
     }
   ]
 }
