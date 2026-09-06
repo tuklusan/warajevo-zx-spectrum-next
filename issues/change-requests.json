@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 250,
+  "next_cr_number": 251,
   "status_values": [
     "open",
     "in_progress",
@@ -2086,6 +2086,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0249.md", "design/debugger-api.md", "design/monitor-debugger-inventory.md", "design/warajevo-zx-spectrum-next-architecture.md sections 41 and 44", "design/warajevo-zx-spectrum-next-ui-architecture.md section 21", "design/wzsn-architectures-1-2-developer-tasks.md task 230", "reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM"],
       "notes": "Closed on 2026-09-06. Final commit b8ebb8888e9b284f19af9b65d778991e34102ada passed serial CODE, TEST_ARTIFACT, and DOCUMENTATION reviews with zero confirmed findings; four remote lanes and hosted publication run 34014963955 passed."
+    },
+    {
+      "cr_number": "CR-0250",
+      "title": "Implement scheduler-backed single-step and continue",
+      "status": "open",
+      "source_authority": ["design/cr-preflight/CR-0250.md", "design/debugger-api.md", "design/monitor-debugger-inventory.md", "design/warajevo-zx-spectrum-next-architecture.md sections 41, 44, and 49.2", "design/warajevo-zx-spectrum-next-ui-architecture.md section 21", "design/wzsn-architectures-1-2-developer-tasks.md task 231", "reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM"],
+      "notes": "Opened on 2026-09-06 after upstream step, continue, breakpoint, halt, interrupt, and monitor-loop paths were reconciled."
     }
   ]
 }
