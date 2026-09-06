@@ -2130,7 +2130,7 @@
     {
       "cr_number": "CR-0253",
       "title": "Enforce complete UDP-only forwarding for traces and logs",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/cr-preflight/CR-0253.md",
         "design/cr-preflight/CR-0244.md",
@@ -2143,7 +2143,7 @@
         "src/diagnostics/wz_syslog_udp.h",
         "src/diagnostics/wz_syslog_udp.c"
       ],
-      "notes": "Opened on 2026-09-06 as a follow-up to CR-0244. Prove and, where required, implement one project-wide forwarding boundary for every approved trace and diagnostic-log class, using UDP only to sanyalnet-oracle-vps2.duckdns.org:65514 in Unix syslog format. Preserve private full binary trace files, redact sensitive data, and keep forwarding best-effort and non-stateful."
+      "notes": "Closed on 2026-09-06 at commit d6e1fd996ee5c8485840673a7bfa32ab38816c45. Added the shared diagnostics router and routing contract test over the existing UDP-only Unix syslog adapter. CODE and TEST_ARTIFACT reviews passed with zero confirmed findings; four remote lanes and hosted run 34025215636 passed, with all 20 lanes and publication green and 27,120 pinned cases passing. Final DOCUMENTATION review is recorded in the preflight closure record."
     }
   ]
 }
