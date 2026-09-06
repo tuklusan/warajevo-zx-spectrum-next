@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 265,
+  "next_cr_number": 266,
   "status_values": [
     "open",
     "in_progress",
@@ -2309,6 +2309,22 @@
         "reference/original-warajevo/source/src/environment/WARAJEVO.PAS"
       ],
       "notes": "Closed on 2026-09-06 at commit 8c5e4714ba6c5403054a64390280316ab1cdff33. Added an immutable validated presentation snapshot/publication boundary with sequence tracking and const-only reads, preserving host scheduling and GPU ownership outside deterministic core state. Exact-SHA CODE, TEST_ARTIFACT, and DOCUMENTATION reviews passed with zero findings; all four remote lanes and hosted run 34048552789 passed all 20 platform lanes and publication."
+    },
+    {
+      "cr_number": "CR-0265",
+      "title": "Freeze Phase-12 UI toolkit and integration boundary",
+      "status": "open",
+      "source_authority": [
+        "design/cr-preflight/CR-0265.md",
+        "design/warajevo-zx-spectrum-next-architecture.md sections 19, 27, 30, 31, 49.2, and 51",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md sections 3, 4, 6-8, 18, 23-25, 40, 43-45, and 49",
+        "design/wzsn-architectures-1-2-developer-tasks.md tasks 237-246",
+        "design/dependencies/sokol-pin.md",
+        "design/dependencies/linux-graphics-backend.md",
+        "design/dependencies/nuklear-pin.md",
+        "reference/original-warajevo/source/src/environment"
+      ],
+      "notes": "Opened on 2026-09-06 as the Phase-12A entry gate. Freeze the host UI toolkit and integration boundary before command-registry or higher-level UI implementation. The decision is documentation-only; implementation follows in subsequent CRs after exact-SHA documentation review and upstream zero-gap reconciliation."
     }
   ]
 }

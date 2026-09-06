@@ -3751,6 +3751,13 @@ Already frozen by this architecture:
   scheduling behavior are frozen in Section 55; Telnet application-control
   grammar and permission policy are frozen by the UI architecture.
 
+Phase-12 UI toolkit decision: the in-window C widget layer is Nuklear at the
+immutable revision recorded in `design/dependencies/nuklear-pin.md`. Sokol
+continues to own the host viewport and presentation upload. Native platform
+menus and file dialogs remain host-shell responsibilities, and the toolkit,
+window handles, persistence, and accessibility adapters remain outside the
+deterministic core.
+
 A deferred item must be recorded as an explicit design decision before its gate
 closes. It must not be decided implicitly by whichever host platform or
 developer happens to implement it first.

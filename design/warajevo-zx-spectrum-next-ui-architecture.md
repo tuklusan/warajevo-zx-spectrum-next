@@ -2968,6 +2968,16 @@ exact application command-registry C API
 exact command result/error representation
 ```
 
+The Phase-12 toolkit decision is frozen as follows: Nuklear at the immutable
+revision recorded in `design/dependencies/nuklear-pin.md` supplies portable
+in-window widgets and event translation. Sokol remains the viewport/presentation
+boundary. Native platform menus and file dialogs are used where they provide
+the expected desktop behavior, with semantic command IDs remaining unchanged.
+Keyboard navigation, focus order, labels, and actionable states are mandatory
+project-owned accessibility behavior; host adapters expose those semantics to
+platform accessibility facilities where available. Versioned settings are
+host-only and interprocess-safe, and never contain canonical machine state.
+
 Those choices may alter implementation but not the semantic menu tree,
 command IDs, manager ownership, Telnet grammar, or acceptance requirements in
 this document.
