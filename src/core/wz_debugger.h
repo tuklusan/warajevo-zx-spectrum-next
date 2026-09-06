@@ -51,6 +51,13 @@ wz_result_t wz_debugger_find_memory(const wz_machine_t* machine,
                                     size_t length,
                                     wz_byte_t value,
                                     wz_word_t* found_address);
+wz_result_t wz_debugger_format_hex8(wz_byte_t value, char* output, size_t capacity);
+wz_result_t wz_debugger_format_hex16(wz_word_t value, char* output, size_t capacity);
+wz_result_t wz_debugger_disassemble(const wz_machine_t* machine,
+                                    wz_word_t address,
+                                    char* output,
+                                    size_t capacity,
+                                    size_t* consumed);
 
 /* Mutation and execution controls are defined here and implemented by later CRs. */
 wz_result_t wz_debugger_set_access_mode(wz_machine_t* machine,

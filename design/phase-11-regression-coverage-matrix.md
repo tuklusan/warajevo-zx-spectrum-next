@@ -27,8 +27,8 @@ closure pass.
 | Put bytes/words | COVERED | `wz_debugger_memory_tools_tests` |
 | Breakpoint | COVERED | `test_debugger_breakpoint` |
 | Single step and continue | COVERED | `test_debugger_step_continue` |
+| Disassemble and value formatting | COVERED | `wz_debugger_disassembly_tests` |
 | Abort/warm restart | MISSING | Add shared lifecycle command and regression CR |
-| Disassemble | MISSING | Add read-only disassembly service and regression CR |
 | Hex/value formatting | MISSING | Add deterministic debugger formatter and regression CR |
 | Jump/program-counter mutation | MISSING | Add paused-state mutation API and regression CR |
 | Load/save diagnostic block | MISSING | Add explicit application boundary and regression CR |
