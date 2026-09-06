@@ -2389,6 +2389,25 @@
         "WORKFLOW.md"
       ],
       "notes": "Closed in 3e04baf3c8e48f141102bbe6914e31efd5d34d48. WZ_TRACE_FORWARD=Y/1 gates UDP-only Unix syslog forwarding to the secured endpoint. CODE, DOCUMENTATION, and TEST_ARTIFACT reviews passed; remote Linux opt-in validation and hosted 20-lane publication run 34066868847 passed."
+    },
+    {
+      "cr_number": "CR-0270",
+      "title": "Implement the Phase-12B main application layout boundary",
+      "status": "in_progress",
+      "priority": "high",
+      "execution_order": "architecture_2_phase_12b",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0270.md",
+        "design/warajevo-zx-spectrum-next-architecture.md",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md",
+        "design/wzsn-architectures-1-2-developer-tasks.md tasks 265-282",
+        "reference/original-warajevo/source/src/environment/WARAJEVO.PAS",
+        "reference/original-warajevo/source/src/environment/DOSMENU.PAS",
+        "reference/original-warajevo/source/src/environment/MENUCONS.PAS",
+        "reference/original-warajevo/source/src/environment/SETUP.PAS"
+      ],
+      "notes": "Opened for the first Phase-12B UI implementation slice: semantic main-window layout, canonical menus, toolbar order, defaults, and status projection. Host toolkit rendering, media managers, and Telnet remain separately gated."
     }
   ]
 }
