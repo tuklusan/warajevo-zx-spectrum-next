@@ -2377,7 +2377,7 @@
     {
       "cr_number": "CR-0269",
       "title": "Forward secured lab and hosted harness diagnostics over UDP syslog",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "medium",
       "execution_order": "after_workflow_crs",
       "blocking": false,
@@ -2388,7 +2388,7 @@
         "design/cr-preflight/CR-0258.md",
         "WORKFLOW.md"
       ],
-      "notes": "Queued after workflow-first CRs. Forward complete runner-matrix and local-lab harness diagnostics, including explicitly authorized secrets, private binaries, screenshots, and raw test artifacts, over UDP-only Unix syslog to the secured lab endpoint. Keep the transport credential itself local-only."
+      "notes": "Closed in 3e04baf3c8e48f141102bbe6914e31efd5d34d48. WZ_TRACE_FORWARD=Y/1 gates UDP-only Unix syslog forwarding to the secured endpoint. CODE, DOCUMENTATION, and TEST_ARTIFACT reviews passed; remote Linux opt-in validation and hosted 20-lane publication run 34066868847 passed."
     }
   ]
 }
