@@ -59,6 +59,10 @@ over the same fixed UDP endpoint. Transport credentials are not payload data.
 Forwarding is best effort and never changes the build, test, or publication
 result.
 
+Forwarding is disabled by default and activates only when
+`WZ_TRACE_FORWARD` is exactly `Y` or `1`; validation environments set it
+explicitly.
+
 The bounded circular product trace file uses
 `wz_trace_file_set_forwarder` to invoke the same forwarding boundary after
 each successful record and header commit; it does not wait for freeze or

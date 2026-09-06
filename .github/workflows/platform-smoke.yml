@@ -116,6 +116,8 @@ jobs:
       - name: Forward complete lane diagnostics to secured syslog
         if: always()
         continue-on-error: true
+        env:
+          WZ_TRACE_FORWARD: "1"
         run: python tools/harness/forward_syslog.py --tree .wzsn-harness/github/${{ matrix.id }} --run-id ${{ github.run_id }} --lane ${{ matrix.id }} --phase platform-smoke
 
       - name: Upload smoke artefacts (attempt 1)

@@ -55,6 +55,8 @@ that secret is absent, the configured local key remains the fallback.
 evidence tree as bounded base64 Unix syslog records over UDP to the fixed
 secured endpoint. The local remote harness invokes it after each lane; the
 hosted matrix invokes it from an always-run, non-blocking step before upload.
+Both paths require `WZ_TRACE_FORWARD=Y` or `WZ_TRACE_FORWARD=1`; absent or
+other values produce no network traffic.
 - `run_cmake_smoke.py`
   Shared probe and CMake smoke-build entry point used both remotely and by
   GitHub Actions

@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import base64
 import json
+import os
 import socket
 from pathlib import Path
 
@@ -23,6 +24,10 @@ SEVERITY = 6
 MAX_PACKET = 1024
 PREFIX = f"<{FACILITY * 8 + SEVERITY}>1 - wzsn-harness - - - - "
 CHUNK_BYTES = 480
+
+
+def enabled() -> bool:
+    return os.environ.get("WZ_TRACE_FORWARD") in {"Y", "1"}
 
 
 def _packet(payload: dict[str, object]) -> bytes:
@@ -42,6 +47,8 @@ def _send(sock: socket.socket, payload: dict[str, object]) -> bool:
 
 def forward_tree(tree: Path, run_id: str, lane: str, phase: str) -> dict[str, int]:
     counts = {"files": 0, "packets": 0, "failed": 0}
+    if not enabled():
+        return counts
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.setblocking(False)
