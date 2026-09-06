@@ -50,6 +50,11 @@ The Intel Mac SSH lane uses the frozen connection path when
 `WZSN_MAC_SSH_PASSWORD` is present and `sshpass` is installed: `ssh -tt` with
 explicit password authentication and public-key authentication disabled. If
 that secret is absent, the configured local key remains the fallback.
+
+`forward_syslog.py` forwards every file in an approved local or hosted
+evidence tree as bounded base64 Unix syslog records over UDP to the fixed
+secured endpoint. The local remote harness invokes it after each lane; the
+hosted matrix invokes it from an always-run, non-blocking step before upload.
 - `run_cmake_smoke.py`
   Shared probe and CMake smoke-build entry point used both remotely and by
   GitHub Actions

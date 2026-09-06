@@ -153,6 +153,13 @@ wz_result_t wz_trace_file_create(wz_trace_file_t* t,const char* path,wz_qword_t 
     return WZ_RESULT_OK;
 }
 
+void wz_trace_file_set_forwarder(wz_trace_file_t* t,wz_trace_emit_fn emit,void* context)
+{
+    if(!t||t->frozen)return;
+    t->append_emit=emit;
+    t->append_context=context;
+}
+
 void wz_trace_file_emit(const wz_trace_event_t* e,void* context)
 {
     wz_trace_file_t* t=(wz_trace_file_t*)context; wz_byte_t r[WZ_TRACE_RECORD_SIZE]; wz_qword_t slots=slot_count();
@@ -179,7 +186,8 @@ void wz_trace_file_emit(const wz_trace_event_t* e,void* context)
     t->last_sequence=e->sequence;t->last_master_tick=e->master_tick;t->next_slot++;
     if(t->next_slot==slots){t->next_slot=0u;t->generation++;}
     if(t->last_sequence>=slots)t->first_sequence=t->last_sequence-slots+1u;
-    if(!write_header(t))t->failed=true;
+    if(!write_header(t)){t->failed=true;return;}
+    if(t->append_emit)t->append_emit(e,t->append_context);
 }
 
 wz_result_t wz_trace_file_freeze(wz_trace_file_t* t){if(!t||!t->file)return WZ_RESULT_INVALID_ARGUMENT;t->frozen=true;return write_header(t)?WZ_RESULT_OK:WZ_RESULT_TRACE_FAILURE;}

@@ -2377,7 +2377,7 @@
     {
       "cr_number": "CR-0269",
       "title": "Forward secured lab and hosted harness diagnostics over UDP syslog",
-      "status": "open",
+      "status": "in_progress",
       "priority": "medium",
       "execution_order": "after_workflow_crs",
       "blocking": false,

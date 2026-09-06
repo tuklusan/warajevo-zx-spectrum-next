@@ -47,3 +47,19 @@ additional structured trace producer or approved application-log channel was
 found beyond the paths listed above. Legacy text output remains explicitly
 classified as host-local or mapped through the new boundary; it is not silently
 treated as a second transport.
+
+## Harness Diagnostics
+
+The approved harness producer scope is the complete hosted lane result tree
+under `.wzsn-harness/github/<lane-id>` and each local remote session tree under
+`test-artefacts/remote-runs/<machine>/<run-id>`. The shared
+`tools/harness/forward_syslog.py` adapter forwards their logs, traces,
+screenshots, and raw test artifacts as bounded base64 RFC 5424-style records
+over the same fixed UDP endpoint. Transport credentials are not payload data.
+Forwarding is best effort and never changes the build, test, or publication
+result.
+
+The bounded circular product trace file uses
+`wz_trace_file_set_forwarder` to invoke the same forwarding boundary after
+each successful record and header commit; it does not wait for freeze or
+shutdown.

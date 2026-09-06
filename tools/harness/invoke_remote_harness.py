@@ -24,6 +24,11 @@ import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
 
+HARNESS_DIR = str(Path(__file__).resolve().parent)
+if HARNESS_DIR not in sys.path:
+    sys.path.insert(0, HARNESS_DIR)
+from forward_syslog import forward_tree
+
 
 REMOTE_MACHINES = {
     "linux-x64-lxqt": {
@@ -720,6 +725,8 @@ def main() -> int:
         "local_dir": str(local_dir),
         "remote_dir": remote_dir,
     }
+    forwarding = forward_tree(local_dir, args.run_id, args.machine, args.action)
+    session_record["syslog_forwarding"] = forwarding
     write_text(local_dir / "session.json", json.dumps(session_record, indent=2, sort_keys=True) + "\n")
 
     if primary.returncode != 0:

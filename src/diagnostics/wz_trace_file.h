@@ -29,6 +29,8 @@ typedef struct {
     wz_master_tick_t last_master_tick;
     wz_dword_t event_mask;
     wz_dword_t profile_kind;
+    wz_trace_emit_fn append_emit;
+    void* append_context;
     bool frozen;
     bool failed;
 } wz_trace_file_t;
@@ -47,6 +49,9 @@ typedef struct {
 wz_result_t wz_trace_file_create(wz_trace_file_t* trace, const char* path,
                                  wz_qword_t session_id, wz_dword_t profile_kind,
                                  wz_qword_t rom_identity, wz_dword_t event_mask);
+void wz_trace_file_set_forwarder(wz_trace_file_t* trace,
+                                  wz_trace_emit_fn append_emit,
+                                  void* append_context);
 void wz_trace_file_emit(const wz_trace_event_t* event, void* context);
 wz_result_t wz_trace_file_freeze(wz_trace_file_t* trace);
 void wz_trace_file_close(wz_trace_file_t* trace);

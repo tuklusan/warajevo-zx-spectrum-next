@@ -113,6 +113,11 @@ jobs:
       - name: Verify and record lane evidence
         run: python tools/harness/verify_platform_evidence.py --artifact-dir .wzsn-harness/github/${{ matrix.id }} --lane-id ${{ matrix.id }}
 
+      - name: Forward complete lane diagnostics to secured syslog
+        if: always()
+        continue-on-error: true
+        run: python tools/harness/forward_syslog.py --tree .wzsn-harness/github/${{ matrix.id }} --run-id ${{ github.run_id }} --lane ${{ matrix.id }} --phase platform-smoke
+
       - name: Upload smoke artefacts (attempt 1)
         id: upload-smoke-1
         if: always()
