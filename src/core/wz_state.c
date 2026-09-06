@@ -18,7 +18,6 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #define WZ_STATE_EXTENSION_MAGIC UINT32_C(0x4e535a57)
 #define WZ_STATE_EXTENSION_VERSION 1u
 #define WZ_STATE_EXTENSION_OFFSET (WZ_STATE_HEADER_LENGTH + 65536u)
-#define WZ_STATE_MACHINE_LENGTH (WZ_STATE_EXTENSION_OFFSET + WZ_STATE_EXTENSION_CAPACITY)
 
 static wz_result_t wz_state_write(wz_state_writer_t* writer,
                                   const wz_byte_t* data,

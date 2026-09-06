@@ -107,6 +107,7 @@ endif()
 add_executable(
     wz_headless
     src/app/wz_headless_main.c
+    src/app/wz_diagnostic_block.c
 )
 
 target_link_libraries(wz_headless PRIVATE wz_core)
@@ -164,6 +165,11 @@ add_executable(wz_printer_export_tests
     src/app/wz_printer_export.c)
 target_link_libraries(wz_printer_export_tests PRIVATE wz_core)
 
+add_executable(wz_diagnostic_block_tests
+    tests/wz_diagnostic_block_tests.c
+    src/app/wz_diagnostic_block.c)
+target_link_libraries(wz_diagnostic_block_tests PRIVATE wz_core)
+
 enable_testing()
 add_test(NAME wz_tests_placeholder COMMAND wz_tests)
 add_test(NAME wz_zxnet_loopback COMMAND wz_zxnet_loopback)
@@ -175,6 +181,7 @@ add_test(NAME wz_debugger_disassembly_tests COMMAND wz_debugger_disassembly_test
 add_test(NAME wz_debugger_jump_undo_tests COMMAND wz_debugger_jump_undo_tests)
 add_test(NAME wz_machine_reset_tests COMMAND wz_machine_reset_tests)
 add_test(NAME wz_printer_export_tests COMMAND wz_printer_export_tests)
+add_test(NAME wz_diagnostic_block_tests COMMAND wz_diagnostic_block_tests)
 
 if(WZSN_ENABLE_REVIEW_GATE_TESTS)
     find_package(Python3 COMPONENTS Interpreter REQUIRED)
