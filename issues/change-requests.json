@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 267,
+  "next_cr_number": 268,
   "status_values": [
     "open",
     "in_progress",
@@ -2342,6 +2342,22 @@
         "reference/original-warajevo/source/src/environment/WARAJEVO.PAS"
       ],
       "notes": "Opened on 2026-09-06 for the Phase-12A command-registry foundation. The CR freezes the application-layer C API and implements bounded metadata, validation, lookup, enumeration, and dispatch without introducing UI, host, socket, or deterministic-core dependencies."
+    },
+    {
+      "cr_number": "CR-0267",
+      "title": "Correct remote harness sequencing and failure classification",
+      "status": "open",
+      "priority": "low",
+      "execution_order": "out_of_order_allowed",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0267.md",
+        "WORKFLOW.md",
+        "tools/harness/invoke_remote_harness.py",
+        "tests/test_remote_harness_gate.py",
+        "design/review-gate.md"
+      ],
+      "notes": "Queued on 2026-09-06 as a low-priority out-of-order infrastructure CR. Make CODE-review-before-remote validation an explicit orchestration precondition and classify review-state refusal as review_pending rather than lab unavailability. It must not block CR-0266 or the main architecture queue."
     }
   ]
 }
