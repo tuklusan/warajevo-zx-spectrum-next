@@ -19,7 +19,7 @@
     {
       "cr_number": "CR-0001",
       "title": "Create canonical repository skeleton and bootstrap build",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/warajevo-zx-spectrum-next-architecture.md",
         "design/wzsn-architectures-1-2-developer-tasks.md task 001"
@@ -2269,7 +2269,7 @@
     {
       "cr_number": "CR-0262",
       "title": "Add explicit application quit and lifecycle boundary",
-      "status": "closed",
+      "status": "in_progress",
       "source_authority": [
         "design/cr-preflight/CR-0262.md",
         "design/phase-11-regression-coverage-matrix.md",
