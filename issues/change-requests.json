@@ -1992,9 +1992,9 @@
     {
       "cr_number": "CR-0236",
       "title": "Guard dirty Microdrive state during networking-mode changes",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0236.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24.1, 24.3, 28.7, and 49.1", "design/interface1-microdrive-zxnet.md sections 2, 5, 8, 10, and 11", "design/wzsn-architectures-1-2-developer-tasks.md task 218", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
-      "notes": "Opened on 2026-09-06 after the upstream/spec scan confirmed that leaving Interface 1 must flush or explicitly discard dirty writable Microdrive state without silent loss."
+      "notes": "Closed on 2026-09-06 at 20850990441a8bb02f3355aeb8f3235578ef91de after exact CODE and TEST_ARTIFACT PASS, four remote validations, hosted platform-smoke run 34006551904 with all 22 jobs green, and retained private closure evidence."
     }
   ]
 }
