@@ -1128,6 +1128,51 @@ bool wz_machine_flash_phase(const wz_machine_t* machine,
     return ((master_tick / flash_period_ticks) & 1u) != 0u;
 }
 
+wz_result_t wz_machine_render_raster(const wz_machine_t* machine,
+                                     wz_raster_buffer_t* destination)
+{
+    const size_t left = (WZ_RASTER_CANONICAL_WIDTH - 256u) / 2u;
+    const size_t top = (WZ_RASTER_CANONICAL_HEIGHT - 192u) / 2u;
+    wz_byte_t border_sample;
+
+    if (machine == 0 || machine->profile == 0 || destination == 0 ||
+        destination->samples == 0 ||
+        destination->width != WZ_RASTER_CANONICAL_WIDTH ||
+        destination->height != WZ_RASTER_CANONICAL_HEIGHT) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (wz_raster_palette_index(machine->border_color, false,
+                                &border_sample) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    border_sample = (wz_byte_t)(WZ_RASTER_BORDER_MIN + machine->border_color);
+    if (wz_raster_buffer_clear(destination, border_sample) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    for (size_t y = 0u; y < 192u; ++y) {
+        for (size_t x = 0u; x < 256u; ++x) {
+            wz_dword_t row = (wz_dword_t)y;
+            wz_dword_t cell = (wz_dword_t)(x / 8u);
+            wz_word_t bitmap_address = wz_ula_bitmap_address(row, cell);
+            wz_word_t attribute_address = (wz_word_t)(0x5800u +
+                (row / 8u) * 32u + cell);
+            wz_byte_t bitmap = wz_machine_memory_read(machine, bitmap_address);
+            wz_byte_t attribute = wz_machine_memory_read(machine,
+                                                          attribute_address);
+            wz_byte_t sample;
+            if (wz_raster_decode_attribute_phase(
+                    attribute, (bitmap & (wz_byte_t)(0x80u >> (x & 7u))) != 0u,
+                    wz_machine_flash_phase(machine, machine->master_tick),
+                    &sample) != WZ_RESULT_OK ||
+                wz_raster_buffer_write(destination, left + x, top + y,
+                                       sample) != WZ_RESULT_OK) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+        }
+    }
+    return WZ_RESULT_OK;
+}
+
 const char* wz_machine_boot_message(void)
 {
     return "Warajevo ZX Spectrum Next bootstrap";

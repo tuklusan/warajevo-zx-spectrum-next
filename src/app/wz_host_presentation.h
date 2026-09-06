@@ -19,8 +19,8 @@ typedef struct {
 } wz_host_presentation_rect_t;
 
 /* The default host view includes the complete canonical 448x312 raster. */
-#define WZ_HOST_PRESENTATION_WIDTH 448u
-#define WZ_HOST_PRESENTATION_HEIGHT 312u
+#define WZ_HOST_PRESENTATION_WIDTH WZ_RASTER_CANONICAL_WIDTH
+#define WZ_HOST_PRESENTATION_HEIGHT WZ_RASTER_CANONICAL_HEIGHT
 
 wz_host_presentation_rect_t wz_host_presentation_default_rect(void);
 

@@ -179,6 +179,9 @@ add_executable(
     src/app/wz_application_lifecycle.c)
 target_link_libraries(wz_application_lifecycle_tests PRIVATE wz_core)
 
+add_executable(wz_screen_inspection_tests tests/wz_screen_inspection_tests.c)
+target_link_libraries(wz_screen_inspection_tests PRIVATE wz_core)
+
 enable_testing()
 add_test(NAME wz_tests_placeholder COMMAND wz_tests)
 add_test(NAME wz_zxnet_loopback COMMAND wz_zxnet_loopback)
@@ -193,6 +196,7 @@ add_test(NAME wz_machine_reset_tests COMMAND wz_machine_reset_tests)
 add_test(NAME wz_printer_export_tests COMMAND wz_printer_export_tests)
 add_test(NAME wz_diagnostic_block_tests COMMAND wz_diagnostic_block_tests)
 add_test(NAME wz_application_lifecycle_tests COMMAND wz_application_lifecycle_tests)
+add_test(NAME wz_screen_inspection_tests COMMAND wz_screen_inspection_tests)
 
 if(WZSN_ENABLE_REVIEW_GATE_TESTS)
     find_package(Python3 COMPONENTS Interpreter REQUIRED)

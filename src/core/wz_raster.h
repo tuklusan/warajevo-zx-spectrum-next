@@ -18,6 +18,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #define WZ_RASTER_BORDER_MIN 0x10u
 #define WZ_RASTER_BORDER_MAX 0x17u
 #define WZ_RASTER_BLANKING 0x18u
+#define WZ_RASTER_CANONICAL_WIDTH 448u
+#define WZ_RASTER_CANONICAL_HEIGHT 312u
 
 enum {
     WZ_PALETTE_BLACK = 0u,

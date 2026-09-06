@@ -264,4 +264,8 @@ wz_byte_t wz_machine_floating_bus_value(const wz_machine_t* machine,
 bool wz_machine_flash_phase(const wz_machine_t* machine,
                             wz_master_tick_t master_tick);
 
+/* Project the current machine video state without mutating machine state. */
+wz_result_t wz_machine_render_raster(const wz_machine_t* machine,
+                                     wz_raster_buffer_t* destination);
+
 #endif
