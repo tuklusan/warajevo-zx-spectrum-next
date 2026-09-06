@@ -692,9 +692,9 @@ static void test_interface1_rom_paging(void)
             sizeof(interface1_rom), WZ_INTERFACE1_ROM_OLD) != WZ_RESULT_OK ||
         wz_machine_reconfigure_networking_mode(&machine,
             WZ_NETWORKING_INTERFACE1) != WZ_RESULT_OK ||
-        wz_machine_set_interface1_rom_page(&machine, 3u) != WZ_RESULT_OK ||
+        wz_machine_set_interface1_rom_page(&machine, 1u) != WZ_RESULT_OK ||
         wz_machine_interface1_rom_variant(&machine) != WZ_INTERFACE1_ROM_OLD ||
-        wz_machine_interface1_rom_page(&machine) != 3u ||
+        wz_machine_interface1_rom_page(&machine) != 1u ||
         wz_machine_memory_read(&machine, 0x0000u) != interface1_rom[0]) {
         fputs("Interface 1 old-ROM paging state failed\n", stderr);
         wz_machine_destroy(&machine);
