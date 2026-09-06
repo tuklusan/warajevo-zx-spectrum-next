@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 253,
+  "next_cr_number": 254,
   "status_values": [
     "open",
     "in_progress",
@@ -2112,7 +2112,7 @@
     {
       "cr_number": "CR-0252",
       "title": "Implement host printer presentation and export boundary",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/cr-preflight/CR-0252.md",
         "design/zx-printer-inventory.md",
@@ -2125,7 +2125,25 @@
         "src/app/wz_host_config.h",
         "src/app/wz_host_config.c"
       ],
-      "notes": "Opened on 2026-09-06 for Phase-11 task 234. Define a portable caller-owned bitmap export boundary over CR-0251 flush events; filesystem/UI integration remains deferred to the UI queue."
+      "notes": "Closed on 2026-09-06 at commit 4d93ad740d1f0530b8014c8f1eb39d0d2b14a507. CODE and TEST_ARTIFACT reviews passed with zero confirmed findings; Linux, Mac Intel, Windows 10, and Windows 11 remote lanes produced successful evidence, with the Windows 11 sanitizer limitation recorded separately. Hosted run 34023528224 passed all 20 platform lanes, housekeeping, and publication; all 27,120 pinned cases passed. Final DOCUMENTATION review is recorded in the preflight closure record."
+    },
+    {
+      "cr_number": "CR-0253",
+      "title": "Enforce complete UDP-only forwarding for traces and logs",
+      "status": "open",
+      "source_authority": [
+        "design/cr-preflight/CR-0253.md",
+        "design/cr-preflight/CR-0244.md",
+        "design/warajevo-zx-spectrum-next-architecture.md sections 44, 44.3, and 55.15.1",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md diagnostics, trace, and host-network boundaries",
+        "src/core/wz_trace.h",
+        "src/core/wz_trace.c",
+        "src/diagnostics/wz_trace_file.h",
+        "src/diagnostics/wz_trace_file.c",
+        "src/diagnostics/wz_syslog_udp.h",
+        "src/diagnostics/wz_syslog_udp.c"
+      ],
+      "notes": "Opened on 2026-09-06 as a follow-up to CR-0244. Prove and, where required, implement one project-wide forwarding boundary for every approved trace and diagnostic-log class, using UDP only to sanyalnet-oracle-vps2.duckdns.org:65514 in Unix syslog format. Preserve private full binary trace files, redact sensitive data, and keep forwarding best-effort and non-stateful."
     }
   ]
 }
