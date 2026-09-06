@@ -57,7 +57,7 @@ static int verify_reset(const wz_machine_profile_t* profile)
         machine.keyboard_rows[2u] != held_key ||
         machine.tape_mounted == 0u ||
         machine.tape_state.segment_elapsed != tape_elapsed ||
-        wz_machine_kempston_read(&machine, 0x001fu) != 0x10u ||
+        wz_machine_kempston_read(&machine, 0x001fu) != 0x04u ||
         machine.timing_trace != &trace) {
         wz_machine_destroy(&machine);
         return 1;

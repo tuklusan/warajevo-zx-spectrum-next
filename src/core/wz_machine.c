@@ -128,6 +128,7 @@ wz_result_t wz_machine_reset(wz_machine_t* machine)
 
     wz_machine_destroy(machine);
     *machine = replacement;
+    machine->tape_state.tape = &machine->tape;
     return WZ_RESULT_OK;
 }
 
