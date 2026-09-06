@@ -72,7 +72,8 @@ wz_result_t wz_zxnet_start_read_collection(wz_zxnet_t* network)
 
 wz_result_t wz_zxnet_begin_claim(wz_zxnet_t* network, wz_byte_t claim_byte)
 {
-    if (network == 0 || network->state.state == WZ_ZXNET_COLLWRITE) {
+    if (network == 0 || network->state.state == WZ_ZXNET_COLLREAD ||
+        network->state.state == WZ_ZXNET_COLLWRITE) {
         return WZ_RESULT_INVALID_STATE;
     }
     network->state.claim_byte = claim_byte;
