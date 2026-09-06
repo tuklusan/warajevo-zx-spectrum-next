@@ -2034,9 +2034,9 @@
     {
       "cr_number": "CR-0242",
       "title": "Inventory the ZX Printer",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0242.md", "design/zx-printer-inventory.md", "design/warajevo-zx-spectrum-next-architecture.md sections 41 and 49.2", "design/warajevo-zx-spectrum-next-ui-architecture.md sections 16 and 21", "design/wzsn-architectures-1-2-developer-tasks.md task 224", "reference/original-warajevo/source/src/spectrum-kernel/ZXPRINT.ASM", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
-      "notes": "Opened on 2026-09-06 for full function-level ZX Printer inventory and classification before Phase-11 peripheral implementation."
+      "notes": "Closed on 2026-09-06 at 13aff9595c58ad9794161a1295b2c3c8c42221f7 after full ZXPRINT.ASM, SPECSIM.ASM, setup, and Architecture 1/UI Architecture 2 reconciliation. Exact CODE and DOCUMENTATION reviews passed with zero findings. Port status/control, motor transitions, four printer modes, buffering, flush behavior, configuration, and host-output boundaries are classified before implementation."
     }
   ]
 }
