@@ -1999,9 +1999,9 @@
     {
       "cr_number": "CR-0237",
       "title": "Add deterministic Interface 1, Microdrive, and ZX Net regression tests",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0237.md", "design/warajevo-zx-spectrum-next-architecture.md section 36", "design/interface1-microdrive-zxnet.md sections 3-11", "design/wzsn-architectures-1-2-developer-tasks.md task 219", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
-      "notes": "Opened on 2026-09-06 after the upstream and companion-spec scan identified the remaining Architecture 1/2 deterministic regression coverage task."
+      "notes": "Closed on 2026-09-06 at 29c632586ed67c11c5c30ece677e5cd02566a1c3 after exact CODE, DOCUMENTATION, and TEST_ARTIFACT PASS, four remote validations, hosted platform-smoke run 34007716458 with all 22 jobs green, and retained private closure evidence."
     }
   ]
 }
