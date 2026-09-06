@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 264,
+  "next_cr_number": 265,
   "status_values": [
     "open",
     "in_progress",
@@ -2295,6 +2295,20 @@
         "reference/original-warajevo/source/src/environment/KONVTAP.PAS"
       ],
       "notes": "Closed on 2026-09-06 at commit 1ad63534d598b68633aa79e7f768813006200fd7. Added a read-only complete-frame canonical raster projection covering 48K/128K bitmap, attribute, BRIGHT, FLASH, border, blanking, and display-bank semantics without host/UI dependencies. Exact-SHA CODE, TEST_ARTIFACT, and DOCUMENTATION reviews passed with zero findings; all four remote lanes and hosted run 34045219821 passed all 20 platform lanes and publication."
+    },
+    {
+      "cr_number": "CR-0264",
+      "title": "Add refresh and monitor presentation boundary",
+      "status": "in_progress",
+      "source_authority": [
+        "design/cr-preflight/CR-0264.md",
+        "design/phase-11-regression-coverage-matrix.md",
+        "design/warajevo-zx-spectrum-next-architecture.md sections 16, 19, 27, 30, 31, 36, 37, and 49.2",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md sections 3.3, 3.4, 18, 24, 25, 40, 45, and 47",
+        "design/wzsn-architectures-1-2-developer-tasks.md tasks 085-094 and 107-113",
+        "reference/original-warajevo/source/src/environment/WARAJEVO.PAS"
+      ],
+      "notes": "Opened on 2026-09-06 for the Phase-11 missing Refresh/monitor presentation workflow. Add an immutable presentation snapshot/publication boundary using the canonical raster while preserving host scheduling and GPU ownership outside deterministic core state."
     }
   ]
 }
