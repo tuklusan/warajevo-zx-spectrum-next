@@ -75,6 +75,7 @@ add_library(
     src/core/audio/wz_audio_mixer.c
     src/core/audio/wz_audio_evidence.c
     src/core/wz_bus.c
+    src/core/wz_debugger.c
     src/core/wz_machine.c
     src/core/wz_microdrive.c
     src/core/wz_zxnet.c

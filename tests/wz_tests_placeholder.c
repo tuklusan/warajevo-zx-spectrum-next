@@ -11,6 +11,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include <string.h>
 
 #include "core/wz_machine.h"
+#include "core/wz_debugger.h"
 #include "core/wz_microdrive.h"
 #include "core/wz_zxnet.h"
 #include "core/wz_keyboard_matrix.h"
@@ -1921,6 +1922,37 @@ static void test_malformed_mdr_and_device_transition_fuzz(void)
     }
 }
 
+static void test_debugger_read_only_inspection(void)
+{
+    static wz_machine_t machine;
+    static wz_debugger_snapshot_t snapshot;
+    static wz_byte_t values[4u];
+
+    if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK) {
+        fputs("debugger inspection setup failed\n", stderr);
+        exit(1);
+    }
+    machine.cpu.program_counter = 0x1234u;
+    machine.cpu.stack_pointer = 0xabcdu;
+    machine.master_tick = 77u;
+    machine.memory[0xfffdu] = 0x5au;
+    if (wz_debugger_snapshot(&machine, &snapshot) != WZ_RESULT_OK ||
+        snapshot.cpu.program_counter != 0x1234u ||
+        snapshot.cpu.stack_pointer != 0xabcdu ||
+        snapshot.master_tick != 77u ||
+        wz_debugger_read_memory(&machine, 0xfffdu, &values[0]) != WZ_RESULT_OK ||
+        values[0] != 0x5au ||
+        wz_debugger_read_memory_block(&machine, 0xfffdu, values, 4u) !=
+            WZ_RESULT_BUFFER_TOO_SMALL ||
+        wz_debugger_read_memory_block(&machine, 0xfffdu, 0, 0u) != WZ_RESULT_OK ||
+        wz_debugger_snapshot(0, &snapshot) != WZ_RESULT_INVALID_ARGUMENT ||
+        wz_debugger_read_memory(&machine, 0u, 0) != WZ_RESULT_INVALID_ARGUMENT) {
+        fputs("debugger read-only inspection failed\n", stderr);
+        exit(1);
+    }
+    wz_machine_destroy(&machine);
+}
+
 static void test_snapshot_cross_host_round_trips(void)
 {
     static wz_byte_t sna[WZ_SNA_48K_LENGTH];
@@ -3689,6 +3721,7 @@ int main(void)
     test_microdrive_image_validation();
     test_dirty_microdrive_mode_guard();
     test_malformed_mdr_and_device_transition_fuzz();
+    test_debugger_read_only_inspection();
     test_peripheral_state_serialization();
     test_historical_state_representability();
     test_snapshot_state_isolated_validation();

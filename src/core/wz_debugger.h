@@ -20,7 +20,6 @@ typedef struct {
     wz_master_tick_t master_tick;
     wz_byte_t border_color;
     wz_byte_t networking_mode;
-    wz_byte_t paused;
 } wz_debugger_snapshot_t;
 
 typedef enum {

@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 245,
+  "next_cr_number": 246,
   "status_values": [
     "open",
     "in_progress",
@@ -2051,6 +2051,13 @@
       "status": "open",
       "source_authority": ["design/cr-preflight/CR-0244.md", "design/warajevo-zx-spectrum-next-architecture.md sections 28, 44, 44.3, and 55.15", "design/warajevo-zx-spectrum-next-ui-architecture.md diagnostics and trace sections", "src/core/wz_trace.h", "src/core/wz_trace.c", "src/diagnostics/wz_trace_file.h", "WORKFLOW.md"],
       "notes": "Added on 2026-09-06 from the operator request. Proposed destination is sanyalnet-oracle-vps2.duckdns.org:65514 over UDP only; implementation is not yet approved pending privacy, opt-in, syslog-format, failure-isolation, and upstream-boundary design review."
+    },
+    {
+      "cr_number": "CR-0245",
+      "title": "Implement read-only CPU register inspection",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0245.md", "design/debugger-api.md", "design/monitor-debugger-inventory.md", "design/warajevo-zx-spectrum-next-architecture.md sections 41 and 44", "design/warajevo-zx-spectrum-next-ui-architecture.md section 21", "design/wzsn-architectures-1-2-developer-tasks.md task 226", "reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM"],
+      "notes": "Opened on 2026-09-06 to implement read-only register and bounded memory inspection over the single live machine."
     }
   ]
 }
