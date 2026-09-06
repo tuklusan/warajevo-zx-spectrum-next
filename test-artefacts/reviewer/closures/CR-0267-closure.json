@@ -1,0 +1,35 @@
+{
+  "cr_number": "CR-0267",
+  "header": "Warajevo ZX Spectrum Next",
+  "implementation_commit": "cecaea63dbf0e58922465116ab862892d6020306",
+  "code_review": {
+    "verdict": "PASS",
+    "packet_manifest_hash": "ed686f030dd80171aab65a425f77be31d0e130b7863b58fed1cbb38987f71075"
+  },
+  "test_artifact_review": {
+    "verdict": "PASS",
+    "packet_manifest_hash": "2afe820d3d7438b64b5bf3dcb6ee08e18191a86909b55f3a215a95a89ce34b16"
+  },
+  "documentation_review": {
+    "verdict": "PASS",
+    "packet_manifest_hash": "0a99c009b8e41b4ba215941bb4e96fa4217abac5610a46388775dfb895b56a6d"
+  },
+  "remote_validation": {
+    "passed": [
+      "CR0267-LINUX-R1",
+      "CR0267-MAC-R1",
+      "CR0267-WIN10-R1",
+      "CR0267-WIN11-R1"
+    ]
+  },
+  "local_execution": "not_performed",
+  "housekeeping": {
+    "local_disposable_remote_runs_removed": true,
+    "remote_harness_state_cleared": [
+      "linux-x64-lxqt",
+      "macos-bigsur-lab",
+      "windows-10-reference",
+      "windows-11-laptop"
+    ]
+  }
+}
