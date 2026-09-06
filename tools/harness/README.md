@@ -45,6 +45,11 @@ attempted; the harness writes `session.json` with
 `classification: review_pending` and `remote_execution_started: false`. SSH,
 build/test, and artifact-transport failures are recorded only after this
 precondition has passed and remain separate classifications.
+
+The Intel Mac SSH lane uses the frozen connection path when
+`WZSN_MAC_SSH_PASSWORD` is present and `sshpass` is installed: `ssh -tt` with
+explicit password authentication and public-key authentication disabled. If
+that secret is absent, the configured local key remains the fallback.
 - `run_cmake_smoke.py`
   Shared probe and CMake smoke-build entry point used both remotely and by
   GitHub Actions

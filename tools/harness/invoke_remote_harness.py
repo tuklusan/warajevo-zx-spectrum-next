@@ -55,6 +55,7 @@ REMOTE_MACHINES = {
         "path_prefix": "/opt/local/bin:/usr/local/bin",
         "max_bytes": 1073741824,
         "identity_file": "test-artefacts/ssh-private/macos-bigsur",
+        "password_environment": "WZSN_MAC_SSH_PASSWORD",
         "lab_status": "available",
     },
 }
@@ -261,11 +262,31 @@ def known_hosts_option(root: Path) -> list[str]:
 
 
 def ssh_base(root: Path, machine: dict[str, str]) -> list[str]:
+    password_environment = machine.get("password_environment")
+    if password_environment and os.environ.get(password_environment) and shutil.which("sshpass"):
+        command = [
+            "sshpass", "-e", "ssh", "-tt", "-o", "PreferredAuthentications=password",
+            "-o", "PubkeyAuthentication=no", "-o", "ConnectTimeout=30",
+            *known_hosts_option(root),
+        ]
+        return command
     command = ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=30", *known_hosts_option(root)]
     identity_file = machine.get("identity_file")
     if identity_file:
         command.extend(["-i", identity_file, "-o", "IdentitiesOnly=yes"])
     return command
+
+
+def ssh_environment(machine: dict[str, str]) -> dict[str, str] | None:
+    password_environment = machine.get("password_environment")
+    if not password_environment:
+        return None
+    password = os.environ.get(password_environment)
+    if not password or not shutil.which("sshpass"):
+        return None
+    environment = os.environ.copy()
+    environment["SSHPASS"] = password
+    return environment
 
 
 def decode_output(payload: bytes) -> str:
@@ -357,6 +378,7 @@ def run_linux(machine: dict[str, str], shell_command: str, root: Path) -> subpro
         cwd=root,
         check=False,
         capture_output=True,
+        env=ssh_environment(machine),
     )
 
 
@@ -413,6 +435,7 @@ def run_windows(machine: dict[str, str], script_text: str, root: Path) -> subpro
         cwd=root,
         check=False,
         capture_output=True,
+        env=ssh_environment(machine),
     )
 
 
@@ -434,6 +457,7 @@ def run_windows_with_input(
         check=False,
         capture_output=True,
         input=stdin_text.encode("utf-8"),
+        env=ssh_environment(machine),
     )
 
 
