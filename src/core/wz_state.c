@@ -11,6 +11,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "core/wz_machine.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 #define WZ_STATE_VERSION 13u
 #define WZ_STATE_HEADER_LENGTH WZ_STATE_MACHINE_MEMORY_OFFSET
@@ -602,7 +603,8 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
         microdrive.phase = (wz_mdr_phase_t)data[offset++];
         memcpy(microdrive.buffer, data + offset, sizeof(microdrive.buffer));
         offset += sizeof(microdrive.buffer);
-        if (image_present > 1u || microdrive.image_identity == 0u && image_present != 0u ||
+        if (image_present > 1u ||
+            (microdrive.image_identity == 0u && image_present != 0u) ||
             microdrive.image_length > UINT32_MAX ||
             (image_present != 0u &&
              (microdrive.image_sector_count < WZ_MDR_MIN_SECTORS ||
@@ -610,8 +612,8 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
               microdrive.image_length != microdrive.image_sector_count * WZ_MDR_SECTOR_SIZE ||
               microdrive.sector >= microdrive.image_sector_count)) ||
             microdrive.offset > WZ_MDR_SECTOR_SIZE ||
-            microdrive.active_motor > 7u && microdrive.active_motor != 0xfeu &&
-                microdrive.active_motor != 0xffu ||
+            (microdrive.active_motor > 7u && microdrive.active_motor != 0xfeu &&
+             microdrive.active_motor != 0xffu) ||
             microdrive.write_enabled > 1u || microdrive.erase_enabled > 1u ||
             microdrive.dirty > 1u || microdrive.phase > WZ_MDR_PHASE_DATA) {
             return WZ_RESULT_INVALID_STATE;
