@@ -2362,7 +2362,7 @@
     {
       "cr_number": "CR-0268",
       "title": "Freeze reliable Intel Mac SSH harness authentication",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "low",
       "execution_order": "workflow_first",
       "blocking": false,
