@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 240,
+  "next_cr_number": 241,
   "status_values": [
     "open",
     "in_progress",
@@ -2016,6 +2016,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0239.md", "design/warajevo-zx-spectrum-next-architecture.md sections 36, 39, and 46", "design/interface1-microdrive-zxnet.md sections 6-11", "design/wzsn-architectures-1-2-developer-tasks.md task 221", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM"],
       "notes": "Closed on 2026-09-06 at c855e0ddcf62703618c629680ba72dfeeb10d653 after adding 4096 deterministic seeded malformed-MDR and invalid Microdrive/ZX Net transition iterations with bounded post-operation state checks. Exact CODE, TEST_ARTIFACT, and DOCUMENTATION reviews passed with zero findings. Linux sanitizer, Intel macOS sanitizer, Windows 10 sanitizer retry, and Windows 11 remote lanes passed. Hosted platform-smoke run 34009604530 passed all matrix and publication gates. The first Windows 10 attempt had incomplete archive transport; retry R2 passed and is the authoritative lane evidence. Private closure evidence is retained under test-artefacts/reviewer/CR-0239-test-evidence.local.json and test-artefacts/remote-runs/. Remote and hosted harnesses remain frozen unless a concrete validation blocker appears."
+    },
+    {
+      "cr_number": "CR-0240",
+      "title": "Close the Phase-10 gate",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0240.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24, 36, 39, 46, and 49.1", "design/interface1-microdrive-zxnet.md sections 1-12", "design/wzsn-architectures-1-2-developer-tasks.md tasks 200-222", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
+      "notes": "Opened on 2026-09-06 as the Phase-10 consolidation gate. It must reconcile every preceding Phase-10 task, upstream scan, evidence packet, and explicit boundary before Phase 11 proceeds."
     }
   ]
 }
