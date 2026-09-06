@@ -2062,9 +2062,9 @@
     {
       "cr_number": "CR-0246",
       "title": "Implement controlled register mutation",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0246.md", "design/debugger-api.md", "design/monitor-debugger-inventory.md", "design/warajevo-zx-spectrum-next-architecture.md sections 41, 44, and 49.2", "design/warajevo-zx-spectrum-next-ui-architecture.md section 21", "design/wzsn-architectures-1-2-developer-tasks.md task 227", "reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM"],
-      "notes": "Opened on 2026-09-06 after upstream register mutation, restore, interrupt, undo, and neighboring state paths were reconciled."
+      "notes": "Closed on 2026-09-06. Final commit f3b49dc5f847bf926c257f06219d9410fccdb17d passed serial CODE, TEST_ARTIFACT, and DOCUMENTATION reviews with zero confirmed findings; corrected R2 remote lanes and hosted publication run 34013179101 passed."
     }
   ]
 }
