@@ -36,6 +36,30 @@ static void wz_debugger_trace_result(wz_machine_t* machine,
     wz_trace_emit_detail(machine->timing_trace, &event);
 }
 
+static void wz_debugger_trace_memory_result(wz_machine_t* machine,
+                                            wz_word_t address,
+                                            wz_byte_t value,
+                                            wz_result_t result)
+{
+    wz_trace_event_t event;
+
+    if (machine == 0 || machine->timing_trace == 0) {
+        return;
+    }
+    event.kind = WZ_TRACE_DEVELOPER_MARKER;
+    event.master_tick = machine->master_tick;
+    event.sequence = 0u;
+    event.address = address;
+    event.program_counter = machine->cpu.program_counter;
+    event.stack_pointer = machine->cpu.stack_pointer;
+    event.register_snapshot = 0u;
+    event.value = value;
+    event.auxiliary = (wz_byte_t)result;
+    event.cycle = WZ_DEBUGGER_TRACE_MEMORY_MUTATION;
+    event.t_states = 0u;
+    wz_trace_emit_detail(machine->timing_trace, &event);
+}
+
 wz_result_t wz_debugger_snapshot(const wz_machine_t* machine,
                                  wz_debugger_snapshot_t* snapshot)
 {
@@ -119,5 +143,32 @@ wz_result_t wz_debugger_set_cpu_state(wz_machine_t* machine,
     machine->cpu = *state;
     wz_debugger_trace_result(machine, WZ_DEBUGGER_TRACE_CPU_MUTATION,
                              WZ_RESULT_OK, state);
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_debugger_write_memory(wz_machine_t* machine,
+                                     wz_word_t address,
+                                     wz_byte_t value)
+{
+    wz_result_t result;
+
+    if (machine == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (machine->debugger_access_mode != WZ_DEBUGGER_PAUSED_MUTATION) {
+        result = WZ_RESULT_INVALID_STATE;
+        wz_debugger_trace_memory_result(machine, address, value, result);
+        return result;
+    }
+    if (machine->profile == 0 ||
+        (address < WZ_48K_ROM_SIZE &&
+         (machine->profile->kind == WZ_MACHINE_128K_PAL ||
+          machine->has_48k_rom != 0u))) {
+        result = WZ_RESULT_UNSUPPORTED_OPERATION;
+        wz_debugger_trace_memory_result(machine, address, value, result);
+        return result;
+    }
+    wz_machine_memory_write(machine, address, value);
+    wz_debugger_trace_memory_result(machine, address, value, WZ_RESULT_OK);
     return WZ_RESULT_OK;
 }

@@ -2008,6 +2008,48 @@ static void test_debugger_read_only_inspection(void)
     wz_machine_destroy(&machine);
 }
 
+static void test_debugger_memory_mutation(void)
+{
+    static wz_machine_t machine;
+    static wz_trace_sink_t trace;
+    static debugger_trace_log_t trace_log;
+
+    if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK) {
+        fputs("debugger memory mutation setup failed\n", stderr);
+        exit(1);
+    }
+    memset(&trace_log, 0, sizeof(trace_log));
+    wz_trace_sink_init(&trace, record_debugger_trace, &trace_log);
+    wz_machine_set_timing_trace(&machine, &trace);
+    if (wz_debugger_write_memory(&machine, 0x4000u, 0x5au) !=
+            WZ_RESULT_INVALID_STATE ||
+        wz_debugger_set_access_mode(&machine, WZ_DEBUGGER_PAUSED_MUTATION) !=
+            WZ_RESULT_OK ||
+        wz_debugger_write_memory(&machine, 0x4000u, 0x5au) != WZ_RESULT_OK ||
+        wz_machine_memory_read(&machine, 0x4000u) != 0x5au) {
+        fputs("debugger mapped memory mutation failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    machine.has_48k_rom = 1u;
+    if (wz_debugger_write_memory(&machine, 0x0000u, 0xa5u) !=
+            WZ_RESULT_UNSUPPORTED_OPERATION ||
+        wz_machine_memory_read(&machine, 0x0000u) == 0xa5u ||
+        trace_log.count != 4u ||
+        trace_log.events[0].auxiliary != WZ_RESULT_INVALID_STATE ||
+        trace_log.events[2].address != 0x4000u ||
+        trace_log.events[2].value != 0x5au ||
+        trace_log.events[2].auxiliary != WZ_RESULT_OK ||
+        trace_log.events[3].address != 0u ||
+        trace_log.events[3].auxiliary != WZ_RESULT_UNSUPPORTED_OPERATION ||
+        trace_log.events[3].cycle != WZ_DEBUGGER_TRACE_MEMORY_MUTATION) {
+        fputs("debugger memory protection or traceability failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_machine_destroy(&machine);
+}
+
 static void test_snapshot_cross_host_round_trips(void)
 {
     static wz_byte_t sna[WZ_SNA_48K_LENGTH];
@@ -3777,6 +3819,7 @@ int main(void)
     test_dirty_microdrive_mode_guard();
     test_malformed_mdr_and_device_transition_fuzz();
     test_debugger_read_only_inspection();
+    test_debugger_memory_mutation();
     test_peripheral_state_serialization();
     test_historical_state_representability();
     test_snapshot_state_isolated_validation();

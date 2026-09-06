@@ -2048,7 +2048,7 @@
     {
       "cr_number": "CR-0244",
       "title": "Forward diagnostic traces and logs by UDP syslog",
-      "status": "open",
+      "status": "in_progress",
       "source_authority": ["design/cr-preflight/CR-0244.md", "design/warajevo-zx-spectrum-next-architecture.md sections 28, 44, 44.3, and 55.15", "design/warajevo-zx-spectrum-next-ui-architecture.md diagnostics and trace sections", "src/core/wz_trace.h", "src/core/wz_trace.c", "src/diagnostics/wz_trace_file.h", "WORKFLOW.md"],
       "notes": "Added on 2026-09-06 from the operator request. Proposed destination is sanyalnet-oracle-vps2.duckdns.org:65514 over UDP only; implementation is not yet approved pending privacy, opt-in, syslog-format, failure-isolation, and upstream-boundary design review."
     },
@@ -2069,14 +2069,14 @@
     {
       "cr_number": "CR-0247",
       "title": "Implement bounded memory inspection",
-      "status": "open",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0247.md", "design/debugger-api.md", "design/monitor-debugger-inventory.md", "design/warajevo-zx-spectrum-next-architecture.md sections 41 and 44", "design/warajevo-zx-spectrum-next-ui-architecture.md section 21", "design/wzsn-architectures-1-2-developer-tasks.md task 228", "reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM"],
       "notes": "Closed on 2026-09-06 as satisfied by the bounded byte/block memory inspection delivered in CR-0245 and validated again in CR-0246 evidence; no duplicate implementation was necessary."
     },
     {
       "cr_number": "CR-0248",
       "title": "Implement controlled memory mutation",
-      "status": "open",
+      "status": "in_progress",
       "source_authority": ["design/cr-preflight/CR-0248.md", "design/debugger-api.md", "design/monitor-debugger-inventory.md", "design/warajevo-zx-spectrum-next-architecture.md sections 41 and 44", "design/warajevo-zx-spectrum-next-ui-architecture.md section 21", "design/wzsn-architectures-1-2-developer-tasks.md task 229", "reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM"],
       "notes": "Opened on 2026-09-06 after upstream memory editor, ROM protection, paging, and write-boundary paths were reconciled."
     }

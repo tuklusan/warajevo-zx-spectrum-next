@@ -29,7 +29,8 @@ typedef enum {
 
 enum {
     WZ_DEBUGGER_TRACE_ACCESS_MODE = 1,
-    WZ_DEBUGGER_TRACE_CPU_MUTATION = 2
+    WZ_DEBUGGER_TRACE_CPU_MUTATION = 2,
+    WZ_DEBUGGER_TRACE_MEMORY_MUTATION = 3
 };
 
 /* Inspection always reads the one live machine; it does not clone execution state. */
