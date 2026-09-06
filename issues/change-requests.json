@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 235,
+  "next_cr_number": 236,
   "status_values": [
     "open",
     "in_progress",
@@ -1981,6 +1981,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0234.md", "design/warajevo-zx-spectrum-next-architecture.md section 24.5", "design/warajevo-zx-spectrum-next-ui-architecture.md sections 4 and 23.5", "design/wzsn-architectures-1-2-developer-tasks.md task 216", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM"],
       "notes": "Closed on 2026-09-06 at commit b54ce043abbb8d681d450cf57ca88bb0b8409464. The bounded application-layer ZX Net normalization queue was implemented and the complete upstream handler scan found no undispositioned behavior. CODE review, independent bootstrap review, DOCUMENTATION review, and TEST_ARTIFACT review passed with zero confirmed findings. Linux, Windows 10, Windows 11, and Intel macOS remote smoke runs passed for the implementation commit. Hosted platform-smoke run 33999503462 passed deep housekeeping, all 20 matrix lanes including Windows ARM and macOS Intel/ARM, and publication evidence verification. Full hosted evidence is privately retained under test-artefacts/hosted/CR-0234-33999503462/; the compact reviewed packet passed with packet manifest 7f5c20fe09fafa54f4372a5930b6cb566496fc5dafc7c135fec4a89051d97e23."
+    },
+    {
+      "cr_number": "CR-0235",
+      "title": "Add canonical Interface 1, Microdrive, and ZX Net state serialization",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0235.md", "design/warajevo-zx-spectrum-next-architecture.md sections 8 and 24.1-24.6", "design/interface1-microdrive-zxnet.md section 10", "design/wzsn-architectures-1-2-developer-tasks.md task 217", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
+      "notes": "Opened on 2026-09-06 after the upstream and companion-spec scan identified missing canonical serialization of deterministic Interface 1, Microdrive, and ZX Net state. Candidate implementation is committed at 39651da and awaits exact review and remote validation."
     }
   ]
 }
