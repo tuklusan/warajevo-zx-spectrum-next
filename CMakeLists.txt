@@ -180,6 +180,12 @@ add_executable(
     src/app/wz_application_lifecycle.c)
 target_link_libraries(wz_application_lifecycle_tests PRIVATE wz_core)
 
+add_executable(
+    wz_command_registry_tests
+    tests/wz_command_registry_tests.c
+    src/app/wz_command_registry.c)
+target_link_libraries(wz_command_registry_tests PRIVATE wz_core)
+
 add_executable(wz_screen_inspection_tests tests/wz_screen_inspection_tests.c)
 target_link_libraries(wz_screen_inspection_tests PRIVATE wz_core)
 
@@ -197,6 +203,7 @@ add_test(NAME wz_machine_reset_tests COMMAND wz_machine_reset_tests)
 add_test(NAME wz_printer_export_tests COMMAND wz_printer_export_tests)
 add_test(NAME wz_diagnostic_block_tests COMMAND wz_diagnostic_block_tests)
 add_test(NAME wz_application_lifecycle_tests COMMAND wz_application_lifecycle_tests)
+add_test(NAME wz_command_registry_tests COMMAND wz_command_registry_tests)
 add_test(NAME wz_screen_inspection_tests COMMAND wz_screen_inspection_tests)
 
 add_executable(wz_presentation_snapshot_tests

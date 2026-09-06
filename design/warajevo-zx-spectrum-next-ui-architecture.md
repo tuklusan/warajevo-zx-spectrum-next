@@ -240,6 +240,14 @@ change it.
 The registry describes semantic parameters; front ends acquire those parameters
 appropriately.
 
+The frozen C foundation uses bounded caller-owned storage and the following
+application-layer objects: immutable command metadata, a byte-oriented argument
+view, and a tagged result containing a project result code, stable reason token,
+and bounded message. Registration rejects malformed or duplicate IDs and null
+handlers; finalization makes lookup/enumeration stable. Availability predicates
+are read-only, and dispatch delegates validated arguments to an application
+handler without acquiring GUI parameters or mutating deterministic state.
+
 For example:
 
 ```text

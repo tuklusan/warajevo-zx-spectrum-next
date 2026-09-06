@@ -2329,7 +2329,7 @@
     {
       "cr_number": "CR-0266",
       "title": "Implement the shared application command registry foundation",
-      "status": "open",
+      "status": "in_progress",
       "source_authority": [
         "design/cr-preflight/CR-0266.md",
         "design/warajevo-zx-spectrum-next-architecture.md sections 30, 31, 49.2, 51, and 55",
