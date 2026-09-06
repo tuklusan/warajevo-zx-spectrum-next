@@ -1985,9 +1985,9 @@
     {
       "cr_number": "CR-0235",
       "title": "Add canonical Interface 1, Microdrive, and ZX Net state serialization",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0235.md", "design/warajevo-zx-spectrum-next-architecture.md sections 8 and 24.1-24.6", "design/interface1-microdrive-zxnet.md section 10", "design/wzsn-architectures-1-2-developer-tasks.md task 217", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
-      "notes": "Opened on 2026-09-06 after the upstream and companion-spec scan identified missing canonical serialization of deterministic Interface 1, Microdrive, and ZX Net state. Candidate implementation is committed at 39651da and awaits exact review and remote validation."
+      "notes": "Closed on 2026-09-06 at b449d334e494109a547e385b1c0302985a878e9f after exact CODE PASS, four remote validations, hosted platform-smoke run 34005444562 with all 20 lanes green, debugger diagnosis of the Windows 10 stack overflow, and retained private closure evidence."
     }
   ]
 }
