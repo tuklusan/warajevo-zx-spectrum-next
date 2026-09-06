@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 260,
+  "next_cr_number": 261,
   "status_values": [
     "open",
     "in_progress",
@@ -2235,6 +2235,21 @@
         "reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM"
       ],
       "notes": "Closed on 2026-09-06 at commit 335a6d5fc5fe3a4c8027ffb844fee9b96c4b8319. Implemented the shared deterministic machine reset boundary with preserved RAM/ROM, mounted media, host bindings, trace sink, and input ownership, plus transient-state reset across 48K and 128K profiles. Exact-SHA CODE and TEST_ARTIFACT reviews passed with zero findings; four remote lanes and hosted run 34036023354 passed all 20 platform lanes and publication. Final DOCUMENTATION review is recorded in the preflight closure record."
+    },
+    {
+      "cr_number": "CR-0260",
+      "title": "Add application diagnostic block load and save boundary",
+      "status": "in_progress",
+      "source_authority": [
+        "design/cr-preflight/CR-0260.md",
+        "design/phase-11-regression-coverage-matrix.md",
+        "design/monitor-debugger-inventory.md",
+        "design/warajevo-zx-spectrum-next-architecture.md sections 41, 44, 49.2, and 55.7",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md sections 13, 21, and 27",
+        "design/wzsn-architectures-1-2-developer-tasks.md tasks 235 and 236",
+        "reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM"
+      ],
+      "notes": "Opened on 2026-09-06 from the CR-0254 missing Load/save diagnostic block workflow. Add a bounded application boundary that delegates to existing validated snapshot/state serialization, keeps file I/O outside the deterministic core, and provides atomic load/save behavior without host-path or UI duplication."
     }
   ]
 }
