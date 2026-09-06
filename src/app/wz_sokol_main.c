@@ -24,11 +24,13 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "sokol_audio.h"
 
 #include "core/wz_machine.h"
+#include "app/wz_application_lifecycle.h"
 #include "app/wz_sokol_audio.h"
 
 typedef struct {
     wz_machine_t machine;
     wz_sokol_audio_t audio;
+    wz_application_lifecycle_t lifecycle;
     bool initialized;
 } wz_host_session_t;
 
@@ -36,6 +38,7 @@ static wz_host_session_t wz_host_session;
 
 static void wz_host_session_init(void)
 {
+    (void)wz_application_lifecycle_init(&wz_host_session.lifecycle, 0, 0);
     wz_host_session.initialized =
         wz_machine_init(&wz_host_session.machine, wz_machine_profile_48k_pal()) == WZ_RESULT_OK;
     if (wz_host_session.initialized) {
@@ -48,6 +51,7 @@ static void wz_host_session_shutdown(void)
     if (wz_host_session.initialized) {
         wz_machine_destroy(&wz_host_session.machine);
         wz_sokol_audio_shutdown(&wz_host_session.audio);
+        (void)wz_application_mark_terminated(&wz_host_session.lifecycle);
         wz_host_session.initialized = false;
     }
 }
@@ -70,7 +74,9 @@ static void wz_host_frame(void)
 static void wz_host_event(const sapp_event* event)
 {
     if (event->type == SAPP_EVENTTYPE_KEY_DOWN && event->key_code == SAPP_KEYCODE_ESCAPE) {
-        sapp_request_quit();
+        if (wz_application_request_quit(&wz_host_session.lifecycle) == WZ_RESULT_OK) {
+            sapp_request_quit();
+        }
     }
 }
 

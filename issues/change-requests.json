@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 262,
+  "next_cr_number": 263,
   "status_values": [
     "open",
     "in_progress",
@@ -2254,7 +2254,7 @@
     {
       "cr_number": "CR-0261",
       "title": "Add model-aware debugger memory pointer and page controls",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/cr-preflight/CR-0261.md",
         "design/phase-11-regression-coverage-matrix.md",
@@ -2265,6 +2265,21 @@
         "reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM"
       ],
       "notes": "Closed on 2026-09-06 at commit b5350622ef0dcedbdeb587feca94af9b341093a9. Added bounded model-aware debugger page inspection and 128K configuration controls by delegating to the existing paging boundary, with paused-mutation enforcement, invalid-input rejection, locked-page no-op behavior, and focused 48K/128K regression coverage. Exact-SHA CODE and TEST_ARTIFACT reviews passed with zero findings; Linux, Mac Intel, and Windows 11 remote validation passed, Windows 10 execution passed with frozen archive transport incomplete, and hosted run 34039804460 passed all 20 lanes and publication. Final DOCUMENTATION review is recorded in the preflight closure record."
+    },
+    {
+      "cr_number": "CR-0262",
+      "title": "Add explicit application quit and lifecycle boundary",
+      "status": "in_progress",
+      "source_authority": [
+        "design/cr-preflight/CR-0262.md",
+        "design/phase-11-regression-coverage-matrix.md",
+        "design/monitor-debugger-inventory.md",
+        "design/warajevo-zx-spectrum-next-architecture.md sections 31, 41, 45, and 49.2",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md sections 21, 27, and 45",
+        "design/wzsn-architectures-1-2-developer-tasks.md tasks 235 and 236",
+        "reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM"
+      ],
+      "notes": "Opened on 2026-09-06 from the CR-0254 missing Quit/lifecycle command workflow. Add an explicit application-boundary quit request and lifecycle state contract with idempotent repeated requests, invalid-transition rejection, and host/UI teardown kept outside the deterministic core."
     }
   ]
 }
