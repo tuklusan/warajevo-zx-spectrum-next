@@ -11,6 +11,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include <stddef.h>
 
+#include "core/wz_raster.h"
+
 typedef struct {
     size_t x;
     size_t y;
