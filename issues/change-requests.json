@@ -2097,7 +2097,7 @@
     {
       "cr_number": "CR-0251",
       "title": "Implement deterministic ZX Printer peripheral",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/cr-preflight/CR-0251.md",
         "design/zx-printer-inventory.md",
@@ -2107,7 +2107,7 @@
         "reference/original-warajevo/source/src/spectrum-kernel/ZXPRINT.ASM",
         "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"
       ],
-      "notes": "Opened on 2026-09-06 for Phase-11 task 233 after the full ZXPRINT.ASM scan and port-dispatch reconciliation. Implement the deterministic core peripheral only; host printer export remains task 234."
+      "notes": "Closed on 2026-09-06 at commit 6877f052de9511e71b8fe7912b68a22f2784a43f after the full ZXPRINT.ASM scan, tracked implementation audit, expanded regression coverage, exact-SHA CODE/DOCUMENTATION/TEST_ARTIFACT reviews with zero confirmed findings, hosted platform-smoke run 34022265306 with all 20 lanes and publication gate green. Local lab invocations were unavailable before artifact collection; hosted validation is authoritative. Host printer export remains task 234."
     }
   ]
 }
