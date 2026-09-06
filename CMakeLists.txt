@@ -94,7 +94,10 @@ add_library(
 target_include_directories(wz_core PUBLIC src)
 target_link_libraries(wz_core PUBLIC wz_warnings ZLIB::ZLIB)
 
-add_library(wz_diagnostics STATIC src/diagnostics/wz_trace_file.c src/diagnostics/wz_syslog_udp.c)
+add_library(wz_diagnostics STATIC
+    src/diagnostics/wz_trace_file.c
+    src/diagnostics/wz_syslog_udp.c
+    src/diagnostics/wz_diagnostics_router.c)
 target_include_directories(wz_diagnostics PUBLIC src)
 target_link_libraries(wz_diagnostics PUBLIC wz_core wz_warnings)
 if(WIN32)
@@ -138,6 +141,9 @@ target_link_libraries(wz_zxnet_loopback PRIVATE wz_core)
 add_executable(wz_syslog_udp_tests tests/wz_syslog_udp_tests.c)
 target_link_libraries(wz_syslog_udp_tests PRIVATE wz_diagnostics)
 
+add_executable(wz_diagnostics_router_tests tests/wz_diagnostics_router_tests.c)
+target_link_libraries(wz_diagnostics_router_tests PRIVATE wz_diagnostics)
+
 add_executable(wz_printer_tests tests/wz_printer_tests.c)
 target_link_libraries(wz_printer_tests PRIVATE wz_core)
 
@@ -150,6 +156,7 @@ enable_testing()
 add_test(NAME wz_tests_placeholder COMMAND wz_tests)
 add_test(NAME wz_zxnet_loopback COMMAND wz_zxnet_loopback)
 add_test(NAME wz_syslog_udp_tests COMMAND wz_syslog_udp_tests)
+add_test(NAME wz_diagnostics_router_tests COMMAND wz_diagnostics_router_tests)
 add_test(NAME wz_printer_tests COMMAND wz_printer_tests)
 add_test(NAME wz_printer_export_tests COMMAND wz_printer_export_tests)
 

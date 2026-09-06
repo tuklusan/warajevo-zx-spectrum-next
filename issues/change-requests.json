@@ -2130,7 +2130,7 @@
     {
       "cr_number": "CR-0253",
       "title": "Enforce complete UDP-only forwarding for traces and logs",
-      "status": "open",
+      "status": "in_progress",
       "source_authority": [
         "design/cr-preflight/CR-0253.md",
         "design/cr-preflight/CR-0244.md",
