@@ -386,8 +386,8 @@ wz_result_t wz_debugger_undo_registers(wz_machine_t* machine)
     }
     if (machine->debugger_undo_valid == 0u) {
         wz_debugger_trace_result(machine, WZ_DEBUGGER_TRACE_UNDO,
-                                 WZ_RESULT_INVALID_STATE, 0);
-        return WZ_RESULT_INVALID_STATE;
+                                 WZ_RESULT_NOT_FOUND, 0);
+        return WZ_RESULT_NOT_FOUND;
     }
     machine->cpu = machine->debugger_undo_cpu;
     machine->debugger_undo_valid = 0u;

@@ -29,7 +29,7 @@ int main(void)
         wz_debugger_undo_available(&machine) || machine.cpu.program_counter != 0x4321u ||
         machine.cpu.main.a != original.main.a ||
         machine.cpu.main.f != original.main.f ||
-        wz_debugger_undo_registers(&machine) != WZ_RESULT_INVALID_STATE) {
+        wz_debugger_undo_registers(&machine) != WZ_RESULT_NOT_FOUND) {
         fputs("debugger jump/undo contract failed\n", stderr);
         wz_machine_destroy(&machine);
         return 1;
