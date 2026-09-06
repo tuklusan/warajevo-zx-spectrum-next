@@ -2239,7 +2239,7 @@
     {
       "cr_number": "CR-0260",
       "title": "Add application diagnostic block load and save boundary",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/cr-preflight/CR-0260.md",
         "design/phase-11-regression-coverage-matrix.md",
@@ -2249,7 +2249,7 @@
         "design/wzsn-architectures-1-2-developer-tasks.md tasks 235 and 236",
         "reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM"
       ],
-      "notes": "Opened on 2026-09-06 from the CR-0254 missing Load/save diagnostic block workflow. Add a bounded application boundary that delegates to existing validated snapshot/state serialization, keeps file I/O outside the deterministic core, and provides atomic load/save behavior without host-path or UI duplication."
+      "notes": "Closed on 2026-09-06 at commit 36fca786c9a1b5a2a93869b660fc833159242e79. Added the bounded application diagnostic block save/load boundary with isolated candidate validation, atomic publication, and focused round-trip/capacity/malformed-input regressions. Exact-SHA CODE and TEST_ARTIFACT reviews passed with zero findings; Linux, Mac Intel, Windows 10, and Windows 11 execution passed (Windows 10 archive transport limitation recorded). Hosted run 34037939699 passed all 20 lanes and publication. Final DOCUMENTATION reviews are recorded in the preflight closure record."
     }
   ]
 }

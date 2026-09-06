@@ -32,7 +32,7 @@ closure pass.
 | Undo register mutation | COVERED | `wz_debugger_jump_undo_tests` |
 | Abort/warm restart | COVERED | `wz_machine_reset_tests` through CR-0259 |
 | Hex/value formatting | COVERED | `wz_debugger_disassembly_tests` |
-| Load/save diagnostic block | MISSING | Add explicit application boundary and regression CR |
+| Load/save diagnostic block | COVERED | `wz_diagnostic_block_tests` through CR-0260 |
 | Memory pointer/page configuration | MISSING | Add model-aware debugger API and regression CR |
 | Quit/lifecycle command | MISSING | Add application command boundary and regression CR |
 | Screen inspection | MISSING | Add read-only raster projection and regression CR |
