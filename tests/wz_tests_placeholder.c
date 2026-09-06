@@ -4661,12 +4661,17 @@ int main(void)
         wz_bus_request_init(&bus_request, WZ_BUS_IO_READ, port, address, 0u, 4u);
         if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
             bus_request.direction != WZ_BUS_DIRECTION_READ ||
-            bus_request.source != (address % 2u == 0u
+            bus_request.source != ((address & 0xffu) == WZ_PRINTER_PORT
+                                       ? WZ_BUS_SOURCE_PRINTER
+                                       : address % 2u == 0u
                                        ? WZ_BUS_SOURCE_ULA
                                        : (address & 0xffu) == WZ_KEMPSTON_PORT
                                            ? WZ_BUS_SOURCE_INPUT
                                            : WZ_BUS_SOURCE_FALLBACK) ||
+            ((address & 0xffu) == WZ_PRINTER_PORT &&
+             bus_request.value != wz_machine_printer_read(&machine, address)) ||
             (address % 2u != 0u && (address & 0xffu) != WZ_KEMPSTON_PORT &&
+             (address & 0xffu) != WZ_PRINTER_PORT &&
              bus_request.value != 0xffu) ||
             ((address & 0xffu) == WZ_KEMPSTON_PORT &&
              bus_request.value != wz_machine_kempston_read(&machine, address))) {
@@ -4677,7 +4682,9 @@ int main(void)
                             (wz_byte_t)port, 4u);
         if (wz_machine_bus_request(&machine, &bus_request) != WZ_RESULT_OK ||
             bus_request.direction != WZ_BUS_DIRECTION_WRITE ||
-            bus_request.source != (address % 2u == 0u
+            bus_request.source != ((address & 0xffu) == WZ_PRINTER_PORT
+                                       ? WZ_BUS_SOURCE_PRINTER
+                                       : address % 2u == 0u
                                        ? WZ_BUS_SOURCE_ULA
                                        : WZ_BUS_SOURCE_FALLBACK)) {
             fputs("full-range unsupported I/O write failed\n", stderr);
