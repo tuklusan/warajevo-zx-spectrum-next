@@ -33,7 +33,7 @@ closure pass.
 | Abort/warm restart | COVERED | `wz_machine_reset_tests` through CR-0259 |
 | Hex/value formatting | COVERED | `wz_debugger_disassembly_tests` |
 | Load/save diagnostic block | COVERED | `wz_diagnostic_block_tests` through CR-0260 |
-| Memory pointer/page configuration | MISSING | Add model-aware debugger API and regression CR |
+| Memory pointer/page configuration | COVERED | `wz_debugger_page_controls_tests` through CR-0261 |
 | Quit/lifecycle command | MISSING | Add application command boundary and regression CR |
 | Screen inspection | MISSING | Add read-only raster projection and regression CR |
 | Refresh/monitor presentation | MISSING | UI queue owns presentation; add boundary test |

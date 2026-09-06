@@ -2148,7 +2148,7 @@
     {
       "cr_number": "CR-0254",
       "title": "Complete Phase-11 monitor, debugger, and printer regression coverage",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/cr-preflight/CR-0254.md",
         "design/monitor-debugger-inventory.md",
@@ -2264,7 +2264,7 @@
         "design/wzsn-architectures-1-2-developer-tasks.md tasks 235 and 236",
         "reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM"
       ],
-      "notes": "Opened on 2026-09-06 from the CR-0254 missing Memory pointer/page configuration workflow. Add bounded model-aware debugger inspection and configuration controls by delegating to the existing 48K/128K memory and paging boundaries, with no second memory model or unchecked page access."
+      "notes": "Closed on 2026-09-06 at commit b5350622ef0dcedbdeb587feca94af9b341093a9. Added bounded model-aware debugger page inspection and 128K configuration controls by delegating to the existing paging boundary, with paused-mutation enforcement, invalid-input rejection, locked-page no-op behavior, and focused 48K/128K regression coverage. Exact-SHA CODE and TEST_ARTIFACT reviews passed with zero findings; Linux, Mac Intel, and Windows 11 remote validation passed, Windows 10 execution passed with frozen archive transport incomplete, and hosted run 34039804460 passed all 20 lanes and publication. Final DOCUMENTATION review is recorded in the preflight closure record."
     }
   ]
 }
