@@ -884,9 +884,9 @@ static void test_microdrive_image_validation(void)
 
 static void test_peripheral_state_serialization(void)
 {
-    wz_machine_t machine;
-    wz_machine_t restored;
-    wz_byte_t serialized[WZ_STATE_SNAPSHOT_CAPACITY];
+    static wz_machine_t machine;
+    static wz_machine_t restored;
+    static wz_byte_t serialized[WZ_STATE_SNAPSHOT_CAPACITY];
     wz_state_writer_t writer;
     wz_qword_t first_hash;
     wz_qword_t second_hash;
