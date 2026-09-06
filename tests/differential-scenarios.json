@@ -6,7 +6,7 @@
     "Upstream Warajevo and third-party material retain their applicable copyrights and licenses.",
     "See LICENSE.txt and NOTICE.md for complete terms and provenance."
   ],
-  "schema_version": 1,
+  "schema_version": 2,
   "reference_identity": "94f69bd8f4acb6c0c320ae34f9b1c3ee29bc5545",
   "reference_source_root": "reference/original-warajevo/source/src/spectrum-kernel/Z80.ASM",
   "normalized_result_schema": {
@@ -70,6 +70,71 @@
       "reference_boundary": "SNAPSHOT.PAS:load128Kpage and paging-state restoration",
       "classification": "source_reviewed_match",
       "compared_fields": ["paging_7ffd", "program_counter", "all_ram_banks", "border"]
+    },
+    {
+      "id": "interface1-port-alias-dispatch",
+      "profile": "WZ_MACHINE_48K_PAL_INTERFACE1",
+      "setup": {
+        "port_low_bytes": [231, 239, 247],
+        "unrelated_port_low_byte": 192,
+        "alias_mask": "low_five_bits"
+      },
+      "reference_boundary": "SPECSIM.ASM:Interface-1 I/O dispatch and MDRIVE.ASM:ZXI1_IN/ZXI1_OUT",
+      "classification": "source_reviewed_match",
+      "compared_fields": ["port_alias", "device_route", "unrelated_port_preserved", "master_tick"]
+    },
+    {
+      "id": "interface1-control-latch-motor-edge",
+      "profile": "WZ_MACHINE_48K_PAL_INTERFACE1",
+      "setup": {
+        "reset_latch": 238,
+        "functional_bits": [0, 1, 2, 3, 4],
+        "clock_transition": "1_to_0",
+        "motor_selection": "exactly_one"
+      },
+      "reference_boundary": "MDRIVE.ASM:ZXI1_CTRL, MOTORS, and MDVINIT",
+      "classification": "source_reviewed_match",
+      "compared_fields": ["latch_value", "motor_shift_register", "active_slot", "dirty_flush_order", "master_tick"]
+    },
+    {
+      "id": "microdrive-sector-header-data-wrap",
+      "profile": "WZ_MACHINE_48K_PAL_INTERFACE1",
+      "setup": {
+        "sector_size": 543,
+        "header_offset": 12,
+        "data_offset": 27,
+        "accepted_sector_counts": [9, 254],
+        "wrap": true
+      },
+      "reference_boundary": "MDRIVE.ASM:sector cache load, header/data alternation, and cartridge-length validation",
+      "classification": "source_reviewed_match",
+      "compared_fields": ["sector_phase", "buffered_byte", "sector_index", "validated_length", "gap_state"]
+    },
+    {
+      "id": "microdrive-write-protect-and-gap",
+      "profile": "WZ_MACHINE_48K_PAL_INTERFACE1",
+      "setup": {
+        "write_protected": true,
+        "erase": true,
+        "malformed_checksum": true,
+        "write_pointer_limit": 543
+      },
+      "reference_boundary": "MDRIVE.ASM:WRITPROT, ERASECNT, GAPCHECK, and bounded sector writes",
+      "classification": "source_reviewed_match",
+      "compared_fields": ["write_acceptance", "gap_state", "checksum_state", "pointer_saturation", "image_mutation"]
+    },
+    {
+      "id": "zxnet-six-state-loopback",
+      "profile": "WZ_MACHINE_48K_PAL_INTERFACE1",
+      "setup": {
+        "states": ["CLAIM", "IDLE", "BUSY", "FREE", "COLLREAD", "COLLWRITE"],
+        "block_size": 256,
+        "identity_size": 2,
+        "bit_count": 8
+      },
+      "reference_boundary": "MDRIVE.ASM:NETMODE, NETINTBL, IN_CLAIM/IN_IDLE/IN_BUSY/IN_FREE/IN_CLR/IN_CLW",
+      "classification": "source_reviewed_match",
+      "compared_fields": ["network_state", "claim_byte", "busy_free_count", "bit_position", "bounded_block", "master_tick"]
     }
   ]
 }
