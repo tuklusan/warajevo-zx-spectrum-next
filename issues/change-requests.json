@@ -2048,9 +2048,9 @@
     {
       "cr_number": "CR-0244",
       "title": "Forward diagnostic traces and logs by UDP syslog",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0244.md", "design/warajevo-zx-spectrum-next-architecture.md sections 28, 44, 44.3, and 55.15", "design/warajevo-zx-spectrum-next-ui-architecture.md diagnostics and trace sections", "src/core/wz_trace.h", "src/core/wz_trace.c", "src/diagnostics/wz_trace_file.h", "WORKFLOW.md"],
-      "notes": "Implemented on 2026-09-06 in src/diagnostics/wz_syslog_udp.*. The opt-in adapter resolves the fixed destination once, uses a nonblocking UDP socket, emits RFC 5424-style records, projects only safe trace metadata, sanitizes and bounds log text, and isolates all transport failures. Initial hosted validation exposed missing POSIX addrinfo feature visibility on strict Linux lanes; corrected in the next checkpoint. Remote and hosted validation plus serial review gates remain before closure."
+      "notes": "Closed on 2026-09-06 at commit 5c9a763e752f36779ffe24c3c2eef0ef1fba620c. The opt-in adapter resolves the fixed destination once, uses a nonblocking UDP socket, emits RFC 5424-style records, projects only safe trace metadata, sanitizes and bounds log text, and isolates all transport failures. Initial hosted validation exposed missing POSIX addrinfo feature visibility on strict Linux lanes and a macOS send-flag portability issue; both were corrected. Hosted run 34018675014 passed all 20 lanes and its publication gate. Linux and macOS lab validation passed; Windows lab evidence was unavailable. Serial code, documentation, and private test-artifact reviews passed with zero confirmed findings."
     },
     {
       "cr_number": "CR-0245",
