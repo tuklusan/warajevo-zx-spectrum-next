@@ -1,0 +1,33 @@
+Warajevo ZX Spectrum Next
+Copyright (c) 2026 Supratim Sanyal, SANYALnet Labs, for new original project material.
+New original material is licensed under GNU GPL v2 or later (GPL-2.0-or-later), as stated in LICENSE.txt.
+Upstream Warajevo and third-party material retain their applicable copyrights and licenses.
+See LICENSE.txt and NOTICE.md for complete terms and provenance.
+
+An ASM version of the disassembly in this archive can be built from the source
+files in the 'sources' subdirectory using version 10.0 of SkoolKit.
+
+SkoolKit can be obtained from the following locations:
+
+  https://skoolkit.ca/skoolkit/
+  https://github.com/skoolkid/skoolkit/releases/
+
+The ASM disassembly can be built by following these steps:
+
+1. Download and unpack SkoolKit 10.0.
+
+2. Copy every file from the 'sources' subdirectory in this archive to the
+   directory where SkoolKit was unpacked.
+
+3. Change to the directory where SkoolKit was unpacked and run this command:
+
+  $ ./skool2asm.py rom.skool > rom.asm
+
+Now rom.asm can be assembled using pasmo (http://pasmo.speccy.org/):
+
+  $ pasmo rom.asm rom.bin
+
+Alternatively, rom.skool can be converted to a binary file by the skool2bin.py
+utility, included with SkoolKit:
+
+  $ ./skool2bin.py -E 16384 rom.skool
