@@ -2027,9 +2027,9 @@
     {
       "cr_number": "CR-0241",
       "title": "Inventory the legacy monitor and debugger",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0241.md", "design/monitor-debugger-inventory.md", "design/warajevo-zx-spectrum-next-architecture.md sections 41, 44, and 49.2", "design/warajevo-zx-spectrum-next-ui-architecture.md section 21", "design/wzsn-architectures-1-2-developer-tasks.md tasks 223-225", "reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM"],
-      "notes": "Opened on 2026-09-06 for full function-level monitor/debugger inventory and classification before Phase-11 implementation."
+      "notes": "Closed on 2026-09-06 at f17f37a9275e839e0ed5d7de044d41233435c858 after a full 3,451-line/372-label SPECMON.ASM scan and reconciliation of all 26 legacy monitor commands and internal routine families. Exact CODE and DOCUMENTATION reviews passed with zero findings. No build/test artifact review was required because this CR changes only architecture inventory and preflight documentation."
     }
   ]
 }
