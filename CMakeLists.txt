@@ -151,6 +151,9 @@ target_link_libraries(wz_printer_tests PRIVATE wz_core)
 add_executable(wz_debugger_memory_tools_tests tests/wz_debugger_memory_tools_tests.c)
 target_link_libraries(wz_debugger_memory_tools_tests PRIVATE wz_core)
 
+add_executable(wz_debugger_page_controls_tests tests/wz_debugger_page_controls_tests.c)
+target_link_libraries(wz_debugger_page_controls_tests PRIVATE wz_core)
+
 add_executable(wz_debugger_disassembly_tests tests/wz_debugger_disassembly_tests.c)
 target_link_libraries(wz_debugger_disassembly_tests PRIVATE wz_core)
 
@@ -177,6 +180,7 @@ add_test(NAME wz_syslog_udp_tests COMMAND wz_syslog_udp_tests)
 add_test(NAME wz_diagnostics_router_tests COMMAND wz_diagnostics_router_tests)
 add_test(NAME wz_printer_tests COMMAND wz_printer_tests)
 add_test(NAME wz_debugger_memory_tools_tests COMMAND wz_debugger_memory_tools_tests)
+add_test(NAME wz_debugger_page_controls_tests COMMAND wz_debugger_page_controls_tests)
 add_test(NAME wz_debugger_disassembly_tests COMMAND wz_debugger_disassembly_tests)
 add_test(NAME wz_debugger_jump_undo_tests COMMAND wz_debugger_jump_undo_tests)
 add_test(NAME wz_machine_reset_tests COMMAND wz_machine_reset_tests)

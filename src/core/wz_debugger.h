@@ -35,8 +35,16 @@ enum {
     WZ_DEBUGGER_TRACE_STEP = 4,
     WZ_DEBUGGER_TRACE_CONTINUE = 5,
     WZ_DEBUGGER_TRACE_JUMP = 6,
-    WZ_DEBUGGER_TRACE_UNDO = 7
+    WZ_DEBUGGER_TRACE_UNDO = 7,
+    WZ_DEBUGGER_TRACE_PAGE = 8
 };
+
+typedef struct {
+    wz_byte_t paging_value;
+    wz_byte_t screen_bank;
+    wz_byte_t rom_bank;
+    wz_byte_t paging_locked;
+} wz_debugger_page_info_t;
 
 /* Inspection always reads the one live machine; it does not clone execution state. */
 wz_result_t wz_debugger_snapshot(const wz_machine_t* machine,
@@ -83,6 +91,10 @@ wz_result_t wz_debugger_set_cpu_state(wz_machine_t* machine,
 wz_result_t wz_debugger_jump(wz_machine_t* machine, wz_word_t address);
 wz_result_t wz_debugger_undo_registers(wz_machine_t* machine);
 bool wz_debugger_undo_available(const wz_machine_t* machine);
+wz_result_t wz_debugger_read_page_info(const wz_machine_t* machine,
+                                       wz_debugger_page_info_t* info);
+wz_result_t wz_debugger_set_page_config(wz_machine_t* machine,
+                                        wz_byte_t paging_value);
 wz_result_t wz_debugger_set_breakpoint(wz_machine_t* machine,
                                        wz_word_t address);
 wz_result_t wz_debugger_clear_breakpoint(wz_machine_t* machine);

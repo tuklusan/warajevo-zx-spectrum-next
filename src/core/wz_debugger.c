@@ -400,6 +400,50 @@ bool wz_debugger_undo_available(const wz_machine_t* machine)
     return machine != 0 && machine->debugger_undo_valid != 0u;
 }
 
+wz_result_t wz_debugger_read_page_info(const wz_machine_t* machine,
+                                       wz_debugger_page_info_t* info)
+{
+    if (machine == 0 || info == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    info->paging_value = wz_machine_128k_paging_value(machine);
+    info->screen_bank = wz_machine_128k_screen_bank(machine);
+    info->rom_bank = wz_machine_128k_rom_bank(machine);
+    info->paging_locked = machine->profile != 0 &&
+        machine->profile->kind == WZ_MACHINE_128K_PAL &&
+        machine->paging_7ffd_locked != 0u;
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_debugger_set_page_config(wz_machine_t* machine,
+                                        wz_byte_t paging_value)
+{
+    wz_result_t result;
+
+    if (machine == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (machine->debugger_access_mode != WZ_DEBUGGER_PAUSED_MUTATION) {
+        wz_debugger_trace_result(machine, WZ_DEBUGGER_TRACE_PAGE,
+                                 WZ_RESULT_INVALID_STATE, 0);
+        return WZ_RESULT_INVALID_STATE;
+    }
+    if (machine->profile == 0 ||
+        machine->profile->kind != WZ_MACHINE_128K_PAL) {
+        wz_debugger_trace_result(machine, WZ_DEBUGGER_TRACE_PAGE,
+                                 WZ_RESULT_UNSUPPORTED_OPERATION, 0);
+        return WZ_RESULT_UNSUPPORTED_OPERATION;
+    }
+    if ((paging_value & (wz_byte_t)~0x3fu) != 0u) {
+        wz_debugger_trace_result(machine, WZ_DEBUGGER_TRACE_PAGE,
+                                 WZ_RESULT_INVALID_ARGUMENT, 0);
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    result = wz_machine_128k_paging_write(machine, 0x7ffdu, paging_value);
+    wz_debugger_trace_result(machine, WZ_DEBUGGER_TRACE_PAGE, result, 0);
+    return result;
+}
+
 wz_result_t wz_debugger_write_memory(wz_machine_t* machine,
                                      wz_word_t address,
                                      wz_byte_t value)
