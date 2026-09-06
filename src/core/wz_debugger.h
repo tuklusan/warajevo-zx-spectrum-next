@@ -10,6 +10,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #define WZ_CORE_WZ_DEBUGGER_H
 
 #include <stddef.h>
+#include <stdbool.h>
 
 #include "core/wz_machine.h"
 #include "core/wz_trace.h"
@@ -52,5 +53,11 @@ wz_result_t wz_debugger_write_memory(wz_machine_t* machine,
                                      wz_byte_t value);
 wz_result_t wz_debugger_set_cpu_state(wz_machine_t* machine,
                                       const wz_z80_state_t* state);
+wz_result_t wz_debugger_set_breakpoint(wz_machine_t* machine,
+                                       wz_word_t address);
+wz_result_t wz_debugger_clear_breakpoint(wz_machine_t* machine);
+bool wz_debugger_breakpoint_active(const wz_machine_t* machine);
+bool wz_debugger_breakpoint_hit(const wz_machine_t* machine);
+void wz_debugger_clear_breakpoint_hit(wz_machine_t* machine);
 
 #endif

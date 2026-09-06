@@ -172,3 +172,46 @@ wz_result_t wz_debugger_write_memory(wz_machine_t* machine,
     wz_debugger_trace_memory_result(machine, address, value, WZ_RESULT_OK);
     return WZ_RESULT_OK;
 }
+
+wz_result_t wz_debugger_set_breakpoint(wz_machine_t* machine,
+                                       wz_word_t address)
+{
+    if (machine == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    machine->debugger_breakpoint_address = address;
+    machine->debugger_breakpoint_active = 1u;
+    machine->debugger_breakpoint_hit = 0u;
+    wz_debugger_trace_result(machine, WZ_TRACE_DEBUGGER_BREAKPOINT_HIT,
+                             WZ_RESULT_OK, 0);
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_debugger_clear_breakpoint(wz_machine_t* machine)
+{
+    if (machine == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    machine->debugger_breakpoint_active = 0u;
+    machine->debugger_breakpoint_hit = 0u;
+    wz_debugger_trace_result(machine, WZ_TRACE_DEBUGGER_BREAKPOINT_HIT,
+                             WZ_RESULT_OK, 0);
+    return WZ_RESULT_OK;
+}
+
+bool wz_debugger_breakpoint_active(const wz_machine_t* machine)
+{
+    return machine != 0 && machine->debugger_breakpoint_active != 0u;
+}
+
+bool wz_debugger_breakpoint_hit(const wz_machine_t* machine)
+{
+    return machine != 0 && machine->debugger_breakpoint_hit != 0u;
+}
+
+void wz_debugger_clear_breakpoint_hit(wz_machine_t* machine)
+{
+    if (machine != 0) {
+        machine->debugger_breakpoint_hit = 0u;
+    }
+}

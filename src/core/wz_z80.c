@@ -2052,6 +2052,22 @@ wz_result_t wz_z80_step(wz_machine_t* machine)
         return WZ_RESULT_INVALID_STATE;
     }
 
+    if (machine->debugger_breakpoint_active != 0u &&
+        machine->cpu.program_counter == machine->debugger_breakpoint_address) {
+        wz_trace_event_t breakpoint_event = {0};
+        machine->debugger_breakpoint_hit = 1u;
+        breakpoint_event.kind = WZ_TRACE_DEVELOPER_MARKER;
+        breakpoint_event.master_tick = machine->master_tick;
+        breakpoint_event.address = machine->cpu.program_counter;
+        breakpoint_event.program_counter = machine->cpu.program_counter;
+        breakpoint_event.stack_pointer = machine->cpu.stack_pointer;
+        breakpoint_event.auxiliary = WZ_TRACE_DEBUGGER_BREAKPOINT_HIT;
+        if (machine->timing_trace != 0) {
+            wz_trace_emit_detail(machine->timing_trace, &breakpoint_event);
+        }
+        return WZ_RESULT_OK;
+    }
+
     /* EI blocks recognition until this following instruction has completed. */
     if (machine->cpu.interrupt_enable_delay != 0u) {
         machine->cpu.interrupt_enable_delay = 0u;

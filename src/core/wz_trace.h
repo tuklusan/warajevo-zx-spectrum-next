@@ -17,6 +17,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #define WZ_TRACE_INTERRUPT_NMI_ACCEPT 3u
 #define WZ_TRACE_INTERRUPT_LINE_ASSERT 4u
 #define WZ_TRACE_INTERRUPT_LINE_DEASSERT 5u
+#define WZ_TRACE_DEBUGGER_BREAKPOINT_HIT 6u
 
 typedef enum {
     WZ_TRACE_MASTER_TICK_ADVANCED = 0,

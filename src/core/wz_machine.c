@@ -36,6 +36,9 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     wz_bus_data_source_init(&machine->bus_data_source, 0, 0);
     machine->timing_trace = 0;
     machine->debugger_access_mode = 0u;
+    machine->debugger_breakpoint_active = 0u;
+    machine->debugger_breakpoint_hit = 0u;
+    machine->debugger_breakpoint_address = 0u;
     machine->has_48k_rom = 0u;
     machine->has_interface1_rom = 0u;
     machine->interface1_rom_variant = WZ_INTERFACE1_ROM_NEW;

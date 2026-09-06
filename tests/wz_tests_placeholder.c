@@ -2050,6 +2050,53 @@ static void test_debugger_memory_mutation(void)
     wz_machine_destroy(&machine);
 }
 
+static void test_debugger_breakpoint(void)
+{
+    static wz_machine_t machine;
+    static wz_trace_sink_t trace;
+    static debugger_trace_log_t trace_log;
+    wz_master_tick_t before_tick;
+
+    if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK) {
+        fputs("debugger breakpoint setup failed\n", stderr);
+        exit(1);
+    }
+    memset(&trace_log, 0, sizeof(trace_log));
+    wz_trace_sink_init(&trace, record_debugger_trace, &trace_log);
+    wz_machine_set_timing_trace(&machine, &trace);
+    machine.memory[0u] = 0u;
+    if (wz_debugger_set_breakpoint(&machine, 0u) != WZ_RESULT_OK ||
+        !wz_debugger_breakpoint_active(&machine) ||
+        wz_debugger_breakpoint_hit(&machine)) {
+        fputs("debugger breakpoint install failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    before_tick = machine.master_tick;
+    if (wz_z80_step(&machine) != WZ_RESULT_OK ||
+        !wz_debugger_breakpoint_hit(&machine) ||
+        machine.master_tick != before_tick || machine.cpu.program_counter != 0u ||
+        trace_log.count != 2u ||
+        trace_log.events[1].address != 0u ||
+        trace_log.events[1].auxiliary != WZ_TRACE_DEBUGGER_BREAKPOINT_HIT ||
+        wz_debugger_clear_breakpoint(&machine) != WZ_RESULT_OK ||
+        wz_debugger_breakpoint_active(&machine) ||
+        wz_z80_step(&machine) != WZ_RESULT_OK ||
+        machine.master_tick != before_tick + 8u ||
+        machine.cpu.program_counter != 1u) {
+        fputs("debugger breakpoint fetch boundary failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_debugger_clear_breakpoint_hit(&machine);
+    if (wz_debugger_breakpoint_hit(&machine)) {
+        fputs("debugger breakpoint hit clear failed\n", stderr);
+        wz_machine_destroy(&machine);
+        exit(1);
+    }
+    wz_machine_destroy(&machine);
+}
+
 static void test_snapshot_cross_host_round_trips(void)
 {
     static wz_byte_t sna[WZ_SNA_48K_LENGTH];
@@ -3820,6 +3867,7 @@ int main(void)
     test_malformed_mdr_and_device_transition_fuzz();
     test_debugger_read_only_inspection();
     test_debugger_memory_mutation();
+    test_debugger_breakpoint();
     test_peripheral_state_serialization();
     test_historical_state_representability();
     test_snapshot_state_isolated_validation();
