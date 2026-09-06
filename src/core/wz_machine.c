@@ -81,6 +81,56 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     return WZ_RESULT_OK;
 }
 
+wz_result_t wz_machine_reset(wz_machine_t* machine)
+{
+    wz_machine_t replacement;
+    wz_result_t result;
+
+    if (machine == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (machine->profile == 0) {
+        return WZ_RESULT_INVALID_PROFILE;
+    }
+
+    result = wz_machine_init(&replacement, machine->profile);
+    if (result != WZ_RESULT_OK) {
+        return result;
+    }
+
+    /* Reset transient emulation state while retaining caller-owned state. */
+    memcpy(replacement.memory, machine->memory, sizeof(replacement.memory));
+    if (machine->ram_128k != 0 && replacement.ram_128k != 0) {
+        memcpy(replacement.ram_128k, machine->ram_128k,
+               WZ_128K_RAM_BANK_COUNT * WZ_128K_RAM_BANK_SIZE);
+    }
+    replacement.has_48k_rom = machine->has_48k_rom;
+    replacement.has_interface1_rom = machine->has_interface1_rom;
+    memcpy(replacement.interface1_rom, machine->interface1_rom,
+           sizeof(replacement.interface1_rom));
+    replacement.interface1_rom_variant = machine->interface1_rom_variant;
+    replacement.interface1_rom_identity = machine->interface1_rom_identity;
+    replacement.rom_identity = machine->rom_identity;
+    replacement.bus_observer = machine->bus_observer;
+    replacement.bus_input = machine->bus_input;
+    replacement.bus_data_source = machine->bus_data_source;
+    replacement.timing_trace = machine->timing_trace;
+    replacement.hardware_io_decode_enabled = machine->hardware_io_decode_enabled;
+    memcpy(replacement.keyboard_rows, machine->keyboard_rows,
+           sizeof(replacement.keyboard_rows));
+    replacement.kempston = machine->kempston;
+    replacement.tape = machine->tape;
+    replacement.tape_state = machine->tape_state;
+    replacement.tape_state.tape = &replacement.tape;
+    replacement.tape_mounted = machine->tape_mounted;
+    replacement.tape_loading_mode = machine->tape_loading_mode;
+    replacement.networking_mode = machine->networking_mode;
+
+    wz_machine_destroy(machine);
+    *machine = replacement;
+    return WZ_RESULT_OK;
+}
+
 void wz_machine_destroy(wz_machine_t* machine)
 {
     if (machine != 0) {

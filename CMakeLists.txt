@@ -156,6 +156,9 @@ target_link_libraries(wz_debugger_disassembly_tests PRIVATE wz_core)
 add_executable(wz_debugger_jump_undo_tests tests/wz_debugger_jump_undo_tests.c)
 target_link_libraries(wz_debugger_jump_undo_tests PRIVATE wz_core)
 
+add_executable(wz_machine_reset_tests tests/wz_machine_reset_tests.c)
+target_link_libraries(wz_machine_reset_tests PRIVATE wz_core)
+
 add_executable(wz_printer_export_tests
     tests/wz_printer_export_tests.c
     src/app/wz_printer_export.c)
@@ -170,6 +173,7 @@ add_test(NAME wz_printer_tests COMMAND wz_printer_tests)
 add_test(NAME wz_debugger_memory_tools_tests COMMAND wz_debugger_memory_tools_tests)
 add_test(NAME wz_debugger_disassembly_tests COMMAND wz_debugger_disassembly_tests)
 add_test(NAME wz_debugger_jump_undo_tests COMMAND wz_debugger_jump_undo_tests)
+add_test(NAME wz_machine_reset_tests COMMAND wz_machine_reset_tests)
 add_test(NAME wz_printer_export_tests COMMAND wz_printer_export_tests)
 
 if(WZSN_ENABLE_REVIEW_GATE_TESTS)
