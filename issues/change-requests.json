@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 266,
+  "next_cr_number": 267,
   "status_values": [
     "open",
     "in_progress",
@@ -2325,6 +2325,23 @@
         "reference/original-warajevo/source/src/environment"
       ],
       "notes": "Closed on 2026-09-06 at commit 52f8808733c07fd8ea982fd3d293d854f5270f93. Froze Nuklear revision e3e18dc1e4d3de935095d372aaa211f12183befb as the C in-window widget layer, retained Sokol for the viewport, and documented native platform integration, accessibility, and host-only settings boundaries. Exact-SHA CODE and initial DOCUMENTATION reviews passed with zero confirmed findings; final closure DOCUMENTATION review passed with zero confirmed findings at packet 187e80b2a145a5f3c3ab32b8df39a5f71fb3fa92079d6cee6611de118e1d80ea. No local build or test was performed; higher-level UI implementation remains in subsequent CRs."
+    },
+    {
+      "cr_number": "CR-0266",
+      "title": "Implement the shared application command registry foundation",
+      "status": "open",
+      "source_authority": [
+        "design/cr-preflight/CR-0266.md",
+        "design/warajevo-zx-spectrum-next-architecture.md sections 30, 31, 49.2, 51, and 55",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md sections 3-5, 7, 20, 27-40, and 46-49",
+        "design/wzsn-architectures-1-2-developer-tasks.md tasks 244-250",
+        "reference/original-warajevo/source/src/environment/SETSTATE.PAS",
+        "reference/original-warajevo/source/src/environment/DOSMENU.PAS",
+        "reference/original-warajevo/source/src/environment/MENUCONS.PAS",
+        "reference/original-warajevo/source/src/environment/SETUP.PAS",
+        "reference/original-warajevo/source/src/environment/WARAJEVO.PAS"
+      ],
+      "notes": "Opened on 2026-09-06 for the Phase-12A command-registry foundation. The CR freezes the application-layer C API and implements bounded metadata, validation, lookup, enumeration, and dispatch without introducing UI, host, socket, or deterministic-core dependencies."
     }
   ]
 }
