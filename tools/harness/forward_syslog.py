@@ -51,7 +51,7 @@ def forward_tree(tree: Path, run_id: str, lane: str, phase: str) -> dict[str, in
         return counts
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.setblocking(False)
+        sock.settimeout(5.0)
     except OSError:
         return counts
     try:
