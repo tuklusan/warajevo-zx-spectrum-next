@@ -2083,9 +2083,9 @@
     {
       "cr_number": "CR-0249",
       "title": "Implement minimum breakpoint support",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0249.md", "design/debugger-api.md", "design/monitor-debugger-inventory.md", "design/warajevo-zx-spectrum-next-architecture.md sections 41 and 44", "design/warajevo-zx-spectrum-next-ui-architecture.md section 21", "design/wzsn-architectures-1-2-developer-tasks.md task 230", "reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM"],
-      "notes": "Opened on 2026-09-06 after upstream breakpoint install, stop, page-context, and restoration paths were reconciled."
+      "notes": "Closed on 2026-09-06. Final commit b8ebb8888e9b284f19af9b65d778991e34102ada passed serial CODE, TEST_ARTIFACT, and DOCUMENTATION reviews with zero confirmed findings; four remote lanes and hosted publication run 34014963955 passed."
     }
   ]
 }
