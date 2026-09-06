@@ -4443,6 +4443,24 @@ This preserves the single-program-binary distribution objective.
 
 The socket implementation is host code. It may not enter the emulation core.
 
+### 55.15.1 Diagnostic UDP syslog export
+
+The diagnostics layer may forward trace events and application diagnostic log
+messages over UDP only to `sanyalnet-oracle-vps2.duckdns.org:65514`. The adapter
+uses the operating-system socket APIs above, resolves the fixed endpoint during
+host setup, and configures a nonblocking datagram socket before attaching to a
+trace sink. It uses RFC 5424-style Unix syslog records with facility `user` and
+an explicit severity mapping.
+
+Forwarding is opt-in and best effort. DNS, socket, packet-size, queue, and send
+failures are reported only through local diagnostics and cannot mutate
+canonical machine state, change emulated timing, or stop the emulator. UDP
+delivery has no acknowledgement. Trace records are projected to sequence,
+master tick, and event kind only; addresses, register snapshots, memory values,
+ROM bytes, host paths, credentials, and personal data are never included.
+The adapter has no alternate transport and does not forward the private binary
+circular trace file.
+
 ### 55.16 Threading
 
 The Telnet server must not mutate machine state directly from a networking

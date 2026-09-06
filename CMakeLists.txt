@@ -93,9 +93,12 @@ add_library(
 target_include_directories(wz_core PUBLIC src)
 target_link_libraries(wz_core PUBLIC wz_warnings ZLIB::ZLIB)
 
-add_library(wz_diagnostics STATIC src/diagnostics/wz_trace_file.c)
+add_library(wz_diagnostics STATIC src/diagnostics/wz_trace_file.c src/diagnostics/wz_syslog_udp.c)
 target_include_directories(wz_diagnostics PUBLIC src)
 target_link_libraries(wz_diagnostics PUBLIC wz_core wz_warnings)
+if(WIN32)
+    target_link_libraries(wz_diagnostics PUBLIC ws2_32)
+endif()
 
 add_executable(
     wz_headless
@@ -131,9 +134,13 @@ target_link_libraries(wz_fuse_ed_runner PRIVATE wz_core)
 add_executable(wz_zxnet_loopback tests/wz_zxnet_loopback.c)
 target_link_libraries(wz_zxnet_loopback PRIVATE wz_core)
 
+add_executable(wz_syslog_udp_tests tests/wz_syslog_udp_tests.c)
+target_link_libraries(wz_syslog_udp_tests PRIVATE wz_diagnostics)
+
 enable_testing()
 add_test(NAME wz_tests_placeholder COMMAND wz_tests)
 add_test(NAME wz_zxnet_loopback COMMAND wz_zxnet_loopback)
+add_test(NAME wz_syslog_udp_tests COMMAND wz_syslog_udp_tests)
 
 if(WZSN_ENABLE_REVIEW_GATE_TESTS)
     find_package(Python3 COMPONENTS Interpreter REQUIRED)
