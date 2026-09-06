@@ -37,7 +37,14 @@ not prerequisites for the standard smoke gate.
 - `invoke_remote_windows_powershell.py`
   Runs a repository-local PowerShell script on an approved Windows SSH remote
   through the parser-first path and records the session under
-  `test-artefacts/remote-runs/`
+`test-artefacts/remote-runs/`
+
+Smoke validation first verifies the exact published CODE PASS authority. If
+review authority is missing or stale, no SSH connection or remote command is
+attempted; the harness writes `session.json` with
+`classification: review_pending` and `remote_execution_started: false`. SSH,
+build/test, and artifact-transport failures are recorded only after this
+precondition has passed and remain separate classifications.
 - `run_cmake_smoke.py`
   Shared probe and CMake smoke-build entry point used both remotely and by
   GitHub Actions

@@ -210,6 +210,17 @@ def require_code_review_pass(root: Path) -> None:
         raise SystemExit("remote smoke blocked: CODE PASS diff identity mismatch")
 
 
+def review_pending_record(machine: str, run_id: str, reason: str) -> dict:
+    return {
+        "action": "smoke",
+        "classification": "review_pending",
+        "machine": machine,
+        "remote_execution_started": False,
+        "reason": reason,
+        "run_id": run_id,
+    }
+
+
 def require_bootstrap_maintenance_pass(root: Path, cr_number: str, published_ref: str) -> None:
     if not MAINTENANCE_REF.fullmatch(published_ref) or cr_number not in published_ref:
         raise SystemExit("remote smoke blocked: bootstrap maintenance ref is invalid")
@@ -511,18 +522,28 @@ def main() -> int:
     args.run_id = validate_run_id(args.run_id)
 
     root = repo_root()
-    if args.action == "smoke":
-        if args.bootstrap_maintenance_cr or args.published_ref:
-            if not args.bootstrap_maintenance_cr or not args.published_ref:
-                raise SystemExit("bootstrap maintenance requires both CR and published ref")
-            require_bootstrap_maintenance_pass(root, args.bootstrap_maintenance_cr, args.published_ref)
-        else:
-            require_code_review_pass(root)
     machine = REMOTE_MACHINES[args.machine]
     remote_dir = f".wzsn-harness/{args.run_id}"
     remote_dir_windows = windows_relative_path(remote_dir)
     local_dir = root / "test-artefacts" / "remote-runs" / args.machine / args.run_id
     local_dir.mkdir(parents=True, exist_ok=True)
+    if args.action == "smoke":
+        try:
+            if args.bootstrap_maintenance_cr or args.published_ref:
+                if not args.bootstrap_maintenance_cr or not args.published_ref:
+                    raise SystemExit("bootstrap maintenance requires both CR and published ref")
+                require_bootstrap_maintenance_pass(root, args.bootstrap_maintenance_cr, args.published_ref)
+            else:
+                require_code_review_pass(root)
+        except SystemExit as exc:
+            reason = str(exc)
+            if reason.startswith("remote smoke blocked:"):
+                write_text(local_dir / "session.json", json.dumps(
+                    review_pending_record(args.machine, args.run_id, reason),
+                    indent=2, sort_keys=True) + "\n")
+                print(f"remote smoke pending: {reason}", file=sys.stderr)
+                return 2
+            raise
     sanitizer_arg = " --sanitizers" if args.sanitizers else ""
     sokol_arg = " --sokol-host" if args.sokol_host else ""
 

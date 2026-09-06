@@ -2346,7 +2346,7 @@
     {
       "cr_number": "CR-0267",
       "title": "Correct remote harness sequencing and failure classification",
-      "status": "open",
+      "status": "in_progress",
       "priority": "low",
       "execution_order": "out_of_order_allowed",
       "blocking": false,

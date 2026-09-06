@@ -143,6 +143,17 @@ guards rather than by placing the artifact outside the project directory.
 Remote build or test sessions must stay within the approved per-machine project
 directories defined in `test-artefacts/README.md`.
 
+## Remote Validation Ordering Rule
+
+Every remote smoke invocation must verify the exact published CODE PASS
+authority before SSH synchronization or any remote build/test command begins.
+If that precondition is absent, stale, or no longer matches the tracker or
+requirements, the harness writes a machine-readable session record with
+`classification: review_pending` and `remote_execution_started: false`. This
+is a workflow-state result, not an SSH or lab-machine availability result.
+Only after the precondition passes may SSH reachability, synchronization,
+build/test, artifact transport, and evidence outcomes be classified.
+
 ## PowerShell Parser-First Rule
 
 Whenever a PowerShell command is about to be executed on the local machine or

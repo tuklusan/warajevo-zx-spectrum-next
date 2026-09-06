@@ -163,6 +163,16 @@ class HarnessGateTests(unittest.TestCase):
         with self.assertRaises(SystemExit):
             remote.validate_review_authority(ROOT, receipt)
 
+    def test_review_pending_record_proves_no_remote_execution_started(self):
+        record = remote.review_pending_record(
+            "windows-11-laptop", "CR0267-WIN11-R1",
+            "remote smoke blocked: review is not published",
+        )
+        self.assertEqual(record["classification"], "review_pending")
+        self.assertFalse(record["remote_execution_started"])
+        self.assertEqual(record["machine"], "windows-11-laptop")
+        self.assertEqual(record["run_id"], "CR0267-WIN11-R1")
+
 
 if __name__ == "__main__":
     unittest.main()
