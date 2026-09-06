@@ -2180,7 +2180,7 @@
     {
       "cr_number": "CR-0256",
       "title": "Implement bounded debugger disassembly and value formatting",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/cr-preflight/CR-0256.md",
         "design/phase-11-regression-coverage-matrix.md",
@@ -2190,7 +2190,7 @@
         "design/wzsn-architectures-1-2-developer-tasks.md tasks 225 and 235",
         "reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM"
       ],
-      "notes": "Opened on 2026-09-06 from the CR-0254 coverage gap. Add a read-only bounded Z80 disassembly/value-formatting boundary with deterministic output, visible-memory wrapping rejection, and regression coverage; no execution or mutation is permitted."
+      "notes": "Closed on 2026-09-06 at commit 9cf241d3127205cdbd24f26d8e5b1216c45cdb55. Added bounded read-only Z80 primary, CB, ED, IX, and IY disassembly plus deterministic hex formatting and regressions. CODE and TEST_ARTIFACT reviews passed with zero confirmed findings; four remote lanes and hosted run 34028097223 passed all 20 lanes, housekeeping, and publication with 27,120 pinned cases green. Final DOCUMENTATION reviews are recorded in the preflight closure record."
     }
   ]
 }
