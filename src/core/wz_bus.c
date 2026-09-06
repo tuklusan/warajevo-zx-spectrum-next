@@ -161,6 +161,10 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
             wz_machine_ula_port_fe_selected(request->address)) {
             request->value = wz_machine_ula_port_fe_read(machine, request->address);
             request->source = WZ_BUS_SOURCE_ULA;
+        } else if (machine->hardware_io_decode_enabled &&
+                   wz_printer_port_selected(request->address)) {
+            request->value = wz_machine_printer_read(machine, request->address);
+            request->source = WZ_BUS_SOURCE_PRINTER;
         } else if (machine->bus_input.read != 0) {
             request->value = machine->bus_input.read(
                 request->cycle, request->address, machine->bus_input.context);
@@ -197,6 +201,13 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
             wz_machine_ula_port_fe_write(machine, request->address, request->value,
                                          request->master_tick);
             request->source = WZ_BUS_SOURCE_ULA;
+        } else if (machine->hardware_io_decode_enabled &&
+                   wz_printer_port_selected(request->address)) {
+            if (wz_machine_printer_write(machine, request->address, request->value,
+                                         request->master_tick) != WZ_RESULT_OK) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+            request->source = WZ_BUS_SOURCE_PRINTER;
         } else if (machine->hardware_io_decode_enabled &&
                    machine->networking_mode == WZ_NETWORKING_INTERFACE1 &&
                    wz_machine_interface1_port_selected(request->address, 0xefu)) {

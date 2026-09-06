@@ -65,6 +65,7 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     machine->tape_loading_mode = WZ_TAPE_LOADING_NORMAL;
     machine->networking_mode = WZ_NETWORKING_NONE;
     wz_mdr_transport_init(&machine->microdrive);
+    wz_printer_init(&machine->printer);
     wz_zxnet_init(&machine->zxnet);
     machine->maskable_interrupt_line_low = 0u;
     machine->rom_identity = 0u;
@@ -115,6 +116,7 @@ void wz_machine_destroy(wz_machine_t* machine)
         machine->tape_loading_mode = WZ_TAPE_LOADING_NORMAL;
         machine->networking_mode = WZ_NETWORKING_NONE;
         wz_mdr_transport_init(&machine->microdrive);
+        wz_printer_init(&machine->printer);
         wz_zxnet_init(&machine->zxnet);
         machine->ula_output = 0u;
         machine->maskable_interrupt_line_low = 0u;
@@ -318,6 +320,43 @@ wz_result_t wz_machine_reconfigure_networking_mode_with_mdr_resolution(
 wz_networking_mode_t wz_machine_networking_mode(const wz_machine_t* machine)
 {
     return machine == 0 ? WZ_NETWORKING_NONE : machine->networking_mode;
+}
+
+wz_result_t wz_machine_set_printer_mode(wz_machine_t* machine,
+                                         wz_printer_mode_t mode)
+{
+    return machine == 0 ? WZ_RESULT_INVALID_ARGUMENT :
+        wz_printer_set_mode(&machine->printer, mode);
+}
+
+wz_printer_mode_t wz_machine_printer_mode(const wz_machine_t* machine)
+{
+    return machine == 0 ? WZ_PRINTER_MODE_NONE : wz_printer_mode(&machine->printer);
+}
+
+wz_byte_t wz_machine_printer_read(const wz_machine_t* machine,
+                                  wz_word_t address)
+{
+    if (machine == 0 || !wz_printer_port_selected(address)) return 0xffu;
+    return wz_printer_status(&machine->printer);
+}
+
+wz_result_t wz_machine_printer_write(wz_machine_t* machine,
+                                     wz_word_t address,
+                                     wz_byte_t value,
+                                     wz_master_tick_t master_tick)
+{
+    if (machine == 0 || !wz_printer_port_selected(address)) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    return wz_printer_write_control(&machine->printer, value, master_tick);
+}
+
+wz_result_t wz_machine_printer_take_flush(wz_machine_t* machine,
+                                          wz_printer_flush_event_t* event)
+{
+    return machine == 0 ? WZ_RESULT_INVALID_ARGUMENT :
+        wz_printer_take_flush(&machine->printer, event);
 }
 
 wz_tape_trap_reason_t wz_machine_tape_trap_reason(const wz_machine_t* machine)

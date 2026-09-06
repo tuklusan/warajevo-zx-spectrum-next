@@ -20,6 +20,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "core/wz_trace.h"
 #include "core/wz_tape.h"
 #include "core/wz_microdrive.h"
+#include "core/wz_printer.h"
 #include "core/wz_types.h"
 #include "core/wz_z80.h"
 #include "core/wz_zxnet.h"
@@ -117,6 +118,7 @@ typedef struct wz_machine {
     wz_tape_loading_mode_t tape_loading_mode;
     wz_networking_mode_t networking_mode;
     wz_mdr_transport_t microdrive;
+    wz_printer_t printer;
     wz_zxnet_t zxnet;
     wz_byte_t ula_output;
     wz_qword_t rom_identity;
@@ -163,6 +165,17 @@ wz_result_t wz_machine_reconfigure_networking_mode_with_mdr_resolution(
     wz_mdr_flush_callback_t flush_callback, void* flush_context,
     bool discard_dirty_media);
 wz_networking_mode_t wz_machine_networking_mode(const wz_machine_t* machine);
+wz_result_t wz_machine_set_printer_mode(wz_machine_t* machine,
+                                         wz_printer_mode_t mode);
+wz_printer_mode_t wz_machine_printer_mode(const wz_machine_t* machine);
+wz_byte_t wz_machine_printer_read(const wz_machine_t* machine,
+                                  wz_word_t address);
+wz_result_t wz_machine_printer_write(wz_machine_t* machine,
+                                     wz_word_t address,
+                                     wz_byte_t value,
+                                     wz_master_tick_t master_tick);
+wz_result_t wz_machine_printer_take_flush(wz_machine_t* machine,
+                                          wz_printer_flush_event_t* event);
 wz_tape_trap_reason_t wz_machine_tape_trap_reason(const wz_machine_t* machine);
 wz_byte_t wz_machine_tape_ear_level(const wz_machine_t* machine);
 wz_byte_t wz_machine_kempston_read(const wz_machine_t* machine,

@@ -2201,6 +2201,16 @@ printer objects to the core. Old/new Interface 1 ROM behavioral differences
 used by compatibility software must be represented explicitly when evidence
 requires them.
 
+### 24.4.1 ZX Printer contract
+
+The deterministic printer peripheral owns the Spectrum-visible port `0xfb`,
+status/control latches, motor state, configured mode, bounded pixel buffer, row
+progression, and flush ordering. The initial implementation preserves the four
+inventory modes and upstream motor, pixel, row, and flush transitions while
+exposing completed output as bounded core events for a later host presentation
+adapter. BIOS, LPT, printer handles, host paths, and host availability remain
+outside canonical machine state and cannot affect emulated timing.
+
 ### 24.5 Original ZX Net contract
 
 Original ZX Net emulation must preserve the Spectrum-visible state machine and
