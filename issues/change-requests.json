@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 236,
+  "next_cr_number": 237,
   "status_values": [
     "open",
     "in_progress",
@@ -1988,6 +1988,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0235.md", "design/warajevo-zx-spectrum-next-architecture.md sections 8 and 24.1-24.6", "design/interface1-microdrive-zxnet.md section 10", "design/wzsn-architectures-1-2-developer-tasks.md task 217", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
       "notes": "Closed on 2026-09-06 at b449d334e494109a547e385b1c0302985a878e9f after exact CODE PASS, four remote validations, hosted platform-smoke run 34005444562 with all 20 lanes green, debugger diagnosis of the Windows 10 stack overflow, and retained private closure evidence."
+    },
+    {
+      "cr_number": "CR-0236",
+      "title": "Guard dirty Microdrive state during networking-mode changes",
+      "status": "in_progress",
+      "source_authority": ["design/cr-preflight/CR-0236.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24.1, 24.3, 28.7, and 49.1", "design/interface1-microdrive-zxnet.md sections 2, 5, 8, 10, and 11", "design/wzsn-architectures-1-2-developer-tasks.md task 218", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
+      "notes": "Opened on 2026-09-06 after the upstream/spec scan confirmed that leaving Interface 1 must flush or explicitly discard dirty writable Microdrive state without silent loss."
     }
   ]
 }
