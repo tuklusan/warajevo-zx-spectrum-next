@@ -1796,6 +1796,131 @@ static void test_snapshot_parser_fuzz_matrix(void)
     }
 }
 
+static void test_malformed_mdr_and_device_transition_fuzz(void)
+{
+    static wz_byte_t image_data[WZ_MDR_MAX_SECTORS * WZ_MDR_SECTOR_SIZE];
+    static wz_byte_t random_data[WZ_MDR_MAX_SECTORS * WZ_MDR_SECTOR_SIZE];
+    static wz_byte_t network_data[WZ_ZXNET_DATA_CAPACITY];
+    static wz_mdr_image_t image;
+    static wz_mdr_image_t candidate;
+    static wz_mdr_transport_t transport;
+    static wz_zxnet_t network;
+    static wz_zxnet_snapshot_t network_state;
+    wz_dword_t seed = 0x9e3779b9u;
+
+    memset(image_data, 0xa5, sizeof(image_data));
+    memset(network_data, 0x3c, sizeof(network_data));
+    if (wz_mdr_image_init(&image, image_data,
+                          WZ_MDR_MIN_SECTORS * WZ_MDR_SECTOR_SIZE) !=
+            WZ_RESULT_OK) {
+        fputs("MDR fuzz setup failed\n", stderr);
+        exit(1);
+    }
+    wz_zxnet_init(&network);
+    for (size_t iteration = 0u; iteration < 4096u; ++iteration) {
+        size_t length;
+        wz_result_t result;
+
+        seed = seed * 1664525u + 1013904223u;
+        for (size_t index = 0u; index < sizeof(random_data); ++index) {
+            seed = seed * 1664525u + 1013904223u;
+            random_data[index] = (wz_byte_t)(seed >> 24u);
+        }
+        length = (size_t)(seed % (sizeof(random_data) + 1u));
+        result = wz_mdr_image_init(&candidate, random_data, length);
+        if (result != WZ_RESULT_OK && result != WZ_RESULT_PARSE_ERROR) {
+            fputs("MDR malformed input returned an uncontrolled result\n",
+                  stderr);
+            exit(1);
+        }
+        if (result == WZ_RESULT_OK &&
+            (candidate.sector_count < WZ_MDR_MIN_SECTORS ||
+             candidate.sector_count > WZ_MDR_MAX_SECTORS ||
+             candidate.length != candidate.sector_count * WZ_MDR_SECTOR_SIZE)) {
+            fputs("MDR malformed input published invalid image state\n",
+                  stderr);
+            exit(1);
+        }
+
+        wz_mdr_transport_init(&transport);
+        if (wz_mdr_transport_mount(&transport, &image) != WZ_RESULT_OK ||
+            wz_mdr_transport_select_motor(&transport, (wz_byte_t)(seed & 0xffu))
+                != ((seed & 0xffu) <= 7u ? WZ_RESULT_OK :
+                    WZ_RESULT_INVALID_ARGUMENT) ||
+            wz_mdr_transport_set_write_mode(&transport, (wz_byte_t)(seed & 3u))
+                != ((seed & 3u) <= 1u ? WZ_RESULT_OK :
+                    WZ_RESULT_INVALID_ARGUMENT) ||
+            wz_mdr_transport_set_erase(&transport, (wz_byte_t)((seed >> 2u) & 3u))
+                != (((seed >> 2u) & 3u) <= 1u ? WZ_RESULT_OK :
+                    WZ_RESULT_INVALID_ARGUMENT)) {
+            fputs("MDR invalid transition returned an unexpected result\n",
+                  stderr);
+            exit(1);
+        }
+        for (size_t operation = 0u; operation < 8u; ++operation) {
+            wz_byte_t value = 0u;
+            seed = seed * 1664525u + 1013904223u;
+            if ((seed & 1u) != 0u) {
+                result = wz_mdr_transport_read(&transport, &value);
+            } else {
+                result = wz_mdr_transport_write(&transport,
+                                                (wz_byte_t)(seed >> 24u));
+            }
+            if (result != WZ_RESULT_OK && result != WZ_RESULT_INVALID_STATE) {
+                fputs("MDR transition returned an uncontrolled result\n",
+                      stderr);
+                exit(1);
+            }
+            if (transport.sector >= transport.image_sector_count ||
+                transport.offset > WZ_MDR_SECTOR_SIZE ||
+                transport.phase > WZ_MDR_PHASE_DATA ||
+                (transport.active_motor > 7u && transport.active_motor != 0xffu) ||
+                transport.write_enabled > 1u || transport.erase_enabled > 1u ||
+                transport.dirty > 1u) {
+                fputs("MDR transition published out-of-range state\n", stderr);
+                exit(1);
+            }
+        }
+
+        seed = seed * 1664525u + 1013904223u;
+        switch (seed % 7u) {
+        case 0u:
+            (void)wz_zxnet_begin_claim(&network, (wz_byte_t)(seed >> 24u));
+            break;
+        case 1u:
+            (void)wz_zxnet_accept_claim(&network, (seed & 1u) != 0u);
+            break;
+        case 2u:
+            (void)wz_zxnet_feed_read_block(&network, (wz_word_t)seed,
+                                           network_data,
+                                           (size_t)(seed %
+                                                    (WZ_ZXNET_DATA_CAPACITY + 1u)));
+            break;
+        case 3u:
+            (void)wz_zxnet_start_read_collection(&network);
+            break;
+        case 4u:
+            (void)wz_zxnet_read(&network, &network_data[0]);
+            break;
+        case 5u:
+            (void)wz_zxnet_write_bit(&network, (seed & 1u) != 0u);
+            break;
+        default:
+            (void)wz_zxnet_finish_write(&network);
+            break;
+        }
+        if (wz_zxnet_snapshot(&network, &network_state) != WZ_RESULT_OK ||
+            network_state.state < WZ_ZXNET_CLAIM ||
+            network_state.state > WZ_ZXNET_COLLWRITE ||
+            network_state.bit_count > 9u ||
+            network_state.buffer_position > WZ_ZXNET_DATA_CAPACITY ||
+            network_state.buffer_length > WZ_ZXNET_DATA_CAPACITY) {
+            fputs("ZX Net invalid transition published invalid state\n", stderr);
+            exit(1);
+        }
+    }
+}
+
 static void test_snapshot_cross_host_round_trips(void)
 {
     static wz_byte_t sna[WZ_SNA_48K_LENGTH];
@@ -3563,6 +3688,7 @@ int main(void)
     test_interface1_machine_registers();
     test_microdrive_image_validation();
     test_dirty_microdrive_mode_guard();
+    test_malformed_mdr_and_device_transition_fuzz();
     test_peripheral_state_serialization();
     test_historical_state_representability();
     test_snapshot_state_isolated_validation();

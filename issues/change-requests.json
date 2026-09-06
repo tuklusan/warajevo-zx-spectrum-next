@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 239,
+  "next_cr_number": 240,
   "status_values": [
     "open",
     "in_progress",
@@ -2009,6 +2009,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0238.md", "design/warajevo-zx-spectrum-next-architecture.md sections 24, 36, 39, and 49.1", "design/interface1-microdrive-zxnet.md sections 3-11", "design/wzsn-architectures-1-2-developer-tasks.md task 220", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM", "reference/original-warajevo/source/src/spectrum-kernel/SPECSIM.ASM"],
       "notes": "Closed on 2026-09-06 at 9207c94f5e59800637035cf56d0f14aa6af7c986 after adding explicit deterministic scenarios for Interface 1 port aliases, control-latch motor edges, MDR sector/header/data boundaries, write protection/GAP behavior, and all six preserved ZX Net states. Exact CODE, TEST_ARTIFACT, and DOCUMENTATION reviews passed with zero findings. Linux sanitizer, Intel macOS sanitizer, Windows 10, and Windows 11 remote lanes passed. Hosted platform-smoke run 34008579989 passed all 22 jobs, including Windows ARM and macOS ARM lanes, deep housekeeping, and publication evidence inspection. Private closure evidence is retained under test-artefacts/reviewer/CR-0238-test-evidence.local.json and test-artefacts/remote-runs/. Remote and hosted harnesses are frozen unless a concrete validation blocker appears."
+    },
+    {
+      "cr_number": "CR-0239",
+      "title": "Fuzz malformed MDR images and invalid device transitions",
+      "status": "open",
+      "source_authority": ["design/cr-preflight/CR-0239.md", "design/warajevo-zx-spectrum-next-architecture.md sections 36, 39, and 46", "design/interface1-microdrive-zxnet.md sections 6-11", "design/wzsn-architectures-1-2-developer-tasks.md task 221", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM"],
+      "notes": "Opened on 2026-09-06 for deterministic seeded malformed-MDR and invalid Interface 1/ZX Net transition coverage under remote sanitizers. Host transport fuzzing remains outside the core."
     }
   ]
 }
