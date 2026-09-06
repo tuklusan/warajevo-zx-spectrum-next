@@ -2224,7 +2224,7 @@
     {
       "cr_number": "CR-0259",
       "title": "Implement deterministic machine reset and warm restart boundary",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/cr-preflight/CR-0259.md",
         "design/phase-11-regression-coverage-matrix.md",
@@ -2234,7 +2234,7 @@
         "design/wzsn-architectures-1-2-developer-tasks.md tasks 235 and 236",
         "reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM"
       ],
-      "notes": "Opened on 2026-09-06 from the CR-0254 missing Abort/warm restart workflow. Add one shared deterministic machine-reset boundary corresponding to the preserved ABORT/ANEW/ASOFT behavior without restarting the host application, changing model/speed, disconnecting Telnet, or silently changing mounted media and input ownership outside the architecture policy."
+      "notes": "Closed on 2026-09-06 at commit 335a6d5fc5fe3a4c8027ffb844fee9b96c4b8319. Implemented the shared deterministic machine reset boundary with preserved RAM/ROM, mounted media, host bindings, trace sink, and input ownership, plus transient-state reset across 48K and 128K profiles. Exact-SHA CODE and TEST_ARTIFACT reviews passed with zero findings; four remote lanes and hosted run 34036023354 passed all 20 platform lanes and publication. Final DOCUMENTATION review is recorded in the preflight closure record."
     }
   ]
 }

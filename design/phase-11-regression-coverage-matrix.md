@@ -30,7 +30,7 @@ closure pass.
 | Disassemble and value formatting | COVERED | `wz_debugger_disassembly_tests` |
 | Jump/program-counter mutation | COVERED | `wz_debugger_jump_undo_tests` |
 | Undo register mutation | COVERED | `wz_debugger_jump_undo_tests` |
-| Abort/warm restart | MISSING | Add shared lifecycle command and regression CR |
+| Abort/warm restart | COVERED | `wz_machine_reset_tests` through CR-0259 |
 | Hex/value formatting | COVERED | `wz_debugger_disassembly_tests` |
 | Load/save diagnostic block | MISSING | Add explicit application boundary and regression CR |
 | Memory pointer/page configuration | MISSING | Add model-aware debugger API and regression CR |
