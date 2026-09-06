@@ -8,7 +8,27 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "core/wz_debugger.h"
 
+#include <string.h>
 #include <stdint.h>
+
+static bool valid_range(wz_word_t address, size_t length)
+{
+    return length <= 65536u - (size_t)address;
+}
+
+static bool writable_range(const wz_machine_t* machine,
+                           wz_word_t address, size_t length)
+{
+    if (machine == 0 || machine->profile == 0 || !valid_range(address, length)) {
+        return false;
+    }
+    if (address < WZ_48K_ROM_SIZE &&
+        (machine->profile->kind == WZ_MACHINE_128K_PAL ||
+         machine->has_48k_rom != 0u)) {
+        return false;
+    }
+    return length == 0u || address >= WZ_48K_ROM_SIZE;
+}
 
 static void wz_debugger_trace_result(wz_machine_t* machine,
                                      wz_byte_t operation,
@@ -102,6 +122,24 @@ wz_result_t wz_debugger_read_memory_block(const wz_machine_t* machine,
     return WZ_RESULT_OK;
 }
 
+wz_result_t wz_debugger_find_memory(const wz_machine_t* machine,
+                                    wz_word_t address,
+                                    size_t length,
+                                    wz_byte_t value,
+                                    wz_word_t* found_address)
+{
+    if (machine == 0 || found_address == 0 || !valid_range(address, length)) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    for (size_t index = 0u; index < length; ++index) {
+        if (wz_machine_memory_read(machine, (wz_word_t)(address + index)) == value) {
+            *found_address = (wz_word_t)(address + index);
+            return WZ_RESULT_OK;
+        }
+    }
+    return WZ_RESULT_NOT_FOUND;
+}
+
 wz_result_t wz_debugger_set_access_mode(wz_machine_t* machine,
                                          wz_debugger_access_mode_t mode)
 {
@@ -171,6 +209,70 @@ wz_result_t wz_debugger_write_memory(wz_machine_t* machine,
     wz_machine_memory_write(machine, address, value);
     wz_debugger_trace_memory_result(machine, address, value, WZ_RESULT_OK);
     return WZ_RESULT_OK;
+}
+
+wz_result_t wz_debugger_write_memory_word(wz_machine_t* machine,
+                                          wz_word_t address,
+                                          wz_word_t value)
+{
+    wz_result_t result;
+    if (machine == 0 || !valid_range(address, 2u)) return WZ_RESULT_INVALID_ARGUMENT;
+    if (machine->debugger_access_mode != WZ_DEBUGGER_PAUSED_MUTATION) {
+        result = WZ_RESULT_INVALID_STATE;
+    } else if (!writable_range(machine, address, 2u)) {
+        result = WZ_RESULT_UNSUPPORTED_OPERATION;
+    } else {
+        wz_machine_memory_write(machine, address, (wz_byte_t)value);
+        wz_machine_memory_write(machine, (wz_word_t)(address + 1u),
+                                (wz_byte_t)(value >> 8u));
+        result = WZ_RESULT_OK;
+    }
+    wz_debugger_trace_memory_result(machine, address, (wz_byte_t)value, result);
+    return result;
+}
+
+wz_result_t wz_debugger_fill_memory(wz_machine_t* machine,
+                                    wz_word_t address,
+                                    size_t length,
+                                    wz_byte_t value)
+{
+    wz_result_t result;
+    if (machine == 0 || !valid_range(address, length)) return WZ_RESULT_INVALID_ARGUMENT;
+    if (machine->debugger_access_mode != WZ_DEBUGGER_PAUSED_MUTATION) {
+        result = WZ_RESULT_INVALID_STATE;
+    } else if (!writable_range(machine, address, length)) {
+        result = WZ_RESULT_UNSUPPORTED_OPERATION;
+    } else {
+        for (size_t index = 0u; index < length; ++index) {
+            wz_machine_memory_write(machine, (wz_word_t)(address + index), value);
+        }
+        result = WZ_RESULT_OK;
+    }
+    wz_debugger_trace_memory_result(machine, address, value, result);
+    return result;
+}
+
+wz_result_t wz_debugger_copy_memory(wz_machine_t* machine,
+                                    wz_word_t source_address,
+                                    wz_word_t destination_address,
+                                    size_t length)
+{
+    wz_result_t result;
+    if (machine == 0 || !valid_range(source_address, length) ||
+        !valid_range(destination_address, length)) return WZ_RESULT_INVALID_ARGUMENT;
+    if (machine->debugger_access_mode != WZ_DEBUGGER_PAUSED_MUTATION) {
+        result = WZ_RESULT_INVALID_STATE;
+    } else if (!writable_range(machine, destination_address, length)) {
+        result = WZ_RESULT_UNSUPPORTED_OPERATION;
+    } else {
+        memmove(&machine->memory[destination_address],
+                &machine->memory[source_address], length);
+        result = WZ_RESULT_OK;
+    }
+    wz_debugger_trace_memory_result(machine, destination_address,
+                                    length == 0u ? 0u : machine->memory[destination_address],
+                                    result);
+    return result;
 }
 
 wz_result_t wz_debugger_set_breakpoint(wz_machine_t* machine,

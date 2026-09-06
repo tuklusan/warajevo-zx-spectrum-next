@@ -21,18 +21,18 @@ closure pass.
 | Snapshot and read-only memory | COVERED | `test_debugger_read_only_inspection` |
 | Controlled register mutation | COVERED | `test_debugger_read_only_inspection` |
 | Controlled memory mutation | COVERED | `test_debugger_memory_mutation` |
+| Copy memory | COVERED | `wz_debugger_memory_tools_tests` |
+| Find memory | COVERED | `wz_debugger_memory_tools_tests` |
+| Fill memory | COVERED | `wz_debugger_memory_tools_tests` |
+| Put bytes/words | COVERED | `wz_debugger_memory_tools_tests` |
 | Breakpoint | COVERED | `test_debugger_breakpoint` |
 | Single step and continue | COVERED | `test_debugger_step_continue` |
 | Abort/warm restart | MISSING | Add shared lifecycle command and regression CR |
-| Copy memory | MISSING | Add bounded bus/state operation and regression CR |
 | Disassemble | MISSING | Add read-only disassembly service and regression CR |
-| Find memory | MISSING | Add bounded search service and regression CR |
 | Hex/value formatting | MISSING | Add deterministic debugger formatter and regression CR |
 | Jump/program-counter mutation | MISSING | Add paused-state mutation API and regression CR |
-| Fill memory | MISSING | Add bounded paused-state operation and regression CR |
 | Load/save diagnostic block | MISSING | Add explicit application boundary and regression CR |
 | Memory pointer/page configuration | MISSING | Add model-aware debugger API and regression CR |
-| Put bytes/words | MISSING | Add bounded mutation operations and regression CR |
 | Quit/lifecycle command | MISSING | Add application command boundary and regression CR |
 | Undo register mutation | MISSING | Add transaction/undo contract and regression CR |
 | Screen inspection | MISSING | Add read-only raster projection and regression CR |

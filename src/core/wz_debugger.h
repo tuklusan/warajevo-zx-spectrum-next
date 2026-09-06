@@ -46,6 +46,11 @@ wz_result_t wz_debugger_read_memory_block(const wz_machine_t* machine,
                                           wz_word_t address,
                                           wz_byte_t* values,
                                           size_t length);
+wz_result_t wz_debugger_find_memory(const wz_machine_t* machine,
+                                    wz_word_t address,
+                                    size_t length,
+                                    wz_byte_t value,
+                                    wz_word_t* found_address);
 
 /* Mutation and execution controls are defined here and implemented by later CRs. */
 wz_result_t wz_debugger_set_access_mode(wz_machine_t* machine,
@@ -53,6 +58,17 @@ wz_result_t wz_debugger_set_access_mode(wz_machine_t* machine,
 wz_result_t wz_debugger_write_memory(wz_machine_t* machine,
                                      wz_word_t address,
                                      wz_byte_t value);
+wz_result_t wz_debugger_write_memory_word(wz_machine_t* machine,
+                                          wz_word_t address,
+                                          wz_word_t value);
+wz_result_t wz_debugger_fill_memory(wz_machine_t* machine,
+                                    wz_word_t address,
+                                    size_t length,
+                                    wz_byte_t value);
+wz_result_t wz_debugger_copy_memory(wz_machine_t* machine,
+                                    wz_word_t source_address,
+                                    wz_word_t destination_address,
+                                    size_t length);
 wz_result_t wz_debugger_set_cpu_state(wz_machine_t* machine,
                                       const wz_z80_state_t* state);
 wz_result_t wz_debugger_set_breakpoint(wz_machine_t* machine,

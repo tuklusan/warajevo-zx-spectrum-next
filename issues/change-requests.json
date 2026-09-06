@@ -2165,7 +2165,7 @@
     {
       "cr_number": "CR-0255",
       "title": "Implement bounded debugger memory data tools",
-      "status": "open",
+      "status": "in_progress",
       "source_authority": [
         "design/cr-preflight/CR-0255.md",
         "design/phase-11-regression-coverage-matrix.md",
