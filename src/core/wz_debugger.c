@@ -355,10 +355,49 @@ wz_result_t wz_debugger_set_cpu_state(wz_machine_t* machine,
                                  result, state);
         return result;
     }
+    machine->debugger_undo_cpu = machine->cpu;
+    machine->debugger_undo_valid = 1u;
     machine->cpu = *state;
     wz_debugger_trace_result(machine, WZ_DEBUGGER_TRACE_CPU_MUTATION,
                              WZ_RESULT_OK, state);
     return WZ_RESULT_OK;
+}
+
+wz_result_t wz_debugger_jump(wz_machine_t* machine, wz_word_t address)
+{
+    if (machine == 0) return WZ_RESULT_INVALID_ARGUMENT;
+    if (machine->debugger_access_mode != WZ_DEBUGGER_PAUSED_MUTATION) {
+        wz_debugger_trace_result(machine, WZ_DEBUGGER_TRACE_JUMP,
+                                 WZ_RESULT_INVALID_STATE, 0);
+        return WZ_RESULT_INVALID_STATE;
+    }
+    machine->cpu.program_counter = address;
+    wz_debugger_trace_result(machine, WZ_DEBUGGER_TRACE_JUMP, WZ_RESULT_OK, 0);
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_debugger_undo_registers(wz_machine_t* machine)
+{
+    if (machine == 0) return WZ_RESULT_INVALID_ARGUMENT;
+    if (machine->debugger_access_mode != WZ_DEBUGGER_PAUSED_MUTATION) {
+        wz_debugger_trace_result(machine, WZ_DEBUGGER_TRACE_UNDO,
+                                 WZ_RESULT_INVALID_STATE, 0);
+        return WZ_RESULT_INVALID_STATE;
+    }
+    if (machine->debugger_undo_valid == 0u) {
+        wz_debugger_trace_result(machine, WZ_DEBUGGER_TRACE_UNDO,
+                                 WZ_RESULT_INVALID_STATE, 0);
+        return WZ_RESULT_INVALID_STATE;
+    }
+    machine->cpu = machine->debugger_undo_cpu;
+    machine->debugger_undo_valid = 0u;
+    wz_debugger_trace_result(machine, WZ_DEBUGGER_TRACE_UNDO, WZ_RESULT_OK, 0);
+    return WZ_RESULT_OK;
+}
+
+bool wz_debugger_undo_available(const wz_machine_t* machine)
+{
+    return machine != 0 && machine->debugger_undo_valid != 0u;
 }
 
 wz_result_t wz_debugger_write_memory(wz_machine_t* machine,

@@ -92,6 +92,8 @@ typedef struct wz_machine {
     wz_byte_t debugger_breakpoint_active;
     wz_byte_t debugger_breakpoint_hit;
     wz_word_t debugger_breakpoint_address;
+    wz_z80_state_t debugger_undo_cpu;
+    wz_byte_t debugger_undo_valid;
     wz_byte_t memory[65536u];
     wz_byte_t has_48k_rom;
     wz_byte_t interface1_rom[WZ_INTERFACE1_ROM_SIZE];

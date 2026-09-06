@@ -33,7 +33,9 @@ enum {
     WZ_DEBUGGER_TRACE_CPU_MUTATION = 2,
     WZ_DEBUGGER_TRACE_MEMORY_MUTATION = 3,
     WZ_DEBUGGER_TRACE_STEP = 4,
-    WZ_DEBUGGER_TRACE_CONTINUE = 5
+    WZ_DEBUGGER_TRACE_CONTINUE = 5,
+    WZ_DEBUGGER_TRACE_JUMP = 6,
+    WZ_DEBUGGER_TRACE_UNDO = 7
 };
 
 /* Inspection always reads the one live machine; it does not clone execution state. */
@@ -78,6 +80,9 @@ wz_result_t wz_debugger_copy_memory(wz_machine_t* machine,
                                     size_t length);
 wz_result_t wz_debugger_set_cpu_state(wz_machine_t* machine,
                                       const wz_z80_state_t* state);
+wz_result_t wz_debugger_jump(wz_machine_t* machine, wz_word_t address);
+wz_result_t wz_debugger_undo_registers(wz_machine_t* machine);
+bool wz_debugger_undo_available(const wz_machine_t* machine);
 wz_result_t wz_debugger_set_breakpoint(wz_machine_t* machine,
                                        wz_word_t address);
 wz_result_t wz_debugger_clear_breakpoint(wz_machine_t* machine);

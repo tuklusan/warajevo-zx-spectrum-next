@@ -28,13 +28,13 @@ closure pass.
 | Breakpoint | COVERED | `test_debugger_breakpoint` |
 | Single step and continue | COVERED | `test_debugger_step_continue` |
 | Disassemble and value formatting | COVERED | `wz_debugger_disassembly_tests` |
+| Jump/program-counter mutation | COVERED | `wz_debugger_jump_undo_tests` |
+| Undo register mutation | COVERED | `wz_debugger_jump_undo_tests` |
 | Abort/warm restart | MISSING | Add shared lifecycle command and regression CR |
 | Hex/value formatting | COVERED | `wz_debugger_disassembly_tests` |
-| Jump/program-counter mutation | MISSING | Add paused-state mutation API and regression CR |
 | Load/save diagnostic block | MISSING | Add explicit application boundary and regression CR |
 | Memory pointer/page configuration | MISSING | Add model-aware debugger API and regression CR |
 | Quit/lifecycle command | MISSING | Add application command boundary and regression CR |
-| Undo register mutation | MISSING | Add transaction/undo contract and regression CR |
 | Screen inspection | MISSING | Add read-only raster projection and regression CR |
 | Refresh/monitor presentation | MISSING | UI queue owns presentation; add boundary test |
 
