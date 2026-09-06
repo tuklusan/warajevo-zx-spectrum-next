@@ -19,7 +19,7 @@ int main(void)
         wz_debugger_fill_memory(&machine, 0x5000u, 4u, 0xa5u) != WZ_RESULT_OK ||
         wz_debugger_write_memory_word(&machine, 0x5004u, 0x1234u) != WZ_RESULT_OK ||
         wz_debugger_find_memory(&machine, 0x5000u, 6u, 0x34u, &found) != WZ_RESULT_OK ||
-        found != 0x5005u) {
+        found != 0x5004u) {
         fputs("debugger fill/word/find failed\n", stderr);
         wz_machine_destroy(&machine);
         return 1;
