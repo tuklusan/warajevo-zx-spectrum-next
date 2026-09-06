@@ -34,7 +34,7 @@ closure pass.
 | Hex/value formatting | COVERED | `wz_debugger_disassembly_tests` |
 | Load/save diagnostic block | COVERED | `wz_diagnostic_block_tests` through CR-0260 |
 | Memory pointer/page configuration | COVERED | `wz_debugger_page_controls_tests` through CR-0261 |
-| Quit/lifecycle command | MISSING | Add application command boundary and regression CR |
+| Quit/lifecycle command | COVERED | `wz_application_lifecycle_tests` through CR-0262 |
 | Screen inspection | MISSING | Add read-only raster projection and regression CR |
 | Refresh/monitor presentation | MISSING | UI queue owns presentation; add boundary test |
 
