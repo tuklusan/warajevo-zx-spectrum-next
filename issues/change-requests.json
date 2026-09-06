@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 256,
+  "next_cr_number": 257,
   "status_values": [
     "open",
     "in_progress",
@@ -2176,6 +2176,21 @@
         "reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM"
       ],
       "notes": "Closed on 2026-09-06 at commit 19bdc642faae8a91e12838a0d61e8a53e4ac14f1. Added bounded copy, find, fill, and byte/word debugger memory APIs with range, ROM, pause, and traceability policy plus focused regressions. CODE and TEST_ARTIFACT reviews passed with zero confirmed findings; four remote lanes and hosted run 34026880227 passed all 20 lanes, housekeeping, and publication with 27,120 pinned cases green. Final DOCUMENTATION review is recorded in the preflight closure record."
+    },
+    {
+      "cr_number": "CR-0256",
+      "title": "Implement bounded debugger disassembly and value formatting",
+      "status": "in_progress",
+      "source_authority": [
+        "design/cr-preflight/CR-0256.md",
+        "design/phase-11-regression-coverage-matrix.md",
+        "design/monitor-debugger-inventory.md",
+        "design/warajevo-zx-spectrum-next-architecture.md sections 41, 44, and 49.2",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md sections 21, 26, and 45",
+        "design/wzsn-architectures-1-2-developer-tasks.md tasks 225 and 235",
+        "reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM"
+      ],
+      "notes": "Opened on 2026-09-06 from the CR-0254 coverage gap. Add a read-only bounded Z80 disassembly/value-formatting boundary with deterministic output, visible-memory wrapping rejection, and regression coverage; no execution or mutation is permitted."
     }
   ]
 }
