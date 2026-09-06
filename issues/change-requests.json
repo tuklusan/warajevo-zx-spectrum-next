@@ -2313,7 +2313,7 @@
     {
       "cr_number": "CR-0265",
       "title": "Freeze Phase-12 UI toolkit and integration boundary",
-      "status": "open",
+      "status": "in_progress",
       "source_authority": [
         "design/cr-preflight/CR-0265.md",
         "design/warajevo-zx-spectrum-next-architecture.md sections 19, 27, 30, 31, 49.2, and 51",
