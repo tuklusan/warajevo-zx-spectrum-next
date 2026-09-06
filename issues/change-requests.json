@@ -2013,7 +2013,7 @@
     {
       "cr_number": "CR-0239",
       "title": "Fuzz malformed MDR images and invalid device transitions",
-      "status": "open",
+      "status": "in_progress",
       "source_authority": ["design/cr-preflight/CR-0239.md", "design/warajevo-zx-spectrum-next-architecture.md sections 36, 39, and 46", "design/interface1-microdrive-zxnet.md sections 6-11", "design/wzsn-architectures-1-2-developer-tasks.md task 221", "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM"],
       "notes": "Opened on 2026-09-06 for deterministic seeded malformed-MDR and invalid Interface 1/ZX Net transition coverage under remote sanitizers. Host transport fuzzing remains outside the core."
     }
