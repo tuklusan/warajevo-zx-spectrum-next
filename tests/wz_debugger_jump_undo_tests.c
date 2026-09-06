@@ -18,7 +18,8 @@ int main(void)
     original = machine.cpu;
     changed = original;
     changed.program_counter = 0x2345u;
-    changed.af = 0x1200u;
+    changed.main.a = 0x12u;
+    changed.main.f = 0x00u;
     if (wz_debugger_set_access_mode(&machine, WZ_DEBUGGER_PAUSED_MUTATION) != WZ_RESULT_OK ||
         wz_debugger_jump(&machine, 0x4321u) != WZ_RESULT_OK ||
         machine.cpu.program_counter != 0x4321u ||
@@ -26,7 +27,8 @@ int main(void)
         !wz_debugger_undo_available(&machine) ||
         wz_debugger_undo_registers(&machine) != WZ_RESULT_OK ||
         wz_debugger_undo_available(&machine) || machine.cpu.program_counter != 0x4321u ||
-        machine.cpu.af != original.af ||
+        machine.cpu.main.a != original.main.a ||
+        machine.cpu.main.f != original.main.f ||
         wz_debugger_undo_registers(&machine) != WZ_RESULT_INVALID_STATE) {
         fputs("debugger jump/undo contract failed\n", stderr);
         wz_machine_destroy(&machine);
