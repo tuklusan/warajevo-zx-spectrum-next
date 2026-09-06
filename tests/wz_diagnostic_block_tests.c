@@ -27,10 +27,13 @@ static int verify_profile(const wz_machine_profile_t* profile)
     preserved = machine.memory[0x8000u];
     if (wz_diagnostic_block_save(&machine, block, sizeof(block), &length) !=
             WZ_RESULT_OK ||
-        length != WZ_STATE_MACHINE_LENGTH ||
-        (block_length = length,
-         wz_diagnostic_block_save(&machine, block, block_length - 1u, &length) !=
-            WZ_RESULT_BUFFER_TOO_SMALL) {
+        length != WZ_STATE_MACHINE_LENGTH) {
+        wz_machine_destroy(&machine);
+        return 1;
+    }
+    block_length = length;
+    if (wz_diagnostic_block_save(&machine, block, block_length - 1u, &length) !=
+        WZ_RESULT_BUFFER_TOO_SMALL) {
         wz_machine_destroy(&machine);
         return 1;
     }
