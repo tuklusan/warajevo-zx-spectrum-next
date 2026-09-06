@@ -2313,7 +2313,7 @@
     {
       "cr_number": "CR-0265",
       "title": "Freeze Phase-12 UI toolkit and integration boundary",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/cr-preflight/CR-0265.md",
         "design/warajevo-zx-spectrum-next-architecture.md sections 19, 27, 30, 31, 49.2, and 51",
@@ -2324,7 +2324,7 @@
         "design/dependencies/nuklear-pin.md",
         "reference/original-warajevo/source/src/environment"
       ],
-      "notes": "Opened on 2026-09-06 as the Phase-12A entry gate. Freeze the host UI toolkit and integration boundary before command-registry or higher-level UI implementation. The decision is documentation-only; implementation follows in subsequent CRs after exact-SHA documentation review and upstream zero-gap reconciliation."
+      "notes": "Closed on 2026-09-06 at commit 52f8808733c07fd8ea982fd3d293d854f5270f93. Froze Nuklear revision e3e18dc1e4d3de935095d372aaa211f12183befb as the C in-window widget layer, retained Sokol for the viewport, and documented native platform integration, accessibility, and host-only settings boundaries. Exact-SHA CODE and DOCUMENTATION reviews passed with zero confirmed findings. No local build or test was performed; higher-level UI implementation remains in subsequent CRs."
     }
   ]
 }
