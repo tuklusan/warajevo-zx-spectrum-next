@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 246,
+  "next_cr_number": 247,
   "status_values": [
     "open",
     "in_progress",
@@ -2058,6 +2058,13 @@
       "status": "closed",
       "source_authority": ["design/cr-preflight/CR-0245.md", "design/debugger-api.md", "design/monitor-debugger-inventory.md", "design/warajevo-zx-spectrum-next-architecture.md sections 41 and 44", "design/warajevo-zx-spectrum-next-ui-architecture.md section 21", "design/wzsn-architectures-1-2-developer-tasks.md task 226", "reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM"],
       "notes": "Closed on 2026-09-06. Commit f8528918a7d376f925e0023c9767faf04d0ac6c4 passed serial CODE, TEST_ARTIFACT, and DOCUMENTATION reviews with zero confirmed findings; four remote lanes and hosted publication run 34011629474 passed."
+    },
+    {
+      "cr_number": "CR-0246",
+      "title": "Implement controlled register mutation",
+      "status": "open",
+      "source_authority": ["design/cr-preflight/CR-0246.md", "design/debugger-api.md", "design/monitor-debugger-inventory.md", "design/warajevo-zx-spectrum-next-architecture.md sections 41, 44, and 49.2", "design/warajevo-zx-spectrum-next-ui-architecture.md section 21", "design/wzsn-architectures-1-2-developer-tasks.md task 227", "reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM"],
+      "notes": "Opened on 2026-09-06 after upstream register mutation, restore, interrupt, undo, and neighboring state paths were reconciled."
     }
   ]
 }
