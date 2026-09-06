@@ -2284,7 +2284,7 @@
     {
       "cr_number": "CR-0263",
       "title": "Add read-only screen inspection projection",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/cr-preflight/CR-0263.md",
         "design/phase-11-regression-coverage-matrix.md",
@@ -2294,7 +2294,7 @@
         "reference/original-warajevo/source/src/environment/WARAJEVO.PAS",
         "reference/original-warajevo/source/src/environment/KONVTAP.PAS"
       ],
-      "notes": "Implementation and CODE/TEST_ARTIFACT validation are complete at commit 1ad63534d598b68633aa79e7f768813006200fd7. Documentation reviews remain before final closure."
+      "notes": "Closed on 2026-09-06 at commit 1ad63534d598b68633aa79e7f768813006200fd7. Added a read-only complete-frame canonical raster projection covering 48K/128K bitmap, attribute, BRIGHT, FLASH, border, blanking, and display-bank semantics without host/UI dependencies. Exact-SHA CODE, TEST_ARTIFACT, and DOCUMENTATION reviews passed with zero findings; all four remote lanes and hosted run 34045219821 passed all 20 platform lanes and publication."
     }
   ]
 }
