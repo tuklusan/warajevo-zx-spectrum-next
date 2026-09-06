@@ -1991,14 +1991,16 @@ static void test_debugger_read_only_inspection(void)
         wz_debugger_set_access_mode(&machine, WZ_DEBUGGER_READ_ONLY) !=
             WZ_RESULT_OK ||
         wz_debugger_set_cpu_state(&machine, &candidate) != WZ_RESULT_INVALID_STATE ||
-        trace_log.count != 5u ||
+        trace_log.count != 6u ||
         trace_log.events[0].auxiliary != WZ_DEBUGGER_TRACE_CPU_MUTATION ||
         trace_log.events[0].value != WZ_RESULT_INVALID_STATE ||
         trace_log.events[1].auxiliary != WZ_DEBUGGER_TRACE_ACCESS_MODE ||
         trace_log.events[2].auxiliary != WZ_DEBUGGER_TRACE_CPU_MUTATION ||
         trace_log.events[2].value != WZ_RESULT_OK ||
         trace_log.events[3].value != WZ_RESULT_INVALID_STATE ||
-        trace_log.events[4].auxiliary != WZ_DEBUGGER_TRACE_ACCESS_MODE) {
+        trace_log.events[4].auxiliary != WZ_DEBUGGER_TRACE_ACCESS_MODE ||
+        trace_log.events[5].auxiliary != WZ_DEBUGGER_TRACE_CPU_MUTATION ||
+        trace_log.events[5].value != WZ_RESULT_INVALID_STATE) {
         fputs("debugger mutation atomicity or traceability failed\n", stderr);
         wz_machine_destroy(&machine);
         exit(1);
