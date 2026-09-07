@@ -26,11 +26,13 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "core/wz_machine.h"
 #include "app/wz_application_lifecycle.h"
 #include "app/wz_sokol_audio.h"
+#include "app/wz_ui_window.h"
 
 typedef struct {
     wz_machine_t machine;
     wz_sokol_audio_t audio;
     wz_application_lifecycle_t lifecycle;
+    wz_ui_window_t ui_window;
     bool initialized;
 } wz_host_session_t;
 
@@ -42,6 +44,11 @@ static void wz_host_session_init(void)
     wz_host_session.initialized =
         wz_machine_init(&wz_host_session.machine, wz_machine_profile_48k_pal()) == WZ_RESULT_OK;
     if (wz_host_session.initialized) {
+        if (!wz_ui_window_init(&wz_host_session.ui_window)) {
+            wz_machine_destroy(&wz_host_session.machine);
+            wz_host_session.initialized = false;
+            return;
+        }
         (void)wz_sokol_audio_init(&wz_host_session.audio);
     }
 }
@@ -50,6 +57,7 @@ static void wz_host_session_shutdown(void)
 {
     if (wz_host_session.initialized) {
         wz_machine_destroy(&wz_host_session.machine);
+        wz_ui_window_destroy(&wz_host_session.ui_window);
         wz_sokol_audio_shutdown(&wz_host_session.audio);
         (void)wz_application_mark_terminated(&wz_host_session.lifecycle);
         wz_host_session.initialized = false;

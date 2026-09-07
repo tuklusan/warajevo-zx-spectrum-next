@@ -2584,6 +2584,23 @@
         "src/app/wz_host_scaling.h"
       ],
       "notes": "Closed after shared host-only Display settings implementation, exact CODE PASS, focused Windows/macOS artifact PASS records, hosted run 34086246586 passing housekeeping, all 20 lanes and publication, and final DOCUMENTATION PASS. No local build/test; cleanup change was limited to the hosted cancellation race blocker."
+    },
+    {
+      "cr_number": "CR-0282",
+      "title": "Basic main-window acceptance subset",
+      "status": "in_progress",
+      "priority": "high",
+      "execution_order": "architecture_2_phase_12f",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0282.md",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 278",
+        "src/app/wz_ui_layout.h",
+        "src/app/wz_ui_layout.c",
+        "src/app/wz_sokol_main.c"
+      ],
+      "notes": "Queued for preflight. Implement the initial acceptance slice as a real host-window integration using the existing shared UI layout and presentation seams; do not add duplicate command or machine state, and do not modify frozen harnesses or wrappers."
     }
   ]
 }

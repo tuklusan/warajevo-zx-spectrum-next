@@ -194,6 +194,15 @@ add_executable(
     src/app/wz_host_audio_policy.c)
 target_link_libraries(wz_ui_layout_tests PRIVATE wz_core)
 
+add_executable(
+    wz_ui_window_tests
+    tests/wz_ui_window_tests.c
+    src/app/wz_ui_window.c
+    src/app/wz_ui_layout.c
+    src/app/wz_speed_policy.c
+    src/app/wz_host_audio_policy.c)
+target_link_libraries(wz_ui_window_tests PRIVATE wz_core)
+
 add_executable(wz_screen_inspection_tests tests/wz_screen_inspection_tests.c)
 target_link_libraries(wz_screen_inspection_tests PRIVATE wz_core)
 
@@ -213,6 +222,7 @@ add_test(NAME wz_diagnostic_block_tests COMMAND wz_diagnostic_block_tests)
 add_test(NAME wz_application_lifecycle_tests COMMAND wz_application_lifecycle_tests)
 add_test(NAME wz_command_registry_tests COMMAND wz_command_registry_tests)
 add_test(NAME wz_ui_layout_tests COMMAND wz_ui_layout_tests)
+add_test(NAME wz_ui_window_tests COMMAND wz_ui_window_tests)
 
 add_executable(
     wz_ui_help_tests
@@ -273,9 +283,9 @@ if(WZSN_BUILD_SOKOL_HOST)
 
     find_package(Threads REQUIRED)
     if(APPLE)
-        add_executable(wz_sokol_host src/app/wz_sokol_macos.m src/app/wz_sokol_raster.c src/app/wz_application_lifecycle.c src/app/wz_host_presentation.c src/app/wz_host_scaling.c src/app/wz_host_effects.c src/app/wz_input_arbiter.c src/app/wz_input_timing.c src/app/wz_input_focus.c src/app/wz_kempston_mapping.c src/app/wz_speed_policy.c src/app/wz_host_pacing.c src/app/wz_host_config.c src/app/wz_host_media_ownership.c src/app/wz_host_audio_push.c src/app/wz_host_audio_policy.c src/app/wz_sokol_audio.c)
+        add_executable(wz_sokol_host src/app/wz_sokol_macos.m src/app/wz_ui_window.c src/app/wz_ui_layout.c src/app/wz_sokol_raster.c src/app/wz_application_lifecycle.c src/app/wz_host_presentation.c src/app/wz_host_scaling.c src/app/wz_host_effects.c src/app/wz_input_arbiter.c src/app/wz_input_timing.c src/app/wz_input_focus.c src/app/wz_kempston_mapping.c src/app/wz_speed_policy.c src/app/wz_host_pacing.c src/app/wz_host_config.c src/app/wz_host_media_ownership.c src/app/wz_host_audio_push.c src/app/wz_host_audio_policy.c src/app/wz_sokol_audio.c)
     else()
-        add_executable(wz_sokol_host src/app/wz_sokol_main.c src/app/wz_sokol_raster.c src/app/wz_application_lifecycle.c src/app/wz_host_presentation.c src/app/wz_host_scaling.c src/app/wz_host_effects.c src/app/wz_input_arbiter.c src/app/wz_input_timing.c src/app/wz_input_focus.c src/app/wz_kempston_mapping.c src/app/wz_speed_policy.c src/app/wz_host_pacing.c src/app/wz_host_config.c src/app/wz_host_media_ownership.c src/app/wz_host_audio_push.c src/app/wz_host_audio_policy.c src/app/wz_sokol_audio.c)
+        add_executable(wz_sokol_host src/app/wz_sokol_main.c src/app/wz_ui_window.c src/app/wz_ui_layout.c src/app/wz_sokol_raster.c src/app/wz_application_lifecycle.c src/app/wz_host_presentation.c src/app/wz_host_scaling.c src/app/wz_host_effects.c src/app/wz_input_arbiter.c src/app/wz_input_timing.c src/app/wz_input_focus.c src/app/wz_kempston_mapping.c src/app/wz_speed_policy.c src/app/wz_host_pacing.c src/app/wz_host_config.c src/app/wz_host_media_ownership.c src/app/wz_host_audio_push.c src/app/wz_host_audio_policy.c src/app/wz_sokol_audio.c)
     endif()
     target_include_directories(wz_sokol_host PRIVATE ${sokol_SOURCE_DIR} src)
     target_link_libraries(wz_sokol_host PRIVATE wz_core wz_warnings Threads::Threads)
