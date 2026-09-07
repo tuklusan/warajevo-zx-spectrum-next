@@ -2522,7 +2522,7 @@
     {
       "cr_number": "CR-0278",
       "title": "Lock canonical toolbar semantic set",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "architecture_2_phase_12b",
       "blocking": false,
@@ -2533,7 +2533,7 @@
         "src/app/wz_ui_layout.c",
         "tests/wz_ui_layout_tests.c"
       ],
-      "notes": "Implementation and validation evidence recorded for 5bf8361a015be22d5875826824381907c43e0a12: CODE packet 670abfe599bd975e9ad23fb8d8903c3cc5c6ce8a92af78166962a2f663d892ce; TEST_ARTIFACT packets 05ddca0512373d343ee69c47dc2a4213c71693acb629d5dc5e303271d3585e53, e9e82c1c82d6eab16a132eb2c981d7664cc248a71ce6faa88dee974d28b5fa05, 75d2b23f2be0304d11927dd3ae15955b7d5cb7a8c4b537926e208e2470169f13, and 48c8266ee56c615a156e5e3298499e4ef5764c6247d8fe1ebbeccbdf29823309; remote lanes CR-0278-LINUX-R1, CR-0278-WIN10-R1, CR-0278-WIN11-R1, and CR-0278-MAC-R1 passed; hosted run 34080050412 passed matrix, housekeeping, and publication inspection. No local build/test and no harness/wrapper changes. Awaiting final DOCUMENTATION review."
+      "notes": "Closed after canonical toolbar label coverage and validation. Implementation candidate 5bf8361a015be22d5875826824381907c43e0a12; CODE packet 670abfe599bd975e9ad23fb8d8903c3cc5c6ce8a92af78166962a2f663d892ce; TEST_ARTIFACT packets 05ddca0512373d343ee69c47dc2a4213c71693acb629d5dc5e303271d3585e53, e9e82c1c82d6eab16a132eb2c981d7664cc248a71ce6faa88dee974d28b5fa05, 75d2b23f2be0304d11927dd3ae15955b7d5cb7a8c4b537926e208e2470169f13, and 48c8266ee56c615a156e5e3298499e4ef5764c6247d8fe1ebbeccbdf29823309; final DOCUMENTATION packet 3dc018a018092a66097745378557874f1253565d4da7b88c526709986a97ef12; remote lanes CR-0278-LINUX-R1, CR-0278-WIN10-R1, CR-0278-WIN11-R1, and CR-0278-MAC-R1 passed; hosted run 34080050412 passed matrix, housekeeping, and publication inspection. No local build/test and no harness/wrapper changes."
     }
   ]
 }
