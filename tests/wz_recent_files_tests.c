@@ -14,6 +14,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 int main(void)
 {
     wz_recent_files_t recent;
+    wz_recent_files_remote_projection_t projection;
     const wz_recent_file_t* entry;
     size_t index;
 
@@ -44,6 +45,11 @@ int main(void)
         }
     }
     if (wz_recent_files_count(&recent) != WZ_RECENT_FILES_CAPACITY) {
+        return 1;
+    }
+    wz_recent_files_remote_projection(&recent, &projection);
+    if (strcmp(projection.group_id, "file.recent") != 0 ||
+        projection.dynamic_entry_count != 0u) {
         return 1;
     }
     puts("wz_recent_files contract passed");

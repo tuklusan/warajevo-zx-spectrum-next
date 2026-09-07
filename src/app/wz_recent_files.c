@@ -77,3 +77,14 @@ const wz_recent_file_t* wz_recent_files_at(const wz_recent_files_t* recent,
 {
     return recent != NULL && index < recent->count ? &recent->entries[index] : NULL;
 }
+
+void wz_recent_files_remote_projection(
+    const wz_recent_files_t* recent,
+    wz_recent_files_remote_projection_t* projection)
+{
+    (void)recent;
+    if (projection != NULL) {
+        projection->group_id = "file.recent";
+        projection->dynamic_entry_count = 0u;
+    }
+}

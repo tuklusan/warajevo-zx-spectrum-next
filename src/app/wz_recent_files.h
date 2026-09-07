@@ -25,11 +25,19 @@ typedef struct {
     size_t count;
 } wz_recent_files_t;
 
+typedef struct {
+    const char* group_id;
+    size_t dynamic_entry_count;
+} wz_recent_files_remote_projection_t;
+
 void wz_recent_files_init(wz_recent_files_t* recent);
 bool wz_recent_files_add(wz_recent_files_t* recent, const char* path);
 bool wz_recent_files_remove(wz_recent_files_t* recent, size_t index);
 size_t wz_recent_files_count(const wz_recent_files_t* recent);
 const wz_recent_file_t* wz_recent_files_at(const wz_recent_files_t* recent,
                                            size_t index);
+void wz_recent_files_remote_projection(
+    const wz_recent_files_t* recent,
+    wz_recent_files_remote_projection_t* projection);
 
 #endif
