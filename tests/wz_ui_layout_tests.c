@@ -62,6 +62,9 @@ int main(void)
         wz_ui_layout_select_speed(&state, (wz_speed_policy_t)WZ_SPEED_COUNT)) {
         return 1;
     }
+    if (!wz_ui_layout_select_speed(&state, WZ_SPEED_100)) {
+        return 1;
+    }
     wz_ui_layout_status_line(&state, status, sizeof(status));
     if (strstr(status, "Model: 48K") == 0 ||
         strstr(status, "Speed: 100%") == 0 ||
