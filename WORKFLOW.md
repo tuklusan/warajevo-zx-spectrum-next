@@ -24,6 +24,22 @@ checks and hostile falsification become blockers. A new CODE attempt
 invalidates the prior private receipt before review begins, and unresolved or
 ambiguous authority remains fail-closed.
 
+## Review Handle and Closure Ordering
+
+The execution wrapper must return a bounded first response that preserves the
+live session identifier even when command output is large. If wrapper output is
+truncated or the outer handle is unavailable, do not restart the command:
+recover by polling the durable reviewer lock/state and classify the observation
+as indeterminate until that state is terminal. A reviewer packet may never be
+started in parallel with another packet.
+
+A CR and its preflight record must remain active while any implementation,
+evidence, or final review gate is pending. Before each review, verify that the
+tracker and preflight statuses identify the same active CR. Only after the
+final DOCUMENTATION review returns PASS may the closure record be completed
+and both statuses transition to CLOSED. A refused or failed review leaves the
+CR active and recoverable.
+
 ## Migration Pre-Development Gate
 
 Before editing implementation artifacts for every CR or other tracked work item,
