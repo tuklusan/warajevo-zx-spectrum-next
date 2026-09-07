@@ -2427,7 +2427,7 @@
     {
       "cr_number": "CR-0272",
       "title": "Lock and track all working harnesses with operator authorization",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "workflow_first_out_of_order",
       "blocking": false,
@@ -2437,7 +2437,7 @@
         "tools/harness/README.md",
         "design/cr-preflight/CR-0272.md"
       ],
-      "notes": "Opened by operator authorization to lock every working harness and require explicit operator authorization before future changes. Includes the Mac binary-transfer correction separating TTY command execution from non-TTY ZIP transfer."
+      "notes": "Closed at ed2a857e21232dc660d0ed82bc22000dec47c1d4 by operator authorization. All working harnesses are listed in the locked tracked manifest; Mac TTY command execution is separated from non-TTY binary transfer. CODE, DOCUMENTATION, and TEST_ARTIFACT reviews passed; final DOCUMENTATION packet b6bcc40803b7e158e7130e3c60f703d155c1561e9ed4d9ab3b980a105361f616; Mac CR0270-MAC-R5 and hosted run 34070133625 passed publication evidence inspection."
     }
   ]
 }
