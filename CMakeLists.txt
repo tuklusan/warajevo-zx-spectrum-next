@@ -275,6 +275,14 @@ target_include_directories(wz_snapshot_state_editor_tests PRIVATE src)
 add_test(NAME wz_snapshot_state_editor_tests COMMAND wz_snapshot_state_editor_tests)
 
 add_executable(
+    wz_screenshot_service_tests
+    tests/wz_screenshot_service_tests.c
+    src/app/wz_screenshot_service.c)
+target_link_libraries(wz_screenshot_service_tests PRIVATE wz_core wz_warnings)
+target_include_directories(wz_screenshot_service_tests PRIVATE src)
+add_test(NAME wz_screenshot_service_tests COMMAND wz_screenshot_service_tests)
+
+add_executable(
     wz_ui_help_tests
     tests/wz_ui_help_tests.c
     src/app/wz_ui_help.c)

@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 297,
+  "next_cr_number": 298,
   "status_values": [
     "open",
     "in_progress",
@@ -2827,6 +2827,23 @@
         "src/app/wz_snapshot_inspector.h"
       ],
       "notes": "Closed after implementing shared snapshot state editor routing through debugger access-mode, CPU mutation, memory write, and register-undo APIs with no duplicated editor state. CODE packet 19cfffd86ae590136323ac0a01d50de006ea44121661979ca4a57304f2d43592, hosted 20-lane platform-smoke run 34127379122 and evidence-tree verification, TEST_ARTIFACT packet 1f315d98264ce27470f4546529f451f22a8359723be1ff61f28df19900e3462a, and DOCUMENTATION packet 8ef0267dd036758e64becca2d403b47dcaf5e757eae48bc225edef1503e623d3 all passed. No local build/test and no harness/wrapper changes."
+    },
+    {
+      "cr_number": "CR-0297",
+      "title": "Shared screenshot capture service",
+      "status": "in_progress",
+      "priority": "high",
+      "execution_order": "architecture_2_phase_12s",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0297.md",
+        "design/warajevo-zx-spectrum-next-architecture.md section 19.6",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md section 8.4",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 293",
+        "src/core/wz_raster.h",
+        "src/core/wz_machine.h"
+      ],
+      "notes": "Implementation in progress; one host-independent indexed PNG encoder accepts only the canonical presentation raster and excludes host chrome by construction."
     }
   ]
 }
