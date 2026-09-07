@@ -200,6 +200,7 @@ add_executable(
     tests/wz_ui_window_tests.c
     src/app/wz_ui_window.c
     src/app/wz_ui_layout.c
+    src/app/wz_command_registry.c
     src/app/wz_speed_policy.c
     src/app/wz_host_audio_policy.c)
 target_link_libraries(wz_ui_window_tests PRIVATE wz_core)
