@@ -2716,7 +2716,7 @@
     {
       "cr_number": "CR-0290",
       "title": "Remote-safe Recent projection",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "medium",
       "execution_order": "architecture_2_phase_12m",
       "blocking": false,
@@ -2727,7 +2727,7 @@
         "src/app/wz_recent_files.h",
         "src/app/wz_recent_files.c"
       ],
-      "notes": "Add an explicit remote projection that exposes only the stable file.recent group and suppresses all dynamic Recent paths and entry counts."
+      "notes": "Closed after adding an explicit remote projection that exposes only the stable file.recent group and suppresses all dynamic Recent paths and entry counts. Exact CODE review passed with packet 354a61fc9a53559ba7863a5606f9ca798039025b5c3b08490415f6ef8e9f3ae7; hosted 20-lane platform-smoke run 34108197125 passed after deep housekeeping and publication evidence inspection; TEST_ARTIFACT packet 7630f1dd078ad492601aeb6f5ead89b357511b4069abef73dca1fd34206e6092 and final DOCUMENTATION packet f36515261faf5ede53a0fa16673c06959461fe1c65e69a0e90bd36891034f9e8 passed. No local build/test and no harness/wrapper changes."
     }
   ]
 }
