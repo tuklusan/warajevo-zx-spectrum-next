@@ -2555,7 +2555,7 @@
     {
       "cr_number": "CR-0280",
       "title": "Machine and media status panel",
-      "status": "queued",
+      "status": "in_progress",
       "priority": "high",
       "execution_order": "architecture_2_phase_12d",
       "blocking": false,
