@@ -3000,7 +3000,7 @@
     {
       "cr_number": "CR-0307",
       "title": "Implement the Tape Insert quick action",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "medium",
       "execution_order": "architecture_2_phase_12aa",
       "blocking": false,
@@ -3014,7 +3014,7 @@
         "tests/wz_tape_insert_workflow_tests.c",
         "CMakeLists.txt"
       ],
-      "notes": "Implementation in progress; add transactional Tape Insert workflow with source identity and Ear/Mic disabled-state handling."
+      "notes": "Closed after implementation commit 1f8ab2c, exact CODE PASS, corrected four-machine remote smokes, hosted matrix 34169949049 with all 20 lanes green, evidence-tree verification, TEST_ARTIFACT PASS, and final DOCUMENTATION PASS with zero confirmed findings."
     }
   ]
 }
