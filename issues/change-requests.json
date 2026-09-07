@@ -2652,7 +2652,7 @@
     {
       "cr_number": "CR-0286",
       "title": "Universal Open / Run format-routing seam",
-      "status": "closed",
+      "status": "in_progress",
       "priority": "high",
       "execution_order": "architecture_2_phase_12i",
       "blocking": false,
