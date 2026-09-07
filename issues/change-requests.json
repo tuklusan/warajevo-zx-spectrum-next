@@ -2442,7 +2442,7 @@
     {
       "cr_number": "CR-0273",
       "title": "Preserve external command handles when first output is truncated",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "workflow_first_out_of_order",
       "blocking": false,
@@ -2452,7 +2452,7 @@
         "design/review-gate.md",
         "tools/reviewer/review_gate.py"
       ],
-      "notes": "Authorized implementation and validation evidence recorded; awaiting final documentation review before closure."
+      "notes": "Closed after authorized durable session boundary implementation. CODE packet 41a6c07ddff9fa5932564dd58e07981db65d4faf9275d50517e322d301217112, four remote smoke lanes, four passing TEST_ARTIFACT packets, final DOCUMENTATION packet d6815945f0abe13ac08b3a8ca2d8a884f0aeb699a6fa1182224a77bc5cf72b4a, and hosted run 34077263404 with all 20 lanes plus publication-gate inspection passed."
     },
     {
       "cr_number": "CR-0274",
