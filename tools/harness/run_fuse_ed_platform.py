@@ -10,18 +10,37 @@
 from __future__ import annotations
 
 import argparse
+import shutil
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 PINNED_COMMIT = "e7fe9a0f3625b0aef649b114fc98323c7d241840"
 REPOSITORY = "https://git.code.sf.net/p/fuse-emulator/fuse"
+ACQUISITION_BACKOFF_SECONDS = (5, 15, 45, 120, 300, 600)
 
 
 def run(command: list[str], cwd: Path) -> None:
     completed = subprocess.run(command, cwd=cwd, check=False)
     if completed.returncode != 0:
         raise RuntimeError(f"command failed with exit code {completed.returncode}: {command[0]}")
+
+
+def acquire_source(source: Path, project: Path) -> None:
+    """Recover transient upstream transport failures without weakening the pin."""
+    for attempt, delay in enumerate((0, *ACQUISITION_BACKOFF_SECONDS)):
+        if attempt:
+            time.sleep(delay)
+        if source.exists():
+            shutil.rmtree(source)
+        try:
+            run(["git", "clone", REPOSITORY, str(source)], project)
+            run(["git", "fetch", "origin", PINNED_COMMIT], source)
+            return
+        except RuntimeError:
+            if attempt == len(ACQUISITION_BACKOFF_SECONDS):
+                raise
 
 
 def find_runner(root: Path) -> Path:
@@ -49,8 +68,9 @@ def main() -> int:
     source = private_root / "fuse-source"
     private_root.mkdir(parents=True, exist_ok=True)
     if not (source / ".git").is_dir():
-        run(["git", "clone", REPOSITORY, str(source)], project)
-    run(["git", "fetch", "origin", PINNED_COMMIT], source)
+        acquire_source(source, project)
+    else:
+        run(["git", "fetch", "origin", PINNED_COMMIT], source)
     run(["git", "checkout", "--detach", PINNED_COMMIT], source)
     resolved = subprocess.check_output(
         ["git", "rev-parse", "HEAD"], cwd=source, text=True
