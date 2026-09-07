@@ -2779,7 +2779,7 @@
     {
       "cr_number": "CR-0294",
       "title": "Snapshot Inspector boundary",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "architecture_2_phase_12p",
       "blocking": false,
@@ -2792,7 +2792,7 @@
         "reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM",
         "reference/original-warajevo/source/src/environment/WARAJEVO.PAS"
       ],
-      "notes": "Implement the stable Tools Snapshot Inspector boundary using shared read-only debugger snapshot and paging inspection; defer format-specific display, editing, and host presentation to later tasks."
+      "notes": "Closed after implementing the stable Tools Snapshot Inspector boundary using shared read-only debugger snapshot and paging inspection; format-specific display, editing, and host presentation remain deferred to later tasks. CODE packet 48f4ee65daed4775b0d94d0f9b31b03bf1df6c2b28c686537fea0119f463b0a5 passed; hosted 20-lane platform-smoke run 34118029741 passed after housekeeping and evidence inspection; TEST_ARTIFACT packet 54213f65abcec00a8bac23a339d72bf9c77f08e3ab5128eb250bfd072cb53afc and final DOCUMENTATION packet 362560aeca6fcb7b6d3494e44b36e231f3b632c091fed07893cf7e1838b0a0a3 passed. No local build/test and no harness/wrapper changes."
     }
   ]
 }
