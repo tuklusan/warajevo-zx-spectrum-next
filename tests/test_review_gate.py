@@ -986,6 +986,9 @@ class GateTests(unittest.TestCase):
             urllib.error.HTTPError(request.full_url, 402, "payment required", {}, None)
         )
         self.assertEqual(record, {"kind": "http", "status": 402})
+        with self.assertRaises(urllib.error.HTTPError) as raised:
+            gate.CodeReviewerClient._raise_transport_failure(request, record)
+        self.assertEqual(raised.exception.code, 402)
 
     def test_review_framing_and_results_are_project_unique(self):
         prefix = gate.stable_prefix("CODE", "snapshot", scope(), requirement(), "packet")
@@ -1002,9 +1005,6 @@ class GateTests(unittest.TestCase):
             gate.update_review_lock(path, telemetry, "complete", "PASS")
             self.assertEqual(json.loads(path.read_text(encoding="utf-8"))["project_id"],
                              gate.PROJECT_ID)
-        with self.assertRaises(urllib.error.HTTPError) as raised:
-            gate.CodeReviewerClient._raise_transport_failure(request, record)
-        self.assertEqual(raised.exception.code, 402)
 
     def test_deadline_exhaustion_after_clean_discovery_cannot_pass(self):
         class ExpiringClient(FakeClient):
