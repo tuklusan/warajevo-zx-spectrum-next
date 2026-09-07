@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-    "next_cr_number": 289,
+  "next_cr_number": 290,
   "status_values": [
     "open",
     "in_progress",
@@ -2696,6 +2696,22 @@
         "src/app/wz_file_open_run.c"
       ],
       "notes": "Closed after exact CODE packet 4db4fda5f059683a0bec8a524878c0b313a3fdff6d618428b6d976b8f13b8986, hosted run 34101448733 passed all 20 lanes and publication after rerunning one transient Windows runner-storage failure, evidence-tree verification passed, TEST_ARTIFACT packet 0b7aba6436da5f5e9ece1b8d68ee20dc789589617cb1c34d9c86b3bb3d8899a5 passed, and complete closure DOCUMENTATION packet c5a6db34e59e37875de3c2b841529896872e01c372863e4794d3cfec5a90fb8a passed."
+    },
+    {
+      "cr_number": "CR-0289",
+      "title": "Host-only Recent file metadata",
+      "status": "in_progress",
+      "priority": "medium",
+      "execution_order": "architecture_2_phase_12l",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0289.md",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md sections 8.2, 39.1, 44",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 286",
+        "src/app/wz_recent_files.h",
+        "src/app/wz_recent_files.c"
+      ],
+      "notes": "Maintain bounded host-only Recent metadata whose entries invoke file.open_run and never expose dynamic paths through remote registry metadata."
     }
   ]
 }

@@ -235,6 +235,14 @@ target_include_directories(wz_file_open_run_tests PRIVATE src)
 add_test(NAME wz_file_open_run_tests COMMAND wz_file_open_run_tests)
 
 add_executable(
+    wz_recent_files_tests
+    tests/wz_recent_files_tests.c
+    src/app/wz_recent_files.c)
+target_link_libraries(wz_recent_files_tests PRIVATE wz_warnings)
+target_include_directories(wz_recent_files_tests PRIVATE src)
+add_test(NAME wz_recent_files_tests COMMAND wz_recent_files_tests)
+
+add_executable(
     wz_ui_help_tests
     tests/wz_ui_help_tests.c
     src/app/wz_ui_help.c)
