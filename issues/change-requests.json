@@ -2764,7 +2764,7 @@
     {
       "cr_number": "CR-0293",
       "title": "Resilient pinned conformance-source acquisition",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "workflow_infrastructure_before_architecture_queue",
       "blocking": true,
@@ -2774,7 +2774,7 @@
         "tools/harness/run_fuse_ed_platform.py",
         ".github/workflows/platform-smoke.yml"
       ],
-      "notes": "Add bounded exponential retry only around transient pinned-source acquisition; preserve the exact SourceForge authority, revision pin, conformance semantics, and fail-closed evidence gates."
+      "notes": "Closed after adding bounded exponential retry only around transient pinned-source acquisition, preserving the exact SourceForge authority, revision pin, conformance semantics, and fail-closed evidence gates. CODE packet c0b6f877769bbe6824d4ae224c7646660e68f40bb8aa10e5830d7b0251f32147 passed; hosted 20-lane platform-smoke run 34115851511 passed after housekeeping and evidence inspection; TEST_ARTIFACT packet 96020b784e98ab78e599b8006810ce4c87f1579a2f06cf616274cc30e999b2d0 and final DOCUMENTATION packet 09fea7b39d3a35278ddbfa00b201e183208acfc6caa2431415286dc7fedc3e4e passed. No local build/test and no product or locked wrapper changes."
     }
   ]
 }
