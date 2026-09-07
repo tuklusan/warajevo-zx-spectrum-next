@@ -10,6 +10,11 @@
   "locked": true,
   "authorization_required": true,
   "authorization_rule": "Operator authorization is required before modifying any listed harness or its governing parser/gate.",
+  "last_authorized_change": {
+    "cr_number": "CR-0276",
+    "reason": "Separate Windows interactive TTY execution from non-TTY binary archive transport.",
+    "operator_authorized": true
+  },
   "tracked_harnesses": [
     "tools/harness/forward_syslog.py",
     "tools/harness/invoke_remote_harness.py",

@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 276,
+  "next_cr_number": 277,
   "status_values": [
     "open",
     "in_progress",
@@ -2485,6 +2485,22 @@
         "reference/original-warajevo/source/src/environment/HELP.TXT"
       ],
       "notes": "Opened for the Phase-12B Help and About semantic action slice. Keep stable IDs and content projection independent of toolkit dialogs; platform-standard About relocation remains a host presentation concern."
+    },
+    {
+      "cr_number": "CR-0276",
+      "title": "Separate Windows TTY execution from binary archive transport",
+      "status": "in_progress",
+      "priority": "high",
+      "execution_order": "workflow_first_out_of_order",
+      "blocking": true,
+      "source_authority": [
+        "design/cr-preflight/CR-0276.md",
+        "WORKFLOW.md",
+        "tools/harness/harness-lock.json",
+        "tools/harness/invoke_remote_harness.py",
+        "tools/harness/stream_zip_tree.py"
+      ],
+      "notes": "Operator-authorized correction for Windows archive transport rejecting a TTY-contaminated base64 stream. Preserve TTY for interactive Windows commands and force non-TTY for binary archive pulls; re-prove Windows 10 and Windows 11, then update the harness lock evidence."
     }
   ]
 }

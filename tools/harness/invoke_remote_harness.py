@@ -435,12 +435,17 @@ def sync_windows(machine: dict[str, str], root: Path, published_ref: str | None 
     return run_windows(machine, script_text, root)
 
 
-def run_windows(machine: dict[str, str], script_text: str, root: Path) -> subprocess.CompletedProcess[bytes]:
+def run_windows(
+    machine: dict[str, str],
+    script_text: str,
+    root: Path,
+    allocate_tty: bool = True,
+) -> subprocess.CompletedProcess[bytes]:
     validate_powershell(root, script_text)
     encoded = base64.b64encode(script_text.encode("utf-16le")).decode("ascii")
     return subprocess.run(
         [
-            *ssh_base(root, machine),
+            *ssh_base(root, machine, allocate_tty=allocate_tty),
             machine["ssh_target"],
             f"powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -OutputFormat Text -EncodedCommand {encoded}",
         ],
@@ -515,7 +520,7 @@ def pull_windows(machine: dict[str, str], remote_dir: str, root: Path) -> subpro
             "exit $LASTEXITCODE",
         ]
     )
-    return run_windows(machine, script_text, root)
+    return run_windows(machine, script_text, root, allocate_tty=False)
 
 
 def extract_zip(zip_path: Path, target_dir: Path) -> None:
