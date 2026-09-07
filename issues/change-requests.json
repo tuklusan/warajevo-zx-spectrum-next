@@ -2976,7 +2976,7 @@
         "src/app/wz_snapshot_inspector.c",
         "tests/wz_snapshot_inspector_tests.c"
       ],
-      "notes": "Implementation in progress; extend snapshot inspector regression coverage to 128K metadata/paging and bounded formatter failure."
+      "notes": "Implementation commit dc16ec108409f1a72b58435478c1d89a6d803c9c; CODE PASS, four remote smokes passed, hosted run 34164853381 passed all 20 lanes, evidence-tree verification passed, and TEST_ARTIFACT PASS. Awaiting active closure evidence and final DOCUMENTATION review."
     }
   ]
 }
