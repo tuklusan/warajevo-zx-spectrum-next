@@ -2472,7 +2472,7 @@
     {
       "cr_number": "CR-0275",
       "title": "Implement semantic Help and About actions",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "architecture_2_phase_12b",
       "blocking": false,
@@ -2484,7 +2484,7 @@
         "reference/original-warajevo/source/src/environment/WARAJEVO.PAS",
         "reference/original-warajevo/source/src/environment/HELP.TXT"
       ],
-      "notes": "Implementation and validation evidence recorded; awaiting final documentation review. Stable IDs and deterministic content projection are independent of toolkit dialogs; platform-standard About relocation remains a host presentation concern."
+      "notes": "Closed after semantic Help/About implementation and validation. CODE packet adbed76794ec83713232eaf862c7e0a3cefb656e3450672f1fe3e8523de268ea, four passing remote TEST_ARTIFACT packets, final DOCUMENTATION packet f01b982483b5d390a51ed9d594c12b57b51d28d04267e2875d078a95169043b2, and hosted run 34075203620 with all 20 lanes plus publication inspection passed."
     },
     {
       "cr_number": "CR-0276",
