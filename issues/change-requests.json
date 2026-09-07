@@ -2452,7 +2452,7 @@
         "design/review-gate.md",
         "tools/reviewer/review_gate.py"
       ],
-      "notes": "Authorized implementation added as tools/harness/run_durable_session.py. It emits a bounded start event before verbose output, persists atomic running/completed/failed/terminated state, redirects output to files, and supports state-based recovery without duplicate launch. Registered in the locked harness manifest."
+      "notes": "Authorized implementation and validation evidence recorded; awaiting final documentation review before closure."
     },
     {
       "cr_number": "CR-0274",
