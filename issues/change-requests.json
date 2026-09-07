@@ -2797,7 +2797,7 @@
     {
       "cr_number": "CR-0295",
       "title": "Snapshot Inspector metadata display",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "architecture_2_phase_12q",
       "blocking": false,
@@ -2810,7 +2810,7 @@
         "src/app/wz_snapshot_inspector.h",
         "src/app/wz_snapshot_inspector.c"
       ],
-      "notes": "Implementation in progress; candidate metadata projection is read-only and derives from shared debugger, profile, AY, and memory ownership seams."
+      "notes": "Closed after implementing the read-only snapshot inspector metadata projection and complete bounded formatter for model, full CPU register state, paging, AY registers, memory pages, and warnings. CODE packet 025a4322b1d323b25e0605c9f746d0dc88dd36a830fb7dac16e76d4a24a5318c, hosted 20-lane platform-smoke run 34124009650, evidence-tree verification, TEST_ARTIFACT packet 97a6681a05371bd2ca65f3519fc1b944eda398f2af66080fef56b4e5bffe56bb, and final DOCUMENTATION packet 34856cc07ac63e8f602dc6717a2ce174975d01a1d161df728268557a9f60abf9 all passed. Visual capture was not applicable to the headless hosted lanes. No local build/test and no harness/wrapper changes."
     }
   ]
 }
