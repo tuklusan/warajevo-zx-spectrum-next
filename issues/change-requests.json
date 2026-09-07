@@ -2831,7 +2831,7 @@
     {
       "cr_number": "CR-0297",
       "title": "Shared screenshot capture service",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "architecture_2_phase_12s",
       "blocking": false,
@@ -2843,7 +2843,7 @@
         "src/core/wz_raster.h",
         "src/core/wz_machine.h"
       ],
-      "notes": "Implementation in progress; one host-independent indexed PNG encoder accepts only the canonical presentation raster and excludes host chrome by construction."
+      "notes": "Closed after correcting the screenshot test fixture exposed by hosted run 34141409177: the test copied expected samples before raster initialization, which intentionally clears storage. The repaired fixture passed CODE review with zero findings, hosted 20-lane platform-smoke run 34148775894, evidence-tree verification, and TEST_ARTIFACT review with zero findings. The shared host-independent PNG encoder accepts only the canonical presentation raster and excludes host chrome by construction. No local build/test and no harness/wrapper changes."
     },
     {
       "cr_number": "CR-0298",
