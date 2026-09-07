@@ -40,13 +40,15 @@ int main(void)
     wz_open_run_route_t route = WZ_OPEN_RUN_TAPE;
     dispatch_probe_t probe = {WZ_OPEN_RUN_TAPE, NULL, 0u, true};
     wz_open_run_handlers_t handlers = {record_dispatch, record_dispatch,
-                                       record_dispatch, &probe};
+                                       record_dispatch, record_dispatch, &probe};
     if (expect_route("game.TAP", WZ_OPEN_RUN_TAPE) != 0 ||
         expect_route("game.tZx", WZ_OPEN_RUN_TAPE) != 0 ||
         expect_route("audio.WAV", WZ_OPEN_RUN_TAPE) != 0 ||
         expect_route("state.SNA", WZ_OPEN_RUN_SNAPSHOT) != 0 ||
         expect_route("state.z80", WZ_OPEN_RUN_SNAPSHOT) != 0 ||
         expect_route("drive.MDR", WZ_OPEN_RUN_MICRODRIVE) != 0 ||
+        expect_route("legacy.VOC", WZ_OPEN_RUN_CONVERSION) != 0 ||
+        expect_route("legacy.SNP", WZ_OPEN_RUN_CONVERSION) != 0 ||
         wz_file_open_run_route("unknown.bin", &route) !=
             WZ_OPEN_RUN_UNSUPPORTED_FORMAT ||
         route != WZ_OPEN_RUN_UNSUPPORTED ||
@@ -64,8 +66,10 @@ int main(void)
         probe.calls != 2u ||
         wz_file_open_run_dispatch("drive.MDR", &handlers) != WZ_OPEN_RUN_OK ||
         probe.calls != 3u ||
+        wz_file_open_run_dispatch("legacy.VOC", &handlers) != WZ_OPEN_RUN_OK ||
+        probe.calls != 4u ||
         wz_file_open_run_dispatch("other.bin", &handlers) !=
-            WZ_OPEN_RUN_UNSUPPORTED_FORMAT || probe.calls != 3u ||
+            WZ_OPEN_RUN_UNSUPPORTED_FORMAT || probe.calls != 4u ||
         wz_file_open_run_dispatch("game.tap", NULL) != WZ_OPEN_RUN_INVALID_ARGUMENT) {
         fputs("wz_file_open_run dispatch contract failed\n", stderr);
         return 1;
@@ -73,7 +77,7 @@ int main(void)
     probe.succeed = false;
     if (wz_file_open_run_dispatch("game.tap", &handlers) !=
             WZ_OPEN_RUN_HANDLER_FAILED ||
-        wz_file_open_run_dispatch("game.tap", &(wz_open_run_handlers_t){0}) !=
+        wz_file_open_run_dispatch("legacy.voc", &(wz_open_run_handlers_t){0}) !=
             WZ_OPEN_RUN_HANDLER_UNAVAILABLE) {
         fputs("wz_file_open_run handler contract failed\n", stderr);
         return 1;

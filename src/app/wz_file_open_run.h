@@ -16,6 +16,7 @@ typedef enum {
     WZ_OPEN_RUN_TAPE = 0,
     WZ_OPEN_RUN_SNAPSHOT,
     WZ_OPEN_RUN_MICRODRIVE,
+    WZ_OPEN_RUN_CONVERSION,
     WZ_OPEN_RUN_UNSUPPORTED
 } wz_open_run_route_t;
 
@@ -33,6 +34,7 @@ typedef struct {
     wz_open_run_handler_fn tape;
     wz_open_run_handler_fn snapshot;
     wz_open_run_handler_fn microdrive;
+    wz_open_run_handler_fn conversion;
     void* context;
 } wz_open_run_handlers_t;
 

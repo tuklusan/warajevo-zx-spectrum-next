@@ -25,6 +25,21 @@ static bool wz_extension_equals(const char* extension, const char* expected)
     return *extension == '\0' && *expected == '\0';
 }
 
+static bool wz_conversion_extension(const char* extension)
+{
+    static const char* const extensions[] = {
+        ".voc", ".blk", ".spc", ".ltp", ".zxs", ".zxt", ".slt",
+        ".sem", ".sit", ".snp", ".scr", ".dck"
+    };
+    size_t index;
+    for (index = 0u; index < sizeof(extensions) / sizeof(extensions[0]); ++index) {
+        if (wz_extension_equals(extension, extensions[index])) {
+            return true;
+        }
+    }
+    return false;
+}
+
 wz_open_run_result_t wz_file_open_run_route(const char* path,
                                              wz_open_run_route_t* route)
 {
@@ -55,6 +70,10 @@ wz_open_run_result_t wz_file_open_run_route(const char* path,
         *route = WZ_OPEN_RUN_MICRODRIVE;
         return WZ_OPEN_RUN_OK;
     }
+    if (wz_conversion_extension(extension)) {
+        *route = WZ_OPEN_RUN_CONVERSION;
+        return WZ_OPEN_RUN_OK;
+    }
     *route = WZ_OPEN_RUN_UNSUPPORTED;
     return WZ_OPEN_RUN_UNSUPPORTED_FORMAT;
 }
@@ -75,8 +94,10 @@ wz_open_run_result_t wz_file_open_run_dispatch(
         handler = handlers->tape;
     } else if (route == WZ_OPEN_RUN_SNAPSHOT) {
         handler = handlers->snapshot;
-    } else {
+    } else if (route == WZ_OPEN_RUN_MICRODRIVE) {
         handler = handlers->microdrive;
+    } else {
+        handler = handlers->conversion;
     }
     if (handler == NULL) {
         return WZ_OPEN_RUN_HANDLER_UNAVAILABLE;
