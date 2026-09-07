@@ -2748,7 +2748,7 @@
     {
       "cr_number": "CR-0292",
       "title": "Snapshot save destination workflow",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "architecture_2_phase_12o",
       "blocking": false,
@@ -2759,7 +2759,7 @@
         "src/app/wz_snapshot_save_workflow.h",
         "src/app/wz_snapshot_save_workflow.c"
       ],
-      "notes": "Implement distinct Save Snapshot and Save Snapshot As destination acquisition behavior without changing core serialization or host harnesses."
+      "notes": "Closed after implementing distinct Save Snapshot and Save Snapshot As destination acquisition behavior without changing core serialization or host harnesses. Exact CODE review packet c64e84d94fdd4afbdf5e678eb575c17f4a07cfbfecd181fe73cbe0e9ac1f0ef3 passed; hosted 20-lane platform-smoke run 34112990494 passed after deep housekeeping and evidence-tree inspection; TEST_ARTIFACT packet b8f8d5ee6254c2fbe3599ce8ee420348210ef588c0be533fa825ed61b567ee06 and final DOCUMENTATION packet 201882b2216b7109d64e4e4f04fb13dacfe3933bc2155c21a1f0060fd8c8250d passed. No local build/test and no harness/wrapper changes."
     }
   ]
 }
