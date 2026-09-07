@@ -18,7 +18,7 @@ int main(void)
     wz_snapshot_inspector_t inspector;
     const wz_debugger_snapshot_t* view;
     const wz_debugger_page_info_t* paging;
-    char formatted[512];
+    char formatted[2048];
 
     wz_snapshot_inspector_init(&inspector);
     if (wz_snapshot_inspector_is_open(&inspector) ||
@@ -48,8 +48,10 @@ int main(void)
         wz_snapshot_inspector_format(&inspector, formatted, sizeof(formatted)) != WZ_RESULT_OK ||
         strstr(formatted, "Format: live-machine/runtime") == 0 ||
         strstr(formatted, "Model: ZX Spectrum 48K PAL") == 0 ||
-        strstr(formatted, "Paging:") == 0 || strstr(formatted, "AY:") == 0 ||
-        strstr(formatted, "Memory pages: 3") == 0 ||
+        strstr(formatted, "Registers:") == 0 || strstr(formatted, "A'=") == 0 ||
+        strstr(formatted, "MEMPTR=") == 0 || strstr(formatted, "Paging:") == 0 ||
+        strstr(formatted, "AY: selected=0 registers=") == 0 ||
+        strstr(formatted, "Memory pages: count=3 present=1 1 1") == 0 ||
         strstr(formatted, "Warnings: 0") == 0) {
         wz_machine_destroy(&machine);
         return 1;
