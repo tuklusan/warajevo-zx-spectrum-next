@@ -2893,7 +2893,7 @@
         "src/app/wz_ui_layout.c",
         "src/app/wz_command_registry.h"
       ],
-      "notes": "Implementation in progress; activate toolbar items through the shared command registry so Screenshot reaches the GUI save workflow and never the Telnet temporary-path behavior."
+      "notes": "Implementation and validation evidence recorded; four remote smoke lanes passed, hosted run 34154321519 passed all 20 lanes, and TEST_ARTIFACT review passed with zero confirmed findings. Awaiting final DOCUMENTATION review before closure."
     }
   ]
 }
