@@ -292,6 +292,18 @@ target_include_directories(wz_screenshot_save_workflow_tests PRIVATE src)
 add_test(NAME wz_screenshot_save_workflow_tests COMMAND wz_screenshot_save_workflow_tests)
 
 add_executable(
+    wz_file_snapshot_screenshot_acceptance_tests
+    tests/wz_file_snapshot_screenshot_acceptance_tests.c
+    src/app/wz_file_open_run.c
+    src/app/wz_snapshot_workflow.c
+    src/app/wz_screenshot_save_workflow.c
+    src/app/wz_screenshot_service.c)
+target_link_libraries(wz_file_snapshot_screenshot_acceptance_tests PRIVATE wz_core wz_warnings)
+target_include_directories(wz_file_snapshot_screenshot_acceptance_tests PRIVATE src)
+add_test(NAME wz_file_snapshot_screenshot_acceptance_tests
+         COMMAND wz_file_snapshot_screenshot_acceptance_tests)
+
+add_executable(
     wz_ui_help_tests
     tests/wz_ui_help_tests.c
     src/app/wz_ui_help.c)
