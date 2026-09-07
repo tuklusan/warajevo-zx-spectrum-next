@@ -1916,8 +1916,9 @@ def update_review_lock(path: Path, telemetry: Telemetry, phase: str, status: str
         record = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
     except (OSError, json.JSONDecodeError):
         record = {}
+    # Reassert identity before every write, including legacy lock files.
+    record["project_id"] = PROJECT_ID
     record.update({
-        "project_id": PROJECT_ID,
         "current_phase": phase,
         "api_call_number": telemetry.calls,
         "last_completed_phase": telemetry.passes[-1] if telemetry.passes else "",
