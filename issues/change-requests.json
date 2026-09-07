@@ -2442,7 +2442,7 @@
     {
       "cr_number": "CR-0273",
       "title": "Preserve external command handles when first output is truncated",
-      "status": "open",
+      "status": "in_progress",
       "priority": "high",
       "execution_order": "workflow_first_out_of_order",
       "blocking": false,
@@ -2452,7 +2452,7 @@
         "design/review-gate.md",
         "tools/reviewer/review_gate.py"
       ],
-      "notes": "Raised after an oversized first response caused the outer execution wrapper to omit the live session identifier. Require bounded first responses, durable handle/state correlation, and recovery tests proving live commands remain pollable and terminable without duplicate launch. Harness changes require explicit operator authorization under CR-0272."
+      "notes": "Project-owned recovery contract implemented in WORKFLOW.md; the outer execution wrapper itself is external and has no source in this repository. Require bounded first responses, durable handle/state correlation, and recovery without duplicate launch. Any future project-owned wrapper must be tracked and locked under CR-0272."
     },
     {
       "cr_number": "CR-0274",
