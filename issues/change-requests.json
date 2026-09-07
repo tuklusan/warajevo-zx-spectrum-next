@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 299,
+  "next_cr_number": 300,
   "status_values": [
     "open",
     "in_progress",
@@ -2860,6 +2860,23 @@
         ".github/workflows/platform-smoke.yml"
       ],
       "notes": "Closed after making exact-commit reuse of a complete passing matrix explicit for instrumentation-only corrections; product or lane-execution changes still require a fresh matrix. Static repository gates and CODE/DOCUMENTATION reviews passed with zero confirmed findings. No hosted matrix was required because no product or lane execution behavior changed."
+    },
+    {
+      "cr_number": "CR-0299",
+      "title": "GUI Save Screenshot workflow",
+      "status": "in_progress",
+      "priority": "high",
+      "execution_order": "architecture_2_phase_12t",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0299.md",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md section 8.4",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 294",
+        "src/app/wz_screenshot_service.h",
+        "src/app/wz_snapshot_save_workflow.h",
+        "src/app/wz_command_registry.h"
+      ],
+      "notes": "Implementation in progress; add a toolkit-independent GUI save workflow that acquires a bounded destination and delegates PNG encoding to the shared screenshot service."
     }
   ]
 }
