@@ -2648,6 +2648,22 @@
         "tests/test_review_gate.py"
       ],
       "notes": "Closed after correcting explicit lock identity reassertion. Initial exact review packet 00ad6db12bc0fb941adf7afedc1ab09cc159bbff8296407dc39d3be9b12a0d85 found one high-severity persistence gap; corrected exact CODE packet ffa46c20859aafbe3e8666b0267067fc27fc0fa75b49c6c140f77add4b272f6d passed with zero findings at commit 1abbad0; final DOCUMENTATION packet 62176f4a73c99e4e9188a52e30d1ca75d92548cdaf13c77c2cec72e951f264c0 passed."
+    },
+    {
+      "cr_number": "CR-0286",
+      "title": "Universal Open / Run format-routing seam",
+      "status": "in_progress",
+      "priority": "high",
+      "execution_order": "architecture_2_phase_12i",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0286.md",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md section 8.1",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 283",
+        "src/app/wz_file_open_run.h",
+        "src/app/wz_file_open_run.c"
+      ],
+      "notes": "Implement a host-side universal file.open_run route classifier for native tape, snapshot, and Microdrive formats with deterministic unsupported results and no machine-state mutation."
     }
   ]
 }

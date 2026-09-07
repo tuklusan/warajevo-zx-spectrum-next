@@ -227,6 +227,13 @@ add_test(NAME wz_ui_layout_tests COMMAND wz_ui_layout_tests)
 add_test(NAME wz_ui_window_tests COMMAND wz_ui_window_tests)
 
 add_executable(
+    wz_file_open_run_tests
+    tests/wz_file_open_run_tests.c
+    src/app/wz_file_open_run.c)
+target_link_libraries(wz_file_open_run_tests PRIVATE wz_warnings)
+add_test(NAME wz_file_open_run_tests COMMAND wz_file_open_run_tests)
+
+add_executable(
     wz_ui_help_tests
     tests/wz_ui_help_tests.c
     src/app/wz_ui_help.c)
