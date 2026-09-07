@@ -58,3 +58,29 @@ wz_open_run_result_t wz_file_open_run_route(const char* path,
     *route = WZ_OPEN_RUN_UNSUPPORTED;
     return WZ_OPEN_RUN_UNSUPPORTED_FORMAT;
 }
+
+wz_open_run_result_t wz_file_open_run_dispatch(
+    const char* path, const wz_open_run_handlers_t* handlers)
+{
+    wz_open_run_route_t route;
+    wz_open_run_handler_fn handler;
+
+    if (path == NULL || handlers == NULL || path[0] == '\0') {
+        return WZ_OPEN_RUN_INVALID_ARGUMENT;
+    }
+    if (wz_file_open_run_route(path, &route) != WZ_OPEN_RUN_OK) {
+        return WZ_OPEN_RUN_UNSUPPORTED_FORMAT;
+    }
+    if (route == WZ_OPEN_RUN_TAPE) {
+        handler = handlers->tape;
+    } else if (route == WZ_OPEN_RUN_SNAPSHOT) {
+        handler = handlers->snapshot;
+    } else {
+        handler = handlers->microdrive;
+    }
+    if (handler == NULL) {
+        return WZ_OPEN_RUN_HANDLER_UNAVAILABLE;
+    }
+    return handler(path, handlers->context) ? WZ_OPEN_RUN_OK
+                                             : WZ_OPEN_RUN_HANDLER_FAILED;
+}
