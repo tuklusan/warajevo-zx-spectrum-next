@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 291,
+  "next_cr_number": 292,
   "status_values": [
     "open",
     "in_progress",
@@ -2728,6 +2728,22 @@
         "src/app/wz_recent_files.c"
       ],
       "notes": "Closed after adding an explicit remote projection that exposes only the stable file.recent group and suppresses all dynamic Recent paths and entry counts. Exact CODE review passed with packet 354a61fc9a53559ba7863a5606f9ca798039025b5c3b08490415f6ef8e9f3ae7; hosted 20-lane platform-smoke run 34108197125 passed after deep housekeeping and publication evidence inspection; TEST_ARTIFACT packet 7630f1dd078ad492601aeb6f5ead89b357511b4069abef73dca1fd34206e6092 and final DOCUMENTATION packet f36515261faf5ede53a0fa16673c06959461fe1c65e69a0e90bd36891034f9e8 passed. No local build/test and no harness/wrapper changes."
+    },
+    {
+      "cr_number": "CR-0291",
+      "title": "Transactional Load Snapshot workflow",
+      "status": "in_progress",
+      "priority": "high",
+      "execution_order": "architecture_2_phase_12n",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0291.md",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md sections 8.3 and 13.1",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 288",
+        "src/app/wz_snapshot_workflow.h",
+        "src/app/wz_snapshot_workflow.c"
+      ],
+      "notes": "Add a transactional application Load Snapshot seam that validates into pending state and commits only complete valid snapshots."
     }
   ]
 }
