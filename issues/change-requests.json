@@ -2964,7 +2964,7 @@
     {
       "cr_number": "CR-0305",
       "title": "Extend snapshot inspector regression coverage",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "medium",
       "execution_order": "architecture_2_phase_12y",
       "blocking": false,
@@ -2976,7 +2976,7 @@
         "src/app/wz_snapshot_inspector.c",
         "tests/wz_snapshot_inspector_tests.c"
       ],
-      "notes": "Implementation commit dc16ec108409f1a72b58435478c1d89a6d803c9c; CODE PASS, four remote smokes passed, hosted run 34164853381 passed all 20 lanes, evidence-tree verification passed, and TEST_ARTIFACT PASS. Awaiting active closure evidence and final DOCUMENTATION review."
+      "notes": "Closed after implementation dc16ec108409f1a72b58435478c1d89a6d803c9c, four remote smokes, hosted run 34164853381 with all 20 lanes green, evidence-tree verification, TEST_ARTIFACT PASS, and final DOCUMENTATION PASS with zero confirmed findings."
     }
   ]
 }
