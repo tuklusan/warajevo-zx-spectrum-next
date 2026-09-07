@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 296,
+  "next_cr_number": 297,
   "status_values": [
     "open",
     "in_progress",
@@ -2811,6 +2811,22 @@
         "src/app/wz_snapshot_inspector.c"
       ],
       "notes": "Closed after implementing the read-only snapshot inspector metadata projection and complete bounded formatter for model, full CPU register state, paging, AY registers, memory pages, and warnings. CODE packet 025a4322b1d323b25e0605c9f746d0dc88dd36a830fb7dac16e76d4a24a5318c, hosted 20-lane platform-smoke run 34124009650, evidence-tree verification, TEST_ARTIFACT packet 97a6681a05371bd2ca65f3519fc1b944eda398f2af66080fef56b4e5bffe56bb, and final DOCUMENTATION packet 34856cc07ac63e8f602dc6717a2ce174975d01a1d161df728268557a9f60abf9 all passed. Visual capture was not applicable to the headless hosted lanes. No local build/test and no harness/wrapper changes."
+    },
+    {
+      "cr_number": "CR-0296",
+      "title": "Shared snapshot state editor routing",
+      "status": "in_progress",
+      "priority": "high",
+      "execution_order": "architecture_2_phase_12r",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0296.md",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md section 13.3",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 292",
+        "src/core/wz_debugger.h",
+        "src/app/wz_snapshot_inspector.h"
+      ],
+      "notes": "Implementation in progress; snapshot editing is an app adapter over shared debugger mutation and undo APIs, with no duplicated editor state."
     }
   ]
 }
