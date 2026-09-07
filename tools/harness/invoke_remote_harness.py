@@ -266,11 +266,12 @@ def known_hosts_option(root: Path) -> list[str]:
     return ["-o", "UserKnownHostsFile=test-artefacts/ssh-known-hosts.local"]
 
 
-def ssh_base(root: Path, machine: dict[str, str]) -> list[str]:
+def ssh_base(root: Path, machine: dict[str, str], allocate_tty: bool = True) -> list[str]:
     password_environment = machine.get("password_environment")
     if password_environment and os.environ.get(password_environment) and shutil.which("sshpass"):
         command = [
-            "sshpass", "-e", "ssh", "-tt", "-o", "PreferredAuthentications=password",
+            "sshpass", "-e", "ssh", "-tt" if allocate_tty else "-T",
+            "-o", "PreferredAuthentications=password",
             "-o", "PubkeyAuthentication=no", "-o", "StrictHostKeyChecking=no",
             "-o", "ConnectTimeout=30",
             *known_hosts_option(root),
@@ -361,7 +362,12 @@ def validate_powershell(root: Path, script_text: str) -> None:
         raise RuntimeError(result.stderr.strip() or result.stdout.strip() or "PowerShell parser validation failed")
 
 
-def run_linux(machine: dict[str, str], shell_command: str, root: Path) -> subprocess.CompletedProcess[bytes]:
+def run_linux(
+    machine: dict[str, str],
+    shell_command: str,
+    root: Path,
+    allocate_tty: bool = True,
+) -> subprocess.CompletedProcess[bytes]:
     path_prefix = machine.get("path_prefix")
     path_setup = f"PATH={shlex.quote(path_prefix)}:$PATH && " if path_prefix else ""
     max_bytes = machine.get("max_bytes")
@@ -380,7 +386,7 @@ def run_linux(machine: dict[str, str], shell_command: str, root: Path) -> subpro
         f"{post_size_guard}"
     )
     return subprocess.run(
-        [*ssh_base(root, machine), machine["ssh_target"], remote_command],
+        [*ssh_base(root, machine, allocate_tty), machine["ssh_target"], remote_command],
         cwd=root,
         check=False,
         capture_output=True,
@@ -496,7 +502,7 @@ def pull_linux(machine: dict[str, str], remote_dir: str, root: Path) -> subproce
     shell_command = (
         f"{machine['python_command']} tools/harness/stream_zip_tree.py {shlex.quote(remote_dir)}"
     )
-    return run_linux(machine, shell_command, root)
+    return run_linux(machine, shell_command, root, allocate_tty=False)
 
 
 def pull_windows(machine: dict[str, str], remote_dir: str, root: Path) -> subprocess.CompletedProcess[bytes]:

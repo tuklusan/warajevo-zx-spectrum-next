@@ -140,6 +140,15 @@ guards rather than by placing the artifact outside the project directory.
 
 ## Remote Machine Directory Rule
 
+## Harness Lock
+
+Every working local, hosted, remote-build, remote-test, screenshot, cleanup,
+transport, and parser harness is tracked by
+`tools/harness/harness-lock.json`. The lock is mandatory and requires explicit
+operator authorization before any listed harness or its governing gate is
+modified. A proven harness must remain unchanged unless a concrete blocker is
+identified and the authorization is recorded in the active CR evidence.
+
 Remote build or test sessions must stay within the approved per-machine project
 directories defined in `test-artefacts/README.md`.
 

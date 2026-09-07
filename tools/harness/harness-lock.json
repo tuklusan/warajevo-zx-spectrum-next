@@ -1,0 +1,30 @@
+{
+  "project_notice": [
+    "Warajevo ZX Spectrum Next",
+    "Copyright (c) 2026 Supratim Sanyal, SANYALnet Labs, for new original project material.",
+    "New original material is licensed under GNU GPL v2 or later (GPL-2.0-or-later), as stated in LICENSE.txt.",
+    "Upstream Warajevo and third-party material retain their applicable copyrights and licenses.",
+    "See LICENSE.txt and NOTICE.md for complete terms and provenance."
+  ],
+  "schema_version": 1,
+  "locked": true,
+  "authorization_required": true,
+  "authorization_rule": "Operator authorization is required before modifying any listed harness or its governing parser/gate.",
+  "tracked_harnesses": [
+    "tools/harness/forward_syslog.py",
+    "tools/harness/invoke_remote_harness.py",
+    "tools/harness/invoke_remote_windows_powershell.py",
+    "tools/harness/run_cmake_smoke.py",
+    "tools/harness/run_fuse_ed_corpus.py",
+    "tools/harness/run_fuse_ed_platform.py",
+    "tools/harness/stream_zip_tree.py",
+    "tools/harness/summarize_fuse_review_evidence.py",
+    "tools/harness/verify_platform_evidence.py",
+    "tools/harness/Capture-WindowsDesktopScreenshot.ps1",
+    "tools/harness/Invoke-WindowsInteractiveScreenshot.ps1",
+    "tools/harness/capture-linux-active-display.sh",
+    "tools/harness/cleanup-hosted-runner-state.sh",
+    "tools/validate_project_gates.py",
+    "tools/Test-PowerShellSyntax.ps1"
+  ]
+}

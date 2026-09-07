@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 270,
+  "next_cr_number": 273,
   "status_values": [
     "open",
     "in_progress",
@@ -2423,6 +2423,21 @@
         "tools/harness/README.md"
       ],
       "notes": "Opened out of order to eliminate Mac SSH prompt stalls. The password fallback now uses the proven password-only TTY path with strict noninteractive host-key handling; the key fallback remains available."
+    },
+    {
+      "cr_number": "CR-0272",
+      "title": "Lock and track all working harnesses with operator authorization",
+      "status": "in_progress",
+      "priority": "high",
+      "execution_order": "workflow_first_out_of_order",
+      "blocking": false,
+      "source_authority": [
+        "WORKFLOW.md",
+        "tools/harness/harness-lock.json",
+        "tools/harness/README.md",
+        "design/cr-preflight/CR-0272.md"
+      ],
+      "notes": "Opened by operator authorization to lock every working harness and require explicit operator authorization before future changes. Includes the Mac binary-transfer correction separating TTY command execution from non-TTY ZIP transfer."
     }
   ]
 }

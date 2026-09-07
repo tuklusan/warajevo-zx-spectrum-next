@@ -123,6 +123,14 @@ test-artefacts/remote-runs/<machine>/<run-id>/
 
 ## Remote artefact convention
 
+## Harness Lock
+
+All working harnesses and their governing parser/gate scripts are tracked in
+`tools/harness/harness-lock.json`. The lock is active. Any modification to a
+listed harness requires explicit operator authorization before editing,
+review, commit, or publication. Do not replace a working harness with an
+untracked one-shot script.
+
 On each approved SSH remote, the harness writes transient outputs only inside:
 
 ```text
