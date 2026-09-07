@@ -88,11 +88,15 @@ int main(void)
     }
     wz_machine_destroy(&machine);
 
-    memcpy(original_samples, samples, sizeof(samples));
     if (wz_raster_buffer_init(&raster, 2u, 2u, samples, sizeof(samples)) != WZ_RESULT_OK) {
         fputs("raster initialization acceptance failed\n", stderr);
         return 1;
     }
+    samples[0] = WZ_PALETTE_BLACK;
+    samples[1] = WZ_PALETTE_WHITE;
+    samples[2] = WZ_RASTER_BORDER_MIN;
+    samples[3] = WZ_RASTER_BLANKING;
+    memcpy(original_samples, samples, sizeof(samples));
     required = wz_screenshot_png_required_size(&raster);
     wz_screenshot_save_workflow_init(&screenshot_workflow);
     if (wz_screenshot_save_as(&screenshot_workflow, 0, &raster, png, sizeof(png),
