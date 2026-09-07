@@ -213,3 +213,11 @@ bool wz_ui_layout_select_speed(wz_ui_layout_state_t* state,
     state->audio_muted = !wz_host_audio_enabled(speed);
     return true;
 }
+
+wz_command_state_t wz_ui_layout_command_state(
+    const wz_command_registry_t* registry,
+    const char* command_id,
+    const char** disabled_reason)
+{
+    return wz_command_registry_state(registry, command_id, disabled_reason);
+}

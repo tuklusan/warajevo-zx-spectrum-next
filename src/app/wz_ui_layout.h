@@ -13,6 +13,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include <stddef.h>
 
 #include "app/wz_speed_policy.h"
+#include "app/wz_command_registry.h"
 
 #define WZ_UI_MENU_COUNT 7u
 #define WZ_UI_TOOLBAR_COUNT 11u
@@ -63,5 +64,9 @@ size_t wz_ui_layout_speed_count(void);
 const char* wz_ui_layout_speed_label(size_t index);
 bool wz_ui_layout_select_speed(wz_ui_layout_state_t* state,
                                wz_speed_policy_t speed);
+wz_command_state_t wz_ui_layout_command_state(
+    const wz_command_registry_t* registry,
+    const char* command_id,
+    const char** disabled_reason);
 
 #endif

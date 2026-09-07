@@ -99,6 +99,10 @@ size_t wz_command_registry_count(const wz_command_registry_t* registry);
 const wz_command_metadata_t* wz_command_registry_at(
     const wz_command_registry_t* registry,
     size_t index);
+wz_command_state_t wz_command_registry_state(
+    const wz_command_registry_t* registry,
+    const char* id,
+    const char** reason);
 wz_result_t wz_command_registry_dispatch(
     const wz_command_registry_t* registry,
     const char* id,

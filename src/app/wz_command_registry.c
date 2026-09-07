@@ -141,6 +141,44 @@ const wz_command_metadata_t* wz_command_registry_at(
     return &registry->storage[index];
 }
 
+wz_command_state_t wz_command_registry_state(
+    const wz_command_registry_t* registry,
+    const char* id,
+    const char** reason)
+{
+    const wz_command_metadata_t* metadata;
+    const char* availability_reason = 0;
+
+    if (reason != 0) {
+        *reason = "command-unavailable";
+    }
+    if (registry == 0 || !registry->finalized || id == 0) {
+        if (reason != 0) {
+            *reason = "registry-unavailable";
+        }
+        return WZ_COMMAND_DISABLED;
+    }
+    metadata = wz_command_registry_find(registry, id);
+    if (metadata == 0) {
+        if (reason != 0) {
+            *reason = "unknown-command";
+        }
+        return WZ_COMMAND_DISABLED;
+    }
+    if (metadata->availability != 0 &&
+        !metadata->availability(metadata->handler_context, &availability_reason)) {
+        if (reason != 0) {
+            *reason = availability_reason == 0 ?
+                "command-unavailable" : availability_reason;
+        }
+        return WZ_COMMAND_DISABLED;
+    }
+    if (reason != 0) {
+        *reason = 0;
+    }
+    return WZ_COMMAND_ENABLED;
+}
+
 wz_result_t wz_command_registry_dispatch(
     const wz_command_registry_t* registry,
     const char* id,

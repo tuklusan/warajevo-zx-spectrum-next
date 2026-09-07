@@ -11,6 +11,25 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "app/wz_ui_layout.h"
 
+static bool unavailable(const void* context, const char** reason)
+{
+    (void)context;
+    if (reason != 0) {
+        *reason = "requires-media";
+    }
+    return false;
+}
+
+static wz_result_t handler(const void* context,
+                           wz_command_arguments_t arguments,
+                           wz_command_result_t* result)
+{
+    (void)context;
+    (void)arguments;
+    (void)result;
+    return WZ_RESULT_OK;
+}
+
 int main(void)
 {
     static const char* expected_menus[] = {
@@ -31,6 +50,10 @@ int main(void)
     char panel[512];
     char status[WZ_UI_STATUS_CAPACITY];
     size_t index;
+    wz_command_metadata_t metadata;
+    wz_command_metadata_t storage[1];
+    wz_command_registry_t registry;
+    const char* reason;
 
     if (wz_ui_layout_menu_count() != WZ_UI_MENU_COUNT ||
         wz_ui_layout_toolbar_count() != WZ_UI_TOOLBAR_COUNT) {
@@ -89,6 +112,26 @@ int main(void)
         return 1;
     }
     if (!wz_ui_layout_select_speed(&state, WZ_SPEED_100)) {
+        return 1;
+    }
+    metadata = (wz_command_metadata_t){
+        .id = "media.tape.insert",
+        .label = "Insert Tape",
+        .description = "Insert tape",
+        .handler_identity = "test.handler",
+        .permission = WZ_COMMAND_REMOTE_SAFE,
+        .availability = unavailable,
+        .handler = handler,
+    };
+    if (wz_command_registry_init(&registry, storage, 1u) != WZ_RESULT_OK ||
+        wz_command_registry_register(&registry, metadata) != WZ_RESULT_OK ||
+        wz_command_registry_finalize(&registry) != WZ_RESULT_OK ||
+        wz_ui_layout_command_state(&registry, "media.tape.insert", &reason) !=
+            WZ_COMMAND_DISABLED || reason == 0 || strcmp(reason, "requires-media") != 0 ||
+        wz_ui_layout_command_state(&registry, "missing.command", &reason) !=
+            WZ_COMMAND_DISABLED || strcmp(reason, "unknown-command") != 0 ||
+        wz_ui_layout_command_state(NULL, "media.tape.insert", &reason) !=
+            WZ_COMMAND_DISABLED || strcmp(reason, "registry-unavailable") != 0) {
         return 1;
     }
     wz_ui_layout_status_line(&state, status, sizeof(status));

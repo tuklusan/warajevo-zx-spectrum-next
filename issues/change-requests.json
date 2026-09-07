@@ -2617,6 +2617,22 @@
         "tests/wz_ui_layout_tests.c"
       ],
       "notes": "Closed as a no-code reconciliation: the shared layout status line already emits the exact available/unavailable Control Port alternatives and existing tests cover both. Exact CODE packet 142e723546071fe795fdf07c3c382c2c50a37c771af26460288631352bc18396, hosted run 34090078094, evidence-tree verification, representative Windows/macOS artifact reviews, and final DOCUMENTATION packet 7efb9aa16074606c69467fa1899e39325be64794608dacc97e56c7ade711e828 all passed. All four local probes passed; no local build/test and no harness/wrapper changes."
+    },
+    {
+      "cr_number": "CR-0284",
+      "title": "Registry-driven UI enabled state",
+      "status": "in_progress",
+      "priority": "high",
+      "execution_order": "architecture_2_phase_12h",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0284.md",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 280",
+        "src/app/wz_command_registry.h",
+        "src/app/wz_ui_layout.h"
+      ],
+      "notes": "Implement UI enabled/disabled state as a projection of the shared command registry availability predicates and reasons. No private UI predicates, duplicate handlers, harness changes, or wrapper changes are permitted."
     }
   ]
 }
