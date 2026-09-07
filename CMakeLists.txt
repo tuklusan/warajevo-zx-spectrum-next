@@ -231,6 +231,7 @@ add_executable(
     tests/wz_file_open_run_tests.c
     src/app/wz_file_open_run.c)
 target_link_libraries(wz_file_open_run_tests PRIVATE wz_warnings)
+target_include_directories(wz_file_open_run_tests PRIVATE src)
 add_test(NAME wz_file_open_run_tests COMMAND wz_file_open_run_tests)
 
 add_executable(
