@@ -2981,7 +2981,7 @@
     {
       "cr_number": "CR-0306",
       "title": "Complete File/Snapshot/Screenshot acceptance subset",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "medium",
       "execution_order": "architecture_2_phase_12z",
       "blocking": false,
@@ -2995,7 +2995,7 @@
         "src/app/wz_snapshot_workflow.h",
         "src/app/wz_screenshot_save_workflow.h"
       ],
-      "notes": "Implementation commits 28dc9c6 and corrective test commit a1df9d6; initial Linux smoke exposed and corrected a test baseline defect, then four corrected remote smokes passed, hosted run 34167941503 passed all 20 lanes, evidence-tree verification passed, and TEST_ARTIFACT PASS. Awaiting active closure evidence and final DOCUMENTATION review."
+      "notes": "Closed after implementation commits 28dc9c6 and a1df9d6, four corrected remote smokes, hosted run 34167941503 with all 20 lanes green, evidence-tree verification, TEST_ARTIFACT PASS, and final DOCUMENTATION PASS with zero confirmed findings."
     }
   ]
 }
