@@ -15,6 +15,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 int main(void)
 {
     wz_machine_t machine;
+    wz_machine_t machine_128k;
     wz_snapshot_inspector_t inspector;
     const wz_debugger_snapshot_t* view;
     const wz_debugger_page_info_t* paging;
@@ -62,6 +63,33 @@ int main(void)
         wz_snapshot_inspector_paging(&inspector) != 0) {
         wz_machine_destroy(&machine);
         return 1;
+    }
+    {
+        char tiny[1u];
+        int machine_128k_initialized =
+            wz_machine_init(&machine_128k, wz_machine_profile_128k_pal()) ==
+            WZ_RESULT_OK;
+        if (!machine_128k_initialized ||
+            wz_snapshot_inspector_open(&inspector, &machine_128k) !=
+                WZ_SNAPSHOT_INSPECTOR_OK ||
+            wz_snapshot_inspector_format(&inspector, tiny, sizeof(tiny)) !=
+                WZ_RESULT_BUFFER_TOO_SMALL ||
+            inspector.model_kind != WZ_MACHINE_128K_PAL ||
+            inspector.memory_page_count != WZ_128K_RAM_BANK_COUNT ||
+            inspector.paging.paging_value != 0u ||
+            wz_snapshot_inspector_format(&inspector, formatted,
+                                         sizeof(formatted)) != WZ_RESULT_OK ||
+            strstr(formatted, "Model: ZX Spectrum 128K PAL") == 0 ||
+            strstr(formatted, "Memory pages: count=8") == 0) {
+            if (machine_128k_initialized) {
+                wz_snapshot_inspector_close(&inspector);
+                wz_machine_destroy(&machine_128k);
+            }
+            wz_machine_destroy(&machine);
+            return 1;
+        }
+        wz_snapshot_inspector_close(&inspector);
+        wz_machine_destroy(&machine_128k);
     }
     wz_machine_destroy(&machine);
     puts("wz_snapshot_inspector contract passed");

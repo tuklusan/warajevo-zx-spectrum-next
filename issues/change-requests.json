@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 305,
+  "next_cr_number": 306,
   "status_values": [
     "open",
     "in_progress",
@@ -2960,6 +2960,23 @@
         "tests/wz_screenshot_service_tests.c"
       ],
       "notes": "Closed after four remote smoke lanes passed, hosted run 34163418419 passed all 20 lanes, evidence-tree verification passed, and TEST_ARTIFACT and final DOCUMENTATION reviews passed with zero confirmed findings. No harness or wrapper changes were made."
+    },
+    {
+      "cr_number": "CR-0305",
+      "title": "Extend snapshot inspector regression coverage",
+      "status": "in_progress",
+      "priority": "medium",
+      "execution_order": "architecture_2_phase_12y",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0305.md",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md sections 13.1-13.3 and 47",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 299",
+        "src/app/wz_snapshot_inspector.h",
+        "src/app/wz_snapshot_inspector.c",
+        "tests/wz_snapshot_inspector_tests.c"
+      ],
+      "notes": "Implementation in progress; extend snapshot inspector regression coverage to 128K metadata/paging and bounded formatter failure."
     }
   ]
 }
