@@ -2621,7 +2621,7 @@
     {
       "cr_number": "CR-0284",
       "title": "Registry-driven UI enabled state",
-      "status": "closed",
+      "status": "in_progress",
       "priority": "high",
       "execution_order": "architecture_2_phase_12h",
       "blocking": false,
@@ -2637,10 +2637,10 @@
     {
       "cr_number": "CR-0285",
       "title": "Project-unique reviewer namespace",
-      "status": "closed",
+      "status": "in_progress",
       "priority": "high",
       "execution_order": "workflow_safety_interlock",
-      "blocking": false,
+      "blocking": true,
       "source_authority": [
         "design/cr-preflight/CR-0285.md",
         "design/review-gate.md",
