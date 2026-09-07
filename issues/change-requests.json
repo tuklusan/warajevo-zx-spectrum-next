@@ -2652,7 +2652,7 @@
     {
       "cr_number": "CR-0286",
       "title": "Universal Open / Run format-routing seam",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "architecture_2_phase_12i",
       "blocking": false,
@@ -2663,7 +2663,7 @@
         "src/app/wz_file_open_run.h",
         "src/app/wz_file_open_run.c"
       ],
-      "notes": "Closed after exact CODE packet 79d9c6b651562ddf91cef575397ba22d79033ac1aab1bbb0f59edfd7bf5130ec, hosted platform-smoke run 34098101518 passed all 20 lanes and publication, evidence-tree verification passed, TEST_ARTIFACT packet 29f21ee7ef95ed70954f973d2c9daa5440050c89e6cfc61b4d51333bf812b4c8 passed, and final DOCUMENTATION packet 2a5d6b8c18f0e129c873df16d8621334ec9ae965c4b4de5a3997260fe2ecb08d passed."
+      "notes": "Closed after exact CODE packet 79d9c6b651562ddf91cef575397ba22d79033ac1aab1bbb0f59edfd7bf5130ec, hosted platform-smoke runs 34098101518 and 34098802726 passed all 20 lanes and publication, evidence-tree verification passed, TEST_ARTIFACT packet 29f21ee7ef95ed70954f973d2c9daa5440050c89e6cfc61b4d51333bf812b4c8 passed, and final DOCUMENTATION packets 2a5d6b8c18f0e129c873df16d8621334ec9ae965c4b4de5a3997260fe2ecb08d and 6b42319d8a9d6b98d830758c19a794015eba4dbd5ba3a1cc3140025ef947905d passed."
     }
   ]
 }
