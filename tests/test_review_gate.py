@@ -986,6 +986,12 @@ class GateTests(unittest.TestCase):
             urllib.error.HTTPError(request.full_url, 402, "payment required", {}, None)
         )
         self.assertEqual(record, {"kind": "http", "status": 402})
+
+    def test_review_framing_and_results_are_project_unique(self):
+        prefix = gate.stable_prefix("CODE", "snapshot", scope(), requirement(), "packet")
+        self.assertIn("PROJECT_ID=" + gate.PROJECT_ID, prefix)
+        result = gate.compact_result("CODE", "CR-0020", packet(), "PASS", True)
+        self.assertEqual(result["project_id"], gate.PROJECT_ID)
         with self.assertRaises(urllib.error.HTTPError) as raised:
             gate.CodeReviewerClient._raise_transport_failure(request, record)
         self.assertEqual(raised.exception.code, 402)

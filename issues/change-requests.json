@@ -2633,6 +2633,21 @@
         "src/app/wz_ui_layout.h"
       ],
       "notes": "Implement UI enabled/disabled state as a projection of the shared command registry availability predicates and reasons. No private UI predicates, duplicate handlers, harness changes, or wrapper changes are permitted."
+    },
+    {
+      "cr_number": "CR-0285",
+      "title": "Project-unique reviewer namespace",
+      "status": "in_progress",
+      "priority": "high",
+      "execution_order": "workflow_safety_interlock",
+      "blocking": true,
+      "source_authority": [
+        "design/cr-preflight/CR-0285.md",
+        "design/review-gate.md",
+        "tools/reviewer/review_gate.py",
+        "tests/test_review_gate.py"
+      ],
+      "notes": "Add an explicit stable repository identity to outbound review framing, lock records, telemetry, and receipts so concurrent projects cannot be confused. This is a narrow workflow-safety correction and must not change review verdict semantics."
     }
   ]
 }
