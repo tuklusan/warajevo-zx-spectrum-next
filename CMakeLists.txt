@@ -259,6 +259,14 @@ target_include_directories(wz_snapshot_save_workflow_tests PRIVATE src)
 add_test(NAME wz_snapshot_save_workflow_tests COMMAND wz_snapshot_save_workflow_tests)
 
 add_executable(
+    wz_snapshot_inspector_tests
+    tests/wz_snapshot_inspector_tests.c
+    src/app/wz_snapshot_inspector.c)
+target_link_libraries(wz_snapshot_inspector_tests PRIVATE wz_core wz_warnings)
+target_include_directories(wz_snapshot_inspector_tests PRIVATE src)
+add_test(NAME wz_snapshot_inspector_tests COMMAND wz_snapshot_inspector_tests)
+
+add_executable(
     wz_ui_help_tests
     tests/wz_ui_help_tests.c
     src/app/wz_ui_help.c)

@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 294,
+  "next_cr_number": 295,
   "status_values": [
     "open",
     "in_progress",
@@ -2775,6 +2775,24 @@
         ".github/workflows/platform-smoke.yml"
       ],
       "notes": "Closed after adding bounded exponential retry only around transient pinned-source acquisition, preserving the exact SourceForge authority, revision pin, conformance semantics, and fail-closed evidence gates. CODE packet c0b6f877769bbe6824d4ae224c7646660e68f40bb8aa10e5830d7b0251f32147 passed; hosted 20-lane platform-smoke run 34115851511 passed after housekeeping and evidence inspection; TEST_ARTIFACT packet 96020b784e98ab78e599b8006810ce4c87f1579a2f06cf616274cc30e999b2d0 and final DOCUMENTATION packet 09fea7b39d3a35278ddbfa00b201e183208acfc6caa2431415286dc7fedc3e4e passed. No local build/test and no product or locked wrapper changes."
+    },
+    {
+      "cr_number": "CR-0294",
+      "title": "Snapshot Inspector boundary",
+      "status": "in_progress",
+      "priority": "high",
+      "execution_order": "architecture_2_phase_12p",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0294.md",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md sections 13.1-13.3",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 290",
+        "src/core/wz_debugger.h",
+        "src/app/wz_snapshot_inspector.h",
+        "reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM",
+        "reference/original-warajevo/source/src/environment/WARAJEVO.PAS"
+      ],
+      "notes": "Implement the stable Tools Snapshot Inspector boundary using shared read-only debugger snapshot and paging inspection; defer format-specific display, editing, and host presentation to later tasks."
     }
   ]
 }
