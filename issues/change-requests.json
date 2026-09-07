@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 278,
+  "next_cr_number": 279,
   "status_values": [
     "open",
     "in_progress",
@@ -2518,6 +2518,22 @@
         "src/app/wz_host_audio_policy.h"
       ],
       "notes": "Closed after toolbar speed selector implementation and validation. CODE packets 45fa856201620e4b47fa3b6c87f198c92ae35b7fa516cae02dec0aae5a4d3584 and 0f6dfc06c1d2cf1382aade438a989cf18b0f676b628b92571785a05e14523831, four passing R3 remote TEST_ARTIFACT packets, final DOCUMENTATION packet 0295b8e41bbfe5c1e587eaaf19e44b00558095ca0a7141946468b385d4b918fb, and hosted run 34079483977 passed."
+    },
+    {
+      "cr_number": "CR-0278",
+      "title": "Lock canonical toolbar semantic set",
+      "status": "in_progress",
+      "priority": "high",
+      "execution_order": "architecture_2_phase_12b",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0278.md",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 274",
+        "src/app/wz_ui_layout.c",
+        "tests/wz_ui_layout_tests.c"
+      ],
+      "notes": "Locking the canonical toolbar control IDs, order, and labels through the shared application layout projection. No harness or wrapper changes permitted."
     }
   ]
 }

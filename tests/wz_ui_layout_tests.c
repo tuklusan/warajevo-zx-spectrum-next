@@ -22,6 +22,11 @@ int main(void)
         "media.microdrive.drive1", "host.screenshot.save", "view.fullscreen",
         "tools.debugger"
     };
+    static const char* expected_toolbar_labels[] = {
+        "Open / Run", "Pause / Resume", "Reset", "Emulation Speed",
+        "Tape", "Load Snapshot", "Save Snapshot", "MDV 1", "Screenshot",
+        "Fullscreen", "Debugger"
+    };
     wz_ui_layout_state_t state;
     char status[WZ_UI_STATUS_CAPACITY];
     size_t index;
@@ -38,7 +43,8 @@ int main(void)
     }
     for (index = 0u; index < WZ_UI_TOOLBAR_COUNT; ++index) {
         const wz_ui_toolbar_item_t* item = wz_ui_layout_toolbar_at(index);
-        if (item == 0 || strcmp(item->command_id, expected_toolbar[index]) != 0) {
+        if (item == 0 || strcmp(item->command_id, expected_toolbar[index]) != 0 ||
+            strcmp(item->label, expected_toolbar_labels[index]) != 0) {
             return 1;
         }
     }
