@@ -2668,7 +2668,7 @@
     {
       "cr_number": "CR-0287",
       "title": "Open / Run subsystem dispatch",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "architecture_2_phase_12j",
       "blocking": false,
@@ -2679,7 +2679,7 @@
         "src/app/wz_file_open_run.h",
         "src/app/wz_file_open_run.c"
       ],
-      "notes": "Dispatch classified Open / Run paths to the owning tape, snapshot, or Microdrive handler without fallback or machine-state mutation in the host seam."
+      "notes": "Closed after exact CODE packet 8d128bb2c1e6bad0b85d504094f6c3ac9342886825f2624f232a444cbcaf3f63, hosted platform-smoke run 34100091787 passed all 20 lanes and publication, evidence-tree verification passed, TEST_ARTIFACT packet 31fdfef76b6895f386a582f4d61bff7407ebb0f53af61354bcfbed161c9df8b3 passed, and final DOCUMENTATION packet d53338f91c11cb09274019d35d06e203af0f5893c1f4b024e8afac20783a03f0 passed."
     }
   ]
 }
