@@ -2572,7 +2572,7 @@
     {
       "cr_number": "CR-0281",
       "title": "Shared display settings surface",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "architecture_2_phase_12e",
       "blocking": false,
@@ -2583,7 +2583,7 @@
         "src/app/wz_host_presentation.h",
         "src/app/wz_host_scaling.h"
       ],
-      "notes": "Preflight approved for one shared host-only Display settings surface. Upstream and architecture inventory completed; no harness or wrapper changes permitted."
+      "notes": "Closed after shared host-only Display settings implementation, exact CODE PASS, focused Windows/macOS artifact PASS records, hosted run 34086246586 passing housekeeping, all 20 lanes and publication, and final DOCUMENTATION PASS. No local build/test; cleanup change was limited to the hosted cancellation race blocker."
     }
   ]
 }
