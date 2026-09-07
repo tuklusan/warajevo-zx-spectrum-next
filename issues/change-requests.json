@@ -2517,7 +2517,7 @@
         "src/app/wz_speed_policy.h",
         "src/app/wz_host_audio_policy.h"
       ],
-      "notes": "Implementing the application-layer toolbar speed selector with canonical value enumeration, immediate status/audio reflection, and invalid-value rejection. No harness or wrapper changes permitted."
+      "notes": "Implementation and validation evidence recorded; awaiting final documentation review. Application-layer toolbar speed selector enumerates canonical values, reflects status/audio state immediately, and rejects invalid values. No harness or wrapper changes permitted."
     }
   ]
 }
