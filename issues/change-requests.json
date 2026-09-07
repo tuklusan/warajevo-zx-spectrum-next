@@ -2876,7 +2876,7 @@
         "src/app/wz_snapshot_save_workflow.h",
         "src/app/wz_command_registry.h"
       ],
-      "notes": "Implementation in progress; add a toolkit-independent GUI save workflow that acquires a bounded destination and delegates PNG encoding to the shared screenshot service."
+      "notes": "Implementation and validation evidence recorded; hosted run 34151575366 passed all 20 lanes, TEST_ARTIFACT review passed with zero confirmed findings, Linux remote smoke passed, and Windows 10 reached 32/33 tests before an installed Python 3.12 ipaddress.py environment error. Awaiting final DOCUMENTATION review before closure."
     }
   ]
 }
