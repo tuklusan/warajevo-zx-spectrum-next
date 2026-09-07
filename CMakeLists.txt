@@ -230,7 +230,8 @@ add_test(NAME wz_presentation_snapshot_tests COMMAND wz_presentation_snapshot_te
 
 add_executable(wz_host_presentation_tests
     tests/wz_host_presentation_tests.c
-    src/app/wz_host_presentation.c)
+    src/app/wz_host_presentation.c
+    src/app/wz_host_scaling.c)
 target_link_libraries(wz_host_presentation_tests PRIVATE wz_core)
 add_test(NAME wz_host_presentation_tests COMMAND wz_host_presentation_tests)
 
