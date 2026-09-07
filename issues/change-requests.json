@@ -2959,7 +2959,7 @@
         "src/app/wz_screenshot_service.c",
         "tests/wz_screenshot_service_tests.c"
       ],
-      "notes": "Implementation in progress; prove equivalent GUI/Telnet raster inputs produce identical PNG bytes without GUI chrome or destination metadata."
+      "notes": "Implementation and validation evidence recorded; four remote smoke lanes passed, hosted run 34163418419 passed all 20 lanes, evidence-tree verification passed, and TEST_ARTIFACT review passed with zero confirmed findings. Awaiting final DOCUMENTATION review before closure."
     }
   ]
 }
