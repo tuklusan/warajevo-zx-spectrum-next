@@ -2555,7 +2555,7 @@
     {
       "cr_number": "CR-0280",
       "title": "Machine and media status panel",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "architecture_2_phase_12d",
       "blocking": false,
@@ -2567,7 +2567,7 @@
         "src/app/wz_ui_layout.c",
         "src/app/wz_command_registry.h"
       ],
-      "notes": "Implementation and hosted validation evidence recorded for 013eefa8c0be9b6e1a611643574eab6f9cadc34c. CODE packet 40e39f701e35abcb628b71621476385282f379bc9ab8e0d66d2acfbc0c1623b3; hosted run 34084719617 passed all 20 lanes, housekeeping, and publication inspection; hosted evidence tree verified; representative TEST_ARTIFACT packets a4a494ec2fb4259e467f70c0f6c1e1670e64bbc55ef0ae5fc5f26207f7ec1703, 23b5ffdbf8feaec21fec78161b7b96328804b39ae3a25141e174728d450b1c63, 9d1ff1aa61c12a2d24c249bdf75596fa9673e224938532ab94a4025938a70498, and 31fd8f7b9edec77cc4aa5dda91c93813fa2b4721bffdaa9b6c286a34b54ef253 passed. No local build/test and no harness/wrapper changes. Awaiting final DOCUMENTATION review."
+      "notes": "Closed after shared machine/media status panel implementation and validation. Implementation head 013eefa8c0be9b6e1a611643574eab6f9cadc34c; CODE packet 40e39f701e35abcb628b71621476385282f379bc9ab8e0d66d2acfbc0c1623b3; hosted run 34084719617 passed all 20 lanes, housekeeping, and publication inspection; hosted evidence tree verified; representative TEST_ARTIFACT packets a4a494ec2fb4259e467f70c0f6c1e1670e64bbc55ef0ae5fc5f26207f7ec1703, 23b5ffdbf8feaec21fec78161b7b96328804b39ae3a25141e174728d450b1c63, 9d1ff1aa61c12a2d24c249bdf75596fa9673e224938532ab94a4025938a70498, and 31fd8f7b9edec77cc4aa5dda91c93813fa2b4721bffdaa9b6c286a34b54ef253 passed; final DOCUMENTATION packet 564be5bbeafc229899ca94435f4dfe53d879cfdbc875c08ff39c3c34f4420b3f passed. No local build/test and no harness/wrapper changes."
     }
   ]
 }
