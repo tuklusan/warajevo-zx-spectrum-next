@@ -2864,7 +2864,7 @@
     {
       "cr_number": "CR-0299",
       "title": "GUI Save Screenshot workflow",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "architecture_2_phase_12t",
       "blocking": false,
@@ -2876,7 +2876,7 @@
         "src/app/wz_snapshot_save_workflow.h",
         "src/app/wz_command_registry.h"
       ],
-      "notes": "Implementation and validation evidence recorded; hosted run 34151575366 passed all 20 lanes, TEST_ARTIFACT review passed with zero confirmed findings, Linux remote smoke passed, and Windows 10 reached 32/33 tests before an installed Python 3.12 ipaddress.py environment error. Awaiting final DOCUMENTATION review before closure."
+      "notes": "Closed after hosted run 34151575366 passed all 20 lanes, TEST_ARTIFACT and final DOCUMENTATION reviews passed with zero confirmed findings, and Linux remote smoke passed. Windows 10 reached 32/33 tests before an installed Python 3.12 ipaddress.py environment error; no harness modification was made."
     }
   ]
 }
