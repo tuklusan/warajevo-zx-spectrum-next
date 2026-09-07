@@ -995,6 +995,7 @@ class GateTests(unittest.TestCase):
 
     def test_review_lock_updates_preserve_project_identity(self):
         with private_tempdir() as directory:
+            directory = Path(directory)
             path = directory / "active-review.json"
             path.write_text(json.dumps({"project_id": "wrong-project"}) + "\n", encoding="utf-8")
             telemetry = gate.Telemetry("CODE", "snapshot", "CR-0020", "packet")
