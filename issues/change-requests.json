@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 303,
+  "next_cr_number": 304,
   "status_values": [
     "open",
     "in_progress",
@@ -2928,6 +2928,21 @@
         "tests/wz_snapshot_save_workflow_tests.c"
       ],
       "notes": "Implementation in progress; add immediate screenshot and snapshot state-preservation assertions for cancellation and non-destructive failures without changing runtime behavior."
+    },
+    {
+      "cr_number": "CR-0303",
+      "title": "Harden hosted publication-lane verification",
+      "status": "in_progress",
+      "priority": "high",
+      "execution_order": "workflow_infrastructure_before_architecture_queue",
+      "blocking": true,
+      "source_authority": [
+        "design/cr-preflight/CR-0303.md",
+        "WORKFLOW.md",
+        ".github/workflows/platform-smoke.yml",
+        "tools/harness/verify_platform_evidence.py"
+      ],
+      "notes": "Implementation in progress; correct the false-negative publication checker using the completed all-green matrix evidence, with no product matrix rerun for this instrumentation-only fix."
     }
   ]
 }
