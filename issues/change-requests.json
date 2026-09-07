@@ -2489,7 +2489,7 @@
     {
       "cr_number": "CR-0276",
       "title": "Separate Windows TTY execution from binary archive transport",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "workflow_first_out_of_order",
       "blocking": true,
@@ -2500,7 +2500,7 @@
         "tools/harness/invoke_remote_harness.py",
         "tools/harness/stream_zip_tree.py"
       ],
-      "notes": "Operator-authorized correction for Windows archive transport rejecting a TTY-contaminated base64 stream. Preserve TTY for interactive Windows commands and force non-TTY for binary archive pulls; re-prove Windows 10 and Windows 11, then update the harness lock evidence."
+      "notes": "Closed at 73b411b after operator-authorized correction. Exact CODE packet cca2c855c7c5e6fb42b3c195af47f352a568ad01334544df412341d0a2ccbbb5, TEST_ARTIFACT packets 3d6a7d62aa2377a91fe19a1aa8c309ae6ebdbdac4d577c32c3e2f30b136423b0 and b387425adc8c8e998f562d2a748cc60915c7212814e4553a4e0fb40a71fb050a, final DOCUMENTATION packet 828f90ea377723b4c05b90d31dd0c7b748c53ba38799c30e88143d7f8b7486b6. Windows 10/11 remote smoke and hosted 20-lane publication run 34073820228 passed. Harness lock updated and no local build/test run."
     }
   ]
 }
