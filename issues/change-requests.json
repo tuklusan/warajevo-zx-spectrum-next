@@ -2881,7 +2881,7 @@
     {
       "cr_number": "CR-0300",
       "title": "Bind toolbar Screenshot to the GUI screenshot workflow",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "architecture_2_phase_12u",
       "blocking": false,
@@ -2893,7 +2893,7 @@
         "src/app/wz_ui_layout.c",
         "src/app/wz_command_registry.h"
       ],
-      "notes": "Implementation and validation evidence recorded; four remote smoke lanes passed, hosted run 34154321519 passed all 20 lanes, and TEST_ARTIFACT review passed with zero confirmed findings. Awaiting final DOCUMENTATION review before closure."
+      "notes": "Closed after four remote smoke lanes passed, hosted run 34154321519 passed all 20 lanes, TEST_ARTIFACT and final DOCUMENTATION reviews passed with zero confirmed findings, and evidence-tree verification passed. No harness or wrapper changes were made."
     }
   ]
 }
