@@ -271,7 +271,8 @@ def ssh_base(root: Path, machine: dict[str, str]) -> list[str]:
     if password_environment and os.environ.get(password_environment) and shutil.which("sshpass"):
         command = [
             "sshpass", "-e", "ssh", "-tt", "-o", "PreferredAuthentications=password",
-            "-o", "PubkeyAuthentication=no", "-o", "ConnectTimeout=30",
+            "-o", "PubkeyAuthentication=no", "-o", "StrictHostKeyChecking=no",
+            "-o", "ConnectTimeout=30",
             *known_hosts_option(root),
         ]
         return command
