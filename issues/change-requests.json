@@ -2915,7 +2915,7 @@
     {
       "cr_number": "CR-0302",
       "title": "Add cancellation and failure state-preservation regressions",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "architecture_2_phase_12w",
       "blocking": false,
@@ -2927,7 +2927,7 @@
         "tests/wz_snapshot_workflow_tests.c",
         "tests/wz_snapshot_save_workflow_tests.c"
       ],
-      "notes": "Implementation and validation evidence recorded; four remote smoke lanes passed, the original product matrix run 34160498964 passed all 20 product lanes, corrected publication validation run 34161538129 passed all 20 lanes, and TEST_ARTIFACT review passed with zero confirmed findings. Awaiting final DOCUMENTATION review before closure."
+      "notes": "Closed after four remote smoke lanes passed, the original product matrix run 34160498964 passed all 20 product lanes, corrected publication validation run 34161538129 passed all 20 lanes, and TEST_ARTIFACT and final DOCUMENTATION reviews passed with zero confirmed findings."
     },
     {
       "cr_number": "CR-0303",
