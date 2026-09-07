@@ -2412,7 +2412,7 @@
     {
       "cr_number": "CR-0271",
       "title": "Freeze noninteractive Intel Mac SSH fallback",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "workflow_first_out_of_order",
       "blocking": false,
@@ -2422,7 +2422,7 @@
         "tools/harness/invoke_remote_harness.py",
         "tools/harness/README.md"
       ],
-      "notes": "Opened out of order to eliminate Mac SSH prompt stalls. The password fallback now uses the proven password-only TTY path with strict noninteractive host-key handling; the key fallback remains available."
+      "notes": "Closed with implementation candidate cb5e5a3, CODE packet 87e7491e58939d9612845dae27623da4a235884257f222cf9df893684fd24144, and final DOCUMENTATION packet c552fd460891e3ccf74fef418377ac15ef5a95762483a8d310a87db3c03b85d9. Mac CR0270-MAC-R5 and hosted run 34070133625 passed; the subsequent CR-0272 lock and transfer correction supersedes this authentication-only change."
     },
     {
       "cr_number": "CR-0272",
