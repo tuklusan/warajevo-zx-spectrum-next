@@ -12,6 +12,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include <stdbool.h>
 #include <stddef.h>
 
+#include "app/wz_speed_policy.h"
+
 #define WZ_UI_MENU_COUNT 7u
 #define WZ_UI_TOOLBAR_COUNT 11u
 #define WZ_UI_STATUS_CAPACITY 192u
@@ -48,5 +50,9 @@ const wz_ui_toolbar_item_t* wz_ui_layout_toolbar_at(size_t index);
 void wz_ui_layout_status_line(const wz_ui_layout_state_t* state,
                               char* output,
                               size_t capacity);
+size_t wz_ui_layout_speed_count(void);
+const char* wz_ui_layout_speed_label(size_t index);
+bool wz_ui_layout_select_speed(wz_ui_layout_state_t* state,
+                               wz_speed_policy_t speed);
 
 #endif

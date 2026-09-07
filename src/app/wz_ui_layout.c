@@ -10,6 +10,12 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include <stdio.h>
 
+#include "app/wz_host_audio_policy.h"
+
+static const char* speed_labels[WZ_SPEED_COUNT] = {
+    "25%", "50%", "100%", "200%", "400%", "800%", "Unlimited"
+};
+
 static const wz_ui_menu_node_t menus[WZ_UI_MENU_COUNT] = {
     {"file", "File"},
     {"machine", "Machine"},
@@ -118,4 +124,26 @@ void wz_ui_layout_status_line(const wz_ui_layout_state_t* state,
                        control_port);
     }
     output[capacity - 1u] = '\0';
+}
+
+size_t wz_ui_layout_speed_count(void)
+{
+    return WZ_SPEED_COUNT;
+}
+
+const char* wz_ui_layout_speed_label(size_t index)
+{
+    return index < WZ_SPEED_COUNT ? speed_labels[index] : 0;
+}
+
+bool wz_ui_layout_select_speed(wz_ui_layout_state_t* state,
+                               wz_speed_policy_t speed)
+{
+    if (state == 0 || !wz_speed_policy_valid(speed)) {
+        return false;
+    }
+    state->speed_percent = wz_speed_policy_percent(speed);
+    state->unlimited_speed = wz_speed_policy_is_unlimited(speed);
+    state->audio_muted = !wz_host_audio_enabled(speed);
+    return true;
 }
