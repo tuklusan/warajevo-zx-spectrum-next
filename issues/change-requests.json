@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 295,
+  "next_cr_number": 296,
   "status_values": [
     "open",
     "in_progress",
@@ -2793,6 +2793,24 @@
         "reference/original-warajevo/source/src/environment/WARAJEVO.PAS"
       ],
       "notes": "Closed after implementing the stable Tools Snapshot Inspector boundary using shared read-only debugger snapshot and paging inspection; format-specific display, editing, and host presentation remain deferred to later tasks. CODE packet 48f4ee65daed4775b0d94d0f9b31b03bf1df6c2b28c686537fea0119f463b0a5 passed; hosted 20-lane platform-smoke run 34118029741 passed after housekeeping and evidence inspection; TEST_ARTIFACT packet 54213f65abcec00a8bac23a339d72bf9c77f08e3ab5128eb250bfd072cb53afc and final DOCUMENTATION packet 362560aeca6fcb7b6d3494e44b36e231f3b632c091fed07893cf7e1838b0a0a3 passed. No local build/test and no harness/wrapper changes."
+    },
+    {
+      "cr_number": "CR-0295",
+      "title": "Snapshot Inspector metadata display",
+      "status": "in_progress",
+      "priority": "high",
+      "execution_order": "architecture_2_phase_12q",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0295.md",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md sections 13.1-13.3",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 291",
+        "src/core/wz_debugger.h",
+        "src/core/wz_machine.h",
+        "src/app/wz_snapshot_inspector.h",
+        "src/app/wz_snapshot_inspector.c"
+      ],
+      "notes": "Implementation in progress; candidate metadata projection is read-only and derives from shared debugger, profile, AY, and memory ownership seams."
     }
   ]
 }

@@ -7,6 +7,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 */
 
 #include <stdio.h>
+#include <string.h>
 
 #include "app/wz_snapshot_inspector.h"
 #include "core/wz_machine.h"
@@ -17,6 +18,7 @@ int main(void)
     wz_snapshot_inspector_t inspector;
     const wz_debugger_snapshot_t* view;
     const wz_debugger_page_info_t* paging;
+    char formatted[512];
 
     wz_snapshot_inspector_init(&inspector);
     if (wz_snapshot_inspector_is_open(&inspector) ||
@@ -38,7 +40,17 @@ int main(void)
     if (view->cpu.program_counter != machine.cpu.program_counter ||
         view->master_tick != machine.master_tick ||
         paging->paging_value != 0u || paging->screen_bank != 5u ||
-        paging->rom_bank != 0u || paging->paging_locked != 0u) {
+        paging->rom_bank != 0u || paging->paging_locked != 0u ||
+        inspector.model_kind != WZ_MACHINE_48K_PAL ||
+        strcmp(inspector.format_name, "live-machine") != 0 ||
+        strcmp(inspector.format_version, "runtime") != 0 ||
+        inspector.memory_page_count != 3u || inspector.warning_count != 0u ||
+        wz_snapshot_inspector_format(&inspector, formatted, sizeof(formatted)) != WZ_RESULT_OK ||
+        strstr(formatted, "Format: live-machine/runtime") == 0 ||
+        strstr(formatted, "Model: ZX Spectrum 48K PAL") == 0 ||
+        strstr(formatted, "Paging:") == 0 || strstr(formatted, "AY:") == 0 ||
+        strstr(formatted, "Memory pages: 3") == 0 ||
+        strstr(formatted, "Warnings: 0") == 0) {
         wz_machine_destroy(&machine);
         return 1;
     }

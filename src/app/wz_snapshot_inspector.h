@@ -10,10 +10,12 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #define WZ_APP_WZ_SNAPSHOT_INSPECTOR_H
 
 #include <stdbool.h>
+#include <stddef.h>
 
 #include "core/wz_debugger.h"
 
 #define WZ_SNAPSHOT_INSPECTOR_COMMAND_ID "tools.snapshot_inspector"
+#define WZ_SNAPSHOT_INSPECTOR_MAX_WARNINGS 4u
 
 typedef enum {
     WZ_SNAPSHOT_INSPECTOR_OK = 0,
@@ -24,6 +26,16 @@ typedef enum {
 typedef struct {
     wz_debugger_snapshot_t machine;
     wz_debugger_page_info_t paging;
+    const char* format_name;
+    const char* format_version;
+    const char* model_name;
+    wz_machine_kind_t model_kind;
+    wz_byte_t ay_selected_register;
+    wz_byte_t ay_registers[WZ_AY_REGISTER_COUNT];
+    wz_byte_t memory_pages[WZ_128K_RAM_BANK_COUNT];
+    size_t memory_page_count;
+    size_t warning_count;
+    const char* warnings[WZ_SNAPSHOT_INSPECTOR_MAX_WARNINGS];
     bool open;
 } wz_snapshot_inspector_t;
 
@@ -37,5 +49,9 @@ const wz_debugger_snapshot_t* wz_snapshot_inspector_machine(
     const wz_snapshot_inspector_t* inspector);
 const wz_debugger_page_info_t* wz_snapshot_inspector_paging(
     const wz_snapshot_inspector_t* inspector);
+const wz_snapshot_inspector_t* wz_snapshot_inspector_metadata(
+    const wz_snapshot_inspector_t* inspector);
+wz_result_t wz_snapshot_inspector_format(const wz_snapshot_inspector_t* inspector,
+                                        char* output, size_t capacity);
 
 #endif
