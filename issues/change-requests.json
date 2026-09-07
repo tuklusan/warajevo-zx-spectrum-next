@@ -2848,7 +2848,7 @@
     {
       "cr_number": "CR-0298",
       "title": "Reuse complete matrix evidence for post-matrix instrumentation repairs",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "medium",
       "execution_order": "workflow_infrastructure_before_architecture_queue",
       "blocking": false,
@@ -2859,7 +2859,7 @@
         "tools/validate_project_gates.py",
         ".github/workflows/platform-smoke.yml"
       ],
-      "notes": "Opened to make exact-commit reuse of a complete passing matrix explicit for instrumentation-only corrections; product or lane-execution changes still require a fresh matrix."
+      "notes": "Closed after making exact-commit reuse of a complete passing matrix explicit for instrumentation-only corrections; product or lane-execution changes still require a fresh matrix. Static repository gates and CODE/DOCUMENTATION reviews passed with zero confirmed findings. No hosted matrix was required because no product or lane execution behavior changed."
     }
   ]
 }
