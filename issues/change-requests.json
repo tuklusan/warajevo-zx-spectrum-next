@@ -2601,6 +2601,22 @@
         "src/app/wz_sokol_main.c"
       ],
       "notes": "Closed after host-window composition seam and acceptance test implementation. Exact CODE packet 41a8e285c6a16a08c7ea45c884614f42f713c9dd6801a927efc5a996604627f6 passed; hosted run 34088573337 passed deep housekeeping, all 20 lanes, evidence publication, and publication gate; evidence-tree verification passed; representative Windows x64, Windows ARM, macOS Intel, and macOS ARM artifact reviews passed; final DOCUMENTATION packet 83e89fa63ee03298ba36e9c31a38e5e8b53f93673ff6df5e6b0fc8b90aef0d8d passed. All local probes passed; no local build/test and no harness/wrapper changes."
+    },
+    {
+      "cr_number": "CR-0283",
+      "title": "Control Port status label reconciliation",
+      "status": "in_progress",
+      "priority": "medium",
+      "execution_order": "architecture_2_phase_12g",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0283.md",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 279",
+        "src/app/wz_ui_layout.c",
+        "tests/wz_ui_layout_tests.c"
+      ],
+      "notes": "Reconcile the already-present Control Port status behavior against task 279 and its upstream/UI acceptance requirements. No duplicate implementation is permitted; close only after the existing behavior and tests pass all gates."
     }
   ]
 }
