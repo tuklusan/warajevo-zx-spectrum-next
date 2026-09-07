@@ -2605,7 +2605,7 @@
     {
       "cr_number": "CR-0283",
       "title": "Control Port status label reconciliation",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "medium",
       "execution_order": "architecture_2_phase_12g",
       "blocking": false,
@@ -2616,7 +2616,7 @@
         "src/app/wz_ui_layout.c",
         "tests/wz_ui_layout_tests.c"
       ],
-      "notes": "Reconcile the already-present Control Port status behavior against task 279 and its upstream/UI acceptance requirements. No duplicate implementation is permitted; close only after the existing behavior and tests pass all gates."
+      "notes": "Closed as a no-code reconciliation: the shared layout status line already emits the exact available/unavailable Control Port alternatives and existing tests cover both. Exact CODE packet 142e723546071fe795fdf07c3c382c2c50a37c771af26460288631352bc18396, hosted run 34090078094, evidence-tree verification, representative Windows/macOS artifact reviews, and final DOCUMENTATION packet 7efb9aa16074606c69467fa1899e39325be64794608dacc97e56c7ade711e828 all passed. All four local probes passed; no local build/test and no harness/wrapper changes."
     }
   ]
 }
