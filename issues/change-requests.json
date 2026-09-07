@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 302,
+  "next_cr_number": 303,
   "status_values": [
     "open",
     "in_progress",
@@ -2911,6 +2911,23 @@
         "src/app/wz_host_config.c"
       ],
       "notes": "Closed after Linux, Windows 11, and Intel Mac remote smoke passed, hosted run 34157806081 passed all 20 lanes, evidence-tree verification passed, and TEST_ARTIFACT and final DOCUMENTATION reviews passed with zero confirmed findings. Windows 10 archive pull remained truncated by the known transport limitation; no harness or wrapper changes were made."
+    },
+    {
+      "cr_number": "CR-0302",
+      "title": "Add cancellation and failure state-preservation regressions",
+      "status": "in_progress",
+      "priority": "high",
+      "execution_order": "architecture_2_phase_12w",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0302.md",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md sections 45 and 47",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 297",
+        "tests/wz_screenshot_save_workflow_tests.c",
+        "tests/wz_snapshot_workflow_tests.c",
+        "tests/wz_snapshot_save_workflow_tests.c"
+      ],
+      "notes": "Implementation in progress; add immediate screenshot and snapshot state-preservation assertions for cancellation and non-destructive failures without changing runtime behavior."
     }
   ]
 }

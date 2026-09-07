@@ -35,14 +35,17 @@ int main(void)
     assert(written == 0u && wz_screenshot_save_current_destination(&workflow) == 0);
     assert(wz_screenshot_save_as(&workflow, 0, &raster, png, sizeof(png), &written) ==
            WZ_SCREENSHOT_SAVE_CANCELLED);
-    assert(wz_screenshot_save_current_destination(&workflow) == 0);
+    assert(wz_screenshot_save_current_destination(&workflow) == 0 &&
+           memcmp(samples, original, sizeof(samples)) == 0);
     assert(wz_screenshot_save_as(&workflow, "", &raster, png, sizeof(png), &written) ==
            WZ_SCREENSHOT_SAVE_INVALID_DESTINATION);
-    assert(wz_screenshot_save_current_destination(&workflow) == 0);
+    assert(wz_screenshot_save_current_destination(&workflow) == 0 &&
+           memcmp(samples, original, sizeof(samples)) == 0);
     assert(wz_screenshot_save_as(&workflow, "screen.png", &raster, png, required - 1u,
                                  &written) == WZ_SCREENSHOT_SAVE_BUFFER_TOO_SMALL);
-    assert(written == required);
-    assert(wz_screenshot_save_current_destination(&workflow) == 0);
+    assert(written == required &&
+           wz_screenshot_save_current_destination(&workflow) == 0 &&
+           memcmp(samples, original, sizeof(samples)) == 0);
     assert(wz_screenshot_save_as(&workflow, "screen.png", &raster, png, sizeof(png),
                                  &written) == WZ_SCREENSHOT_SAVE_OK);
     assert(written == required);

@@ -13,13 +13,18 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 int main(void)
 {
     wz_snapshot_save_workflow_t workflow;
+    char too_long[WZ_SNAPSHOT_DESTINATION_CAPACITY + 1u];
 
     wz_snapshot_save_workflow_init(&workflow);
+    memset(too_long, 'x', sizeof(too_long));
+    too_long[sizeof(too_long) - 1u] = '\0';
     if (wz_snapshot_save(&workflow) != WZ_SNAPSHOT_SAVE_NEEDS_DESTINATION ||
         wz_snapshot_save_as(&workflow, "first.sna") != WZ_SNAPSHOT_SAVE_OK ||
         wz_snapshot_save(&workflow) != WZ_SNAPSHOT_SAVE_OK ||
         strcmp(wz_snapshot_save_current_destination(&workflow), "first.sna") != 0 ||
         wz_snapshot_save_as(&workflow, "") != WZ_SNAPSHOT_SAVE_INVALID_DESTINATION ||
+        strcmp(wz_snapshot_save_current_destination(&workflow), "first.sna") != 0 ||
+        wz_snapshot_save_as(&workflow, too_long) != WZ_SNAPSHOT_SAVE_INVALID_DESTINATION ||
         strcmp(wz_snapshot_save_current_destination(&workflow), "first.sna") != 0 ||
         wz_snapshot_save_set_destination(&workflow, NULL) !=
             WZ_SNAPSHOT_SAVE_INVALID_DESTINATION) {
