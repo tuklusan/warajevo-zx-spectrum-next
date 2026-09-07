@@ -30,6 +30,21 @@ static wz_result_t handler(const void* context,
     return WZ_RESULT_OK;
 }
 
+static const void* activated_context;
+static const void* activated_data;
+static size_t activated_size;
+
+static wz_result_t screenshot_handler(const void* context,
+                                      wz_command_arguments_t arguments,
+                                      wz_command_result_t* result)
+{
+    activated_context = context;
+    activated_data = arguments.data;
+    activated_size = arguments.size;
+    result->status = WZ_COMMAND_RESULT_SUCCESS;
+    return WZ_RESULT_OK;
+}
+
 int main(void)
 {
     static const char* expected_menus[] = {
@@ -54,9 +69,37 @@ int main(void)
     wz_command_metadata_t storage[1];
     wz_command_registry_t registry;
     const char* reason;
+    const char screenshot_context = 'g';
+    const char screenshot_argument[] = "gui-destination";
 
     if (wz_ui_layout_menu_count() != WZ_UI_MENU_COUNT ||
         wz_ui_layout_toolbar_count() != WZ_UI_TOOLBAR_COUNT) {
+        return 1;
+    }
+    metadata = (wz_command_metadata_t){
+        .id = "host.screenshot.save",
+        .label = "Screenshot",
+        .description = "Save the Spectrum display",
+        .handler_identity = "gui.screenshot.save",
+        .permission = WZ_COMMAND_HOST_WRITE,
+        .handler = screenshot_handler,
+        .handler_context = &screenshot_context,
+    };
+    if (wz_command_registry_init(&registry, storage, 1u) != WZ_RESULT_OK ||
+        wz_command_registry_register(&registry, metadata) != WZ_RESULT_OK ||
+        wz_command_registry_finalize(&registry) != WZ_RESULT_OK ||
+        wz_ui_layout_activate_toolbar(
+            &registry, 8u,
+            (wz_command_arguments_t){screenshot_argument,
+                                     sizeof(screenshot_argument) - 1u},
+            &(wz_command_result_t){0}) != WZ_RESULT_OK ||
+        activated_context != &screenshot_context ||
+        activated_data != screenshot_argument ||
+        activated_size != sizeof(screenshot_argument) - 1u ||
+        wz_ui_layout_activate_toolbar(&registry, WZ_UI_TOOLBAR_COUNT,
+                                      (wz_command_arguments_t){0, 0u},
+                                      &(wz_command_result_t){0}) !=
+            WZ_RESULT_INVALID_ARGUMENT) {
         return 1;
     }
     for (index = 0u; index < WZ_UI_MENU_COUNT; ++index) {

@@ -214,6 +214,25 @@ bool wz_ui_layout_select_speed(wz_ui_layout_state_t* state,
     return true;
 }
 
+wz_result_t wz_ui_layout_activate_toolbar(
+    const wz_command_registry_t* registry,
+    size_t index,
+    wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    const wz_ui_toolbar_item_t* item;
+
+    if (result == 0 || index >= WZ_UI_TOOLBAR_COUNT) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    item = wz_ui_layout_toolbar_at(index);
+    if (item == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    return wz_command_registry_dispatch(registry, item->command_id,
+                                        arguments, result);
+}
+
 wz_command_state_t wz_ui_layout_command_state(
     const wz_command_registry_t* registry,
     const char* command_id,

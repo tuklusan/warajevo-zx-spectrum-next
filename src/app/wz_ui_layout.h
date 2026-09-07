@@ -64,6 +64,11 @@ size_t wz_ui_layout_speed_count(void);
 const char* wz_ui_layout_speed_label(size_t index);
 bool wz_ui_layout_select_speed(wz_ui_layout_state_t* state,
                                wz_speed_policy_t speed);
+wz_result_t wz_ui_layout_activate_toolbar(
+    const wz_command_registry_t* registry,
+    size_t index,
+    wz_command_arguments_t arguments,
+    wz_command_result_t* result);
 wz_command_state_t wz_ui_layout_command_state(
     const wz_command_registry_t* registry,
     const char* command_id,

@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 300,
+  "next_cr_number": 301,
   "status_values": [
     "open",
     "in_progress",
@@ -2877,6 +2877,23 @@
         "src/app/wz_command_registry.h"
       ],
       "notes": "Closed after hosted run 34151575366 passed all 20 lanes, TEST_ARTIFACT and final DOCUMENTATION reviews passed with zero confirmed findings, and Linux remote smoke passed. Windows 10 reached 32/33 tests before an installed Python 3.12 ipaddress.py environment error; no harness modification was made."
+    },
+    {
+      "cr_number": "CR-0300",
+      "title": "Bind toolbar Screenshot to the GUI screenshot workflow",
+      "status": "in_progress",
+      "priority": "high",
+      "execution_order": "architecture_2_phase_12u",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0300.md",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md section 24.2",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 295",
+        "src/app/wz_ui_layout.h",
+        "src/app/wz_ui_layout.c",
+        "src/app/wz_command_registry.h"
+      ],
+      "notes": "Implementation in progress; activate toolbar items through the shared command registry so Screenshot reaches the GUI save workflow and never the Telnet temporary-path behavior."
     }
   ]
 }
