@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 301,
+  "next_cr_number": 302,
   "status_values": [
     "open",
     "in_progress",
@@ -2894,6 +2894,23 @@
         "src/app/wz_command_registry.h"
       ],
       "notes": "Closed after four remote smoke lanes passed, hosted run 34154321519 passed all 20 lanes, TEST_ARTIFACT and final DOCUMENTATION reviews passed with zero confirmed findings, and evidence-tree verification passed. No harness or wrapper changes were made."
+    },
+    {
+      "cr_number": "CR-0301",
+      "title": "Make host output creation and atomic replacement interprocess-safe",
+      "status": "in_progress",
+      "priority": "high",
+      "execution_order": "architecture_2_phase_12v",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0301.md",
+        "design/warajevo-zx-spectrum-next-architecture.md section 28.7",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md sections 44.1 and 49",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 296",
+        "src/app/wz_host_config.h",
+        "src/app/wz_host_config.c"
+      ],
+      "notes": "Implementation in progress; formalize reusable host-only atomic output writing for screenshots, snapshots, conversions, and exports without changing frozen harnesses."
     }
   ]
 }

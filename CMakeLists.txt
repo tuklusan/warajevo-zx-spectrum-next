@@ -312,6 +312,14 @@ add_executable(wz_host_presentation_tests
 target_link_libraries(wz_host_presentation_tests PRIVATE wz_core)
 add_test(NAME wz_host_presentation_tests COMMAND wz_host_presentation_tests)
 
+add_executable(
+    wz_host_output_tests
+    tests/wz_host_output_tests.c
+    src/app/wz_host_output.c)
+target_link_libraries(wz_host_output_tests PRIVATE wz_warnings)
+target_include_directories(wz_host_output_tests PRIVATE src)
+add_test(NAME wz_host_output_tests COMMAND wz_host_output_tests)
+
 if(WZSN_ENABLE_REVIEW_GATE_TESTS)
     find_package(Python3 COMPONENTS Interpreter REQUIRED)
     add_test(
