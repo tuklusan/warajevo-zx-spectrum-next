@@ -189,7 +189,9 @@ target_link_libraries(wz_command_registry_tests PRIVATE wz_core)
 add_executable(
     wz_ui_layout_tests
     tests/wz_ui_layout_tests.c
-    src/app/wz_ui_layout.c)
+    src/app/wz_ui_layout.c
+    src/app/wz_speed_policy.c
+    src/app/wz_host_audio_policy.c)
 target_link_libraries(wz_ui_layout_tests PRIVATE wz_core)
 
 add_executable(wz_screen_inspection_tests tests/wz_screen_inspection_tests.c)
