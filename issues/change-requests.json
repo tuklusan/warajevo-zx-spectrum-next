@@ -2831,7 +2831,7 @@
     {
       "cr_number": "CR-0297",
       "title": "Shared screenshot capture service",
-      "status": "closed",
+      "status": "in_progress",
       "priority": "high",
       "execution_order": "architecture_2_phase_12s",
       "blocking": false,
