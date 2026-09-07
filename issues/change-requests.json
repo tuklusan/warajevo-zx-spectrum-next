@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 282,
+    "next_cr_number": 286,
   "status_values": [
     "open",
     "in_progress",
@@ -2621,7 +2621,7 @@
     {
       "cr_number": "CR-0284",
       "title": "Registry-driven UI enabled state",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "architecture_2_phase_12h",
       "blocking": false,
@@ -2632,22 +2632,22 @@
         "src/app/wz_command_registry.h",
         "src/app/wz_ui_layout.h"
       ],
-      "notes": "Implement UI enabled/disabled state as a projection of the shared command registry availability predicates and reasons. No private UI predicates, duplicate handlers, harness changes, or wrapper changes are permitted."
+      "notes": "Closed after exact CODE packet 5264588ea01a42a456984025e28aeb5918924cd7cdf8724cf2824f4f075c2ec6, hosted platform-smoke run 34093506072 passed all 20 lanes, downloaded evidence-tree verification passed, and closure documentation was recorded."
     },
     {
       "cr_number": "CR-0285",
       "title": "Project-unique reviewer namespace",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "workflow_safety_interlock",
-      "blocking": true,
+      "blocking": false,
       "source_authority": [
         "design/cr-preflight/CR-0285.md",
         "design/review-gate.md",
         "tools/reviewer/review_gate.py",
         "tests/test_review_gate.py"
       ],
-      "notes": "Add an explicit stable repository identity to outbound review framing, lock records, telemetry, and receipts so concurrent projects cannot be confused. This is a narrow workflow-safety correction and must not change review verdict semantics."
+      "notes": "Closed after correcting explicit lock identity reassertion. Initial exact review packet 00ad6db12bc0fb941adf7afedc1ab09cc159bbff8296407dc39d3be9b12a0d85 found one high-severity persistence gap; corrected exact CODE packet ffa46c20859aafbe3e8666b0267067fc27fc0fa75b49c6c140f77add4b272f6d passed with zero findings at commit 1abbad0."
     }
   ]
 }
