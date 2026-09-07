@@ -19,7 +19,7 @@
     {
       "cr_number": "CR-0001",
       "title": "Create canonical repository skeleton and bootstrap build",
-      "status": "closed",
+      "status": "in_progress",
       "source_authority": [
         "design/warajevo-zx-spectrum-next-architecture.md",
         "design/wzsn-architectures-1-2-developer-tasks.md task 001"
@@ -29,7 +29,7 @@
     {
       "cr_number": "CR-0002",
       "title": "Install repository gates for notice headers and reserved banned terms",
-      "status": "closed",
+      "status": "in_progress",
       "source_authority": [
         "project repository governance",
         "design/wzsn-architectures-1-2-developer-tasks.md task 004"
@@ -2349,7 +2349,7 @@
       "status": "closed",
       "priority": "low",
       "execution_order": "out_of_order_allowed",
-      "blocking": false,
+      "blocking": true,
       "source_authority": [
         "design/cr-preflight/CR-0267.md",
         "WORKFLOW.md",
