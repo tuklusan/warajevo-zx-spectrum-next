@@ -2505,7 +2505,7 @@
     {
       "cr_number": "CR-0277",
       "title": "Implement toolbar speed selector state reflection",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "architecture_2_phase_12b",
       "blocking": false,
@@ -2517,7 +2517,7 @@
         "src/app/wz_speed_policy.h",
         "src/app/wz_host_audio_policy.h"
       ],
-      "notes": "Implementation and validation evidence recorded; awaiting final documentation review. Application-layer toolbar speed selector enumerates canonical values, reflects status/audio state immediately, and rejects invalid values. No harness or wrapper changes permitted."
+      "notes": "Closed after toolbar speed selector implementation and validation. CODE packets 45fa856201620e4b47fa3b6c87f198c92ae35b7fa516cae02dec0aae5a4d3584 and 0f6dfc06c1d2cf1382aade438a989cf18b0f676b628b92571785a05e14523831, four passing R3 remote TEST_ARTIFACT packets, final DOCUMENTATION packet 0295b8e41bbfe5c1e587eaaf19e44b00558095ca0a7141946468b385d4b918fb, and hosted run 34079483977 passed."
     }
   ]
 }
