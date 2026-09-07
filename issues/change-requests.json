@@ -2484,7 +2484,7 @@
         "reference/original-warajevo/source/src/environment/WARAJEVO.PAS",
         "reference/original-warajevo/source/src/environment/HELP.TXT"
       ],
-      "notes": "Opened for the Phase-12B Help and About semantic action slice. Keep stable IDs and content projection independent of toolkit dialogs; platform-standard About relocation remains a host presentation concern."
+      "notes": "Implementation and validation evidence recorded; awaiting final documentation review. Stable IDs and deterministic content projection are independent of toolkit dialogs; platform-standard About relocation remains a host presentation concern."
     },
     {
       "cr_number": "CR-0276",
