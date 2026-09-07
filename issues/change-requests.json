@@ -2995,7 +2995,7 @@
         "src/app/wz_snapshot_workflow.h",
         "src/app/wz_screenshot_save_workflow.h"
       ],
-      "notes": "Implementation in progress; add aggregate File/Snapshot/Screenshot acceptance regression and CTest registration."
+      "notes": "Implementation commits 28dc9c6 and corrective test commit a1df9d6; initial Linux smoke exposed and corrected a test baseline defect, then four corrected remote smokes passed, hosted run 34167941503 passed all 20 lanes, evidence-tree verification passed, and TEST_ARTIFACT PASS. Awaiting active closure evidence and final DOCUMENTATION review."
     }
   ]
 }
