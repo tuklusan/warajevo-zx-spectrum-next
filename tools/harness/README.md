@@ -181,6 +181,14 @@ and wait for all lanes, including queued or slow lanes. A queued job is not a
 failure and must not trigger cancellation or a replacement run; the aggregate
 publication gate evaluates only terminal conclusions for the exact commit.
 
+When a matrix has completed and its product/build/test acceptance passed, a
+later correction limited to instrumentation or evidence handling may reuse that
+exact-commit run. Record the run ID, commit, correction scope, and reason in
+the active CR closure record. This exception covers manifests, log forwarding,
+screenshot/trace inspection, and publication bookkeeping only. Any product,
+test, build, runner-label, or lane-execution change requires a fresh matrix;
+queued, incomplete, cancelled, or failed runs cannot be reused.
+
 Every configured hosted macOS lane is scheduled when capacity permits. The
 publication gate accepts macOS verification when at least one Intel lane and
 at least one ARM lane succeeds, while every non-macOS lane succeeds. At CR

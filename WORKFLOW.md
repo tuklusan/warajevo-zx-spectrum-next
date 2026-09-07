@@ -107,6 +107,16 @@ including queued or slow lanes. Never cancel or replace a live run and never
 classify a queued lane as failed. Only terminal GitHub job conclusions may
 feed the publication gate.
 
+Completed matrix evidence may be reused for a later instrumentation-only
+correction when the prior run reached terminal state, passed the matrix's
+product/build/test acceptance criteria, and is bound to the exact commit.
+The active CR must record the prior run ID, commit, correction scope, and
+reason for reuse. Instrumentation-only corrections include manifest generation,
+log forwarding, screenshot or trace inspection, and publication bookkeeping;
+they must not alter product source, tests, build configuration, runner labels,
+or lane execution semantics. Any such product or execution change requires a
+fresh complete matrix run. An incomplete, queued, cancelled, or failed matrix is never eligible for this exception.
+
 The hosted matrix has a pre-matrix deep-housekeeping gate. It may cancel and
 delete only older `platform-smoke` workflow runs for the same ref; deleting the
 run also removes its temporary Actions artifacts without a per-artifact API
@@ -198,6 +208,8 @@ The parser check must succeed before the actual PowerShell command is executed.
 Every hosted matrix lane must complete its build and tests, emit its
 machine-readable result manifest, and upload the complete lane bundle. The
 The publication gate downloads and re-verifies every bundle before accepting the run.
+If a later correction only repairs that instrumentation after a complete
+passing matrix, reuse is allowed only under the completed-evidence rule above.
 Screenshots and traces are inspected by hash when produced; visual
 capture is required for a lane only when that platform/application supports an
 interactive host. Unsupported capture must be recorded explicitly, never

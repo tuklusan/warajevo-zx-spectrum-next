@@ -503,6 +503,8 @@ def validate_required_workflow_documents(root: Path) -> list[str]:
             "tools/Test-PowerShellSyntax.ps1",
             "Every hosted matrix lane must complete its build and tests",
             "The publication gate downloads and re-verifies every bundle",
+            "Completed matrix evidence may be reused for a later instrumentation-only",
+            "An incomplete, queued, cancelled, or failed matrix is never eligible for this exception.",
             "Cross-platform macOS acceptance is architecture-based, not count-based.",
             "one successful Intel macOS lane",
             "one successful ARM",
