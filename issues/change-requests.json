@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 292,
+  "next_cr_number": 293,
   "status_values": [
     "open",
     "in_progress",
@@ -2744,6 +2744,22 @@
         "src/app/wz_snapshot_workflow.c"
       ],
       "notes": "Closed after adding a transactional application Load Snapshot seam that validates into pending state and commits only complete valid snapshots. Exact CODE review passed with packet f1a022947a27005b5cd72cb2b9dad8134830e319807532c31cff661533307197; hosted 20-lane platform-smoke run 34110565581 passed after deep housekeeping and evidence-tree inspection; TEST_ARTIFACT packet f0a4fd347da81f1e6ace85683a7d24408f168bdb5dc7863d71b98c64d37cee69 and final DOCUMENTATION packet 4e1accdade1290a051c8df15c79a3da4948d2f793de531255e8bda71b2c5dd6a passed. No local build/test and no harness/wrapper changes."
+    },
+    {
+      "cr_number": "CR-0292",
+      "title": "Snapshot save destination workflow",
+      "status": "in_progress",
+      "priority": "high",
+      "execution_order": "architecture_2_phase_12o",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0292.md",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md sections 8.3 and 13.1",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 289",
+        "src/app/wz_snapshot_save_workflow.h",
+        "src/app/wz_snapshot_save_workflow.c"
+      ],
+      "notes": "Implement distinct Save Snapshot and Save Snapshot As destination acquisition behavior without changing core serialization or host harnesses."
     }
   ]
 }
