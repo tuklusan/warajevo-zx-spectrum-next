@@ -2732,7 +2732,7 @@
     {
       "cr_number": "CR-0291",
       "title": "Transactional Load Snapshot workflow",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "architecture_2_phase_12n",
       "blocking": false,
@@ -2743,7 +2743,7 @@
         "src/app/wz_snapshot_workflow.h",
         "src/app/wz_snapshot_workflow.c"
       ],
-      "notes": "Add a transactional application Load Snapshot seam that validates into pending state and commits only complete valid snapshots."
+      "notes": "Closed after adding a transactional application Load Snapshot seam that validates into pending state and commits only complete valid snapshots. Exact CODE review passed with packet f1a022947a27005b5cd72cb2b9dad8134830e319807532c31cff661533307197; hosted 20-lane platform-smoke run 34110565581 passed after deep housekeeping and evidence-tree inspection; TEST_ARTIFACT packet f0a4fd347da81f1e6ace85683a7d24408f168bdb5dc7863d71b98c64d37cee69 and final DOCUMENTATION packet 4e1accdade1290a051c8df15c79a3da4948d2f793de531255e8bda71b2c5dd6a passed. No local build/test and no harness/wrapper changes."
     }
   ]
 }
