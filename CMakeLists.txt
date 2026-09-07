@@ -211,6 +211,14 @@ add_test(NAME wz_diagnostic_block_tests COMMAND wz_diagnostic_block_tests)
 add_test(NAME wz_application_lifecycle_tests COMMAND wz_application_lifecycle_tests)
 add_test(NAME wz_command_registry_tests COMMAND wz_command_registry_tests)
 add_test(NAME wz_ui_layout_tests COMMAND wz_ui_layout_tests)
+
+add_executable(
+    wz_ui_help_tests
+    tests/wz_ui_help_tests.c
+    src/app/wz_ui_help.c)
+target_link_libraries(wz_ui_help_tests PRIVATE wz_core)
+add_test(NAME wz_ui_help_tests COMMAND wz_ui_help_tests)
+
 add_test(NAME wz_screen_inspection_tests COMMAND wz_screen_inspection_tests)
 
 add_executable(wz_presentation_snapshot_tests

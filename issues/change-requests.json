@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 275,
+  "next_cr_number": 276,
   "status_values": [
     "open",
     "in_progress",
@@ -2468,6 +2468,23 @@
         "issues/change-requests.json"
       ],
       "notes": "Closed at f417309 after exact CODE packet f8e4ae05c4de4c4e440694753cdae0a5800632d28d0bd3d024fe6fdc2f224f2c and final DOCUMENTATION packet 2cce847ec9a6593fe4bfe3a7c9e8d94f309df1e34eea2bacba799a93903767d5. Implemented the state-ordering and handle-recovery invariant in WORKFLOW.md; documentation-only, with no build/test artifact claimed."
+    },
+    {
+      "cr_number": "CR-0275",
+      "title": "Implement semantic Help and About actions",
+      "status": "open",
+      "priority": "high",
+      "execution_order": "architecture_2_phase_12b",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0275.md",
+        "design/warajevo-zx-spectrum-next-architecture.md",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 267",
+        "reference/original-warajevo/source/src/environment/WARAJEVO.PAS",
+        "reference/original-warajevo/source/src/environment/HELP.TXT"
+      ],
+      "notes": "Opened for the Phase-12B Help and About semantic action slice. Keep stable IDs and content projection independent of toolkit dialogs; platform-standard About relocation remains a host presentation concern."
     }
   ]
 }
