@@ -6,6 +6,7 @@ Upstream Warajevo and third-party material retain their applicable copyrights an
 See LICENSE.txt and NOTICE.md for complete terms and provenance.
 */
 
+#include <stdio.h>
 #include <string.h>
 
 #include "app/wz_file_open_run.h"
@@ -58,6 +59,7 @@ int main(void)
         wz_file_open_run_dispatch("state.SNA", &handlers) != WZ_OPEN_RUN_OK ||
         wz_file_open_run_dispatch("drive.MDR", &handlers) != WZ_OPEN_RUN_OK ||
         probe.calls != 3u) {
+        fputs("file routing acceptance failed\n", stderr);
         return 1;
     }
 
@@ -66,6 +68,7 @@ int main(void)
     }
     wz_state_writer_init(&writer, snapshot, sizeof(snapshot));
     if (wz_state_serialize_machine(&machine, &writer) != WZ_RESULT_OK) {
+        fputs("snapshot serialization acceptance failed\n", stderr);
         wz_machine_destroy(&machine);
         return 1;
     }
@@ -79,6 +82,7 @@ int main(void)
                                   sizeof(invalid_snapshot)) !=
             WZ_SNAPSHOT_WORKFLOW_INVALID_SNAPSHOT ||
         wz_snapshot_workflow_current(&snapshot_workflow)->data[0u] != 13u) {
+        fputs("snapshot workflow acceptance failed\n", stderr);
         wz_machine_destroy(&machine);
         return 1;
     }
@@ -86,6 +90,7 @@ int main(void)
 
     memcpy(original_samples, samples, sizeof(samples));
     if (wz_raster_buffer_init(&raster, 2u, 2u, samples, sizeof(samples)) != WZ_RESULT_OK) {
+        fputs("raster initialization acceptance failed\n", stderr);
         return 1;
     }
     required = wz_screenshot_png_required_size(&raster);
@@ -100,6 +105,10 @@ int main(void)
         written != required ||
         memcmp(samples, original_samples, sizeof(samples)) != 0 ||
         memcmp(png, "\x89PNG\r\n\x1a\n", 8u) != 0) {
+        fprintf(stderr, "screenshot acceptance failed: required=%lu written=%lu destination=%s\n",
+                (unsigned long)required, (unsigned long)written,
+                wz_screenshot_save_current_destination(&screenshot_workflow) != 0 ?
+                    wz_screenshot_save_current_destination(&screenshot_workflow) : "<none>");
         return 1;
     }
     return 0;
