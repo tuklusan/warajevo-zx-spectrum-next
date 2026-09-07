@@ -44,7 +44,7 @@ static size_t png_required_for_raw(size_t raw_size)
     if (!mul_size(blocks, 5u, &deflate_size) ||
         !add_size(deflate_size, raw_size, &deflate_size) ||
         !add_size(deflate_size, 6u, &deflate_size) ||
-        !add_size(8u + 25u + 83u + 12u + 12u, deflate_size, &total)) {
+        !add_size(8u + 25u + 87u + 12u + 12u, deflate_size, &total)) {
         return 0u;
     }
     return total;
