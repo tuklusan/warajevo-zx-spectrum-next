@@ -52,10 +52,76 @@ void wz_ui_layout_state_init(wz_ui_layout_state_t* state)
     state->audio_muted = false;
     state->tape_mounted = false;
     state->microdrive1_mounted = false;
+    for (size_t index = 0u; index < WZ_UI_MICRODRIVE_COUNT; ++index) {
+        state->microdrive_mounted[index] = false;
+    }
     state->fullscreen = false;
     state->status_panel_visible = false;
+    state->networking_mode = "None";
+    state->remote_control_enabled = false;
+    state->remote_control_client_connected = false;
     state->control_port_available = false;
     state->control_port = 0u;
+}
+
+void wz_ui_layout_status_panel(const wz_ui_layout_state_t* state,
+                               char* output,
+                               size_t capacity)
+{
+    size_t index;
+    size_t used;
+    char speed_text[24];
+
+    if (output == 0 || capacity == 0u) {
+        return;
+    }
+    if (state == 0) {
+        output[0] = '\0';
+        return;
+    }
+    if (state->unlimited_speed) {
+        (void)snprintf(speed_text, sizeof(speed_text), "Unlimited");
+    } else {
+        (void)snprintf(speed_text, sizeof(speed_text), "%u%%", state->speed_percent);
+    }
+    used = (size_t)snprintf(output, capacity,
+                            "Model: %uK | Speed: %s | State: %s | Audio: %s | Tape: %s | ",
+                            state->model_k,
+                            speed_text,
+                            state->paused ? "paused" : "running",
+                            state->audio_muted ? "muted" : "audible",
+                            state->tape_mounted ? "mounted" : "none");
+    if (used >= capacity) {
+        output[capacity - 1u] = '\0';
+        return;
+    }
+    for (index = 0u; index < WZ_UI_MICRODRIVE_COUNT; ++index) {
+        int written = snprintf(output + used, capacity - used,
+                               "MDV %u: %s%s",
+                               (unsigned)(index + 1u),
+                               state->microdrive_mounted[index] ? "mounted" : "none",
+                               index + 1u == WZ_UI_MICRODRIVE_COUNT ? " | " : ", ");
+        if (written < 0 || (size_t)written >= capacity - used) {
+            output[capacity - 1u] = '\0';
+            return;
+        }
+        used += (size_t)written;
+    }
+    (void)snprintf(output + used, capacity - used,
+                   "Networking: %s | Remote: %s%s",
+                   state->networking_mode == 0 ? "None" : state->networking_mode,
+                   state->remote_control_enabled ? "enabled" : "disabled",
+                   state->remote_control_client_connected ? ", connected" : "");
+    output[capacity - 1u] = '\0';
+}
+
+bool wz_ui_layout_toggle_status_panel(wz_ui_layout_state_t* state)
+{
+    if (state == 0) {
+        return false;
+    }
+    state->status_panel_visible = !state->status_panel_visible;
+    return state->status_panel_visible;
 }
 
 size_t wz_ui_layout_menu_count(void)

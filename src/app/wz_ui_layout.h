@@ -17,6 +17,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #define WZ_UI_MENU_COUNT 7u
 #define WZ_UI_TOOLBAR_COUNT 11u
 #define WZ_UI_STATUS_CAPACITY 192u
+#define WZ_UI_MICRODRIVE_COUNT 8u
 
 typedef struct {
     const char* id;
@@ -36,8 +37,12 @@ typedef struct {
     bool audio_muted;
     bool tape_mounted;
     bool microdrive1_mounted;
+    bool microdrive_mounted[WZ_UI_MICRODRIVE_COUNT];
     bool fullscreen;
     bool status_panel_visible;
+    const char* networking_mode;
+    bool remote_control_enabled;
+    bool remote_control_client_connected;
     bool control_port_available;
     unsigned control_port;
 } wz_ui_layout_state_t;
@@ -50,6 +55,10 @@ const wz_ui_toolbar_item_t* wz_ui_layout_toolbar_at(size_t index);
 void wz_ui_layout_status_line(const wz_ui_layout_state_t* state,
                               char* output,
                               size_t capacity);
+void wz_ui_layout_status_panel(const wz_ui_layout_state_t* state,
+                               char* output,
+                               size_t capacity);
+bool wz_ui_layout_toggle_status_panel(wz_ui_layout_state_t* state);
 size_t wz_ui_layout_speed_count(void);
 const char* wz_ui_layout_speed_label(size_t index);
 bool wz_ui_layout_select_speed(wz_ui_layout_state_t* state,

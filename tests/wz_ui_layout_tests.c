@@ -28,6 +28,7 @@ int main(void)
         "Fullscreen", "Debugger"
     };
     wz_ui_layout_state_t state;
+    char panel[512];
     char status[WZ_UI_STATUS_CAPACITY];
     size_t index;
 
@@ -59,6 +60,25 @@ int main(void)
         return 1;
     }
     wz_ui_layout_state_init(&state);
+    wz_ui_layout_status_panel(&state, panel, sizeof(panel));
+    if (wz_ui_layout_toggle_status_panel(&state) != true ||
+        !state.status_panel_visible ||
+        wz_ui_layout_toggle_status_panel(&state) != false ||
+        state.status_panel_visible ||
+        wz_ui_layout_toggle_status_panel(NULL) ||
+        panel[0] == '\0') {
+        return 1;
+    }
+    state.microdrive_mounted[7] = true;
+    state.networking_mode = "Interface-1";
+    state.remote_control_enabled = true;
+    state.remote_control_client_connected = true;
+    wz_ui_layout_status_panel(&state, panel, sizeof(panel));
+    if (strstr(panel, "MDV 8: mounted") == 0 ||
+        strstr(panel, "Networking: Interface-1") == 0 ||
+        strstr(panel, "Remote: enabled, connected") == 0) {
+        return 1;
+    }
     if (!wz_ui_layout_select_speed(&state, WZ_SPEED_400) ||
         state.speed_percent != 400u || !state.audio_muted ||
         !wz_ui_layout_select_speed(&state, WZ_SPEED_100) ||
