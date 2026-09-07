@@ -2452,7 +2452,7 @@
         "design/review-gate.md",
         "tools/reviewer/review_gate.py"
       ],
-      "notes": "Project-owned recovery contract implemented in WORKFLOW.md; the outer execution wrapper itself is external and has no source in this repository. Require bounded first responses, durable handle/state correlation, and recovery without duplicate launch. Any future project-owned wrapper must be tracked and locked under CR-0272."
+      "notes": "Authorized implementation added as tools/harness/run_durable_session.py. It emits a bounded start event before verbose output, persists atomic running/completed/failed/terminated state, redirects output to files, and supports state-based recovery without duplicate launch. Registered in the locked harness manifest."
     },
     {
       "cr_number": "CR-0274",

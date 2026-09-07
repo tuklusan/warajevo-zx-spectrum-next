@@ -23,6 +23,7 @@
     "tools/harness/run_fuse_ed_corpus.py",
     "tools/harness/run_fuse_ed_platform.py",
     "tools/harness/stream_zip_tree.py",
+    "tools/harness/run_durable_session.py",
     "tools/harness/summarize_fuse_review_evidence.py",
     "tools/harness/verify_platform_evidence.py",
     "tools/harness/Capture-WindowsDesktopScreenshot.ps1",

@@ -60,6 +60,11 @@ secured endpoint. The local remote harness invokes it after each lane; the
 hosted matrix invokes it from an always-run, non-blocking step before upload.
 Both paths require `WZ_TRACE_FORWARD=Y` or `WZ_TRACE_FORWARD=1`; absent or
 other values produce no network traffic.
+
+`run_durable_session.py` is the project-owned boundary for slow or verbose
+operations. It atomically writes a JSON state record and emits a small start
+event before waiting; stdout and stderr are redirected to declared files, and
+the state supports polling or termination without relaunching the command.
 - `run_cmake_smoke.py`
   Shared probe and CMake smoke-build entry point used both remotely and by
   GitHub Actions
