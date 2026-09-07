@@ -992,6 +992,15 @@ class GateTests(unittest.TestCase):
         self.assertIn("PROJECT_ID=" + gate.PROJECT_ID, prefix)
         result = gate.compact_result("CODE", "CR-0020", packet(), "PASS", True)
         self.assertEqual(result["project_id"], gate.PROJECT_ID)
+
+    def test_review_lock_updates_preserve_project_identity(self):
+        with private_tempdir() as directory:
+            path = directory / "active-review.json"
+            path.write_text(json.dumps({"project_id": "wrong-project"}) + "\n", encoding="utf-8")
+            telemetry = gate.Telemetry("CODE", "snapshot", "CR-0020", "packet")
+            gate.update_review_lock(path, telemetry, "complete", "PASS")
+            self.assertEqual(json.loads(path.read_text(encoding="utf-8"))["project_id"],
+                             gate.PROJECT_ID)
         with self.assertRaises(urllib.error.HTTPError) as raised:
             gate.CodeReviewerClient._raise_transport_failure(request, record)
         self.assertEqual(raised.exception.code, 402)
