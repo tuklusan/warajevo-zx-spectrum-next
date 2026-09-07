@@ -2942,7 +2942,7 @@
         ".github/workflows/platform-smoke.yml",
         "tools/harness/verify_platform_evidence.py"
       ],
-      "notes": "Implementation in progress; correct the false-negative publication checker using the completed all-green matrix evidence, with no product matrix rerun for this instrumentation-only fix."
+      "notes": "Implementation and validation evidence recorded; corrected publication gate passed in automatic validation run 34161538129 with all 20 lanes, TEST_ARTIFACT review passed with zero confirmed findings, and the prior all-green product run 34160498964 was preserved as the original product evidence. Awaiting final DOCUMENTATION review before closure."
     }
   ]
 }
