@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 273,
+  "next_cr_number": 275,
   "status_values": [
     "open",
     "in_progress",
@@ -2393,7 +2393,7 @@
     {
       "cr_number": "CR-0270",
       "title": "Implement the Phase-12B main application layout boundary",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "architecture_2_phase_12b",
       "blocking": false,
@@ -2407,7 +2407,7 @@
         "reference/original-warajevo/source/src/environment/MENUCONS.PAS",
         "reference/original-warajevo/source/src/environment/SETUP.PAS"
       ],
-      "notes": "Opened for the first Phase-12B UI implementation slice: semantic main-window layout, canonical menus, toolbar order, defaults, and status projection. Host toolkit rendering, media managers, and Telnet remain separately gated."
+      "notes": "Closed after implementation candidate 3196628. Exact CODE review b03313d5abe7bf1fdf07b3277da7fdd5d1393ccfe2da74f073b7b81394e8bb1e; final DOCUMENTATION review 03a76a93ffc19051de9bc717adebb90bdc372217adb28e35c40f223ffc76e3d4; four serial remote TEST_ARTIFACT reviews passed; hosted 20-lane publication run 34070133625 passed with all lane evidence inspected."
     },
     {
       "cr_number": "CR-0271",
@@ -2438,6 +2438,36 @@
         "design/cr-preflight/CR-0272.md"
       ],
       "notes": "Closed at ed2a857e21232dc660d0ed82bc22000dec47c1d4 by operator authorization. All working harnesses are listed in the locked tracked manifest; Mac TTY command execution is separated from non-TTY binary transfer. CODE, DOCUMENTATION, and TEST_ARTIFACT reviews passed; final DOCUMENTATION packet b6bcc40803b7e158e7130e3c60f703d155c1561e9ed4d9ab3b980a105361f616; Mac CR0270-MAC-R5 and hosted run 34070133625 passed publication evidence inspection."
+    },
+    {
+      "cr_number": "CR-0273",
+      "title": "Preserve external command handles when first output is truncated",
+      "status": "open",
+      "priority": "high",
+      "execution_order": "workflow_first_out_of_order",
+      "blocking": false,
+      "source_authority": [
+        "WORKFLOW.md",
+        "tools/harness/harness-lock.json",
+        "design/review-gate.md",
+        "tools/reviewer/review_gate.py"
+      ],
+      "notes": "Raised after an oversized first response caused the outer execution wrapper to omit the live session identifier. Require bounded first responses, durable handle/state correlation, and recovery tests proving live commands remain pollable and terminable without duplicate launch. Harness changes require explicit operator authorization under CR-0272."
+    },
+    {
+      "cr_number": "CR-0274",
+      "title": "Prevent premature CR closure before final review",
+      "status": "open",
+      "priority": "high",
+      "execution_order": "workflow_first_out_of_order",
+      "blocking": false,
+      "source_authority": [
+        "WORKFLOW.md",
+        "design/review-gate.md",
+        "tools/reviewer/review_gate.py",
+        "issues/change-requests.json"
+      ],
+      "notes": "Raised after a closure edit changed CR-0270 to closed before its final DOCUMENTATION review. Require an active tracker state through all final reviews, validate tracker/preflight consistency before each review, and apply the closed transition only after the final review packet passes."
     }
   ]
 }
