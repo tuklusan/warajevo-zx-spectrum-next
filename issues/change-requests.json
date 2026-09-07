@@ -2947,7 +2947,7 @@
     {
       "cr_number": "CR-0304",
       "title": "Add screenshot pixel-source equivalence coverage",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "medium",
       "execution_order": "architecture_2_phase_12x",
       "blocking": false,
@@ -2959,7 +2959,7 @@
         "src/app/wz_screenshot_service.c",
         "tests/wz_screenshot_service_tests.c"
       ],
-      "notes": "Implementation and validation evidence recorded; four remote smoke lanes passed, hosted run 34163418419 passed all 20 lanes, evidence-tree verification passed, and TEST_ARTIFACT review passed with zero confirmed findings. Awaiting final DOCUMENTATION review before closure."
+      "notes": "Closed after four remote smoke lanes passed, hosted run 34163418419 passed all 20 lanes, evidence-tree verification passed, and TEST_ARTIFACT and final DOCUMENTATION reviews passed with zero confirmed findings. No harness or wrapper changes were made."
     }
   ]
 }
