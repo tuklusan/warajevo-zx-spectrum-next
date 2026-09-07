@@ -32,7 +32,13 @@ if [ "$workspace_only" != "--workspace-only" ]; then
     case "$status" in
       queued|in_progress)
         echo "Cancelling stale prior run ${run_id} (${status})."
-        gh run cancel "$run_id" --repo "$GITHUB_REPOSITORY"
+        if ! gh run cancel "$run_id" --repo "$GITHUB_REPOSITORY"; then
+          # A listed run can finish between enumeration and cancellation.
+          # Accept that race only when the authoritative follow-up state is terminal.
+          terminal_status="$(gh run view "$run_id" --repo "$GITHUB_REPOSITORY" \
+            --json status --jq '.status')"
+          test "$terminal_status" = "completed"
+        fi
         ;;
     esac
 
