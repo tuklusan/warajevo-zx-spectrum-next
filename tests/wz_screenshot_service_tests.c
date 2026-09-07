@@ -33,7 +33,10 @@ int main(void)
     assert(memcmp(samples, original, sizeof(samples)) == 0);
 
     samples[0] = (wz_byte_t)(WZ_RASTER_BLANKING + 1u);
+    memset(png, 0xa5, sizeof(png));
     assert(wz_screenshot_png_encode(&raster, png, sizeof(png), &written) ==
            WZ_RESULT_INVALID_ARGUMENT);
+    assert(written == 0u);
+    for (size_t index = 0u; index < sizeof(png); ++index) assert(png[index] == 0xa5u);
     return 0;
 }

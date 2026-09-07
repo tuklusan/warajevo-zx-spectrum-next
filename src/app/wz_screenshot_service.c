@@ -11,8 +11,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include <stdbool.h>
 
 #define WZ_PNG_SIGNATURE_SIZE 8u
-#define WZ_PNG_MAX_IDAT_BLOCK 65535u
-#define WZ_PNG_PALETTE_ENTRIES 25u
+#define WZ_PNG_MAX_DEFLATE_BLOCK 65535u
 
 static bool add_size(size_t left, size_t right, size_t* result)
 {
@@ -21,44 +20,86 @@ static bool add_size(size_t left, size_t right, size_t* result)
     return true;
 }
 
-static bool mul_size(size_t left, size_t right, size_t* result)
+static bool multiply_size(size_t left, size_t right, size_t* result)
 {
     if (left != 0u && right > (size_t)-1 / left) return false;
     *result = left * right;
     return true;
 }
 
-static size_t deflate_block_count(size_t raw_size)
+static size_t deflate_block_count(size_t raw_bytes)
 {
-    return raw_size == 0u ? 1u :
-        raw_size / WZ_PNG_MAX_IDAT_BLOCK +
-        (raw_size % WZ_PNG_MAX_IDAT_BLOCK != 0u ? 1u : 0u);
+    return raw_bytes == 0u ? 1u :
+        raw_bytes / WZ_PNG_MAX_DEFLATE_BLOCK +
+        (raw_bytes % WZ_PNG_MAX_DEFLATE_BLOCK != 0u ? 1u : 0u);
 }
 
-static size_t png_required_for_raw(size_t raw_size)
+static bool raster_dimensions(const wz_raster_buffer_t* raster,
+                              size_t* scanline_bytes, size_t* raw_bytes)
 {
-    size_t blocks = deflate_block_count(raw_size);
-    size_t deflate_size;
-    size_t total;
+    size_t pixels_per_row;
+    if (raster == 0 || raster->samples == 0u || raster->width == 0u ||
+        raster->height == 0u || raster->width > 0xffffffffu ||
+        raster->height > 0xffffffffu ||
+        !multiply_size(raster->width, 3u, &pixels_per_row) ||
+        !add_size(pixels_per_row, 1u, scanline_bytes) ||
+        !multiply_size(*scanline_bytes, raster->height, raw_bytes) ||
+        *raw_bytes > 0xffffffffu) return false;
+    return true;
+}
 
-    if (!mul_size(blocks, 5u, &deflate_size) ||
-        !add_size(deflate_size, raw_size, &deflate_size) ||
-        !add_size(deflate_size, 6u, &deflate_size) ||
-        !add_size(8u + 25u + 87u + 12u + 12u, deflate_size, &total)) {
-        return 0u;
+static bool sample_rgb(wz_byte_t sample, wz_byte_t* red,
+                       wz_byte_t* green, wz_byte_t* blue)
+{
+    static const wz_byte_t colors[16u][3u] = {
+        {0u, 0u, 0u}, {0u, 0u, 192u}, {192u, 0u, 0u}, {192u, 0u, 192u},
+        {0u, 192u, 0u}, {0u, 192u, 192u}, {192u, 192u, 0u}, {192u, 192u, 192u},
+        {0u, 0u, 0u}, {0u, 0u, 255u}, {255u, 0u, 0u}, {255u, 0u, 255u},
+        {0u, 255u, 0u}, {0u, 255u, 255u}, {255u, 255u, 0u}, {255u, 255u, 255u}
+    };
+    size_t index;
+    if (!wz_raster_sample_is_valid(sample) || sample == WZ_RASTER_BLANKING) {
+        index = 0u;
+    } else if (wz_raster_sample_is_border(sample)) {
+        index = (size_t)(sample - WZ_RASTER_BORDER_MIN);
+    } else {
+        index = sample;
     }
+    if (red == 0u || green == 0u || blue == 0u) return false;
+    *red = colors[index][0];
+    *green = colors[index][1];
+    *blue = colors[index][2];
+    return true;
+}
+
+static bool raster_samples_valid(const wz_raster_buffer_t* raster)
+{
+    size_t pixel_count;
+    if (!multiply_size(raster->width, raster->height, &pixel_count)) return false;
+    for (size_t index = 0u; index < pixel_count; ++index) {
+        if (!wz_raster_sample_is_valid(raster->samples[index])) return false;
+    }
+    return true;
+}
+
+static size_t required_for_raw(size_t raw_bytes)
+{
+    size_t deflate_bytes;
+    size_t total;
+    if (!multiply_size(deflate_block_count(raw_bytes), 5u, &deflate_bytes) ||
+        !add_size(deflate_bytes, raw_bytes, &deflate_bytes) ||
+        !add_size(deflate_bytes, 6u, &deflate_bytes) ||
+        !add_size(8u + 25u + 12u + 12u, deflate_bytes, &total)) return 0u;
     return total;
 }
 
 size_t wz_screenshot_png_required_size(const wz_raster_buffer_t* raster)
 {
-    size_t row_size;
-    size_t raw_size;
-
-    if (raster == 0 || raster->samples == 0u || raster->width == 0u ||
-        raster->height == 0u || !add_size(raster->width, 1u, &row_size) ||
-        !mul_size(row_size, raster->height, &raw_size)) return 0u;
-    return png_required_for_raw(raw_size);
+    size_t scanline_bytes;
+    size_t raw_bytes;
+    if (!raster_dimensions(raster, &scanline_bytes, &raw_bytes)) return 0u;
+    (void)scanline_bytes;
+    return required_for_raw(raw_bytes);
 }
 
 static void put_u32(wz_byte_t* output, size_t* offset, wz_dword_t value)
@@ -75,7 +116,8 @@ static wz_dword_t crc32(const wz_byte_t* data, size_t length)
     for (size_t index = 0u; index < length; ++index) {
         crc ^= data[index];
         for (unsigned bit = 0u; bit < 8u; ++bit) {
-            crc = (crc >> 1u) ^ (0xedb88320u & (wz_dword_t)-(wz_dword_t)(crc & 1u));
+            crc = (crc >> 1u) ^
+                (0xedb88320u & (wz_dword_t)-(wz_dword_t)(crc & 1u));
         }
     }
     return ~crc;
@@ -87,37 +129,9 @@ static void chunk(wz_byte_t* output, size_t* offset, const char type[4],
     size_t type_offset;
     put_u32(output, offset, (wz_dword_t)length);
     type_offset = *offset;
-    output[(*offset)++] = (wz_byte_t)type[0];
-    output[(*offset)++] = (wz_byte_t)type[1];
-    output[(*offset)++] = (wz_byte_t)type[2];
-    output[(*offset)++] = (wz_byte_t)type[3];
+    for (size_t index = 0u; index < 4u; ++index) output[(*offset)++] = (wz_byte_t)type[index];
     for (size_t index = 0u; index < length; ++index) output[(*offset)++] = data[index];
     put_u32(output, offset, crc32(output + type_offset, 4u + length));
-}
-
-static void palette(wz_byte_t* output, size_t* offset)
-{
-    static const wz_byte_t colors[16u][3u] = {
-        {0u, 0u, 0u}, {0u, 0u, 192u}, {192u, 0u, 0u}, {192u, 0u, 192u},
-        {0u, 192u, 0u}, {0u, 192u, 192u}, {192u, 192u, 0u}, {192u, 192u, 192u},
-        {0u, 0u, 0u}, {0u, 0u, 255u}, {255u, 0u, 0u}, {255u, 0u, 255u},
-        {0u, 255u, 0u}, {0u, 255u, 255u}, {255u, 255u, 0u}, {255u, 255u, 255u}
-    };
-    wz_byte_t entries[WZ_PNG_PALETTE_ENTRIES * 3u];
-    for (size_t index = 0u; index < 16u; ++index) {
-        entries[index * 3u] = colors[index][0];
-        entries[index * 3u + 1u] = colors[index][1];
-        entries[index * 3u + 2u] = colors[index][2];
-    }
-    for (size_t index = 0u; index < 8u; ++index) {
-        entries[(16u + index) * 3u] = colors[index][0];
-        entries[(16u + index) * 3u + 1u] = colors[index][1];
-        entries[(16u + index) * 3u + 2u] = colors[index][2];
-    }
-    entries[72u] = 0u;
-    entries[73u] = 0u;
-    entries[74u] = 0u;
-    chunk(output, offset, "PLTE", entries, sizeof(entries));
 }
 
 static void adler_update(wz_dword_t* a, wz_dword_t* b, wz_byte_t value)
@@ -130,34 +144,30 @@ wz_result_t wz_screenshot_png_encode(const wz_raster_buffer_t* raster,
                                      wz_byte_t* output, size_t capacity,
                                      size_t* written)
 {
+    size_t scanline_bytes;
+    size_t raw_bytes;
     size_t required;
-    size_t raw_size;
-    size_t row_size;
     size_t offset = 0u;
     size_t raw_offset = 0u;
     size_t remaining;
     wz_dword_t adler_a = 1u;
     wz_dword_t adler_b = 0u;
+    static const wz_byte_t signature[WZ_PNG_SIGNATURE_SIZE] =
+        {0x89u, 0x50u, 0x4eu, 0x47u, 0x0du, 0x0au, 0x1au, 0x0au};
 
     if (written == 0u) return WZ_RESULT_INVALID_ARGUMENT;
     *written = 0u;
-    required = wz_screenshot_png_required_size(raster);
+    if (!raster_dimensions(raster, &scanline_bytes, &raw_bytes) ||
+        !raster_samples_valid(raster)) return WZ_RESULT_INVALID_ARGUMENT;
+    required = required_for_raw(raw_bytes);
     if (required == 0u || output == 0u) return WZ_RESULT_INVALID_ARGUMENT;
     if (capacity < required) {
         *written = required;
         return WZ_RESULT_BUFFER_TOO_SMALL;
     }
-    row_size = raster->width + 1u;
-    if (!mul_size(row_size, raster->height, &raw_size)) return WZ_RESULT_INVALID_ARGUMENT;
-    for (size_t index = 0u; index < raster->width * raster->height; ++index) {
-        if (!wz_raster_sample_is_valid(raster->samples[index])) return WZ_RESULT_INVALID_ARGUMENT;
-    }
-
-    static const wz_byte_t signature[WZ_PNG_SIGNATURE_SIZE] =
-        {0x89u, 0x50u, 0x4eu, 0x47u, 0x0du, 0x0au, 0x1au, 0x0au};
     for (size_t index = 0u; index < sizeof(signature); ++index) output[offset++] = signature[index];
     {
-        wz_byte_t ihdr[13u] = {0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 8u, 3u, 0u, 0u, 0u};
+        wz_byte_t ihdr[13u] = {0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u, 8u, 2u, 0u, 0u, 0u};
         ihdr[0] = (wz_byte_t)(raster->width >> 24u);
         ihdr[1] = (wz_byte_t)(raster->width >> 16u);
         ihdr[2] = (wz_byte_t)(raster->width >> 8u);
@@ -168,15 +178,15 @@ wz_result_t wz_screenshot_png_encode(const wz_raster_buffer_t* raster,
         ihdr[7] = (wz_byte_t)raster->height;
         chunk(output, &offset, "IHDR", ihdr, sizeof(ihdr));
     }
-    palette(output, &offset);
-    put_u32(output, &offset, (wz_dword_t)(raw_size + 6u + deflate_block_count(raw_size) * 5u));
+    put_u32(output, &offset, (wz_dword_t)(raw_bytes + 6u + deflate_block_count(raw_bytes) * 5u));
     {
         size_t type_offset = offset;
         output[offset++] = 'I'; output[offset++] = 'D'; output[offset++] = 'A'; output[offset++] = 'T';
         output[offset++] = 0x78u; output[offset++] = 0x01u;
-        remaining = raw_size;
+        remaining = raw_bytes;
         while (remaining != 0u) {
-            size_t block_size = remaining > WZ_PNG_MAX_IDAT_BLOCK ? WZ_PNG_MAX_IDAT_BLOCK : remaining;
+            size_t block_size = remaining > WZ_PNG_MAX_DEFLATE_BLOCK ?
+                WZ_PNG_MAX_DEFLATE_BLOCK : remaining;
             bool final = block_size == remaining;
             output[offset++] = final ? 1u : 0u;
             output[offset++] = (wz_byte_t)block_size;
@@ -184,9 +194,21 @@ wz_result_t wz_screenshot_png_encode(const wz_raster_buffer_t* raster,
             output[offset++] = (wz_byte_t)~(wz_byte_t)block_size;
             output[offset++] = (wz_byte_t)~(wz_byte_t)(block_size >> 8u);
             for (size_t index = 0u; index < block_size; ++index) {
-                size_t source = raw_offset++;
-                wz_byte_t value = source % row_size == 0u ? 0u :
-                    raster->samples[(source / row_size) * raster->width + source % row_size - 1u];
+                size_t row_offset = raw_offset++;
+                wz_byte_t value;
+                if (row_offset % scanline_bytes == 0u) {
+                    value = 0u;
+                } else {
+                    size_t pixel_offset = row_offset % scanline_bytes - 1u;
+                    size_t pixel_index = (row_offset / scanline_bytes) * raster->width +
+                        pixel_offset / 3u;
+                    wz_byte_t red;
+                    wz_byte_t green;
+                    wz_byte_t blue;
+                    (void)sample_rgb(raster->samples[pixel_index], &red, &green, &blue);
+                    value = pixel_offset % 3u == 0u ? red :
+                        (pixel_offset % 3u == 1u ? green : blue);
+                }
                 output[offset++] = value;
                 adler_update(&adler_a, &adler_b, value);
             }
