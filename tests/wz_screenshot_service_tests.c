@@ -14,9 +14,12 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 int main(void)
 {
     wz_byte_t samples[4u];
+    wz_byte_t equivalent_samples[4u];
     wz_byte_t original[4u];
     wz_raster_buffer_t raster;
+    wz_raster_buffer_t equivalent_raster;
     wz_byte_t png[512u];
+    wz_byte_t equivalent_png[512u];
     size_t required;
     size_t written = 0u;
 
@@ -25,7 +28,15 @@ int main(void)
     samples[1] = WZ_PALETTE_WHITE;
     samples[2] = WZ_RASTER_BORDER_MIN;
     samples[3] = WZ_RASTER_BLANKING;
+    memcpy(equivalent_samples, samples, sizeof(samples));
     memcpy(original, samples, sizeof(samples));
+    assert(wz_raster_buffer_init(&equivalent_raster, 2u, 2u,
+                                 equivalent_samples,
+                                 sizeof(equivalent_samples)) == WZ_RESULT_OK);
+    equivalent_samples[0] = WZ_PALETTE_BLACK;
+    equivalent_samples[1] = WZ_PALETTE_WHITE;
+    equivalent_samples[2] = WZ_RASTER_BORDER_MIN;
+    equivalent_samples[3] = WZ_RASTER_BLANKING;
     required = wz_screenshot_png_required_size(&raster);
     assert(required > 0u && required < sizeof(png));
     assert(wz_screenshot_png_encode(&raster, png, required - 1u, &written) ==
@@ -35,6 +46,10 @@ int main(void)
     assert(written == required);
     assert(memcmp(png, "\x89PNG\r\n\x1a\n", 8u) == 0);
     assert(memcmp(samples, original, sizeof(samples)) == 0);
+    assert(wz_screenshot_png_encode(&equivalent_raster, equivalent_png,
+                                    sizeof(equivalent_png), &written) == WZ_RESULT_OK);
+    assert(written == required && memcmp(png, equivalent_png, written) == 0);
+    assert(memcmp(equivalent_samples, original, sizeof(equivalent_samples)) == 0);
 
     samples[0] = (wz_byte_t)(WZ_RASTER_BLANKING + 1u);
     memset(png, 0xa5, sizeof(png));
