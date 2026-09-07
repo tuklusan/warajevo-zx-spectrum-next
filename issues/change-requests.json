@@ -2538,7 +2538,7 @@
     {
       "cr_number": "CR-0279",
       "title": "Fullscreen host presentation boundary",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "architecture_2_phase_12c",
       "blocking": false,
@@ -2550,7 +2550,7 @@
         "src/app/wz_host_scaling.h",
         "src/app/wz_ui_layout.c"
       ],
-      "notes": "Implementation and hosted validation evidence recorded for 0d29d8c8d5391f7c82df1237d88686ea5bb846fa. CODE packet 552055f7da4504a5eb193d24ec34573d9b7b3ef6d14c16f9b8c498ac60885ed2; hosted run 34082593533 passed all 20 lanes, housekeeping, and publication inspection; hosted evidence tree verified; representative TEST_ARTIFACT packets f6a72b293f62eeb424b29f814536fb2935d73f037ebb06539eb37b984b542ccf, d2d8ded14c7cd2efb71d717c89ef0b25cba86513b938803cb426fc8d9af2fda5, 7bb8dd3c1580d546823e3dfe328373327de2c1ed52775b48989dd3d6610e75ba, and 5acbf6fc22c8ef4c5ea00c5733a7218ae31c58c9d518d7c828b9e22475fb6a3c passed. Lab Linux/Windows 10 transport evidence was corrupt or incomplete and Windows 11 produced no accepted evidence; hosted validation is authoritative. No local build/test and no harness/wrapper changes. Awaiting final DOCUMENTATION review."
+      "notes": "Closed after host-only fullscreen implementation and validation. Implementation head 0d29d8c8d5391f7c82df1237d88686ea5bb846fa; CODE packet 552055f7da4504a5eb193d24ec34573d9b7b3ef6d14c16f9b8c498ac60885ed2; hosted run 34082593533 passed all 20 lanes, housekeeping, and publication inspection; hosted evidence tree verified; representative TEST_ARTIFACT packets f6a72b293f62eeb424b29f814536fb2935d73f037ebb06539eb37b984b542ccf, d2d8ded14c7cd2efb71d717c89ef0b25cba86513b938803cb426fc8d9af2fda5, 7bb8dd3c1580d546823e3dfe328373327de2c1ed52775b48989dd3d6610e75ba, and 5acbf6fc22c8ef4c5ea00c5733a7218ae31c58c9d518d7c828b9e22475fb6a3c passed; final DOCUMENTATION packet 9d9fd95a625885d19633be2427ff411e33c0330a7d603214c8f8c5ff8f1645e0 passed. Lab transport limitations are retained as non-product evidence limitations. No local build/test and no harness/wrapper changes."
     }
   ]
 }
