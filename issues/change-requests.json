@@ -2457,7 +2457,7 @@
     {
       "cr_number": "CR-0274",
       "title": "Prevent premature CR closure before final review",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "workflow_first_out_of_order",
       "blocking": false,
@@ -2467,7 +2467,7 @@
         "tools/reviewer/review_gate.py",
         "issues/change-requests.json"
       ],
-      "notes": "Implemented the state-ordering and handle-recovery invariant in WORKFLOW.md and the CR preflight. Require an active tracker state through all final reviews, validate tracker/preflight consistency before each review, and apply the closed transition only after the final review packet passes."
+      "notes": "Closed at f417309 after exact CODE packet f8e4ae05c4de4c4e440694753cdae0a5800632d28d0bd3d024fe6fdc2f224f2c and final DOCUMENTATION packet 2cce847ec9a6593fe4bfe3a7c9e8d94f309df1e34eea2bacba799a93903767d5. Implemented the state-ordering and handle-recovery invariant in WORKFLOW.md; documentation-only, with no build/test artifact claimed."
     }
   ]
 }
