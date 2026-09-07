@@ -2815,7 +2815,7 @@
     {
       "cr_number": "CR-0296",
       "title": "Shared snapshot state editor routing",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "architecture_2_phase_12r",
       "blocking": false,
@@ -2826,7 +2826,7 @@
         "src/core/wz_debugger.h",
         "src/app/wz_snapshot_inspector.h"
       ],
-      "notes": "Implementation in progress; snapshot editing is an app adapter over shared debugger mutation and undo APIs, with no duplicated editor state."
+      "notes": "Closed after implementing shared snapshot state editor routing through debugger access-mode, CPU mutation, memory write, and register-undo APIs with no duplicated editor state. CODE packet 19cfffd86ae590136323ac0a01d50de006ea44121661979ca4a57304f2d43592, hosted 20-lane platform-smoke run 34127379122 and evidence-tree verification, TEST_ARTIFACT packet 1f315d98264ce27470f4546529f451f22a8359723be1ff61f28df19900e3462a, and DOCUMENTATION packet 8ef0267dd036758e64becca2d403b47dcaf5e757eae48bc225edef1503e623d3 all passed. No local build/test and no harness/wrapper changes."
     }
   ]
 }
