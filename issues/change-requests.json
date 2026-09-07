@@ -2700,7 +2700,7 @@
     {
       "cr_number": "CR-0289",
       "title": "Host-only Recent file metadata",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "medium",
       "execution_order": "architecture_2_phase_12l",
       "blocking": false,
@@ -2711,7 +2711,7 @@
         "src/app/wz_recent_files.h",
         "src/app/wz_recent_files.c"
       ],
-      "notes": "Maintain bounded host-only Recent metadata whose entries invoke file.open_run and never expose dynamic paths through remote registry metadata."
+      "notes": "Closed after implementing bounded host-only Recent metadata with newest-first ordering, de-duplication, explicit removal, and file.open_run command binding. Exact CODE review passed with packet 831b55f4d29f8af0f3938a0849be6b6f586d1586594733c79e2818bc272a29e3; hosted 20-lane platform-smoke run 34105917467 passed after deep housekeeping and evidence-tree inspection; TEST_ARTIFACT packet 5425a70790a4a7dae0f8a761a2f72e19a97fa5a17da44a66fa5c54beb2d75a77 and final DOCUMENTATION packet 62aba308d745502db5723e1e6c90607258238541c2ff07e381aba9de3258f493 passed. No local build/test and no harness/wrapper changes."
     }
   ]
 }
