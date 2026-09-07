@@ -44,9 +44,9 @@ int main(void)
         wz_machine_destroy(&machine);
         return 1;
     }
-    if (wz_machine_set_networking_mode(&machine, WZ_NETWORKING_EAR_MIC) !=
-            WZ_RESULT_OK ||
-        wz_tape_insert_available(&workflow, &reason) || reason == 0 ||
+    /* Model an already-active transport owner; ordinary reconfiguration rejects this mode. */
+    machine.networking_mode = WZ_NETWORKING_EAR_MIC;
+    if (wz_tape_insert_available(&workflow, &reason) || reason == 0 ||
         strcmp(reason, "tape-transport-unavailable") != 0 ||
         wz_tape_insert(&workflow, "blocked.tap", &initial, 1u) !=
             WZ_TAPE_INSERT_UNAVAILABLE ||
