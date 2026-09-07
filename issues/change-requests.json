@@ -2621,7 +2621,7 @@
     {
       "cr_number": "CR-0284",
       "title": "Registry-driven UI enabled state",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "architecture_2_phase_12h",
       "blocking": false,
