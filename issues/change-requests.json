@@ -2472,7 +2472,7 @@
     {
       "cr_number": "CR-0275",
       "title": "Implement semantic Help and About actions",
-      "status": "open",
+      "status": "in_progress",
       "priority": "high",
       "execution_order": "architecture_2_phase_12b",
       "blocking": false,
