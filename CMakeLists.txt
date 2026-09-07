@@ -228,6 +228,11 @@ add_executable(wz_presentation_snapshot_tests
 target_link_libraries(wz_presentation_snapshot_tests PRIVATE wz_core)
 add_test(NAME wz_presentation_snapshot_tests COMMAND wz_presentation_snapshot_tests)
 
+add_executable(wz_host_presentation_tests
+    tests/wz_host_presentation_tests.c)
+target_link_libraries(wz_host_presentation_tests PRIVATE wz_core)
+add_test(NAME wz_host_presentation_tests COMMAND wz_host_presentation_tests)
+
 if(WZSN_ENABLE_REVIEW_GATE_TESTS)
     find_package(Python3 COMPONENTS Interpreter REQUIRED)
     add_test(

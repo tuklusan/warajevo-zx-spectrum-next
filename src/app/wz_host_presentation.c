@@ -17,3 +17,27 @@ wz_host_presentation_rect_t wz_host_presentation_default_rect(void)
         .height = WZ_HOST_PRESENTATION_HEIGHT,
     };
 }
+
+void wz_host_presentation_state_init(wz_host_presentation_state_t* state)
+{
+    if (state == NULL) {
+        return;
+    }
+    state->fullscreen = false;
+}
+
+wz_result_t wz_host_presentation_set_fullscreen(
+    wz_host_presentation_state_t* state, bool fullscreen)
+{
+    if (state == NULL) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    state->fullscreen = fullscreen;
+    return WZ_RESULT_OK;
+}
+
+bool wz_host_presentation_is_fullscreen(
+    const wz_host_presentation_state_t* state)
+{
+    return state != NULL && state->fullscreen;
+}

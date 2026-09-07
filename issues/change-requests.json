@@ -2538,7 +2538,7 @@
     {
       "cr_number": "CR-0279",
       "title": "Fullscreen host presentation boundary",
-      "status": "queued",
+      "status": "in_progress",
       "priority": "high",
       "execution_order": "architecture_2_phase_12c",
       "blocking": false,
