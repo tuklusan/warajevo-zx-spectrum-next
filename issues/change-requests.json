@@ -2684,7 +2684,7 @@
     {
       "cr_number": "CR-0288",
       "title": "Explicit Open / Run conversion boundary",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "architecture_2_phase_12k",
       "blocking": false,
@@ -2695,7 +2695,7 @@
         "src/app/wz_file_open_run.h",
         "src/app/wz_file_open_run.c"
       ],
-      "notes": "Closed after exact CODE packet 4db4fda5f059683a0bec8a524878c0b313a3fdff6d618428b6d976b8f13b8986, hosted run 34101448733 passed all 20 lanes and publication after rerunning one transient Windows runner-storage failure, evidence-tree verification passed, TEST_ARTIFACT packet 0b7aba6436da5f5e9ece1b8d68ee20dc789589617cb1c34d9c86b3bb3d8899a5 passed, and final DOCUMENTATION packet 3ae76e7625c84fc26470ce8fac742545cd5fb9de0a99a0622b0a120cd14f9948 passed."
+      "notes": "Closed after exact CODE packet 4db4fda5f059683a0bec8a524878c0b313a3fdff6d618428b6d976b8f13b8986, hosted run 34101448733 passed all 20 lanes and publication after rerunning one transient Windows runner-storage failure, evidence-tree verification passed, TEST_ARTIFACT packet 0b7aba6436da5f5e9ece1b8d68ee20dc789589617cb1c34d9c86b3bb3d8899a5 passed, and complete closure DOCUMENTATION packet c5a6db34e59e37875de3c2b841529896872e01c372863e4794d3cfec5a90fb8a passed."
     }
   ]
 }
