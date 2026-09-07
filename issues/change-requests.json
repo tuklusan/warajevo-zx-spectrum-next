@@ -2898,7 +2898,7 @@
     {
       "cr_number": "CR-0301",
       "title": "Make host output creation and atomic replacement interprocess-safe",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "architecture_2_phase_12v",
       "blocking": false,
@@ -2910,7 +2910,7 @@
         "src/app/wz_host_config.h",
         "src/app/wz_host_config.c"
       ],
-      "notes": "Implementation and validation evidence recorded; Linux, Windows 11, and Intel Mac remote smoke passed, hosted run 34157806081 passed all 20 lanes, and TEST_ARTIFACT review passed with zero confirmed findings. Windows 10 archive pull remained truncated by the known transport limitation. Awaiting final DOCUMENTATION review before closure."
+      "notes": "Closed after Linux, Windows 11, and Intel Mac remote smoke passed, hosted run 34157806081 passed all 20 lanes, evidence-tree verification passed, and TEST_ARTIFACT and final DOCUMENTATION reviews passed with zero confirmed findings. Windows 10 archive pull remained truncated by the known transport limitation; no harness or wrapper changes were made."
     }
   ]
 }
