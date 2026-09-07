@@ -19,7 +19,7 @@
     {
       "cr_number": "CR-0001",
       "title": "Create canonical repository skeleton and bootstrap build",
-      "status": "in_progress",
+      "status": "closed",
       "source_authority": [
         "design/warajevo-zx-spectrum-next-architecture.md",
         "design/wzsn-architectures-1-2-developer-tasks.md task 001"
@@ -2632,22 +2632,22 @@
         "src/app/wz_command_registry.h",
         "src/app/wz_ui_layout.h"
       ],
-      "notes": "Closed after exact CODE packet 5264588ea01a42a456984025e28aeb5918924cd7cdf8724cf2824f4f075c2ec6, hosted platform-smoke run 34093506072 passed all 20 lanes, downloaded evidence-tree verification passed, and closure documentation was recorded."
+      "notes": "Closed after exact CODE packet 5264588ea01a42a456984025e28aeb5918924cd7cdf8724cf2824f4f075c2ec6, hosted platform-smoke run 34093506072 passed all 20 lanes, downloaded evidence-tree verification passed, and final DOCUMENTATION packet 63aef9724133439ec2f9c911c9075e8bd0b9e8050893061aa7d29d74bcdb7e34 passed."
     },
     {
       "cr_number": "CR-0285",
       "title": "Project-unique reviewer namespace",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "workflow_safety_interlock",
-      "blocking": true,
+      "blocking": false,
       "source_authority": [
         "design/cr-preflight/CR-0285.md",
         "design/review-gate.md",
         "tools/reviewer/review_gate.py",
         "tests/test_review_gate.py"
       ],
-      "notes": "Closed after correcting explicit lock identity reassertion. Initial exact review packet 00ad6db12bc0fb941adf7afedc1ab09cc159bbff8296407dc39d3be9b12a0d85 found one high-severity persistence gap; corrected exact CODE packet ffa46c20859aafbe3e8666b0267067fc27fc0fa75b49c6c140f77add4b272f6d passed with zero findings at commit 1abbad0."
+      "notes": "Closed after correcting explicit lock identity reassertion. Initial exact review packet 00ad6db12bc0fb941adf7afedc1ab09cc159bbff8296407dc39d3be9b12a0d85 found one high-severity persistence gap; corrected exact CODE packet ffa46c20859aafbe3e8666b0267067fc27fc0fa75b49c6c140f77add4b272f6d passed with zero findings at commit 1abbad0; final DOCUMENTATION packet 62176f4a73c99e4e9188a52e30d1ca75d92548cdaf13c77c2cec72e951f264c0 passed."
     }
   ]
 }
