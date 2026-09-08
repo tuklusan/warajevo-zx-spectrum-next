@@ -3354,7 +3354,7 @@
     {
       "cr_number": "CR-0326",
       "title": "Implement Debugger/Monitor window over shared Phase-11 debugger APIs",
-      "status": "open",
+      "status": "in_progress",
       "priority": "medium",
       "execution_order": "architecture_2_phase_12e",
       "blocking": false,
