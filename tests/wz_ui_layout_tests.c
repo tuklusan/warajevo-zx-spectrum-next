@@ -87,6 +87,8 @@ int main(void)
     const char screenshot_argument[] = "gui-destination";
     char tape_label[32];
     char expected_microdrive_id[64];
+    wz_ui_microdrive_overview_entry_t overview[WZ_UI_MICRODRIVE_COUNT];
+    const wz_ui_microdrive_overview_entry_t* overview_entry;
 
     if (wz_ui_layout_menu_count() != WZ_UI_MENU_COUNT ||
         wz_ui_layout_toolbar_count() != WZ_UI_TOOLBAR_COUNT) {
@@ -183,6 +185,44 @@ int main(void)
     if (wz_ui_layout_microdrive_action_count() !=
             WZ_UI_MICRODRIVE_ACTION_COUNT ||
         wz_ui_layout_microdrive_action_at(WZ_UI_MICRODRIVE_ACTION_COUNT) != 0) {
+        return 1;
+    }
+    if (wz_ui_layout_microdrive_overview_count() != WZ_UI_MICRODRIVE_COUNT ||
+        wz_ui_layout_microdrive_overview_at(0, 0u) != 0) {
+        return 1;
+    }
+    wz_ui_layout_microdrive_overview_init(overview);
+    overview_entry = wz_ui_layout_microdrive_overview_at(overview, 0u);
+    if (overview_entry == 0 || overview_entry->mounted ||
+        overview_entry->validation != WZ_UI_MICRODRIVE_VALIDATION_UNMOUNTED ||
+        strcmp(wz_ui_layout_microdrive_validation_label(
+                   overview_entry->validation), "unmounted") != 0) {
+        return 1;
+    }
+    if (!wz_ui_layout_microdrive_overview_set(
+            overview, 0u, UINT64_C(0x1234), "BOOT", 9u, true, true, false,
+            WZ_UI_MICRODRIVE_VALIDATION_VALID)) {
+        return 1;
+    }
+    overview_entry = wz_ui_layout_microdrive_overview_at(overview, 0u);
+    if (overview_entry == 0 || !overview_entry->mounted ||
+        overview_entry->host_image_identity != UINT64_C(0x1234) ||
+        strcmp(overview_entry->logical_name, "BOOT") != 0 ||
+        overview_entry->sector_count != 9u || !overview_entry->write_protected ||
+        !overview_entry->current_drive || overview_entry->default_drive ||
+        strcmp(wz_ui_layout_microdrive_validation_label(
+                   overview_entry->validation), "valid") != 0) {
+        return 1;
+    }
+    if (!wz_ui_layout_microdrive_overview_set(
+            overview, 7u, UINT64_C(0x5678), "BAD", 0u, false, false, true,
+            WZ_UI_MICRODRIVE_VALIDATION_INVALID) ||
+        wz_ui_layout_microdrive_overview_at(overview, WZ_UI_MICRODRIVE_COUNT) != 0 ||
+        wz_ui_layout_microdrive_overview_set(
+            overview, WZ_UI_MICRODRIVE_COUNT, 0u, "bad", 0u, false, false,
+            false, WZ_UI_MICRODRIVE_VALIDATION_VALID) ||
+        wz_ui_layout_microdrive_validation_label(
+            (wz_ui_microdrive_validation_t)99) != 0) {
         return 1;
     }
     tape_handler_context = 0;

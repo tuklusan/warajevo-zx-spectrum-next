@@ -9,6 +9,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "app/wz_ui_layout.h"
 
 #include <stdio.h>
+#include <string.h>
 
 #include "app/wz_host_audio_policy.h"
 
@@ -197,6 +198,78 @@ size_t wz_ui_layout_microdrive_action_count(void)
 const wz_ui_toolbar_item_t* wz_ui_layout_microdrive_action_at(size_t index)
 {
     return index < WZ_UI_MICRODRIVE_ACTION_COUNT ? &microdrive_actions[index] : 0;
+}
+
+void wz_ui_layout_microdrive_overview_init(
+    wz_ui_microdrive_overview_entry_t* entries)
+{
+    if (entries == 0) {
+        return;
+    }
+    for (size_t index = 0u; index < WZ_UI_MICRODRIVE_COUNT; ++index) {
+        entries[index].mounted = false;
+        entries[index].host_image_identity = 0u;
+        entries[index].logical_name[0] = '\0';
+        entries[index].sector_count = 0u;
+        entries[index].write_protected = false;
+        entries[index].current_drive = false;
+        entries[index].default_drive = false;
+        entries[index].validation = WZ_UI_MICRODRIVE_VALIDATION_UNMOUNTED;
+    }
+}
+
+size_t wz_ui_layout_microdrive_overview_count(void)
+{
+    return WZ_UI_MICRODRIVE_COUNT;
+}
+
+const wz_ui_microdrive_overview_entry_t* wz_ui_layout_microdrive_overview_at(
+    const wz_ui_microdrive_overview_entry_t* entries,
+    size_t index)
+{
+    return entries != 0 && index < WZ_UI_MICRODRIVE_COUNT
+        ? &entries[index] : 0;
+}
+
+bool wz_ui_layout_microdrive_overview_set(
+    wz_ui_microdrive_overview_entry_t* entries,
+    size_t index,
+    uint64_t host_image_identity,
+    const char* logical_name,
+    size_t sector_count,
+    bool write_protected,
+    bool current_drive,
+    bool default_drive,
+    wz_ui_microdrive_validation_t validation)
+{
+    wz_ui_microdrive_overview_entry_t* entry;
+
+    if (entries == 0 || index >= WZ_UI_MICRODRIVE_COUNT ||
+        logical_name == 0 || validation < WZ_UI_MICRODRIVE_VALIDATION_UNMOUNTED ||
+        validation > WZ_UI_MICRODRIVE_VALIDATION_UNAVAILABLE) {
+        return false;
+    }
+    entry = &entries[index];
+    entry->mounted = validation != WZ_UI_MICRODRIVE_VALIDATION_UNMOUNTED;
+    entry->host_image_identity = host_image_identity;
+    (void)snprintf(entry->logical_name, sizeof(entry->logical_name), "%s",
+                   logical_name);
+    entry->sector_count = sector_count;
+    entry->write_protected = write_protected;
+    entry->current_drive = current_drive;
+    entry->default_drive = default_drive;
+    entry->validation = validation;
+    return true;
+}
+
+const char* wz_ui_layout_microdrive_validation_label(
+    wz_ui_microdrive_validation_t validation)
+{
+    static const char* labels[] = {
+        "unmounted", "valid", "invalid", "unavailable"
+    };
+    return validation <= WZ_UI_MICRODRIVE_VALIDATION_UNAVAILABLE
+        ? labels[validation] : 0;
 }
 
 void wz_ui_layout_tape_label(bool mounted, char* output, size_t capacity)

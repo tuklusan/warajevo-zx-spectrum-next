@@ -11,6 +11,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #include "app/wz_speed_policy.h"
 #include "app/wz_command_registry.h"
@@ -23,6 +24,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
     (WZ_UI_MICRODRIVE_COUNT * WZ_UI_MICRODRIVE_ACTIONS_PER_SLOT)
 #define WZ_UI_STATUS_CAPACITY 192u
 #define WZ_UI_MICRODRIVE_COUNT 8u
+#define WZ_UI_MICRODRIVE_NAME_CAPACITY 64u
 
 typedef struct {
     const char* id;
@@ -33,6 +35,24 @@ typedef struct {
     const char* command_id;
     const char* label;
 } wz_ui_toolbar_item_t;
+
+typedef enum {
+    WZ_UI_MICRODRIVE_VALIDATION_UNMOUNTED = 0,
+    WZ_UI_MICRODRIVE_VALIDATION_VALID,
+    WZ_UI_MICRODRIVE_VALIDATION_INVALID,
+    WZ_UI_MICRODRIVE_VALIDATION_UNAVAILABLE
+} wz_ui_microdrive_validation_t;
+
+typedef struct {
+    bool mounted;
+    uint64_t host_image_identity;
+    char logical_name[WZ_UI_MICRODRIVE_NAME_CAPACITY];
+    size_t sector_count;
+    bool write_protected;
+    bool current_drive;
+    bool default_drive;
+    wz_ui_microdrive_validation_t validation;
+} wz_ui_microdrive_overview_entry_t;
 
 typedef struct {
     unsigned model_k;
@@ -61,6 +81,24 @@ size_t wz_ui_layout_tape_action_count(void);
 const wz_ui_toolbar_item_t* wz_ui_layout_tape_action_at(size_t index);
 size_t wz_ui_layout_microdrive_action_count(void);
 const wz_ui_toolbar_item_t* wz_ui_layout_microdrive_action_at(size_t index);
+void wz_ui_layout_microdrive_overview_init(
+    wz_ui_microdrive_overview_entry_t* entries);
+size_t wz_ui_layout_microdrive_overview_count(void);
+const wz_ui_microdrive_overview_entry_t* wz_ui_layout_microdrive_overview_at(
+    const wz_ui_microdrive_overview_entry_t* entries,
+    size_t index);
+bool wz_ui_layout_microdrive_overview_set(
+    wz_ui_microdrive_overview_entry_t* entries,
+    size_t index,
+    uint64_t host_image_identity,
+    const char* logical_name,
+    size_t sector_count,
+    bool write_protected,
+    bool current_drive,
+    bool default_drive,
+    wz_ui_microdrive_validation_t validation);
+const char* wz_ui_layout_microdrive_validation_label(
+    wz_ui_microdrive_validation_t validation);
 void wz_ui_layout_tape_label(bool mounted, char* output, size_t capacity);
 void wz_ui_layout_status_line(const wz_ui_layout_state_t* state,
                               char* output,
