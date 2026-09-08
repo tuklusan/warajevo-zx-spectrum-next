@@ -8,6 +8,19 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "app/wz_tape_manager.h"
 
+static const wz_tape_manager_maintenance_operation_t maintenance_operations[] = {
+    {WZ_TAPE_MANAGER_MAINTENANCE_EXCLUDE, "media.tape.native.exclude",
+     "Exclude", false, "requires-native-tape"},
+    {WZ_TAPE_MANAGER_MAINTENANCE_LINEARIZE, "media.tape.native.linearize",
+     "Linearize", false, "requires-native-tape"},
+    {WZ_TAPE_MANAGER_MAINTENANCE_IMPLODE, "media.tape.native.implode",
+     "Implode", false, "requires-native-tape"},
+    {WZ_TAPE_MANAGER_MAINTENANCE_DECOMPRESS, "media.tape.native.decompress",
+     "Decompress", false, "requires-native-tape"},
+    {WZ_TAPE_MANAGER_MAINTENANCE_EFFICIENCY, "media.tape.native.efficiency",
+     "Compression Efficiency", false, "requires-native-tape"}
+};
+
 #include <stdint.h>
 
 static wz_result_t prepare_output(size_t required,
@@ -210,4 +223,24 @@ wz_result_t wz_tape_manager_copy_block_to_new(const wz_tape_manager_edit_t* edit
                                               size_t position, wz_tap_block_t* output)
 {
     return wz_tape_manager_extract_block(edit, position, output);
+}
+
+size_t wz_tape_manager_maintenance_count(void)
+{
+    return sizeof(maintenance_operations) / sizeof(maintenance_operations[0]);
+}
+
+const wz_tape_manager_maintenance_operation_t*
+wz_tape_manager_maintenance_at(wz_tape_manager_format_t format, size_t index)
+{
+    static wz_tape_manager_maintenance_operation_t native_operation;
+    const wz_tape_manager_maintenance_operation_t* operation;
+
+    if (index >= wz_tape_manager_maintenance_count()) return 0;
+    operation = &maintenance_operations[index];
+    if (format != WZ_TAPE_MANAGER_FORMAT_NATIVE_TAP) return operation;
+    native_operation = *operation;
+    native_operation.available = true;
+    native_operation.unavailable_reason = 0;
+    return &native_operation;
 }

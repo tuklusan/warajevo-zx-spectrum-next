@@ -52,6 +52,22 @@ typedef struct {
     size_t capacity;
 } wz_tape_manager_edit_t;
 
+typedef enum {
+    WZ_TAPE_MANAGER_MAINTENANCE_EXCLUDE = 0,
+    WZ_TAPE_MANAGER_MAINTENANCE_LINEARIZE,
+    WZ_TAPE_MANAGER_MAINTENANCE_IMPLODE,
+    WZ_TAPE_MANAGER_MAINTENANCE_DECOMPRESS,
+    WZ_TAPE_MANAGER_MAINTENANCE_EFFICIENCY
+} wz_tape_manager_maintenance_kind_t;
+
+typedef struct {
+    wz_tape_manager_maintenance_kind_t kind;
+    const char* command_id;
+    const char* label;
+    bool available;
+    const char* unavailable_reason;
+} wz_tape_manager_maintenance_operation_t;
+
 wz_result_t wz_tape_manager_view_init(
     wz_tape_manager_view_t* view,
     const char* source_identity,
@@ -89,5 +105,8 @@ wz_result_t wz_tape_manager_extract_block(const wz_tape_manager_edit_t* edit,
                                           size_t position, wz_tap_block_t* output);
 wz_result_t wz_tape_manager_copy_block_to_new(const wz_tape_manager_edit_t* edit,
                                               size_t position, wz_tap_block_t* output);
+size_t wz_tape_manager_maintenance_count(void);
+const wz_tape_manager_maintenance_operation_t*
+wz_tape_manager_maintenance_at(wz_tape_manager_format_t format, size_t index);
 
 #endif

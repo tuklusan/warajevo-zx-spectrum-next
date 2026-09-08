@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 312,
+  "next_cr_number": 313,
   "status_values": [
     "open",
     "in_progress",
@@ -3086,6 +3086,24 @@
         "CMakeLists.txt"
       ],
       "notes": "Closed after CODE, four remote lanes, one 20-lane hosted matrix, evidence verification, TEST_ARTIFACT review, and final DOCUMENTATION review all passed."
+    },
+    {
+      "cr_number": "CR-0312",
+      "title": "Expose applicable Warajevo-native tape maintenance operations",
+      "status": "in_progress",
+      "priority": "low",
+      "execution_order": "architecture_2_phase_12aa",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0312.md",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md sections 12.3, 12.5, 20.2, 20.3, 20.4, 22, 45, and 48",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 307",
+        "src/core/wz_tape.h",
+        "src/app/wz_tape_manager.h",
+        "src/app/wz_tape_manager.c",
+        "CMakeLists.txt"
+      ],
+      "notes": "Implementation in progress; add native-only applicability metadata without ordinary TAP/TZX exposure or mutation."
     }
   ]
 }

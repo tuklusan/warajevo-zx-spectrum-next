@@ -22,6 +22,7 @@ int main(void)
     wz_tap_block_t editable[4];
     wz_tape_manager_edit_t edit;
     wz_tap_block_t extracted;
+    const wz_tape_manager_maintenance_operation_t* operation;
     wz_tape_manager_view_t view;
     size_t count = 0u;
 
@@ -57,6 +58,18 @@ int main(void)
         wz_tape_manager_delete_block(&edit, 1u) != WZ_RESULT_OK ||
         edit.count != 2u || wz_tape_manager_delete_block(&edit, 9u) !=
             WZ_RESULT_INVALID_ARGUMENT) {
+        return 1;
+    }
+    if (wz_tape_manager_maintenance_count() != 5u ||
+        (operation = wz_tape_manager_maintenance_at(
+             WZ_TAPE_MANAGER_FORMAT_STANDARD_TAP, 0u)) == 0 ||
+        operation->available || strcmp(operation->unavailable_reason,
+                                       "requires-native-tape") != 0 ||
+        (operation = wz_tape_manager_maintenance_at(
+             WZ_TAPE_MANAGER_FORMAT_NATIVE_TAP, 4u)) == 0 ||
+        !operation->available || operation->unavailable_reason != 0 ||
+        strcmp(operation->command_id, "media.tape.native.efficiency") != 0 ||
+        wz_tape_manager_maintenance_at(WZ_TAPE_MANAGER_FORMAT_NATIVE_TAP, 5u) != 0) {
         return 1;
     }
     puts("wz_tape_manager presentation contract passed");
