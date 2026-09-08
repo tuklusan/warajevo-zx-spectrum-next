@@ -3333,7 +3333,7 @@
     {
       "cr_number": "CR-0325",
       "title": "Implement ZX Printer Manager presentation and export",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "medium",
       "execution_order": "architecture_2_phase_12ac",
       "blocking": false,
@@ -3349,7 +3349,7 @@
         "src/app/wz_command_registry.h",
         "src/app/wz_command_registry.c"
       ],
-      "notes": "Preflight approved; implementation slice and required gates are in progress."
+      "notes": "Closed after upstream zero-gap scan, CODE and bootstrap authorization, serial remote evidence, hosted run 34239802754 with all 20 matrix lanes and publication green, evidence verification, TEST_ARTIFACT review PASS, and final DOCUMENTATION review PASS."
     }
   ]
 }
