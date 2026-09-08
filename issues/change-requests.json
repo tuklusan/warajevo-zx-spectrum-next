@@ -3019,7 +3019,7 @@
     {
       "cr_number": "CR-0308",
       "title": "Implement the Tape Eject quick action",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "medium",
       "execution_order": "architecture_2_phase_12aa",
       "blocking": false,
@@ -3032,7 +3032,7 @@
         "src/app/wz_tape_insert_workflow.c",
         "CMakeLists.txt"
       ],
-      "notes": "Implementation in progress; add transactional Tape Eject workflow with no-tape disabled-state handling."
+      "notes": "Closed after implementation commit b06fdaf, exact CODE PASS, corrected four-machine remote smokes, hosted matrix 34171267121 with all 20 lanes green, evidence-tree verification, TEST_ARTIFACT PASS, and final DOCUMENTATION PASS with zero confirmed findings."
     }
   ]
 }
