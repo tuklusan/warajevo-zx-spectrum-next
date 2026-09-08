@@ -3108,7 +3108,7 @@
     {
       "cr_number": "CR-0313",
       "title": "Replace tape print-to-screen with manager presentation and export report",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "low",
       "execution_order": "architecture_2_phase_12aa",
       "blocking": false,
@@ -3121,7 +3121,7 @@
         "tests/wz_tape_manager_tests.c",
         "CMakeLists.txt"
       ],
-      "notes": "Implementation in progress; manager-backed deterministic bounded report serializer replaces legacy print-to-screen without mutation."
+      "notes": "Closed after corrective CODE review, four remote lanes, one 20-lane hosted matrix, evidence verification, TEST_ARTIFACT review, and final DOCUMENTATION review all passed."
     }
   ]
 }
