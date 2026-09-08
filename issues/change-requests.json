@@ -3090,7 +3090,7 @@
     {
       "cr_number": "CR-0312",
       "title": "Expose applicable Warajevo-native tape maintenance operations",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "low",
       "execution_order": "architecture_2_phase_12aa",
       "blocking": false,
@@ -3103,7 +3103,7 @@
         "src/app/wz_tape_manager.c",
         "CMakeLists.txt"
       ],
-      "notes": "Implementation in progress; add native-only applicability metadata without ordinary TAP/TZX exposure or mutation."
+      "notes": "Closed after CODE, four remote lanes, one 20-lane hosted matrix, evidence verification, TEST_ARTIFACT review, and final DOCUMENTATION review all passed."
     }
   ]
 }
