@@ -3162,7 +3162,7 @@
     {
       "cr_number": "CR-0316",
       "title": "Complete Tape Manager regression coverage",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "medium",
       "execution_order": "architecture_2_phase_12aa",
       "blocking": false,
@@ -3175,7 +3175,7 @@
         "tests/wz_tape_manager_tests.c",
         "CMakeLists.txt"
       ],
-      "notes": "Implementation in progress; extend headless Tape Manager tests for malformed, cancellation, enabled-state, and atomic-error paths."
+      "notes": "Closed after CODE, four remote lanes, one 20-lane hosted matrix, evidence verification, TEST_ARTIFACT review, and final DOCUMENTATION review all passed."
     }
   ]
 }
