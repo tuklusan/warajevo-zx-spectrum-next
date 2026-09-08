@@ -10,6 +10,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
 
 static const wz_tape_manager_maintenance_operation_t maintenance_operations[] = {
     {WZ_TAPE_MANAGER_MAINTENANCE_EXCLUDE, "media.tape.native.exclude",
@@ -226,6 +227,56 @@ wz_result_t wz_tape_manager_copy_block_to_new(const wz_tape_manager_edit_t* edit
                                               size_t position, wz_tap_block_t* output)
 {
     return wz_tape_manager_extract_block(edit, position, output);
+}
+
+wz_result_t wz_tape_manager_transaction_init(
+    wz_tape_manager_transaction_t* transaction,
+    const wz_tap_block_t* source,
+    size_t source_count,
+    wz_tap_block_t* working,
+    size_t capacity)
+{
+    if (transaction == 0 || source == 0 || working == 0 || source_count == 0u ||
+        source_count > capacity) return WZ_RESULT_INVALID_ARGUMENT;
+    for (size_t index = 0u; index < source_count; ++index) {
+        if (!valid_block(&source[index])) return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    memcpy(working, source, source_count * sizeof(*working));
+    transaction->edit.blocks = working;
+    transaction->edit.count = source_count;
+    transaction->edit.capacity = capacity;
+    transaction->source = source;
+    transaction->source_count = source_count;
+    transaction->committed = false;
+    return WZ_RESULT_OK;
+}
+
+wz_tape_manager_edit_t* wz_tape_manager_transaction_edit(
+    wz_tape_manager_transaction_t* transaction)
+{
+    if (transaction == 0 || transaction->edit.blocks == 0 ||
+        transaction->source == 0 || transaction->committed) return 0;
+    return &transaction->edit;
+}
+
+wz_result_t wz_tape_manager_transaction_commit(
+    wz_tape_manager_transaction_t* transaction,
+    wz_tap_block_t* destination,
+    size_t capacity)
+{
+    if (transaction == 0 || destination == 0 || transaction->edit.blocks == 0 ||
+        transaction->source == 0 || transaction->committed ||
+        transaction->edit.count == 0u || transaction->edit.count > capacity) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    for (size_t index = 0u; index < transaction->edit.count; ++index) {
+        if (!valid_block(&transaction->edit.blocks[index]))
+            return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    memcpy(destination, transaction->edit.blocks,
+           transaction->edit.count * sizeof(*destination));
+    transaction->committed = true;
+    return WZ_RESULT_OK;
 }
 
 size_t wz_tape_manager_maintenance_count(void)

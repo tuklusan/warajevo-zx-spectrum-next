@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 314,
+  "next_cr_number": 315,
   "status_values": [
     "open",
     "in_progress",
@@ -3122,6 +3122,24 @@
         "CMakeLists.txt"
       ],
       "notes": "Closed after corrective CODE review, four remote lanes, one 20-lane hosted matrix, evidence verification, TEST_ARTIFACT review, and final DOCUMENTATION review all passed."
+    },
+    {
+      "cr_number": "CR-0314",
+      "title": "Enforce atomic failure behavior for tape mutation",
+      "status": "in_progress",
+      "priority": "medium",
+      "execution_order": "architecture_2_phase_12aa",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0314.md",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md sections 12.5, 20.1, 45, 47, and 48",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 309",
+        "src/app/wz_tape_manager.h",
+        "src/app/wz_tape_manager.c",
+        "tests/wz_tape_manager_tests.c",
+        "CMakeLists.txt"
+      ],
+      "notes": "Implementation in progress; add caller-owned transaction semantics so failed tape mutations preserve the original image."
     }
   ]
 }

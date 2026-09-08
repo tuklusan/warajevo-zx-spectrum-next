@@ -20,7 +20,10 @@ int main(void)
     };
     wz_tape_manager_block_t rows[2];
     wz_tap_block_t editable[4];
+    wz_tap_block_t working[4];
+    wz_tap_block_t destination[4];
     wz_tape_manager_edit_t edit;
+    wz_tape_manager_transaction_t transaction;
     wz_tap_block_t extracted;
     const wz_tape_manager_maintenance_operation_t* operation;
     wz_tape_manager_view_t view;
@@ -59,6 +62,19 @@ int main(void)
         wz_tape_manager_edit_block(&edit, 1u, tap_blocks[1]) != WZ_RESULT_OK ||
         wz_tape_manager_delete_block(&edit, 1u) != WZ_RESULT_OK ||
         edit.count != 2u || wz_tape_manager_delete_block(&edit, 9u) !=
+            WZ_RESULT_INVALID_ARGUMENT) {
+        return 1;
+    }
+    memset(destination, 0, sizeof(destination));
+    if (wz_tape_manager_transaction_init(&transaction, tap_blocks, 2u,
+            working, 4u) != WZ_RESULT_OK ||
+        wz_tape_manager_transaction_edit(&transaction) == 0 ||
+        wz_tape_manager_delete_block(wz_tape_manager_transaction_edit(
+            &transaction), 0u) != WZ_RESULT_OK ||
+        tap_blocks[0].data != data_a ||
+        wz_tape_manager_transaction_commit(&transaction, destination, 4u) !=
+            WZ_RESULT_OK || destination[0].data != data_b ||
+        wz_tape_manager_transaction_commit(&transaction, destination, 4u) !=
             WZ_RESULT_INVALID_ARGUMENT) {
         return 1;
     }
