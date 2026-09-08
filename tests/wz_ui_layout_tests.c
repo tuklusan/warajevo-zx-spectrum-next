@@ -20,11 +20,15 @@ static bool unavailable(const void* context, const char** reason)
     return false;
 }
 
+static const void* tape_handler_context;
+static size_t tape_handler_calls;
+
 static wz_result_t handler(const void* context,
                            wz_command_arguments_t arguments,
                            wz_command_result_t* result)
 {
-    (void)context;
+    tape_handler_context = context;
+    ++tape_handler_calls;
     (void)arguments;
     (void)result;
     return WZ_RESULT_OK;
@@ -75,7 +79,7 @@ int main(void)
     char status[WZ_UI_STATUS_CAPACITY];
     size_t index;
     wz_command_metadata_t metadata;
-    wz_command_metadata_t storage[1];
+    wz_command_metadata_t storage[WZ_UI_TAPE_ACTION_COUNT];
     wz_command_registry_t registry;
     const char* reason;
     const char screenshot_context = 'g';
@@ -141,6 +145,38 @@ int main(void)
     }
     if (wz_ui_layout_tape_action_at(WZ_UI_TAPE_ACTION_COUNT) != 0) {
         return 1;
+    }
+    tape_handler_context = 0;
+    tape_handler_calls = 0u;
+    if (wz_command_registry_init(&registry, storage, WZ_UI_TAPE_ACTION_COUNT) !=
+            WZ_RESULT_OK) {
+        return 1;
+    }
+    for (index = 0u; index < WZ_UI_TAPE_ACTION_COUNT; ++index) {
+        metadata = (wz_command_metadata_t){
+            .id = expected_tape_actions[index],
+            .label = expected_tape_labels[index],
+            .description = expected_tape_labels[index],
+            .handler_identity = "test.tape.action",
+            .permission = WZ_COMMAND_REMOTE_SAFE,
+            .handler = handler,
+            .handler_context = expected_tape_actions[index],
+        };
+        if (wz_command_registry_register(&registry, metadata) != WZ_RESULT_OK) {
+            return 1;
+        }
+    }
+    if (wz_command_registry_finalize(&registry) != WZ_RESULT_OK) {
+        return 1;
+    }
+    for (index = 0u; index < WZ_UI_TAPE_ACTION_COUNT; ++index) {
+        if (wz_ui_layout_activate_tape_action(
+                &registry, index, (wz_command_arguments_t){0, 0u},
+                &(wz_command_result_t){0}) != WZ_RESULT_OK ||
+            tape_handler_context != expected_tape_actions[index] ||
+            tape_handler_calls != index + 1u) {
+            return 1;
+        }
     }
     wz_ui_layout_tape_label(false, tape_label, sizeof(tape_label));
     if (strcmp(tape_label, "Tape: none") != 0) {
