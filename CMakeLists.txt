@@ -155,6 +155,8 @@ target_link_libraries(wz_debugger_memory_tools_tests PRIVATE wz_core)
 add_executable(wz_compatibility_tools_tests
     tests/wz_compatibility_tools_tests.c
     src/app/wz_compatibility_tools.c)
+target_link_libraries(wz_compatibility_tools_tests PRIVATE wz_warnings)
+target_include_directories(wz_compatibility_tools_tests PRIVATE src)
 
 add_executable(wz_debugger_page_controls_tests tests/wz_debugger_page_controls_tests.c)
 target_link_libraries(wz_debugger_page_controls_tests PRIVATE wz_core)
