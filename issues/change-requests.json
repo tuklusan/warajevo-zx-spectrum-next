@@ -3378,7 +3378,7 @@
     {
       "cr_number": "CR-0327",
       "title": "Implement Diagnostics entry point for project-owned diagnostic surfaces",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "medium",
       "execution_order": "architecture_2_phase_12e",
       "blocking": false,
@@ -3394,7 +3394,7 @@
         "src/app/wz_diagnostic_block.h",
         "src/app/wz_diagnostic_block.c"
       ],
-      "notes": "Opened after CR-0326 closure for Phase-12 UI task 323; implementation must remain a read-only presentation seam over existing diagnostic boundaries."
+      "notes": "Closed after implementation 92fd158, CODE/bootstrap/documentation review PASS, four serial remote lanes with retained diagnostics, hosted matrix run 34280401876 green across all 20 lanes, and manifest/evidence-inspection TEST_ARTIFACT reviews PASS."
     }
   ]
 }
