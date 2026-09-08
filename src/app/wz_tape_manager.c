@@ -300,7 +300,7 @@ wz_result_t wz_tape_manager_export_report(
         return WZ_RESULT_INVALID_ARGUMENT;
     }
     for (size_t index = 0u; index < block_count; ++index) {
-        if (blocks[index].type == 0 || blocks[index].metadata == 0)
+        if (blocks[index].type == 0)
             return WZ_RESULT_INVALID_ARGUMENT;
     }
     if (append_report(output, capacity, &used,
@@ -318,7 +318,8 @@ wz_result_t wz_tape_manager_export_report(
                 "Block %zu: type=%s logical=%zu stored=%zu flags=%u selected=%s metadata=%s\n",
                 index, blocks[index].type, blocks[index].logical_length,
                 blocks[index].stored_length, blocks[index].flags,
-                blocks[index].selected ? "yes" : "no", blocks[index].metadata) != WZ_RESULT_OK) {
+                blocks[index].selected ? "yes" : "no",
+                blocks[index].metadata == 0 ? "" : blocks[index].metadata) != WZ_RESULT_OK) {
             *length = 0u;
             return WZ_RESULT_BUFFER_TOO_SMALL;
         }
