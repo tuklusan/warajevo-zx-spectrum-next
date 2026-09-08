@@ -46,6 +46,12 @@ typedef struct {
     bool selected;
 } wz_tape_manager_block_t;
 
+typedef struct {
+    wz_tap_block_t* blocks;
+    size_t count;
+    size_t capacity;
+} wz_tape_manager_edit_t;
+
 wz_result_t wz_tape_manager_view_init(
     wz_tape_manager_view_t* view,
     const char* source_identity,
@@ -65,5 +71,23 @@ wz_result_t wz_tape_manager_blocks_from_native(
 wz_result_t wz_tape_manager_blocks_from_tzx(
     const wz_tzx_block_t* blocks, size_t block_count, size_t selected_block,
     wz_tape_manager_block_t* output, size_t capacity, size_t* count);
+
+wz_result_t wz_tape_manager_edit_init(wz_tape_manager_edit_t* edit,
+                                      wz_tap_block_t* blocks,
+                                      size_t count, size_t capacity);
+wz_result_t wz_tape_manager_reorder(wz_tape_manager_edit_t* edit,
+                                    size_t from, size_t to);
+wz_result_t wz_tape_manager_change_position(wz_tape_manager_edit_t* edit,
+                                            size_t from, size_t to);
+wz_result_t wz_tape_manager_add_block(wz_tape_manager_edit_t* edit,
+                                      wz_tap_block_t block, size_t position);
+wz_result_t wz_tape_manager_delete_block(wz_tape_manager_edit_t* edit,
+                                         size_t position);
+wz_result_t wz_tape_manager_edit_block(wz_tape_manager_edit_t* edit,
+                                       size_t position, wz_tap_block_t block);
+wz_result_t wz_tape_manager_extract_block(const wz_tape_manager_edit_t* edit,
+                                          size_t position, wz_tap_block_t* output);
+wz_result_t wz_tape_manager_copy_block_to_new(const wz_tape_manager_edit_t* edit,
+                                              size_t position, wz_tap_block_t* output);
 
 #endif

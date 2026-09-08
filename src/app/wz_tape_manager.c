@@ -8,6 +8,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "app/wz_tape_manager.h"
 
+#include <stdint.h>
+
 static wz_result_t prepare_output(size_t required,
                                   wz_tape_manager_block_t* output,
                                   size_t capacity, size_t* count)
@@ -113,4 +115,99 @@ wz_result_t wz_tape_manager_blocks_from_tzx(
                              "supported" : "not-expanded", selected_block);
     }
     return WZ_RESULT_OK;
+}
+
+static bool valid_block(const wz_tap_block_t* block)
+{
+    return block != 0 && block->data != 0 && block->length != 0u;
+}
+
+wz_result_t wz_tape_manager_edit_init(wz_tape_manager_edit_t* edit,
+                                      wz_tap_block_t* blocks,
+                                      size_t count, size_t capacity)
+{
+    if (edit == 0 || blocks == 0 || count == 0u || count > capacity) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    for (size_t index = 0u; index < count; ++index) {
+        if (!valid_block(&blocks[index])) return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    edit->blocks = blocks;
+    edit->count = count;
+    edit->capacity = capacity;
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_tape_manager_reorder(wz_tape_manager_edit_t* edit,
+                                    size_t from, size_t to)
+{
+    wz_tap_block_t moved;
+    if (edit == 0 || edit->blocks == 0 || from >= edit->count ||
+        to >= edit->count) return WZ_RESULT_INVALID_ARGUMENT;
+    if (from == to) return WZ_RESULT_OK;
+    moved = edit->blocks[from];
+    if (from < to) {
+        for (size_t index = from; index < to; ++index)
+            edit->blocks[index] = edit->blocks[index + 1u];
+    } else {
+        for (size_t index = from; index > to; --index)
+            edit->blocks[index] = edit->blocks[index - 1u];
+    }
+    edit->blocks[to] = moved;
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_tape_manager_change_position(wz_tape_manager_edit_t* edit,
+                                            size_t from, size_t to)
+{
+    return wz_tape_manager_reorder(edit, from, to);
+}
+
+wz_result_t wz_tape_manager_add_block(wz_tape_manager_edit_t* edit,
+                                      wz_tap_block_t block, size_t position)
+{
+    if (edit == 0 || edit->blocks == 0 || !valid_block(&block) ||
+        position > edit->count || edit->count >= edit->capacity) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    for (size_t index = edit->count; index > position; --index)
+        edit->blocks[index] = edit->blocks[index - 1u];
+    edit->blocks[position] = block;
+    ++edit->count;
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_tape_manager_delete_block(wz_tape_manager_edit_t* edit,
+                                         size_t position)
+{
+    if (edit == 0 || edit->blocks == 0 || edit->count == 0u ||
+        position >= edit->count) return WZ_RESULT_INVALID_ARGUMENT;
+    for (size_t index = position; index + 1u < edit->count; ++index)
+        edit->blocks[index] = edit->blocks[index + 1u];
+    --edit->count;
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_tape_manager_edit_block(wz_tape_manager_edit_t* edit,
+                                       size_t position, wz_tap_block_t block)
+{
+    if (edit == 0 || edit->blocks == 0 || position >= edit->count ||
+        !valid_block(&block)) return WZ_RESULT_INVALID_ARGUMENT;
+    edit->blocks[position] = block;
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_tape_manager_extract_block(const wz_tape_manager_edit_t* edit,
+                                          size_t position, wz_tap_block_t* output)
+{
+    if (edit == 0 || edit->blocks == 0 || output == 0 ||
+        position >= edit->count) return WZ_RESULT_INVALID_ARGUMENT;
+    *output = edit->blocks[position];
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_tape_manager_copy_block_to_new(const wz_tape_manager_edit_t* edit,
+                                              size_t position, wz_tap_block_t* output)
+{
+    return wz_tape_manager_extract_block(edit, position, output);
 }

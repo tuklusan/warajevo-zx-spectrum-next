@@ -19,6 +19,9 @@ int main(void)
         {data_a, sizeof(data_a)}, {data_b, sizeof(data_b)}
     };
     wz_tape_manager_block_t rows[2];
+    wz_tap_block_t editable[4];
+    wz_tape_manager_edit_t edit;
+    wz_tap_block_t extracted;
     wz_tape_manager_view_t view;
     size_t count = 0u;
 
@@ -34,7 +37,26 @@ int main(void)
         !rows[1].selected || strcmp(rows[0].type, "TAP data block") != 0 ||
         wz_tape_manager_blocks_from_tap(tap_blocks, 2u, 0u, rows, 1u,
                                          &count) != WZ_RESULT_BUFFER_TOO_SMALL ||
-        count != 2u) {
+        count != 2u ||
+        wz_tape_manager_edit_init(&edit, editable, 0u, 4u) !=
+            WZ_RESULT_INVALID_ARGUMENT) {
+        return 1;
+    }
+    editable[0] = tap_blocks[0];
+    editable[1] = tap_blocks[1];
+    if (wz_tape_manager_edit_init(&edit, editable, 2u, 4u) != WZ_RESULT_OK ||
+        wz_tape_manager_add_block(&edit, tap_blocks[0], 1u) != WZ_RESULT_OK ||
+        edit.count != 3u || wz_tape_manager_reorder(&edit, 2u, 0u) != WZ_RESULT_OK ||
+        wz_tape_manager_change_position(&edit, 0u, 2u) != WZ_RESULT_OK ||
+        wz_tape_manager_extract_block(&edit, 1u, &extracted) != WZ_RESULT_OK ||
+        extracted.length != sizeof(data_a)) {
+        return 1;
+    }
+    if (wz_tape_manager_copy_block_to_new(&edit, 1u, &extracted) != WZ_RESULT_OK ||
+        wz_tape_manager_edit_block(&edit, 1u, tap_blocks[1]) != WZ_RESULT_OK ||
+        wz_tape_manager_delete_block(&edit, 1u) != WZ_RESULT_OK ||
+        edit.count != 2u || wz_tape_manager_delete_block(&edit, 9u) !=
+            WZ_RESULT_INVALID_ARGUMENT) {
         return 1;
     }
     puts("wz_tape_manager presentation contract passed");
