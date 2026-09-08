@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 324,
+  "next_cr_number": 325,
   "status_values": [
     "open",
     "in_progress",
@@ -3308,6 +3308,27 @@
         "CMakeLists.txt"
       ],
       "notes": "Closed after upstream zero-gap scan, CODE and bootstrap authorization, serial remote evidence, hosted run 34222919738 with all 20 matrix lanes and publication green, evidence verification, TEST_ARTIFACT review, and final DOCUMENTATION review."
+    },
+    {
+      "cr_number": "CR-0324",
+      "title": "Expose cross-process Microdrive ownership outcomes in UI workflows",
+      "status": "in_progress",
+      "priority": "medium",
+      "execution_order": "architecture_2_phase_12ab",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0324.md",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md sections 14, 15.2 through 15.4, 39, 44.1, 45, 47, 48, and 51",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 319",
+        "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM",
+        "src/app/wz_host_media_ownership.h",
+        "src/app/wz_host_media_ownership.c",
+        "src/app/wz_microdrive_manager.h",
+        "src/app/wz_microdrive_manager.c",
+        "tests/wz_host_media_ownership_tests.c",
+        "CMakeLists.txt"
+      ],
+      "notes": "Preflight approved; implementation and required gates are pending."
     }
   ]
 }
