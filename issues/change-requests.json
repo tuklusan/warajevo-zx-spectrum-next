@@ -3254,7 +3254,7 @@
     {
       "cr_number": "CR-0321",
       "title": "Implement Microdrive Manager whole-cartridge workflows",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "medium",
       "execution_order": "architecture_2_phase_12ab",
       "blocking": false,
@@ -3269,7 +3269,7 @@
         "tests/wz_microdrive_manager_tests.c",
         "CMakeLists.txt"
       ],
-      "notes": "Implementation staged; upstream zero-gap exit and validation gates are pending."
+      "notes": "Closed after upstream zero-gap scan, CODE and bootstrap authorization, serial remote evidence, hosted run 34214625192 with all 20 matrix lanes and publication green, evidence verification, TEST_ARTIFACT review, and final DOCUMENTATION review."
     }
   ]
 }
