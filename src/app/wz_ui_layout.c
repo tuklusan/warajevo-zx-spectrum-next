@@ -40,6 +40,14 @@ static const wz_ui_toolbar_item_t toolbar[WZ_UI_TOOLBAR_COUNT] = {
     {"tools.debugger", "Debugger"}
 };
 
+static const wz_ui_toolbar_item_t tape_actions[WZ_UI_TAPE_ACTION_COUNT] = {
+    {"media.tape.insert", "Insert..."},
+    {"media.tape.eject", "Eject"},
+    {"media.tape.loading.normal", "Normal"},
+    {"media.tape.loading.instant", "Instant / Trap"},
+    {"media.tape.manager", "Open Tape Manager..."}
+};
+
 void wz_ui_layout_state_init(wz_ui_layout_state_t* state)
 {
     if (state == 0) {
@@ -144,6 +152,25 @@ const wz_ui_toolbar_item_t* wz_ui_layout_toolbar_at(size_t index)
     return index < WZ_UI_TOOLBAR_COUNT ? &toolbar[index] : 0;
 }
 
+size_t wz_ui_layout_tape_action_count(void)
+{
+    return WZ_UI_TAPE_ACTION_COUNT;
+}
+
+const wz_ui_toolbar_item_t* wz_ui_layout_tape_action_at(size_t index)
+{
+    return index < WZ_UI_TAPE_ACTION_COUNT ? &tape_actions[index] : 0;
+}
+
+void wz_ui_layout_tape_label(bool mounted, char* output, size_t capacity)
+{
+    if (output == 0 || capacity == 0u) {
+        return;
+    }
+    (void)snprintf(output, capacity, "Tape: %s", mounted ? "mounted" : "none");
+    output[capacity - 1u] = '\0';
+}
+
 void wz_ui_layout_status_line(const wz_ui_layout_state_t* state,
                               char* output,
                               size_t capacity)
@@ -226,6 +253,25 @@ wz_result_t wz_ui_layout_activate_toolbar(
         return WZ_RESULT_INVALID_ARGUMENT;
     }
     item = wz_ui_layout_toolbar_at(index);
+    if (item == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    return wz_command_registry_dispatch(registry, item->command_id,
+                                        arguments, result);
+}
+
+wz_result_t wz_ui_layout_activate_tape_action(
+    const wz_command_registry_t* registry,
+    size_t index,
+    wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    const wz_ui_toolbar_item_t* item;
+
+    if (result == 0 || index >= WZ_UI_TAPE_ACTION_COUNT) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    item = wz_ui_layout_tape_action_at(index);
     if (item == 0) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }

@@ -61,6 +61,15 @@ int main(void)
         "Tape", "Load Snapshot", "Save Snapshot", "MDV 1", "Screenshot",
         "Fullscreen", "Debugger"
     };
+    static const char* expected_tape_actions[] = {
+        "media.tape.insert", "media.tape.eject",
+        "media.tape.loading.normal", "media.tape.loading.instant",
+        "media.tape.manager"
+    };
+    static const char* expected_tape_labels[] = {
+        "Insert...", "Eject", "Normal", "Instant / Trap",
+        "Open Tape Manager..."
+    };
     wz_ui_layout_state_t state;
     char panel[512];
     char status[WZ_UI_STATUS_CAPACITY];
@@ -71,6 +80,7 @@ int main(void)
     const char* reason;
     const char screenshot_context = 'g';
     const char screenshot_argument[] = "gui-destination";
+    char tape_label[32];
 
     if (wz_ui_layout_menu_count() != WZ_UI_MENU_COUNT ||
         wz_ui_layout_toolbar_count() != WZ_UI_TOOLBAR_COUNT) {
@@ -117,6 +127,27 @@ int main(void)
     }
     if (wz_ui_layout_menu_at(WZ_UI_MENU_COUNT) != 0 ||
         wz_ui_layout_toolbar_at(WZ_UI_TOOLBAR_COUNT) != 0) {
+        return 1;
+    }
+    if (wz_ui_layout_tape_action_count() != WZ_UI_TAPE_ACTION_COUNT) {
+        return 1;
+    }
+    for (index = 0u; index < WZ_UI_TAPE_ACTION_COUNT; ++index) {
+        const wz_ui_toolbar_item_t* item = wz_ui_layout_tape_action_at(index);
+        if (item == 0 || strcmp(item->command_id, expected_tape_actions[index]) != 0 ||
+            strcmp(item->label, expected_tape_labels[index]) != 0) {
+            return 1;
+        }
+    }
+    if (wz_ui_layout_tape_action_at(WZ_UI_TAPE_ACTION_COUNT) != 0) {
+        return 1;
+    }
+    wz_ui_layout_tape_label(false, tape_label, sizeof(tape_label));
+    if (strcmp(tape_label, "Tape: none") != 0) {
+        return 1;
+    }
+    wz_ui_layout_tape_label(true, tape_label, sizeof(tape_label));
+    if (strcmp(tape_label, "Tape: mounted") != 0) {
         return 1;
     }
     if (wz_ui_layout_speed_count() != WZ_SPEED_COUNT ||
@@ -169,6 +200,9 @@ int main(void)
     if (wz_command_registry_init(&registry, storage, 1u) != WZ_RESULT_OK ||
         wz_command_registry_register(&registry, metadata) != WZ_RESULT_OK ||
         wz_command_registry_finalize(&registry) != WZ_RESULT_OK ||
+        wz_ui_layout_activate_tape_action(
+            &registry, 0u, (wz_command_arguments_t){0, 0u},
+            &(wz_command_result_t){0}) != WZ_RESULT_OK ||
         wz_ui_layout_command_state(&registry, "media.tape.insert", &reason) !=
             WZ_COMMAND_DISABLED || reason == 0 || strcmp(reason, "requires-media") != 0 ||
         wz_ui_layout_command_state(&registry, "missing.command", &reason) !=
