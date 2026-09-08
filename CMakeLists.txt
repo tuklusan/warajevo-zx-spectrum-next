@@ -176,6 +176,13 @@ add_executable(wz_printer_export_tests
     src/app/wz_printer_export.c)
 target_link_libraries(wz_printer_export_tests PRIVATE wz_core)
 
+add_executable(wz_printer_manager_tests
+    tests/wz_printer_manager_tests.c
+    src/app/wz_printer_manager.c
+    src/app/wz_printer_export.c
+    src/app/wz_command_registry.c)
+target_link_libraries(wz_printer_manager_tests PRIVATE wz_core)
+
 add_executable(wz_diagnostic_block_tests
     tests/wz_diagnostic_block_tests.c
     src/app/wz_diagnostic_block.c)
@@ -247,6 +254,7 @@ add_test(NAME wz_command_registry_tests COMMAND wz_command_registry_tests)
 add_test(NAME wz_ui_layout_tests COMMAND wz_ui_layout_tests)
 add_test(NAME wz_tape_manager_tests COMMAND wz_tape_manager_tests)
 add_test(NAME wz_microdrive_manager_tests COMMAND wz_microdrive_manager_tests)
+add_test(NAME wz_printer_manager_tests COMMAND wz_printer_manager_tests)
 add_test(NAME wz_ui_window_tests COMMAND wz_ui_window_tests)
 
 add_executable(
