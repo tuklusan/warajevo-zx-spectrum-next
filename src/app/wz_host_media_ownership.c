@@ -26,6 +26,7 @@ bool wz_host_media_claim_acquire(const char* path,
     claim->held = false;
     claim->writable = writable;
     claim->native_handle = (intptr_t)-1;
+    claim->reason = 0;
     if (!writable) {
         return true;
     }
@@ -42,6 +43,7 @@ bool wz_host_media_claim_acquire(const char* path,
             if (handle != INVALID_HANDLE_VALUE) {
                 CloseHandle(handle);
             }
+            claim->reason = "media-writer-unavailable";
             return false;
         }
         claim->native_handle = (intptr_t)handle;
@@ -53,6 +55,7 @@ bool wz_host_media_claim_acquire(const char* path,
             if (file >= 0) {
                 close(file);
             }
+            claim->reason = "media-writer-unavailable";
             return false;
         }
         claim->native_handle = (intptr_t)file;
@@ -60,6 +63,37 @@ bool wz_host_media_claim_acquire(const char* path,
 #endif
     claim->held = true;
     return true;
+}
+
+wz_host_media_claim_outcome_t wz_host_media_claim_acquire_with_fallback(
+    const char* path, bool writable, bool allow_read_only,
+    wz_host_media_claim_t* claim)
+{
+    if (path == 0 || claim == 0) {
+        if (claim != 0) claim->reason = "invalid-argument";
+        return WZ_HOST_MEDIA_CLAIM_INVALID_ARGUMENT;
+    }
+    if (wz_host_media_claim_acquire(path, writable, claim)) {
+        claim->reason = writable ? 0 : "read-only-request";
+        return writable ? WZ_HOST_MEDIA_CLAIM_WRITABLE : WZ_HOST_MEDIA_CLAIM_READ_ONLY;
+    }
+    if (allow_read_only) {
+        claim->held = false;
+        claim->writable = false;
+        claim->native_handle = (intptr_t)-1;
+        claim->reason = "read-only-fallback";
+        return WZ_HOST_MEDIA_CLAIM_READ_ONLY;
+    }
+    return WZ_HOST_MEDIA_CLAIM_UNAVAILABLE;
+}
+
+wz_host_media_claim_outcome_t wz_host_media_claim_outcome(
+    const wz_host_media_claim_t* claim)
+{
+    if (claim == 0) return WZ_HOST_MEDIA_CLAIM_INVALID_ARGUMENT;
+    if (claim->held && claim->writable) return WZ_HOST_MEDIA_CLAIM_WRITABLE;
+    if (!claim->writable) return WZ_HOST_MEDIA_CLAIM_READ_ONLY;
+    return WZ_HOST_MEDIA_CLAIM_UNAVAILABLE;
 }
 
 void wz_host_media_claim_release(wz_host_media_claim_t* claim)

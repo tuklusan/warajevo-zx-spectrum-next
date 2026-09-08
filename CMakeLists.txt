@@ -164,6 +164,13 @@ target_link_libraries(wz_debugger_jump_undo_tests PRIVATE wz_core)
 add_executable(wz_machine_reset_tests tests/wz_machine_reset_tests.c)
 target_link_libraries(wz_machine_reset_tests PRIVATE wz_core)
 
+add_executable(
+    wz_host_media_ownership_tests
+    tests/wz_host_media_ownership_tests.c
+    src/app/wz_host_media_ownership.c)
+target_link_libraries(wz_host_media_ownership_tests PRIVATE wz_warnings)
+target_include_directories(wz_host_media_ownership_tests PRIVATE src)
+
 add_executable(wz_printer_export_tests
     tests/wz_printer_export_tests.c
     src/app/wz_printer_export.c)
@@ -232,6 +239,7 @@ add_test(NAME wz_debugger_page_controls_tests COMMAND wz_debugger_page_controls_
 add_test(NAME wz_debugger_disassembly_tests COMMAND wz_debugger_disassembly_tests)
 add_test(NAME wz_debugger_jump_undo_tests COMMAND wz_debugger_jump_undo_tests)
 add_test(NAME wz_machine_reset_tests COMMAND wz_machine_reset_tests)
+add_test(NAME wz_host_media_ownership_tests COMMAND wz_host_media_ownership_tests)
 add_test(NAME wz_printer_export_tests COMMAND wz_printer_export_tests)
 add_test(NAME wz_diagnostic_block_tests COMMAND wz_diagnostic_block_tests)
 add_test(NAME wz_application_lifecycle_tests COMMAND wz_application_lifecycle_tests)
