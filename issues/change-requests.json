@@ -3234,7 +3234,7 @@
     {
       "cr_number": "CR-0320",
       "title": "Implement Microdrive Manager overview",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "medium",
       "execution_order": "architecture_2_phase_12ab",
       "blocking": false,
@@ -3249,7 +3249,7 @@
         "tests/wz_ui_layout_tests.c",
         "CMakeLists.txt"
       ],
-      "notes": "Implementation in progress; establish the complete eight-slot Microdrive Manager overview contract without duplicating media semantics."
+      "notes": "Closed after upstream zero-gap scan, CODE review, bootstrap authorization, four successful remote lanes, hosted run 34208172449 with all 20 lanes and publication gate green, retained evidence verification, TEST_ARTIFACT review, and final DOCUMENTATION review all passed."
     }
   ]
 }
