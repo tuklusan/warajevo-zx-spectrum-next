@@ -31,7 +31,7 @@ typedef enum {
 } wz_debugger_window_result_t;
 
 typedef struct {
-    const wz_machine_t* machine;
+    wz_machine_t* machine;
     wz_debugger_snapshot_t snapshot;
     wz_debugger_page_info_t paging;
     wz_word_t memory_address;

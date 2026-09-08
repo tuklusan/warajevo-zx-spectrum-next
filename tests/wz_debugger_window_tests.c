@@ -11,6 +11,18 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "app/wz_debugger_window.h"
 
+static wz_result_t command_handler(const void* context,
+                                   wz_command_arguments_t arguments,
+                                   wz_command_result_t* result)
+{
+    (void)context;
+    (void)arguments;
+    if (result != 0) {
+        result->status = WZ_COMMAND_RESULT_SUCCESS;
+    }
+    return WZ_RESULT_OK;
+}
+
 int main(void)
 {
     wz_machine_t machine;
@@ -50,7 +62,7 @@ int main(void)
         return 1;
     }
     if (wz_command_registry_init(&registry, commands, 4u) != WZ_RESULT_OK ||
-        wz_debugger_window_register_commands(&registry, 0, 0, 0) != WZ_RESULT_OK ||
+        wz_debugger_window_register_commands(&registry, 0, command_handler, 0) != WZ_RESULT_OK ||
         wz_command_registry_finalize(&registry) != WZ_RESULT_OK ||
         wz_command_registry_find(&registry, WZ_DEBUGGER_WINDOW_COMMAND_ID) == 0 ||
         wz_command_registry_find(&registry, WZ_DEBUGGER_WINDOW_STEP_COMMAND_ID) == 0) {
