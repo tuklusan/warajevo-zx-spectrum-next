@@ -3180,7 +3180,7 @@
     {
       "cr_number": "CR-0317",
       "title": "Complete Tape UI acceptance subset",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "medium",
       "execution_order": "architecture_2_phase_12aa",
       "blocking": false,
@@ -3193,7 +3193,7 @@
         "tests/wz_ui_layout_tests.c",
         "CMakeLists.txt"
       ],
-      "notes": "Implementation in progress; complete headless dispatch coverage for all canonical Tape UI actions."
+      "notes": "Closed after CODE, four remote lanes, one 20-lane hosted matrix, evidence verification, TEST_ARTIFACT review, and final DOCUMENTATION review all passed."
     }
   ]
 }
