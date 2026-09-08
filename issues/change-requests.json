@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 319,
+  "next_cr_number": 320,
   "status_values": [
     "open",
     "in_progress",
@@ -3212,6 +3212,24 @@
         "CMakeLists.txt"
       ],
       "notes": "Closed after CODE, bootstrap authorization, corrected four remote lanes, one 20-lane hosted matrix, evidence verification, TEST_ARTIFACT review, and final DOCUMENTATION review all passed."
+    },
+    {
+      "cr_number": "CR-0319",
+      "title": "Complete compact MDV 1 toolbar control",
+      "status": "in_progress",
+      "priority": "medium",
+      "execution_order": "architecture_2_phase_12ab",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0319.md",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md sections 14, 24, 47, and 48",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 314",
+        "src/app/wz_ui_layout.h",
+        "src/app/wz_ui_layout.c",
+        "tests/wz_ui_layout_tests.c",
+        "CMakeLists.txt"
+      ],
+      "notes": "Implementation in progress; prove compact MDV 1 toolbar activation uses the shared Microdrive registry."
     }
   ]
 }

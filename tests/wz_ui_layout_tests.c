@@ -80,6 +80,7 @@ int main(void)
     size_t index;
     wz_command_metadata_t metadata;
     wz_command_metadata_t storage[WZ_UI_MICRODRIVE_ACTION_COUNT];
+    wz_command_metadata_t toolbar_storage[1];
     wz_command_registry_t registry;
     const char* reason;
     const char screenshot_context = 'g';
@@ -230,6 +231,28 @@ int main(void)
             tape_handler_calls != index + 1u) {
             return 1;
         }
+    }
+    tape_handler_context = 0;
+    tape_handler_calls = 0u;
+    metadata = (wz_command_metadata_t){
+        .id = "media.microdrive.drive1",
+        .label = "MDV 1",
+        .description = "Open MDV 1 control",
+        .handler_identity = "test.microdrive.toolbar",
+        .permission = WZ_COMMAND_REMOTE_SAFE,
+        .handler = handler,
+        .handler_context = "media.microdrive.drive1",
+    };
+    if (wz_command_registry_init(&registry, toolbar_storage, 1u) !=
+            WZ_RESULT_OK ||
+        wz_command_registry_register(&registry, metadata) != WZ_RESULT_OK ||
+        wz_command_registry_finalize(&registry) != WZ_RESULT_OK ||
+        wz_ui_layout_activate_toolbar(
+            &registry, 7u, (wz_command_arguments_t){0, 0u},
+            &(wz_command_result_t){0}) != WZ_RESULT_OK ||
+        tape_handler_context != "media.microdrive.drive1" ||
+        tape_handler_calls != 1u) {
+        return 1;
     }
     wz_ui_layout_tape_label(false, tape_label, sizeof(tape_label));
     if (strcmp(tape_label, "Tape: none") != 0) {
