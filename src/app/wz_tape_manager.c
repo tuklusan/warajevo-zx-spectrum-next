@@ -8,6 +8,9 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "app/wz_tape_manager.h"
 
+#include <stdarg.h>
+#include <stdio.h>
+
 static const wz_tape_manager_maintenance_operation_t maintenance_operations[] = {
     {WZ_TAPE_MANAGER_MAINTENANCE_EXCLUDE, "media.tape.native.exclude",
      "Exclude", false, "requires-native-tape"},
@@ -243,4 +246,83 @@ wz_tape_manager_maintenance_at(wz_tape_manager_format_t format, size_t index)
     native_operation.available = true;
     native_operation.unavailable_reason = 0;
     return &native_operation;
+}
+
+static const char* format_name(wz_tape_manager_format_t format)
+{
+    switch (format) {
+    case WZ_TAPE_MANAGER_FORMAT_STANDARD_TAP: return "standard TAP";
+    case WZ_TAPE_MANAGER_FORMAT_NATIVE_TAP: return "Warajevo native TAP";
+    case WZ_TAPE_MANAGER_FORMAT_TZX: return "TZX";
+    default: return "unknown";
+    }
+}
+
+static const char* state_name(wz_tape_manager_state_t state)
+{
+    switch (state) {
+    case WZ_TAPE_MANAGER_STATE_STOPPED: return "stopped";
+    case WZ_TAPE_MANAGER_STATE_LOADING: return "loading";
+    case WZ_TAPE_MANAGER_STATE_PLAYING: return "playing";
+    default: return "unknown";
+    }
+}
+
+static wz_result_t append_report(char* output, size_t capacity,
+                                 size_t* used, const char* format, ...)
+{
+    int written;
+    va_list arguments;
+
+    if (*used >= capacity) return WZ_RESULT_BUFFER_TOO_SMALL;
+    va_start(arguments, format);
+    written = vsnprintf(output + *used, capacity - *used, format, arguments);
+    va_end(arguments);
+    if (written < 0 || (size_t)written >= capacity - *used)
+        return WZ_RESULT_BUFFER_TOO_SMALL;
+    *used += (size_t)written;
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_tape_manager_export_report(
+    const wz_tape_manager_view_t* view,
+    const wz_tape_manager_block_t* blocks,
+    size_t block_count,
+    char* output,
+    size_t capacity,
+    size_t* length)
+{
+    size_t used = 0u;
+
+    if (view == 0 || blocks == 0 || block_count == 0u || output == 0 ||
+        capacity == 0u || length == 0 || view->source_identity == 0 ||
+        view->loading_mode == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    for (size_t index = 0u; index < block_count; ++index) {
+        if (blocks[index].type == 0 || blocks[index].metadata == 0)
+            return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (append_report(output, capacity, &used,
+            "Tape Report\nSource: %s\nFormat: %s\nLoading mode: %s\n"
+            "State: %s\nCurrent block: %zu\nCurrent position: %zu\n"
+            "Selected block: %zu\nBlocks: %zu\n",
+            view->source_identity, format_name(view->format),
+            view->loading_mode, state_name(view->state), view->current_block,
+            view->current_position, view->selected_block, block_count) != WZ_RESULT_OK) {
+        *length = 0u;
+        return WZ_RESULT_BUFFER_TOO_SMALL;
+    }
+    for (size_t index = 0u; index < block_count; ++index) {
+        if (append_report(output, capacity, &used,
+                "Block %zu: type=%s logical=%zu stored=%zu flags=%u selected=%s metadata=%s\n",
+                index, blocks[index].type, blocks[index].logical_length,
+                blocks[index].stored_length, blocks[index].flags,
+                blocks[index].selected ? "yes" : "no", blocks[index].metadata) != WZ_RESULT_OK) {
+            *length = 0u;
+            return WZ_RESULT_BUFFER_TOO_SMALL;
+        }
+    }
+    *length = used;
+    return WZ_RESULT_OK;
 }

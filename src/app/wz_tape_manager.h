@@ -109,4 +109,12 @@ size_t wz_tape_manager_maintenance_count(void);
 const wz_tape_manager_maintenance_operation_t*
 wz_tape_manager_maintenance_at(wz_tape_manager_format_t format, size_t index);
 
+wz_result_t wz_tape_manager_export_report(
+    const wz_tape_manager_view_t* view,
+    const wz_tape_manager_block_t* blocks,
+    size_t block_count,
+    char* output,
+    size_t capacity,
+    size_t* length);
+
 #endif

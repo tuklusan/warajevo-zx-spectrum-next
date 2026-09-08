@@ -24,6 +24,8 @@ int main(void)
     wz_tap_block_t extracted;
     const wz_tape_manager_maintenance_operation_t* operation;
     wz_tape_manager_view_t view;
+    char report[1024];
+    size_t report_length = 0u;
     size_t count = 0u;
 
     if (wz_tape_manager_view_init(&view, "demo.tap",
@@ -70,6 +72,16 @@ int main(void)
         !operation->available || operation->unavailable_reason != 0 ||
         strcmp(operation->command_id, "media.tape.native.efficiency") != 0 ||
         wz_tape_manager_maintenance_at(WZ_TAPE_MANAGER_FORMAT_NATIVE_TAP, 5u) != 0) {
+        return 1;
+    }
+    if (wz_tape_manager_export_report(&view, rows, 2u, report,
+            sizeof(report), &report_length) != WZ_RESULT_OK ||
+        report_length == 0u || strstr(report, "Tape Report") == 0 ||
+        strstr(report, "Source: demo.tap") == 0 ||
+        strstr(report, "Block 1: type=TAP data block") == 0 ||
+        wz_tape_manager_export_report(&view, rows, 2u, report, 8u,
+                                      &report_length) != WZ_RESULT_BUFFER_TOO_SMALL ||
+        report_length != 0u) {
         return 1;
     }
     puts("wz_tape_manager presentation contract passed");
