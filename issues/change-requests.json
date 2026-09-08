@@ -3144,7 +3144,7 @@
     {
       "cr_number": "CR-0315",
       "title": "Reconcile all legacy TapeFiles operations",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "medium",
       "execution_order": "architecture_2_phase_12aa",
       "blocking": false,
@@ -3157,7 +3157,7 @@
         "tests/wz_tape_manager_tests.c",
         "CMakeLists.txt"
       ],
-      "notes": "Implementation in progress; create a complete tracked TapeFiles destination/disposition trace without duplicating handlers or implementing deferred converters."
+      "notes": "Closed after CODE, four remote lanes, one 20-lane hosted matrix, evidence verification, TEST_ARTIFACT review, and final DOCUMENTATION review all passed."
     }
   ]
 }
