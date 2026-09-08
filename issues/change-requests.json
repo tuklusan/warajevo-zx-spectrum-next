@@ -3312,7 +3312,7 @@
     {
       "cr_number": "CR-0324",
       "title": "Expose cross-process Microdrive ownership outcomes in UI workflows",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "medium",
       "execution_order": "architecture_2_phase_12ab",
       "blocking": false,
@@ -3328,7 +3328,7 @@
         "tests/wz_host_media_ownership_tests.c",
         "CMakeLists.txt"
       ],
-      "notes": "Preflight approved; implementation and required gates are pending."
+      "notes": "Closed after upstream zero-gap scan, CODE and bootstrap authorization, four serial remote lanes with retained diagnostics, hosted run 34229096677 with all 20 matrix lanes green, evidence verification, TEST_ARTIFACT review PASS, and final DOCUMENTATION review PASS."
     }
   ]
 }
