@@ -85,6 +85,7 @@ int main(void)
     const char screenshot_context = 'g';
     const char screenshot_argument[] = "gui-destination";
     char tape_label[32];
+    char expected_microdrive_id[64];
 
     if (wz_ui_layout_menu_count() != WZ_UI_MENU_COUNT ||
         wz_ui_layout_toolbar_count() != WZ_UI_TOOLBAR_COUNT) {
@@ -174,6 +175,58 @@ int main(void)
                 &registry, index, (wz_command_arguments_t){0, 0u},
                 &(wz_command_result_t){0}) != WZ_RESULT_OK ||
             tape_handler_context != expected_tape_actions[index] ||
+            tape_handler_calls != index + 1u) {
+            return 1;
+        }
+    }
+    if (wz_ui_layout_microdrive_action_count() !=
+            WZ_UI_MICRODRIVE_ACTION_COUNT ||
+        wz_ui_layout_microdrive_action_at(WZ_UI_MICRODRIVE_ACTION_COUNT) != 0) {
+        return 1;
+    }
+    tape_handler_context = 0;
+    tape_handler_calls = 0u;
+    if (wz_command_registry_init(&registry, storage,
+                                 WZ_UI_MICRODRIVE_ACTION_COUNT) != WZ_RESULT_OK) {
+        return 1;
+    }
+    for (index = 0u; index < WZ_UI_MICRODRIVE_ACTION_COUNT; ++index) {
+        const wz_ui_toolbar_item_t* item =
+            wz_ui_layout_microdrive_action_at(index);
+        const size_t slot = index / WZ_UI_MICRODRIVE_ACTIONS_PER_SLOT + 1u;
+        const size_t operation = index % WZ_UI_MICRODRIVE_ACTIONS_PER_SLOT;
+        const char* operation_name[] = {"mount", "eject", "set_default"};
+
+        (void)snprintf(expected_microdrive_id, sizeof(expected_microdrive_id),
+                       "media.microdrive.%s.%u", operation_name[operation],
+                       (unsigned)slot);
+        if (item == 0 || strcmp(item->command_id, expected_microdrive_id) != 0 ||
+            item->label == 0) {
+            return 1;
+        }
+        metadata = (wz_command_metadata_t){
+            .id = item->command_id,
+            .label = item->label,
+            .description = item->label,
+            .handler_identity = "test.microdrive.action",
+            .permission = WZ_COMMAND_REMOTE_SAFE,
+            .handler = handler,
+            .handler_context = item->command_id,
+        };
+        if (wz_command_registry_register(&registry, metadata) != WZ_RESULT_OK) {
+            return 1;
+        }
+    }
+    if (wz_command_registry_finalize(&registry) != WZ_RESULT_OK) {
+        return 1;
+    }
+    for (index = 0u; index < WZ_UI_MICRODRIVE_ACTION_COUNT; ++index) {
+        const wz_ui_toolbar_item_t* item =
+            wz_ui_layout_microdrive_action_at(index);
+        if (wz_ui_layout_activate_microdrive_action(
+                &registry, index, (wz_command_arguments_t){0, 0u},
+                &(wz_command_result_t){0}) != WZ_RESULT_OK ||
+            tape_handler_context != item->command_id ||
             tape_handler_calls != index + 1u) {
             return 1;
         }

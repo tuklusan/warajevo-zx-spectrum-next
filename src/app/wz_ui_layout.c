@@ -48,6 +48,33 @@ static const wz_ui_toolbar_item_t tape_actions[WZ_UI_TAPE_ACTION_COUNT] = {
     {"media.tape.manager", "Open Tape Manager..."}
 };
 
+static const wz_ui_toolbar_item_t microdrive_actions[WZ_UI_MICRODRIVE_ACTION_COUNT] = {
+    {"media.microdrive.mount.1", "Mount MDV 1..."},
+    {"media.microdrive.eject.1", "Eject MDV 1"},
+    {"media.microdrive.set_default.1", "Set MDV 1 Default"},
+    {"media.microdrive.mount.2", "Mount MDV 2..."},
+    {"media.microdrive.eject.2", "Eject MDV 2"},
+    {"media.microdrive.set_default.2", "Set MDV 2 Default"},
+    {"media.microdrive.mount.3", "Mount MDV 3..."},
+    {"media.microdrive.eject.3", "Eject MDV 3"},
+    {"media.microdrive.set_default.3", "Set MDV 3 Default"},
+    {"media.microdrive.mount.4", "Mount MDV 4..."},
+    {"media.microdrive.eject.4", "Eject MDV 4"},
+    {"media.microdrive.set_default.4", "Set MDV 4 Default"},
+    {"media.microdrive.mount.5", "Mount MDV 5..."},
+    {"media.microdrive.eject.5", "Eject MDV 5"},
+    {"media.microdrive.set_default.5", "Set MDV 5 Default"},
+    {"media.microdrive.mount.6", "Mount MDV 6..."},
+    {"media.microdrive.eject.6", "Eject MDV 6"},
+    {"media.microdrive.set_default.6", "Set MDV 6 Default"},
+    {"media.microdrive.mount.7", "Mount MDV 7..."},
+    {"media.microdrive.eject.7", "Eject MDV 7"},
+    {"media.microdrive.set_default.7", "Set MDV 7 Default"},
+    {"media.microdrive.mount.8", "Mount MDV 8..."},
+    {"media.microdrive.eject.8", "Eject MDV 8"},
+    {"media.microdrive.set_default.8", "Set MDV 8 Default"}
+};
+
 void wz_ui_layout_state_init(wz_ui_layout_state_t* state)
 {
     if (state == 0) {
@@ -162,6 +189,16 @@ const wz_ui_toolbar_item_t* wz_ui_layout_tape_action_at(size_t index)
     return index < WZ_UI_TAPE_ACTION_COUNT ? &tape_actions[index] : 0;
 }
 
+size_t wz_ui_layout_microdrive_action_count(void)
+{
+    return WZ_UI_MICRODRIVE_ACTION_COUNT;
+}
+
+const wz_ui_toolbar_item_t* wz_ui_layout_microdrive_action_at(size_t index)
+{
+    return index < WZ_UI_MICRODRIVE_ACTION_COUNT ? &microdrive_actions[index] : 0;
+}
+
 void wz_ui_layout_tape_label(bool mounted, char* output, size_t capacity)
 {
     if (output == 0 || capacity == 0u) {
@@ -272,6 +309,25 @@ wz_result_t wz_ui_layout_activate_tape_action(
         return WZ_RESULT_INVALID_ARGUMENT;
     }
     item = wz_ui_layout_tape_action_at(index);
+    if (item == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    return wz_command_registry_dispatch(registry, item->command_id,
+                                        arguments, result);
+}
+
+wz_result_t wz_ui_layout_activate_microdrive_action(
+    const wz_command_registry_t* registry,
+    size_t index,
+    wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    const wz_ui_toolbar_item_t* item;
+
+    if (result == 0 || index >= WZ_UI_MICRODRIVE_ACTION_COUNT) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    item = wz_ui_layout_microdrive_action_at(index);
     if (item == 0) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }

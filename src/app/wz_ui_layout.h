@@ -18,6 +18,9 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #define WZ_UI_MENU_COUNT 7u
 #define WZ_UI_TOOLBAR_COUNT 11u
 #define WZ_UI_TAPE_ACTION_COUNT 5u
+#define WZ_UI_MICRODRIVE_ACTIONS_PER_SLOT 3u
+#define WZ_UI_MICRODRIVE_ACTION_COUNT \
+    (WZ_UI_MICRODRIVE_COUNT * WZ_UI_MICRODRIVE_ACTIONS_PER_SLOT)
 #define WZ_UI_STATUS_CAPACITY 192u
 #define WZ_UI_MICRODRIVE_COUNT 8u
 
@@ -56,6 +59,8 @@ size_t wz_ui_layout_toolbar_count(void);
 const wz_ui_toolbar_item_t* wz_ui_layout_toolbar_at(size_t index);
 size_t wz_ui_layout_tape_action_count(void);
 const wz_ui_toolbar_item_t* wz_ui_layout_tape_action_at(size_t index);
+size_t wz_ui_layout_microdrive_action_count(void);
+const wz_ui_toolbar_item_t* wz_ui_layout_microdrive_action_at(size_t index);
 void wz_ui_layout_tape_label(bool mounted, char* output, size_t capacity);
 void wz_ui_layout_status_line(const wz_ui_layout_state_t* state,
                               char* output,
@@ -74,6 +79,11 @@ wz_result_t wz_ui_layout_activate_toolbar(
     wz_command_arguments_t arguments,
     wz_command_result_t* result);
 wz_result_t wz_ui_layout_activate_tape_action(
+    const wz_command_registry_t* registry,
+    size_t index,
+    wz_command_arguments_t arguments,
+    wz_command_result_t* result);
+wz_result_t wz_ui_layout_activate_microdrive_action(
     const wz_command_registry_t* registry,
     size_t index,
     wz_command_arguments_t arguments,
