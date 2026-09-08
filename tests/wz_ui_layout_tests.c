@@ -79,7 +79,7 @@ int main(void)
     char status[WZ_UI_STATUS_CAPACITY];
     size_t index;
     wz_command_metadata_t metadata;
-    wz_command_metadata_t storage[WZ_UI_TAPE_ACTION_COUNT];
+    wz_command_metadata_t storage[WZ_UI_MICRODRIVE_ACTION_COUNT];
     wz_command_registry_t registry;
     const char* reason;
     const char screenshot_context = 'g';
