@@ -38,7 +38,22 @@ static const wz_microdrive_manager_operation_t operations[] = {
      WZ_COMMAND_MEDIA_DESTRUCTIVE, true, false, false},
     {WZ_MICRODRIVE_MANAGER_WRITE_UNPROTECT, "media.microdrive.write_unprotect", "Write Unprotect",
      "Allow writes to the selected cartridge", "drive", "drive-selector",
-     WZ_COMMAND_MEDIA_DESTRUCTIVE, true, false, false}
+     WZ_COMMAND_MEDIA_DESTRUCTIVE, true, false, false},
+    {WZ_MICRODRIVE_MANAGER_FILE_DELETE, "media.microdrive.file.delete", "Delete File",
+     "Delete the selected logical file", "drive,file", "drive-selector+file-selector",
+     WZ_COMMAND_MEDIA_DESTRUCTIVE, true, false, false},
+    {WZ_MICRODRIVE_MANAGER_FILE_RENAME, "media.microdrive.file.rename", "Rename File",
+     "Rename the selected logical file", "drive,file,name", "drive-selector+file-selector+text",
+     WZ_COMMAND_MEDIA_DESTRUCTIVE, true, false, false},
+    {WZ_MICRODRIVE_MANAGER_FILE_HIDE, "media.microdrive.file.hide", "Hide File",
+     "Hide the selected logical file", "drive,file", "drive-selector+file-selector",
+     WZ_COMMAND_MEDIA_DESTRUCTIVE, true, false, false},
+    {WZ_MICRODRIVE_MANAGER_FILE_UNHIDE, "media.microdrive.file.unhide", "Unhide File",
+     "Make the selected hidden file visible", "drive,file", "drive-selector+file-selector",
+     WZ_COMMAND_MEDIA_DESTRUCTIVE, true, false, false},
+    {WZ_MICRODRIVE_MANAGER_FILE_COPY, "media.microdrive.file.copy", "Copy File",
+     "Copy a logical file to another mounted cartridge", "source-drive,file,destination-drive",
+     "drive-selector+file-selector+drive-selector", WZ_COMMAND_MEDIA_DESTRUCTIVE, true, false, false}
 };
 
 size_t wz_microdrive_manager_operation_count(void)
