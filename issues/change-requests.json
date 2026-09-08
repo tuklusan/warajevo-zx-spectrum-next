@@ -3293,7 +3293,7 @@
     {
       "cr_number": "CR-0323",
       "title": "Implement Microdrive advanced sector workflows",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "medium",
       "execution_order": "architecture_2_phase_12ab",
       "blocking": false,
@@ -3307,7 +3307,7 @@
         "tests/wz_microdrive_manager_tests.c",
         "CMakeLists.txt"
       ],
-      "notes": "Preflight approved; implementation and required gates are pending."
+      "notes": "Closed after upstream zero-gap scan, CODE and bootstrap authorization, serial remote evidence, hosted run 34222919738 with all 20 matrix lanes and publication green, evidence verification, TEST_ARTIFACT review, and final DOCUMENTATION review."
     }
   ]
 }
