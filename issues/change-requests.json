@@ -3037,7 +3037,7 @@
     {
       "cr_number": "CR-0309",
       "title": "Implement the compact toolbar Tape control",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "medium",
       "execution_order": "architecture_2_phase_12aa",
       "blocking": false,
@@ -3050,7 +3050,7 @@
         "src/app/wz_command_registry.h",
         "CMakeLists.txt"
       ],
-      "notes": "Implementation in progress; replace the placeholder Tape toolbar entry with a shared-command compact control surface."
+      "notes": "Closed after CODE, four remote lanes, one 20-lane hosted matrix, evidence verification, TEST_ARTIFACT review, and final DOCUMENTATION review all passed."
     }
   ]
 }
