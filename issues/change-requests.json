@@ -3055,7 +3055,7 @@
     {
       "cr_number": "CR-0310",
       "title": "Implement Tape Manager block list and details presentation",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "medium",
       "execution_order": "architecture_2_phase_12aa",
       "blocking": false,
@@ -3067,7 +3067,7 @@
         "src/app/wz_ui_layout.h",
         "CMakeLists.txt"
       ],
-      "notes": "Implementation in progress; add a toolkit-neutral Tape Manager presentation model from canonical media metadata."
+      "notes": "Closed after CODE, four remote lanes, one 20-lane hosted matrix, evidence verification, TEST_ARTIFACT review, and final DOCUMENTATION review all passed."
     }
   ]
 }
