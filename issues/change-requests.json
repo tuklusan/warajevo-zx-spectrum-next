@@ -3354,7 +3354,7 @@
     {
       "cr_number": "CR-0326",
       "title": "Implement Debugger/Monitor window over shared Phase-11 debugger APIs",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "medium",
       "execution_order": "architecture_2_phase_12e",
       "blocking": false,
@@ -3373,7 +3373,7 @@
         "src/app/wz_ui_window.h",
         "src/app/wz_ui_window.c"
       ],
-      "notes": "Opened for Phase-12 UI task 322 after CR-0325 closure; implementation must use the shared live-machine debugger APIs and complete the upstream zero-gap exit scan."
+      "notes": "Closed after upstream zero-gap scan, CODE and bootstrap authorization, corrected serial Linux and Windows 10 validation, retained Windows 11 and macOS platform diagnostics, hosted run 34257601196 with all 20 lanes and publication green, complete evidence verification, two sequential TEST_ARTIFACT PASS reviews, and final DOCUMENTATION PASS."
     }
   ]
 }
