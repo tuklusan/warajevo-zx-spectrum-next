@@ -194,7 +194,7 @@ int main(void)
         .description = "Insert tape",
         .handler_identity = "test.handler",
         .permission = WZ_COMMAND_REMOTE_SAFE,
-        .availability = unavailable,
+        .availability = 0,
         .handler = handler,
     };
     if (wz_command_registry_init(&registry, storage, 1u) != WZ_RESULT_OK ||
@@ -202,7 +202,13 @@ int main(void)
         wz_command_registry_finalize(&registry) != WZ_RESULT_OK ||
         wz_ui_layout_activate_tape_action(
             &registry, 0u, (wz_command_arguments_t){0, 0u},
-            &(wz_command_result_t){0}) != WZ_RESULT_OK ||
+            &(wz_command_result_t){0}) != WZ_RESULT_OK) {
+        return 1;
+    }
+    metadata.availability = unavailable;
+    if (wz_command_registry_init(&registry, storage, 1u) != WZ_RESULT_OK ||
+        wz_command_registry_register(&registry, metadata) != WZ_RESULT_OK ||
+        wz_command_registry_finalize(&registry) != WZ_RESULT_OK ||
         wz_ui_layout_command_state(&registry, "media.tape.insert", &reason) !=
             WZ_COMMAND_DISABLED || reason == 0 || strcmp(reason, "requires-media") != 0 ||
         wz_ui_layout_command_state(&registry, "missing.command", &reason) !=
