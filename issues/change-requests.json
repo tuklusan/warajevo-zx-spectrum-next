@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 316,
+  "next_cr_number": 317,
   "status_values": [
     "open",
     "in_progress",
@@ -3158,6 +3158,24 @@
         "CMakeLists.txt"
       ],
       "notes": "Closed after CODE, four remote lanes, one 20-lane hosted matrix, evidence verification, TEST_ARTIFACT review, and final DOCUMENTATION review all passed."
+    },
+    {
+      "cr_number": "CR-0316",
+      "title": "Complete Tape Manager regression coverage",
+      "status": "in_progress",
+      "priority": "medium",
+      "execution_order": "architecture_2_phase_12aa",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0316.md",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md sections 12.1 through 12.5, 45, 47, and 48",
+        "design/wzsn-architectures-1-2-developer-tasks.md tasks 305 through 311",
+        "src/app/wz_tape_manager.h",
+        "src/app/wz_tape_manager.c",
+        "tests/wz_tape_manager_tests.c",
+        "CMakeLists.txt"
+      ],
+      "notes": "Implementation in progress; extend headless Tape Manager tests for malformed, cancellation, enabled-state, and atomic-error paths."
     }
   ]
 }

@@ -22,6 +22,10 @@ int main(void)
     wz_tap_block_t editable[4];
     wz_tap_block_t working[4];
     wz_tap_block_t destination[4];
+    wz_tap_block_t destination_snapshot[4];
+    const wz_tap_block_t malformed_blocks[] = {
+        {0, 0u}, {data_b, sizeof(data_b)}
+    };
     wz_tape_manager_edit_t edit;
     wz_tape_manager_transaction_t transaction;
     wz_tap_block_t extracted;
@@ -76,6 +80,24 @@ int main(void)
             WZ_RESULT_OK || destination[0].data != data_b ||
         wz_tape_manager_transaction_commit(&transaction, destination, 4u) !=
             WZ_RESULT_INVALID_ARGUMENT) {
+        return 1;
+    }
+    destination[0] = tap_blocks[1];
+    destination[1] = tap_blocks[0];
+    memcpy(destination_snapshot, destination, sizeof(destination_snapshot));
+    if (wz_tape_manager_transaction_init(&transaction, malformed_blocks, 2u,
+            working, 4u) != WZ_RESULT_INVALID_ARGUMENT ||
+        memcmp(destination, destination_snapshot, sizeof(destination)) != 0 ||
+        wz_tape_manager_transaction_init(&transaction, tap_blocks, 2u,
+            working, 4u) != WZ_RESULT_OK ||
+        wz_tape_manager_transaction_edit(&transaction) == 0 ||
+        memcmp(destination, destination_snapshot, sizeof(destination)) != 0) {
+        return 1;
+    }
+    wz_tape_manager_transaction_edit(&transaction)->blocks[0].data = 0;
+    if (wz_tape_manager_transaction_commit(&transaction, destination, 4u) !=
+            WZ_RESULT_INVALID_ARGUMENT ||
+        memcmp(destination, destination_snapshot, sizeof(destination)) != 0) {
         return 1;
     }
     if (wz_tape_manager_maintenance_count() != 5u ||
