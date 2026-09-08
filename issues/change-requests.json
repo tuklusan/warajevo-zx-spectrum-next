@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 310,
+  "next_cr_number": 311,
   "status_values": [
     "open",
     "in_progress",
@@ -3051,6 +3051,23 @@
         "CMakeLists.txt"
       ],
       "notes": "Closed after CODE, four remote lanes, one 20-lane hosted matrix, evidence verification, TEST_ARTIFACT review, and final DOCUMENTATION review all passed."
+    },
+    {
+      "cr_number": "CR-0310",
+      "title": "Implement Tape Manager block list and details presentation",
+      "status": "in_progress",
+      "priority": "medium",
+      "execution_order": "architecture_2_phase_12aa",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0310.md",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md sections 12.1, 12.2, 12.4, 12.5, 20.1, 20.2, 45, and 48",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 305",
+        "src/core/wz_tape.h",
+        "src/app/wz_ui_layout.h",
+        "CMakeLists.txt"
+      ],
+      "notes": "Implementation in progress; add a toolkit-neutral Tape Manager presentation model from canonical media metadata."
     }
   ]
 }
