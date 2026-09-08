@@ -168,6 +168,13 @@ add_executable(
     src/app/wz_command_registry.c)
 target_link_libraries(wz_debugger_window_tests PRIVATE wz_core)
 
+add_executable(
+    wz_diagnostics_window_tests
+    tests/wz_diagnostics_window_tests.c
+    src/app/wz_diagnostics_window.c
+    src/app/wz_command_registry.c)
+target_link_libraries(wz_diagnostics_window_tests PRIVATE wz_core wz_diagnostics)
+
 add_executable(wz_machine_reset_tests tests/wz_machine_reset_tests.c)
 target_link_libraries(wz_machine_reset_tests PRIVATE wz_core)
 
@@ -253,6 +260,7 @@ add_test(NAME wz_debugger_page_controls_tests COMMAND wz_debugger_page_controls_
 add_test(NAME wz_debugger_disassembly_tests COMMAND wz_debugger_disassembly_tests)
 add_test(NAME wz_debugger_jump_undo_tests COMMAND wz_debugger_jump_undo_tests)
 add_test(NAME wz_debugger_window_tests COMMAND wz_debugger_window_tests)
+add_test(NAME wz_diagnostics_window_tests COMMAND wz_diagnostics_window_tests)
 add_test(NAME wz_machine_reset_tests COMMAND wz_machine_reset_tests)
 add_test(NAME wz_host_media_ownership_tests COMMAND wz_host_media_ownership_tests)
 add_test(NAME wz_printer_export_tests COMMAND wz_printer_export_tests)
