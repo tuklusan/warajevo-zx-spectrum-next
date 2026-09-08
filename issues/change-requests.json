@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 321,
+  "next_cr_number": 322,
   "status_values": [
     "open",
     "in_progress",
@@ -3250,6 +3250,26 @@
         "CMakeLists.txt"
       ],
       "notes": "Closed after upstream zero-gap scan, CODE review, bootstrap authorization, four successful remote lanes, hosted run 34208172449 with all 20 lanes and publication gate green, retained evidence verification, TEST_ARTIFACT review, and final DOCUMENTATION review all passed."
+    },
+    {
+      "cr_number": "CR-0321",
+      "title": "Implement Microdrive Manager whole-cartridge workflows",
+      "status": "in_progress",
+      "priority": "medium",
+      "execution_order": "architecture_2_phase_12ab",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0321.md",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md sections 14, 15.1 through 15.2, 24, 39, 45, 47, 48, and 51",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 316",
+        "reference/original-warajevo/source/src/environment/MICROD.PAS",
+        "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM",
+        "src/app/wz_microdrive_manager.h",
+        "src/app/wz_microdrive_manager.c",
+        "tests/wz_microdrive_manager_tests.c",
+        "CMakeLists.txt"
+      ],
+      "notes": "Implementation staged; upstream zero-gap exit and validation gates are pending."
     }
   ]
 }

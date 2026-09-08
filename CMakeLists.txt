@@ -202,6 +202,13 @@ add_executable(
 target_link_libraries(wz_tape_manager_tests PRIVATE wz_core)
 
 add_executable(
+    wz_microdrive_manager_tests
+    tests/wz_microdrive_manager_tests.c
+    src/app/wz_microdrive_manager.c
+    src/app/wz_command_registry.c)
+target_link_libraries(wz_microdrive_manager_tests PRIVATE wz_core)
+
+add_executable(
     wz_ui_window_tests
     tests/wz_ui_window_tests.c
     src/app/wz_ui_window.c
@@ -231,6 +238,7 @@ add_test(NAME wz_application_lifecycle_tests COMMAND wz_application_lifecycle_te
 add_test(NAME wz_command_registry_tests COMMAND wz_command_registry_tests)
 add_test(NAME wz_ui_layout_tests COMMAND wz_ui_layout_tests)
 add_test(NAME wz_tape_manager_tests COMMAND wz_tape_manager_tests)
+add_test(NAME wz_microdrive_manager_tests COMMAND wz_microdrive_manager_tests)
 add_test(NAME wz_ui_window_tests COMMAND wz_ui_window_tests)
 
 add_executable(
