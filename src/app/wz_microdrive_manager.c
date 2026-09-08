@@ -53,7 +53,22 @@ static const wz_microdrive_manager_operation_t operations[] = {
      WZ_COMMAND_MEDIA_DESTRUCTIVE, true, false, false},
     {WZ_MICRODRIVE_MANAGER_FILE_COPY, "media.microdrive.file.copy", "Copy File",
      "Copy a logical file to another mounted cartridge", "source-drive,file,destination-drive",
-     "drive-selector+file-selector+drive-selector", WZ_COMMAND_MEDIA_DESTRUCTIVE, true, false, false}
+     "drive-selector+file-selector+drive-selector", WZ_COMMAND_MEDIA_DESTRUCTIVE, true, false, false},
+    {WZ_MICRODRIVE_MANAGER_SECTOR_VIEW, "media.microdrive.sector.view", "View Sector",
+     "Inspect one complete 543-byte sector", "drive,sector", "drive-selector+sector-selector",
+     WZ_COMMAND_REMOTE_SAFE, false, false, true},
+    {WZ_MICRODRIVE_MANAGER_SECTOR_VERIFY, "media.microdrive.sector.verify", "Verify Sector",
+     "Validate sector structure and checksums", "drive,sector", "drive-selector+sector-selector",
+     WZ_COMMAND_REMOTE_SAFE, false, false, true},
+    {WZ_MICRODRIVE_MANAGER_SECTOR_REPAIR, "media.microdrive.sector.repair", "Repair Sector",
+     "Adjust a sector with explicit confirmation", "drive,sector", "drive-selector+sector-selector+confirm",
+     WZ_COMMAND_MEDIA_DESTRUCTIVE, true, false, false},
+    {WZ_MICRODRIVE_MANAGER_SECTOR_EDIT_DATA, "media.microdrive.sector.edit_data", "Edit Sector Data",
+     "Edit ordinary logical sector data", "drive,sector,data", "drive-selector+sector-selector+data-editor",
+     WZ_COMMAND_MEDIA_DESTRUCTIVE, true, false, false},
+    {WZ_MICRODRIVE_MANAGER_SECTOR_EDIT_RAW, "media.microdrive.sector.edit_raw", "Edit Whole Sector (Dangerous)",
+     "Edit all 543 bytes including metadata and checksums", "drive,sector,bytes",
+     "drive-selector+sector-selector+raw-editor+confirm", WZ_COMMAND_MEDIA_DESTRUCTIVE, true, false, false}
 };
 
 size_t wz_microdrive_manager_operation_count(void)

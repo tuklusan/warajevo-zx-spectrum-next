@@ -29,28 +29,32 @@ static wz_result_t handle(const void* context, wz_command_arguments_t arguments,
 
 int main(void)
 {
-    wz_command_metadata_t storage[15];
+    wz_command_metadata_t storage[20];
     wz_command_registry_t registry;
     const wz_microdrive_manager_operation_t* format;
     const wz_microdrive_manager_operation_t* catalog;
     const wz_command_metadata_t* metadata;
 
-    assert(wz_microdrive_manager_operation_count() == 15u);
+    assert(wz_microdrive_manager_operation_count() == 20u);
     format = wz_microdrive_manager_operation_at(WZ_MICRODRIVE_MANAGER_FORMAT);
     catalog = wz_microdrive_manager_operation_at(WZ_MICRODRIVE_MANAGER_CATALOG);
     assert(format != 0 && format->requires_confirmation);
     assert(format->permission == WZ_COMMAND_MEDIA_DESTRUCTIVE);
     assert(catalog != 0 && !catalog->requires_confirmation);
     assert(catalog->permission == WZ_COMMAND_REMOTE_SAFE);
-    assert(wz_microdrive_manager_operation_at(15u) == 0);
+    assert(wz_microdrive_manager_operation_at(20u) == 0);
 
-    assert(wz_command_registry_init(&registry, storage, 15u) == WZ_RESULT_OK);
+    assert(wz_command_registry_init(&registry, storage, 20u) == WZ_RESULT_OK);
     assert(wz_microdrive_manager_register_commands(&registry, available, handle, 0) == WZ_RESULT_OK);
     assert(wz_command_registry_finalize(&registry) == WZ_RESULT_OK);
-    assert(wz_command_registry_count(&registry) == 15u);
+    assert(wz_command_registry_count(&registry) == 20u);
     metadata = wz_command_registry_find(&registry, "media.microdrive.rename");
     assert(metadata != 0);
     assert(strcmp(metadata->menu_group, "media.microdrive.manager") == 0);
+    assert(metadata->permission == WZ_COMMAND_MEDIA_DESTRUCTIVE);
+    metadata = wz_command_registry_find(&registry, "media.microdrive.sector.edit_raw");
+    assert(metadata != 0);
+    assert(strstr(metadata->label, "Dangerous") != 0);
     assert(metadata->permission == WZ_COMMAND_MEDIA_DESTRUCTIVE);
     metadata = wz_command_registry_find(&registry, "media.microdrive.file.copy");
     assert(metadata != 0);
