@@ -3126,7 +3126,7 @@
     {
       "cr_number": "CR-0314",
       "title": "Enforce atomic failure behavior for tape mutation",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "medium",
       "execution_order": "architecture_2_phase_12aa",
       "blocking": false,
@@ -3139,7 +3139,7 @@
         "tests/wz_tape_manager_tests.c",
         "CMakeLists.txt"
       ],
-      "notes": "Implementation in progress; add caller-owned transaction semantics so failed tape mutations preserve the original image."
+      "notes": "Closed after CODE, four remote lanes, one 20-lane hosted matrix, evidence verification, TEST_ARTIFACT review, and final DOCUMENTATION review all passed."
     }
   ]
 }
