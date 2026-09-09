@@ -10,8 +10,10 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #define WZ_APP_WZ_ROM_SETTINGS_H
 
 #include <stdbool.h>
+#include <stddef.h>
 
 #include "core/wz_machine_profile.h"
+#include "core/wz_types.h"
 
 typedef enum {
     WZ_ROM_SETTINGS_NONE = 0,
@@ -30,7 +32,8 @@ typedef struct {
 void wz_rom_settings_init(wz_rom_settings_t* settings);
 wz_result_t wz_rom_settings_select(wz_rom_settings_t* settings,
                                     const wz_machine_profile_t* profile,
-                                    wz_qword_t identity,
+                                    const wz_byte_t* bytes,
+                                    size_t length,
                                     bool license_approved);
 wz_machine_kind_t wz_rom_settings_machine_kind(
     const wz_rom_settings_t* settings);

@@ -10,23 +10,24 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include <stdint.h>
 
 #include "app/wz_rom_settings.h"
+#include "core/wz_machine.h"
 
 int main(void)
 {
+    wz_byte_t rom[WZ_48K_ROM_SIZE] = {0};
     wz_machine_profile_t profile = *wz_machine_profile_48k_pal();
     wz_rom_settings_t settings;
 
     wz_rom_settings_init(&settings);
-    profile.expected_rom_identity = UINT64_C(0x123456789abcdef0);
-    if (wz_rom_settings_select(&settings, &profile,
-                               profile.expected_rom_identity, false) !=
+    rom[0] = 0x42u;
+    profile.expected_rom_identity = wz_machine_rom_identity(rom, sizeof(rom));
+    if (wz_rom_settings_select(&settings, &profile, rom, sizeof(rom), false) !=
             WZ_RESULT_INVALID_STATE ||
         wz_rom_settings_status(&settings) != WZ_ROM_SETTINGS_LICENSE_REQUIRED ||
-        wz_rom_settings_select(&settings, &profile, 0x1u, true) !=
+        wz_rom_settings_select(&settings, &profile, rom, sizeof(rom) - 1u, true) !=
             WZ_RESULT_ROM_IDENTITY_MISMATCH ||
         wz_rom_settings_status(&settings) != WZ_ROM_SETTINGS_IDENTITY_MISMATCH ||
-        wz_rom_settings_select(&settings, &profile,
-                               profile.expected_rom_identity, true) !=
+        wz_rom_settings_select(&settings, &profile, rom, sizeof(rom), true) !=
             WZ_RESULT_OK ||
         wz_rom_settings_status(&settings) != WZ_ROM_SETTINGS_READY ||
         wz_rom_settings_identity(&settings) != profile.expected_rom_identity ||

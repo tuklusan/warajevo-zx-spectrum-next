@@ -8,6 +8,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "app/wz_rom_settings.h"
 
+#include "core/wz_machine.h"
+
 void wz_rom_settings_init(wz_rom_settings_t* settings)
 {
     if (settings == 0) {
@@ -20,9 +22,12 @@ void wz_rom_settings_init(wz_rom_settings_t* settings)
 
 wz_result_t wz_rom_settings_select(wz_rom_settings_t* settings,
                                     const wz_machine_profile_t* profile,
-                                    wz_qword_t identity,
+                                    const wz_byte_t* bytes,
+                                    size_t length,
                                     bool license_approved)
 {
+    wz_qword_t identity;
+
     if (settings == 0 || profile == 0) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
@@ -30,6 +35,7 @@ wz_result_t wz_rom_settings_select(wz_rom_settings_t* settings,
         settings->status = WZ_ROM_SETTINGS_UNAVAILABLE;
         return WZ_RESULT_INVALID_PROFILE;
     }
+    identity = wz_machine_rom_identity(bytes, length);
     if (identity == 0u || identity != profile->expected_rom_identity) {
         settings->status = WZ_ROM_SETTINGS_IDENTITY_MISMATCH;
         return WZ_RESULT_ROM_IDENTITY_MISMATCH;
