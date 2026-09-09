@@ -3497,7 +3497,7 @@
     {
       "cr_number": "CR-0333",
       "title": "Trace legacy snapshot, Microdrive, Dock, and database dispositions",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "medium",
       "execution_order": "architecture_2_phase_12i",
       "blocking": false,
@@ -3508,7 +3508,7 @@
         "design/wzsn-architectures-1-2-developer-tasks.md task 327",
         "reference/Warajevo 2.50 legacy menu and conversion descriptions"
       ],
-      "notes": "Opened for the Phase-12 legacy disposition trace; this documentation-only increment must not promote deferred tools or historical database UI."
+      "notes": "Closed after implementation 74bd73b, bootstrap/CODE/documentation PASS with zero findings, and static project-gate validation. The complete 20.9-20.18 disposition ledger is tracked in design/legacy-disposition-trace.md."
     }
   ]
 }
