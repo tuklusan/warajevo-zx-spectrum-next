@@ -3513,7 +3513,7 @@
     {
       "cr_number": "CR-0334",
       "title": "Verify Dock Cartridge UI remains absent before Timex/DCK support",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "medium",
       "execution_order": "architecture_2_phase_12j",
       "blocking": false,
@@ -3525,7 +3525,7 @@
         "src/app/wz_command_registry.c",
         "src/app/wz_ui_window.c"
       ],
-      "notes": "Opened to preserve the explicit negative Dock/Timex UI gate without implementing deferred functionality."
+      "notes": "Closed after implementation 3524651, bootstrap/CODE/documentation PASS with zero findings, and static source verification confirming no Dock/Timex product exposure."
     }
   ]
 }
