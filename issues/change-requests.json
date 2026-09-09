@@ -3764,10 +3764,10 @@
     {
       "cr_number": "CR-0349",
       "title": "Install certified external review gate protocol v4 package",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "out_of_band_review_gate_maintenance_before_architecture_queue",
-      "blocking": true,
+      "blocking": false,
       "source_authority": [
         "design/cr-preflight/CR-0349.md",
         "design/review-gate-packages/WZXN-REVIEW-GATE-V4-ZERO-GAP-DEVELOPER-PACKAGE.zip",
@@ -3775,7 +3775,7 @@
         "WORKFLOW.md",
         "operator-authorized protocol-v4 package directive"
       ],
-      "notes": "Apply the preserved certified protocol-v4 package atomically after the CR/preflight baseline commit. Require standalone bootstrap authorization, normal review, remote regression, and full workflow/document reconciliation before closure. Architecture development remains paused during this detour."
+      "notes": "Closed after certified v4 installation and transport debugging. Fixed the independent bootstrap TLS trust-store path, removed the NVIDIA V2-rejected reasoning_budget wire field from both clients, and formalized packet_audit_required fail-closed handling for output/schema/envelope failures. Bootstrap CODE review passed with zero findings on d3e1a8a; remote Linux v4 regression passed 27/27 and remote static validator passed. Architecture development may resume; no product matrix was required for reviewer-only changes."
     }
   ]
 }
