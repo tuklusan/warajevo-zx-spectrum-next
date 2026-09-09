@@ -407,6 +407,49 @@ class GateTests(unittest.TestCase):
             self.assertIn("diff", records["linked/guard.json"])
             self.assertNotIn("unrelated(void)", records["linked/guard.json"])
             self.assertEqual(requirements[0]["content"], "The guard must reject invalid input.")
+            linked = json.loads(records["linked/guard.json"])
+            self.assertEqual(linked["requirement_source_sha256"], gate.sha256_bytes(requirement_data))
+            self.assertEqual(linked["related_source_sha256"], gate.sha256_bytes(head_data))
+            self.assertEqual(linked["requirement_excerpt_sha256"],
+                             gate.sha256_bytes(b"The guard must reject invalid input."))
+            self.assertEqual(linked["related_range"], {"start": 1, "end": 1})
+            self.assertEqual(linked["diff_sha256"], gate.sha256_bytes(linked["diff"].encode()))
+            self.assertEqual(linked["diff_binding"]["path"], "src/item.c")
+            self.assertEqual(requirements[0]["sha256"], gate.sha256_bytes(requirement_data))
+            self.assertEqual(requirements[0]["excerpt_sha256"], linked["requirement_excerpt_sha256"])
+        finally:
+            repo.close()
+
+    def test_linked_packet_binds_diff_to_the_mapped_snapshots_and_ranges(self):
+        repo = GitFixture()
+        try:
+            repo.write("design/requirement.md", "Purpose.\n")
+            repo.write("src/item.c", "old\n")
+            base = repo.commit("base")
+            repo.write("src/item.c", "new\n")
+            head = repo.commit("head")
+            requirement_data = (repo.root / "design/requirement.md").read_bytes()
+            head_data = (repo.root / "src/item.c").read_bytes()
+            base_data = repo.run("show", f"{base}:src/item.c")
+            links = [{
+                "id": "purpose",
+                "requirement": {"source": "design/requirement.md", "start": 1, "end": 1,
+                                 "sha256": gate.sha256_bytes(requirement_data)},
+                "related": {"path": "src/item.c", "start": 1, "end": 1,
+                            "sha256": gate.sha256_bytes(head_data)},
+                "prior": {"path": "src/item.c", "start": 1, "end": 1,
+                          "sha256": gate.sha256_bytes(base_data)},
+            }]
+            review_packet, _ = gate.linked_packet(repo.root, "CODE", links, base, head)
+            linked = json.loads(dict(review_packet.records)["linked/purpose.json"])
+            self.assertEqual(linked["prior_source_sha256"], gate.sha256_bytes(base_data))
+            self.assertEqual(linked["prior_excerpt_sha256"], gate.sha256_bytes(b"old"))
+            self.assertEqual(linked["diff_binding"], {
+                "path": "src/item.c", "base": base, "head": head,
+                "base_range": {"start": 1, "end": 1},
+                "head_range": {"start": 1, "end": 1},
+            })
+            self.assertEqual(linked["diff_sha256"], gate.sha256_bytes(linked["diff"].encode()))
         finally:
             repo.close()
 

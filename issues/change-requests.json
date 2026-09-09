@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 346,
+  "next_cr_number": 347,
   "status_values": [
     "open",
     "in_progress",
@@ -3710,6 +3710,22 @@
         "NVIDIA NIM model-specific structured-output guidance"
       ],
       "notes": "Closed after adding deterministic structured-request sampling only. Packet scope, schema validation, retries, locks, harnesses, wrappers, and product behavior were unchanged. CODE and DOCUMENTATION reviews passed with zero confirmed findings, remote reviewer regression passed 87/87, and final closure-state DOCUMENTATION review passed on 0c86807. No product matrix was required."
+    },
+    {
+      "cr_number": "CR-0346",
+      "title": "Enforce internally consistent minimal review packets",
+      "status": "in_progress",
+      "priority": "high",
+      "execution_order": "workflow_review_packet_integrity_before_product_queue",
+      "blocking": true,
+      "source_authority": [
+        "design/cr-preflight/CR-0346.md",
+        "design/review-gate.md",
+        "WORKFLOW.md",
+        "tools/reviewer/review_gate.py",
+        "tests/test_review_gate.py"
+      ],
+      "notes": "Opened to prevent CODE-DISCOVERY OutputError caused by internally inconsistent requirement, related-snippet, and diff packets. The gate now binds full-source and excerpt identities plus exact base/head diff provenance before transport."
     }
   ]
 }

@@ -666,14 +666,29 @@ def linked_packet(root: Path, review_type: str, links: list[dict[str, Any]],
             raise ReviewError(f"review map source hash mismatch: {link_id}")
         req_excerpt = line_excerpt(req_text, requirement.get("start"), requirement.get("end"), link_id + " requirement", numbered=False)
         related_excerpt = line_excerpt(related_text, related.get("start"), related.get("end"), link_id + " related")
-        entry = {"id": link_id, "requirement_source": req_source, "requirement": req_excerpt,
-                 "related_path": related_path, "related": related_excerpt}
+        req_source_hash = sha256_bytes(req_data)
+        related_source_hash = sha256_bytes(related_data)
+        entry = {
+            "id": link_id,
+            "requirement_source": req_source,
+            "requirement_source_sha256": req_source_hash,
+            "requirement_range": {"start": requirement.get("start"), "end": requirement.get("end")},
+            "requirement_excerpt_sha256": sha256_bytes(req_excerpt.encode()),
+            "requirement": req_excerpt,
+            "related_path": related_path,
+            "related_source_sha256": related_source_hash,
+            "related_range": {"start": related.get("start"), "end": related.get("end")},
+            "related_excerpt_sha256": sha256_bytes(related_excerpt.encode()),
+            "related": related_excerpt,
+        }
         if review_type == "CODE":
-            related_entry = tree_entry(root, head_sha, related_path)
-            head_text = git_object(root, head_sha, related_path).decode("utf-8", errors="strict")
-            if related.get("sha256") != sha256_bytes(git_object(root, head_sha, related_path)):
+            head_data = git_object(root, head_sha, related_path)
+            head_text = head_data.decode("utf-8", errors="strict")
+            if related.get("sha256") != sha256_bytes(head_data):
                 raise ReviewError(f"review map HEAD hash mismatch: {link_id}")
+            entry["related_source_sha256"] = sha256_bytes(head_data)
             entry["related"] = line_excerpt(head_text, related.get("start"), related.get("end"), link_id + " HEAD")
+            entry["related_excerpt_sha256"] = sha256_bytes(entry["related"].encode())
             prior = link.get("prior")
             if prior is not None:
                 if not isinstance(prior, dict) or prior.get("path") != related_path:
@@ -683,9 +698,21 @@ def linked_packet(root: Path, review_type: str, links: list[dict[str, Any]],
                     raise ReviewError(f"review map base hash mismatch: {link_id}")
                 base_text = base_data.decode("utf-8", errors="strict")
                 entry["prior"] = line_excerpt(base_text, prior.get("start"), prior.get("end"), link_id + " base")
-                entry["diff"] = bounded_git_diff(root, base_sha, head_sha, related_path,
-                                                  prior.get("start"), prior.get("end"),
-                                                  related.get("start"), related.get("end"))
+                entry["prior_source_sha256"] = sha256_bytes(base_data)
+                entry["prior_range"] = {"start": prior.get("start"), "end": prior.get("end")}
+                entry["prior_excerpt_sha256"] = sha256_bytes(entry["prior"].encode())
+                diff = bounded_git_diff(root, base_sha, head_sha, related_path,
+                                        prior.get("start"), prior.get("end"),
+                                        related.get("start"), related.get("end"))
+                entry["diff"] = diff
+                entry["diff_sha256"] = sha256_bytes(diff.encode())
+                entry["diff_binding"] = {
+                    "path": related_path,
+                    "base": base_sha,
+                    "head": head_sha,
+                    "base_range": entry["prior_range"],
+                    "head_range": entry["related_range"],
+                }
         elif link.get("prior") is not None:
             if not base or not head:
                 raise ReviewError(f"document prior diff requires --base and --head: {link_id}")
@@ -698,11 +725,28 @@ def linked_packet(root: Path, review_type: str, links: list[dict[str, Any]],
                 raise ReviewError(f"review map base hash mismatch: {link_id}")
             entry["prior"] = line_excerpt(base_data.decode("utf-8", errors="strict"), prior.get("start"),
                                            prior.get("end"), link_id + " base")
-            entry["diff"] = bounded_git_diff(root, base_sha, head_sha, related_path,
-                                              prior.get("start"), prior.get("end"),
-                                              related.get("start"), related.get("end"))
+            entry["prior_source_sha256"] = sha256_bytes(base_data)
+            entry["prior_range"] = {"start": prior.get("start"), "end": prior.get("end")}
+            entry["prior_excerpt_sha256"] = sha256_bytes(entry["prior"].encode())
+            diff = bounded_git_diff(root, base_sha, head_sha, related_path,
+                                    prior.get("start"), prior.get("end"),
+                                    related.get("start"), related.get("end"))
+            entry["diff"] = diff
+            entry["diff_sha256"] = sha256_bytes(diff.encode())
+            entry["diff_binding"] = {
+                "path": related_path,
+                "base": base_sha,
+                "head": head_sha,
+                "base_range": entry["prior_range"],
+                "head_range": entry["related_range"],
+            }
         manifest.append(entry)
-        minimal_requirements.append({"source": req_source, "sha256": sha256_bytes(req_excerpt.encode()), "content": req_excerpt})
+        minimal_requirements.append({
+            "source": req_source,
+            "sha256": req_source_hash,
+            "excerpt_sha256": entry["requirement_excerpt_sha256"],
+            "content": req_excerpt,
+        })
         records.append((f"linked/{link_id}.json", canonical_json(entry)))
     packet_manifest_hash = sha256_bytes(canonical_json(manifest).encode())
     snapshot_id = f"linked:{review_type}:{packet_manifest_hash}"

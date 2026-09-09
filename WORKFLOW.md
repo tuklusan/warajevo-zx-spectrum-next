@@ -24,6 +24,18 @@ checks and hostile falsification become blockers. A new CODE attempt
 invalidates the prior private receipt before review begins, and unresolved or
 ambiguous authority remains fail-closed.
 
+Before each review request, packet construction is its own hard gate. The
+review map must express each requirement in a minimal but complete excerpt and
+must point to the exact related implementation or document range. The packet
+builder must prove that the requirement text, related excerpt, and any prior
+diff refer to the same CR intent and immutable source objects. It must emit
+separate full-source and excerpt hashes, bind a prior diff to its base/head
+objects and ranges, and reject stale hashes, invalid ranges, path mismatches,
+empty diffs, or omitted prior context before transport. A
+`CODE-DISCOVERY OutputError` requires this packet-consistency check and map
+regeneration before any retry; an unchanged packet must never be retried as a
+substitute for fixing construction.
+
 ## Review Handle and Closure Ordering
 
 The execution wrapper must return a bounded first response that preserves the

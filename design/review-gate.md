@@ -258,11 +258,34 @@ base-object hash and receives the exact bounded file diff. Documentation links
 use the same structure and may provide `prior` plus `--base` and `--head` when a
 previous tracked document section exists.
 
-The gate validates every path, hash, line range, and repository boundary before
-transmission. It sends only the linked requirement excerpt, related excerpt,
-and applicable prior excerpt/diff. Missing, stale, broad, or malformed maps
-fail closed; complete requirement files and complete changed-file packets are
-not valid substitutes for a normal review map.
+The packet contract is **Minimal BUT Sufficient+Accurate**. For every link, the
+requirement excerpt must state the complete acceptance intent for that link,
+and the related excerpt must contain the exact implementation or document
+section that can satisfy or violate it. The map author must not use a generic
+file excerpt when a narrower symbol or section is sufficient, and must not
+omit neighboring control logic needed to understand the stated behavior. The
+link ID, requirement source/range, related path/range, and optional prior
+range are one immutable correspondence; they are not independent snippets.
+
+The emitted record carries separate full-source hashes and excerpt hashes for
+the requirement, current related content, and optional prior content. When a
+prior exists, the record also carries a hash of the bounded diff and a binding
+to the exact path, base object, head object, and base/head ranges used to
+produce it. The gate recomputes all of these values from the selected Git
+objects before transmission. A stale hash, invalid range, missing required
+prior diff, path mismatch, empty bounded diff, or packet field that does not
+match its map is rejected before any model call. This makes the requirement,
+code/document excerpt, and diff internally consistent rather than merely
+individually plausible.
+
+The transmitted packet contains only the linked requirement excerpt, related
+excerpt, and applicable prior excerpt/diff plus the integrity metadata above.
+Missing, stale, broad, or malformed maps fail closed; complete requirement
+files and complete changed-file packets are not valid substitutes for a
+normal review map. If a reviewer returns `CODE-DISCOVERY OutputError`, the
+first recovery action is to inspect and regenerate the packet map and verify
+these bindings; retrying an unchanged inconsistent packet is not a valid
+recovery.
 
 The retained bootstrap gate is an architecturally independent one-pass audit
 path for maintenance of the normal gate. It consumes the complete bounded
