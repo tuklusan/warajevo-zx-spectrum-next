@@ -32,6 +32,16 @@ class Result:
 
 
 class HarnessGateTests(unittest.TestCase):
+    def test_active_machine_registry_contains_only_remaining_hosts(self):
+        self.assertEqual(set(remote.REMOTE_MACHINES), {"linux-x64-lxqt", "windows-10-reference"})
+        self.assertEqual(remote.REMOTE_MACHINES["linux-x64-lxqt"]["ssh_target"], "sanyalnet@192.168.4.76")
+        self.assertEqual(remote.REMOTE_MACHINES["windows-10-reference"]["ssh_target"], "sanyalnet@192.168.4.75")
+
+    def test_retired_machine_names_are_rejected_before_execution(self):
+        for machine in ("windows-11-laptop", "macos-bigsur-lab"):
+            with self.subTest(machine=machine):
+                self.assertNotIn(machine, remote.REMOTE_MACHINES)
+
     def test_run_id_rejects_local_traversal_and_remote_shell_metacharacters(self):
         for value in ("../escape", "name'; Write-Output injected; '", "with space", "a" * 65):
             with self.subTest(value=value), self.assertRaises(SystemExit):

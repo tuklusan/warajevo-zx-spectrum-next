@@ -105,13 +105,12 @@ The public harness contract for those machines lives in
 `test-artefacts/README.md`, and the tracked shared harness entry points live in
 `tools/harness/`.
 
-The current lab availability snapshot has all four approved hosts available:
-Linux `192.168.4.76`, macOS/Intel `192.168.4.77`, Windows 10
-`192.168.4.75`, and Windows 11 `192.168.4.103`. Any SSH failure must be
-recorded as an environmental result and must not be treated as evidence that
-the software failed. The complete hosted runner matrix remains required for
-multi-platform proof regardless of lab availability, and every configured
-hosted macOS lane should be exercised when capacity permits.
+The active local lab registry contains Linux `192.168.4.76` and Windows 10
+`192.168.4.75`. Any SSH failure must be recorded as an environmental result and
+must not be treated as evidence that the software failed. The complete hosted
+runner matrix remains required for multi-platform proof regardless of lab
+availability, and every configured hosted macOS lane should be exercised when
+capacity permits. Retired local hosts are not valid harness targets.
 
 Hosted-runner waiting is terminal-state based. Use one run for the exact
 published commit with `fail-fast: false`; wait for every configured lane,

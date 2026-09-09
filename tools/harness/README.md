@@ -106,15 +106,12 @@ Run the orchestrator from the repository root:
 ```text
 python tools/harness/invoke_remote_harness.py probe linux-x64-lxqt
 python tools/harness/invoke_remote_harness.py smoke windows-10-reference
-python tools/harness/invoke_remote_harness.py screenshot windows-11-laptop
-python tools/harness/invoke_remote_harness.py probe macos-bigsur-lab
-python tools/harness/invoke_remote_windows_powershell.py windows-11-laptop tools/harness/windows-toolchain/verify-toolchain.ps1
 ```
 
-The current lab snapshot has all four hosts available: Linux at
-`192.168.4.76`, macOS/Intel at `192.168.4.77`, Windows 10 at `192.168.4.75`,
-and Windows 11 at `192.168.4.103`. Record any unavailable-host transport
-results as environmental and continue with the complete hosted runner matrix.
+The active lab registry contains Linux at `192.168.4.76` and Windows 10 at
+`192.168.4.75`. Record any unavailable-host transport results as environmental
+and continue with the complete hosted runner matrix. Retired local hosts are
+not valid harness targets.
 
 The temporary hosted-only validation mode has been withdrawn by operator
 direction. Local test-machine soaks are enabled again; use the existing SSH

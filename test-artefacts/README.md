@@ -67,10 +67,11 @@ is wrapped in SSH transport quoting.
 
 ## Approved remote machines
 
-The current lab availability snapshot has all four approved hosts available.
-If a host becomes unreachable, record the transport result as environmental
+The active local lab registry contains Linux and Windows 10 only. If an active
+host becomes unreachable, record the transport result as environmental
 evidence, not a project correctness failure, and continue with the hosted
-matrix plus any available lab host.
+matrix plus any available lab host. Retired local hosts are not valid harness
+targets and must not be reintroduced by private connection notes.
 
 ### linux-x64-lxqt (currently available)
 
@@ -99,33 +100,6 @@ Example session shape:
 ```text
 ssh sanyalnet@192.168.4.75 "powershell -NoProfile -Command \"Set-Location 'D:\\WarajevoSpectrum.Next'; <remote-command>\""
 ```
-
-### windows-11-laptop (currently available)
-
-- SSH target: `vagab@192.168.4.103`
-- Remote project directory:
-  `C:\Users\vagab\WarajevoSpectrum.Next`
-- Rule:
-  never leave that directory and never use any other drive
-
-Example session shape:
-
-```text
-ssh vagab@192.168.4.103 "powershell -NoProfile -Command \"Set-Location 'C:\\Users\\vagab\\WarajevoSpectrum.Next'; <remote-command>\""
-```
-
-### macos-bigsur-lab (currently available)
-
-- SSH target: `rumtuk@192.168.4.77`
-- Remote project directory: `/Users/rumtuk/SOFTWARE_DEV/WARAJEVO-NEXT`
-- Rule: every file operation, build, test, and pulled-result staging operation
-  must remain below this directory; total occupied space must never exceed 1 GiB
-- Rule: use existing key-based SSH where available; never place the supplied
-  password in tracked files, command arguments, logs, or environment captures
-- Harness key: local-only `test-artefacts/ssh-private/macos-bigsur`
-
-The harness checks the directory usage before and after every Mac operation and
-fails closed if the 1 GiB limit is exceeded.
 
 ## Pull-back rule
 

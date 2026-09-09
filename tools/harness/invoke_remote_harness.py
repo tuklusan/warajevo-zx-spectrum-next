@@ -45,24 +45,6 @@ REMOTE_MACHINES = {
         "python_command": "py -3",
         "lab_status": "available",
     },
-    "windows-11-laptop": {
-        "kind": "windows",
-        "ssh_target": "vagab@192.168.4.103",
-        "project_dir": r"C:\Users\vagab\WarajevoSpectrum.Next",
-        "python_command": "py -3",
-        "lab_status": "available",
-    },
-    "macos-bigsur-lab": {
-        "kind": "macos",
-        "ssh_target": "rumtuk@192.168.4.77",
-        "project_dir": "/Users/rumtuk/SOFTWARE_DEV/WARAJEVO-NEXT",
-        "python_command": "python3",
-        "path_prefix": "/opt/local/bin:/usr/local/bin",
-        "max_bytes": 1073741824,
-        "identity_file": "test-artefacts/ssh-private/macos-bigsur",
-        "password_environment": "WZSN_MAC_SSH_PASSWORD",
-        "lab_status": "available",
-    },
 }
 REMOTE_REPOSITORY = "https://github.com/tuklusan/warajevo-zx-spectrum-next.git"
 SAFE_RUN_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}\Z")

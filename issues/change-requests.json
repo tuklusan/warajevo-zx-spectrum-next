@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 348,
+  "next_cr_number": 349,
   "status_values": [
     "open",
     "in_progress",
@@ -3743,6 +3743,23 @@
         "tests/test_review_gate.py"
       ],
       "notes": "Opened after CR-0344 telemetry showed every provider attempt terminating at the obsolete 180-second transport timeout. Align the request ceiling with the one-hour review deadline without changing retry, lock, packet, harness, wrapper, or product behavior."
+    },
+    {
+      "cr_number": "CR-0348",
+      "title": "Retire inactive Windows 11 and Intel Mac local lab registry entries",
+      "status": "in_progress",
+      "priority": "low",
+      "execution_order": "workflow_local_topology_retirement_before_product_queue",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0348.md",
+        "WORKFLOW.md",
+        "test-artefacts/README.md",
+        "tools/harness/invoke_remote_harness.py",
+        ".github/workflows/platform-smoke.yml",
+        "operator topology-retirement directive"
+      ],
+      "notes": "Retire only the active local registry entries for windows-11-laptop and macos-bigsur-lab. Preserve historical execution evidence and leave the hosted 20-lane workflow and publication expected set unchanged."
     }
   ]
 }

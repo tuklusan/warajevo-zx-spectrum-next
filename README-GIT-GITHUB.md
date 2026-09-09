@@ -53,11 +53,11 @@ are documented in `test-artefacts/README.md`.
 
 ## Remote harness baseline
 
-The current lab availability snapshot has all four approved hosts online:
-Linux at `sanyalnet@192.168.4.76`, macOS/Intel at `rumtuk@192.168.4.77`,
-Windows 10 at `sanyalnet@192.168.4.75`, and Windows 11 at
-`vagab@192.168.4.103`. If any host is unreachable, treat its transport result
-as environmental and continue with the complete hosted runner matrix.
+The active local lab registry contains Linux at `sanyalnet@192.168.4.76` and
+Windows 10 at `sanyalnet@192.168.4.75`. If an active host is unreachable, treat
+its transport result as environmental and continue with the complete hosted
+runner matrix. Retired local hosts are not valid harness targets; the hosted
+matrix remains the authoritative cross-platform topology.
 
 The tracked remote harness entry points live in:
 
@@ -72,14 +72,11 @@ machines:
 ```text
 python tools/harness/invoke_remote_harness.py probe linux-x64-lxqt
 python tools/harness/invoke_remote_harness.py smoke windows-10-reference
-python tools/harness/invoke_remote_harness.py screenshot windows-11-laptop
-python tools/harness/invoke_remote_harness.py probe macos-bigsur-lab
 ```
 
 For parser-first Windows maintenance or verification scripts, use:
 
 ```text
-python tools/harness/invoke_remote_windows_powershell.py windows-11-laptop tools/harness/windows-toolchain/verify-toolchain.ps1
 ```
 
 Pulled-back outputs are stored only under:
