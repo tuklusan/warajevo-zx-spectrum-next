@@ -51,7 +51,7 @@ class GitFixture:
         if binary:
             target.write_bytes(content)
         else:
-            target.write_text(content, encoding="utf-8")
+            target.write_bytes(content.encode("utf-8"))
 
     def commit(self, message):
         self.run("add", "-A")
