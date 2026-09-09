@@ -404,7 +404,7 @@ class GateTests(unittest.TestCase):
             self.assertEqual(set(records), {"linked/guard.json"})
             self.assertIn("diff", records["linked/guard.json"])
             self.assertNotIn("unrelated(void)", records["linked/guard.json"])
-            self.assertEqual(requirements[0]["content"], "2: The guard must reject invalid input.")
+            self.assertEqual(requirements[0]["content"], "The guard must reject invalid input.")
         finally:
             repo.close()
 

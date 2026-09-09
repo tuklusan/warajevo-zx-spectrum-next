@@ -580,13 +580,14 @@ def requirement_records(root: Path, paths: list[str]) -> list[dict[str, str]]:
     return records
 
 
-def line_excerpt(content: str, start: Any, end: Any, label: str) -> str:
+def line_excerpt(content: str, start: Any, end: Any, label: str, numbered: bool = True) -> str:
     if not isinstance(start, int) or not isinstance(end, int) or start < 1 or end < start:
         raise ReviewError(f"invalid line range for {label}")
     lines = content.splitlines()
     if end > len(lines):
         raise ReviewError(f"line range exceeds file for {label}")
-    return "\n".join(f"{number}: {lines[number - 1]}" for number in range(start, end + 1))
+    selected = lines[start - 1:end]
+    return "\n".join(f"{number}: {lines[number - 1]}" for number in range(start, end + 1)) if numbered else "\n".join(selected)
 
 
 def bounded_git_diff(root: Path, base: str, head: str, path: str,
@@ -663,7 +664,7 @@ def linked_packet(root: Path, review_type: str, links: list[dict[str, Any]],
         related_hash = related.get("sha256")
         if req_hash != sha256_bytes(req_data) or related_hash != sha256_bytes(related_data):
             raise ReviewError(f"review map source hash mismatch: {link_id}")
-        req_excerpt = line_excerpt(req_text, requirement.get("start"), requirement.get("end"), link_id + " requirement")
+        req_excerpt = line_excerpt(req_text, requirement.get("start"), requirement.get("end"), link_id + " requirement", numbered=False)
         related_excerpt = line_excerpt(related_text, related.get("start"), related.get("end"), link_id + " related")
         entry = {"id": link_id, "requirement_source": req_source, "requirement": req_excerpt,
                  "related_path": related_path, "related": related_excerpt}
