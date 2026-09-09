@@ -3480,7 +3480,7 @@
     {
       "cr_number": "CR-0332",
       "title": "Keep complete TEST_ARTIFACT indexes local while transmitting compact packets",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "reviewer_correction_before_cr_0330_artifacts",
       "blocking": true,
@@ -3492,7 +3492,7 @@
         "issues/change-requests.json",
         "operator-approved reviewer redesign directive"
       ],
-      "notes": "Opened after the new complete TEST_ARTIFACT gate correctly rejected a packet whose generic manifest duplicated the full local index and exceeded the discovery budget."
+      "notes": "Closed on 2026-09-09 at implementation commit cf5f1ad after bootstrap CODE PASS, normal CODE PASS, documentation PASS, and compact packet budget verification."
     }
   ]
 }
