@@ -112,7 +112,7 @@ class GateV4Tests(unittest.TestCase):
   def opener(req,timeout):
    captured.append(json.loads(req.data)); content={'review_complete':True,'decisions':[],'new_candidates':[]}; env={'choices':[{'finish_reason':'stop','message':{'content':json.dumps(content)}}],'usage':{}}; return Response(200,json.dumps(env).encode())
   c=gate.CodeReviewerClient('x',opener); tm=gate.Telemetry('CODE','x'); c.request('s','u',tm,phase='FALSIFICATION')
-  body=captured[0]; self.assertEqual(body['reasoning_effort'],'high'); self.assertLess(body['reasoning_budget'],body['max_tokens']); self.assertTrue(body['chat_template_kwargs']['enable_thinking']); self.assertTrue(body['chat_template_kwargs']['force_nonempty_content']); self.assertNotIn('temperature',body)
+  body=captured[0]; self.assertEqual(body['reasoning_effort'],'high'); self.assertNotIn('reasoning_budget',body); self.assertTrue(body['chat_template_kwargs']['enable_thinking']); self.assertTrue(body['chat_template_kwargs']['force_nonempty_content']); self.assertNotIn('temperature',body)
 
  def test_202_polls_without_duplicate_post(self):
   calls=[]

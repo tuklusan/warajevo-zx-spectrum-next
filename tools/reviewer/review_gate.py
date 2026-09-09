@@ -1754,8 +1754,9 @@ class CodeReviewerClient:
                 "force_nonempty_content": True,
             },
         }
-        if chosen_effort != "none":
-            payload["reasoning_budget"] = chosen_budget
+        # NVIDIA's current V2 runner rejects reasoning_budget as
+        # thinking_token_budget; retain the profile value for local telemetry
+        # but do not transmit the unsupported request field.
         telemetry.logical_inferences += 1
         logical_id = telemetry.logical_inferences
         last_error = "request failed"
@@ -2611,7 +2612,9 @@ def perform_review(client: CodeReviewerClient, root: Path, review_type: str, pac
             )
         except ReviewError as exc:
             return compact_result(review_type, scope, packet, "REVIEW_UNAVAILABLE" if not isinstance(exc, OutputError)
-                                  else "INCONCLUSIVE", False, reason=f"{pass_name}: {type(exc).__name__}: {exc}")
+                                  else "INCONCLUSIVE", False,
+                                  reason=packet_audit_required(packet, pass_name, exc)
+                                  if isinstance(exc, OutputError) else f"{pass_name}: {type(exc).__name__}: {exc}")
         discovered.extend(value["candidates"])
 
     if len(units) > 1 and review_type == "CODE":
@@ -2627,7 +2630,9 @@ def perform_review(client: CodeReviewerClient, root: Path, review_type: str, pac
                 discovery_prompt(prefix, integration, "CODE-INTEGRATION", review_type), "CODE-INTEGRATION",
             )
         except ReviewError as exc:
-            return compact_result(review_type, scope, packet, "INCONCLUSIVE", False, reason=str(exc))
+            return compact_result(review_type, scope, packet, "INCONCLUSIVE", False,
+                                  reason=packet_audit_required(packet, "CODE-INTEGRATION", exc)
+                                  if isinstance(exc, OutputError) else str(exc))
         discovered.extend(value["candidates"])
 
     telemetry.discovery_candidate_count = len(discovered)
@@ -2661,7 +2666,9 @@ def perform_review(client: CodeReviewerClient, root: Path, review_type: str, pac
         except ReviewError as exc:
             return compact_result(review_type, scope, packet,
                                   "REVIEW_UNAVAILABLE" if not isinstance(exc, OutputError) else "INCONCLUSIVE",
-                                  False, reason=f"FALSIFICATION: {type(exc).__name__}: {exc}")
+                                  False, reason=packet_audit_required(packet, "FALSIFICATION", exc)
+                                  if isinstance(exc, OutputError)
+                                  else f"FALSIFICATION: {type(exc).__name__}: {exc}")
         decision = result["decisions"][0]
         # New candidates cannot skip discovery/provenance. Fail closed and require a fresh complete review.
         if result.get("new_candidates"):
@@ -2683,7 +2690,9 @@ def perform_review(client: CodeReviewerClient, root: Path, review_type: str, pac
                 )
             except ReviewError as exc:
                 return compact_result(review_type, scope, packet, "INCONCLUSIVE", False,
-                                      reason=f"ADJUDICATION: {type(exc).__name__}: {exc}")
+                                      reason=packet_audit_required(packet, "ADJUDICATION", exc)
+                                      if isinstance(exc, OutputError)
+                                      else f"ADJUDICATION: {type(exc).__name__}: {exc}")
             if adjudicated.get("new_candidates"):
                 return compact_result(review_type, scope, packet, "INCONCLUSIVE", False,
                                       reason="adjudication introduced new candidate; fresh complete review required")
@@ -2734,6 +2743,27 @@ def requirements_manifest_hash(packet: ReviewPacket) -> str:
                       ("requirement_id", "source", "start", "end", "excerpt_sha256")}
                      for _, req in sorted(packet.requirement_index.items())],
     }).encode())
+
+
+def packet_audit_required(packet: ReviewPacket, phase: str, exc: OutputError) -> dict[str, Any]:
+    """Make output/schema failures stop resubmission until the immutable packet is audited."""
+    return {
+        "packet_audit_required": True,
+        "failure_class": type(exc).__name__,
+        "phase": phase,
+        "instruction": "Re-audit requirement, related excerpt, and diff bindings before any resubmission; do not retry automatically.",
+        "packet_identity": {
+            "snapshot_id": packet.snapshot_id,
+            "packet_manifest_hash": packet.packet_manifest_hash,
+            "requirements_manifest_hash": requirements_manifest_hash(packet),
+            "sources": [
+                {"path": path, "sha256": str(entry.get("sha256", "")),
+                 "source_kind": str(entry.get("source_kind", ""))}
+                for path, entry in sorted(packet.source_index.items())
+            ],
+            "revalidation": dict(packet.revalidation),
+        },
+    }
 
 
 def _revalidate_packet(root: Path, packet: ReviewPacket, scope: dict[str, Any]) -> None:
