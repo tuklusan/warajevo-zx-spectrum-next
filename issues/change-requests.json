@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 339,
+  "next_cr_number": 340,
   "status_values": [
     "open",
     "in_progress",
@@ -3592,6 +3592,21 @@
         "tests/test_review_gate.py"
       ],
       "notes": "Closed after focused linked CODE and DOCUMENTATION PASS with zero confirmed findings and remote reviewer regression 87/87 on bfb7a05."
+    },
+    {
+      "cr_number": "CR-0339",
+      "title": "Normalize equivalent reviewer discovery envelopes",
+      "status": "in_progress",
+      "priority": "high",
+      "execution_order": "workflow_review_gate_response_contract",
+      "blocking": true,
+      "source_authority": [
+        "design/cr-preflight/CR-0339.md",
+        "design/review-gate.md",
+        "tools/reviewer/review_gate.py",
+        "tests/test_review_gate.py"
+      ],
+      "notes": "Opened to review the post-CR-0338 envelope normalization without mutating the closed CR-0338 record."
     }
   ]
 }
