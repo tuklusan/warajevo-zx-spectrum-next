@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 334,
+  "next_cr_number": 335,
   "status_values": [
     "open",
     "in_progress",
@@ -3509,6 +3509,23 @@
         "reference/Warajevo 2.50 legacy menu and conversion descriptions"
       ],
       "notes": "Closed after implementation 74bd73b, bootstrap/CODE/documentation PASS with zero findings, and static project-gate validation. The complete 20.9-20.18 disposition ledger is tracked in design/legacy-disposition-trace.md."
+    },
+    {
+      "cr_number": "CR-0334",
+      "title": "Verify Dock Cartridge UI remains absent before Timex/DCK support",
+      "status": "in_progress",
+      "priority": "medium",
+      "execution_order": "architecture_2_phase_12j",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0334.md",
+        "design/dock-ui-negative-gate.md",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md sections 17, 20.16, 45, and 49",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 328",
+        "src/app/wz_command_registry.c",
+        "src/app/wz_ui_window.c"
+      ],
+      "notes": "Opened to preserve the explicit negative Dock/Timex UI gate without implementing deferred functionality."
     }
   ]
 }
