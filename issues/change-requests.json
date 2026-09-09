@@ -3530,7 +3530,7 @@
     {
       "cr_number": "CR-0335",
       "title": "Reconcile Phase-12 media and tools regression coverage",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "medium",
       "execution_order": "architecture_2_phase_12k",
       "blocking": false,
@@ -3545,7 +3545,7 @@
         "tests/wz_debugger_window_tests.c",
         "tests/wz_compatibility_tools_tests.c"
       ],
-      "notes": "Opened to reconcile existing media/tools regression coverage before Phase-12 acceptance; no local execution is claimed."
+      "notes": "Closed after CODE and DOCUMENTATION PASS with zero confirmed findings and remote reviewer regression 83/83 on 9534703; no local execution is claimed."
     }
   ]
 }
