@@ -1108,6 +1108,16 @@ def normalize_discovery_response(value: Any, expected_pass: str) -> Any:
         normalized["pass"] = expected_pass
     if "candidates" not in normalized and isinstance(normalized.get("findings"), list):
         normalized["candidates"] = normalized["findings"]
+    if "review_complete" not in normalized and normalized.get("complete") is True:
+        normalized["review_complete"] = True
+    if "review_complete" not in normalized and normalized.get("status") == "complete":
+        normalized["review_complete"] = True
+    if "candidates" not in normalized and isinstance(normalized.get("issues"), list):
+        normalized["candidates"] = normalized["issues"]
+    if "uncertainties" not in normalized and isinstance(normalized.get("uncertainty"), list):
+        normalized["uncertainties"] = normalized["uncertainty"]
+    if "evidence_requests" not in normalized and isinstance(normalized.get("requests"), list):
+        normalized["evidence_requests"] = normalized["requests"]
     if "review_complete" not in normalized and "candidates" in normalized:
         normalized["review_complete"] = True
     return normalized

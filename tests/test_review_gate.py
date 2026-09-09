@@ -1219,7 +1219,7 @@ class GateTests(unittest.TestCase):
 
     def test_discovery_response_normalizes_equivalent_provider_envelope(self):
         value = gate.normalize_discovery_response(
-            {"findings": [], "uncertainties": [], "evidence_requests": []},
+            {"complete": True, "issues": [], "uncertainty": [], "requests": []},
             "CODE-DISCOVERY",
         )
         self.assertTrue(gate.discovery_schema_valid(value, "CODE-DISCOVERY"))
