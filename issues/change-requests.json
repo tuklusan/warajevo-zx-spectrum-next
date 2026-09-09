@@ -3714,10 +3714,10 @@
     {
       "cr_number": "CR-0346",
       "title": "Enforce internally consistent minimal review packets",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "workflow_review_packet_integrity_before_product_queue",
-      "blocking": true,
+      "blocking": false,
       "source_authority": [
         "design/cr-preflight/CR-0346.md",
         "design/review-gate.md",
@@ -3725,7 +3725,7 @@
         "tools/reviewer/review_gate.py",
         "tests/test_review_gate.py"
       ],
-      "notes": "Opened to prevent CODE-DISCOVERY OutputError caused by internally inconsistent requirement, related-snippet, and diff packets. The gate now binds full-source and excerpt identities plus exact base/head diff provenance before transport."
+      "notes": "Closed on 2026-09-09 after enforcing internally consistent Minimal BUT Sufficient+Accurate packets. The gate now binds full-source and excerpt identities plus exact base/head diff provenance before transport. CODE and DOCUMENTATION reviews passed with zero confirmed findings on 7910356; remote reviewer regression passed 88/88. No product matrix was required because this CR changes only review infrastructure."
     }
   ]
 }
