@@ -443,7 +443,7 @@ class GateTests(unittest.TestCase):
             review_packet, _ = gate.linked_packet(repo.root, "CODE", links, base, head)
             linked = json.loads(dict(review_packet.records)["linked/purpose.json"])
             self.assertEqual(linked["prior_source_sha256"], gate.sha256_bytes(base_data))
-            self.assertEqual(linked["prior_excerpt_sha256"], gate.sha256_bytes(b"old"))
+            self.assertEqual(linked["prior_excerpt_sha256"], gate.sha256_bytes(b"1: old"))
             self.assertEqual(linked["diff_binding"], {
                 "path": "src/item.c", "base": base, "head": head,
                 "base_range": {"start": 1, "end": 1},
