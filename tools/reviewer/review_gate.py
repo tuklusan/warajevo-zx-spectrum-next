@@ -580,6 +580,105 @@ def requirement_records(root: Path, paths: list[str]) -> list[dict[str, str]]:
     return records
 
 
+def line_excerpt(content: str, start: Any, end: Any, label: str) -> str:
+    if not isinstance(start, int) or not isinstance(end, int) or start < 1 or end < start:
+        raise ReviewError(f"invalid line range for {label}")
+    lines = content.splitlines()
+    if end > len(lines):
+        raise ReviewError(f"line range exceeds file for {label}")
+    return "\n".join(f"{number}: {lines[number - 1]}" for number in range(start, end + 1))
+
+
+def load_review_map(root: Path, value: str) -> list[dict[str, Any]]:
+    path = resolve_inside(root, value)
+    enforce_external_review_data_policy(path.relative_to(root).as_posix())
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    links = payload.get("links") if isinstance(payload, dict) else None
+    if not isinstance(links, list) or not links:
+        raise ReviewError("review map requires a non-empty links array")
+    if any(not isinstance(link, dict) for link in links):
+        raise ReviewError("review map link is malformed")
+    return links
+
+
+def linked_packet(root: Path, review_type: str, links: list[dict[str, Any]],
+                  base: str | None = None, head: str | None = None) -> tuple[ReviewPacket, list[dict[str, str]]]:
+    if review_type == "CODE" and (not base or not head):
+        raise ReviewError("linked CODE review requires --base and --head")
+    base_sha = head_sha = ""
+    if review_type == "CODE":
+        base_sha, head_sha = validate_code_snapshot(root, base or "", head or "")
+    records: list[tuple[str, str]] = []
+    manifest: list[dict[str, Any]] = []
+    minimal_requirements: list[dict[str, str]] = []
+    for link in links:
+        link_id = link.get("id")
+        requirement = link.get("requirement")
+        related = link.get("related")
+        if not isinstance(link_id, str) or not link_id.strip() or not isinstance(requirement, dict) or not isinstance(related, dict):
+            raise ReviewError("review map link requires id, requirement, and related")
+        req_source = requirement.get("source")
+        related_path = related.get("path")
+        if not isinstance(req_source, str) or not isinstance(related_path, str):
+            raise ReviewError(f"review map link is missing source/path: {link_id}")
+        req_path = resolve_inside(root, req_source)
+        related_fs = resolve_inside(root, related_path)
+        enforce_external_review_data_policy(req_source)
+        enforce_external_review_data_policy(related_path)
+        req_data = req_path.read_bytes()
+        related_data = related_fs.read_bytes()
+        req_text = req_data.decode("utf-8", errors="strict")
+        related_text = related_data.decode("utf-8", errors="strict")
+        req_hash = requirement.get("sha256")
+        related_hash = related.get("sha256")
+        if req_hash != sha256_bytes(req_data) or related_hash != sha256_bytes(related_data):
+            raise ReviewError(f"review map source hash mismatch: {link_id}")
+        req_excerpt = line_excerpt(req_text, requirement.get("start"), requirement.get("end"), link_id + " requirement")
+        related_excerpt = line_excerpt(related_text, related.get("start"), related.get("end"), link_id + " related")
+        entry = {"id": link_id, "requirement_source": req_source, "requirement": req_excerpt,
+                 "related_path": related_path, "related": related_excerpt}
+        if review_type == "CODE":
+            related_entry = tree_entry(root, head_sha, related_path)
+            head_text = git_object(root, head_sha, related_path).decode("utf-8", errors="strict")
+            if related.get("sha256") != sha256_bytes(git_object(root, head_sha, related_path)):
+                raise ReviewError(f"review map HEAD hash mismatch: {link_id}")
+            entry["related"] = line_excerpt(head_text, related.get("start"), related.get("end"), link_id + " HEAD")
+            prior = link.get("prior")
+            if prior is not None:
+                if not isinstance(prior, dict) or prior.get("path") != related_path:
+                    raise ReviewError(f"review map prior path mismatch: {link_id}")
+                base_data = git_object(root, base_sha, related_path)
+                if prior.get("sha256") != sha256_bytes(base_data):
+                    raise ReviewError(f"review map base hash mismatch: {link_id}")
+                base_text = base_data.decode("utf-8", errors="strict")
+                entry["prior"] = line_excerpt(base_text, prior.get("start"), prior.get("end"), link_id + " base")
+                entry["diff"] = reviewable_diff_text(run_git_bytes(root, "diff", "--no-ext-diff", "--unified=80",
+                                                                    base_sha, head_sha, "--", related_path))
+        elif link.get("prior") is not None:
+            if not base or not head:
+                raise ReviewError(f"document prior diff requires --base and --head: {link_id}")
+            prior = link["prior"]
+            if not isinstance(prior, dict) or prior.get("path") != related_path:
+                raise ReviewError(f"review map prior path mismatch: {link_id}")
+            base_sha, head_sha = validate_code_snapshot(root, base, head)
+            base_data = git_object(root, base_sha, related_path)
+            if prior.get("sha256") != sha256_bytes(base_data):
+                raise ReviewError(f"review map base hash mismatch: {link_id}")
+            entry["prior"] = line_excerpt(base_data.decode("utf-8", errors="strict"), prior.get("start"),
+                                           prior.get("end"), link_id + " base")
+            entry["diff"] = reviewable_diff_text(run_git_bytes(root, "diff", "--no-ext-diff", "--unified=80",
+                                                                base_sha, head_sha, "--", related_path))
+        manifest.append(entry)
+        minimal_requirements.append({"source": req_source, "sha256": sha256_bytes(req_excerpt.encode()), "content": req_excerpt})
+        records.append((f"linked/{link_id}.json", canonical_json(entry)))
+    packet_manifest_hash = sha256_bytes(canonical_json(manifest).encode())
+    snapshot_id = f"linked:{review_type}:{packet_manifest_hash}"
+    if review_type == "CODE":
+        snapshot_id = f"git:{base_sha}..{head_sha}:linked:{packet_manifest_hash}"
+    packet = ReviewPacket(snapshot_id, packet_manifest_hash, records, manifest, head_sha, base_sha)
+    return packet, minimal_requirements
+
+
 def requirements_manifest_hash(records: list[dict[str, str]]) -> str:
     return sha256_bytes(canonical_json([
         {"source": record["source"], "sha256": record["sha256"]} for record in records
@@ -2084,6 +2183,7 @@ def main() -> int:
     review.add_argument("--path", action="append", default=[])
     review.add_argument("--cr")
     review.add_argument("--scope-file")
+    review.add_argument("--review-map")
     review.add_argument("--base")
     review.add_argument("--head")
     review.add_argument("--prior-findings")
@@ -2133,7 +2233,10 @@ def main() -> int:
                 private_scope = scope["private_scope"]
                 if not any(item["source"] == private_scope["source"] for item in requirements):
                     requirements.append(dict(private_scope))
-            packet = code_packet(root, args.base, args.head)
+            if not args.review_map:
+                raise ReviewError("CODE requires --review-map")
+            packet, requirements = linked_packet(root, args.type, load_review_map(root, args.review_map), args.base, args.head)
+            require_universal_authority(requirements)
         else:
             if args.type == "TEST_ARTIFACT" and (not args.run_id or not args.build_id):
                 raise ReviewError("TEST_ARTIFACT requires --run-id and --build-id")
@@ -2148,7 +2251,9 @@ def main() -> int:
             else:
                 if not args.path:
                     raise ReviewError(f"{args.type} requires at least one --path")
-                packet = file_packet(root, args.path, args.extraction_manifest)
+                if not args.review_map:
+                    raise ReviewError("DOCUMENTATION requires --review-map")
+                packet, requirements = linked_packet(root, args.type, load_review_map(root, args.review_map), args.base, args.head)
         requirements_hash = requirements_manifest_hash(requirements)
         scope_hash = scope_manifest_hash(scope)
         snapshot_id = packet.snapshot_id

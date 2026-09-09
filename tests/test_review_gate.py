@@ -379,6 +379,50 @@ class GateTests(unittest.TestCase):
         finally:
             repo.close()
 
+    def test_linked_code_packet_contains_only_mapped_excerpt_and_prior_diff(self):
+        repo = GitFixture()
+        try:
+            repo.write("design/requirement.md", "header\nThe guard must reject invalid input.\nclosing\n")
+            repo.write("src/item.c", "int check(void) { return 0; }\n")
+            base = repo.commit("base")
+            repo.write("src/item.c", "int check(void) { return 1; }\n")
+            head = repo.commit("head")
+            requirement_data = (repo.root / "design/requirement.md").read_bytes()
+            head_data = (repo.root / "src/item.c").read_bytes()
+            base_data = repo.run("show", f"{base}:src/item.c")
+            links = [{
+                "id": "guard",
+                "requirement": {"source": "design/requirement.md", "start": 2, "end": 2,
+                                 "sha256": gate.sha256_bytes(requirement_data)},
+                "related": {"path": "src/item.c", "start": 1, "end": 1,
+                            "sha256": gate.sha256_bytes(head_data)},
+                "prior": {"path": "src/item.c", "start": 1, "end": 1,
+                          "sha256": gate.sha256_bytes(base_data)},
+            }]
+            review_packet, requirements = gate.linked_packet(repo.root, "CODE", links, base, head)
+            records = dict(review_packet.records)
+            self.assertEqual(set(records), {"linked/guard.json"})
+            self.assertIn("diff", records["linked/guard.json"])
+            self.assertEqual(requirements[0]["content"], "2: The guard must reject invalid input.")
+        finally:
+            repo.close()
+
+    def test_linked_document_packet_rejects_stale_hash(self):
+        with private_tempdir() as directory:
+            root = Path(directory)
+            (root / "design").mkdir()
+            (root / "design/requirement.md").write_text("Purpose line.\n", encoding="utf-8")
+            (root / "design/current.md").write_text("Relevant section.\n", encoding="utf-8")
+            links = [{
+                "id": "purpose",
+                "requirement": {"source": "design/requirement.md", "start": 1, "end": 1,
+                                 "sha256": "stale"},
+                "related": {"path": "design/current.md", "start": 1, "end": 1,
+                            "sha256": gate.sha256_bytes(b"Relevant section.\n")},
+            }]
+            with self.assertRaises(gate.ReviewError):
+                gate.linked_packet(root, "DOCUMENTATION", links)
+
     def test_snapshot_rejects_dirty_head_mismatch_and_nonancestor(self):
         repo = GitFixture()
         try:

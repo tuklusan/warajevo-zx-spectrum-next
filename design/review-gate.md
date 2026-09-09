@@ -240,11 +240,29 @@ snapshot while safely recovering stale locks.
 ## Commands
 
 ```text
-python tools/reviewer/review_gate.py review --type CODE --cr CR-0020 --base <base> --head <head> --requirements design/review-gate.md --scope-file test-artefacts/reviewer/requirements/CR-0020-review-harness-hardening.local.txt
-python tools/reviewer/review_gate.py review --type DOCUMENTATION --requirements design/review-gate.md --path <document>
+python tools/reviewer/review_gate.py review --type CODE --cr CR-0020 --base <base> --head <head> --requirements design/review-gate.md --scope-file test-artefacts/reviewer/requirements/CR-0020-review-harness-hardening.local.txt --review-map test-artefacts/reviewer/requirements/CR-0020-review-map.json
+python tools/reviewer/review_gate.py review --type DOCUMENTATION --requirements design/review-gate.md --path <document> --review-map test-artefacts/reviewer/requirements/CR-0020-review-map.json
 python tools/reviewer/review_gate.py review --type TEST_ARTIFACT --requirements design/review-gate.md --run-id <test-run-id> --build-id <build-identity> --evidence-root test-artefacts/github/CR####
 python tools/reviewer/review_gate.py health-check --requirements design/review-gate.md --deadline-seconds 60
 ```
+
+### Requirement-linked review packets
+
+Every normal CODE and DOCUMENTATION review must use `--review-map`. The map is a
+small JSON file containing one or more links. Each link names a minimal but
+complete requirement excerpt (`requirement.source`, `start`, `end`, and the
+full-source `sha256`) and the exact related file and line range (`related.path`,
+`start`, `end`, and the current-file `sha256`). CODE links are read from the
+immutable HEAD object. A link with a `prior` range must also provide the
+base-object hash and receives the exact bounded file diff. Documentation links
+use the same structure and may provide `prior` plus `--base` and `--head` when a
+previous tracked document section exists.
+
+The gate validates every path, hash, line range, and repository boundary before
+transmission. It sends only the linked requirement excerpt, related excerpt,
+and applicable prior excerpt/diff. Missing, stale, broad, or malformed maps
+fail closed; complete requirement files and complete changed-file packets are
+not valid substitutes for a normal review map.
 
 The retained bootstrap gate is an architecturally independent one-pass audit
 path for maintenance of the normal gate. It consumes the complete bounded
