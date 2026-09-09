@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 343,
+  "next_cr_number": 344,
   "status_values": [
     "open",
     "in_progress",
@@ -3661,6 +3661,23 @@
         "tests/wz_tests_placeholder.c"
       ],
       "notes": "Closed as already satisfied by the host-only audio policy and UI status projection from CR-0149. Reused its exact remote/hosted/publication evidence; no new code, harness, wrapper, local build, or local test."
+    },
+    {
+      "cr_number": "CR-0343",
+      "title": "Reconcile Phase 12F input settings with host mapping boundary",
+      "status": "closed",
+      "priority": "medium",
+      "execution_order": "architecture_2_phase_12f",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0343.md",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 333",
+        "src/app/wz_input_arbiter.h",
+        "src/app/wz_input_focus.h",
+        "src/app/wz_kempston_mapping.h"
+      ],
+      "notes": "Closed as already satisfied by the host input ownership, focus, and Kempston mapping boundaries. Reused prior validation evidence; no new code, harness, wrapper, local build, or local test."
     }
   ]
 }
