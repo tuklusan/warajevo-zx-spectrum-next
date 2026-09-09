@@ -1104,7 +1104,7 @@ def normalize_discovery_response(value: Any, expected_pass: str) -> Any:
     if not isinstance(value, dict):
         return value
     normalized = dict(value)
-    if "pass" not in normalized and normalized.get("phase") == expected_pass:
+    if "pass" not in normalized:
         normalized["pass"] = expected_pass
     if "candidates" not in normalized and isinstance(normalized.get("findings"), list):
         normalized["candidates"] = normalized["findings"]
