@@ -119,6 +119,12 @@ including queued or slow lanes. Never cancel or replace a live run and never
 classify a queued lane as failed. Only terminal GitHub job conclusions may
 feed the publication gate.
 
+External reviewer calls may be slow. The review gate permits a request to wait
+up to the one-hour review deadline and clamps each transport timeout to the
+remaining deadline. Do not classify a healthy slow call as failed at an
+arbitrary shorter interval; only a terminal response, retry exhaustion, or
+overall deadline exhaustion ends the review.
+
 Completed matrix evidence may be reused for a later instrumentation-only
 correction when the prior run reached terminal state, passed the matrix's
 product/build/test acceptance criteria, and is bound to the exact commit.

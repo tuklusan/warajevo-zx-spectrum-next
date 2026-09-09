@@ -1089,6 +1089,8 @@ class GateTests(unittest.TestCase):
     def test_default_review_deadline_supports_slow_external_service(self):
         self.assertEqual(gate.DEFAULT_REVIEW_DEADLINE_SECONDS, 3600.0)
         self.assertEqual(bootstrap_gate.DEFAULT_REVIEW_DEADLINE_SECONDS, 3600.0)
+        self.assertEqual(gate.REQUEST_TIMEOUT_SECONDS, 3600)
+        self.assertEqual(gate.ReviewDeadline(7200.0).timeout(), 3600)
 
     def test_blocked_transport_cannot_outlive_review_deadline(self):
         release = threading.Event()

@@ -214,9 +214,12 @@ with tracked implementation context even when discovery omitted an explicit
 navigation request; model-authored paths or summaries are not trusted.
 
 The wall-clock review deadline is also enforced outside the HTTP socket call.
-The bounded caller stops waiting and fails closed when the remaining review time
-expires even if a platform transport keeps a socket operation alive beyond its
-requested timeout; a stalled transport can therefore never extend gate authority.
+Each request may remain open for up to the one-hour review deadline, while the
+actual socket timeout is always the smaller of that ceiling and the remaining
+deadline. The bounded caller stops waiting and fails closed when the remaining
+review time expires even if a platform transport keeps a socket operation alive
+beyond its requested timeout; a stalled transport can therefore never extend
+gate authority.
 
 Stable scope, requirement, and immutable evidence prefixes are ordered before
 pass-specific instructions for cache reuse. The review-unit budget is calculated

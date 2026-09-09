@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 347,
+  "next_cr_number": 348,
   "status_values": [
     "open",
     "in_progress",
@@ -3726,6 +3726,23 @@
         "tests/test_review_gate.py"
       ],
       "notes": "Closed on 2026-09-09 after enforcing internally consistent Minimal BUT Sufficient+Accurate packets. The gate now binds full-source and excerpt identities plus exact base/head diff provenance before transport. CODE and DOCUMENTATION reviews passed with zero confirmed findings on 7910356; remote reviewer regression passed 88/88. No product matrix was required because this CR changes only review infrastructure."
+    },
+    {
+      "cr_number": "CR-0347",
+      "title": "Allow slow reviewer calls within the review deadline",
+      "status": "in_progress",
+      "priority": "high",
+      "execution_order": "workflow_review_transport_timeout_before_product_queue",
+      "blocking": true,
+      "source_authority": [
+        "design/cr-preflight/CR-0347.md",
+        "design/review-gate.md",
+        "WORKFLOW.md",
+        "tools/reviewer/review_gate.py",
+        "tools/reviewer/legacy_bootstrap_gate.py",
+        "tests/test_review_gate.py"
+      ],
+      "notes": "Opened after CR-0344 telemetry showed every provider attempt terminating at the obsolete 180-second transport timeout. Align the request ceiling with the one-hour review deadline without changing retry, lock, packet, harness, wrapper, or product behavior."
     }
   ]
 }
