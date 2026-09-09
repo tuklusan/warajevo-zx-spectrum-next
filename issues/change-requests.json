@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 335,
+  "next_cr_number": 336,
   "status_values": [
     "open",
     "in_progress",
@@ -3526,6 +3526,26 @@
         "src/app/wz_ui_window.c"
       ],
       "notes": "Closed after implementation 3524651, bootstrap/CODE/documentation PASS with zero findings, and static source verification confirming no Dock/Timex product exposure."
+    },
+    {
+      "cr_number": "CR-0335",
+      "title": "Reconcile Phase-12 media and tools regression coverage",
+      "status": "in_progress",
+      "priority": "medium",
+      "execution_order": "architecture_2_phase_12k",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0335.md",
+        "design/phase12-media-tools-regression-coverage.md",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md sections 14-16, 20.9-20.18, 21, 22, 45, and 47",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 329",
+        "CMakeLists.txt",
+        "tests/wz_microdrive_manager_tests.c",
+        "tests/wz_printer_manager_tests.c",
+        "tests/wz_debugger_window_tests.c",
+        "tests/wz_compatibility_tools_tests.c"
+      ],
+      "notes": "Opened to reconcile existing media/tools regression coverage before Phase-12 acceptance; no local execution is claimed."
     }
   ]
 }
