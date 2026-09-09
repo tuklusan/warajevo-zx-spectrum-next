@@ -1559,7 +1559,7 @@ def discovery_prompt(prefix: str, unit: str, pass_name: str, lenses: tuple[str, 
         "missing evidence is never a product defect. "
         "For CODE, include per-file, caller/callee, cross-file integration, regression, compatibility, and test-adequacy analysis "
         "inside this one discovery pass. Silently challenge each suspicion before returning JSON. "
-        "Return {\"pass\":\"" + pass_name + "\",\"review_complete\":true,\"candidates\":[{\"candidate_id\":\""
+        "Return {\"pass\":\"" + pass_name + "\",\"review_complete\":true,\"candidates\":[] ,\"uncertainties\":[],\"evidence_requests\":[]} when no serious candidate exists. Otherwise return {\"pass\":\"" + pass_name + "\",\"review_complete\":true,\"candidates\":[{\"candidate_id\":\""
         + pass_name + "-001\",\"proposed_severity\":\"HIGH\",\"category\":\"correctness\","
         "\"requirement_source\":\"path\",\"requirement_quote\":\"exact quote\",\"scope_link\":\"applies now\","
         "\"location\":\"path:line\",\"claim\":\"allegation\",\"failure_scenario\":\"scenario\","
