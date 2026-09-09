@@ -36,6 +36,8 @@ class GitFixture:
         self.temp = private_tempdir()
         self.root = Path(self.temp.name)
         self.run("init")
+        # Keep fixture blobs byte-identical to their working-tree text on every host.
+        self.run("config", "core.autocrlf", "false")
         self.run("config", "user.email", "fixture@example.invalid")
         self.run("config", "user.name", "Fixture")
 

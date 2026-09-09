@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 340,
+  "next_cr_number": 341,
   "status_values": [
     "open",
     "in_progress",
@@ -3607,6 +3607,21 @@
         "tests/test_review_gate.py"
       ],
       "notes": "Closed after focused linked CODE and DOCUMENTATION PASS with zero confirmed findings and remote reviewer regression 87/87 on 3b06fcf."
+    },
+    {
+      "cr_number": "CR-0340",
+      "title": "Make review fixture Git object hashes portable on Windows",
+      "status": "in_progress",
+      "priority": "high",
+      "execution_order": "workflow_review_gate_before_product_queue",
+      "blocking": true,
+      "source_authority": [
+        "design/cr-preflight/CR-0340.md",
+        "tools/reviewer/review_gate.py",
+        "tests/test_review_gate.py",
+        "hosted matrix run 34341351580"
+      ],
+      "notes": "Windows hosted lanes exposed implicit line-ending conversion in the GitFixture; the focused fixture correction must be reviewed and remotely validated before CR-0337 acceptance continues."
     }
   ]
 }
