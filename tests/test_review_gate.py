@@ -383,9 +383,9 @@ class GateTests(unittest.TestCase):
         repo = GitFixture()
         try:
             repo.write("design/requirement.md", "header\nThe guard must reject invalid input.\nclosing\n")
-            repo.write("src/item.c", "int check(void) { return 0; }\n")
+            repo.write("src/item.c", "int check(void) { return 0; }\n" + "unchanged\n" * 8 + "int unrelated(void) { return 0; }\n")
             base = repo.commit("base")
-            repo.write("src/item.c", "int check(void) { return 1; }\n")
+            repo.write("src/item.c", "int check(void) { return 1; }\n" + "unchanged\n" * 8 + "int unrelated(void) { return 1; }\n")
             head = repo.commit("head")
             requirement_data = (repo.root / "design/requirement.md").read_bytes()
             head_data = (repo.root / "src/item.c").read_bytes()
@@ -403,6 +403,7 @@ class GateTests(unittest.TestCase):
             records = dict(review_packet.records)
             self.assertEqual(set(records), {"linked/guard.json"})
             self.assertIn("diff", records["linked/guard.json"])
+            self.assertNotIn("unrelated(void)", records["linked/guard.json"])
             self.assertEqual(requirements[0]["content"], "2: The guard must reject invalid input.")
         finally:
             repo.close()

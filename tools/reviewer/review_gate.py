@@ -589,6 +589,36 @@ def line_excerpt(content: str, start: Any, end: Any, label: str) -> str:
     return "\n".join(f"{number}: {lines[number - 1]}" for number in range(start, end + 1))
 
 
+def bounded_git_diff(root: Path, base: str, head: str, path: str,
+                     base_start: int, base_end: int, head_start: int, head_end: int) -> str:
+    diff = reviewable_diff_text(run_git_bytes(root, "diff", "--no-ext-diff", "--unified=0", base, head, "--", path))
+    selected: list[str] = []
+    include = False
+    for line in diff.splitlines():
+        if line.startswith("@@ "):
+            match = re.search(r"-([0-9]+)(?:,([0-9]+))? \+([0-9]+)(?:,([0-9]+))?", line)
+            if not match:
+                raise ReviewError(f"malformed diff hunk for {path}")
+            old_start = int(match.group(1))
+            old_count = int(match.group(2) or "1")
+            new_start = int(match.group(3))
+            new_count = int(match.group(4) or "1")
+            old_end = old_start + max(old_count, 1) - 1
+            new_end = new_start + max(new_count, 1) - 1
+            include = not (old_end < base_start or old_start > base_end) or not (
+                new_end < head_start or new_start > head_end
+            )
+        elif line.startswith(("diff --git ", "index ", "--- ", "+++ ")):
+            if not selected:
+                selected.append(line)
+            continue
+        if include:
+            selected.append(line)
+    if not selected:
+        raise ReviewError(f"mapped review range has no diff: {path}")
+    return "\n".join(selected) + "\n"
+
+
 def load_review_map(root: Path, value: str) -> list[dict[str, Any]]:
     path = resolve_inside(root, value)
     enforce_external_review_data_policy(path.relative_to(root).as_posix())
@@ -652,8 +682,9 @@ def linked_packet(root: Path, review_type: str, links: list[dict[str, Any]],
                     raise ReviewError(f"review map base hash mismatch: {link_id}")
                 base_text = base_data.decode("utf-8", errors="strict")
                 entry["prior"] = line_excerpt(base_text, prior.get("start"), prior.get("end"), link_id + " base")
-                entry["diff"] = reviewable_diff_text(run_git_bytes(root, "diff", "--no-ext-diff", "--unified=80",
-                                                                    base_sha, head_sha, "--", related_path))
+                entry["diff"] = bounded_git_diff(root, base_sha, head_sha, related_path,
+                                                  prior.get("start"), prior.get("end"),
+                                                  related.get("start"), related.get("end"))
         elif link.get("prior") is not None:
             if not base or not head:
                 raise ReviewError(f"document prior diff requires --base and --head: {link_id}")
@@ -666,8 +697,9 @@ def linked_packet(root: Path, review_type: str, links: list[dict[str, Any]],
                 raise ReviewError(f"review map base hash mismatch: {link_id}")
             entry["prior"] = line_excerpt(base_data.decode("utf-8", errors="strict"), prior.get("start"),
                                            prior.get("end"), link_id + " base")
-            entry["diff"] = reviewable_diff_text(run_git_bytes(root, "diff", "--no-ext-diff", "--unified=80",
-                                                                base_sha, head_sha, "--", related_path))
+            entry["diff"] = bounded_git_diff(root, base_sha, head_sha, related_path,
+                                              prior.get("start"), prior.get("end"),
+                                              related.get("start"), related.get("end"))
         manifest.append(entry)
         minimal_requirements.append({"source": req_source, "sha256": sha256_bytes(req_excerpt.encode()), "content": req_excerpt})
         records.append((f"linked/{link_id}.json", canonical_json(entry)))
