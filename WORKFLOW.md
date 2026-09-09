@@ -134,24 +134,12 @@ they must not alter product source, tests, build configuration, runner labels,
 or lane execution semantics. Any such product or execution change requires a
 fresh complete matrix run. An incomplete, queued, cancelled, or failed matrix is never eligible for this exception.
 
-The hosted matrix has a pre-matrix deep-housekeeping gate. It may cancel and
-delete only older `platform-smoke` workflow runs for the same ref; deleting the
-run also removes its temporary Actions artifacts without a per-artifact API
-request storm. It must preserve the current run and all committed source,
-guidance, and retained evidence. Every matrix lane also clears only generated
-build/test residue from its checked-out workspace before execution using
-workspace-only mode; queued or slow jobs in the current run remain valid and
-must still be awaited.
+The hosted matrix has a pre-matrix deep-housekeeping gate. It may delete only
+older terminal completed `platform-smoke` runs for the same ref; it MUST NOT
+cancel, replace, or delete a queued/in-progress run. Every matrix lane clears
+only generated workspace residue before execution.
 
-Cross-platform macOS acceptance is architecture-based, not count-based. The
-hosted matrix should schedule every configured macOS label, but publication
-requires only one successful Intel macOS lane and one successful ARM macOS
-lane, with all non-macOS lanes successful. A reachable local or remote Intel
-macOS result and a reachable local or remote ARM macOS result may substitute
-for the corresponding hosted lane at CR closure when the exact commit, test
-results, and machine identity are recorded under `test-artefacts/`. Missing
-or queued lanes are never silently counted as success; every configured lane
-must still reach a terminal state before acceptance.
+Hosted publication acceptance is exact-matrix based: all 20 configured lane IDs must reach terminal `success` for the exact commit. Intel and ARM macOS lanes remain explicitly required within that exact set. Local or remote lab evidence supplements diagnosis but never substitutes for a hosted lane.
 
 ## Private Local Artifacts
 
@@ -242,3 +230,16 @@ used for native crash capture and stack analysis when a compiler-specific
 failure needs diagnosis. Install them from Microsoft's official Windows SDK
 or Windows SDK Debugging Tools package; the executables themselves are not
 copied into or redistributed by this repository.
+
+## Review protocol v4 workflow correction
+
+This section supersedes conflicting earlier hosted acceptance/cancellation wording.
+
+1. Every tracked mandatory review requires one active CR and matching approved preflight. `Review-Base` is mandatory and is normally a stable tag created at the committed preflight baseline. Gate/harness/governance edits additionally require `Operator-Authorized-Gate-Change: YES`.
+2. CODE PASS -> required DOCUMENTATION PASS -> publish exact reviewed commit -> generate short-lived hosted authorization -> dispatch `platform-smoke` once for that exact commit -> wait for every lane to reach terminal success -> retain signed publication evidence -> TEST_ARTIFACT second opinion.
+3. `platform-smoke` is protected execution and is dispatch-only. Its exact 20 lane IDs/labels are mandatory. There is no local/remote substitution for a hosted lane in publication acceptance.
+4. A queued/in-progress hosted run is never cancelled or replaced by housekeeping. Housekeeping may delete only older terminal completed runs and generated workspace residue.
+5. Windows 11 and macOS platform breadth is supplied by the unchanged hosted matrix; retired local-lab Windows-11/Big-Sur machines remain retired and are not exceptions/expected failures.
+6. Signed publication provenance binds workflow run ID, exact commit/build ID, workflow blob, exact expected lanes, terminal jobs and artifacts. TEST_ARTIFACT verifies that provenance before semantic review.
+
+7. Gate protocol/root-of-trust migration is applied atomically under one operator-authorized maintenance CR because partial installation would mismatch receipts, hosted authorization, evidence schema and verifier authority. After cutover, independent tuning or policy changes return to ordinary small CRs.

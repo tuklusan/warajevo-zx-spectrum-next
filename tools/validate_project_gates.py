@@ -478,7 +478,7 @@ def validate_platform_smoke_workflow(root: Path) -> list[str]:
         "cleanup-hosted-runner-state.sh",
         "Clear runner workspace build and test residue",
         "verify_platform_evidence.py",
-        "Inspect every retained result manifest and evidence hash",
+            "Verify every retained manifest and structured-source hash",
     )
 
     for snippet in required_snippets:
@@ -505,9 +505,8 @@ def validate_required_workflow_documents(root: Path) -> list[str]:
             "The publication gate downloads and re-verifies every bundle",
             "Completed matrix evidence may be reused for a later instrumentation-only",
             "An incomplete, queued, cancelled, or failed matrix is never eligible for this exception.",
-            "Cross-platform macOS acceptance is architecture-based, not count-based.",
-            "one successful Intel macOS lane",
-            "one successful ARM",
+            "Hosted publication acceptance is exact-matrix based",
+            "all 20 configured lane IDs",
         ),
         "test-artefacts/README.md": (
             "linux-x64-lxqt",
@@ -521,8 +520,8 @@ def validate_required_workflow_documents(root: Path) -> list[str]:
             ".github/workflows/platform-smoke.yml",
             "Before executing any PowerShell command locally or on either remote Windows",
             "powershell -NoProfile -File tools/Test-PowerShellSyntax.ps1 -CommandText '<command>'",
-            "one successful Intel macOS lane",
-            "one successful ARM",
+            "Hosted publication acceptance is exact-matrix based",
+            "all 20 configured lane IDs",
         ),
         "README-GIT-GITHUB.md": (
             "tools/harness/invoke_remote_harness.py",
@@ -535,7 +534,7 @@ def validate_required_workflow_documents(root: Path) -> list[str]:
             "macos-15",
             "macos-15-intel",
             "configured hosted macOS lanes should be used",
-            "successful Intel and one successful ARM macOS lane",
+            "20 lane IDs/labels are mandatory",
             "20 lanes",
         ),
     }

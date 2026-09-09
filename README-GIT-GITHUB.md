@@ -99,7 +99,8 @@ reference: all currently documented hosted labels, including Ubuntu 22.04/24.04/
 14/15/26 Intel and ARM variants (including the documented Xcode 27 preview).
 The baseline labels remain `ubuntu-24.04`, `ubuntu-24.04-arm`, `windows-2025`,
 `windows-11-arm`, `windows-11-vs2026-arm`, `macos-15`, and `macos-15-intel`.
-The matrix currently contains 20 lanes. Each lane must publish a passing
+The matrix currently contains 20 lanes. Its 20 lane IDs/labels are mandatory;
+each lane must publish a passing
 result manifest; the publication gate downloads and hash-checks retained
 screenshots and traces before accepting the run.
 

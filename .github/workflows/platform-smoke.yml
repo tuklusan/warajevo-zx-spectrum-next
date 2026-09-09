@@ -5,34 +5,54 @@
 # See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 name: platform-smoke
-
 run-name: platform-smoke @ ${{ github.sha }}
 
 concurrency:
   group: platform-smoke-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
   workflow_dispatch:
+    inputs:
+      authorization_payload:
+        description: "Short-lived CODE-PASS authorization payload from make_hosted_authorization.py"
+        required: true
+        type: string
+      authorization_signature:
+        description: "HMAC-SHA256 signature for authorization_payload"
+        required: true
+        type: string
 
 permissions:
   contents: read
   actions: write
 
 jobs:
+  authorization:
+    name: protected-execution-authorization
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@v4
+      - name: Verify exact CODE-PASS authorization before any product execution
+        env:
+          WZXN_HOSTED_GATE_HMAC_KEY: ${{ secrets.WZXN_HOSTED_GATE_HMAC_KEY }}
+        run: >-
+          python tools/harness/verify_hosted_authorization.py
+          --payload '${{ inputs.authorization_payload }}'
+          --signature '${{ inputs.authorization_signature }}'
+          --expected-sha '${{ github.sha }}'
+
   housekeeping:
     name: deep-housekeeping
+    needs: authorization
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-
-      - name: Clear stale runs and temporary artifacts
+      - name: Delete only terminal stale runs and temporary artifacts
         env:
           GH_TOKEN: ${{ github.token }}
         run: bash tools/harness/cleanup-hosted-runner-state.sh
@@ -87,39 +107,35 @@ jobs:
     name: ${{ matrix.id }}
     runs-on: ${{ matrix.label }}
     timeout-minutes: 30
-
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-
       - name: Clear runner workspace build and test residue
         run: bash tools/harness/cleanup-hosted-runner-state.sh --workspace-only
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.x"
-
       - name: Run shared CMake smoke harness
         run: python tools/harness/run_cmake_smoke.py --artifact-dir .wzsn-harness/github/${{ matrix.id }}
-
       - name: Run supported Sokol host smoke harness
         if: matrix.id == 'windows-latest' || matrix.id == 'macos-arm64-14'
-        run: python tools/harness/run_cmake_smoke.py --artifact-dir .wzsn-harness/github/${{ matrix.id }}-sokol --sokol-host
-
+        run: python tools/harness/run_cmake_smoke.py --artifact-dir .wzsn-harness/github/${{ matrix.id }}/sokol-host --sokol-host
       - name: Run pinned Fuse ED conformance
-        run: python tools/harness/run_fuse_ed_platform.py --runner-root .wzsn-harness/github/${{ matrix.id }}/build --private-root test-artefacts/github/${{ matrix.id }} --manifest .wzsn-harness/github/${{ matrix.id }}/fuse-complete-manifest.json --unresolved-baseline tools/harness/fuse-unresolved-baseline.json
-
+        run: >-
+          python tools/harness/run_fuse_ed_platform.py
+          --runner-root .wzsn-harness/github/${{ matrix.id }}/build
+          --private-root test-artefacts/github/${{ matrix.id }}
+          --manifest .wzsn-harness/github/${{ matrix.id }}/fuse-complete-manifest.json
+          --unresolved-baseline tools/harness/fuse-unresolved-baseline.json
       - name: Verify and record lane evidence
         run: python tools/harness/verify_platform_evidence.py --artifact-dir .wzsn-harness/github/${{ matrix.id }} --lane-id ${{ matrix.id }}
-
       - name: Forward complete lane diagnostics to secured syslog
         if: always()
         continue-on-error: true
         env:
           WZ_TRACE_FORWARD: "1"
         run: python tools/harness/forward_syslog.py --tree .wzsn-harness/github/${{ matrix.id }} --run-id ${{ github.run_id }} --lane ${{ matrix.id }} --phase platform-smoke
-
       - name: Upload smoke artefacts (attempt 1)
         id: upload-smoke-1
         if: always()
@@ -129,7 +145,6 @@ jobs:
           name: platform-smoke-${{ matrix.id }}
           path: .wzsn-harness/github/${{ matrix.id }}
           if-no-files-found: error
-
       - name: Upload smoke artefacts (attempt 2)
         id: upload-smoke-2
         if: always() && steps.upload-smoke-1.outcome == 'failure'
@@ -139,7 +154,6 @@ jobs:
           name: platform-smoke-${{ matrix.id }}-retry-2
           path: .wzsn-harness/github/${{ matrix.id }}
           if-no-files-found: error
-
       - name: Upload smoke artefacts (attempt 3)
         if: always() && steps.upload-smoke-1.outcome == 'failure' && steps.upload-smoke-2.outcome == 'failure'
         uses: actions/upload-artifact@v4
@@ -153,44 +167,60 @@ jobs:
     if: always()
     needs: smoke
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
-      - name: Verify one run and one commit are being published
+      - name: Check out exact candidate for publication verification
+        uses: actions/checkout@v4
+      - name: Verify exact 20-lane terminal-success set
         env:
           EXPECTED_RUN_ID: ${{ github.run_id }}
           EXPECTED_SHA: ${{ github.sha }}
           MATRIX_RESULT: ${{ needs.smoke.result }}
           GH_TOKEN: ${{ github.token }}
         run: |
-          printf 'run_id=%s\nsha=%s\nmatrix_result=%s\n' "$EXPECTED_RUN_ID" "$EXPECTED_SHA" "$MATRIX_RESULT"
-          test -n "$EXPECTED_RUN_ID"
-          test "$EXPECTED_SHA" = "${GITHUB_SHA}"
+          set -euo pipefail
           expected='linux-x64 linux-x64-latest linux-x64-24 linux-x64-26 linux-arm64-22 linux-arm64 linux-arm64-26 windows-latest windows-server-2022 windows-server-2025 windows-server-2025-vs2026 windows-arm-11 windows-arm-11-vs2026 macos-arm64-latest macos-arm64 macos-arm64-14 macos-intel-x64 macos-intel-26 macos-arm64-26 macos-xcode-27'
-          actual=$(gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/runs/${EXPECTED_RUN_ID}/jobs?per_page=100" --jq '[.jobs[] | select(.name != "publication-gate" and .name != "deep-housekeeping")]')
-          printf '%s\n' "$actual" | jq .
-          if ! printf '%s\n' "$actual" | jq -e --arg sha "$EXPECTED_SHA" --arg expected "$expected" '
+          test "$MATRIX_RESULT" = success
+          gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/runs/${EXPECTED_RUN_ID}/jobs?per_page=100" --jq '[.jobs[] | select(.name != "publication-gate" and .name != "deep-housekeeping" and .name != "protected-execution-authorization")]' > .wzsn-jobs.json
+          jq -e --arg sha "$EXPECTED_SHA" --arg expected "$expected" '
             length == 20 and
             ([.[].name] | sort) == ($expected | split(" ") | sort) and
-            all(.[]; .head_sha == $sha and .conclusion == "success") and
+            all(.[]; .head_sha == $sha and .status == "completed" and .conclusion == "success") and
             any(.[]; .name | startswith("macos-intel-")) and
             any(.[]; .name | startswith("macos-arm64"))
-          ' >/dev/null; then
-            printf 'publication lane validation failed; normalized lane data follows\n'
-            printf '%s\n' "$actual" | jq '.[] | {name, head_sha, status, conclusion}'
-            exit 1
-          fi
-
-      - name: Check out repository for retained evidence verification
-        uses: actions/checkout@v4
-
+          ' .wzsn-jobs.json >/dev/null
       - name: Download every lane evidence bundle
         uses: actions/download-artifact@v4
         with:
           pattern: platform-smoke-*
           path: .wzsn-published-artifacts
           merge-multiple: false
-
-      - name: Inspect every retained result manifest and evidence hash
+      - name: Verify every retained manifest and structured-source hash
         run: |
           test "$(find .wzsn-published-artifacts -name result-manifest.json -type f | wc -l)" -eq 20
-          python tools/harness/verify_platform_evidence.py --verify-tree .wzsn-published-artifacts
+          python tools/harness/verify_platform_evidence.py --verify-tree .wzsn-published-artifacts --workflow-file .github/workflows/platform-smoke.yml --expected-count 20
+      - name: Capture artifact and workflow provenance
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts?per_page=100" --jq '.artifacts' > .wzsn-artifacts.json
+          git rev-parse 'HEAD:.github/workflows/platform-smoke.yml' > .wzsn-workflow-blob.txt
+      - name: Sign publication provenance for TEST_ARTIFACT review
+        env:
+          WZXN_HOSTED_GATE_HMAC_KEY: ${{ secrets.WZXN_HOSTED_GATE_HMAC_KEY }}
+        run: >-
+          python tools/harness/make_publication_manifest.py
+          --run-id '${{ github.run_id }}'
+          --head-sha '${{ github.sha }}'
+          --workflow-blob-sha "$(cat .wzsn-workflow-blob.txt)"
+          --jobs-json .wzsn-jobs.json
+          --artifacts-json .wzsn-artifacts.json
+          --expected-lanes 'linux-x64 linux-x64-latest linux-x64-24 linux-x64-26 linux-arm64-22 linux-arm64 linux-arm64-26 windows-latest windows-server-2022 windows-server-2025 windows-server-2025-vs2026 windows-arm-11 windows-arm-11-vs2026 macos-arm64-latest macos-arm64 macos-arm64-14 macos-intel-x64 macos-intel-26 macos-arm64-26 macos-xcode-27'
+          --evidence-root .wzsn-published-artifacts
+          --out-dir .wzsn-published-artifacts
+      - name: Upload signed complete publication evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: platform-publication-${{ github.run_id }}
+          path: .wzsn-published-artifacts
+          if-no-files-found: error

@@ -28,6 +28,7 @@ HARNESS_DIR = str(Path(__file__).resolve().parent)
 if HARNESS_DIR not in sys.path:
     sys.path.insert(0, HARNESS_DIR)
 from forward_syslog import forward_tree
+from review_authority_v4 import validate_code_receipt, validate_bootstrap_receipt
 
 
 REMOTE_MACHINES = {
@@ -81,121 +82,19 @@ def _bound_file(root: Path, value: str) -> Path:
 
 
 def validate_review_authority(root: Path, receipt: dict) -> None:
-    protocol_version = receipt.get("review_protocol_version", 0)
-    if not isinstance(protocol_version, int):
-        raise SystemExit("remote smoke blocked: malformed review protocol version")
-    if protocol_version < 2:
-        return
-    cr_number = receipt.get("cr_number")
-    sources = receipt.get("requirement_sources")
-    if not isinstance(cr_number, str) or not cr_number or not isinstance(sources, list) or not sources:
-        raise SystemExit("remote smoke blocked: protocol-v2 authority binding is incomplete")
-    requirement_identity = []
-    seen_sources = set()
-    for source in sources:
-        if (not isinstance(source, dict) or not isinstance(source.get("source"), str)
-                or not isinstance(source.get("sha256"), str)):
-            raise SystemExit("remote smoke blocked: malformed requirement authority binding")
-        if source["source"] in seen_sources:
-            raise SystemExit("remote smoke blocked: duplicate requirement authority binding")
-        seen_sources.add(source["source"])
-        data = _bound_file(root, source["source"]).read_bytes()
-        digest = hashlib.sha256(data).hexdigest()
-        if digest != source["sha256"]:
-            raise SystemExit("remote smoke blocked: requirement authority changed after review")
-        requirement_identity.append({"source": source["source"], "sha256": digest})
-    requirements_hash = hashlib.sha256(canonical_json(requirement_identity).encode()).hexdigest()
-    if requirements_hash != receipt.get("requirements_manifest_hash"):
-        raise SystemExit("remote smoke blocked: requirement manifest identity mismatch")
+    # Protocol-v4 authority is strict; legacy receipts never authorize execution.
+    validate_code_receipt(root, receipt)
 
-    tracker_path = _bound_file(root, "issues/change-requests.json")
-    tracker_data = tracker_path.read_bytes()
-    try:
-        tracker = json.loads(tracker_data.decode("utf-8", errors="strict"))
-    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-        raise SystemExit("remote smoke blocked: CR tracker is invalid") from exc
-    items = tracker.get("change_requests", []) if isinstance(tracker, dict) else tracker if isinstance(tracker, list) else []
-    if not isinstance(items, list):
-        raise SystemExit("remote smoke blocked: CR tracker change_requests is not an array")
-    matches = [item for item in items if isinstance(item, dict) and item.get("cr_number") == cr_number]
-    if len(matches) != 1 or matches[0].get("status") != "in_progress":
-        raise SystemExit("remote smoke blocked: reviewed CR is not uniquely active")
-    item = matches[0]
-    scope = {
-        "cr_number": cr_number,
-        "title": item.get("title"),
-        "status": item.get("status"),
-        "source_authority": item.get("source_authority", []),
-        "notes": item.get("notes", ""),
-        "tracker_source": "issues/change-requests.json",
-        "tracker_sha256": hashlib.sha256(tracker_data).hexdigest(),
-        "record_sha256": hashlib.sha256(canonical_json(item).encode()).hexdigest(),
-    }
-    private_source = receipt.get("scope_private_source")
-    if private_source is not None:
-        if not isinstance(private_source, str) or not private_source:
-            raise SystemExit("remote smoke blocked: malformed private scope binding")
-        if private_source not in seen_sources:
-            raise SystemExit("remote smoke blocked: private scope is absent from requirement authority")
-        private_data = _bound_file(root, private_source).read_bytes()
-        scope["private_scope"] = {
-            "source": private_source,
-            "sha256": hashlib.sha256(private_data).hexdigest(),
-            "content": private_data.decode("utf-8", errors="strict"),
-        }
-    if hashlib.sha256(canonical_json(scope).encode()).hexdigest() != receipt.get("scope_manifest_hash"):
-        raise SystemExit("remote smoke blocked: CR scope changed after review")
 
 
 def require_code_review_pass(root: Path) -> None:
     receipt_path = root / "test-artefacts" / "reviewer" / "code-pass.json"
-    if not receipt_path.is_file():
-        raise SystemExit("remote smoke blocked: no private CODE PASS receipt")
     try:
         receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
-        raise SystemExit("remote smoke blocked: invalid CODE PASS receipt") from exc
-    try:
-        head = subprocess.run(
-            ["git", "rev-parse", "HEAD"], cwd=root, check=True,
-            capture_output=True, text=True,
-        ).stdout.strip()
-    except (subprocess.CalledProcessError, OSError) as exc:
-        raise SystemExit("remote smoke blocked: current commit identity unavailable") from exc
-    try:
-        remote_output = subprocess.run(
-            ["git", "ls-remote", "--heads", "origin", "main"], cwd=root, check=True,
-            capture_output=True, text=True, timeout=30,
-        ).stdout.strip()
-    except (subprocess.CalledProcessError, subprocess.TimeoutExpired, OSError) as exc:
-        raise SystemExit("remote smoke blocked: published commit identity unavailable") from exc
-    fields = remote_output.split()
-    if len(fields) != 2 or fields[1] != "refs/heads/main":
-        raise SystemExit("remote smoke blocked: authoritative origin/main identity is malformed")
-    published_head = fields[0]
-    if published_head != head:
-        raise SystemExit("remote smoke blocked: reviewed commit is not published on origin/main")
-    snapshot = receipt.get("snapshot_id", "")
-    if receipt.get("verdict") != "PASS" or receipt.get("review_complete") is not True:
-        raise SystemExit("remote smoke blocked: reviewer verdict is not PASS")
-    validate_review_authority(root, receipt)
-    try:
-        without_scheme = snapshot[4:] if snapshot.startswith("git:") else snapshot
-        commit_range, marker, recorded_digest = without_scheme.rpartition(":sha256:")
-        base, separator, reviewed_head = commit_range.partition("..")
-    except (AttributeError, ValueError) as exc:
-        raise SystemExit("remote smoke blocked: malformed CODE PASS snapshot") from exc
-    if marker != ":sha256:" or not separator or reviewed_head != head:
-        raise SystemExit("remote smoke blocked: CODE PASS does not match current commit")
-    try:
-        diff = subprocess.run(
-            ["git", "diff", "--no-ext-diff", "--unified=80", base, reviewed_head],
-            cwd=root, check=True, capture_output=True,
-        ).stdout
-    except (subprocess.CalledProcessError, OSError) as exc:
-        raise SystemExit("remote smoke blocked: reviewed diff identity unavailable") from exc
-    if hashlib.sha256(diff).hexdigest() != recorded_digest:
-        raise SystemExit("remote smoke blocked: CODE PASS diff identity mismatch")
+        raise SystemExit("remote smoke blocked: no valid private CODE PASS receipt") from exc
+    validate_code_receipt(root, receipt)
+
 
 
 def review_pending_record(machine: str, run_id: str, reason: str) -> dict:
@@ -217,21 +116,8 @@ def require_bootstrap_maintenance_pass(root: Path, cr_number: str, published_ref
         receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         raise SystemExit("remote smoke blocked: bootstrap PASS receipt is missing or invalid") from exc
-    if receipt.get("verdict") != "PASS" or receipt.get("review_complete") is not True or receipt.get("cr_number") != cr_number:
-        raise SystemExit("remote smoke blocked: bootstrap PASS receipt is not authorized for this CR")
-    sources = receipt.get("requirement_sources")
-    if not isinstance(sources, list) or len(sources) != 1 or sources[0].get("source") != "design/review-gate.md":
-        raise SystemExit("remote smoke blocked: bootstrap authority is not the review-gate specification")
-    source = root / "design" / "review-gate.md"
-    if hashlib.sha256(source.read_bytes()).hexdigest() != sources[0].get("sha256"):
-        raise SystemExit("remote smoke blocked: bootstrap authority changed after review")
-    head = run_git(root, "rev-parse", "HEAD")
-    published = run_git(root, "ls-remote", "--heads", "origin", published_ref).split()
-    if len(published) != 2 or published[0] != head:
-        raise SystemExit("remote smoke blocked: maintenance candidate is not published exactly")
-    snapshot = str(receipt.get("snapshot_id", ""))
-    if not snapshot.startswith("git:") or f"..{head}:sha256:" not in snapshot:
-        raise SystemExit("remote smoke blocked: bootstrap PASS does not match current commit")
+    validate_bootstrap_receipt(root, receipt, cr_number, published_ref)
+
 
 
 def run_git(root: Path, *args: str) -> str:

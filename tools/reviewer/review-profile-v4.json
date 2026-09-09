@@ -1,0 +1,68 @@
+{
+  "api": "https://integrate.api.nvidia.com/v1/chat/completions",
+  "artifact_slice_bytes": 32768,
+  "context_bytes": 96000,
+  "force_nonempty_content": true,
+  "input_budget_bytes": 520000,
+  "json_schema_qualified": false,
+  "max_context_tokens": 1000000,
+  "model": "nvidia/nemotron-3-ultra-550b-a55b",
+  "phase_profile": {
+    "ADJUDICATION": {
+      "max_tokens": 12288,
+      "reasoning_budget": 8192,
+      "reasoning_effort": "high"
+    },
+    "CODE-DISCOVERY": {
+      "max_tokens": 8192,
+      "reasoning_budget": 4096,
+      "reasoning_effort": "medium"
+    },
+    "CODE-INTEGRATION": {
+      "max_tokens": 10240,
+      "reasoning_budget": 6144,
+      "reasoning_effort": "high"
+    },
+    "DOCUMENTATION-DISCOVERY": {
+      "max_tokens": 8192,
+      "reasoning_budget": 4096,
+      "reasoning_effort": "medium"
+    },
+    "FALSIFICATION": {
+      "max_tokens": 12288,
+      "reasoning_budget": 8192,
+      "reasoning_effort": "high"
+    },
+    "FORMAT-REPAIR": {
+      "max_tokens": 4096,
+      "reasoning_budget": 0,
+      "reasoning_effort": "none"
+    },
+    "HEALTH-CHECK": {
+      "max_tokens": 128,
+      "reasoning_budget": 0,
+      "reasoning_effort": "none"
+    },
+    "TEST-DISCOVERY": {
+      "max_tokens": 8192,
+      "reasoning_budget": 4096,
+      "reasoning_effort": "medium"
+    }
+  },
+  "project_id": "github.com/tuklusan/warajevo-zx-spectrum-next",
+  "protocol": 4,
+  "provider": "NVIDIA hosted Build API",
+  "response_format": "json_object",
+  "retryable_http_status": [
+    408,
+    429,
+    500,
+    502,
+    503,
+    504
+  ],
+  "schema": 1,
+  "secret_policy_version": 1,
+  "status_api": "https://integrate.api.nvidia.com/v1/status/{request_id}",
+  "structured_output_qualification_required": true
+}

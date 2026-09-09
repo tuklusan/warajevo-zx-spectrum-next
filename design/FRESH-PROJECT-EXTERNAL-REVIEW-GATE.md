@@ -2129,3 +2129,9 @@ This document intentionally separates:
 2. **changeable API configuration** - model name, supported effort levels, context/output limits, and provider-specific request fields.
 
 When the external API changes, update the centralized adapter and the verified API-baseline section. Do not redesign the evidence model unless actual review behavior demonstrates a reason.
+
+## Protocol v4 bootstrap/root-of-trust correction
+
+For protocol v4, the maintenance bootstrap is a standalone implementation. It MUST NOT import the normal review gate's transport, packet builder, schema validator, context resolver, receipt writer, or final-decision code. An authorizing bootstrap run always reviews the complete immutable maintenance change; path/line-scoped diagnostics cannot issue a PASS receipt.
+
+When `legacy_bootstrap_gate.py` itself changes, a one-time private root-of-trust record under `test-artefacts/reviewer/` is mandatory. It binds project ID, active CR, pre-change baseline commit, SHA-256 of the replacement standalone bootstrap, SHA-256 of the certified remediation ledger, and explicit operator approval. The replacement then performs high-reasoning independent review of the complete gate change and revalidates HEAD, clean tree, CR/preflight and authority immediately before writing a v4 bootstrap receipt.
