@@ -3419,7 +3419,7 @@
     {
       "cr_number": "CR-0329",
       "title": "Distinguish native load/run from explicit conversion workflows",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "medium",
       "execution_order": "architecture_2_phase_12g",
       "blocking": false,
@@ -3435,7 +3435,7 @@
         "src/app/wz_compatibility_tools.c",
         "reference/Warajevo 2.50 file dispatch and conversion routines"
       ],
-      "notes": "Opened after CR-0328 closure for Phase-12 UI task 325; native media opening remains separate from explicit preservation conversion."
+      "notes": "Closed after implementation d7d53cf. Exact CODE and bootstrap gates passed; serial Linux and Windows 10 lanes passed, while Windows 11 and Intel macOS retained documented environmental limitations. Hosted run 34300499315 passed deep housekeeping, all 20 matrix lanes, publication, and evidence-tree verification. The 20 result manifests and 20 evidence-inspection records each passed TEST_ARTIFACT review with zero findings; final DOCUMENTATION review passed. Private closure receipts retained under test-artefacts/reviewer/closures/CR-0329-closure.local.md."
     }
   ]
 }
