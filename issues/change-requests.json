@@ -3550,7 +3550,7 @@
     {
       "cr_number": "CR-0336",
       "title": "Enforce requirement-linked external review packets",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "workflow_review_gate_before_product_queue",
       "blocking": true,
@@ -3560,7 +3560,7 @@
         "tools/reviewer/review_gate.py",
         "tests/test_review_gate.py"
       ],
-      "notes": "Permanent normal CODE and DOCUMENTATION review format: minimal complete requirement, directly related excerpt, and prior diff when applicable."
+      "notes": "Closed after linked CODE and DOCUMENTATION PASS with zero confirmed findings and remote reviewer regression 85/85 on c2d3e51; permanent normal review format is now enforced."
     }
   ]
 }
