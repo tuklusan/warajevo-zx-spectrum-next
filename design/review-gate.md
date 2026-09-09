@@ -139,6 +139,18 @@ Artifact inputs are classified before review:
 Artifact conclusions distinguish product defects, test defects, insufficient
 evidence, and interpretation errors.
 
+`TEST_ARTIFACT` reviews use `--evidence-root` rather than a caller-selected
+subset when claiming a complete hosted matrix. The gate derives the expected
+20 lane IDs from the immutable `platform-smoke.yml`, recursively indexes every
+file under the canonical root with path, size, line count, and SHA-256, and
+binds that index to the exact run and build identity. Missing, extra, malformed,
+or non-passing lane evidence is inconclusive; a manual `--path` list can never
+establish complete matrix coverage. The external packet carries compact lane
+summaries and index identity while the complete local index remains available
+for bounded, exact `ARTIFACT_SLICE` requests. Each slice is hash-checked,
+line-bounded, and limited to 32 KiB, with at most eight requests and 96 KiB
+aggregate retrieval per review.
+
 ## Severity And Data Policy
 
 `BLOCKER` means a fundamental current acceptance failure, severe security or
@@ -218,16 +230,19 @@ Telemetry records every API call's phase, thinking setting, reasoning effort,
 input bytes, tokens, cache usage, elapsed time, retry index, and result class,
 plus review-level call count, discovery units, integration need, candidate
 count, falsification batches, adjudications, final verdict, snapshot, manifests,
-and elapsed time. It never records the key, authorization data, prompts, source,
-or hidden reasoning. A private active-review status file prevents duplicate
-normal reviews of the same snapshot while safely recovering stale locks.
+and elapsed time. For indexed test evidence it additionally records the local
+byte universe, indexed-file count, compact packet size, anomaly count, result
+groups, and bounded slice retrieval totals. It never records the key,
+authorization data, prompts, source, or hidden reasoning. A private
+active-review status file prevents duplicate normal reviews of the same
+snapshot while safely recovering stale locks.
 
 ## Commands
 
 ```text
 python tools/reviewer/review_gate.py review --type CODE --cr CR-0020 --base <base> --head <head> --requirements design/review-gate.md --scope-file test-artefacts/reviewer/requirements/CR-0020-review-harness-hardening.local.txt
 python tools/reviewer/review_gate.py review --type DOCUMENTATION --requirements design/review-gate.md --path <document>
-python tools/reviewer/review_gate.py review --type TEST_ARTIFACT --requirements design/review-gate.md --run-id <test-run-id> --build-id <build-identity> --path <artifact>
+python tools/reviewer/review_gate.py review --type TEST_ARTIFACT --requirements design/review-gate.md --run-id <test-run-id> --build-id <build-identity> --evidence-root test-artefacts/github/CR####
 python tools/reviewer/review_gate.py health-check --requirements design/review-gate.md --deadline-seconds 60
 ```
 

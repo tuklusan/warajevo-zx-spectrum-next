@@ -34,7 +34,7 @@ API_URL = "https://integrate.api.nvidia.com/v1/chat/completions"
 MODEL = "nvidia/nemotron-3-ultra-550b-a55b"
 KEY_NAME = "NVIDIA_API_KEY_CODING"
 UNIVERSAL_REQUIREMENT_SOURCE = "design/review-gate.md"
-PROTOCOL_VERSION = 2
+PROTOCOL_VERSION = 3
 MAX_CONTEXT_TOKENS = 1_000_000
 INPUT_BUDGET_BYTES = 520_000
 TARGET_UNIT_BYTES = 340_000
@@ -54,6 +54,9 @@ RETRY_DELAYS = (1, 2, 4, 8, 16, 32)
 RETRYABLE_HTTP_STATUS = {404, 408, 429, 500, 502, 503, 504}
 MAX_CONTEXT_CYCLES = 2
 MAX_NEW_CANDIDATE_CYCLES = 1
+ARTIFACT_SLICE_BYTES = 32_768
+ARTIFACT_SLICE_AGGREGATE_BYTES = 96_000
+MAX_ARTIFACT_SLICE_REQUESTS = 8
 NON_CALLABLE_IDENTIFIERS = {"if", "for", "while", "switch", "return", "sizeof"}
 VERDICTS = {"PASS", "FAIL", "INCONCLUSIVE", "REVIEW_UNAVAILABLE", "HUMAN_DECISION_REQUIRED"}
 SEVERITIES = {"BLOCKER", "HIGH"}
@@ -170,6 +173,14 @@ class Telemetry:
     falsification_batch_count: int = 0
     final_verdict: str = ""
     status_path: Path | None = None
+    total_local_bytes: int = 0
+    indexed_file_count: int = 0
+    packet_bytes: int = 0
+    context_request_bytes: int = 0
+    anomaly_count: int = 0
+    unique_result_group_count: int = 0
+    artifact_slice_count: int = 0
+    artifact_slice_bytes: int = 0
 
 
 @dataclass
@@ -198,6 +209,8 @@ class ReviewPacket:
     base_sha: str = ""
     tracked_paths: set[str] = field(default_factory=set)
     insufficient_evidence: list[str] = field(default_factory=list)
+    evidence_index: list[dict[str, Any]] = field(default_factory=list)
+    evidence_root: str = ""
 
 
 def canonical_json(value: Any) -> str:
@@ -475,6 +488,82 @@ def file_packet(root: Path, paths: list[str], extraction_manifest: str | None = 
     identity_material = {"files": manifest, "snapshot_context": context}
     identity = sha256_bytes(canonical_json(identity_material).encode())
     return ReviewPacket(f"files:{identity}", identity, records, manifest, insufficient_evidence=insufficient)
+
+
+def expected_platform_lanes(root: Path) -> list[str]:
+    workflow = (root / ".github" / "workflows" / "platform-smoke.yml").read_text(encoding="utf-8")
+    lanes = re.findall(r"^\s+- id:\s*([A-Za-z0-9][A-Za-z0-9-]*)\s*$", workflow, re.MULTILINE)
+    if len(lanes) != 20 or len(set(lanes)) != 20:
+        raise ReviewError("authoritative workflow does not define exactly 20 unique platform lanes")
+    return lanes
+
+
+def test_artifact_packet(root: Path, evidence_root: str, run_id: str, build_id: str,
+                         publication_id: str | None = None) -> ReviewPacket:
+    """Index the complete evidence root; transmit compact metadata, not raw artifacts."""
+    root_path = (root / evidence_root).resolve()
+    try:
+        root_path.relative_to(root)
+    except ValueError as exc:
+        raise ReviewError("TEST_ARTIFACT evidence root escapes project root") from exc
+    if not root_path.is_dir():
+        raise ReviewError("TEST_ARTIFACT evidence root is not a directory")
+    lanes = expected_platform_lanes(root)
+    files: list[dict[str, Any]] = []
+    records: list[tuple[str, str]] = []
+    anomalies: list[str] = []
+    groups: dict[str, list[str]] = {}
+    for path in sorted((item for item in root_path.rglob("*") if item.is_file()),
+                       key=lambda item: item.relative_to(root_path).as_posix()):
+        rel = path.relative_to(root_path).as_posix()
+        data = path.read_bytes()
+        item = {"path": rel, "size": len(data), "sha256": sha256_bytes(data),
+                "line_count": len(data.decode("utf-8", errors="replace").splitlines())}
+        files.append(item)
+        if path.name == "result-manifest.json":
+            try:
+                payload = json.loads(data.decode("utf-8"))
+                status = payload.get("status") if isinstance(payload, dict) else None
+                lane = rel.split("/", 1)[0]
+                groups.setdefault(sha256_bytes(canonical_json(payload).encode()), []).append(lane)
+                if status != "passed":
+                    anomalies.append(f"{rel}: status is not passed")
+            except (UnicodeDecodeError, json.JSONDecodeError):
+                anomalies.append(f"{rel}: malformed result manifest")
+    lane_dirs = {
+        path.split("/", 1)[0].removeprefix("platform-smoke-")
+        for path in (item["path"] for item in files)
+    }
+    missing_lanes = sorted(set(lanes) - lane_dirs)
+    extra_lanes = sorted(lane_dirs - set(lanes))
+    for lane in missing_lanes:
+        anomalies.append(f"missing lane evidence: {lane}")
+    for lane in extra_lanes:
+        anomalies.append(f"unexpected lane evidence: {lane}")
+    identity = {"run_id": run_id, "build_id": build_id, "publication_id": publication_id or "",
+                "expected_lanes": lanes, "files": files}
+    index_hash = sha256_bytes(canonical_json(identity).encode())
+    file_index_hash = sha256_bytes(canonical_json(files).encode())
+    lane_summaries = []
+    for lane in sorted(set(lane_dirs) & set(lanes)):
+        lane_files = [item for item in files if item["path"].split("/", 1)[0].removeprefix("platform-smoke-") == lane]
+        lane_summaries.append({"lane": lane, "file_count": len(lane_files),
+                               "bytes": sum(item["size"] for item in lane_files),
+                               "index_sha256": sha256_bytes(canonical_json(lane_files).encode())})
+    context = {"review_type": "TEST_ARTIFACT", "run_id": run_id, "build_id": build_id,
+               "publication_id": publication_id or "", "expected_lanes": lanes,
+               "missing_lanes": missing_lanes, "extra_lanes": extra_lanes,
+               "anomalies": anomalies, "indexed_file_count": len(files),
+               "total_local_bytes": sum(item["size"] for item in files),
+               "file_index_sha256": file_index_hash, "lane_summaries": lane_summaries,
+               "result_groups": [{"sha256": key, "lanes": sorted(value)} for key, value in sorted(groups.items())],
+               "index_sha256": index_hash}
+    records.append(("test-evidence-index.json", canonical_json(context)))
+    insufficient = ["complete canonical 20-lane evidence set is not available"] if missing_lanes or extra_lanes else []
+    packet = ReviewPacket(f"test:{index_hash}", index_hash, records, files,
+                          insufficient_evidence=insufficient, evidence_index=files,
+                          evidence_root=root_path.relative_to(root).as_posix())
+    return packet
 
 
 def requirement_records(root: Path, paths: list[str]) -> list[dict[str, str]]:
@@ -881,8 +970,13 @@ CANDIDATE_FIELDS = (
 
 
 def context_request_schema_valid(request: Any) -> bool:
-    if not isinstance(request, dict) or request.get("type") not in {"PATH", "SYMBOL"}:
+    if not isinstance(request, dict) or request.get("type") not in {"PATH", "SYMBOL", "ARTIFACT_SLICE"}:
         return False
+    if request["type"] == "ARTIFACT_SLICE":
+        return (isinstance(request.get("path"), str) and bool(request["path"].strip())
+                and isinstance(request.get("line_start"), int) and isinstance(request.get("line_end"), int)
+                and 1 <= request["line_start"] <= request["line_end"]
+                and request["line_end"] - request["line_start"] < 5000)
     if request["type"] == "PATH":
         return isinstance(request.get("path"), str) and bool(request["path"].strip())
     return (
@@ -911,6 +1005,8 @@ def discovery_schema_valid(value: Any, expected_pass: str | None = None) -> bool
         and isinstance(value.get("candidates"), list)
         and all(isinstance(candidate, dict) for candidate in value["candidates"])
         and isinstance(value.get("uncertainties", []), list)
+        and isinstance(value.get("evidence_requests", []), list)
+        and all(context_request_schema_valid(item) for item in value.get("evidence_requests", []))
     )
 
 
@@ -1021,6 +1117,9 @@ def candidate_location_valid(packet: ReviewPacket, location: str) -> bool:
         return False
     if line < 1:
         return False
+    if packet.evidence_index:
+        indexed = next((item for item in packet.evidence_index if item.get("path") == path), None)
+        return indexed is not None and line <= max(1, int(indexed.get("line_count", 0)))
     records = dict(packet.records)
     possible_labels = (path, f"head/{path}", f"base-deleted/{path}", f"{path}.metadata.json")
     for label in possible_labels:
@@ -1083,6 +1182,30 @@ def deterministic_filter(candidates: list[dict[str, Any]], requirements: list[di
 
 def resolve_context_request(root: Path, packet: ReviewPacket, request: dict[str, Any]) -> dict[str, Any]:
     request_type = request.get("type")
+    if request_type == "ARTIFACT_SLICE":
+        if not packet.evidence_index:
+            return {"request": request, "status": "UNRESOLVED", "reason": "artifact index unavailable"}
+        path = str(request.get("path", ""))
+        indexed = next((item for item in packet.evidence_index if item.get("path") == path), None)
+        if indexed is None:
+            return {"request": request, "status": "UNRESOLVED", "reason": "path absent from immutable index"}
+        start, end = request["line_start"], request["line_end"]
+        if end > indexed.get("line_count", 0):
+            return {"request": request, "status": "UNRESOLVED", "reason": "requested line is out of bounds"}
+        evidence_root = packet.evidence_root
+        if not evidence_root:
+            return {"request": request, "status": "UNRESOLVED", "reason": "artifact source root unavailable"}
+        source = resolve_inside(root, f"{evidence_root}/{path}")
+        data = source.read_bytes()
+        if sha256_bytes(data) != indexed.get("sha256"):
+            return {"request": request, "status": "UNRESOLVED", "reason": "artifact hash changed"}
+        text = data.decode("utf-8", errors="strict")
+        lines = text.splitlines(keepends=True)
+        content = "".join(lines[start - 1:end])
+        if len(content.encode()) > ARTIFACT_SLICE_BYTES:
+            return {"request": request, "status": "UNRESOLVED", "reason": "artifact slice exceeds byte budget"}
+        return {"request": request, "status": "RESOLVED", "path": path,
+                "line_start": start, "line_end": end, "sha256": indexed["sha256"], "content": content}
     if request_type == "PATH":
         path = str(request.get("path", ""))
         records = dict(packet.records)
@@ -1212,7 +1335,20 @@ def resolve_candidate_context(root: Path, packet: ReviewPacket, candidates: list
         resolutions = []
         for request in requests:
             telemetry.context_request_count += 1
+            if request.get("type") == "ARTIFACT_SLICE":
+                if (telemetry.artifact_slice_count >= MAX_ARTIFACT_SLICE_REQUESTS
+                        or telemetry.artifact_slice_bytes >= ARTIFACT_SLICE_AGGREGATE_BYTES):
+                    unresolved.append(candidate["candidate_id"])
+                    continue
             resolution = resolve_context_request(root, packet, request)
+            telemetry.context_request_bytes += len(canonical_json(resolution).encode())
+            if request.get("type") == "ARTIFACT_SLICE" and resolution.get("status") == "RESOLVED":
+                size = len(str(resolution.get("content", "")).encode())
+                if telemetry.artifact_slice_bytes + size > ARTIFACT_SLICE_AGGREGATE_BYTES:
+                    unresolved.append(candidate["candidate_id"])
+                    continue
+                telemetry.artifact_slice_count += 1
+                telemetry.artifact_slice_bytes += size
             compact_automatic_symbol_context(resolution)
             if resolution["status"] == "RESOLVED":
                 telemetry.context_request_resolved_count += 1
@@ -1284,7 +1420,8 @@ def discovery_prompt(prefix: str, unit: str, pass_name: str, lenses: tuple[str, 
         "\nDiscover serious candidates by completing all review lenses before returning:\n" + lens_text +
         "\nReview the entire assigned unit and continue after each candidate. "
         "A candidate is not a blocker. Cite an exact requirement source and exact quote, explain why it applies now, "
-        "state a concrete failure scenario, causal path, evidence, assumptions, and bounded PATH/SYMBOL context requests. "
+        "state a concrete failure scenario, causal path, evidence, assumptions, and bounded PATH/SYMBOL context requests; "
+        "for TEST_ARTIFACT use only indexed ARTIFACT_SLICE requests with exact path and line range. "
         "Missing context is a request, never a HIGH. Exclude future work, style, cleanup, and speculative redesign. "
         "For TEST_ARTIFACT use category PRODUCT_DEFECT, TEST_DEFECT, EVIDENCE_INSUFFICIENT, or INTERPRETATION_ERROR; "
         "missing evidence is never a product defect. "
@@ -1295,7 +1432,7 @@ def discovery_prompt(prefix: str, unit: str, pass_name: str, lenses: tuple[str, 
         "\"requirement_source\":\"path\",\"requirement_quote\":\"exact quote\",\"scope_link\":\"applies now\","
         "\"location\":\"path:line\",\"claim\":\"allegation\",\"failure_scenario\":\"scenario\","
         "\"causal_path\":\"path\",\"evidence\":\"evidence\",\"assumptions\":[],\"context_requests\":[]}],"
-        "\"uncertainties\":[]} with pass exactly " + pass_name + "."
+        "\"uncertainties\":[],\"evidence_requests\":[]} with pass exactly " + pass_name + "."
     )
 
 
@@ -1748,6 +1885,16 @@ def write_telemetry(root: Path, telemetry: Telemetry, final: dict[str, Any],
         # Persist the complete private verdict so an inconclusive gate can be repaired.
         "final_result": final,
         "elapsed_seconds": round(time.monotonic() - telemetry.started, 3),
+        "total_local_bytes": telemetry.total_local_bytes,
+        "indexed_file_count": telemetry.indexed_file_count,
+        "packet_bytes": telemetry.packet_bytes,
+        "context_request_bytes": telemetry.context_request_bytes,
+        "anomaly_count": telemetry.anomaly_count,
+        "unique_result_group_count": telemetry.unique_result_group_count,
+        "artifact_slice_count": telemetry.artifact_slice_count,
+        "artifact_slice_bytes": telemetry.artifact_slice_bytes,
+        "logical_api_calls": telemetry.calls,
+        "physical_api_calls": telemetry.calls,
     }
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S.%fZ")
     path = directory / f"telemetry-{timestamp}-{uuid.uuid4().hex}.json"
@@ -1943,6 +2090,8 @@ def main() -> int:
     review.add_argument("--extraction-manifest")
     review.add_argument("--run-id")
     review.add_argument("--build-id")
+    review.add_argument("--evidence-root")
+    review.add_argument("--publication-id")
     review.add_argument("--deadline-seconds", type=float, default=DEFAULT_REVIEW_DEADLINE_SECONDS)
     health = sub.add_parser("health-check")
     health.add_argument("--requirements", required=True)
@@ -1986,16 +2135,20 @@ def main() -> int:
                     requirements.append(dict(private_scope))
             packet = code_packet(root, args.base, args.head)
         else:
-            if not args.path:
-                raise ReviewError(f"{args.type} requires at least one --path")
             if args.type == "TEST_ARTIFACT" and (not args.run_id or not args.build_id):
                 raise ReviewError("TEST_ARTIFACT requires --run-id and --build-id")
             scope = load_cr_scope(root, args.cr, args.scope_file) if args.cr else {
                 "cr_number": "", "title": f"{args.type} independent review", "status": "review"
             }
-            snapshot_context = ({"run_id": args.run_id, "build_id": args.build_id}
-                                if args.type == "TEST_ARTIFACT" else None)
-            packet = file_packet(root, args.path, args.extraction_manifest, snapshot_context)
+            if args.type == "TEST_ARTIFACT":
+                if not args.evidence_root:
+                    raise ReviewError("TEST_ARTIFACT requires --evidence-root for complete evidence binding")
+                packet = test_artifact_packet(root, args.evidence_root, args.run_id, args.build_id,
+                                              args.publication_id)
+            else:
+                if not args.path:
+                    raise ReviewError(f"{args.type} requires at least one --path")
+                packet = file_packet(root, args.path, args.extraction_manifest)
         requirements_hash = requirements_manifest_hash(requirements)
         scope_hash = scope_manifest_hash(scope)
         snapshot_id = packet.snapshot_id
@@ -2003,6 +2156,13 @@ def main() -> int:
         if args.prior_findings:
             prior = validate_prior(json.loads(resolve_inside(root, args.prior_findings).read_text(encoding="utf-8")))
         telemetry = Telemetry(args.type, packet.snapshot_id, scope.get("cr_number", ""), packet.packet_manifest_hash)
+        telemetry.total_local_bytes = sum(int(item.get("size", 0)) for item in packet.manifest)
+        telemetry.indexed_file_count = len(packet.evidence_index or packet.manifest)
+        telemetry.packet_bytes = sum(len(content.encode()) for _, content in packet.records)
+        if args.type == "TEST_ARTIFACT":
+            index = json.loads(dict(packet.records)["test-evidence-index.json"])
+            telemetry.anomaly_count = len(index.get("anomalies", []))
+            telemetry.unique_result_group_count = len(index.get("result_groups", []))
         lock_path = acquire_review_lock(root, packet.snapshot_id, args.type, telemetry.cr_number, args.deadline_seconds)
         telemetry.status_path = lock_path
         update_review_lock(lock_path, telemetry, "packet-prepared", "RUNNING")

@@ -788,6 +788,42 @@ class GateTests(unittest.TestCase):
         self.assertEqual(valid, [])
         self.assertEqual(rejected[0]["reason"], "test-artifact candidate category is invalid")
 
+    def test_complete_artifact_root_is_indexed_and_slice_is_hash_bound(self):
+        with private_tempdir() as directory:
+            root = Path(directory)
+            lanes = [f"lane-{index:02d}" for index in range(20)]
+            workflow = "\n".join(f"          - id: {lane}" for lane in lanes)
+            (root / ".github/workflows").mkdir(parents=True)
+            (root / ".github/workflows/platform-smoke.yml").write_text(workflow, encoding="utf-8")
+            for lane in lanes:
+                target = root / "test-artefacts" / "run" / f"platform-smoke-{lane}" / "result-manifest.json"
+                target.parent.mkdir(parents=True)
+                target.write_text('{"status":"passed"}\n', encoding="utf-8")
+            packet = gate.test_artifact_packet(root, "test-artefacts/run", "run-1", "build-1")
+            self.assertFalse(packet.insufficient_evidence)
+            self.assertEqual(len(packet.evidence_index), 20)
+            request = {"type": "ARTIFACT_SLICE", "path": "platform-smoke-lane-00/result-manifest.json",
+                       "line_start": 1, "line_end": 1}
+            resolved = gate.resolve_context_request(root, packet, request)
+            self.assertEqual(resolved["status"], "RESOLVED")
+            target = root / "test-artefacts/run/platform-smoke-lane-00/result-manifest.json"
+            target.write_text('{"status":"failed"}\n', encoding="utf-8")
+            self.assertEqual(gate.resolve_context_request(root, packet, request)["status"], "UNRESOLVED")
+
+    def test_artifact_root_rejects_missing_matrix_lane(self):
+        with private_tempdir() as directory:
+            root = Path(directory)
+            lanes = [f"lane-{index:02d}" for index in range(20)]
+            (root / ".github/workflows").mkdir(parents=True)
+            (root / ".github/workflows/platform-smoke.yml").write_text(
+                "\n".join(f"          - id: {lane}" for lane in lanes), encoding="utf-8")
+            for lane in lanes[:-1]:
+                target = root / "evidence" / f"platform-smoke-{lane}" / "result-manifest.json"
+                target.parent.mkdir(parents=True)
+                target.write_text('{"status":"passed"}\n', encoding="utf-8")
+            packet = gate.test_artifact_packet(root, "evidence", "run-1", "build-1")
+            self.assertTrue(packet.insufficient_evidence)
+
     def test_binary_and_image_artifacts_are_not_fake_text(self):
         with private_tempdir() as directory:
             root = Path(directory)
