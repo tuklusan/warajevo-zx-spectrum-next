@@ -3459,7 +3459,7 @@
     {
       "cr_number": "CR-0331",
       "title": "Redesign external review packets around deterministic evidence indexes",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "reviewer_detour_after_cr_0330",
       "blocking": true,
@@ -3475,7 +3475,7 @@
         "tests/test_review_gate.py",
         "operator-approved external review redesign directive"
       ],
-      "notes": "Reviewer-gate detour opened after the CR-0330 checkpoint. Product architecture work is paused until the reviewer redesign is validated and published."
+      "notes": "Closed on 2026-09-09 at implementation commit fda9f3e after bootstrap CODE PASS, normal CODE PASS, documentation PASS, and 83/83 approved remote reviewer regression tests. Product matrix was not rerun because protected product and harness behavior were unchanged."
     }
   ]
 }
