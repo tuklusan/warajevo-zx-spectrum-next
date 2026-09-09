@@ -3730,10 +3730,10 @@
     {
       "cr_number": "CR-0347",
       "title": "Allow slow reviewer calls within the review deadline",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "workflow_review_transport_timeout_before_product_queue",
-      "blocking": true,
+      "blocking": false,
       "source_authority": [
         "design/cr-preflight/CR-0347.md",
         "design/review-gate.md",
@@ -3742,12 +3742,12 @@
         "tools/reviewer/legacy_bootstrap_gate.py",
         "tests/test_review_gate.py"
       ],
-      "notes": "Opened after CR-0344 telemetry showed every provider attempt terminating at the obsolete 180-second transport timeout. Align the request ceiling with the one-hour review deadline without changing retry, lock, packet, harness, wrapper, or product behavior."
+      "notes": "Closed after the request ceiling was aligned with the one-hour review deadline while preserving bounded remaining-time enforcement, retry behavior, locks, packets, harnesses, wrappers, and product behavior. Current v4 CODE review passed with zero findings; remote Linux reviewer regression passed 27/27. No product matrix was required for this workflow-only change."
     },
     {
       "cr_number": "CR-0348",
       "title": "Retire inactive Windows 11 and Intel Mac local lab registry entries",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "low",
       "execution_order": "workflow_local_topology_retirement_before_product_queue",
       "blocking": false,
@@ -3759,7 +3759,7 @@
         ".github/workflows/platform-smoke.yml",
         "operator topology-retirement directive"
       ],
-      "notes": "Retire only the active local registry entries for windows-11-laptop and macos-bigsur-lab. Preserve historical execution evidence and leave the hosted 20-lane workflow and publication expected set unchanged."
+      "notes": "Closed after retiring only the active local registry entries for windows-11-laptop and macos-bigsur-lab. Historical execution evidence, the hosted 20-lane workflow, and its publication expected set remain unchanged. Remote static/reviewer validation confirms the reconciled state; no product matrix was required for this topology-only change."
     },
     {
       "cr_number": "CR-0349",
