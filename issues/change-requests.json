@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 341,
+  "next_cr_number": 342,
   "status_values": [
     "open",
     "in_progress",
@@ -3622,6 +3622,25 @@
         "hosted matrix run 34341351580"
       ],
       "notes": "Closed after explicit UTF-8 fixture writes and disabled Git line-ending conversion. CODE and DOCUMENTATION reviews passed with zero findings; remote Linux 44/44 passed; hosted matrix 34344455194 passed all 20 lanes and publication evidence inspection."
+    },
+    {
+      "cr_number": "CR-0341",
+      "title": "Reconcile Phase 12F display settings with shared host surface",
+      "status": "closed",
+      "priority": "medium",
+      "execution_order": "architecture_2_phase_12f",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0341.md",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md",
+        "design/wzsn-architectures-1-2-developer-tasks.md task 331",
+        "design/cr-preflight/CR-0281.md",
+        "design/cr-preflight/CR-0279.md",
+        "src/app/wz_host_scaling.h",
+        "src/app/wz_host_presentation.h",
+        "tests/wz_host_presentation_tests.c"
+      ],
+      "notes": "Closed as already satisfied by the shared host-only Display settings implementation and fullscreen boundary from CR-0281 and CR-0279. Reused their exact remote/hosted/publication evidence; no new code, harness, wrapper, local build, or local test."
     }
   ]
 }
