@@ -3565,7 +3565,7 @@
     {
       "cr_number": "CR-0337",
       "title": "Complete media-manager/tools acceptance subset",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "medium",
       "execution_order": "architecture_2_phase_12k_acceptance",
       "blocking": false,
@@ -3576,7 +3576,7 @@
         "design/phase12-media-tools-regression-coverage.md",
         "reference/"
       ],
-      "notes": "Acceptance slice opened after permanent requirement-linked review-gate enforcement; no product matrix rerun yet."
+      "notes": "Closed after ledger zero-gap reconciliation, remote Linux acceptance evidence, and hosted matrix 34344455194: all 20 lanes and publication evidence inspection passed on corrected snapshot 6170670; traces inspected and screenshots correctly marked unsupported for headless lanes."
     },
     {
       "cr_number": "CR-0338",
