@@ -35,11 +35,15 @@ typedef struct {
     const char* warning;
     const char* reason;
     wz_compatibility_availability_t availability;
+    bool requires_loss_disclosure;
 } wz_compatibility_tool_t;
 
 size_t wz_compatibility_tools_count(void);
 const wz_compatibility_tool_t* wz_compatibility_tools_at(size_t index);
 bool wz_compatibility_tools_is_available(size_t index, const char** reason);
+bool wz_compatibility_tools_loss_disclosure(
+    size_t index,
+    const char** warning);
 const char* wz_compatibility_tools_command_id(void);
 wz_file_route_t wz_compatibility_tools_route_for_format(
     const char* format,

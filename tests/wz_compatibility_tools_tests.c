@@ -32,9 +32,16 @@ int main(void)
         if (tool == 0 || tool->availability != WZ_COMPATIBILITY_LATER ||
             wz_compatibility_tools_is_available(index, &reason) ||
             reason == 0 || strcmp(reason, "conversion-not-yet-implemented") != 0 ||
-            tool->source_format[0] == '\0' || tool->destination_format[0] == '\0') {
+            tool->source_format[0] == '\0' || tool->destination_format[0] == '\0' ||
+            !wz_compatibility_tools_loss_disclosure(index, &reason) ||
+            reason == 0 || reason[0] == '\0') {
             return 1;
         }
+    }
+    if (wz_compatibility_tools_loss_disclosure(0u, &reason) || reason == 0 ||
+        reason[0] != '\0' || wz_compatibility_tools_loss_disclosure(6u, &reason) ||
+        reason == 0 || strcmp(reason, "unknown-compatibility-tool") != 0) {
+        return 1;
     }
     if (wz_compatibility_tools_is_available(6u, &reason) || reason == 0 ||
         strcmp(reason, "unknown-compatibility-tool") != 0) {

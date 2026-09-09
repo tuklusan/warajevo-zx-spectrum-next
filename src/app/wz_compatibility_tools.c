@@ -12,17 +12,22 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 static const wz_compatibility_tool_t tools[WZ_COMPATIBILITY_TOOL_COUNT] = {
     {"tools.compatibility", "Compatibility Tools", "", "", "", 0,
-     WZ_COMPATIBILITY_AVAILABLE},
-    {"tools.compatibility.tape", "Tape Converter", "tape", "tape", "", 
-     "conversion-not-yet-implemented", WZ_COMPATIBILITY_LATER},
-    {"tools.compatibility.snapshot", "Snapshot Converter", "snapshot", "snapshot", "",
-     "conversion-not-yet-implemented", WZ_COMPATIBILITY_LATER},
-    {"tools.compatibility.spectrum_data", "Spectrum Data Converter", "spectrum-data", "text-or-spectrum-data", "",
-     "conversion-not-yet-implemented", WZ_COMPATIBILITY_LATER},
-    {"tools.compatibility.microdrive", "Microdrive Tools", "MDR", "MDR", "",
-     "conversion-not-yet-implemented", WZ_COMPATIBILITY_LATER},
-    {"tools.compatibility.database", "Legacy Database Converter", "legacy-database", "portable-data", "",
-     "conversion-not-yet-implemented", WZ_COMPATIBILITY_LATER}
+     WZ_COMPATIBILITY_AVAILABLE, false},
+    {"tools.compatibility.tape", "Tape Converter", "tape", "tape",
+     "Conversion may discard or normalize source-format information.",
+     "conversion-not-yet-implemented", WZ_COMPATIBILITY_LATER, true},
+    {"tools.compatibility.snapshot", "Snapshot Converter", "snapshot", "snapshot",
+     "Conversion may discard machine-state information that the destination cannot represent.",
+     "conversion-not-yet-implemented", WZ_COMPATIBILITY_LATER, true},
+    {"tools.compatibility.spectrum_data", "Spectrum Data Converter", "spectrum-data", "text-or-spectrum-data",
+     "Conversion may discard source-format metadata or machine-visible information.",
+     "conversion-not-yet-implemented", WZ_COMPATIBILITY_LATER, true},
+    {"tools.compatibility.microdrive", "Microdrive Tools", "MDR", "MDR",
+     "Conversion may discard or normalize cartridge data and metadata.",
+     "conversion-not-yet-implemented", WZ_COMPATIBILITY_LATER, true},
+    {"tools.compatibility.database", "Legacy Database Converter", "legacy-database", "portable-data",
+     "Conversion may discard legacy database fields that the destination cannot represent.",
+     "conversion-not-yet-implemented", WZ_COMPATIBILITY_LATER, true}
 };
 
 size_t wz_compatibility_tools_count(void)
@@ -43,6 +48,16 @@ bool wz_compatibility_tools_is_available(size_t index, const char** reason)
         *reason = tool == 0 ? "unknown-compatibility-tool" : tool->reason;
     }
     return tool != 0 && tool->availability == WZ_COMPATIBILITY_AVAILABLE;
+}
+
+bool wz_compatibility_tools_loss_disclosure(size_t index, const char** warning)
+{
+    const wz_compatibility_tool_t* tool = wz_compatibility_tools_at(index);
+
+    if (warning != 0) {
+        *warning = tool == 0 ? "unknown-compatibility-tool" : tool->warning;
+    }
+    return tool != 0 && tool->requires_loss_disclosure;
 }
 
 const char* wz_compatibility_tools_command_id(void)
