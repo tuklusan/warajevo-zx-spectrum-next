@@ -3611,7 +3611,7 @@
     {
       "cr_number": "CR-0340",
       "title": "Make review fixture Git object hashes portable on Windows",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "workflow_review_gate_before_product_queue",
       "blocking": true,
@@ -3621,7 +3621,7 @@
         "tests/test_review_gate.py",
         "hosted matrix run 34341351580"
       ],
-      "notes": "Windows hosted lanes exposed implicit line-ending conversion in the GitFixture; the focused fixture correction must be reviewed and remotely validated before CR-0337 acceptance continues."
+      "notes": "Closed after explicit UTF-8 fixture writes and disabled Git line-ending conversion. CODE and DOCUMENTATION reviews passed with zero findings; remote Linux 44/44 passed; hosted matrix 34344455194 passed all 20 lanes and publication evidence inspection."
     }
   ]
 }
