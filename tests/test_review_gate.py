@@ -1217,6 +1217,13 @@ class GateTests(unittest.TestCase):
         self.assertIn('"candidates":[]', prompt)
         self.assertIn('"evidence_requests":[]', prompt)
 
+    def test_discovery_response_normalizes_equivalent_provider_envelope(self):
+        value = gate.normalize_discovery_response(
+            {"phase": "CODE-DISCOVERY", "findings": [], "uncertainties": [], "evidence_requests": []},
+            "CODE-DISCOVERY",
+        )
+        self.assertTrue(gate.discovery_schema_valid(value, "CODE-DISCOVERY"))
+
     def test_external_review_data_policy_denies_credentials(self):
         for path in ("test-artefacts/remote-machine-secrets.local.txt", ".env.local", "keys/reviewer.pem"):
             with self.subTest(path=path), self.assertRaises(gate.ReviewError):

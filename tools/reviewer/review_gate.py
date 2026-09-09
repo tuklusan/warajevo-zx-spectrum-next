@@ -1082,8 +1082,12 @@ def request_validated(client: CodeReviewerClient, system: str, prompt: str, tele
                       deadline: ReviewDeadline | None = None) -> dict[str, Any]:
     request_prompt = prompt
     for repair_attempt in range(3):
-        value = client.request(system, request_prompt, telemetry, thinking, reasoning_effort,
-                               max_tokens, label, deadline)
+        value = normalize_discovery_response(
+            client.request(system, request_prompt, telemetry, thinking, reasoning_effort,
+                           max_tokens, label, deadline), label
+        ) if label in DISCOVERY_PASSES.values() else client.request(
+            system, request_prompt, telemetry, thinking, reasoning_effort, max_tokens, label, deadline
+        )
         if validator(value):
             return value
         if repair_attempt < 2:
@@ -1093,6 +1097,20 @@ def request_validated(client: CodeReviewerClient, system: str, prompt: str, tele
                 f"Schema repair attempt {repair_attempt + 1} of 2."
             )
     raise OutputError(f"schema-invalid response after bounded repairs: {label}")
+
+
+def normalize_discovery_response(value: Any, expected_pass: str) -> Any:
+    """Normalize harmless provider envelope variations without weakening evidence checks."""
+    if not isinstance(value, dict):
+        return value
+    normalized = dict(value)
+    if "pass" not in normalized and normalized.get("phase") == expected_pass:
+        normalized["pass"] = expected_pass
+    if "candidates" not in normalized and isinstance(normalized.get("findings"), list):
+        normalized["candidates"] = normalized["findings"]
+    if "review_complete" not in normalized and "candidates" in normalized:
+        normalized["review_complete"] = True
+    return normalized
 
 
 CANDIDATE_FIELDS = (
