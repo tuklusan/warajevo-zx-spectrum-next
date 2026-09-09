@@ -1137,7 +1137,7 @@ class GateTests(unittest.TestCase):
             stored = json.loads(receipt.read_text(encoding="utf-8"))
             self.assertEqual(stored["snapshot_id"], "snap")
             self.assertEqual(stored["packet_manifest_hash"], "packet")
-            self.assertEqual(stored["review_protocol_version"], 2)
+            self.assertEqual(stored["review_protocol_version"], gate.PROTOCOL_VERSION)
             self.assertEqual(stored["scope_manifest_hash"], "scope")
             self.assertEqual(stored["requirement_sources"][0]["source"], "design/requirement.md")
 
