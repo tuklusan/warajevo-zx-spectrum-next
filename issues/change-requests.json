@@ -3399,7 +3399,7 @@
     {
       "cr_number": "CR-0328",
       "title": "Implement Compatibility Tools container and availability rules",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "medium",
       "execution_order": "architecture_2_phase_12f",
       "blocking": false,
@@ -3414,7 +3414,7 @@
         "src/app/wz_ui_layout.c",
         "reference/Warajevo 2.50 conversion and menu routines"
       ],
-      "notes": "Opened after CR-0327 closure for Phase-12 UI task 324; preflight freezes the Compatibility Tools presentation and availability contract without falsely exposing unimplemented conversions."
+      "notes": "Closed after implementation 1fa6c15, exact CODE/bootstrap/documentation review PASS, serial remote validation with retained platform diagnostics, hosted matrix run 34291127654 green across all 20 lanes, and manifest/evidence-inspection TEST_ARTIFACT reviews PASS."
     }
   ]
 }
