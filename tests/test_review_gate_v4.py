@@ -134,7 +134,7 @@ class GateV4Tests(unittest.TestCase):
 
  def test_secret_shaped_content_is_blocked(self):
   with tempfile.TemporaryDirectory() as d:
-   root=Path(d); (root/'x.c').write_text('const char*x="ghp_ABCDEFGHIJKLMNOPQRSTUVWXYZ123456";')
+   root=Path(d); token='gh'+'p_'+'ABCDEFGHIJKLMNOPQRSTUVWXYZ123456'; (root/'x.c').write_text(f'const char*x="{token}";')
    with self.assertRaises(gate.ReviewError): gate.enforce_external_review_content_policy(root,'x.c',(root/'x.c').read_bytes())
 
  def test_source_line_zero_never_valid(self):
