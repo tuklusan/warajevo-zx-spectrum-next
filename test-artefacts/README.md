@@ -133,10 +133,11 @@ When hosted-runner logs, screenshots, or packaged artefacts are pulled back to
 this machine for inspection, they must also be stored only under
 `test-artefacts/`.
 
-Hosted-runner waiting is fail-closed and terminal-state based. Start one
-validated run for the exact published commit, set `fail-fast: false`, and wait
-for every configured lane, including lanes that are queued or slow. Do not
-cancel, replace, or label a run failed because a lane has not started yet.
+Hosted publication acceptance is exact-matrix based: all 20 configured lane IDs
+must reach terminal `success` for the exact commit. Hosted-runner waiting is
+fail-closed and terminal-state based. Start one validated dispatch for the exact
+published commit, set `fail-fast: false`, and wait for every configured lane,
+including lanes that are queued or slow. Do not cancel or replace a live run.
 Only GitHub's terminal job conclusions may classify a lane, and the
 publication gate must inspect all expected lanes and the exact commit SHA.
 Every configured hosted macOS lane should be attempted. The hosted acceptance
