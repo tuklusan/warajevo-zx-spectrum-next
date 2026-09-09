@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 345,
+  "next_cr_number": 346,
   "status_values": [
     "open",
     "in_progress",
@@ -3694,6 +3694,22 @@
         "reference/rom-disassemblies"
       ],
       "notes": "Opened after the Phase 12F scan found no existing ROM/Firmware identity, hash, licensing, or settings boundary. This is the next implementation scope; no harness, wrapper, or Architecture 3 work is in scope."
+    },
+    {
+      "cr_number": "CR-0345",
+      "title": "Stabilize deterministic structured-review requests",
+      "status": "in_progress",
+      "priority": "high",
+      "execution_order": "workflow_review_gate_before_product_queue",
+      "blocking": true,
+      "source_authority": [
+        "design/cr-preflight/CR-0345.md",
+        "design/review-gate.md",
+        "tools/reviewer/review_gate.py",
+        "tests/test_review_gate.py",
+        "NVIDIA NIM model-specific structured-output guidance"
+      ],
+      "notes": "Opened after repeated CR-0344 CODE-DISCOVERY schema failures despite parseable API responses. This workflow correction adds deterministic structured-request sampling only; it does not change packet scope, schema validation, retries, locks, harnesses, wrappers, or product behavior."
     }
   ]
 }
