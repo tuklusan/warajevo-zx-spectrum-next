@@ -394,6 +394,12 @@ add_executable(wz_host_presentation_tests
 target_link_libraries(wz_host_presentation_tests PRIVATE wz_core)
 add_test(NAME wz_host_presentation_tests COMMAND wz_host_presentation_tests)
 
+add_executable(wz_rom_settings_tests
+    tests/wz_rom_settings_tests.c
+    src/app/wz_rom_settings.c)
+target_link_libraries(wz_rom_settings_tests PRIVATE wz_core)
+add_test(NAME wz_rom_settings_tests COMMAND wz_rom_settings_tests)
+
 add_executable(
     wz_host_output_tests
     tests/wz_host_output_tests.c
