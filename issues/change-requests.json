@@ -3440,7 +3440,7 @@
     {
       "cr_number": "CR-0330",
       "title": "Require clear loss disclosure before lossy conversions",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "low",
       "execution_order": "architecture_2_phase_12h",
       "blocking": false,
@@ -3454,7 +3454,7 @@
         "src/app/wz_compatibility_tools.c",
         "reference/Warajevo 2.50 conversion menu and routines"
       ],
-      "notes": "Opened after CR-0329 closure for Phase-12 UI task 326; conversion workflows must disclose possible loss before execution."
+      "notes": "Closed after implementation dc5d7bd. CODE/bootstrap, remote/hosted validation, evidence verification, complete indexed TEST_ARTIFACT review for run 34313092125, and final documentation review passed. Intel macOS retained its documented environmental limitation."
     },
     {
       "cr_number": "CR-0331",
