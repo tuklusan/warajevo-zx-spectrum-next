@@ -983,6 +983,7 @@ class CodeReviewerClient:
             "stream": False,
             "response_format": {"type": "json_object"},
             "max_tokens": max_tokens,
+            "temperature": 0.0,
             "chat_template_kwargs": {"enable_thinking": thinking == "enabled"},
         }
         if reasoning_effort is not None:

@@ -214,7 +214,7 @@ class GateTests(unittest.TestCase):
         self.assertEqual(captured["reasoning_budget"], 12345)
         self.assertEqual(captured["max_tokens"], 12345)
         self.assertEqual(captured["response_format"], {"type": "json_object"})
-        self.assertNotIn("temperature", captured)
+        self.assertEqual(captured["temperature"], 0.0)
         self.assertNotIn("top_p", captured)
         captured.clear()
         gate.CodeReviewerClient("secret", opener).request(
