@@ -560,7 +560,7 @@ def test_artifact_packet(root: Path, evidence_root: str, run_id: str, build_id: 
                "index_sha256": index_hash}
     records.append(("test-evidence-index.json", canonical_json(context)))
     insufficient = ["complete canonical 20-lane evidence set is not available"] if missing_lanes or extra_lanes else []
-    packet = ReviewPacket(f"test:{index_hash}", index_hash, records, files,
+    packet = ReviewPacket(f"test:{index_hash}", index_hash, records, [context],
                           insufficient_evidence=insufficient, evidence_index=files,
                           evidence_root=root_path.relative_to(root).as_posix())
     return packet
@@ -2156,7 +2156,8 @@ def main() -> int:
         if args.prior_findings:
             prior = validate_prior(json.loads(resolve_inside(root, args.prior_findings).read_text(encoding="utf-8")))
         telemetry = Telemetry(args.type, packet.snapshot_id, scope.get("cr_number", ""), packet.packet_manifest_hash)
-        telemetry.total_local_bytes = sum(int(item.get("size", 0)) for item in packet.manifest)
+        telemetry.total_local_bytes = sum(int(item.get("size", 0)) for item in
+                                          (packet.evidence_index or packet.manifest))
         telemetry.indexed_file_count = len(packet.evidence_index or packet.manifest)
         telemetry.packet_bytes = sum(len(content.encode()) for _, content in packet.records)
         if args.type == "TEST_ARTIFACT":
