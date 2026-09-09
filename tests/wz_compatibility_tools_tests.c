@@ -40,6 +40,23 @@ int main(void)
         strcmp(reason, "unknown-compatibility-tool") != 0) {
         return 1;
     }
+    if (wz_compatibility_tools_route_for_format("z80", &reason) !=
+            WZ_FILE_ROUTE_NATIVE_LOAD ||
+        strcmp(reason, "native-load-run") != 0 ||
+        wz_compatibility_tools_route_for_format("trd", &reason) !=
+            WZ_FILE_ROUTE_EXPLICIT_CONVERSION ||
+        strcmp(reason, "explicit-conversion-required") != 0 ||
+        wz_compatibility_tools_route_for_format("xyz", &reason) !=
+            WZ_FILE_ROUTE_UNSUPPORTED ||
+        strcmp(reason, "unsupported-format") != 0 ||
+        wz_compatibility_tools_route_for_format(0, &reason) !=
+            WZ_FILE_ROUTE_UNKNOWN ||
+        strcmp(reason, "unknown-format") != 0 ||
+        strcmp(wz_compatibility_tools_route_name(WZ_FILE_ROUTE_NATIVE_LOAD),
+               "native-load-run") != 0 ||
+        wz_compatibility_tools_route_name((wz_file_route_t)99) == 0) {
+        return 1;
+    }
     puts("wz_compatibility_tools contract passed");
     return 0;
 }

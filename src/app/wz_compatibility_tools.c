@@ -8,6 +8,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "app/wz_compatibility_tools.h"
 
+#include <string.h>
+
 static const wz_compatibility_tool_t tools[WZ_COMPATIBILITY_TOOL_COUNT] = {
     {"tools.compatibility", "Compatibility Tools", "", "", "", 0,
      WZ_COMPATIBILITY_AVAILABLE},
@@ -46,4 +48,60 @@ bool wz_compatibility_tools_is_available(size_t index, const char** reason)
 const char* wz_compatibility_tools_command_id(void)
 {
     return "tools.compatibility";
+}
+
+static bool matches(const char* format, const char* value)
+{
+    return format != 0 && value != 0 && strcmp(format, value) == 0;
+}
+
+wz_file_route_t wz_compatibility_tools_route_for_format(
+    const char* format,
+    const char** reason)
+{
+    static const char* native_formats[] = {"tap", "tzx", "wav", "sna", "z80", "mdr"};
+    static const char* conversion_formats[] = {"trd", "dck", "snp", "spc", "ltp", "blk"};
+    size_t index;
+
+    if (reason != 0) {
+        *reason = "unknown-format";
+    }
+    if (format == 0 || *format == '\0') {
+        return WZ_FILE_ROUTE_UNKNOWN;
+    }
+    for (index = 0u; index < sizeof(native_formats) / sizeof(native_formats[0]); ++index) {
+        if (matches(format, native_formats[index])) {
+            if (reason != 0) {
+                *reason = "native-load-run";
+            }
+            return WZ_FILE_ROUTE_NATIVE_LOAD;
+        }
+    }
+    for (index = 0u; index < sizeof(conversion_formats) / sizeof(conversion_formats[0]); ++index) {
+        if (matches(format, conversion_formats[index])) {
+            if (reason != 0) {
+                *reason = "explicit-conversion-required";
+            }
+            return WZ_FILE_ROUTE_EXPLICIT_CONVERSION;
+        }
+    }
+    if (reason != 0) {
+        *reason = "unsupported-format";
+    }
+    return WZ_FILE_ROUTE_UNSUPPORTED;
+}
+
+const char* wz_compatibility_tools_route_name(wz_file_route_t route)
+{
+    switch (route) {
+    case WZ_FILE_ROUTE_NATIVE_LOAD:
+        return "native-load-run";
+    case WZ_FILE_ROUTE_EXPLICIT_CONVERSION:
+        return "explicit-conversion";
+    case WZ_FILE_ROUTE_UNSUPPORTED:
+        return "unsupported";
+    case WZ_FILE_ROUTE_UNKNOWN:
+    default:
+        return "unknown";
+    }
 }

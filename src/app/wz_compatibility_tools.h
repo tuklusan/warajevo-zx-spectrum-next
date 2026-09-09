@@ -20,6 +20,13 @@ typedef enum {
     WZ_COMPATIBILITY_UNAVAILABLE
 } wz_compatibility_availability_t;
 
+typedef enum {
+    WZ_FILE_ROUTE_UNKNOWN = 0,
+    WZ_FILE_ROUTE_NATIVE_LOAD,
+    WZ_FILE_ROUTE_EXPLICIT_CONVERSION,
+    WZ_FILE_ROUTE_UNSUPPORTED
+} wz_file_route_t;
+
 typedef struct {
     const char* id;
     const char* label;
@@ -34,5 +41,9 @@ size_t wz_compatibility_tools_count(void);
 const wz_compatibility_tool_t* wz_compatibility_tools_at(size_t index);
 bool wz_compatibility_tools_is_available(size_t index, const char** reason);
 const char* wz_compatibility_tools_command_id(void);
+wz_file_route_t wz_compatibility_tools_route_for_format(
+    const char* format,
+    const char** reason);
+const char* wz_compatibility_tools_route_name(wz_file_route_t route);
 
 #endif

@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 329,
+  "next_cr_number": 330,
   "status_values": [
     "open",
     "in_progress",
@@ -3415,6 +3415,27 @@
         "reference/Warajevo 2.50 conversion and menu routines"
       ],
       "notes": "Closed after implementation 1fa6c15, exact CODE/bootstrap/documentation review PASS, serial remote validation with retained platform diagnostics, hosted matrix run 34291127654 green across all 20 lanes, and manifest/evidence-inspection TEST_ARTIFACT reviews PASS."
+    },
+    {
+      "cr_number": "CR-0329",
+      "title": "Distinguish native load/run from explicit conversion workflows",
+      "status": "in_progress",
+      "priority": "medium",
+      "execution_order": "architecture_2_phase_12g",
+      "blocking": false,
+      "source_authority": [
+        "design/cr-preflight/CR-0329.md",
+        "design/warajevo-zx-spectrum-next-ui-architecture.md sections 7.1, 8.1, 12.3, 15.5, 17, 20.6-20.18, and 22.2",
+        "design/warajevo-zx-spectrum-next-architecture.md sections 2.5, 23, 28.7, 41, 44, 49.1, and 49.2",
+        "design/media-format-support.md",
+        "design/migration-ledger.md",
+        "src/app/wz_file_open_run.h",
+        "src/app/wz_file_open_run.c",
+        "src/app/wz_compatibility_tools.h",
+        "src/app/wz_compatibility_tools.c",
+        "reference/Warajevo 2.50 file dispatch and conversion routines"
+      ],
+      "notes": "Opened after CR-0328 closure for Phase-12 UI task 325; native media opening remains separate from explicit preservation conversion."
     }
   ]
 }
