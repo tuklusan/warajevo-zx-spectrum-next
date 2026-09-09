@@ -3581,7 +3581,7 @@
     {
       "cr_number": "CR-0338",
       "title": "Bound review diffs to mapped code and document ranges",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "workflow_review_scope_before_product_queue",
       "blocking": true,
@@ -3591,7 +3591,7 @@
         "tools/reviewer/review_gate.py",
         "tests/test_review_gate.py"
       ],
-      "notes": "Corrects linked packet scope after OutputError exposed whole-file diff transmission."
+      "notes": "Closed after focused linked CODE and DOCUMENTATION PASS with zero confirmed findings and remote reviewer regression 87/87 on bfb7a05."
     }
   ]
 }
