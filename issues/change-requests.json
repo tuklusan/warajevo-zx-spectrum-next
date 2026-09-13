@@ -3682,7 +3682,7 @@
     {
       "cr_number": "CR-0344",
       "title": "Implement explicit ROM/Firmware identity boundary",
-      "status": "in_progress",
+      "status": "paused",
       "priority": "high",
       "execution_order": "architecture_2_phase_12f",
       "blocking": true,
