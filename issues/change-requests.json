@@ -3779,19 +3779,20 @@
     },
     {
       "cr_number": "CR-0350",
-      "title": "Reverify preserved certified review-gate v4 package",
-      "status": "in_progress",
+      "title": "Certify current-baseline review-gate recovery package",
+      "status": "closed",
       "priority": "high",
       "execution_order": "out_of_band_before_architecture_queue",
       "blocking": true,
       "source_authority": [
         "design/cr-preflight/CR-0350.md",
         "design/review-gate-packages/WZXN-REVIEW-GATE-V4-ZERO-GAP-DEVELOPER-PACKAGE.zip",
+        "design/review-gate-packages/WZXN-REVIEW-GATE-V4-CURRENT-BASELINE-RECOVERY-CR-0350.zip",
         "design/review-gate.md",
         "WORKFLOW.md",
         "operator package reinstallation and verification directive"
       ],
-      "notes": "The supplied ZIP is byte-identical to the already tracked CR-0349 package. Preserve that object, inspect its complete installation and verification instructions, and prove the current gate state. The installer is certified for a pre-v4 baseline and must fail closed instead of overwriting later protected fixes. Architecture development is temporarily paused."
+      "notes": "The supplied ZIP is byte-identical to the tracked CR-0349 package and its old installer correctly refused the changed baseline. A separate recovery ZIP snapshots 23 exact protected Git objects at tagged base 32582b1; archive and installer verify-only checks passed without mutation. Protected bytes are identical to the earlier remote Linux 27/27 regression baseline. This certifies a current-baseline recovery snapshot, not a fresh functional zero-gap redesign. CR-0344 worktree edits were left untouched."
     }
   ]
 }
