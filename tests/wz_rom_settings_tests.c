@@ -35,6 +35,15 @@ int main(void)
         fputs("ROM settings transaction contract failed\n", stderr);
         return 1;
     }
+    if (wz_rom_settings_select(&settings, &profile, rom, sizeof(rom), true) !=
+            WZ_RESULT_OK ||
+        wz_rom_settings_select(&settings, &profile, rom, sizeof(rom) - 1u, true) !=
+            WZ_RESULT_ROM_IDENTITY_MISMATCH ||
+        wz_rom_settings_machine_kind(&settings) != profile.kind ||
+        wz_rom_settings_identity(&settings) != profile.expected_rom_identity) {
+        fputs("ROM settings rejected selection mutated accepted identity\n", stderr);
+        return 1;
+    }
     puts("ROM settings transaction contract passed");
     return 0;
 }
