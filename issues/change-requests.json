@@ -8,7 +8,7 @@
   ],
   "schema_version": 1,
   "generated_on": "2026-08-09",
-  "next_cr_number": 350,
+  "next_cr_number": 351,
   "status_values": [
     "open",
     "in_progress",
@@ -3776,6 +3776,22 @@
         "operator-authorized protocol-v4 package directive"
       ],
       "notes": "Closed after certified v4 installation and transport debugging. Fixed the independent bootstrap TLS trust-store path, removed the NVIDIA V2-rejected reasoning_budget wire field from both clients, and formalized packet_audit_required fail-closed handling for output/schema/envelope failures. Bootstrap CODE review passed with zero findings on d3e1a8a; remote Linux v4 regression passed 27/27 and remote static validator passed. Architecture development may resume; no product matrix was required for reviewer-only changes."
+    },
+    {
+      "cr_number": "CR-0350",
+      "title": "Reverify preserved certified review-gate v4 package",
+      "status": "in_progress",
+      "priority": "high",
+      "execution_order": "out_of_band_before_architecture_queue",
+      "blocking": true,
+      "source_authority": [
+        "design/cr-preflight/CR-0350.md",
+        "design/review-gate-packages/WZXN-REVIEW-GATE-V4-ZERO-GAP-DEVELOPER-PACKAGE.zip",
+        "design/review-gate.md",
+        "WORKFLOW.md",
+        "operator package reinstallation and verification directive"
+      ],
+      "notes": "The supplied ZIP is byte-identical to the already tracked CR-0349 package. Preserve that object, inspect its complete installation and verification instructions, and prove the current gate state. The installer is certified for a pre-v4 baseline and must fail closed instead of overwriting later protected fixes. Architecture development is temporarily paused."
     }
   ]
 }
