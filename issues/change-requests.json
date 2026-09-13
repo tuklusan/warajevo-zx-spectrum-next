@@ -3793,6 +3793,23 @@
         "operator package reinstallation and verification directive"
       ],
       "notes": "The supplied ZIP is byte-identical to the tracked CR-0349 package and its old installer correctly refused the changed baseline. A separate recovery ZIP snapshots 23 exact protected Git objects at tagged base 32582b1; archive and installer verify-only checks passed without mutation. Protected bytes are identical to the earlier remote Linux 27/27 regression baseline. This certifies a current-baseline recovery snapshot, not a fresh functional zero-gap redesign. CR-0344 worktree edits were left untouched."
+    },
+    {
+      "cr_number": "CR-0351",
+      "title": "Consolidate protected review-gate history for product review",
+      "status": "in_progress",
+      "priority": "high",
+      "execution_order": "out_of_band_before_cr_0344",
+      "blocking": true,
+      "source_authority": [
+        "design/cr-preflight/CR-0351.md",
+        "design/review-gate.md",
+        "WORKFLOW.md",
+        "tools/reviewer/legacy_bootstrap_gate.py",
+        "tools/reviewer/review_gate.py",
+        "operator authorization for this maintenance operation"
+      ],
+      "notes": "Authorized for this maintenance operation only. Bootstrap the protected v4 history, publish an exact maintenance ref, then establish a product-only CR-0344 review boundary. No product, harness, wrapper, or Architecture #3 work is in scope."
     }
   ]
 }
