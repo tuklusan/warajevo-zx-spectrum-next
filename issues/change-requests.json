@@ -3682,7 +3682,7 @@
     {
       "cr_number": "CR-0344",
       "title": "Implement explicit ROM/Firmware identity boundary",
-      "status": "blocked",
+      "status": "in_progress",
       "priority": "high",
       "execution_order": "architecture_2_phase_12f",
       "blocking": true,
@@ -3797,7 +3797,7 @@
     {
       "cr_number": "CR-0352",
       "title": "Provide hosted CODE receipt out of tree",
-      "status": "in_progress",
+      "status": "closed",
       "priority": "high",
       "execution_order": "out_of_band_review_gate_maintenance_before_architecture_queue",
       "blocking": true,
