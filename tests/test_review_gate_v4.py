@@ -32,7 +32,7 @@ class Response:
 
 class GateV4Tests(unittest.TestCase):
  def repo(self,two_hunks=False):
-  td=tempfile.TemporaryDirectory(); root=Path(td.name); run(root,'init'); run(root,'config','user.email','test@example.com'); run(root,'config','user.name','Test')
+  td=tempfile.TemporaryDirectory(); root=Path(td.name); run(root,'init'); run(root,'config','core.autocrlf','false'); run(root,'config','user.email','test@example.com'); run(root,'config','user.name','Test')
   (root/'design/cr-preflight').mkdir(parents=True); (root/'src').mkdir(); (root/'docs').mkdir(); (root/'tools/reviewer').mkdir(parents=True); (root/'test-artefacts/reviewer').mkdir(parents=True)
   req='Requirement one: changed function must return 2.\nRequirement two: same source second excerpt.\n'
   (root/'design/review-gate.md').write_text(req)
