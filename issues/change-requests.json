@@ -3793,6 +3793,16 @@
         "operator package reinstallation and verification directive"
       ],
       "notes": "The supplied ZIP is byte-identical to the tracked CR-0349 package and its old installer correctly refused the changed baseline. A separate recovery ZIP snapshots 23 exact protected Git objects at tagged base 32582b1; archive and installer verify-only checks passed without mutation. Protected bytes are identical to the earlier remote Linux 27/27 regression baseline. This certifies a current-baseline recovery snapshot, not a fresh functional zero-gap redesign. CR-0344 worktree edits were left untouched."
+    },
+    {
+      "cr_number": "CR-0352",
+      "title": "Provide hosted CODE receipt out of tree",
+      "status": "in_progress",
+      "priority": "high",
+      "execution_order": "out_of_band_review_gate_maintenance_before_architecture_queue",
+      "blocking": true,
+      "source_authority": ["design/cr-preflight/CR-0352.md", "design/review-gate.md", "WORKFLOW.md", ".github/workflows/platform-smoke.yml"],
+      "notes": "Operator-authorized maintenance scope: materialize the exact CODE-PASS receipt from workflow input before hosted validation, preserving fail-closed v4 validation and the exact 20-lane matrix. No product, harness, wrapper, or Architecture #3 changes are in scope."
     }
   ]
 }
