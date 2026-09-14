@@ -412,7 +412,7 @@ if(WZSN_ENABLE_REVIEW_GATE_TESTS)
     find_package(Python3 COMPONENTS Interpreter REQUIRED)
     add_test(
         NAME review_gate_tests
-        COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tests/test_review_gate.py
+        COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/tests/test_review_gate_v4.py
     )
     add_test(
         NAME remote_harness_gate_tests
