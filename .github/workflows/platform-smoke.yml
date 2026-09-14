@@ -122,6 +122,10 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+      - name: Materialize exact CODE-PASS receipt
+        env:
+          CODE_PASS_RECEIPT_B64: ${{ inputs.code_pass_receipt_b64 }}
+        run: python -c "import base64,os,pathlib; p=pathlib.Path('test-artefacts/reviewer'); p.mkdir(parents=True,exist_ok=True); (p/'code-pass.json').write_bytes(base64.b64decode(os.environ['CODE_PASS_RECEIPT_B64']))"
       - name: Clear runner workspace build and test residue
         run: bash tools/harness/cleanup-hosted-runner-state.sh --workspace-only
       - name: Set up Python
