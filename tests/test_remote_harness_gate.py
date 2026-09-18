@@ -108,52 +108,71 @@ class HarnessGateTests(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 remote.require_code_review_pass(ROOT)
 
-    def test_extended_precision_receipt_remains_compatible(self):
+    def test_protocol_four_receipt_remains_compatible(self):
         diff = b"reviewed diff"
         digest = hashlib.sha256(diff).hexdigest()
         original_read_bytes = Path.read_bytes
-        tracker = json.loads((ROOT / "issues" / "change-requests.json").read_bytes())
-        cr = {
-            "cr_number": "CR-TEST-REMOTE-HARNESS",
-            "title": "Synthetic remote harness compatibility fixture",
-            "status": "in_progress",
-            "source_authority": ["design/review-gate.md"],
-            "notes": "Isolated test fixture.",
-        }
-        tracker["change_requests"].append(cr)
-        tracker_data = json.dumps(tracker, separators=(",", ":"), sort_keys=True).encode()
-        scope = {
-            "cr_number": cr["cr_number"], "title": cr.get("title"), "status": cr.get("status"),
-            "source_authority": cr.get("source_authority", []), "notes": cr.get("notes", ""),
-            "tracker_source": "issues/change-requests.json",
-            "tracker_sha256": hashlib.sha256(tracker_data).hexdigest(),
-            "record_sha256": hashlib.sha256(remote.canonical_json(cr).encode()).hexdigest(),
-        }
+        original_read_text = Path.read_text
+        authority = remote.validate_code_receipt.__globals__
+        cr_number = "CR-0344"
+        preflight_path = ROOT / "design" / "cr-preflight" / f"{cr_number}.md"
+        preflight_data = preflight_path.read_bytes()
+        review_base = next(
+            line.split(":", 1)[1].strip()
+            for line in preflight_data.decode("utf-8").splitlines()
+            if line.startswith("Review-Base:")
+        )
         requirement_path = "design/review-gate.md"
         requirement_digest = hashlib.sha256((ROOT / requirement_path).read_bytes()).hexdigest()
         requirement_sources = [{"source": requirement_path, "sha256": requirement_digest}]
-        receipt = json.dumps({
-            "schema_version": 2,
-            "review_protocol_version": 2,
-            "cr_number": cr["cr_number"],
-            "packet_manifest_hash": "packet",
-            "requirements_manifest_hash": hashlib.sha256(
-                remote.canonical_json(requirement_sources).encode()
-            ).hexdigest(),
-            "scope_manifest_hash": hashlib.sha256(remote.canonical_json(scope).encode()).hexdigest(),
+        excerpt = (ROOT / requirement_path).read_text(encoding="utf-8").splitlines()[0]
+        excerpts = [{
+            "requirement_id": "REQ-REMOTE-HARNESS",
+            "source": requirement_path,
+            "start": 1,
+            "end": 1,
+            "excerpt_sha256": hashlib.sha256(excerpt.encode()).hexdigest(),
+        }]
+        review_map_path = "test-artefacts/reviewer/requirements/CR-test-remote-harness-map.json"
+        review_map_data = b"{}\n"
+        receipt_data = {
+            "schema_version": 4,
+            "review_protocol_version": 4,
+            "project_id": authority["PROJECT_ID"],
+            "review_profile_hash": authority["profile_hash"](ROOT),
+            "cr_number": cr_number,
+            "preflight_source": preflight_path.relative_to(ROOT).as_posix(),
+            "preflight_sha256": hashlib.sha256(preflight_data).hexdigest(),
+            "review_base": review_base,
+            "requirements_manifest_hash": hashlib.sha256(authority["cj"]({
+                "sources": requirement_sources, "excerpts": excerpts
+            }).encode()).hexdigest(),
             "requirement_sources": requirement_sources,
+            "requirement_excerpt_bindings": excerpts,
             "scope_private_source": None,
+            "review_map_source": review_map_path,
+            "review_map_sha256": hashlib.sha256(review_map_data).hexdigest(),
             "verdict": "PASS",
             "review_complete": True,
             "snapshot_id": f"git:base..head:sha256:{digest}",
-        })
+        }
+        receipt_data["scope_manifest_hash"] = hashlib.sha256(authority["cj"](
+            authority["active_scope"](ROOT, cr_number, receipt_data)
+        ).encode()).hexdigest()
+        receipt = json.dumps(receipt_data)
+
         def read_bytes(path):
-            if Path(path).resolve() == (ROOT / "issues" / "change-requests.json").resolve():
-                return tracker_data
+            if Path(path).resolve() == (ROOT / review_map_path).resolve():
+                return review_map_data
             return original_read_bytes(path)
 
+        def read_text(path, *args, **kwargs):
+            if Path(path).resolve() == (ROOT / "test-artefacts" / "reviewer" / "code-pass.json").resolve():
+                return receipt
+            return original_read_text(path, *args, **kwargs)
+
         with patch.object(Path, "is_file", return_value=True), \
-             patch.object(Path, "read_text", return_value=receipt), \
+             patch.object(Path, "read_text", autospec=True, side_effect=read_text), \
              patch.object(Path, "read_bytes", autospec=True, side_effect=read_bytes), \
              patch.object(remote.subprocess, "run", side_effect=[
                  Result(text_stdout="head\n"), Result(text_stdout="head\trefs/heads/main\n"),
