@@ -194,8 +194,8 @@ class HarnessGateTests(unittest.TestCase):
              patch.object(Path, "read_text", autospec=True, side_effect=read_text), \
              patch.object(Path, "read_bytes", autospec=True, side_effect=read_bytes), \
              patch.object(remote.subprocess, "run", side_effect=[
-                 Result(text_stdout=f"{head}\n"), Result(text_stdout=f"{head}\trefs/heads/main\n"),
-                 Result(stdout=diff),
+                 Result(text_stdout=f"{head}\n"), Result(stdout=diff),
+                 Result(text_stdout=f"{head}\trefs/heads/main\n"),
              ]):
             remote.require_code_review_pass(ROOT)
 
