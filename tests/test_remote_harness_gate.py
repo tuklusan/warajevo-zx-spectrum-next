@@ -111,6 +111,7 @@ class HarnessGateTests(unittest.TestCase):
     def test_protocol_four_receipt_remains_compatible(self):
         diff = b"reviewed diff"
         digest = hashlib.sha256(diff).hexdigest()
+        head = "a" * 40
         original_read_bytes = Path.read_bytes
         original_read_text = Path.read_text
         authority = remote.validate_code_receipt.__globals__
@@ -154,7 +155,7 @@ class HarnessGateTests(unittest.TestCase):
             "review_map_sha256": hashlib.sha256(review_map_data).hexdigest(),
             "verdict": "PASS",
             "review_complete": True,
-            "snapshot_id": f"git:base..head:sha256:{digest}",
+            "snapshot_id": f"git:{review_base}..{head}:sha256:{digest}",
         }
         tracker_data = (ROOT / "issues" / "change-requests.json").read_bytes()
         tracker = json.loads(tracker_data)
@@ -193,7 +194,7 @@ class HarnessGateTests(unittest.TestCase):
              patch.object(Path, "read_text", autospec=True, side_effect=read_text), \
              patch.object(Path, "read_bytes", autospec=True, side_effect=read_bytes), \
              patch.object(remote.subprocess, "run", side_effect=[
-                 Result(text_stdout="head\n"), Result(text_stdout="head\trefs/heads/main\n"),
+                 Result(text_stdout=f"{head}\n"), Result(text_stdout=f"{head}\trefs/heads/main\n"),
                  Result(stdout=diff),
              ]):
             remote.require_code_review_pass(ROOT)
