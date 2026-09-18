@@ -156,9 +156,27 @@ class HarnessGateTests(unittest.TestCase):
             "review_complete": True,
             "snapshot_id": f"git:base..head:sha256:{digest}",
         }
-        receipt_data["scope_manifest_hash"] = hashlib.sha256(authority["cj"](
-            authority["active_scope"](ROOT, cr_number, receipt_data)
-        ).encode()).hexdigest()
+        tracker_data = (ROOT / "issues" / "change-requests.json").read_bytes()
+        tracker = json.loads(tracker_data)
+        cr = next(item for item in tracker["change_requests"]
+                  if item["cr_number"] == cr_number)
+        scope = {
+            "cr_number": cr_number,
+            "title": cr.get("title"),
+            "status": cr.get("status"),
+            "source_authority": cr.get("source_authority", []),
+            "notes": cr.get("notes", ""),
+            "tracker_source": "issues/change-requests.json",
+            "tracker_sha256": hashlib.sha256(tracker_data).hexdigest(),
+            "record_sha256": hashlib.sha256(authority["cj"](cr).encode()).hexdigest(),
+            "preflight_source": preflight_path.relative_to(ROOT).as_posix(),
+            "preflight_sha256": hashlib.sha256(preflight_data).hexdigest(),
+            "review_base": review_base,
+            "operator_authorized_gate_change": False,
+        }
+        receipt_data["scope_manifest_hash"] = hashlib.sha256(
+            authority["cj"](scope).encode()
+        ).hexdigest()
         receipt = json.dumps(receipt_data)
 
         def read_bytes(path):
