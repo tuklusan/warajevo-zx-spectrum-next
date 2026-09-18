@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse
 import ctypes
 import codecs
+import functools
 import hashlib
 import http.client
 import json
@@ -285,6 +286,11 @@ class ReviewPacket:
     evidence_root: str = ""
     revalidation: dict[str, Any] = field(default_factory=dict)
     tested_commit: str = ""
+    # Process-local cache of already-fetched, already-verified immutable source bytes,
+    # keyed by (source_kind, commit-or-filesystem-marker, object/filesystem path). Avoids
+    # re-spawning "git show" for the same blob when multiple candidates/evidence requests
+    # reference the same file within one review run.
+    source_bytes_cache: dict[tuple[str, str, str], bytes] = field(default_factory=dict)
 
 
 def canonical_json(value: Any) -> str:
@@ -425,6 +431,23 @@ def git_object(root: Path, commit: str, path: str) -> bytes:
     return run_git_bytes(root, "show", f"{commit}:{path}")
 
 
+def list_tree(root: Path, commit: str) -> dict[str, dict[str, str]]:
+    """Return mode/type/object for every tracked path in one Git call.
+
+    Same fields tree_entry() returns per-path, sourced from a single
+    ``git ls-tree -r`` instead of one subprocess per tracked file.
+    """
+    output = run_git_bytes(root, "ls-tree", "-r", "-z", commit)
+    entries: dict[str, dict[str, str]] = {}
+    for record in output.split(b"\0"):
+        if not record:
+            continue
+        meta, _, path_bytes = record.partition(b"\t")
+        mode, typ, obj = meta.decode("ascii").split(" ", 2)
+        entries[path_bytes.decode("utf-8", errors="surrogateescape")] = {"mode": mode, "type": typ, "object": obj}
+    return entries
+
+
 def git_line_count(root: Path, commit: str, path: str) -> int:
     data = git_object(root, commit, path)
     try:
@@ -539,7 +562,11 @@ def scope_manifest_hash(scope: dict[str, Any]) -> str:
     return sha256_bytes(canonical_json(scope).encode())
 
 
+@functools.lru_cache(maxsize=1)
 def review_profile() -> dict[str, Any]:
+    # review-profile-v4.json is a PROTECTED_GATE_PATHS file: it cannot be the subject of the
+    # reviewed diff and nothing in this process writes to it, so memoizing for the process
+    # lifetime is safe and avoids re-reading/re-parsing it on every single LLM inference.
     path = Path(__file__).with_name("review-profile-v4.json")
     try:
         profile = json.loads(path.read_text(encoding="utf-8"))
@@ -702,12 +729,13 @@ def _git_change_universe(root: Path, base_sha: str, head_sha: str) -> tuple[list
         }
         if not change["head_path"]:
             deleted.add(source_path)
-    tracked = set(run_git(root, "ls-tree", "-r", "--name-only", head_sha).splitlines())
+    head_tree = list_tree(root, head_sha)
+    tracked = set(head_tree)
     # Tracked current paths are legitimate on-demand context roots even if unchanged.
     for path in sorted(tracked):
         if path in source_index:
             continue
-        entry = tree_entry(root, head_sha, path)
+        entry = head_tree[path]
         if entry["type"] != "blob":
             continue
         source_index[path] = {
@@ -844,9 +872,10 @@ def linked_packet(root: Path, review_type: str, links: list[dict[str, Any]], req
         if head_sha != run_git(root, "rev-parse", "HEAD").strip():
             raise ReviewError("DOCUMENTATION implementation HEAD differs from CODE-reviewed commit")
         tested_commit = head_sha
-        tracked = set(run_git(root, "ls-tree", "-r", "--name-only", head_sha).splitlines())
+        head_tree = list_tree(root, head_sha)
+        tracked = set(head_tree)
         for path in tracked:
-            entry = tree_entry(root, head_sha, path)
+            entry = head_tree[path]
             if entry["type"] == "blob":
                 source_index[path] = {"path": path, "source_kind": "git", "object_path": path, "commit": head_sha,
                                       "sha256": "", "classification": "unknown", "line_count": -1,
@@ -1887,10 +1916,21 @@ def _read_packet_source(root: Path, packet: ReviewPacket, path: str) -> tuple[by
         object_path = str(entry.get("object_path", path))
         if not commit:
             raise ReviewError(f"git source lacks commit identity: {path}")
-        data = git_object(root, commit, object_path)
+        # Git blobs are content-addressed and immutable for a fixed (commit, path): cache the
+        # bytes to avoid re-spawning "git show" when multiple candidates reference the same file.
+        cache_key = ("git", commit, object_path)
+        data = packet.source_bytes_cache.get(cache_key)
+        if data is None:
+            data = git_object(root, commit, object_path)
+            packet.source_bytes_cache[cache_key] = data
     elif source_kind == "file":
-        source = resolve_inside(root, str(entry.get("filesystem_path", path)))
-        data = source.read_bytes()
+        filesystem_path = str(entry.get("filesystem_path", path))
+        source = resolve_inside(root, filesystem_path)
+        cache_key = ("file", "", filesystem_path)
+        data = packet.source_bytes_cache.get(cache_key)
+        if data is None:
+            data = source.read_bytes()
+            packet.source_bytes_cache[cache_key] = data
     elif source_kind == "artifact":
         if not packet.evidence_root:
             raise ReviewError("artifact source root unavailable")
@@ -1901,9 +1941,15 @@ def _read_packet_source(root: Path, packet: ReviewPacket, path: str) -> tuple[by
             raise ReviewError("artifact source escapes evidence root") from exc
         if source.is_symlink():
             raise ReviewError("artifact source may not be a symlink")
-        data = source.read_bytes()
+        cache_key = ("artifact", packet.evidence_root, path)
+        data = packet.source_bytes_cache.get(cache_key)
+        if data is None:
+            data = source.read_bytes()
+            packet.source_bytes_cache[cache_key] = data
     else:
         raise ReviewError(f"unsupported immutable source kind: {source_kind}")
+    # Hash re-verification always re-runs against whatever bytes are in hand (cached or fresh);
+    # only the expensive fetch itself is skipped on a cache hit.
     digest = sha256_bytes(data)
     expected = str(entry.get("sha256", ""))
     if entry.get("lazy"):
@@ -2449,12 +2495,31 @@ def stable_prefix(review_type: str, packet: ReviewPacket, scope: dict[str, Any])
 
 def discovery_prompt(prefix: str, unit: str, pass_name: str, review_type: str) -> str:
     lenses = DISCOVERY_LENSES[review_type]
+    # candidate_schema_errors()/CANDIDATE_REQUIRED enforce this exact shape but it was never
+    # actually transmitted to the model; a single non-conforming candidate fails the whole
+    # response (OutputError, packet_audit_required) even when the finding itself is correct.
+    category_hint = (
+        f" category must be exactly one of: {', '.join(sorted(ARTIFACT_CATEGORIES))}."
+        if review_type == "TEST_ARTIFACT" else ""
+    )
+    candidate_schema_hint = (
+        "Each populated candidate object must contain exactly these string fields: "
+        "candidate_id, proposed_severity (\"BLOCKER\" or \"HIGH\"), category." + category_hint +
+        " requirement_id (must equal a requirement_id present in REQUIREMENT_INDEX), "
+        "requirement_quote (an exact verbatim substring of the cited requirement excerpt -- copy it "
+        "character-for-character, never paraphrased, reflowed, or de-wrapped), scope_link, location "
+        "(\"path:line\", an exact immutable source line), claim, failure_scenario, causal_path, evidence. "
+        "Optional fields: assumptions (a string array) and context_requests (an array). Omitting or "
+        "renaming any required field, or altering a quoted field's exact source text, makes the ENTIRE "
+        "response schema-invalid and discards every candidate in it."
+    )
     return prefix + "IMMUTABLE_REVIEW_UNIT\n" + unit + "\n" + (
         "Complete every lens before returning: " + "; ".join(lenses) + ". "
         "Report only current-scope BLOCKER/HIGH candidates. Each candidate must cite requirement_id, an exact quote present "
         "in that requirement excerpt, and an ORIGINAL source path:line present in the immutable source/artifact index. "
         "Use context_requests only when needed. Material missing evidence belongs in evidence_requests/uncertainties and must "
         "not be converted into a defect. Continue after each candidate.\n"
+        + candidate_schema_hint + "\n"
         f"Return exactly {{\"pass\":\"{pass_name}\",\"review_complete\":true,\"candidates\":[],"
         "\"uncertainties\":[],\"evidence_requests\":[]}} or the same object with fully populated candidates."
     )
