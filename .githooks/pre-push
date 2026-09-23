@@ -15,7 +15,13 @@ review_outgoing_source() {
         return 0
     fi
 
-    if ! command -v gito >/dev/null 2>&1; then
+    if command -v gito >/dev/null 2>&1; then
+        gito_runner='gito'
+    elif command -v py >/dev/null 2>&1; then
+        gito_runner='py -m gito'
+    elif command -v python >/dev/null 2>&1; then
+        gito_runner='python -m gito'
+    else
         printf '%s\n' "Push rejected: 'gito' is required for the pre-push source review." >&2
         printf '%s\n' "Install it with: python -m pip install 'gito.bot~=4.5'" >&2
         return 1
@@ -32,7 +38,7 @@ review_outgoing_source() {
     export LLM_API_TYPE=$(printf '%s' b3BlbmFp | base64 -d)
 
     printf '%s\n' "Running source review before push..." >&2
-    gito --verbose review --against="$oldrev"
+    eval "$gito_runner --verbose review --against=\"$oldrev\""
 }
 
 check_range() {
