@@ -13,6 +13,10 @@ Upstream Warajevo and third-party material retain their applicable copyrights an
 See LICENSE.txt and NOTICE.md for complete terms and provenance.
 */
 
+#if !defined(_WIN32) && !defined(_POSIX_C_SOURCE)
+#define _POSIX_C_SOURCE 200809L
+#endif
+
 #include "diagnostics/wz_trace_file.h"
 #if defined(_WIN32)
 #include <fcntl.h>
