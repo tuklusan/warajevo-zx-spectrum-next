@@ -15,7 +15,7 @@
     },
     {
       "path": "ci/test/application-command-boundary/CMakeLists.txt",
-      "sha256": "65468783dd61b1142f5956793bc545f11c91fd1398f18c469041390713af50c9"
+      "sha256": "62e00ce7eec4d36e3ff6c2dcf270d02a6fed73121ba596e89659291eef84c1c2"
     },
     {
       "path": "ci/test/application-command-boundary/README.md",

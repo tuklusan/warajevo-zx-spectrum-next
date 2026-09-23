@@ -13,7 +13,26 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
 find_package(Threads REQUIRED)
-find_package(ZLIB REQUIRED)
+find_package(ZLIB QUIET)
+if(NOT ZLIB_FOUND)
+    include(FetchContent)
+    FetchContent_Declare(
+        zlib
+        URL https://github.com/madler/zlib/archive/refs/tags/v1.3.1.tar.gz
+        URL_HASH SHA256=17e88863f3600672ab49182f217281b6fc4d3c762bde361935e436a95214d05c
+    )
+    FetchContent_MakeAvailable(zlib)
+    if(NOT TARGET ZLIB::ZLIB)
+        if(TARGET zlibstatic)
+            add_library(ZLIB::ZLIB ALIAS zlibstatic)
+        elseif(TARGET zlib)
+            add_library(ZLIB::ZLIB ALIAS zlib)
+        endif()
+    endif()
+endif()
+if(NOT TARGET ZLIB::ZLIB)
+    message(FATAL_ERROR "ZLIB::ZLIB target is unavailable")
+endif()
 
 set(REPO_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../..")
 set(SOURCE_ROOT "${REPO_ROOT}/src")
