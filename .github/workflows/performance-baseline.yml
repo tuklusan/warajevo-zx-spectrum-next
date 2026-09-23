@@ -11,6 +11,7 @@ permissions:
 jobs:
   baseline:
     name: ${{ matrix.name }}
+    if: github.ref == 'refs/heads/main'
     runs-on: ${{ matrix.label }}
     strategy:
       fail-fast: false

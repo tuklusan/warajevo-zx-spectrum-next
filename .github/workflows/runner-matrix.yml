@@ -2,6 +2,7 @@ name: Cross-platform runner bootstrap and test
 
 on:
   push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -10,6 +11,7 @@ permissions:
 jobs:
   runner:
     name: ${{ matrix.name }}
+    if: github.ref == 'refs/heads/main'
     runs-on: ${{ matrix.label }}
     strategy:
       fail-fast: false

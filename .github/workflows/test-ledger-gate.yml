@@ -2,8 +2,7 @@ name: Test ledger gate
 
 on:
   push:
-  pull_request:
-    types: [opened, synchronize, reopened]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -12,6 +11,7 @@ permissions:
 jobs:
   validate-test-ledger:
     name: Validate test drivers and proofs
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Check out revision

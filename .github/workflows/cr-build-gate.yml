@@ -1,8 +1,8 @@
 name: CR clean-build gate
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -11,6 +11,7 @@ permissions:
 jobs:
   clean-build:
     name: Clean build / ${{ matrix.name }}
+    if: github.ref == 'refs/heads/main'
     runs-on: ${{ matrix.label }}
     strategy:
       fail-fast: false

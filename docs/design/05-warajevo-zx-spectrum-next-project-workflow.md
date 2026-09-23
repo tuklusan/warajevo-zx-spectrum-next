@@ -39,6 +39,9 @@ for that commit before marking its change record ready to close. Automated
 review and test output are evidence; the responsible developer makes the final
 adjudication.
 
+Every push-triggered GitHub workflow is scoped to `main`. Manual dispatch jobs
+also require the selected ref to be `main`; pull-request triggers are prohibited.
+
 ## 3. Local pre-push gate
 
 The sole local validation entrypoint is `.githooks/pre-push`. The checkout uses
