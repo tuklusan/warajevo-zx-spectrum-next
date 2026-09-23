@@ -7,7 +7,7 @@ SANYALnet Labs." See LICENSE for full terms. -->
 
 # Application command boundary acceptance
 
-`tests/application-command-boundary.c` verifies four requirements using a single
+`application-command-boundary.c` verifies four requirements using a single
 registry and a mutation-counting machine fixture:
 
 1. The application-test projection invokes the registered reset handler.
@@ -29,4 +29,3 @@ registry owner identity itself is generated with C11 thread-local storage and
 atomics and does not inspect machine state from a worker thread. Dispatch is
 rejected until an owner is bound; thread ID zero is reserved for the unbound
 state, and identity exhaustion fails closed.
-

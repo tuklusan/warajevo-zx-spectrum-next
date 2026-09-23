@@ -18,7 +18,7 @@ set(REPO_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../..")
 set(SOURCE_ROOT "${REPO_ROOT}/src")
 
 add_executable(wz_application_command_boundary
-    "${CMAKE_CURRENT_SOURCE_DIR}/worker.c"
+    "${REPO_ROOT}/tests/application-command-boundary.c"
     "${SOURCE_ROOT}/app/wz_command_registry.c"
     "${SOURCE_ROOT}/app/wz_host_thread.c"
     "${SOURCE_ROOT}/app/wz_ui_layout.c"

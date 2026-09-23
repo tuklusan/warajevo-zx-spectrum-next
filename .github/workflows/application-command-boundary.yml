@@ -18,6 +18,7 @@ on:
       - 'src/core/wz_presentation_snapshot.*'
       - 'src/core/wz_raster.*'
       - 'ci/test/application-command-boundary/**'
+      - 'tests/application-command-boundary.*'
       - 'src/cmake/CMakeLists.txt'
       - 'test-drivers/application-command-boundary.driver.json'
       - '.github/workflows/application-command-boundary.yml'
