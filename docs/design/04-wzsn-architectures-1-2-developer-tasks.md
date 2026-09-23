@@ -558,7 +558,7 @@ Architecture #3 (`zx48-mic-ear-router-network-architecture.md`) is explicitly ou
 
 ## Final Architecture-#1/#2 acceptance and release-readiness sweep
 
-450. [FINAL][Core §50] Walk every Core/System acceptance criterion and attach concrete test/build/evidence references; no criterion may be marked satisfied by prose alone.
+450. [FINAL][Core §50][IN PROGRESS] Inventory all 75 criteria and record conservative evidence status in [acceptance-evidence-audit.md](acceptance-evidence-audit.md); 6 PASS, 8 PARTIAL, and 61 OPEN. Keep this gate open while evidence is completed or gaps are resolved.
 451. [FINAL][UI §48] Walk every UI acceptance criterion and attach concrete regression/manual-accessibility evidence as applicable.
 452. [FINAL][Core §2.5] Reconcile the final backlog against the legacy-feature disposition and verify every REQUIRED item is implemented/tested and every LATER/REPLACE/NOT-INITIAL item remains correctly scoped.
 453. [FINAL][UI §20] Reconcile every historical UI/menu item against its implemented modern destination or explicit disposition.
