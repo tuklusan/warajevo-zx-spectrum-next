@@ -2664,7 +2664,7 @@ execute_opcode:
         machine->master_tick += 12u;
         return WZ_RESULT_OK;
     case WZ_Z80_PRIMARY_OP_PREFIX_CB:
-        if (wz_z80_bus(machine, WZ_BUS_M1_OPCODE_FETCH, 4u,
+        if (wz_z80_bus(machine, WZ_BUS_M1_OPCODE_FETCH, 8u,
                        machine->cpu.program_counter, &cb_opcode, 4u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
@@ -2672,7 +2672,7 @@ execute_opcode:
         wz_z80_increment_r(&machine->cpu);
         return wz_z80_execute_cb(machine, wz_z80_cb_opcode_decode(cb_opcode));
     case WZ_Z80_PRIMARY_OP_PREFIX_ED:
-        if (wz_z80_bus(machine, WZ_BUS_M1_OPCODE_FETCH, 4u,
+        if (wz_z80_bus(machine, WZ_BUS_M1_OPCODE_FETCH, 8u,
                        machine->cpu.program_counter, &value, 4u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
