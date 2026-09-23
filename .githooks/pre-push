@@ -38,7 +38,7 @@ review_outgoing_source() {
     export LLM_API_TYPE=$(printf '%s' b3BlbmFp | base64 -d)
 
     printf '%s\n' "Running source review before push..." >&2
-    eval "$gito_runner --verbose review --against=\"$oldrev\""
+    eval "$gito_runner --verbose review --against=\"$oldrev\" --filter=\"**/*.c,**/*.C,**/*.h,**/*.H,**/*.py,**/*.PY,**/*.asm,**/*.ASM,**/*.s,**/*.S,**/*.z80,**/*.Z80\""
 }
 
 check_range() {

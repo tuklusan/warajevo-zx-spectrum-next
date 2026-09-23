@@ -1,12 +1,3 @@
-# Review only source languages used by this project.
-include_files = [
-    '**/*.c', '**/*.C', '**/*.h', '**/*.H',
-    '**/*.py', '**/*.PY',
-    '**/*.asm', '**/*.ASM',
-    '**/*.s', '**/*.S',
-    '**/*.z80', '**/*.Z80',
-]
-
 [prompt_vars]
 requirements = """
 - Review only the changed source code in C, Python, and Z80 assembly.
