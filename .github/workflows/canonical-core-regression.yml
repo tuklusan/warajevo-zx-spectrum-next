@@ -9,7 +9,6 @@ on:
       - 'ci/test/core-regression/**'
       - 'tests/canonical-core-regression.c'
       - 'test-drivers/canonical-core-regression.driver.json'
-      - 'test-results/canonical-core-regression.json'
       - '.github/workflows/canonical-core-regression.yml'
   workflow_dispatch:
 
@@ -41,7 +40,7 @@ jobs:
           fixture_hash="$(sha256sum ci/test/core-regression/canonical-fingerprints.h | cut -d ' ' -f 1)"
           mkdir -p dist/core-regression/proof
           cat > dist/core-regression/proof/canonical-core-regression.json <<EOF
-          {"testId":"canonical-core-regression","status":"pass","commit":"${GITHUB_SHA}","runner":"${RUNNER_OS}/${RUNNER_ARCH}","timestamp":"$(date -u +%Y-%m-%dT%H:%M:%SZ)","fixtures":[{"path":"ci/test/core-regression/canonical-fingerprints.h","sha256":"${fixture_hash}"}]}
+          {"testId":"canonical-core-regression","status":"pass","commit":"${GITHUB_SHA}","runner":"${RUNNER_OS}/${RUNNER_ARCH}","timestamp":"$(date -u +%Y-%m-%dT%H:%M:%SZ)","runId":${GITHUB_RUN_ID},"fixtures":[{"path":"ci/test/core-regression/canonical-fingerprints.h","sha256":"${fixture_hash}"}]}
           EOF
 
       - name: Upload hosted proof
