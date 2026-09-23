@@ -1,10 +1,10 @@
 {
   "testId": "fuse-z80-conformance",
   "status": "pass",
-  "commit": "02138dae535a707b47453c642f75e3cecf5c3b37",
+  "commit": "3e38e999113285015cde6f40c6aa74cbccf2080b",
   "runner": "Linux/X64",
-  "timestamp": "2026-09-23T20:31:46+00:00",
-  "runId": "35916471319",
+  "timestamp": "2026-09-23T20:38:07+00:00",
+  "runId": "35917219164",
   "upstreamRevision": "c94a5e611bb0b795d62e904a0f5af4f59f2a4eee",
   "caseCount": 1356,
   "eventComparison": "Compare every MR/MW/PR/PW transfer and timestamp. MC/PC markers are excluded because upstream coretest emits synthetic contention-helper traces whose memory map differs from the 48K PAL profile; this suite does not claim profile contention conformance.",
@@ -23,11 +23,19 @@
     },
     {
       "path": ".github/workflows/fuse-z80-regression.yml",
-      "sha256": "afe82d63deeb8bbf9129ae3fba06febb3b88a4d076067fc4d33c5bc3431a5f49"
+      "sha256": "af192c1fb6e721da42f107248bda61b67b8df4d88552186a8f453a9a569e9bb9"
     },
     {
       "path": "ci/test/fuse-z80/write-proof.py",
-      "sha256": "8f94afefc15324a416fb5d62d6865aa41b084e0b5facb5ed75031d5562c62188"
+      "sha256": "aa61c28918e2f9aa2dbede4d472c4e04a519e73971bd63dc7dfad6d2fd8b0d5e"
+    },
+    {
+      "path": "tests/fuse-z80-conformance.md",
+      "sha256": "ef3535fe8056b1b4ac96ac748522920901a48ccd348f9f5f7a4422225004a87e"
+    },
+    {
+      "path": "test-drivers/fuse-z80-conformance.driver.json",
+      "sha256": "c04e3c2315e506fc2a31024c4557850b07b57dceab32968cd100b8aaf7a79a05"
     },
     {
       "path": "fuse-emulator/fuse@c94a5e611bb0b795d62e904a0f5af4f59f2a4eee:z80/tests/tests.in",
