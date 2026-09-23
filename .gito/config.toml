@@ -1,3 +1,7 @@
+# The structured issue review is sufficient for the pre-push gate. Avoid a
+# second model request for an optional prose summary.
+summary_prompt = ""
+
 [prompt_vars]
 requirements = """
 - Review only the changed source code in C, Python, and Z80 assembly.
@@ -5,10 +9,6 @@ requirements = """
   interrupt and hardware interaction issues, and regressions.
 - Do not report documentation, formatting-only, or generated-file concerns.
 """
-
-# The structured issue review is sufficient for the pre-push gate. Avoid a
-# second model request for an optional prose summary.
-summary_prompt = ""
 
 [pipeline_steps.jira]
 enabled = false
