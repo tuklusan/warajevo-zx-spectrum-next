@@ -5,3 +5,9 @@ requirements = """
   interrupt and hardware interaction issues, and regressions.
 - Do not report documentation, formatting-only, or generated-file concerns.
 """
+
+[pipeline_steps.jira]
+enabled = false
+
+[pipeline_steps.linear]
+enabled = false
