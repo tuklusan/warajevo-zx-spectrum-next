@@ -1,0 +1,131 @@
+name: Required multi-instance stress
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/app/wz_control_port.*'
+      - 'src/app/wz_host_config.*'
+      - 'src/app/wz_host_media_ownership.*'
+      - 'src/app/wz_host_output.*'
+      - 'src/app/wz_host_socket.*'
+      - 'src/app/wz_telnet_keyboard_command.*'
+      - 'src/app/wz_command_registry.*'
+      - 'src/app/wz_telnet_keymap.*'
+      - 'src/app/wz_screenshot_service.*'
+      - 'src/core/wz_presentation_snapshot.*'
+      - 'src/cmake/CMakeLists.txt'
+      - 'ci/test/multi-instance/**'
+      - 'test-drivers/multi-instance-stress.driver.json'
+      - '.github/workflows/multi-instance-stress.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  multi-instance:
+    name: Stress ${{ matrix.label }}
+    if: github.ref == 'refs/heads/main'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: windows-x64
+            label: Windows Intel
+            runner: windows-2025
+          - id: windows-arm64
+            label: Windows ARM64
+            runner: windows-11-arm
+          - id: macos-intel
+            label: macOS Intel
+            runner: macos-15-intel
+          - id: macos-arm64
+            label: macOS ARM64
+            runner: macos-15
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - name: Check out project source
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Configure stress worker
+        shell: bash
+        run: cmake -S ci/test/multi-instance -B dist/multi-instance -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build stress worker
+        shell: bash
+        run: cmake --build dist/multi-instance --config Release --target wz_multi_instance_worker --parallel 2
+
+      - name: Run concurrent host-service stress cases
+        shell: bash
+        run: python ci/test/multi-instance/run-stress.py dist/multi-instance/wz_multi_instance_worker | tee dist/multi-instance-run.log
+
+      - name: Save runner record
+        shell: bash
+        env:
+          MATRIX_ID: ${{ matrix.id }}
+        run: |
+          set -euo pipefail
+          mkdir -p "dist/multi-instance-artifacts/$MATRIX_ID"
+          cp dist/multi-instance-run.log "dist/multi-instance-artifacts/$MATRIX_ID/run.log"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          record = {
+              "label": os.environ["MATRIX_ID"],
+              "os": os.environ["RUNNER_OS"],
+              "architecture": os.environ["RUNNER_ARCH"],
+              "runnerName": os.environ.get("ImageOS", "hosted runner"),
+          }
+          Path(f"dist/multi-instance-artifacts/{record['label']}/runner.json").write_text(
+              json.dumps(record, indent=2) + "\n", encoding="utf-8")
+          PY
+
+      - name: Upload runner stress result
+        uses: actions/upload-artifact@v4
+        with:
+          name: multi-instance-raw-${{ matrix.id }}
+          path: dist/multi-instance-artifacts/
+          if-no-files-found: error
+
+  proof:
+    name: Aggregate multi-instance proof
+    if: github.ref == 'refs/heads/main'
+    needs: multi-instance
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out project source
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Download all runner results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: multi-instance-raw-*
+          path: dist/multi-instance-artifacts
+          merge-multiple: true
+
+      - name: Aggregate pinned proof
+        shell: bash
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          python3 ci/test/multi-instance/write-proof.py \
+            --project-commit "$GITHUB_SHA" \
+            --artifact-root dist/multi-instance-artifacts \
+            --proof-out dist/multi-instance-stress.json
+
+      - name: Upload pinned multi-instance proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: multi-instance-stress-proof-${{ github.sha }}
+          path: dist/multi-instance-stress.json
+          if-no-files-found: error

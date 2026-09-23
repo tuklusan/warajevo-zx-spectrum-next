@@ -1,0 +1,122 @@
+{
+  "testId": "multi-instance-stress",
+  "command": "cmake -S ci/test/multi-instance -B dist/multi-instance -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/multi-instance --config Release --target wz_multi_instance_worker --parallel 2 && python ci/test/multi-instance/run-stress.py dist/multi-instance/wz_multi_instance_worker",
+  "requiredCases": 5,
+  "processesPerContentionGroup": 12,
+  "runnerMatrix": [
+    "windows-2025",
+    "windows-11-arm",
+    "macos-15-intel",
+    "macos-15"
+  ],
+  "fixtures": [
+    {
+      "path": "ci/test/multi-instance/worker.c",
+      "sha256": "91af9a6419d023bf4cf7a0f11cce99bd63db67c605b80e03752cab7b2cf359a9"
+    },
+    {
+      "path": "src/app/wz_control_port.c",
+      "sha256": "07821a10c7e1a7be357b808dd2ad729bd04d684f5782950d3131bf72edb3a18c"
+    },
+    {
+      "path": "src/app/wz_control_port.h",
+      "sha256": "44a2a09d58c56dff09494d2176a43f8de0982ff719e3914fb53853fcca4ea32a"
+    },
+    {
+      "path": "src/app/wz_host_config.c",
+      "sha256": "5fdecc8d1f9abe5e9f6a4297c83fc7e0fe0590a2d4022dce15c3e49c5a76edaa"
+    },
+    {
+      "path": "src/app/wz_host_config.h",
+      "sha256": "dc7886087ef96ae7f98d7dbfdfff69df2e2c48aa39c3a8f52ef33d0664f44e14"
+    },
+    {
+      "path": "src/app/wz_host_media_ownership.c",
+      "sha256": "0dab620b874f77e5c30dd1c08ea67c319aa00050ae771f36865f16eff6e6db06"
+    },
+    {
+      "path": "src/app/wz_host_media_ownership.h",
+      "sha256": "127c649dd96795e8efd802a3b625db8d703c0166cdf205ae63f9fac88f305f5f"
+    },
+    {
+      "path": "src/app/wz_host_output.c",
+      "sha256": "504322b9d5c80d2c865f6e8362557af61bce90240df83ccd25ca7065441191e6"
+    },
+    {
+      "path": "src/app/wz_host_output.h",
+      "sha256": "0c415f0029214f54d2a92dd9aa46bfc53d1801dee71c7eeb9acd8bd65a104895"
+    },
+    {
+      "path": "src/app/wz_host_socket.c",
+      "sha256": "f7c9c9eb5032b170a6c152064bb9556e2a5bf41805eff683bc53b02a7f5c2259"
+    },
+    {
+      "path": "src/app/wz_host_socket.h",
+      "sha256": "1c5bbe42e47fd27db8b2781c699eb51026963bfe9d3831580489dce472444230"
+    },
+    {
+      "path": "src/app/wz_telnet_keyboard_command.c",
+      "sha256": "34459193b5233fb4131c9d9d9ac16a38875695100f792726c3e9ff88163a164d"
+    },
+    {
+      "path": "src/app/wz_telnet_keyboard_command.h",
+      "sha256": "d6e7553f89c46a15706508e474beacf8b3cce6ea9ed6be95599ec84bb446eed1"
+    },
+    {
+      "path": "src/app/wz_command_registry.c",
+      "sha256": "cc93872a17c44e79460c75822cbce642c522c5941873939ee74aa44e05c7dd7d"
+    },
+    {
+      "path": "src/app/wz_command_registry.h",
+      "sha256": "f9b3dbd1fbd1d2efd26d2c242707188c6a63920bd00fe1e896479e042853d025"
+    },
+    {
+      "path": "src/app/wz_telnet_keymap.c",
+      "sha256": "c28b14ee6726eb99c6f26a4b7511c0b60dfaea008dcbe2cbe6bd7750a4092f3c"
+    },
+    {
+      "path": "src/app/wz_telnet_keymap.h",
+      "sha256": "056a9e1304fe7db114b1b860d6628f7d7866e84d0d4c44c75df4e58406bf1ff7"
+    },
+    {
+      "path": "src/app/wz_screenshot_service.c",
+      "sha256": "05c8da60b7b90ca6b3a2b6b865ef6e00ab017ac739be8e282f196078fd195949"
+    },
+    {
+      "path": "src/app/wz_screenshot_service.h",
+      "sha256": "1b58549d40bf834a9b2ebf6afa4820119349fa2afce66082c0e041299b634017"
+    },
+    {
+      "path": "src/core/wz_presentation_snapshot.c",
+      "sha256": "e486ad41490593ff803f647460d3542f69f425bf8c15bd0892e882962a685367"
+    },
+    {
+      "path": "src/core/wz_presentation_snapshot.h",
+      "sha256": "5dc1be78cf4627ed526b39e7d1ee4e961c3bff8b00f869e635675f2180af820d"
+    },
+    {
+      "path": "ci/test/multi-instance/CMakeLists.txt",
+      "sha256": "b3a16c62916119d8db442984925f830faed8db19c5d0aef0129a66d48e8b26a6"
+    },
+    {
+      "path": "ci/test/multi-instance/run-stress.py",
+      "sha256": "e7c5ebc25a56deec263ee22ba1072201ecbcbabd5039414b97553cb1aed30bf1"
+    },
+    {
+      "path": "ci/test/multi-instance/write-proof.py",
+      "sha256": "4423828a8b547c4becfe469c006f724c44ef97f014c56ece9597bd47b4eafd78"
+    },
+    {
+      "path": "ci/test/multi-instance/README.md",
+      "sha256": "a6e32e3bafaa70eeed87895a0b6d04dfc8d52a2eae832a7e1713c3dbd9a8901d"
+    },
+    {
+      "path": "ci/test/multi-instance/test-description.md",
+      "sha256": "0bd30dabae3bcdc59be15f3dc22adcf0c0c036a3978a16882a85c7eca2fd4ec9"
+    },
+    {
+      "path": ".github/workflows/multi-instance-stress.yml",
+      "sha256": "1072d4fb8e8ca3242bbfeb160da6df604a75ddcfdcb755a70cb280944dd1bcc9"
+    }
+  ]
+}
