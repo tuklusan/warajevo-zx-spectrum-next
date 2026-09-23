@@ -1,10 +1,10 @@
 {
   "testId": "application-command-boundary",
   "status": "pass",
-  "commit": "8d5003419b72c3ee53b359d9a6e2dba4f9c86502",
+  "commit": "1b4a9bc955dcd4a337fb1d0fc1436ead3e33b886",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-09-23T22:27:13+00:00",
-  "caseCount": 4,
+  "timestamp": "2026-09-23T23:13:47+00:00",
+  "caseCount": 6,
   "runners": [
     {
       "id": "windows-x64",
@@ -38,15 +38,15 @@
     },
     {
       "path": "ci/test/application-command-boundary/CMakeLists.txt",
-      "sha256": "a58f4fcfb86773d7eacc29d6d106b8df4266a23bd32826878557303222201c56"
+      "sha256": "62e00ce7eec4d36e3ff6c2dcf270d02a6fed73121ba596e89659291eef84c1c2"
     },
     {
       "path": "ci/test/application-command-boundary/README.md",
-      "sha256": "91128f8d43c262dd72b82e984f9ef7a24569d15116015f73bf7657a6c9948021"
+      "sha256": "9493c1c0cac6a78f56556542bd6c6626725364cb6f7a1fa16fcf2fcfb94af190"
     },
     {
       "path": "ci/test/application-command-boundary/write-proof.py",
-      "sha256": "8d57b66432cba15cb67763457ce943527b719d56f5ccba12fd448e663fd0b4dc"
+      "sha256": "5fdd3cbbc31c8e94bc89ced592b782150269b566001c3da9c9a8f4f092e4fe83"
     },
     {
       "path": "src/app/wz_command_registry.c",
@@ -66,7 +66,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "3bf432e38c539193e95ba7986602c47a010ae038a1eb77deb4d0ef3b1527dbb1"
+      "sha256": "c3bfb43ec590557607e2fd15cfc8687ae42db0693f67a6c9bbab7419f7a334e2"
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.c",
@@ -78,23 +78,107 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "6edbe51443dfb28b8f04b8c829ba1da5e19506270e8a3dbc430af33807d12589"
+      "sha256": "fe6d8410b00461e8407c1c085ff2d08bd9bb8f79e7c630cde36952c354e55697"
     },
     {
       "path": "src/app/wz_ui_layout.h",
-      "sha256": "a1a20e5f78005ea0baa04f1a33b2d5e665e7045bdfff289430ee49a14e42fe3c"
+      "sha256": "701a6e9d97019caa67e92656afea58b1e48347800f3046c5dea513a1724af47a"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
       "sha256": "78fb432a79908239ba4efbd818cda04eec86692158ae2ab214c24eaa860d69b4"
     },
     {
+      "path": "src/core/audio/wz_audio_evidence.c",
+      "sha256": "8e01e5376bd09b00cc2f14d4497b9c5877f7201132ac3f5ec33a2a964fa37192"
+    },
+    {
+      "path": "src/core/audio/wz_audio_mixer.c",
+      "sha256": "2236bdde5587652100b7f94390b439985166a848573114e71252faac43adfd67"
+    },
+    {
+      "path": "src/core/audio/wz_ay.c",
+      "sha256": "6225b48ea86d0735d21d511864c428f62319ff015414bde49240a4270ac54022"
+    },
+    {
+      "path": "src/core/audio/wz_beeper.c",
+      "sha256": "c6afe70cf3939f33d3af3084fe72faf85898ab25c7046f991980ddb5fff20b6c"
+    },
+    {
+      "path": "src/core/wz_bus.c",
+      "sha256": "98414267eea61bc0a252d3f81ed1cbbe8aa340861a8e2d819940f9f469247398"
+    },
+    {
+      "path": "src/core/wz_debugger.c",
+      "sha256": "479b238f1aa668002aba6a4959750296cef553c2d4fe4425b0164b7f08e35eaf"
+    },
+    {
+      "path": "src/core/wz_kempston.c",
+      "sha256": "3a5a7d442da3debf4d114b660ae6b606f95ab963244fc5987e190689cd40b35a"
+    },
+    {
+      "path": "src/core/wz_keyboard_matrix.c",
+      "sha256": "68deeb821563f28e5af3e0872765fedd5ae7e24a0491c011c24ebb9d4abbd575"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "1144a874bff7b0d3c583fa900b1b68310884e66ed37085ac1b359084b3c51b5a"
+    },
+    {
+      "path": "src/core/wz_machine_profile.c",
+      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09"
+    },
+    {
+      "path": "src/core/wz_microdrive.c",
+      "sha256": "0d80d9a9144cdc39f5df0b8a9abb8e5e21bc71cfeb92f13ee2f7f34e532bc522"
+    },
+    {
+      "path": "src/core/wz_printer.c",
+      "sha256": "fbcd4ceb9d809fe626517fe336ece5a0dd07f3a7ff3b00dfbb2b64bc7bd58e52"
+    },
+    {
+      "path": "src/core/wz_raster_diagnostic.c",
+      "sha256": "313a045ff4a389f25a296df239061cc16ea924891bc8cc9073477e8b0617fbe2"
+    },
+    {
+      "path": "src/core/wz_raster_evidence.c",
+      "sha256": "5380a2fd77e8534a95cfe23ec621ec39d78aa6735e4fe28f8f1a0731ffb66576"
+    },
+    {
+      "path": "src/core/wz_runner.c",
+      "sha256": "6225a610d2b752d0edeeb073961bb84ba5c54ae446e58fe08569e68f33cd654d"
+    },
+    {
+      "path": "src/core/wz_scheduler.c",
+      "sha256": "524f6560c883d1a374548e1418bb23a05f1270f7c57561f284fa13452543f6f3"
+    },
+    {
+      "path": "src/core/wz_state.c",
+      "sha256": "187297bef4bdae24005193ccd54aadb8bbab9326bea3e763aee6bd98a34bb0b5"
+    },
+    {
+      "path": "src/core/wz_tape.c",
+      "sha256": "9691238f861d9c649690a2c3f94e7d9be52118c16d3aa6b3ae9de0ffa6a2fa96"
+    },
+    {
+      "path": "src/core/wz_trace.c",
+      "sha256": "d5283eff30dcaadb192ab2465901423abef769976687129c967e521f22bb8dd2"
+    },
+    {
+      "path": "src/core/wz_z80.c",
+      "sha256": "4414a17180681cc18c03a3a84c960196c1fa0d7bdfe09f59d0b664919a369195"
+    },
+    {
+      "path": "src/core/wz_zxnet.c",
+      "sha256": "827a71779f8b9ea11dd7644c2b2c757dea33d8a955dd8548fa110dd57325cef5"
+    },
+    {
       "path": "tests/application-command-boundary.c",
-      "sha256": "ef19f3cbf37e3803e137eebc7c4998725301cce2ff63e347253fde5621ed0177"
+      "sha256": "000b5c62ec3bf3853c26b40465a004639909ac5e641806ec1953d8f282d923d9"
     },
     {
       "path": "tests/application-command-boundary.md",
-      "sha256": "a08410c25dc632965299fc33c3439a10736919db3cef655e2315ebf7b50a32e9"
+      "sha256": "51e351ed2fc47dd4fcab19a1b1e48620d5e8e59a35a1adc2c5336ad184681503"
     }
   ]
 }
