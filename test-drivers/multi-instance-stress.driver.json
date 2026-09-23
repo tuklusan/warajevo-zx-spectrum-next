@@ -12,7 +12,7 @@
   "fixtures": [
     {
       "path": "tests/multi-instance-stress.c",
-      "sha256": "f98e98bc37e5db86a0f3a46df5edc138bfc5761afbb91e19b03db6525f6319d0"
+      "sha256": "5ddb0bb2af26230d639c517186e41be070e9da95e37bb06d7cfdbcf0fbad43f0"
     },
     {
       "path": "src/app/wz_control_port.c",

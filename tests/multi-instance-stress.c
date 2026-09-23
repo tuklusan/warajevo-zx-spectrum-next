@@ -182,7 +182,7 @@ static int run_screenshot(const char* directory, unsigned index)
                                        sizeof(output_path));
     free(pixels);
     if (result != WZ_TELNET_SCREENSHOT_OK) return 3;
-    printf("SCREENSHOT %s\n", output_path);
+    printf("SCREENSHOT %.1023s\n", output_path);
     return 0;
 }
 
