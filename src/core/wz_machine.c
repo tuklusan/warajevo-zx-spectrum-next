@@ -79,6 +79,9 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     machine->master_tick = 0u;
     machine->ula_output_tick = 0u;
     machine->border_color = 0u;
+    machine->border_event_base_color = 0u;
+    machine->border_event_base_tick = 0u;
+    machine->border_event_start = 0u;
     machine->border_event_count = 0u;
     machine->im0_injected_opcode = 0u;
     machine->im0_injected_opcode_pending = 0u;
@@ -182,6 +185,9 @@ void wz_machine_destroy(wz_machine_t* machine)
         machine->master_tick = 0u;
         machine->ula_output_tick = 0u;
         machine->border_color = 0u;
+        machine->border_event_base_color = 0u;
+        machine->border_event_base_tick = 0u;
+        machine->border_event_start = 0u;
         machine->border_event_count = 0u;
         machine->im0_injected_opcode = 0u;
         machine->im0_injected_opcode_pending = 0u;
@@ -853,10 +859,26 @@ void wz_machine_ula_port_fe_write(wz_machine_t* machine, wz_word_t address,
     machine->ula_output_tick = master_tick;
     wz_beeper_port_fe_write(&machine->beeper, value, master_tick);
     machine->border_color = (wz_byte_t)(value & 0x07u);
-    if (machine->border_event_count < WZ_BORDER_EVENT_CAPACITY) {
-        machine->border_events[machine->border_event_count].master_tick = master_tick;
-        machine->border_events[machine->border_event_count].color = machine->border_color;
-        machine->border_event_count += 1u;
+    {
+        size_t index;
+        if (machine->border_event_count == WZ_BORDER_EVENT_CAPACITY) {
+            const wz_border_event_t* expired =
+                &machine->border_events[machine->border_event_start];
+            machine->border_event_base_tick = expired->master_tick;
+            machine->border_event_base_color = expired->color;
+            machine->border_event_start =
+                (machine->border_event_start + 1u) % WZ_BORDER_EVENT_CAPACITY;
+            index = (machine->border_event_start +
+                     machine->border_event_count - 1u) %
+                    WZ_BORDER_EVENT_CAPACITY;
+        } else {
+            index = (machine->border_event_start +
+                     machine->border_event_count) %
+                    WZ_BORDER_EVENT_CAPACITY;
+            machine->border_event_count += 1u;
+        }
+        machine->border_events[index].master_tick = master_tick;
+        machine->border_events[index].color = machine->border_color;
     }
     if (machine->timing_trace != 0) {
         wz_trace_event_t event = {0};
@@ -944,7 +966,9 @@ size_t wz_machine_border_events(const wz_machine_t* machine,
         machine->border_event_count : capacity;
     if (events != 0) {
         for (size_t index = 0u; index < count; ++index) {
-            events[index] = machine->border_events[index];
+            events[index] = machine->border_events[
+                (machine->border_event_start + index) %
+                WZ_BORDER_EVENT_CAPACITY];
         }
     }
     return count;
@@ -1149,8 +1173,15 @@ wz_result_t wz_machine_render_raster(const wz_machine_t* machine,
                                      wz_raster_buffer_t* destination)
 {
     const size_t left = (WZ_RASTER_CANONICAL_WIDTH - 256u) / 2u;
-    const size_t top = (WZ_RASTER_CANONICAL_HEIGHT - 192u) / 2u;
+    const size_t top = 64u;
+    wz_qword_t line_ticks;
+    wz_qword_t frame_ticks;
+    wz_master_tick_t latest_tick;
+    wz_master_tick_t frame_start;
+    size_t event_index = 0u;
     wz_byte_t border_sample;
+    wz_byte_t border_color;
+    bool border_changes_in_frame = false;
     bool flash_phase;
 
     if (machine == 0 || machine->profile == 0 || destination == 0 ||
@@ -1159,13 +1190,73 @@ wz_result_t wz_machine_render_raster(const wz_machine_t* machine,
         destination->height != WZ_RASTER_CANONICAL_HEIGHT) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
-    if (wz_raster_palette_index(machine->border_color, false,
-                                &border_sample) != WZ_RESULT_OK) {
+    if (machine->profile->master_ticks_per_cpu_tstate == 0u ||
+        machine->profile->tstates_per_line == 0u ||
+        machine->profile->lines_per_frame == 0u) {
         return WZ_RESULT_INVALID_STATE;
     }
-    border_sample = (wz_byte_t)(WZ_RASTER_BORDER_MIN + machine->border_color);
+    line_ticks = (wz_qword_t)machine->profile->tstates_per_line *
+        machine->profile->master_ticks_per_cpu_tstate;
+    frame_ticks = (wz_qword_t)machine->profile->tstates_per_frame *
+        machine->profile->master_ticks_per_cpu_tstate;
+    if (line_ticks != WZ_RASTER_CANONICAL_WIDTH ||
+        frame_ticks != (wz_qword_t)WZ_RASTER_CANONICAL_WIDTH *
+            WZ_RASTER_CANONICAL_HEIGHT ||
+        machine->master_tick > UINT64_MAX - (frame_ticks - 1u) ||
+        machine->border_event_count > WZ_BORDER_EVENT_CAPACITY) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    latest_tick = machine->master_tick == 0u ? 0u : machine->master_tick - 1u;
+    frame_start = (latest_tick / frame_ticks) * frame_ticks;
+    border_color = machine->border_event_count == 0u ? machine->border_color :
+        machine->border_event_base_color;
+    if (border_color > 7u) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    if (machine->border_event_count != 0u &&
+        machine->border_event_base_tick > frame_start) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    for (size_t index = 0u; index < machine->border_event_count; ++index) {
+        const wz_border_event_t* event = &machine->border_events[
+            (machine->border_event_start + index) % WZ_BORDER_EVENT_CAPACITY];
+        const wz_border_event_t* previous = index == 0u ? 0 :
+            &machine->border_events[(machine->border_event_start + index - 1u) %
+                                    WZ_BORDER_EVENT_CAPACITY];
+        if (event->color > 7u ||
+            (previous != 0 && event->master_tick < previous->master_tick)) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        if (event->master_tick <= frame_start) {
+            border_color = event->color;
+            event_index = index + 1u;
+        } else if (event->master_tick - frame_start < frame_ticks) {
+            border_changes_in_frame = true;
+        }
+    }
+    border_sample = (wz_byte_t)(WZ_RASTER_BORDER_MIN + border_color);
     if (wz_raster_buffer_clear(destination, border_sample) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_STATE;
+    }
+    if (border_changes_in_frame) {
+        for (wz_qword_t offset = 0u; offset < frame_ticks; ++offset) {
+            const size_t y = (size_t)(offset / line_ticks);
+            const size_t raster_phase = (size_t)(offset % line_ticks);
+            const size_t x = (left + raster_phase) % WZ_RASTER_CANONICAL_WIDTH;
+            const wz_master_tick_t sample_tick = frame_start + offset;
+            while (event_index < machine->border_event_count &&
+                   machine->border_events[(machine->border_event_start + event_index) %
+                       WZ_BORDER_EVENT_CAPACITY].master_tick <= sample_tick) {
+                border_color = machine->border_events[
+                    (machine->border_event_start + event_index) %
+                    WZ_BORDER_EVENT_CAPACITY].color;
+                ++event_index;
+            }
+            if (y < top || y >= top + 192u || x < left || x >= left + 256u) {
+                destination->samples[y * destination->width + x] =
+                    (wz_byte_t)(WZ_RASTER_BORDER_MIN + border_color);
+            }
+        }
     }
     flash_phase = wz_machine_flash_phase(machine, machine->master_tick);
     for (size_t y = 0u; y < 192u; ++y) {

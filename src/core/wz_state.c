@@ -776,6 +776,7 @@ wz_result_t wz_snapshot_state_load_sna_48k(wz_snapshot_state_t* snapshot,
     candidate.cpu.stack_pointer = (wz_word_t)(stack_pointer + 2u);
     candidate.cpu.interrupt_mode = data[25u];
     candidate.border_color = data[26u];
+    candidate.border_event_base_color = candidate.border_color;
     candidate.ula_output = data[26u];
     for (size_t index = 0u; index < 49152u; ++index) {
         candidate.memory[0x4000u + index] = data[27u + index];
@@ -1054,10 +1055,13 @@ static void wz_sna_128k_apply_candidate(wz_machine_t* machine,
     machine->master_tick = candidate->master_tick;
     machine->ula_output_tick = candidate->ula_output_tick;
     machine->border_color = candidate->border_color;
+    machine->border_event_base_color = candidate->border_color;
+    machine->border_event_base_tick = candidate->border_event_base_tick;
     for (size_t index = 0u; index < WZ_BORDER_EVENT_CAPACITY; ++index) {
         machine->border_events[index] = candidate->border_events[index];
     }
     machine->border_event_count = candidate->border_event_count;
+    machine->border_event_start = candidate->border_event_start;
     machine->maskable_interrupt_line_low = candidate->maskable_interrupt_line_low;
     machine->im0_injected_opcode = candidate->im0_injected_opcode;
     machine->im0_injected_opcode_pending = candidate->im0_injected_opcode_pending;
@@ -1101,6 +1105,7 @@ wz_result_t wz_state_load_sna_128k(wz_machine_t* machine,
     candidate.paging_7ffd = image.paging_7ffd;
     candidate.paging_7ffd_locked = (wz_byte_t)((image.paging_7ffd >> 5u) & 1u);
     candidate.border_color = border_color;
+    candidate.border_event_base_color = candidate.border_color;
     candidate.ula_output = border_color;
     wz_sna_128k_apply_candidate(machine, &candidate);
     wz_machine_destroy(&candidate);
@@ -1226,6 +1231,7 @@ wz_result_t wz_snapshot_state_load_z80_v1(wz_snapshot_state_t* snapshot,
     candidate.cpu.r = (wz_byte_t)((data[11u] & 0x7fu) |
                                   ((data[12u] & 0x01u) << 7u));
     candidate.border_color = (wz_byte_t)((data[12u] >> 1u) & 0x07u);
+    candidate.border_event_base_color = candidate.border_color;
     candidate.ula_output = candidate.border_color;
     candidate.cpu.main.e = data[13u];
     candidate.cpu.main.d = data[14u];
@@ -1356,6 +1362,10 @@ static wz_result_t wz_z80_v2_map_header(wz_machine_t* machine,
     machine->cpu.r = (wz_byte_t)((data[11u] & 0x7fu) |
                                   ((data[12u] & 0x01u) << 7u));
     machine->border_color = (wz_byte_t)((data[12u] >> 1u) & 0x07u);
+    machine->border_event_base_color = machine->border_color;
+    machine->border_event_base_tick = machine->master_tick;
+    machine->border_event_start = 0u;
+    machine->border_event_count = 0u;
     machine->ula_output = machine->border_color;
     machine->cpu.main.e = data[13u];
     machine->cpu.main.d = data[14u];
@@ -1480,6 +1490,10 @@ static wz_result_t wz_z80_v3_map_header(wz_machine_t* machine,
     machine->cpu.r = (wz_byte_t)((data[11u] & 0x7fu) |
                                   ((data[12u] & 0x01u) << 7u));
     machine->border_color = (wz_byte_t)((data[12u] >> 1u) & 0x07u);
+    machine->border_event_base_color = machine->border_color;
+    machine->border_event_base_tick = machine->master_tick;
+    machine->border_event_start = 0u;
+    machine->border_event_count = 0u;
     machine->ula_output = machine->border_color;
     machine->cpu.main.e = data[13u];
     machine->cpu.main.d = data[14u];
@@ -1665,6 +1679,10 @@ static wz_result_t wz_z80_128k_map_header(wz_machine_t* machine,
     machine->cpu.r = (wz_byte_t)((data[11u] & 0x7fu) |
                                   ((data[12u] & 0x01u) << 7u));
     machine->border_color = (wz_byte_t)((data[12u] >> 1u) & 0x07u);
+    machine->border_event_base_color = machine->border_color;
+    machine->border_event_base_tick = machine->master_tick;
+    machine->border_event_start = 0u;
+    machine->border_event_count = 0u;
     machine->ula_output = machine->border_color;
     machine->cpu.main.e = data[13u];
     machine->cpu.main.d = data[14u];

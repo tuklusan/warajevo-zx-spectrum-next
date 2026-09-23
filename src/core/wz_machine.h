@@ -1,10 +1,10 @@
-/*
-Warajevo ZX Spectrum Next
-Copyright (c) 2026 Supratim Sanyal, SANYALnet Labs, for new original project material.
-New original material is licensed under GNU GPL v2 or later (GPL-2.0-or-later), as stated in LICENSE.txt.
-Upstream Warajevo and third-party material retain their applicable copyrights and licenses.
-See LICENSE.txt and NOTICE.md for complete terms and provenance.
-*/
+/* Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+ * This file is governed by the SANYALnet Labs Non-Commercial License in the
+ * root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
+ * for AI/ML model training are prohibited unless separately authorized.
+ * Attribution is required: "Based on original work by Supratim Sanyal of
+ * SANYALnet Labs." See LICENSE for full terms.
+ */
 
 #ifndef WZ_CORE_WZ_MACHINE_H
 #define WZ_CORE_WZ_MACHINE_H
@@ -30,7 +30,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #define WZ_48K_RAM_SIZE 49152u
 #define WZ_128K_RAM_BANK_COUNT 8u
 #define WZ_128K_RAM_BANK_SIZE 16384u
-#define WZ_BORDER_EVENT_CAPACITY 1024u
+#define WZ_BORDER_EVENT_CAPACITY 8192u
 #define WZ_INTERFACE1_CONTROL_RESET 0xeeu
 
 typedef struct {
@@ -127,7 +127,10 @@ typedef struct wz_machine {
     wz_master_tick_t master_tick;
     wz_master_tick_t ula_output_tick;
     wz_byte_t border_color;
+    wz_byte_t border_event_base_color;
+    wz_master_tick_t border_event_base_tick;
     wz_border_event_t border_events[WZ_BORDER_EVENT_CAPACITY];
+    size_t border_event_start;
     size_t border_event_count;
     wz_byte_t maskable_interrupt_line_low;
     wz_byte_t im0_injected_opcode;
