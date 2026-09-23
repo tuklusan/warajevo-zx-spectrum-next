@@ -1,0 +1,80 @@
+name: Cross-platform runner bootstrap and test
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  runner:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.label }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows Intel
+            id: windows-x64
+            label: windows-2025
+          - name: Windows ARM
+            id: windows-arm64
+            label: windows-11-arm
+          - name: macOS Intel
+            id: macos-x64
+            label: macos-15-intel
+          - name: macOS ARM
+            id: macos-arm64
+            label: macos-15
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+
+      - name: Identify runner
+        shell: bash
+        run: |
+          {
+            echo "## Runner"
+            echo "- Requested label: `${{ matrix.label }}`"
+            echo "- Actual runner name: `${RUNNER_NAME}`"
+            echo "- Actual runner architecture: `${RUNNER_ARCH}`"
+            echo "- Image: `${ImageOS:-unknown}`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Restore runner bootstrap cache
+        id: bootstrap-cache
+        uses: actions/cache@v4
+        with:
+          path: .ci/runner-bootstrap
+          key: runner-bootstrap-${{ matrix.id }}-${{ hashFiles('**/CMakeLists.txt', '**/pyproject.toml', '**/requirements*.txt', '**/package-lock.json', '**/Cargo.lock') }}
+
+      - name: Bootstrap cached runner miss
+        if: steps.bootstrap-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .ci/runner-bootstrap
+          {
+            echo "runner_label=${{ matrix.label }}"
+            echo "runner_name=${RUNNER_NAME}"
+            echo "runner_arch=${RUNNER_ARCH}"
+            echo "image=${ImageOS:-unknown}"
+            echo "bootstrapped_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } > .ci/runner-bootstrap/manifest.txt
+          cmake --version
+          python3 --version || python --version
+
+      - name: Validate cached bootstrap
+        shell: bash
+        run: |
+          test -s .ci/runner-bootstrap/manifest.txt
+          cat .ci/runner-bootstrap/manifest.txt
+
+      - name: Configure and build when CMake is present
+        if: hashFiles('**/CMakeLists.txt') != ''
+        shell: bash
+        run: |
+          cmake -S . -B build/ci -DCMAKE_BUILD_TYPE=Debug
+          cmake --build build/ci --parallel 2
