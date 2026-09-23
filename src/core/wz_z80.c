@@ -1566,10 +1566,10 @@ static wz_result_t wz_z80_execute_in_block(wz_machine_t* machine,
     wz_word_t sum;
     wz_byte_t value = 0u;
 
-    if (wz_z80_ed_bus(machine, WZ_BUS_IO_READ, 8u, port, &value, 4u) != WZ_RESULT_OK) {
+    if (wz_z80_ed_bus(machine, WZ_BUS_IO_READ, 10u, port, &value, 4u) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_STATE;
     }
-    if (wz_z80_ed_bus(machine, WZ_BUS_MEMORY_WRITE, 16u, address, &value, 3u) != WZ_RESULT_OK) {
+    if (wz_z80_ed_bus(machine, WZ_BUS_MEMORY_WRITE, 18u, address, &value, 3u) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_STATE;
     }
 
