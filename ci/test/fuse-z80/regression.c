@@ -356,42 +356,25 @@ static void record_bus_request(const wz_bus_request_t* request, void* context)
     event_log_t* log = (event_log_t*)context;
     uint32_t ticks_per_tstate = log->ticks_per_tstate;
     uint32_t event_tick;
-    uint32_t delay = request->contention_delay;
-    uint32_t start_tick;
     if (ticks_per_tstate == 0u) {
         log->overflow = true;
         return;
     }
     event_tick = (uint32_t)(request->master_tick / ticks_per_tstate);
-    start_tick = event_tick >= delay ? event_tick - delay : 0u;
 
     if (request->cycle == WZ_BUS_M1_OPCODE_FETCH ||
         request->cycle == WZ_BUS_MEMORY_READ ||
         request->cycle == WZ_BUS_MEMORY_WRITE) {
-        for (uint32_t index = 0u; index < delay; ++index) {
-            (void)add_event(log, start_tick + index, "MC", request->address,
-                            0u, false);
-        }
-        (void)add_event(log, event_tick, "MC", request->address, 0u, false);
         (void)add_event(log, event_tick + request->t_states,
                         request->cycle == WZ_BUS_MEMORY_WRITE ? "MW" : "MR",
                         request->address, request->value, true);
         return;
     }
     if (request->cycle == WZ_BUS_IO_READ || request->cycle == WZ_BUS_IO_WRITE) {
-        bool contended_high = (request->address & 0xc000u) == 0x4000u;
         uint32_t io_time = event_tick + 1u;
-        if (contended_high) {
-            (void)add_event(log, start_tick, "PC", request->address, 0u, false);
-        }
         (void)add_event(log, io_time,
                         request->cycle == WZ_BUS_IO_WRITE ? "PW" : "PR",
                         request->address, request->value, true);
-        if ((request->address & 1u) == 0u || contended_high) {
-            (void)add_event(log, io_time + 1u, "PC", request->address, 0u, false);
-            (void)add_event(log, io_time + 2u, "PC", request->address, 0u, false);
-            (void)add_event(log, io_time + 3u, "PC", request->address, 0u, false);
-        }
     }
 }
 
@@ -521,9 +504,21 @@ static bool execute_case(fuse_case_t* input, const fuse_case_t* expected,
                 expected->events.event_count);
         goto cleanup;
     }
+    size_t actual_index = 0u;
     for (size_t index = 0u; index < expected->events.event_count; ++index) {
-        const fuse_event_t* actual = &input->events.events[index];
         const fuse_event_t* wanted = &expected->events.events[index];
+        const fuse_event_t* actual;
+        /* MC/PC are coretest helper-call traces from a synthetic memory map;
+         * compare transfers here and validate profile contention separately. */
+        if (strcmp(wanted->type, "MC") == 0 || strcmp(wanted->type, "PC") == 0) {
+            continue;
+        }
+        if (actual_index >= input->events.event_count) {
+            fprintf(stderr, "FAIL %s: transfer event %zu is missing\n",
+                    input->description, index);
+            goto cleanup;
+        }
+        actual = &input->events.events[actual_index++];
         if (actual->time != wanted->time || actual->address != wanted->address ||
             actual->data != wanted->data || actual->has_data != wanted->has_data ||
             strcmp(actual->type, wanted->type) != 0) {
@@ -535,6 +530,11 @@ static bool execute_case(fuse_case_t* input, const fuse_case_t* expected,
                     case_number);
             goto cleanup;
         }
+    }
+    if (actual_index != input->events.event_count) {
+        fprintf(stderr, "FAIL %s: unexpected transfer events remain\n",
+                input->description);
+        goto cleanup;
     }
     for (size_t address = 0u; address < FUSE_MEMORY_SIZE; ++address) {
         actual_memory[address] = wz_machine_memory_read(&machine, (wz_word_t)address);

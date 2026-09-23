@@ -4,6 +4,7 @@
   "upstreamRepository": "https://git.code.sf.net/p/fuse-emulator/fuse",
   "upstreamRevision": "c94a5e611bb0b795d62e904a0f5af4f59f2a4eee",
   "requiredCases": 1356,
+  "eventComparison": "Compare every MR/MW/PR/PW transfer and timestamp. MC/PC markers are excluded because upstream coretest emits synthetic contention-helper traces whose memory map differs from the 48K PAL profile; this suite does not claim profile contention conformance.",
   "fixtures": [
     {
       "path": "fuse-emulator/fuse@c94a5e611bb0b795d62e904a0f5af4f59f2a4eee:z80/tests/tests.in",

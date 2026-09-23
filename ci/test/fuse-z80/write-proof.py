@@ -23,6 +23,12 @@ import sys
 REPO = Path(__file__).resolve().parents[3]
 UPSTREAM_REVISION = "c94a5e611bb0b795d62e904a0f5af4f59f2a4eee"
 REQUIRED_CASES = 1356
+EVENT_COMPARISON = (
+    "Compare every MR/MW/PR/PW transfer and timestamp. MC/PC markers are "
+    "excluded because upstream coretest emits synthetic contention-helper "
+    "traces whose memory map differs from the 48K PAL profile; this suite "
+    "does not claim profile contention conformance."
+)
 UPSTREAM_FILES = (
     "z80/tests/tests.in",
     "z80/tests/tests.expected",
@@ -99,6 +105,7 @@ def main() -> int:
         "runId": os.environ.get("GITHUB_RUN_ID", "unknown"),
         "upstreamRevision": UPSTREAM_REVISION,
         "caseCount": REQUIRED_CASES,
+        "eventComparison": EVENT_COMPARISON,
         "fixtures": fixtures,
     }
     arguments.proof_out.parent.mkdir(parents=True, exist_ok=True)
