@@ -34,8 +34,8 @@ def read_cache(path: Path) -> dict[str, str]:
         key_and_type, separator, value = line.partition("=")
         if not separator:
             continue
-        key, type_separator, _cache_type = key_and_type.partition(":")
-        if type_separator and key:
+        key = key_and_type.partition(":")[0]
+        if key:
             values[key] = value
     return values
 
