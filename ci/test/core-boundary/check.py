@@ -37,8 +37,9 @@ FORBIDDEN_INCLUDE_PATTERNS = tuple(
     )
 )
 FORBIDDEN_HOST_CALLS = re.compile(
-    r"\b(?:clock_gettime|timespec_get|mach_absolute_time|"
-    r"QueryPerformanceCounter|GetTickCount64?|WSAStartup|closesocket|"
+    r"\b(?:clock_gettime|timespec_get|clock|time|mach_absolute_time|"
+    r"mach_continuous_time|QueryPerformanceCounter|GetTickCount64?|"
+    r"SDL_GetTicks|SDL_GetPerformanceCounter|WSAStartup|closesocket|"
     r"socket|bind|listen|accept|connect|send|recv)\s*\(",
     re.IGNORECASE,
 )
@@ -62,44 +63,52 @@ def core_sources() -> list[Path]:
     )
 
 
-def check_cmake(cmake: str) -> list[str]:
+def check_cmake_report(report_path: Path) -> tuple[list[str], list[str]]:
     errors: list[str] = []
-    core_target = re.search(
-        r"add_library\s*\(\s*wz_core\s+STATIC\b([^)]*)\)", cmake, re.IGNORECASE
-    )
-    if core_target is None:
-        return ["wz_core must be a declared static library"]
-    source_entries = re.findall(r"\$\{WZSN_SOURCE_ROOT\}/([^\s)]+)", core_target.group(1))
+    if not report_path.is_file():
+        return ["CMake target inspection report is missing"], []
+    report = {}
+    for line in report_path.read_text(encoding="utf-8").splitlines():
+        key, separator, value = line.partition("=")
+        if not separator or key in report:
+            errors.append("CMake target inspection report is malformed")
+            continue
+        report[key] = value
+
+    source_entries = report.get("core_sources", "").split(";")
+    source_entries = [entry for entry in source_entries if entry]
     if not source_entries:
-        errors.append("wz_core has no explicit project source entries")
+        errors.append("wz_core has no resolved source files")
+    core_root = (REPO / "src/core").resolve()
     for entry in source_entries:
-        if not entry.replace("\\", "/").startswith("core/"):
+        source = Path(entry).resolve()
+        try:
+            source.relative_to(core_root)
+        except ValueError:
             errors.append(f"wz_core source escapes src/core: {entry}")
 
-    core_links = re.search(
-        r"target_link_libraries\s*\(\s*wz_core\s+PUBLIC\s+([^)]*)\)",
-        cmake,
-        re.IGNORECASE,
-    )
-    if core_links is None:
-        errors.append("wz_core must declare its public dependencies")
-    else:
-        links = core_links.group(1).split()
-        if set(links) - {"wz_warnings", "ZLIB::ZLIB"}:
-            errors.append("wz_core links a dependency outside its approved core set")
+    expected_sources = {
+        path.resolve() for path in core_root.rglob("*.c") if path.is_file()
+    }
+    actual_sources = {Path(entry).resolve() for entry in source_entries}
+    if actual_sources != expected_sources:
+        missing = sorted(str(path) for path in expected_sources - actual_sources)
+        unexpected = sorted(str(path) for path in actual_sources - expected_sources)
+        errors.append(f"wz_core source inventory mismatch: missing={missing}, unexpected={unexpected}")
 
-    if re.search(
-        r"target_link_libraries\s*\(\s*wz_headless\s+PRIVATE\s+wz_core\s*\)",
-        cmake,
-        re.IGNORECASE,
-    ) is None:
+    core_links = set(filter(None, report.get("core_links", "").split(";")))
+    if core_links != {"wz_warnings", "ZLIB::ZLIB"}:
+        errors.append("wz_core direct link dependencies differ from the approved set")
+    core_interface = set(filter(None, report.get("core_interface_links", "").split(";")))
+    if core_interface != {"wz_warnings", "ZLIB::ZLIB"}:
+        errors.append("wz_core interface link dependencies differ from the approved set")
+    headless_links = list(filter(None, report.get("headless_links", "").split(";")))
+    if headless_links != ["wz_core"]:
         errors.append("wz_headless must link directly to wz_core only")
-    if re.search(r"add_executable\s*\(\s*wz_sokol_host\b", cmake, re.IGNORECASE) is None:
-        errors.append("the optional host executable must remain a separate target")
-    return errors
+    return errors, source_entries
 
 
-def inspect() -> tuple[list[str], list[dict[str, str]]]:
+def inspect(cmake_report: Path) -> tuple[list[str], list[dict[str, str]]]:
     errors: list[str] = []
     fixtures: list[dict[str, str]] = []
     sources = core_sources()
@@ -117,11 +126,17 @@ def inspect() -> tuple[list[str], list[dict[str, str]]]:
             errors.append(f"forbidden host API call in {relative}")
 
     cmake_path = REPO / "src/cmake/CMakeLists.txt"
-    cmake = cmake_path.read_text(encoding="utf-8")
     fixtures.append(
         {"path": cmake_path.relative_to(REPO).as_posix(), "sha256": hash_file(cmake_path)}
     )
-    errors.extend(check_cmake(cmake))
+    cmake_errors, _ = check_cmake_report(cmake_report)
+    errors.extend(cmake_errors)
+    fixtures.append(
+        {
+            "path": cmake_report.resolve().relative_to(REPO).as_posix(),
+            "sha256": hash_file(cmake_report),
+        }
+    )
 
     # Exercise both sides of the include rule so an accidentally weakened
     # pattern is detected by the hosted check itself.
@@ -148,10 +163,11 @@ def inspect() -> tuple[list[str], list[dict[str, str]]]:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--cmake-report", required=True, type=Path)
     parser.add_argument("--proof-out", required=True, type=Path)
     arguments = parser.parse_args()
 
-    errors, fixtures = inspect()
+    errors, fixtures = inspect(arguments.cmake_report)
     run_id = os.environ.get("GITHUB_RUN_ID", "local")
     proof = {
         "testId": "core-dependency-boundary",
@@ -169,7 +185,7 @@ def main() -> int:
         for error in errors:
             print(f"FAIL {error}", file=sys.stderr)
         return 1
-    print(f"PASS checked {len(fixtures) - 1} core sources and the CMake dependency graph")
+    print(f"PASS checked {len(fixtures) - 2} core sources and the CMake dependency graph")
     return 0
 
 

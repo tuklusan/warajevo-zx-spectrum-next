@@ -22,13 +22,24 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v5
 
-      - name: Inspect core dependencies and negative control
-        run: python3 ci/test/core-boundary/check.py --proof-out dist/core-boundary/core-dependency-boundary.json
+      - name: Configure and inspect resolved CMake targets
+        run: >-
+          cmake -S src/cmake -B dist/core-boundary/build
+          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_PROJECT_INCLUDE=${GITHUB_WORKSPACE}/ci/test/core-boundary/inspect-targets.cmake
+
+      - name: Inspect core source dependencies and negative controls
+        run: >-
+          python3 ci/test/core-boundary/check.py
+          --cmake-report dist/core-boundary/build/core-boundary-targets.txt
+          --proof-out dist/core-boundary/core-dependency-boundary.json
 
       - name: Upload pinned audit proof
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: core-dependency-boundary-${{ github.sha }}
-          path: dist/core-boundary/core-dependency-boundary.json
+          path: |
+            dist/core-boundary/core-dependency-boundary.json
+            dist/core-boundary/build/core-boundary-targets.txt
           if-no-files-found: error
