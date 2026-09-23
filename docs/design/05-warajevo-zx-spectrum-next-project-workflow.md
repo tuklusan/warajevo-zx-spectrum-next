@@ -39,15 +39,18 @@ for that commit before marking its change record ready to close. Automated
 review and test output are evidence; the responsible developer makes the final
 adjudication.
 
-Every push-triggered GitHub workflow is scoped to `main`. Manual dispatch jobs
-also require the selected ref to be `main`; an off-main dispatch fails its
-job guard, and pull-request triggers are prohibited. The pathname-policy workflow
-therefore validates the complete tracked tree for every direct push to `main`
-and manual runs on `main`; it must not require a pull request or an intermediate
-branch. GitHub's path restriction rules are not available for this public
-repository, so the hosted pathname workflow is the GitHub-side check and reports
-a failure after an invalid path has been pushed. The local pre-push gate rejects
-the same paths before contact with GitHub.
+Every push-triggered GitHub workflow is scoped to `main`. The local pre-push
+gate accepts branch updates only from local `main` to remote `main` and checks
+the complete outgoing tree for forbidden path terms, case-insensitively, before
+contacting GitHub. Manual dispatch jobs require `main`; pull-request triggers
+are prohibited. The pathname-policy workflow rechecks the complete tracked tree
+on each direct push to `main` and on manual runs there.
+
+GitHub push rulesets can reject file paths before receipt only for private or
+internal repositories on eligible plans. This repository is public, so GitHub
+does not offer a server-side path restriction here. The hosted workflow detects
+and fails on a violation after the direct push; the local pre-push gate is the
+before-push safeguard used for project commits.
 
 ## 3. Local pre-push gate
 

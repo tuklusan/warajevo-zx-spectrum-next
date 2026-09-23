@@ -21,6 +21,22 @@ check_banned_content() {
     done
 }
 
+check_pathnames() {
+    newrev=$1
+    [ "$newrev" = "0000000000000000000000000000000000000000" ] && return 0
+
+    if command -v python3 >/dev/null 2>&1; then
+        python3 ci/validate-pathnames.py "$newrev"
+    elif command -v py >/dev/null 2>&1; then
+        py -3 ci/validate-pathnames.py "$newrev"
+    elif command -v python >/dev/null 2>&1; then
+        python ci/validate-pathnames.py "$newrev"
+    else
+        printf '%s\n' "Push rejected: Python is required to validate repository pathnames." >&2
+        return 1
+    fi
+}
+
 check_license_headers() {
     oldrev=$1
     newrev=$2
@@ -165,6 +181,11 @@ failed=0
 bash .githooks/validate-test-ledger.sh || failed=1
 while read -r local_ref local_sha remote_ref remote_sha; do
     [ -n "$local_ref" ] || continue
+    if [ "$local_ref" != "refs/heads/main" ] || [ "$remote_ref" != "refs/heads/main" ]; then
+        printf '%s\n' "Push rejected: this project accepts direct branch pushes to main only." >&2
+        failed=1
+    fi
+    check_pathnames "$local_sha" || failed=1
     check_banned_content "$remote_sha" "$local_sha" || failed=1
     check_license_headers "$remote_sha" "$local_sha" || failed=1
     check_range "$remote_sha" "$local_sha" || failed=1
