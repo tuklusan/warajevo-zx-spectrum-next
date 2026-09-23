@@ -1,0 +1,49 @@
+name: Canonical core regression
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/core/**'
+      - 'src/cmake/CMakeLists.txt'
+      - 'ci/test/core-regression/**'
+      - '.github/workflows/canonical-core-regression.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  canonical-core:
+    name: Canonical state, raster, audio, and tape
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+
+      - name: Configure regression executable
+        run: cmake -S ci/test/core-regression -B dist/core-regression -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build regression executable
+        run: cmake --build dist/core-regression --config Release --target wz_core_regression --parallel 2
+
+      - name: Run canonical regressions
+        run: ./dist/core-regression/wz_core_regression
+
+      - name: Record hosted proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          fixture_hash="$(sha256sum ci/test/core-regression/canonical-fingerprints.h | cut -d ' ' -f 1)"
+          mkdir -p dist/core-regression/proof
+          cat > dist/core-regression/proof/canonical-core-regression.json <<EOF
+          {"testId":"canonical-core-regression","status":"pass","commit":"${GITHUB_SHA}","runner":"${RUNNER_OS}/${RUNNER_ARCH}","timestamp":"$(date -u +%Y-%m-%dT%H:%M:%SZ)","fixtures":[{"path":"ci/test/core-regression/canonical-fingerprints.h","sha256":"${fixture_hash}"}]}
+          EOF
+
+      - name: Upload hosted proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: canonical-core-regression-proof-${{ github.sha }}
+          path: dist/core-regression/proof/canonical-core-regression.json
+          if-no-files-found: error
