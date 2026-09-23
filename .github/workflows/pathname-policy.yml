@@ -1,7 +1,7 @@
 name: Repository pathname policy
 
 on:
-  # Direct commits to main are the project's only write path.
+  # Audit every direct commit after it reaches the project's main branch.
   push:
     branches: [main]
   # Manual runs are also restricted to main by the job-level ref guard.

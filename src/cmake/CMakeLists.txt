@@ -52,6 +52,10 @@ option(WZSN_ENABLE_WARNINGS "Enable the default developer warning set." ON)
 option(WZSN_ENABLE_SANITIZERS "Enable sanitizer flags when supported." OFF)
 option(WZSN_ENABLE_REVIEW_GATE_TESTS "Require Python and run reviewer-gate tests." OFF)
 option(WZSN_BUILD_SOKOL_HOST "Build the opt-in Sokol host shell." OFF)
+set(WZSN_FUSE_Z80_TEST_INPUT "" CACHE FILEPATH
+    "Pinned Fuse Z80 tests.in path for the optional conformance test.")
+set(WZSN_FUSE_Z80_TEST_EXPECTED "" CACHE FILEPATH
+    "Pinned Fuse Z80 tests.expected path for the optional conformance test.")
 
 add_library(wz_warnings INTERFACE)
 
@@ -160,6 +164,10 @@ add_executable(
 target_link_libraries(wz_tests PRIVATE wz_core wz_diagnostics)
 if(WIN32)
     target_link_libraries(wz_tests PRIVATE ws2_32)
+endif()
+else()
+    add_executable(wz_tests ${WZSN_TEST_ROOT}/fuse-z80-conformance.c)
+    target_link_libraries(wz_tests PRIVATE wz_core wz_warnings)
 endif()
 
 add_executable(wz_fuse_ed_runner ${WZSN_TEST_ROOT}/wz_fuse_ed_runner.c)
@@ -298,7 +306,14 @@ add_executable(wz_screen_inspection_tests ${WZSN_TEST_ROOT}/wz_screen_inspection
 target_link_libraries(wz_screen_inspection_tests PRIVATE wz_core)
 
 enable_testing()
-add_test(NAME wz_tests_placeholder COMMAND wz_tests)
+if(EXISTS "${WZSN_TEST_ROOT}/wz_tests_placeholder.c")
+    add_test(NAME wz_tests_placeholder COMMAND wz_tests)
+endif()
+if(WZSN_FUSE_Z80_TEST_INPUT AND WZSN_FUSE_Z80_TEST_EXPECTED)
+    add_test(NAME fuse_z80_conformance
+        COMMAND wz_tests "${WZSN_FUSE_Z80_TEST_INPUT}"
+                        "${WZSN_FUSE_Z80_TEST_EXPECTED}")
+endif()
 add_test(NAME wz_zxnet_loopback COMMAND wz_zxnet_loopback)
 add_test(NAME wz_syslog_udp_tests COMMAND wz_syslog_udp_tests)
 add_test(NAME wz_diagnostics_router_tests COMMAND wz_diagnostics_router_tests)

@@ -6,6 +6,7 @@ on:
     paths:
       - 'src/core/**'
       - 'src/cmake/**'
+      - 'tests/fuse-z80-conformance.c'
       - 'ci/test/fuse-z80/**'
       - 'tests/fuse-z80-conformance.md'
       - 'test-drivers/fuse-z80-conformance.driver.json'
@@ -41,16 +42,14 @@ jobs:
 
       - name: Build conformance runner
         shell: bash
-        run: cmake --build dist/fuse-z80 --config Release --target wz_fuse_z80_regression --parallel 2
+        run: cmake --build dist/fuse-z80 --config Release --target wz_tests --parallel 2
 
       - name: Run all pinned Fuse Z80 tests
         shell: bash
         run: |
           set -euo pipefail
-          dist/fuse-z80/wz_fuse_z80_regression \
-            dist/fuse-upstream/z80/tests/tests.in \
-            dist/fuse-upstream/z80/tests/tests.expected \
-            | tee dist/fuse-z80-run.log
+          ctest --test-dir dist/fuse-z80/product --output-on-failure --verbose \
+            -R '^fuse_z80_conformance$' | tee dist/fuse-z80-run.log
 
       - name: Write pinned conformance proof
         shell: bash

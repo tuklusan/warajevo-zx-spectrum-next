@@ -34,7 +34,8 @@ UPSTREAM_FILES = (
     "z80/tests/tests.expected",
 )
 PROJECT_FILES = (
-    "ci/test/fuse-z80/regression.c",
+    "tests/fuse-z80-conformance.c",
+    "src/cmake/CMakeLists.txt",
     "ci/test/fuse-z80/CMakeLists.txt",
     "ci/test/fuse-z80/driver.json",
     ".github/workflows/fuse-z80-regression.yml",

@@ -9,12 +9,11 @@ cmake_minimum_required(VERSION 3.25)
 project(WZFuseZ80Regression LANGUAGES C)
 
 set(WZSN_BUILD_SOKOL_HOST OFF CACHE BOOL "Build the opt-in Sokol host shell." FORCE)
+set(WZSN_FUSE_Z80_TEST_INPUT
+    "${CMAKE_CURRENT_LIST_DIR}/../../../dist/fuse-upstream/z80/tests/tests.in"
+    CACHE FILEPATH "Pinned Fuse Z80 tests.in path." FORCE)
+set(WZSN_FUSE_Z80_TEST_EXPECTED
+    "${CMAKE_CURRENT_LIST_DIR}/../../../dist/fuse-upstream/z80/tests/tests.expected"
+    CACHE FILEPATH "Pinned Fuse Z80 tests.expected path." FORCE)
 get_filename_component(WZSN_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE)
 add_subdirectory("${WZSN_ROOT}/src/cmake" "${CMAKE_CURRENT_BINARY_DIR}/product")
-
-add_executable(wz_fuse_z80_regression regression.c)
-set_target_properties(wz_fuse_z80_regression PROPERTIES
-    C_STANDARD 11
-    C_STANDARD_REQUIRED ON
-    C_EXTENSIONS OFF)
-target_link_libraries(wz_fuse_z80_regression PRIVATE wz_core wz_warnings)
