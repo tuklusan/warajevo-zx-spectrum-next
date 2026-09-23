@@ -548,13 +548,13 @@ Architecture #3 (`zx48-mic-ear-router-network-architecture.md`) is explicitly ou
 
 ## Phase 16 — Optimization after correctness lock
 
-443. [P16][Core §43] Establish performance baselines for CPU execution, raster generation, audio mixing, tape, snapshots, and UI presentation before optimization — completed on `574714b`; the four-runner records and reproducible workload are in `ci/test/performance/baselines/` and `ci/test/performance/` (run `35886051010`).
+443. [P16][Core §43] Establish performance baselines for CPU execution, raster generation, audio mixing, tape, snapshots, and UI presentation before optimization — original pre-optimization baselines were captured on `574714b` (run `35886051010`); the current four-runner records are recalibrated after the accepted raster optimization on `3501819` (run `35888370795`), with the original records retained in Git history.
 444. [P16][Core §43] Profile with deterministic correctness checks enabled; identify bottlenecks without changing architectural boundaries — completed on run `35886051010`: canonical raster generation measured 318–910 μs/frame across pinned runners, versus 47–70 μs/frame for UI status and raster handoff, making raster generation the first optimization target.
-445. [P16][Core §43] Optimize one subsystem at a time with before/after canonical state/raster/audio regression evidence.
-446. [P16][Core §§7] Reject optimizations that introduce undefined behavior, host-width assumptions, or compiler-specific deterministic results.
-447. [P16][Core §§6,31] Reject optimizations that make machine results depend on thread scheduling or host wall clock.
-448. [P16][Core §43] Add performance regressions/benchmarks for accepted optimizations so later changes do not silently erase gains.
-449. [P16][Core §49.1] Close the Phase-16 gate when every optimization in the release has correctness evidence.
+445. [P16][Core §43] Optimize one subsystem at a time with before/after canonical state/raster/audio regression evidence — completed for canonical raster projection on `3501819`: bitmap and attribute reads are shared across each eight-pixel cell and flash phase is computed once per frame; runner throughput improved 24.1–70.5% versus the original baselines, while raster, audio, tape, snapshot/state, and UI fingerprints remained identical on all four hosted runners (pre-optimization run `35886051010`; post-optimization run `35888370795`).
+446. [P16][Core §§7] Reject optimizations that introduce undefined behavior, host-width assumptions, or compiler-specific deterministic results — completed for the raster optimization: loop bounds constrain row/cell/bit conversions and shifts to their valid ranges; all correctness fingerprints matched across Windows/macOS x64/ARM64 in run `35888370795`.
+447. [P16][Core §§6,31] Reject optimizations that make machine results depend on thread scheduling or host wall clock — completed for the raster optimization: the cached flash phase is derived only from immutable machine profile/tick inputs for the projection; all four hosted-runner fingerprints matched in run `35888370795`.
+448. [P16][Core §43] Add performance regressions/benchmarks for accepted optimizations so later changes do not silently erase gains — completed: the hosted regression workflow compares correctness fingerprints and runner-specific throughput; post-optimization baselines were recorded for all four runners on `3501819` (run `35888370795`).
+449. [P16][Core §49.1] Close the Phase-16 gate when every optimization in the release has correctness evidence — completed: the sole Phase-16 optimization, canonical raster projection, has matching state/raster/audio/tape/UI fingerprints and passing four-runner benchmark evidence (`35888370795`).
 
 ## Final Architecture-#1/#2 acceptance and release-readiness sweep
 
