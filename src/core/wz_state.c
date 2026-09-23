@@ -389,6 +389,7 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
                                          const wz_byte_t* data,
                                          size_t length)
 {
+    /* Restore machine state from the validated serialized representation. */
     const wz_machine_profile_t* profile;
     wz_z80_state_t cpu;
     wz_qword_t tick = 0u;
@@ -1183,6 +1184,7 @@ wz_result_t wz_snapshot_state_load_z80_v1(wz_snapshot_state_t* snapshot,
                                            const wz_byte_t* data,
                                            size_t length)
 {
+    /* Parse the version-one Z80 snapshot layout into the portable state form. */
     static wz_machine_t candidate;
     size_t input_offset;
     size_t output_offset;

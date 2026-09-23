@@ -1,6 +1,13 @@
 /*
 Warajevo ZX Spectrum Next
-Copyright (c) 2026 Supratim Sanyal, SANYALnet Labs, for new original project material.
+Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+Proprietary rights reserved except as expressly licensed herein.
+This file is governed by the SANYALnet Labs Non-Commercial License in the
+root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
+for AI/ML model training are prohibited unless separately authorized.
+Attribution is required: "Based on original work by Supratim Sanyal of
+SANYALnet Labs." See LICENSE for full terms, warranty disclaimer, termination,
+patent, trademark, and governing-law provisions.
 New original material is licensed under GNU GPL v2 or later (GPL-2.0-or-later), as stated in LICENSE.txt.
 Upstream Warajevo and third-party material retain their applicable copyrights and licenses.
 See LICENSE.txt and NOTICE.md for complete terms and provenance.
@@ -117,6 +124,7 @@ wz_result_t wz_machine_set_bus_data_source(wz_machine_t* machine,
 wz_result_t wz_machine_bus_request(wz_machine_t* machine,
                                    wz_bus_request_t* request)
 {
+    /* Resolve a bus cycle, including contention and optional data sources. */
     wz_byte_t contention_delay;
 
     if (machine == 0 || request == 0) {

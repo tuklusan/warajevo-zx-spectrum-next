@@ -442,6 +442,7 @@ static wz_result_t wz_tzx_block_size(const wz_byte_t* data,
                                      size_t* block_length,
                                      wz_tzx_disposition_t* disposition)
 {
+    /* Validate one TZX block and report its bounded encoded size. */
     wz_byte_t id;
     size_t fixed_length = 0u;
     size_t variable_length = 0u;
@@ -778,6 +779,7 @@ static wz_result_t wz_tzx_csw_decode(const wz_tzx_block_t* block,
                                      wz_byte_t** owned,
                                      size_t* pulse_count)
 {
+    /* Decode compressed square-wave timing into the common pulse stream. */
     size_t offset = 14u;
     size_t found = 0u;
     wz_dword_t declared;
@@ -1365,6 +1367,7 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
                                       size_t capacity,
                                       size_t* count)
 {
+    /* Expand control-flow blocks into deterministic tape timing segments. */
     size_t required = 0u;
     size_t index = 0u;
     size_t steps = 0u;

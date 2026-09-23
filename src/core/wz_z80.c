@@ -1,6 +1,13 @@
 /*
 Warajevo ZX Spectrum Next
-Copyright (c) 2026 Supratim Sanyal, SANYALnet Labs, for new original project material.
+Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+Proprietary rights reserved except as expressly licensed herein.
+This file is governed by the SANYALnet Labs Non-Commercial License in the
+root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
+for AI/ML model training are prohibited unless separately authorized.
+Attribution is required: "Based on original work by Supratim Sanyal of
+SANYALnet Labs." See LICENSE for full terms, warranty disclaimer, termination,
+patent, trademark, and governing-law provisions.
 New original material is licensed under GNU GPL v2 or later (GPL-2.0-or-later), as stated in LICENSE.txt.
 Upstream Warajevo and third-party material retain their applicable copyrights and licenses.
 See LICENSE.txt and NOTICE.md for complete terms and provenance.
@@ -309,6 +316,7 @@ size_t wz_z80_ed_opcode_count(void)
 
 wz_z80_ed_opcode_decode_t wz_z80_ed_opcode_decode(wz_byte_t opcode)
 {
+    /* Decode the ED-prefixed instruction family into execution metadata. */
     switch (opcode) {
     case 0x40u: case 0x48u: case 0x50u: case 0x58u:
     case 0x60u: case 0x68u: case 0x78u:
@@ -731,6 +739,7 @@ static wz_result_t wz_z80_cb_load_target(wz_machine_t* machine,
 static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
                                                wz_byte_t initial_prefix)
 {
+    /* Resolve indexed operands while preserving prefix state and timing. */
     wz_byte_t active_prefix = initial_prefix;
     wz_byte_t opcode = 0u;
     wz_byte_t low = 0u;
@@ -1206,6 +1215,7 @@ static wz_result_t wz_z80_execute_cb(wz_machine_t* machine,
 static wz_result_t wz_z80_execute_indexed_cb(wz_machine_t* machine,
                                              wz_word_t index)
 {
+    /* Dispatch indexed CB rotate, shift, bit, set, and reset operations. */
     wz_byte_t prefix = 0u;
     wz_byte_t displacement = 0u;
     wz_byte_t opcode = 0u;
@@ -1597,6 +1607,7 @@ static wz_result_t wz_z80_execute_out_block(wz_machine_t* machine,
 static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
                                      wz_z80_ed_opcode_decode_t decode)
 {
+    /* Execute the already decoded ED-prefixed operation and its timing. */
     wz_byte_t* target;
     wz_byte_t carry_in;
     wz_byte_t value;
@@ -2036,6 +2047,7 @@ wz_result_t wz_z80_accept_nmi(wz_machine_t* machine)
 
 wz_result_t wz_z80_step(wz_machine_t* machine)
 {
+    /* Fetch, decode, and execute one instruction while advancing CPU state. */
     wz_byte_t opcode = 0u;
     wz_byte_t value = 0u;
     wz_byte_t low = 0u;
