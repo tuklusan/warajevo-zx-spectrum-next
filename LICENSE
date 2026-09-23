@@ -1,0 +1,103 @@
+Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs. Proprietary rights reserved except as expressly licensed herein.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to use,
+copy, modify, and distribute Derivative Works of the Software, or merge the
+Software into other projects, strictly for Non-Commercial purposes (as
+defined in Section 0 below) and subject to the following conditions:
+
+0. Definitions.
+   a. "Derivative Work" means any work based upon, incorporating, or merged
+      with the Software, in source or compiled form, including modifications,
+      translations, and any other work into which the Software's logic,
+      structure, or compiled output has been incorporated.
+   b. "Commercial Use" means use, deployment, or distribution of the Software
+      or a Derivative Work that is: (i) by or on behalf of any corporation,
+      partnership, limited liability company, sole proprietorship, nonprofit
+      organization, government body, or other organized legal entity, as part
+      of that entity's internal operations, business activities, or any
+      activity undertaken in the entity's organizational (rather than purely
+      personal) capacity; or (ii) by any person or entity in direct connection
+      with the sale of goods or services, the generation of advertising,
+      subscription, referral, or affiliate revenue, or the performance of paid
+      work (e.g. paid freelance or contract work product). For the avoidance
+      of doubt, an individual's personal, educational, or hobbyist use is not
+      Commercial Use merely because it may indirectly benefit that
+      individual's reputation, learning, or future job prospects (for example,
+      listing the project on a personal portfolio or resume).
+   c. "Non-Commercial" means any use, deployment, or distribution that does not
+      constitute Commercial Use as defined in 0(b).
+
+1. Attribution. The above copyright notice, this identity attribution, and this
+   permission notice shall be included in all copies, substantial portions, or
+   Derivative Works of the Software, regardless of the extent of modifications
+   made. The required attribution text is: "Based on original work by Supratim
+   Sanyal of SANYALnet Labs." This attribution must appear:
+   a. In the source-level documentation of the copy or Derivative Work (e.g. a
+      README file or equivalent top-level notice); and
+   b. If the copy or Derivative Work presents any user-facing interface capable
+      of displaying text to an end user, in a reasonably discoverable location.
+
+2. Non-Commercial Restriction. The Software and any Derivative Works may be
+   used, modified, and distributed only for Non-Commercial purposes, as
+   defined in 0(c). Commercial Use is expressly prohibited unless separately
+   and expressly authorized in writing by the copyright holder. Use of the
+   Software, its source code, or its underlying logic for training, fine-tuning,
+   or otherwise improving any artificial intelligence or machine learning model
+   is also expressly prohibited.
+
+3. Trademark. This license does not grant any right to use the trade names,
+   trademarks, service marks, product names, or logos of Supratim Sanyal or
+   SANYALnet Labs ("Marks"), except for the literal attribution text required
+   by Section 1. No licensee may name or market a Derivative Work in a way that
+   states or implies it is an official release of, or endorsed by, the original
+   author or SANYALnet Labs.
+
+4. License Propagation. Any person who receives the Software or a Derivative
+   Work receives it subject to this same license. A licensee's distribution of
+   a Derivative Work does not create an independent license and does not relieve
+   the recipient of the obligations set out herein.
+
+5. Patent Disclaimer & Defensive Revocation. No patent rights are granted
+   hereunder. If any entity institutes patent litigation or other legal claims
+   against the original author, the Software itself, or any licensee under this
+   license alleging infringement based on use of the Software, then any patent
+   or copyright licenses granted to that entity under this license terminate
+   automatically, completely, and irrevocably as of the date those claims are
+   filed.
+
+6. Remedies for Breach.
+   a. Upon any breach, all rights granted to the breaching party terminate
+      automatically as of the date of the breach.
+   b. For a first breach of Section 1 (Attribution) only, rights will be
+      reinstated if the breach is cured within thirty (30) days of actual notice
+      from the copyright holder.
+   c. Breach of Section 2 (Non-Commercial Restriction) is not subject to that
+      cure period and results in immediate termination.
+   d. Continued utilization, distribution, or duplication after termination
+      constitutes willful copyright infringement.
+
+7. No Warranty. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO
+EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+8. Severability. If any provision is held unenforceable or invalid under
+applicable law, that provision shall be reformed to the minimum extent
+necessary to make it enforceable, or severed if it cannot be reformed, and the
+remaining provisions shall continue in effect.
+
+9. Versioning. This license governs the specific version of the Software with
+which it is distributed. Copies already distributed under a given version
+remain governed by that version notwithstanding later license versions. The
+copyright holder may release future versions under different terms; doing so
+does not retroactively alter prior distributions.
+
+10. Governing Law & Venue. This license shall be governed by and construed in
+accordance with the laws of the State of Delaware, without regard to its
+conflict of laws principles. Disputes may be brought in the state or federal
+courts located in Delaware, subject to any mandatory home-jurisdiction rights
+that cannot be waived.
