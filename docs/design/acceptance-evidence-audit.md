@@ -23,7 +23,7 @@ Four-runner baseline and determinism evidence: run `35894280373`. Four-runner cl
 | 8 | canonical emulated time is an integer model-specific master tick; | OPEN | No criterion-specific tracked test or pinned proof has been recorded. |
 | 9 | CPU T-state/phase is derived from master time rather than defining universal machine time; | OPEN | No criterion-specific tracked test or pinned proof has been recorded. |
 | 10 | deterministic state hashes match across supported CPU architectures; | PASS | CPU canonical state fingerprint matched across four hosted runners; run `35894280373`. |
-| 11 | deterministic state hashes match across supported compilers; | PARTIAL | Matching state fingerprints on AppleClang and MSVC runners; the complete supported compiler set is not covered; run `35894280373`. |
+| 11 | deterministic state hashes match across supported compilers; | PASS | The canonical CPU, raster, audio, tape, and snapshot fingerprints passed on all eight supported compiler/platform groups; run `35904892852`, pinned to `9825cb700847d909e41e52b47303aae280e18282`. All compiler proof fixtures match the pinned Git objects. |
 | 12 | Z80 memory and I/O operations can occur at exact intra-instruction master ticks; | OPEN | No criterion-specific tracked test or pinned proof has been recorded. |
 | 13 | contention is applied by the bus/machine timing model; | OPEN | No criterion-specific tracked test or pinned proof has been recorded. |
 | 14 | same-master-edge hardware ordering is explicit and evidence-based; | OPEN | No criterion-specific tracked test or pinned proof has been recorded. |
