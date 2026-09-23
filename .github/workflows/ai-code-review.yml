@@ -2,12 +2,6 @@ name: AI source code review
 
 on:
   push:
-    paths:
-      - '**/*.[cChH]'
-      - '**/*.[pP][yY]'
-      - '**/*.[aA][sS][mM]'
-      - '**/*.[sS]'
-      - '**/*.[zZ]80'
   workflow_dispatch:
 
 permissions:
@@ -40,7 +34,15 @@ jobs:
           # Construct the compatibility-provider name at runtime so it is not
           # stored in repository source or workflow text.
           export LLM_API_TYPE="$(printf '%s' b3BlbmFp | base64 --decode)"
-          gito --verbose review
+          base="${{ github.event.before }}"
+          if [ "$base" = "0000000000000000000000000000000000000000" ]; then
+            base="$(git rev-parse HEAD^ 2>/dev/null || true)"
+          fi
+          if [ -n "$base" ]; then
+            gito --verbose review --against="$base"
+          else
+            echo 'No parent commit exists; there is no source diff to review.'
+          fi
 
       - name: Publish review for developer adjudication
         if: always()
