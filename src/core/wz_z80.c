@@ -727,7 +727,8 @@ static wz_result_t wz_z80_cb_load_target(wz_machine_t* machine,
     wz_byte_t* reg;
 
     if (decode->target == WZ_Z80_TARGET_HL_INDIRECT) {
-        return wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u, wz_z80_hl(&machine->cpu), value, 3u);
+        return wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 16u,
+                          wz_z80_hl(&machine->cpu), value, 3u);
     }
 
     reg = wz_z80_target_register(&machine->cpu, decode->target);
@@ -1119,7 +1120,8 @@ static wz_result_t wz_z80_cb_store_target(wz_machine_t* machine,
     wz_byte_t* reg;
 
     if (decode->target == WZ_Z80_TARGET_HL_INDIRECT) {
-        return wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 14u, wz_z80_hl(&machine->cpu), &value, 3u);
+        return wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 24u,
+                          wz_z80_hl(&machine->cpu), &value, 3u);
     }
 
     reg = wz_z80_target_register(&machine->cpu, decode->target);
