@@ -53,6 +53,7 @@ def run_group(worker: Path, mode: str, directory: Path, count: int,
         for process in processes:
             if process.poll() is None:
                 process.kill()
+                process.wait()
     outputs: list[str] = []
     failures: list[str] = []
     for process in processes:

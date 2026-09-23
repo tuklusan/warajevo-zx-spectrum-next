@@ -72,6 +72,10 @@ def main() -> int:
     for runner_id in MATRIX:
         runner_file = args.artifact_root / runner_id / "runner.json"
         log_file = args.artifact_root / runner_id / "run.log"
+        if not runner_file.is_file() or not log_file.is_file():
+            print(f"Hosted stress result is missing: {runner_id}",
+                  file=sys.stderr)
+            return 1
         if runner_file.stat().st_size > 16384 or log_file.stat().st_size > 65536:
             print(f"Hosted stress result is oversized: {runner_id}",
                   file=sys.stderr)

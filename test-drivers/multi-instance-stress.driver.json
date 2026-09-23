@@ -100,11 +100,11 @@
     },
     {
       "path": "ci/test/multi-instance/run-stress.py",
-      "sha256": "0fd4a08eb64ee8dc890110efe6cb9ddbe2515a24126caed9387bfa4d16c99f3d"
+      "sha256": "302d38617bec9c3ea7897f4d3f6b49d97b67f303b9d6959968aa65171df9b7da"
     },
     {
       "path": "ci/test/multi-instance/write-proof.py",
-      "sha256": "caf732cc452c41cc31620e13b85da308c29a0c78a78e90b076fbce9dc5522889"
+      "sha256": "dc6a4f8dca4f198532e0a7ba32498ba2f22f1951d4fd1710552d29a022a6f52f"
     },
     {
       "path": "ci/test/multi-instance/README.md",
