@@ -22,6 +22,7 @@ add_executable(wz_multi_instance_worker
     "${WZSN_ROOT}/src/app/wz_screenshot_service.c"
     "${WZSN_ROOT}/src/app/wz_telnet_keyboard_command.c"
     "${WZSN_ROOT}/src/app/wz_command_registry.c"
+    "${WZSN_ROOT}/src/app/wz_host_thread.c"
     "${WZSN_ROOT}/src/app/wz_telnet_keymap.c")
 target_include_directories(wz_multi_instance_worker PRIVATE
     "${WZSN_ROOT}/src")

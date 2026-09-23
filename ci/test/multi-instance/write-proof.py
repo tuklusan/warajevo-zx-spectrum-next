@@ -37,6 +37,8 @@ PROJECT_FILES = (
     "src/app/wz_telnet_keyboard_command.h",
     "src/app/wz_command_registry.c",
     "src/app/wz_command_registry.h",
+    "src/app/wz_host_thread.c",
+    "src/app/wz_host_thread.h",
     "src/app/wz_telnet_keymap.c",
     "src/app/wz_telnet_keymap.h",
     "src/app/wz_screenshot_service.c",

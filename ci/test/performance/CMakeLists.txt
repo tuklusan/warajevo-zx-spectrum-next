@@ -17,6 +17,7 @@ add_executable(
     wz_performance_baseline
     "${CMAKE_CURRENT_LIST_DIR}/baseline.c"
     "${WZSN_ROOT}/src/app/wz_command_registry.c"
+    "${WZSN_ROOT}/src/app/wz_host_thread.c"
     "${WZSN_ROOT}/src/app/wz_control_port.c"
     "${WZSN_ROOT}/src/app/wz_host_audio_policy.c"
     "${WZSN_ROOT}/src/app/wz_host_socket.c"

@@ -11,6 +11,7 @@ on:
       - 'src/app/wz_host_socket.*'
       - 'src/app/wz_telnet_keyboard_command.*'
       - 'src/app/wz_command_registry.*'
+      - 'src/app/wz_host_thread.*'
       - 'src/app/wz_telnet_keymap.*'
       - 'src/app/wz_screenshot_service.*'
       - 'src/core/wz_presentation_snapshot.*'
