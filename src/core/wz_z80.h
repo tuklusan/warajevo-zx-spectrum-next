@@ -1,0 +1,177 @@
+/*
+Warajevo ZX Spectrum Next
+Copyright (c) 2026 Supratim Sanyal, SANYALnet Labs, for new original project material.
+New original material is licensed under GNU GPL v2 or later (GPL-2.0-or-later), as stated in LICENSE.txt.
+Upstream Warajevo and third-party material retain their applicable copyrights and licenses.
+See LICENSE.txt and NOTICE.md for complete terms and provenance.
+*/
+
+#ifndef WZ_CORE_WZ_Z80_H
+#define WZ_CORE_WZ_Z80_H
+
+#include <stddef.h>
+
+#include "core/wz_types.h"
+
+typedef struct wz_machine wz_machine_t;
+
+typedef enum {
+    WZ_Z80_INTERRUPT_MODE_0 = 0,
+    WZ_Z80_INTERRUPT_MODE_1 = 1,
+    WZ_Z80_INTERRUPT_MODE_2 = 2
+} wz_z80_interrupt_mode_t;
+
+typedef struct {
+    wz_byte_t a;
+    wz_byte_t f;
+    wz_byte_t b;
+    wz_byte_t c;
+    wz_byte_t d;
+    wz_byte_t e;
+    wz_byte_t h;
+    wz_byte_t l;
+} wz_z80_register_bank_t;
+
+typedef struct {
+    wz_z80_register_bank_t main;
+    wz_z80_register_bank_t alternate;
+    wz_word_t ix;
+    wz_word_t iy;
+    wz_word_t stack_pointer;
+    wz_word_t program_counter;
+    wz_word_t memptr;
+    wz_byte_t i;
+    wz_byte_t r;
+    wz_byte_t iff1;
+    wz_byte_t iff2;
+    wz_byte_t interrupt_enable_delay;
+    wz_byte_t interrupt_mode;
+    wz_byte_t halted;
+} wz_z80_state_t;
+
+typedef enum {
+    WZ_Z80_OPCODE_DOCUMENTED_UNIMPLEMENTED = 0,
+    WZ_Z80_OPCODE_IMPLEMENTED,
+    WZ_Z80_OPCODE_PREFIX,
+    WZ_Z80_OPCODE_UNDOCUMENTED,
+    WZ_Z80_OPCODE_ILLEGAL
+} wz_z80_opcode_status_t;
+
+typedef enum {
+    WZ_Z80_PRIMARY_OP_UNSUPPORTED = 0,
+    WZ_Z80_PRIMARY_OP_NOP,
+    WZ_Z80_PRIMARY_OP_LD_A_N,
+    WZ_Z80_PRIMARY_OP_LD_NN_A,
+    WZ_Z80_PRIMARY_OP_OUT_N_A,
+    WZ_Z80_PRIMARY_OP_EXX,
+    WZ_Z80_PRIMARY_OP_EX_DE_HL,
+    WZ_Z80_PRIMARY_OP_IN_A_N,
+    WZ_Z80_PRIMARY_OP_EX_SP_RR,
+    WZ_Z80_PRIMARY_OP_LD_SP_RR,
+    WZ_Z80_PRIMARY_OP_LOAD,
+    WZ_Z80_PRIMARY_OP_ALU,
+    WZ_Z80_PRIMARY_OP_ADD_HL_RR,
+    WZ_Z80_PRIMARY_OP_SPECIAL_FLAGS,
+    WZ_Z80_PRIMARY_OP_POP,
+    WZ_Z80_PRIMARY_OP_PUSH,
+    WZ_Z80_PRIMARY_OP_RET,
+    WZ_Z80_PRIMARY_OP_CALL,
+    WZ_Z80_PRIMARY_OP_RST,
+    WZ_Z80_PRIMARY_OP_BRANCH,
+    WZ_Z80_PRIMARY_OP_INC_DEC,
+    WZ_Z80_PRIMARY_OP_HALT,
+    WZ_Z80_PRIMARY_OP_DI,
+    WZ_Z80_PRIMARY_OP_EI,
+    WZ_Z80_PRIMARY_OP_PREFIX_CB,
+    WZ_Z80_PRIMARY_OP_PREFIX_DD,
+    WZ_Z80_PRIMARY_OP_PREFIX_ED,
+    WZ_Z80_PRIMARY_OP_PREFIX_FD
+} wz_z80_primary_operation_t;
+
+typedef enum {
+    WZ_Z80_CB_OP_RLC = 0,
+    WZ_Z80_CB_OP_RRC,
+    WZ_Z80_CB_OP_RL,
+    WZ_Z80_CB_OP_RR,
+    WZ_Z80_CB_OP_SLA,
+    WZ_Z80_CB_OP_SRA,
+    WZ_Z80_CB_OP_SLL,
+    WZ_Z80_CB_OP_SRL,
+    WZ_Z80_CB_OP_BIT,
+    WZ_Z80_CB_OP_RES,
+    WZ_Z80_CB_OP_SET
+} wz_z80_cb_operation_t;
+
+typedef enum {
+    WZ_Z80_ED_OP_UNSUPPORTED = 0,
+    WZ_Z80_ED_OP_IN_R_C,
+    WZ_Z80_ED_OP_OUT_C_R,
+    WZ_Z80_ED_OP_SBC_HL_RR,
+    WZ_Z80_ED_OP_ADC_HL_RR,
+    WZ_Z80_ED_OP_LD_NN_RR,
+    WZ_Z80_ED_OP_LD_RR_NN,
+    WZ_Z80_ED_OP_NEG,
+    WZ_Z80_ED_OP_RETN,
+    WZ_Z80_ED_OP_RETI,
+    WZ_Z80_ED_OP_IM,
+    WZ_Z80_ED_OP_LD_I_A,
+    WZ_Z80_ED_OP_LD_R_A,
+    WZ_Z80_ED_OP_LD_A_I,
+    WZ_Z80_ED_OP_LD_A_R,
+    WZ_Z80_ED_OP_RRD,
+    WZ_Z80_ED_OP_RLD,
+    WZ_Z80_ED_OP_LDI,
+    WZ_Z80_ED_OP_CPI,
+    WZ_Z80_ED_OP_INI,
+    WZ_Z80_ED_OP_OUTI,
+    WZ_Z80_ED_OP_LDD,
+    WZ_Z80_ED_OP_CPD,
+    WZ_Z80_ED_OP_IND,
+    WZ_Z80_ED_OP_OUTD,
+    WZ_Z80_ED_OP_LDIR,
+    WZ_Z80_ED_OP_CPIR,
+    WZ_Z80_ED_OP_INIR,
+    WZ_Z80_ED_OP_OTIR,
+    WZ_Z80_ED_OP_LDDR,
+    WZ_Z80_ED_OP_CPDR,
+    WZ_Z80_ED_OP_INDR,
+    WZ_Z80_ED_OP_OTDR
+} wz_z80_ed_operation_t;
+
+typedef struct {
+    wz_byte_t opcode;
+    wz_z80_primary_operation_t operation;
+    wz_z80_opcode_status_t status;
+} wz_z80_opcode_decode_t;
+
+typedef struct {
+    wz_byte_t opcode;
+    wz_z80_cb_operation_t operation;
+    wz_byte_t target;
+    wz_byte_t bit;
+    wz_z80_opcode_status_t status;
+} wz_z80_cb_opcode_decode_t;
+
+typedef struct {
+    wz_byte_t opcode;
+    wz_z80_ed_operation_t operation;
+    wz_byte_t operand;
+    wz_z80_opcode_status_t status;
+} wz_z80_ed_opcode_decode_t;
+
+void wz_z80_state_init(wz_z80_state_t* state);
+wz_result_t wz_z80_state_validate(const wz_z80_state_t* state);
+size_t wz_z80_primary_opcode_count(void);
+const wz_z80_opcode_decode_t* wz_z80_primary_opcode_decode(wz_byte_t opcode);
+size_t wz_z80_cb_opcode_count(void);
+const wz_z80_cb_opcode_decode_t* wz_z80_cb_opcode_decode(wz_byte_t opcode);
+size_t wz_z80_ed_opcode_count(void);
+wz_z80_ed_opcode_decode_t wz_z80_ed_opcode_decode(wz_byte_t opcode);
+void wz_z80_exit_halt_for_interrupt(wz_z80_state_t* state);
+bool wz_z80_maskable_interrupts_acceptable(const wz_z80_state_t* state);
+wz_result_t wz_z80_sample_maskable_interrupt(wz_machine_t* machine);
+wz_result_t wz_z80_accept_maskable_interrupt(wz_machine_t* machine);
+wz_result_t wz_z80_accept_nmi(wz_machine_t* machine);
+wz_result_t wz_z80_step(wz_machine_t* machine);
+
+#endif
