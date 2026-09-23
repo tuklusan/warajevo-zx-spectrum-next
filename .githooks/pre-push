@@ -112,7 +112,9 @@ while read -r local_ref local_sha remote_ref remote_sha; do
     check_banned_content "$remote_sha" "$local_sha" || failed=1
     check_license_headers "$remote_sha" "$local_sha" || failed=1
     check_range "$remote_sha" "$local_sha" || failed=1
-    review_outgoing_source "$remote_sha" "$local_sha" || failed=1
+    if [ "$failed" -eq 0 ]; then
+        review_outgoing_source "$remote_sha" "$local_sha" || failed=1
+    fi
 done
 
 if [ "$failed" -ne 0 ]; then
