@@ -31,8 +31,8 @@ patent, trademark, and governing-law provisions.
 #define WZ_CPU_STEPS 250000u
 #define WZ_RASTER_FRAMES 384u
 #define WZ_AUDIO_SAMPLES 2000000u
-#define WZ_TAPE_SEGMENT_COUNT 32768u
-#define WZ_TAPE_TICKS 200000u
+#define WZ_TAPE_SEGMENT_COUNT 131072u
+#define WZ_TAPE_TICKS 4000000u
 #define WZ_SNAPSHOT_WRITES 1536u
 #define WZ_UI_FRAMES 512u
 
