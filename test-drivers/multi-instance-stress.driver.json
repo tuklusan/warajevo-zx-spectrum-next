@@ -12,7 +12,7 @@
   "fixtures": [
     {
       "path": "ci/test/multi-instance/worker.c",
-      "sha256": "91af9a6419d023bf4cf7a0f11cce99bd63db67c605b80e03752cab7b2cf359a9"
+      "sha256": "f98e98bc37e5db86a0f3a46df5edc138bfc5761afbb91e19b03db6525f6319d0"
     },
     {
       "path": "src/app/wz_control_port.c",
@@ -100,15 +100,15 @@
     },
     {
       "path": "ci/test/multi-instance/run-stress.py",
-      "sha256": "e7c5ebc25a56deec263ee22ba1072201ecbcbabd5039414b97553cb1aed30bf1"
+      "sha256": "0fd4a08eb64ee8dc890110efe6cb9ddbe2515a24126caed9387bfa4d16c99f3d"
     },
     {
       "path": "ci/test/multi-instance/write-proof.py",
-      "sha256": "4423828a8b547c4becfe469c006f724c44ef97f014c56ece9597bd47b4eafd78"
+      "sha256": "caf732cc452c41cc31620e13b85da308c29a0c78a78e90b076fbce9dc5522889"
     },
     {
       "path": "ci/test/multi-instance/README.md",
-      "sha256": "a6e32e3bafaa70eeed87895a0b6d04dfc8d52a2eae832a7e1713c3dbd9a8901d"
+      "sha256": "7cb2e117685a1963c6d5cd68694d4ba8df2abf895df82fc2ada1738bdf566971"
     },
     {
       "path": "ci/test/multi-instance/test-description.md",

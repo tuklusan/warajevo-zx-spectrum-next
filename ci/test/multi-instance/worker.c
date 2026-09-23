@@ -153,7 +153,7 @@ static int run_screenshot(const char* directory, unsigned index)
     wz_byte_t* pixels = (wz_byte_t*)malloc(pixel_count * 2u);
     wz_presentation_snapshot_t snapshot;
     wz_raster_buffer_t source;
-    char output_path[1024];
+    char output_path[1024] = {0};
     wz_telnet_screenshot_result_t result;
 
     memset(&snapshot, 0, sizeof(snapshot));

@@ -49,6 +49,10 @@ def run_group(worker: Path, mode: str, directory: Path, count: int,
     ready = all((directory / f"ready-{index}").is_file()
                 for index in range(count))
     (directory / "go").write_text("go", encoding="ascii")
+    if not ready:
+        for process in processes:
+            if process.poll() is None:
+                process.kill()
     outputs: list[str] = []
     failures: list[str] = []
     for process in processes:

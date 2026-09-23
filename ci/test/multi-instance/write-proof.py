@@ -72,13 +72,18 @@ def main() -> int:
     for runner_id in MATRIX:
         runner_file = args.artifact_root / runner_id / "runner.json"
         log_file = args.artifact_root / runner_id / "run.log"
-        metadata = json.loads(runner_file.read_text(encoding="utf-8"))
-        match = re.search(
-            rf"^PASS multi-instance stress cases: {EXPECTED_CASES}\s*$",
-            log_file.read_text(encoding="utf-8"),
-            flags=re.MULTILINE,
+        if runner_file.stat().st_size > 16384 or log_file.stat().st_size > 65536:
+            print(f"Hosted stress result is oversized: {runner_id}",
+                  file=sys.stderr)
+            return 1
+        with runner_file.open(encoding="utf-8") as stream:
+            metadata = json.load(stream)
+        marker = re.compile(
+            rf"^PASS multi-instance stress cases: {EXPECTED_CASES}\s*$"
         )
-        if match is None:
+        with log_file.open(encoding="utf-8") as stream:
+            passed = any(marker.fullmatch(line.rstrip("\r\n")) for line in stream)
+        if not passed:
             print(f"Hosted stress result missing or failed: {runner_id}",
                   file=sys.stderr)
             return 1
