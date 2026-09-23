@@ -560,8 +560,8 @@ Architecture #3 (`zx48-mic-ear-router-network-architecture.md`) is explicitly ou
 
 450. [FINAL][Core §50][AUDITED; gaps remain] Inventory all 75 criteria and record conservative evidence status in [acceptance-evidence-audit.md](acceptance-evidence-audit.md); 6 PASS, 8 PARTIAL, and 61 OPEN. The audit is complete; architecture completion remains gated on resolving the OPEN criteria.
 451. [FINAL][UI §48][AUDITED; gaps remain] Inventory all 67 criteria in [ui-acceptance-evidence-audit.md](ui-acceptance-evidence-audit.md); 0 PASS, 6 PARTIAL, and 61 OPEN. Resolve the listed proof gaps before declaring UI acceptance.
-452. [FINAL][Core §2.5][IN PROGRESS] Reconcile all 32 dispositions in [legacy-feature-disposition-audit.md](legacy-feature-disposition-audit.md); REQUIRED rows have implementation/evidence gaps recorded, and deferred/replaced rows remain scoped.
-453. [FINAL][UI §20] Reconcile every historical UI/menu item against its implemented modern destination or explicit disposition.
+452. [FINAL][Core §2.5][AUDITED; implementation/evidence gaps remain] Reconciled all 32 dispositions in [legacy-feature-disposition-audit.md](legacy-feature-disposition-audit.md); REQUIRED rows have implementation/evidence gaps recorded, and deferred/replaced rows remain scoped. This inventory does not close release acceptance.
+453. [FINAL][UI §20][AUDITED; implementation/evidence gaps remain] Reconciled every Section 20 legacy-menu category against its declared modern destination or explicit disposition in [ui-legacy-disposition-audit.md](ui-legacy-disposition-audit.md); destination implementation and acceptance evidence gaps remain open.
 454. [FINAL][Core §§34,35] Run the required compiler/platform matrix and investigate every deterministic disagreement as a defect.
 455. [FINAL][Core §§36–40] Run deterministic, video, audio, differential, private difficult-media, and required real-hardware validation suites appropriate to the release claim.
 456. [FINAL][Core §§28,47,48] Audit release artifacts for dependency, license/notice, ROM exclusion, private-test-media exclusion, and single-program-binary requirements.
