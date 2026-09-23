@@ -1726,7 +1726,7 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         low = (wz_byte_t)(machine->cpu.main.a & 0x0fu);
         machine->cpu.main.a = (wz_byte_t)((machine->cpu.main.a & 0xf0u) | (value & 0x0fu));
         value = (wz_byte_t)((low << 4u) | (value >> 4u));
-        if (wz_z80_ed_bus(machine, WZ_BUS_MEMORY_WRITE, 14u, address, &value, 3u) != WZ_RESULT_OK) {
+        if (wz_z80_ed_bus(machine, WZ_BUS_MEMORY_WRITE, 22u, address, &value, 3u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
         machine->cpu.main.f = (wz_byte_t)((machine->cpu.main.f & WZ_Z80_FLAG_C) |
@@ -1742,7 +1742,7 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         low = (wz_byte_t)(machine->cpu.main.a & 0x0fu);
         machine->cpu.main.a = (wz_byte_t)((machine->cpu.main.a & 0xf0u) | (value >> 4u));
         value = (wz_byte_t)((value << 4u) | low);
-        if (wz_z80_ed_bus(machine, WZ_BUS_MEMORY_WRITE, 14u, address, &value, 3u) != WZ_RESULT_OK) {
+        if (wz_z80_ed_bus(machine, WZ_BUS_MEMORY_WRITE, 22u, address, &value, 3u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
         machine->cpu.main.f = (wz_byte_t)((machine->cpu.main.f & WZ_Z80_FLAG_C) |
