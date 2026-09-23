@@ -75,6 +75,9 @@ def main() -> int:
     commit = os.environ.get("GITHUB_SHA") or subprocess.check_output(
         ["git", "rev-parse", "HEAD"], cwd=REPO, text=True
     ).strip()
+    if not re.fullmatch(r"[0-9a-f]{40}", commit):
+        print("Invalid pinned commit identifier", file=sys.stderr)
+        return 1
     values = read_cache(arguments.cache)
     values.update(read_compiler_metadata(arguments.cache))
     compiler_id = values.get("CMAKE_C_COMPILER_ID", "")
