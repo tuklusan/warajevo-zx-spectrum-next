@@ -1597,14 +1597,14 @@ static wz_result_t wz_z80_execute_out_block(wz_machine_t* machine,
     wz_word_t sum;
     wz_byte_t value = 0u;
 
-    if (wz_z80_ed_bus(machine, WZ_BUS_MEMORY_READ, 8u, address, &value, 3u) != WZ_RESULT_OK) {
+    if (wz_z80_ed_bus(machine, WZ_BUS_MEMORY_READ, 10u, address, &value, 3u) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_STATE;
     }
     machine->cpu.main.b = (wz_byte_t)(machine->cpu.main.b - 1u);
     wz_z80_set_rr(&machine->cpu, 2u, wz_z80_add16(address, decrement ? 0xffffu : 1u));
     port = wz_z80_get_rr(&machine->cpu, 0u);
     machine->cpu.memptr = wz_z80_add16(port, decrement ? 0xffffu : 1u);
-    if (wz_z80_ed_bus(machine, WZ_BUS_IO_WRITE, 14u, port, &value, 4u) != WZ_RESULT_OK) {
+    if (wz_z80_ed_bus(machine, WZ_BUS_IO_WRITE, 16u, port, &value, 4u) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_STATE;
     }
 
