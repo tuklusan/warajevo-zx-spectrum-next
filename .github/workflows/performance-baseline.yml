@@ -42,6 +42,7 @@ jobs:
         run: cmake --build dist/performance/${{ matrix.id }} --config Release --target wz_performance_baseline --parallel 2
 
       - name: Run correctness-checked baseline
+        id: benchmark
         shell: bash
         env:
           WZ_PERF_COMMIT: ${{ github.sha }}
@@ -58,7 +59,21 @@ jobs:
           mkdir -p performance-results
           "$executable" | tee "performance-results/${{ matrix.id }}.json"
 
+      - name: Check performance and correctness regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          if command -v python3 >/dev/null 2>&1; then
+            python_bin=python3
+          else
+            python_bin=python
+          fi
+          "$python_bin" ci/test/performance/compare.py \
+            "performance-results/${{ matrix.id }}.json" \
+            "ci/test/performance/baselines/${{ matrix.id }}.json"
+
       - name: Upload raw baseline record
+        if: always() && hashFiles('performance-results/*.json') != ''
         uses: actions/upload-artifact@v4
         with:
           name: performance-baseline-${{ matrix.id }}

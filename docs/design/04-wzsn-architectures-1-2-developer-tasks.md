@@ -1,9 +1,11 @@
 <!--
-Warajevo ZX Spectrum Next
-Copyright (c) 2026 Supratim Sanyal, SANYALnet Labs, for new original project material.
-New original material is licensed under GNU GPL v2 or later (GPL-2.0-or-later), as stated in LICENSE.txt.
-Upstream Warajevo and third-party material retain their applicable copyrights and licenses.
-See LICENSE.txt and NOTICE.md for complete terms and provenance.
+Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+This file is governed by the SANYALnet Labs Non-Commercial License in the
+root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
+for AI/ML model training are prohibited unless separately authorized.
+Attribution is required: "Based on original work by Supratim Sanyal of
+SANYALnet Labs." See LICENSE for full terms, warranty disclaimer, termination,
+patent, trademark, and governing-law provisions.
 -->
 
 # Warajevo ZX Spectrum Next — Developer Task List for Architectures #1 and #2
@@ -546,8 +548,8 @@ Architecture #3 (`zx48-mic-ear-router-network-architecture.md`) is explicitly ou
 
 ## Phase 16 — Optimization after correctness lock
 
-443. [P16][Core §43] Establish performance baselines for CPU execution, raster generation, audio mixing, tape, snapshots, and UI presentation before optimization.
-444. [P16][Core §43] Profile with deterministic correctness checks enabled; identify bottlenecks without changing architectural boundaries.
+443. [P16][Core §43] Establish performance baselines for CPU execution, raster generation, audio mixing, tape, snapshots, and UI presentation before optimization — completed on `574714b`; the four-runner records and reproducible workload are in `ci/test/performance/baselines/` and `ci/test/performance/` (run `35886051010`).
+444. [P16][Core §43] Profile with deterministic correctness checks enabled; identify bottlenecks without changing architectural boundaries — completed on run `35886051010`: canonical raster generation measured 318–910 μs/frame across pinned runners, versus 47–70 μs/frame for UI status and raster handoff, making raster generation the first optimization target.
 445. [P16][Core §43] Optimize one subsystem at a time with before/after canonical state/raster/audio regression evidence.
 446. [P16][Core §§7] Reject optimizations that introduce undefined behavior, host-width assumptions, or compiler-specific deterministic results.
 447. [P16][Core §§6,31] Reject optimizations that make machine results depend on thread scheduling or host wall clock.
