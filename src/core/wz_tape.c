@@ -626,7 +626,7 @@ static wz_result_t wz_tzx_call_target(size_t current,
     if (block == 0 || target == 0 || block->data == 0 ||
         block->data_length < 2u) return WZ_RESULT_PARSE_ERROR;
     calls = wz_read_le16(block->data);
-    if (calls == 0u || call_index >= calls || calls > (SIZE_MAX - 2u) / 2u ||
+    if (calls == 0u || call_index >= calls ||
         block->data_length < 2u + calls * 2u || current > (size_t)INT32_MAX ||
         block_count > (size_t)INT32_MAX) return WZ_RESULT_PARSE_ERROR;
     relative = (int16_t)wz_read_le16(block->data + 2u + call_index * 2u);
@@ -796,9 +796,6 @@ static wz_result_t wz_tzx_csw_decode(const wz_tzx_block_t* block,
         int status;
 
         maximum64 = (uint64_t)declared * 5u;
-        if (maximum64 > SIZE_MAX) {
-            return WZ_RESULT_PARSE_ERROR;
-        }
         maximum = (size_t)maximum64;
         capacity = maximum < 4096u ? maximum : 4096u;
         expanded = (wz_byte_t*)malloc(capacity);
@@ -1405,8 +1402,7 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
         case 0x13u:
             if (block->data_length < 1u) return WZ_RESULT_PARSE_ERROR;
             amount = (size_t)block->data[0u];
-            if (amount > (SIZE_MAX - 1u) / 2u ||
-                block->data_length < 1u + amount * 2u) return WZ_RESULT_PARSE_ERROR;
+            if (block->data_length < 1u + amount * 2u) return WZ_RESULT_PARSE_ERROR;
             break;
         case 0x14u: {
             size_t data_length;

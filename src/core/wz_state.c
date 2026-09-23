@@ -109,7 +109,7 @@ static wz_result_t wz_state_write_mdr(wz_state_writer_t* writer,
                                       const wz_mdr_transport_t* transport)
 {
     if (writer == 0 || transport == 0 || transport->sector > UINT32_MAX ||
-        transport->offset > UINT32_MAX || transport->active_motor > 0xffu ||
+        transport->offset > UINT32_MAX ||
         transport->image_present > 1u ||
         transport->write_enabled > 1u || transport->erase_enabled > 1u ||
         transport->dirty > 1u || transport->phase > WZ_MDR_PHASE_DATA) {
@@ -143,8 +143,7 @@ static wz_result_t wz_state_write_zxnet(wz_state_writer_t* writer,
     state = &network->state;
     if (state->state < WZ_ZXNET_CLAIM || state->state > WZ_ZXNET_COLLWRITE ||
         state->bit_count > 9u || state->buffer_position > WZ_ZXNET_DATA_CAPACITY ||
-        state->buffer_length > WZ_ZXNET_DATA_CAPACITY ||
-        state->read_block_ready > 1u) {
+        state->buffer_length > WZ_ZXNET_DATA_CAPACITY) {
         return WZ_RESULT_INVALID_STATE;
     }
     if (wz_state_write_u8(writer, (wz_byte_t)state->state) != WZ_RESULT_OK ||
