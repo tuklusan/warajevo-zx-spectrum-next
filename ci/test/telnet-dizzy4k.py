@@ -73,7 +73,6 @@ def main():
             raise RuntimeError("GUI control port did not become available")
         sock.settimeout(1)
         command(sock, "HELP")
-        command(sock, "RESUME")
         time.sleep(60)
         response = command(sock, "SCREENSHOT")
         match = re.search(r"OK SCREENSHOT\s+\"?([^\"\r\n]+)", response)
