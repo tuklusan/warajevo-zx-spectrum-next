@@ -3,6 +3,24 @@ set -eu
 
 BANNED=$(printf '%s\n' Q2xhdWRl Q29kZXg= QW50aHJvcGl4 T3BlbkFJ Q2hhdEdQVA== U1BEWC1MaWNlbnNlLUlkZW50aWZpZXI= U1BEWA== | base64 -d | paste -sd '|' -)
 
+check_banned_content() {
+    oldrev=$1
+    newrev=$2
+    [ "$newrev" = "0000000000000000000000000000000000000000" ] && return 0
+    [ "$oldrev" = "0000000000000000000000000000000000000000" ] && oldrev=$(git rev-parse "$newrev^" 2>/dev/null || true)
+    [ -n "$oldrev" ] || return 0
+
+    failed=0
+    git diff --diff-filter=ACMR --name-only "$oldrev" "$newrev" | while IFS= read -r file; do
+        contents=$(git show "$newrev:$file" 2>/dev/null || true)
+        if matches=$(printf '%s\n' "$contents" | grep -n -i -E "$BANNED"); then
+            printf '%s\n' "Push rejected: banned word or phrase found in $file:" >&2
+            printf '%s\n' "$matches" >&2
+            exit 1
+        fi
+    done
+}
+
 check_license_headers() {
     oldrev=$1
     newrev=$2
@@ -91,9 +109,10 @@ check_range() {
 failed=0
 while read -r local_ref local_sha remote_ref remote_sha; do
     [ -n "$local_ref" ] || continue
+    check_banned_content "$remote_sha" "$local_sha" || failed=1
     check_license_headers "$remote_sha" "$local_sha" || failed=1
-    review_outgoing_source "$remote_sha" "$local_sha" || failed=1
     check_range "$remote_sha" "$local_sha" || failed=1
+    review_outgoing_source "$remote_sha" "$local_sha" || failed=1
 done
 
 if [ "$failed" -ne 0 ]; then
