@@ -1,0 +1,186 @@
+name: Required compiler matrix regression
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/core/**'
+      - 'src/cmake/CMakeLists.txt'
+      - 'ci/test/core-regression/**'
+      - 'ci/test/compiler-matrix/**'
+      - 'tests/canonical-core-regression.c'
+      - 'test-drivers/canonical-core-regression.driver.json'
+      - '.github/workflows/compiler-matrix-regression.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  core-regression:
+    name: ${{ matrix.name }}
+    if: github.ref == 'refs/heads/main'
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows x86-64 / MSVC
+            id: windows-x64-msvc
+            runner: windows-2025
+            platform: windows
+            compiler: MSVC
+            expected_id: MSVC
+            toolset: v143
+          - name: Windows x86-64 / clang-cl
+            id: windows-x64-clang-cl
+            runner: windows-2025
+            platform: windows
+            compiler: clang-cl
+            expected_id: Clang
+            toolset: ClangCL
+          - name: Linux x86-64 / GCC
+            id: linux-x64-gcc
+            runner: ubuntu-24.04
+            platform: linux
+            compiler: gcc
+            expected_id: GNU
+          - name: Linux x86-64 / Clang
+            id: linux-x64-clang
+            runner: ubuntu-24.04
+            platform: linux
+            compiler: clang
+            expected_id: Clang
+          - name: Linux AArch64 / GCC
+            id: linux-arm64-gcc
+            runner: ubuntu-24.04-arm
+            platform: linux
+            compiler: gcc
+            expected_id: GNU
+          - name: Linux AArch64 / Clang
+            id: linux-arm64-clang
+            runner: ubuntu-24.04-arm
+            platform: linux
+            compiler: clang
+            expected_id: Clang
+          - name: macOS AArch64 / Apple Clang
+            id: macos-arm64-apple-clang
+            runner: macos-15
+            platform: macos
+            compiler: clang
+            expected_id: AppleClang
+          - name: macOS x86-64 / Apple Clang
+            id: macos-x64-apple-clang
+            runner: macos-15-intel
+            platform: macos
+            compiler: clang
+            expected_id: AppleClang
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+
+      - name: Install Linux build dependencies
+        if: matrix.platform == 'linux'
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes clang ninja-build zlib1g-dev
+
+      - name: Configure clean Release build with MSVC
+        if: matrix.id == 'windows-x64-msvc'
+        shell: bash
+        run: >-
+          cmake -S src/cmake -B dist/${{ matrix.id }}
+          -G "Visual Studio 17 2022" -A x64 -T ${{ matrix.toolset }}
+          -DCMAKE_BUILD_TYPE=Release
+
+      - name: Configure clean Release build with clang-cl
+        if: matrix.id == 'windows-x64-clang-cl'
+        shell: bash
+        run: >-
+          cmake -S src/cmake -B dist/${{ matrix.id }}
+          -G "Visual Studio 17 2022" -A x64 -T ${{ matrix.toolset }}
+          -DCMAKE_BUILD_TYPE=Release
+
+      - name: Configure clean Release build with GCC or Clang
+        if: matrix.platform == 'linux'
+        shell: bash
+        run: >-
+          cmake -S src/cmake -B dist/${{ matrix.id }} -G Ninja
+          -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=${{ matrix.compiler }}
+
+      - name: Configure clean Release build with Apple Clang
+        if: matrix.platform == 'macos'
+        shell: bash
+        run: >-
+          cmake -S src/cmake -B dist/${{ matrix.id }}
+          -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang
+
+      - name: Build product targets
+        run: cmake --build dist/${{ matrix.id }} --config Release --clean-first --parallel 2
+
+      - name: Configure canonical regression with MSVC
+        if: matrix.id == 'windows-x64-msvc'
+        shell: bash
+        run: >-
+          cmake -S ci/test/core-regression -B dist/${{ matrix.id }}-regression
+          -G "Visual Studio 17 2022" -A x64 -T ${{ matrix.toolset }}
+          -DCMAKE_BUILD_TYPE=Release
+
+      - name: Configure canonical regression with clang-cl
+        if: matrix.id == 'windows-x64-clang-cl'
+        shell: bash
+        run: >-
+          cmake -S ci/test/core-regression -B dist/${{ matrix.id }}-regression
+          -G "Visual Studio 17 2022" -A x64 -T ${{ matrix.toolset }}
+          -DCMAKE_BUILD_TYPE=Release
+
+      - name: Configure canonical regression with GCC or Clang
+        if: matrix.platform == 'linux'
+        shell: bash
+        run: >-
+          cmake -S ci/test/core-regression -B dist/${{ matrix.id }}-regression
+          -G Ninja -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_C_COMPILER=${{ matrix.compiler }}
+
+      - name: Configure canonical regression with Apple Clang
+        if: matrix.platform == 'macos'
+        shell: bash
+        run: >-
+          cmake -S ci/test/core-regression -B dist/${{ matrix.id }}-regression
+          -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang
+
+      - name: Build canonical regression
+        run: cmake --build dist/${{ matrix.id }}-regression --config Release --target wz_core_regression --parallel 2
+
+      - name: Run canonical regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            ./dist/${{ matrix.id }}-regression/Release/wz_core_regression.exe
+          else
+            ./dist/${{ matrix.id }}-regression/wz_core_regression
+          fi
+
+      - name: Record compiler and regression proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          python_command=python3
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            python_command=python
+          fi
+          "$python_command" ci/test/compiler-matrix/write-proof.py \
+            --cache dist/${{ matrix.id }}-regression/CMakeCache.txt \
+            --expected-id ${{ matrix.expected_id }} \
+            --requested '${{ matrix.compiler }}' \
+          --proof-out dist/compiler-proofs/${{ matrix.id }}.json
+
+      - name: Upload pinned compiler proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: compiler-regression-${{ matrix.id }}-${{ github.sha }}
+          path: dist/compiler-proofs/${{ matrix.id }}.json
+          if-no-files-found: error

@@ -1,6 +1,17 @@
 {
   "testId": "canonical-core-regression",
   "command": "cmake -S ci/test/core-regression -B dist/core-regression -DCMAKE_BUILD_TYPE=Release && cmake --build dist/core-regression --config Release --target wz_core_regression --parallel 2 && ./dist/core-regression/wz_core_regression",
+  "matrixWorkflow": ".github/workflows/compiler-matrix-regression.yml",
+  "compilerMatrix": [
+    "Windows x86-64 / MSVC",
+    "Windows x86-64 / clang-cl",
+    "Linux x86-64 / GCC",
+    "Linux x86-64 / Clang",
+    "Linux AArch64 / GCC",
+    "Linux AArch64 / Clang",
+    "macOS AArch64 / Apple Clang",
+    "macOS x86-64 / Apple Clang (secondary maintained target)"
+  ],
   "fixtures": [
     {
       "path": "ci/test/core-regression/canonical-fingerprints.h",

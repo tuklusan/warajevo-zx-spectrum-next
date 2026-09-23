@@ -8,14 +8,14 @@ SANYALnet Labs." See LICENSE for full terms. -->
 # Final release-readiness audit
 
 Tasks 454–460 have been audited against the current tracked workflows, source,
-test ledger, and acceptance inventories. All seven gates remain open. This is
-an evidence inventory, not release approval. Product builds, emulator tests,
-media runs, screenshots, and proof generation belong on hosted runners under
-Workflow 05.
+test ledger, and acceptance inventories. Task 459 is closed; the other six
+gates remain open. This is an evidence inventory, not release approval.
+Product builds, emulator tests, media runs, screenshots, and proof generation
+belong on hosted runners under Workflow 05.
 
 | Task | Audit finding | Required closure evidence |
 |---:|---|---|
-| 454 | `.github/workflows/runner-matrix.yml` and `cr-build-gate.yml` configure Windows x86-64/ARM64 and macOS x86-64/ARM64, but omit mandatory Linux x86-64 and Linux AArch64. The configured workflows also do not express the required per-platform GCC/Clang/MSVC/Apple Clang compiler matrix from Core §35. | Add the missing hosted or project-controlled runner/compiler jobs, then attach deterministic regression results for each mandatory group and investigate any disagreement. |
+| 454 | The existing general runner/build workflows omit mandatory Linux compiler groups and do not provide a compiler-specific deterministic suite. Added `.github/workflows/compiler-matrix-regression.yml` for all Core §35 platform/compiler groups with clean builds and canonical regressions; hosted results are pending. | Require all matrix jobs to pass and inspect each pinned compiler/build/regression artifact; investigate deterministic differences before closure. |
 | 455 | The tracked test ledger contains only `canonical-core-regression`. It does not establish complete CPU conformance, video/audio suites, Warajevo differential coverage, private difficult-media completion, or real-hardware/reference certification. Core and UI acceptance audits enumerate additional gaps. | Add/execute the architecture-required suites on hosted infrastructure; record unavailable private corpus or hardware evidence explicitly and do not claim the corresponding release scope without it. |
 | 456 | No final release artifact has been audited against Core §§28, 47, and 48. The DIZZY4K workflow emits a runner binary artifact plus timestamp and source-commit sidecar files; that runner artifact is not recorded as the final release package. ROM redistribution separation and private-media exclusion have no final artifact proof. | Inspect the actual release package and dependency closure; record license/notice, ROM, private-media, and one-program-executable findings against its pinned hash. Keep runner smoke artifacts distinct from release evidence. |
 | 457 | No tracked test implementation/proof exercises concurrent Control Port allocation, settings writes, screenshot/output creation, and writable-media ownership together or independently as required. | Add and run deterministic multi-process stress cases on supported hosted platforms and pin proofs, including clean recovery after contention/failure. |
