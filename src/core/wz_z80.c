@@ -975,7 +975,7 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
         machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
         address = (wz_word_t)(*index + (wz_word_t)(int16_t)(int8_t)displacement);
         machine->cpu.memptr = address;
-        if (wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 20u,
+        if (wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 24u,
                        address, &value, 3u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
