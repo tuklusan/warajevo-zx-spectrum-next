@@ -273,6 +273,12 @@ static wz_result_t wz_z80_bus(wz_machine_t* machine,
                               wz_word_t address,
                               wz_byte_t* value,
                               wz_byte_t t_states);
+static wz_result_t wz_z80_ed_bus(wz_machine_t* machine,
+                                 wz_bus_cycle_t cycle,
+                                 wz_master_tick_t offset,
+                                 wz_word_t address,
+                                 wz_byte_t* value,
+                                 wz_byte_t t_states);
 static wz_result_t wz_z80_execute_indexed_cb(wz_machine_t* machine,
                                              wz_word_t index);
 
@@ -1454,10 +1460,10 @@ static wz_result_t wz_z80_execute_ld_block(wz_machine_t* machine,
     wz_byte_t sum;
     wz_byte_t flags;
 
-    if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u, source, &value, 3u) != WZ_RESULT_OK) {
+    if (wz_z80_ed_bus(machine, WZ_BUS_MEMORY_READ, 8u, source, &value, 3u) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_STATE;
     }
-    if (wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 14u, destination, &value, 3u) != WZ_RESULT_OK) {
+    if (wz_z80_ed_bus(machine, WZ_BUS_MEMORY_WRITE, 14u, destination, &value, 3u) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_STATE;
     }
 
@@ -1496,7 +1502,7 @@ static wz_result_t wz_z80_execute_cp_block(wz_machine_t* machine,
     wz_byte_t adjusted;
     wz_byte_t flags;
 
-    if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u, address, &value, 3u) != WZ_RESULT_OK) {
+    if (wz_z80_ed_bus(machine, WZ_BUS_MEMORY_READ, 8u, address, &value, 3u) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_STATE;
     }
 
@@ -1560,10 +1566,10 @@ static wz_result_t wz_z80_execute_in_block(wz_machine_t* machine,
     wz_word_t sum;
     wz_byte_t value = 0u;
 
-    if (wz_z80_bus(machine, WZ_BUS_IO_READ, 8u, port, &value, 4u) != WZ_RESULT_OK) {
+    if (wz_z80_ed_bus(machine, WZ_BUS_IO_READ, 8u, port, &value, 4u) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_STATE;
     }
-    if (wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 16u, address, &value, 3u) != WZ_RESULT_OK) {
+    if (wz_z80_ed_bus(machine, WZ_BUS_MEMORY_WRITE, 16u, address, &value, 3u) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_STATE;
     }
 
@@ -1591,14 +1597,14 @@ static wz_result_t wz_z80_execute_out_block(wz_machine_t* machine,
     wz_word_t sum;
     wz_byte_t value = 0u;
 
-    if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u, address, &value, 3u) != WZ_RESULT_OK) {
+    if (wz_z80_ed_bus(machine, WZ_BUS_MEMORY_READ, 8u, address, &value, 3u) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_STATE;
     }
     machine->cpu.main.b = (wz_byte_t)(machine->cpu.main.b - 1u);
     wz_z80_set_rr(&machine->cpu, 2u, wz_z80_add16(address, decrement ? 0xffffu : 1u));
     port = wz_z80_get_rr(&machine->cpu, 0u);
     machine->cpu.memptr = wz_z80_add16(port, decrement ? 0xffffu : 1u);
-    if (wz_z80_bus(machine, WZ_BUS_IO_WRITE, 14u, port, &value, 4u) != WZ_RESULT_OK) {
+    if (wz_z80_ed_bus(machine, WZ_BUS_IO_WRITE, 14u, port, &value, 4u) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_STATE;
     }
 
@@ -1664,7 +1670,7 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         address = wz_z80_get_rr(&machine->cpu, 0u);
         machine->cpu.memptr = wz_z80_add16(address, 1u);
         value = 0u;
-        if (wz_z80_bus(machine, WZ_BUS_IO_READ, 8u, address, &value, 4u) != WZ_RESULT_OK) {
+        if (wz_z80_ed_bus(machine, WZ_BUS_IO_READ, 8u, address, &value, 4u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
         target = wz_z80_target_register(&machine->cpu, decode.operand);
@@ -1687,7 +1693,7 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         } else {
             return WZ_RESULT_INVALID_STATE;
         }
-        if (wz_z80_bus(machine, WZ_BUS_IO_WRITE, 8u, address, &value, 4u) != WZ_RESULT_OK) {
+        if (wz_z80_ed_bus(machine, WZ_BUS_IO_WRITE, 8u, address, &value, 4u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
         machine->master_tick += 24u;
@@ -1714,13 +1720,13 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_RRD:
         address = wz_z80_hl(&machine->cpu);
-        if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u, address, &value, 3u) != WZ_RESULT_OK) {
+        if (wz_z80_ed_bus(machine, WZ_BUS_MEMORY_READ, 8u, address, &value, 3u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
         low = (wz_byte_t)(machine->cpu.main.a & 0x0fu);
         machine->cpu.main.a = (wz_byte_t)((machine->cpu.main.a & 0xf0u) | (value & 0x0fu));
         value = (wz_byte_t)((low << 4u) | (value >> 4u));
-        if (wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 14u, address, &value, 3u) != WZ_RESULT_OK) {
+        if (wz_z80_ed_bus(machine, WZ_BUS_MEMORY_WRITE, 14u, address, &value, 3u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
         machine->cpu.main.f = (wz_byte_t)((machine->cpu.main.f & WZ_Z80_FLAG_C) |
@@ -1730,13 +1736,13 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_RLD:
         address = wz_z80_hl(&machine->cpu);
-        if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u, address, &value, 3u) != WZ_RESULT_OK) {
+        if (wz_z80_ed_bus(machine, WZ_BUS_MEMORY_READ, 8u, address, &value, 3u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
         low = (wz_byte_t)(machine->cpu.main.a & 0x0fu);
         machine->cpu.main.a = (wz_byte_t)((machine->cpu.main.a & 0xf0u) | (value >> 4u));
         value = (wz_byte_t)((value << 4u) | low);
-        if (wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 14u, address, &value, 3u) != WZ_RESULT_OK) {
+        if (wz_z80_ed_bus(machine, WZ_BUS_MEMORY_WRITE, 14u, address, &value, 3u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
         machine->cpu.main.f = (wz_byte_t)((machine->cpu.main.f & WZ_Z80_FLAG_C) |
@@ -1778,12 +1784,12 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         return wz_z80_execute_out_block(machine, true, true);
     case WZ_Z80_ED_OP_RETN:
     case WZ_Z80_ED_OP_RETI:
-        if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,
+        if (wz_z80_ed_bus(machine, WZ_BUS_MEMORY_READ, 8u,
                        machine->cpu.stack_pointer, &low, 3u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
         machine->cpu.stack_pointer = wz_z80_add16(machine->cpu.stack_pointer, 1u);
-        if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 14u,
+        if (wz_z80_ed_bus(machine, WZ_BUS_MEMORY_READ, 14u,
                        machine->cpu.stack_pointer, &high, 3u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
@@ -1794,12 +1800,12 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         machine->master_tick += 28u;
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_LD_NN_RR:
-        if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,
+        if (wz_z80_ed_bus(machine, WZ_BUS_MEMORY_READ, 8u,
                        machine->cpu.program_counter, &low, 3u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
         machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
-        if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 14u,
+        if (wz_z80_ed_bus(machine, WZ_BUS_MEMORY_READ, 14u,
                        machine->cpu.program_counter, &high, 3u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
@@ -1808,33 +1814,33 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         machine->cpu.memptr = wz_z80_add16(address, 1u);
         pair_value = wz_z80_get_rr(&machine->cpu, decode.operand);
         value = (wz_byte_t)(pair_value & 0xffu);
-        if (wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 20u, address, &value, 3u) != WZ_RESULT_OK) {
+        if (wz_z80_ed_bus(machine, WZ_BUS_MEMORY_WRITE, 20u, address, &value, 3u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
         value = (wz_byte_t)(pair_value >> 8u);
-        if (wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 26u,
+        if (wz_z80_ed_bus(machine, WZ_BUS_MEMORY_WRITE, 26u,
                        wz_z80_add16(address, 1u), &value, 3u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
         machine->master_tick += 40u;
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_LD_RR_NN:
-        if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,
+        if (wz_z80_ed_bus(machine, WZ_BUS_MEMORY_READ, 8u,
                        machine->cpu.program_counter, &low, 3u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
         machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
-        if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 14u,
+        if (wz_z80_ed_bus(machine, WZ_BUS_MEMORY_READ, 14u,
                        machine->cpu.program_counter, &high, 3u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
         machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
         address = (wz_word_t)low | ((wz_word_t)high << 8u);
         machine->cpu.memptr = wz_z80_add16(address, 1u);
-        if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 20u, address, &low, 3u) != WZ_RESULT_OK) {
+        if (wz_z80_ed_bus(machine, WZ_BUS_MEMORY_READ, 20u, address, &low, 3u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
-        if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 26u,
+        if (wz_z80_ed_bus(machine, WZ_BUS_MEMORY_READ, 26u,
                        wz_z80_add16(address, 1u), &high, 3u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
@@ -1867,6 +1873,16 @@ static wz_result_t wz_z80_bus(wz_machine_t* machine,
         wz_z80_trace_opcode_byte(machine, request.master_tick, address, request.value);
     }
     return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_z80_ed_bus(wz_machine_t* machine,
+                                 wz_bus_cycle_t cycle,
+                                 wz_master_tick_t offset,
+                                 wz_word_t address,
+                                 wz_byte_t* value,
+                                 wz_byte_t t_states)
+{
+    return wz_z80_bus(machine, cycle, offset + 8u, address, value, t_states);
 }
 
 void wz_z80_state_init(wz_z80_state_t* state)
