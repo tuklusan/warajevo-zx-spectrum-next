@@ -1,3 +1,6 @@
+# Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+# This file is governed by the SANYALnet Labs Non-Commercial License in the root LICENSE file.
+
 cmake
 ninja
 python3
