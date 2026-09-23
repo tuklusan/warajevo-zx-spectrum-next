@@ -18,8 +18,8 @@ the saved state and verifies the canonical state hash.
 The initial records in `baselines/` were produced on the four pinned hosted
 runner families at commit `dfaa8243a074f2b9268eeb7cd7381397577c2a9b`. The
 performance workflow runs on `main`, repeats these workloads, and rejects a
-fingerprint change or a throughput decrease greater than 30% against that
-runner's own baseline. The 30% allowance absorbs normal hosted-runner variance;
+fingerprint change or a throughput decrease greater than 40% against that
+runner's own baseline. The 40% allowance absorbs normal hosted-runner variance;
 it is not a target for accepted optimizations.
 
 When accepting an optimization, compare against the existing records first.

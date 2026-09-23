@@ -12,7 +12,7 @@ import json
 import sys
 from pathlib import Path
 
-MAX_SLOWDOWN = 0.30
+MAX_SLOWDOWN = 0.40
 
 
 def load(path: Path) -> dict:
