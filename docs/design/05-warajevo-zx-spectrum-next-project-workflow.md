@@ -125,16 +125,15 @@ new manifest record. No local installation substitutes for runner bootstrap.
 ## 6. Change-record clean-build gate
 
 `cr-build-gate.yml` is the required clean-build check before a change record is
-closed. It runs a
-clean Release build on all four runner families and accepts only declared build
-entry points such as `src/cmake/CMakeLists.txt`, a Visual Studio solution, or a
-Python project. The build and all execution happen on hosted runners, not on
-the developer workstation.
+closed. It runs a clean Release build on all four runner families and accepts
+declared build entry points such as `src/cmake/CMakeLists.txt`, a repository-root
+Visual Studio solution, or a Python project. The CMake build is the current
+product entry point. Generated build-tree solutions are not treated as separate
+project entry points. The build and all execution happen on hosted runners, not
+on the developer workstation.
 
-The repository currently has no product build entry point, so the gate
-intentionally fails with an actionable message until one is declared. Required
-CI checks apply to the exact commit pushed to `main`; there is no merge or PR
-stage.
+Required CI checks apply to the exact commit pushed to `main`; there is no merge
+or PR stage.
 
 ## 7. ROM and difficult-media validation
 

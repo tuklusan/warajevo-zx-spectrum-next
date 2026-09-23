@@ -48,11 +48,14 @@ jobs:
           cmake -S src/cmake -B dist/cr-gate-${{ matrix.label }} -DCMAKE_BUILD_TYPE=Release
           cmake --build dist/cr-gate-${{ matrix.label }} --clean-first --parallel 2
 
-      - name: Build declared Visual Studio solution
-        if: runner.os == 'Windows' && hashFiles('**/*.sln') != ''
+      - name: Build declared repository-root Visual Studio solution
+        if: runner.os == 'Windows' && hashFiles('*.sln') != ''
         shell: pwsh
         run: |
-          $solution = Get-ChildItem -Recurse -Filter *.sln | Select-Object -First 1
+          $solution = Get-ChildItem -Path . -File -Filter *.sln | Select-Object -First 1
+          if ($null -eq $solution) {
+            throw 'The repository-root solution declared at workflow evaluation was not found.'
+          }
           msbuild $solution.FullName /m /t:Rebuild /p:Configuration=Release
 
       - name: Build declared Python project
