@@ -2586,15 +2586,21 @@ execute_opcode:
         } else {
             bool taken = opcode == 0x18u || wz_z80_condition_met(
                 &machine->cpu, (wz_byte_t)((opcode >> 3u) & 0x03u));
+            if (!taken) {
+                if (wz_z80_bus(machine, WZ_BUS_INTERNAL, 8u,
+                               machine->cpu.program_counter, 0, 3u) != WZ_RESULT_OK) {
+                    return WZ_RESULT_INVALID_STATE;
+                }
+                machine->cpu.program_counter = wz_z80_add16(
+                    machine->cpu.program_counter, 1u);
+                machine->master_tick += 14u;
+                return WZ_RESULT_OK;
+            }
             if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,
                            machine->cpu.program_counter, &value, 3u) != WZ_RESULT_OK) {
                 return WZ_RESULT_INVALID_STATE;
             }
             machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
-            if (!taken) {
-                machine->master_tick += 14u;
-                return WZ_RESULT_OK;
-            }
             if (wz_z80_bus(machine, WZ_BUS_INTERNAL, 14u,
                            wz_z80_add16(machine->cpu.program_counter, 0xffffu),
                            0, 5u) != WZ_RESULT_OK) {
