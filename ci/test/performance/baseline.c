@@ -33,7 +33,7 @@ patent, trademark, and governing-law provisions.
 #define WZ_AUDIO_SAMPLES 2000000u
 #define WZ_TAPE_SEGMENT_COUNT 131072u
 #define WZ_TAPE_TICKS 4000000u
-#define WZ_SNAPSHOT_WRITES 1536u
+#define WZ_SNAPSHOT_WRITES 8192u
 #define WZ_UI_FRAMES 512u
 
 typedef struct {
