@@ -80,6 +80,7 @@ review_outgoing_source() {
     export LLM_API_BASE='https://integrate.api.nvidia.com/v1'
     export MODEL='google/gemma-4-31b-it'
     export LLM_API_TYPE=$(printf '%s' b3BlbmFp | base64 -d)
+    export LLM_DEFAULT_ARGS='{"temperature":0,"max_tokens":2048,"response_format":{"type":"json_object"}}'
 
     printf '%s\n' "Running source review before push..." >&2
     eval "$gito_runner --verbose review --against=\"$oldrev\" --filter=\"**/*.c,**/*.C,**/*.h,**/*.H,**/*.py,**/*.PY,**/*.asm,**/*.ASM,**/*.s,**/*.S,**/*.z80,**/*.Z80\""

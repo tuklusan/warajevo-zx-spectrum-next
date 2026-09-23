@@ -12,6 +12,7 @@
 """Runner-only GUI/telnet DIZZY4K smoke proof."""
 
 import pathlib
+import os
 import re
 import socket
 import subprocess
@@ -56,7 +57,7 @@ def main():
     tape = pathlib.Path(sys.argv[2]).resolve()
     output = pathlib.Path(sys.argv[3]).resolve()
     output.mkdir(parents=True, exist_ok=True)
-    environment = dict(**__import__("os").environ)
+    environment = os.environ.copy()
     environment["WZSN_ROM_PATH"] = str(tape.parent.parent / "roms" / "48.rom")
     environment["WZSN_TAPE_PATH"] = str(tape)
     process = subprocess.Popen([str(binary)], env=environment,
