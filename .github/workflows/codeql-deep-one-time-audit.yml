@@ -28,9 +28,14 @@ jobs:
           languages: ${{ matrix.language }}
           queries: security-extended,security-and-quality
 
-      - name: Build C/C++ database
+      - name: Build C/C++ database with CMake
         if: matrix.language == 'cpp'
-        uses: github/codeql-action/autobuild@v3
+        shell: bash
+        run: |
+          cmake -S src/cmake -B build/codeql \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DWZSN_BUILD_SOKOL_HOST=OFF
+          cmake --build build/codeql --parallel 2
 
       - name: Run deep analysis
         uses: github/codeql-action/analyze@v3
