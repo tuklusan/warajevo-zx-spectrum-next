@@ -200,8 +200,9 @@ static bool raster_run(void* context, uint64_t* fingerprint, double* seconds)
 static void prepare_raster_machine(wz_machine_t* machine)
 {
     for (size_t address = 0x4000u; address < 0x5b00u; ++address) {
-        machine->memory[address] =
-            (wz_byte_t)((address * 37u + (address >> 7u) * 11u) & 0xffu);
+        wz_machine_memory_write(
+            machine, (wz_word_t)address,
+            (wz_byte_t)((address * 37u + (address >> 7u) * 11u) & 0xffu));
     }
     machine->border_color = 5u;
     machine->master_tick =
