@@ -44,8 +44,8 @@ jobs:
         if: hashFiles('src/cmake/CMakeLists.txt') != ''
         shell: bash
         run: |
-          cmake -S src/cmake -B build/cr-gate -DCMAKE_BUILD_TYPE=Release
-          cmake --build build/cr-gate --clean-first --parallel 2
+          cmake -S src/cmake -B dist/cr-gate-${{ matrix.label }} -DCMAKE_BUILD_TYPE=Release
+          cmake --build dist/cr-gate-${{ matrix.label }} --clean-first --parallel 2
 
       - name: Build declared Visual Studio solution
         if: runner.os == 'Windows' && hashFiles('**/*.sln') != ''

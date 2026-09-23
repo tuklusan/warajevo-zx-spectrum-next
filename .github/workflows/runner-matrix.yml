@@ -76,5 +76,5 @@ jobs:
         if: hashFiles('src/cmake/CMakeLists.txt') != ''
         shell: bash
         run: |
-          cmake -S src/cmake -B build/ci -DCMAKE_BUILD_TYPE=Debug
-          cmake --build build/ci --parallel 2
+          cmake -S src/cmake -B dist/${{ matrix.id }} -DCMAKE_BUILD_TYPE=Debug
+          cmake --build dist/${{ matrix.id }} --parallel 2

@@ -189,7 +189,8 @@ Layout rules:
 7. Test drivers describe how to run a test; test proofs describe what actually
    passed. Neither may be used as a miscellaneous scratch area.
 8. Generated build output, caches, runner manifests, and temporary traces must
-   remain untracked outside the defined source/test/proof locations.
+   remain untracked. Runner-produced binaries belong under `dist/`; local
+   workstations must not produce them.
 9. Root-level files are reserved for project-wide policy, licensing, and
    overview metadata. New operational scripts do not belong at the root.
 10. Architecture `03-*` material remains outside the active implementation
