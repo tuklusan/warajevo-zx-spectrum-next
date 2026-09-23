@@ -21,6 +21,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #if defined(_WIN32)
 #include <fcntl.h>
 #include <io.h>
+#include <sys/stat.h>
 #else
 #include <fcntl.h>
 #include <sys/stat.h>
