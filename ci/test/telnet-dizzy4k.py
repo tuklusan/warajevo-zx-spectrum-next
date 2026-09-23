@@ -56,7 +56,11 @@ def main():
     tape = pathlib.Path(sys.argv[2]).resolve()
     output = pathlib.Path(sys.argv[3]).resolve()
     output.mkdir(parents=True, exist_ok=True)
-    process = subprocess.Popen([str(binary)], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    environment = dict(**__import__("os").environ)
+    environment["WZSN_ROM_PATH"] = str(tape.parent.parent / "roms" / "48.rom")
+    environment["WZSN_TAPE_PATH"] = str(tape)
+    process = subprocess.Popen([str(binary)], env=environment,
+                               stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     try:
         sock = None
         for _ in range(120):
@@ -68,7 +72,6 @@ def main():
             raise RuntimeError("GUI control port did not become available")
         sock.settimeout(1)
         command(sock, "HELP")
-        command(sock, f"media.tape.insert {tape}")
         command(sock, "RESUME")
         time.sleep(60)
         response = command(sock, "SCREENSHOT")

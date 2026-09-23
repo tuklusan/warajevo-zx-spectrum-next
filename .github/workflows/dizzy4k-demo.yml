@@ -78,3 +78,11 @@ jobs:
         run: |
           echo "## DIZZY4K / ${{ matrix.name }}" >> "$GITHUB_STEP_SUMMARY"
           find test-results/screenshots/${{ matrix.id }} -maxdepth 1 -type f -print >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+
+      - name: Upload untracked runner screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dizzy4k-screenshot-${{ matrix.id }}
+          path: test-results/screenshots/${{ matrix.id }}/
+          if-no-files-found: warn

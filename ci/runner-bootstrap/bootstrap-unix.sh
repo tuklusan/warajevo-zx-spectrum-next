@@ -6,7 +6,9 @@ case "$(uname -s)" in
   Darwin)
     command -v brew >/dev/null
     brew update
-    brew install cmake ninja python
+    command -v cmake >/dev/null || brew install cmake
+    command -v ninja >/dev/null || brew install ninja
+    command -v python3 >/dev/null || brew install python
     ;;
   Linux)
     sudo apt-get update
