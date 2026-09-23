@@ -10,9 +10,17 @@ SANYALnet Labs." See LICENSE for full terms.
 #ifndef WZ_APP_WZ_HOST_THREAD_H
 #define WZ_APP_WZ_HOST_THREAD_H
 
-#include <stdint.h>
+#include <stdbool.h>
 
-/* Return a process-unique identity for the calling thread. */
-uint64_t wz_host_thread_current_id(void);
+#if defined(_WIN32)
+typedef unsigned long wz_host_thread_id_t;
+#else
+#include <pthread.h>
+typedef pthread_t wz_host_thread_id_t;
+#endif
+
+wz_host_thread_id_t wz_host_thread_current_id(void);
+bool wz_host_thread_id_equal(wz_host_thread_id_t left,
+                             wz_host_thread_id_t right);
 
 #endif

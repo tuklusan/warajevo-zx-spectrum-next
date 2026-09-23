@@ -12,10 +12,9 @@ SANYALnet Labs." See LICENSE for full terms.
 
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdint.h>
-#include <stdatomic.h>
 
 #include "core/wz_types.h"
+#include "app/wz_host_thread.h"
 
 #define WZ_COMMAND_REASON_CAPACITY 48u
 #define WZ_COMMAND_MESSAGE_CAPACITY 128u
@@ -90,7 +89,8 @@ typedef struct {
     size_t capacity;
     size_t count;
     bool finalized;
-    _Atomic uint64_t owner_thread_id;
+    wz_host_thread_id_t owner_thread_id;
+    bool owner_thread_bound;
 } wz_command_registry_t;
 
 typedef struct {
@@ -108,7 +108,7 @@ wz_result_t wz_command_registry_register(
     wz_command_registry_t* registry,
     wz_command_metadata_t metadata);
 wz_result_t wz_command_registry_finalize(wz_command_registry_t* registry);
-/* Bind dispatch to the calling application/machine owner thread before use. */
+/* Call on the setup thread before finalizing or publishing the registry. */
 wz_result_t wz_command_registry_bind_owner_thread(
     wz_command_registry_t* registry);
 bool wz_command_registry_is_owner_thread(

@@ -25,8 +25,7 @@ dist/application-command-boundary/wz_application_command_boundary
 ```
 
 The Windows and POSIX test workers use native thread creation. The command
-registry owner identity itself is generated with C11 thread-local storage and
-atomics and does not inspect machine state from a worker thread. Dispatch is
-rejected until an owner is bound; thread ID zero is reserved for the unbound
-state, and identity exhaustion fails closed.
+registry binds its native owner identity during startup before finalization;
+that identity stays fixed while the registry is in use. Dispatch is rejected
+until an owner is bound, and other threads cannot rebind a finalized registry.
 

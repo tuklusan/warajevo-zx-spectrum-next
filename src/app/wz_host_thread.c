@@ -9,22 +9,25 @@ SANYALnet Labs." See LICENSE for full terms.
 
 #include "app/wz_host_thread.h"
 
-#include <stdatomic.h>
+#if defined(_WIN32)
+#include <windows.h>
+#endif
 
-static _Atomic uint64_t next_thread_id = ATOMIC_VAR_INIT(1u);
-static _Thread_local uint64_t current_thread_id;
-
-uint64_t wz_host_thread_current_id(void)
+wz_host_thread_id_t wz_host_thread_current_id(void)
 {
-    if (current_thread_id == 0u) {
-        uint64_t next = atomic_load_explicit(&next_thread_id,
-                                             memory_order_relaxed);
-        while (next != 0u &&
-               !atomic_compare_exchange_weak_explicit(
-                   &next_thread_id, &next, next + 1u,
-                   memory_order_relaxed, memory_order_relaxed)) {
-        }
-        current_thread_id = next;
-    }
-    return current_thread_id;
+#if defined(_WIN32)
+    return (wz_host_thread_id_t)GetCurrentThreadId();
+#else
+    return pthread_self();
+#endif
+}
+
+bool wz_host_thread_id_equal(wz_host_thread_id_t left,
+                             wz_host_thread_id_t right)
+{
+#if defined(_WIN32)
+    return left == right;
+#else
+    return pthread_equal(left, right) != 0;
+#endif
 }
