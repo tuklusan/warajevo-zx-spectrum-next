@@ -75,7 +75,10 @@ def main():
         command(sock, "HELP")
         time.sleep(60)
         response = command(sock, "SCREENSHOT")
-        match = re.search(r"OK SCREENSHOT\s+\"?([^\"\r\n]+)", response)
+        match = re.search(
+            r"OK (?:SCREENSHOT\s+|DO host\.screenshot\.temp\s+PATH=)\"?([^\"\r\n]+)",
+            response,
+        )
         if not match:
             raise RuntimeError(f"Screenshot path missing from response: {response!r}")
         source = pathlib.Path(match.group(1).strip()).resolve()
