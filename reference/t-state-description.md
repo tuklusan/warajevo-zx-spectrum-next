@@ -77,6 +77,27 @@ cpu_phase  = master_tick % master_ticks_per_cpu_tstate
 
 The scheduler timestamp is always `master_tick`, never a CPU T-state alone.
 
+### 2.3 48K PAL raster coordinates
+
+The 48K PAL raster uses the ULA timing order for each 224-T-state line:
+
+```text
+128 T active display, 24 T right border, 48 T horizontal retrace, 24 T left border
+```
+
+Each half T-state advances one raster position. The line begins at the first
+active pixel, so the canonical 448-position row places active pixels at
+positions 96–351; the right border follows, then retrace, then the left border
+wraps to positions 0–95. The first active line begins 14,336 T-states after the
+frame interrupt, at line 64. The 192 active lines therefore occupy lines
+64–255, leaving 64 lines above and 56 below. Port-FE border writes update the
+border color from their recorded master tick across this raster order.
+
+These coordinates are the baseline 48K PAL timing profile. Measurements report
+one-T-state variations on some ULA revisions; such profiles require separate
+evidence before changing the baseline. See the [48K technical reference](https://worldofspectrum.org/faq/reference/48kreference.htm)
+and the [raster timing diagnostic](https://github.com/rejunity/zx-racing-the-beam/blob/main/screen_timing.asm).
+
 ## 3. CPU instruction execution model
 
 The Z80 executes one instruction as an ordered sequence of machine cycles. A

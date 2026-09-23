@@ -777,6 +777,9 @@ wz_result_t wz_snapshot_state_load_sna_48k(wz_snapshot_state_t* snapshot,
     candidate.cpu.interrupt_mode = data[25u];
     candidate.border_color = data[26u];
     candidate.border_event_base_color = candidate.border_color;
+    candidate.border_event_base_tick = 0u;
+    candidate.border_event_start = 0u;
+    candidate.border_event_count = 0u;
     candidate.ula_output = data[26u];
     for (size_t index = 0u; index < 49152u; ++index) {
         candidate.memory[0x4000u + index] = data[27u + index];

@@ -1173,7 +1173,7 @@ wz_result_t wz_machine_render_raster(const wz_machine_t* machine,
                                      wz_raster_buffer_t* destination)
 {
     const size_t left = (WZ_RASTER_CANONICAL_WIDTH - 256u) / 2u;
-    const size_t top = 64u;
+    size_t top;
     wz_qword_t line_ticks;
     wz_qword_t frame_ticks;
     wz_master_tick_t latest_tick;
@@ -1182,6 +1182,7 @@ wz_result_t wz_machine_render_raster(const wz_machine_t* machine,
     wz_byte_t border_sample;
     wz_byte_t border_color;
     bool border_changes_in_frame = false;
+    bool render_border_timeline;
     bool flash_phase;
 
     if (machine == 0 || machine->profile == 0 || destination == 0 ||
@@ -1195,29 +1196,37 @@ wz_result_t wz_machine_render_raster(const wz_machine_t* machine,
         machine->profile->lines_per_frame == 0u) {
         return WZ_RESULT_INVALID_STATE;
     }
+    render_border_timeline = machine->profile->kind == WZ_MACHINE_48K_PAL;
+    top = render_border_timeline ? 64u :
+        (WZ_RASTER_CANONICAL_HEIGHT - 192u) / 2u;
     line_ticks = (wz_qword_t)machine->profile->tstates_per_line *
         machine->profile->master_ticks_per_cpu_tstate;
     frame_ticks = (wz_qword_t)machine->profile->tstates_per_frame *
         machine->profile->master_ticks_per_cpu_tstate;
-    if (line_ticks != WZ_RASTER_CANONICAL_WIDTH ||
-        frame_ticks != (wz_qword_t)WZ_RASTER_CANONICAL_WIDTH *
-            WZ_RASTER_CANONICAL_HEIGHT ||
-        machine->master_tick > UINT64_MAX - (frame_ticks - 1u) ||
-        machine->border_event_count > WZ_BORDER_EVENT_CAPACITY) {
+    if (machine->border_event_count > WZ_BORDER_EVENT_CAPACITY) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    if (render_border_timeline &&
+        (line_ticks != WZ_RASTER_CANONICAL_WIDTH ||
+         machine->profile->lines_per_frame != WZ_RASTER_CANONICAL_HEIGHT ||
+         frame_ticks != (wz_qword_t)WZ_RASTER_CANONICAL_WIDTH *
+             WZ_RASTER_CANONICAL_HEIGHT ||
+         machine->master_tick > UINT64_MAX - (frame_ticks - 1u))) {
         return WZ_RESULT_INVALID_STATE;
     }
     latest_tick = machine->master_tick == 0u ? 0u : machine->master_tick - 1u;
-    frame_start = (latest_tick / frame_ticks) * frame_ticks;
-    border_color = machine->border_event_count == 0u ? machine->border_color :
-        machine->border_event_base_color;
+    frame_start = render_border_timeline ? (latest_tick / frame_ticks) * frame_ticks : 0u;
+    border_color = !render_border_timeline || machine->border_event_count == 0u ?
+        machine->border_color : machine->border_event_base_color;
     if (border_color > 7u) {
         return WZ_RESULT_INVALID_STATE;
     }
-    if (machine->border_event_count != 0u &&
+    if (render_border_timeline && machine->border_event_count != 0u &&
         machine->border_event_base_tick > frame_start) {
         return WZ_RESULT_INVALID_STATE;
     }
-    for (size_t index = 0u; index < machine->border_event_count; ++index) {
+    for (size_t index = 0u;
+         render_border_timeline && index < machine->border_event_count; ++index) {
         const wz_border_event_t* event = &machine->border_events[
             (machine->border_event_start + index) % WZ_BORDER_EVENT_CAPACITY];
         const wz_border_event_t* previous = index == 0u ? 0 :
@@ -1238,7 +1247,7 @@ wz_result_t wz_machine_render_raster(const wz_machine_t* machine,
     if (wz_raster_buffer_clear(destination, border_sample) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_STATE;
     }
-    if (border_changes_in_frame) {
+    if (render_border_timeline && border_changes_in_frame) {
         for (wz_qword_t offset = 0u; offset < frame_ticks; ++offset) {
             const size_t y = (size_t)(offset / line_ticks);
             const size_t raster_phase = (size_t)(offset % line_ticks);
@@ -1252,7 +1261,8 @@ wz_result_t wz_machine_render_raster(const wz_machine_t* machine,
                     WZ_BORDER_EVENT_CAPACITY].color;
                 ++event_index;
             }
-            if (y < top || y >= top + 192u || x < left || x >= left + 256u) {
+            if (y < destination->height &&
+                (y < top || y >= top + 192u || x < left || x >= left + 256u)) {
                 destination->samples[y * destination->width + x] =
                     (wz_byte_t)(WZ_RASTER_BORDER_MIN + border_color);
             }
