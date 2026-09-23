@@ -70,6 +70,33 @@ jobs:
           cmake -S src/cmake -B dist/${{ matrix.id }} -G Ninja -DCMAKE_BUILD_TYPE=Release -DWZSN_BUILD_SOKOL_HOST=ON
           cmake --build dist/${{ matrix.id }} --clean-first --parallel 2
 
+      - name: Package versioned runner binary
+        shell: bash
+        run: |
+          set -euo pipefail
+          timestamp="$(date -u +%Y%m%dT%H%M%SZ)"
+          package_dir="dist/packages/${{ matrix.id }}"
+          mkdir -p "$package_dir"
+          binary="dist/${{ matrix.id }}/Warajevo-ZX-Spectrum-Next"
+          if [ -f "${binary}.exe" ]; then
+            binary="${binary}.exe"
+          fi
+          test -f "$binary"
+          suffix=""
+          if [[ "$binary" == *.exe ]]; then
+            suffix=".exe"
+          fi
+          cp "$binary" "$package_dir/Warajevo-ZX-Spectrum-Next-${{ matrix.id }}-${timestamp}-${GITHUB_SHA::12}${suffix}"
+          printf '%s\n' "$timestamp" > "$package_dir/build-timestamp-utc.txt"
+          printf '%s\n' "$GITHUB_SHA" > "$package_dir/source-commit.txt"
+
+      - name: Upload versioned runner binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: wzsn-binary-${{ matrix.id }}-${{ github.sha }}
+          path: dist/packages/${{ matrix.id }}/
+          if-no-files-found: error
+
       - name: Run DIZZY4K tape/demo harness
         shell: bash
         run: bash ci/test/run-dizzy4k-demo.sh dist/${{ matrix.id }}/Warajevo-ZX-Spectrum-Next test-media/DIZZY4K.TAP test-results/screenshots/${{ matrix.id }}

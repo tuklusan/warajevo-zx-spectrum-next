@@ -92,7 +92,12 @@ def main():
         command(sock, "KEY UP SYMBOL_SHIFT")
         time.sleep(0.1)
         press_key(sock, "ENTER")
-        time.sleep(60)
+        time.sleep(15)
+        press_key(sock, "R")
+        press_key(sock, "U")
+        press_key(sock, "N")
+        press_key(sock, "ENTER")
+        time.sleep(45)
         response = command(sock, "SCREENSHOT")
         match = re.search(
             r"OK (?:SCREENSHOT\s+|DO host\.screenshot\.temp\s+PATH=)\"?([^\"\r\n]+)",
