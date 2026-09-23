@@ -1,0 +1,72 @@
+name: Repository pathname policy
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pathname-policy:
+    name: Pathname policy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository tree
+        uses: actions/checkout@v5
+
+      - name: Validate every tracked path
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import base64
+          import os
+          import subprocess
+          import sys
+
+          encoded_terms = (
+              "Q2xhdWRl",
+              "Q29kZXg=",
+              "QW50aHJvcGl4",
+              "T3BlbkFJ",
+              "Q2hhdEdQVA==",
+              "U1BEWC1MaWNlbnNlLUlkZW50aWZpZXI=",
+              "U1BEWA==",
+          )
+          terms = tuple(
+              base64.b64decode(value, validate=True).decode("ascii").casefold()
+              for value in encoded_terms
+          )
+
+          def matches(path):
+              folded = path.casefold()
+              return tuple(term for term in terms if term in folded)
+
+          for term in terms:
+              mixed_case = "".join(
+                  char.upper() if index % 2 else char.lower()
+                  for index, char in enumerate(term)
+              )
+              if not matches(f"root/{mixed_case}/file"):
+                  raise SystemExit("case-insensitive directory-name self-check failed")
+              if not matches(f"root/file-{mixed_case}.txt"):
+                  raise SystemExit("case-insensitive filename self-check failed")
+
+          raw_paths = subprocess.check_output(
+              ["git", "ls-tree", "-r", "--name-only", "-z", "HEAD"]
+          )
+          violations = []
+          for raw_path in raw_paths.split(b"\0"):
+              if not raw_path:
+                  continue
+              path = os.fsdecode(raw_path)
+              for term in matches(path):
+                  violations.append((path, term))
+
+          if violations:
+              for path, term in violations:
+                  print(f"Forbidden path component match ({term}): {path}")
+              sys.exit(1)
+          print(f"Validated {len(raw_paths.split(bytes([0])))-1} tracked paths.")
+          PY
