@@ -39,6 +39,8 @@ PROJECT_FILES = (
     "ci/test/fuse-z80/driver.json",
     ".github/workflows/fuse-z80-regression.yml",
     "ci/test/fuse-z80/write-proof.py",
+    "tests/fuse-z80-conformance.md",
+    "test-drivers/fuse-z80-conformance.driver.json",
 )
 EXPECTED_UPSTREAM_HASHES = {
     "z80/tests/tests.in": "9f36e866f22e72ff1f8bf2100bf70ffbf58edd97b453500aab60acf1f403ebbb",

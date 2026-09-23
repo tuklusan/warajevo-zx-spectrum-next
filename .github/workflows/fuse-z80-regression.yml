@@ -7,6 +7,8 @@ on:
       - 'src/core/**'
       - 'src/cmake/**'
       - 'ci/test/fuse-z80/**'
+      - 'tests/fuse-z80-conformance.md'
+      - 'test-drivers/fuse-z80-conformance.driver.json'
       - '.github/workflows/fuse-z80-regression.yml'
   workflow_dispatch:
 
