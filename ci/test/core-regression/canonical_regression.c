@@ -66,11 +66,8 @@ static bool fingerprint_cpu(fingerprint_t* output)
         return false;
     }
     for (size_t index = 0u; index < sizeof(program); ++index) {
-        if (wz_machine_memory_write(&machine, (wz_word_t)(0x8000u + index),
-                                    program[index]) != WZ_RESULT_OK) {
-            wz_machine_destroy(&machine);
-            return false;
-        }
+        wz_machine_memory_write(&machine, (wz_word_t)(0x8000u + index),
+                                program[index]);
     }
     machine.cpu.program_counter = 0x8000u;
     machine.cpu.main.h = 0xc0u;
@@ -111,10 +108,7 @@ static bool fingerprint_raster(fingerprint_t* output)
     for (size_t address = 0x4000u; address < 0x5b00u; ++address) {
         wz_byte_t value = (wz_byte_t)((address * 37u +
                                        (address >> 7u) * 11u) & 0xffu);
-        if (wz_machine_memory_write(&machine, (wz_word_t)address, value) !=
-            WZ_RESULT_OK) {
-            goto cleanup;
-        }
+        wz_machine_memory_write(&machine, (wz_word_t)address, value);
     }
     machine.border_color = 5u;
     machine.master_tick =
