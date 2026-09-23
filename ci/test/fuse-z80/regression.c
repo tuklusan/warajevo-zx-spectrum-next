@@ -386,16 +386,23 @@ static bool execute_case(fuse_case_t* input, const fuse_case_t* expected,
     wz_bus_input_t port_input;
     wz_master_tick_t target_tick;
     uint16_t actual_words[13];
-    uint8_t actual_memory[FUSE_MEMORY_SIZE];
+    uint8_t* actual_memory;
     uint32_t actual_tstates;
     size_t steps = 0u;
     bool success = false;
 
     memset(&machine, 0, sizeof(machine));
+    actual_memory = (uint8_t*)malloc(FUSE_MEMORY_SIZE);
+    if (actual_memory == NULL) {
+        fprintf(stderr, "FAIL %s: could not allocate memory comparison buffer\n",
+                input->description);
+        return false;
+    }
     input->events.event_count = 0u;
     input->events.overflow = false;
     if (wz_machine_init(&machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK) {
         fprintf(stderr, "FAIL %s: machine initialization\n", input->description);
+        free(actual_memory);
         return false;
     }
     wz_bus_observer_init(&observer, record_bus_request, &input->events);
@@ -482,6 +489,7 @@ static bool execute_case(fuse_case_t* input, const fuse_case_t* expected,
 
 cleanup:
     wz_machine_destroy(&machine);
+    free(actual_memory);
     return success;
 }
 
@@ -526,7 +534,11 @@ int main(int argc, char** argv)
         have_expected = read_expected_case(expected_stream, expected_case);
         if (!have_input || !have_expected) {
             if (have_input != have_expected) {
-                fprintf(stderr, "Fuse input and expected case counts differ\n");
+                fprintf(stderr,
+                        "Fuse input and expected case counts differ after %" PRIu32
+                        " cases (input=%s, expected=%s)\n",
+                        cases, have_input ? "present" : "EOF or invalid",
+                        have_expected ? "present" : "EOF or invalid");
                 free(input_case);
                 free(expected_case);
                 fclose(input_stream);
