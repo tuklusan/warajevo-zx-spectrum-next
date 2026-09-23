@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-BANNED=$(printf '%s\n' Q2xhdWRl Q29kZXg= QW50aHJvcGl4 T3BlbkFJ Q2hhdEdQVA== U1BEWC1MaWNlbnNlLUlkZW50aWZpZXI= U1BEWA== | base64 -d | paste -sd '|' -)
+BANNED=$(for encoded in Q2xhdWRl Q29kZXg= QW50aHJvcGl4 T3BlbkFJ Q2hhdEdQVA== U1BEWC1MaWNlbnNlLUlkZW50aWZpZXI= U1BEWA==; do printf '%s\n' "$encoded" | base64 -d; printf '\n'; done | paste -sd '|' -)
 
 check_banned_content() {
     oldrev=$1
