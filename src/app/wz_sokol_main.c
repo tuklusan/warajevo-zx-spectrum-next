@@ -94,6 +94,8 @@ typedef struct {
 } wz_host_session_t;
 
 static wz_host_session_t wz_host_session;
+static bool wz_host_menu_open;
+static size_t wz_host_open_menu_index;
 
 static bool wz_host_read_file(const char* path, wz_byte_t** data, size_t* length)
 {
@@ -451,6 +453,25 @@ static void wz_host_render_native_ui(float width, float height)
                         right - 1.0f, viewport_top - 2.0f,
                         width, height, 0.22f, 0.22f, 0.26f);
     }
+    if (wz_host_menu_open) {
+        const size_t item_count = wz_ui_layout_menu_command_count(
+            &wz_host_session.command_registry, wz_host_open_menu_index);
+        float left = width * (float)wz_host_open_menu_index /
+            (float)menu_count;
+        float right = left + 240.0f;
+        if (right > width) right = width;
+        if (item_count != 0u) {
+            wz_host_ui_quad(left, menu_height, right,
+                            menu_height + (float)item_count * 24.0f,
+                            width, height, 0.10f, 0.10f, 0.12f);
+            for (index = 0u; index < item_count; ++index) {
+                float top = menu_height + (float)index * 24.0f;
+                wz_host_ui_quad(left + 2.0f, top + 1.0f, right - 2.0f,
+                                top + 23.0f, width, height,
+                                0.18f, 0.18f, 0.22f);
+            }
+        }
+    }
 }
 
 static void wz_host_render_raster(void)
@@ -693,8 +714,33 @@ static void wz_host_event(const sapp_event* event)
     if (wz_host_session.initialized &&
         event->type == SAPP_EVENTTYPE_MOUSE_DOWN &&
         event->mouse_button == SAPP_MOUSEBUTTON_LEFT) {
-        size_t toolbar_index;
+        size_t menu_index;
+        size_t menu_command_index;
         wz_command_result_t result;
+        if (wz_ui_layout_menu_hit_test(
+                event->mouse_x, event->mouse_y, (float)sapp_width(),
+                &menu_index)) {
+            if (wz_host_menu_open && menu_index == wz_host_open_menu_index) {
+                wz_host_menu_open = false;
+            } else {
+                wz_host_open_menu_index = menu_index;
+                wz_host_menu_open = true;
+            }
+            return;
+        }
+        if (wz_host_menu_open && wz_ui_layout_menu_command_hit_test(
+                &wz_host_session.command_registry, wz_host_open_menu_index,
+                event->mouse_x, event->mouse_y, (float)sapp_width(),
+                &menu_command_index)) {
+            (void)wz_ui_layout_activate_menu_command(
+                &wz_host_session.command_registry, wz_host_open_menu_index,
+                menu_command_index, (wz_command_arguments_t){NULL, 0u},
+                &result);
+            wz_host_menu_open = false;
+            return;
+        }
+        wz_host_menu_open = false;
+        size_t toolbar_index;
         if (wz_ui_layout_toolbar_hit_test(
                 event->mouse_x, event->mouse_y, (float)sapp_width(),
                 &toolbar_index)) {

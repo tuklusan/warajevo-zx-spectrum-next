@@ -141,6 +141,20 @@ const wz_ui_toolbar_item_t* wz_ui_layout_toolbar_at(size_t index);
 bool wz_ui_layout_toolbar_hit_test(float x, float y,
                                    float viewport_width,
                                    size_t* toolbar_index);
+bool wz_ui_layout_menu_hit_test(float x, float y, float viewport_width,
+                               size_t* menu_index);
+size_t wz_ui_layout_menu_command_count(
+    const wz_command_registry_t* registry, size_t menu_index);
+const wz_command_metadata_t* wz_ui_layout_menu_command_at(
+    const wz_command_registry_t* registry, size_t menu_index,
+    size_t command_index);
+bool wz_ui_layout_menu_command_hit_test(
+    const wz_command_registry_t* registry, size_t menu_index,
+    float x, float y, float viewport_width, size_t* command_index);
+wz_result_t wz_ui_layout_activate_menu_command(
+    const wz_command_registry_t* registry, size_t menu_index,
+    size_t command_index, wz_command_arguments_t arguments,
+    wz_command_result_t* result);
 size_t wz_ui_layout_tape_action_count(void);
 const wz_ui_toolbar_item_t* wz_ui_layout_tape_action_at(size_t index);
 size_t wz_ui_layout_microdrive_action_count(void);

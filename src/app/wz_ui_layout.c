@@ -439,6 +439,114 @@ bool wz_ui_layout_toolbar_hit_test(float x, float y,
     return *toolbar_index < WZ_UI_TOOLBAR_COUNT;
 }
 
+bool wz_ui_layout_menu_hit_test(float x, float y, float viewport_width,
+                               size_t* menu_index)
+{
+    if (menu_index == 0 || viewport_width <= 0.0f || x < 0.0f ||
+        x >= viewport_width || y < 0.0f || y >= WZ_UI_MENU_BAR_HEIGHT) {
+        return false;
+    }
+    *menu_index = (size_t)(x / viewport_width *
+                           (float)wz_ui_layout_menu_count());
+    return *menu_index < wz_ui_layout_menu_count();
+}
+
+size_t wz_ui_layout_menu_command_count(
+    const wz_command_registry_t* registry, size_t menu_index)
+{
+    const wz_ui_menu_node_t* menu = wz_ui_layout_menu_at(menu_index);
+    size_t count = 0u;
+    size_t index;
+    if (registry == 0 || menu == 0) {
+        return 0u;
+    }
+    for (index = 0u; index < wz_command_registry_count(registry); ++index) {
+        const wz_command_metadata_t* command =
+            wz_command_registry_at(registry, index);
+        if (command != 0 && command->menu_group != 0 &&
+            strcmp(command->menu_group, menu->id) == 0) {
+            ++count;
+        }
+    }
+    return count;
+}
+
+const wz_command_metadata_t* wz_ui_layout_menu_command_at(
+    const wz_command_registry_t* registry, size_t menu_index,
+    size_t command_index)
+{
+    const wz_ui_menu_node_t* menu = wz_ui_layout_menu_at(menu_index);
+    size_t index;
+    size_t matched = 0u;
+    if (registry == 0 || menu == 0) {
+        return 0;
+    }
+    for (index = 0u; index < wz_command_registry_count(registry); ++index) {
+        const wz_command_metadata_t* command =
+            wz_command_registry_at(registry, index);
+        if (command != 0 && command->menu_group != 0 &&
+            strcmp(command->menu_group, menu->id) == 0) {
+            if (matched == command_index) {
+                return command;
+            }
+            ++matched;
+        }
+    }
+    return 0;
+}
+
+bool wz_ui_layout_menu_command_hit_test(
+    const wz_command_registry_t* registry, size_t menu_index,
+    float x, float y, float viewport_width, size_t* command_index)
+{
+    const float menu_width = 240.0f;
+    const float item_height = 24.0f;
+    float left;
+    float right;
+    size_t count;
+    size_t index;
+    if (command_index == 0 || viewport_width <= 0.0f || x < 0.0f ||
+        x >= viewport_width || y < WZ_UI_MENU_BAR_HEIGHT ||
+        menu_index >= wz_ui_layout_menu_count()) {
+        return false;
+    }
+    left = viewport_width * (float)menu_index /
+        (float)wz_ui_layout_menu_count();
+    right = left + menu_width;
+    if (right > viewport_width) {
+        right = viewport_width;
+    }
+    count = wz_ui_layout_menu_command_count(registry, menu_index);
+    if (x < left || x >= right ||
+        y >= WZ_UI_MENU_BAR_HEIGHT + (float)count * item_height) {
+        return false;
+    }
+    index = (size_t)((y - WZ_UI_MENU_BAR_HEIGHT) / item_height);
+    if (index >= count) {
+        return false;
+    }
+    *command_index = index;
+    return true;
+}
+
+wz_result_t wz_ui_layout_activate_menu_command(
+    const wz_command_registry_t* registry, size_t menu_index,
+    size_t command_index, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    const wz_command_metadata_t* command;
+    if (result == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    command = wz_ui_layout_menu_command_at(registry, menu_index,
+                                           command_index);
+    if (command == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    return wz_command_registry_dispatch(registry, command->id, arguments,
+                                        result);
+}
+
 size_t wz_ui_layout_tape_action_count(void)
 {
     return WZ_UI_TAPE_ACTION_COUNT;

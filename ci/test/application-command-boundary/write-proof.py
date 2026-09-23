@@ -36,7 +36,7 @@ def main() -> None:
         log = (runner_dir / "run.log").read_text(encoding="utf-8")
         if metadata.get("id") != runner_id:
             raise SystemExit(f"runner metadata mismatch: {runner_id}")
-        if "PASS application-command-boundary cases=4" not in log:
+        if "PASS application-command-boundary cases=6" not in log:
             raise SystemExit(f"acceptance cases did not pass: {runner_id}")
         records.append(metadata)
 
@@ -61,7 +61,7 @@ def main() -> None:
         "commit": args.project_commit,
         "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
         "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "caseCount": 4,
+        "caseCount": 6,
         "runners": records,
         "fixtures": fixtures,
     }

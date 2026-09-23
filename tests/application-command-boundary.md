@@ -7,13 +7,17 @@ SANYALnet Labs." See LICENSE for full terms. -->
 
 # Application command boundary acceptance
 
-`application-command-boundary.c` verifies four requirements using a single
-registry and a mutation-counting machine fixture:
+`application-command-boundary.c` verifies six requirements with the application
+command registry and an initialized canonical 48K machine:
 
 1. The application-test projection invokes the registered reset handler.
-2. A hit-tested GUI toolbar click invokes that same registered handler and checks the right-edge boundary.
-3. The Telnet `DO machine.reset` projection invokes the same handler.
-4. A worker thread cannot rebind the finalized registry or execute the handler;
+2. A hit-tested Machine menu selection invokes that same reset handler.
+3. A hit-tested GUI toolbar click invokes that same handler and checks the
+   right-edge boundary.
+4. A host-only View menu command toggles status presentation without changing
+   the canonical machine-state hash.
+5. The Telnet `DO machine.reset` projection invokes the same handler.
+6. A worker thread cannot rebind the finalized registry or execute the handler;
    dispatch returns `wrong-thread` and leaves machine state unchanged.
 
 Run through the hosted matrix with:
@@ -24,8 +28,6 @@ cmake --build dist/application-command-boundary --config Release --target wz_app
 dist/application-command-boundary/wz_application_command_boundary
 ```
 
-The Windows and POSIX test workers use native thread creation. The command
-registry owner identity itself is generated with C11 thread-local storage and
-atomics and does not inspect machine state from a worker thread. Dispatch is
+The Windows and POSIX test workers use native thread creation. Dispatch is
 rejected until an owner is bound; thread ID zero is reserved for the unbound
 state, and identity exhaustion fails closed.

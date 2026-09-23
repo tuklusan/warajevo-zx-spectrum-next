@@ -10,6 +10,8 @@ SANYALnet Labs." See LICENSE for full terms.
 #include "app/wz_command_registry.h"
 #include "app/wz_ui_layout.h"
 #include "app/wz_telnet_keyboard_command.h"
+#include "core/wz_machine.h"
+#include "core/wz_state.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -23,6 +25,10 @@ SANYALnet Labs." See LICENSE for full terms.
 typedef struct {
     unsigned mutations;
 } test_machine_t;
+
+typedef struct {
+    wz_ui_layout_state_t layout;
+} test_host_context_t;
 
 typedef struct {
     wz_command_registry_t* registry;
@@ -41,6 +47,21 @@ static wz_result_t reset_handler(const void* context,
     }
     ++machine->mutations;
     (void)snprintf(result->message, sizeof(result->message), "reset");
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t toggle_status_panel_handler(
+    const void* context, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    test_host_context_t* host = (test_host_context_t*)context;
+    if (host == NULL || arguments.size != 0u || result == NULL) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (!wz_ui_layout_toggle_status_panel(&host->layout)) {
+        return WZ_RESULT_FAILED;
+    }
+    (void)snprintf(result->message, sizeof(result->message), "visible");
     return WZ_RESULT_OK;
 }
 
@@ -76,20 +97,33 @@ static int fail(const char* message)
 
 int main(void)
 {
-    wz_command_metadata_t storage[1];
+    wz_command_metadata_t storage[2];
     wz_command_registry_t registry;
     wz_command_result_t result;
     wz_command_arguments_t arguments = {NULL, 0u};
+    wz_machine_t canonical_machine;
+    wz_qword_t canonical_hash_before;
+    wz_qword_t canonical_hash_after;
+    test_host_context_t host = {0};
     wz_command_metadata_t reset = {
         "machine.reset", "Reset", "Reset the machine", "machine",
         "NONE", "RESET", "reset_handler", "test", NULL,
         WZ_COMMAND_REMOTE_SAFE, NULL, reset_handler, NULL, true, true, NULL
+    };
+    wz_command_metadata_t status_panel = {
+        "view.status_panel.toggle", "Toggle Status Panel",
+        "Toggle host status presentation", "view", "NONE", "STATE",
+        "toggle_status_panel_handler", "test", NULL,
+        WZ_COMMAND_LOCAL_ONLY, NULL, toggle_status_panel_handler, &host,
+        false, false, NULL
     };
     test_machine_t machine = {0u};
     worker_context_t worker;
     char output[128];
     size_t output_length = 0u;
     size_t toolbar_index = 0u;
+    size_t menu_index = 0u;
+    size_t menu_command_index = 0u;
 #if defined(_WIN32)
     HANDLE thread;
     DWORD wait_result;
@@ -98,9 +132,18 @@ int main(void)
 #endif
 
     reset.handler_context = &machine;
-    if (wz_command_registry_init(&registry, storage, 1u) != WZ_RESULT_OK ||
+    memset(&canonical_machine, 0, sizeof(canonical_machine));
+    wz_ui_layout_state_init(&host.layout);
+    if (wz_machine_init(&canonical_machine,
+                        wz_machine_profile_48k_pal()) != WZ_RESULT_OK ||
+        wz_state_hash_machine(&canonical_machine,
+                              &canonical_hash_before) != WZ_RESULT_OK) {
+        return fail("canonical machine fingerprint setup");
+    }
+    if (wz_command_registry_init(&registry, storage, 2u) != WZ_RESULT_OK ||
         wz_command_registry_bind_owner_thread(&registry) != WZ_RESULT_OK ||
         wz_command_registry_register(&registry, reset) != WZ_RESULT_OK ||
+        wz_command_registry_register(&registry, status_panel) != WZ_RESULT_OK ||
         wz_command_registry_finalize(&registry) != WZ_RESULT_OK) {
         return fail("registry setup and owner binding");
     }
@@ -110,6 +153,30 @@ int main(void)
         machine.mutations != 1u) {
         return fail("application test projection dispatch");
     }
+    if (!wz_ui_layout_menu_hit_test(640.0f * 1.5f /
+                                    (float)WZ_UI_MENU_COUNT,
+                                    14.0f, 640.0f, &menu_index) ||
+        menu_index != 1u ||
+        !wz_ui_layout_menu_command_hit_test(
+            &registry, menu_index, 100.0f, 42.0f, 640.0f,
+            &menu_command_index) || menu_command_index != 0u ||
+        wz_ui_layout_activate_menu_command(&registry, menu_index,
+                                           menu_command_index, arguments,
+                                           &result) != WZ_RESULT_OK ||
+        machine.mutations != 2u) {
+        return fail("GUI menu event did not share registry dispatch");
+    }
+    if (!wz_ui_layout_menu_command_hit_test(
+            &registry, 3u, 300.0f, 42.0f, 640.0f, &menu_command_index) ||
+        wz_ui_layout_activate_menu_command(&registry, 3u,
+                                           menu_command_index, arguments,
+                                           &result) != WZ_RESULT_OK ||
+        !host.layout.status_panel_visible ||
+        wz_state_hash_machine(&canonical_machine,
+                              &canonical_hash_after) != WZ_RESULT_OK ||
+        canonical_hash_before != canonical_hash_after) {
+        return fail("host-only menu operation changed canonical machine state");
+    }
     if (!wz_ui_layout_toolbar_hit_test(640.0f * 2.5f /
                                        (float)WZ_UI_TOOLBAR_COUNT,
                                        42.0f, 640.0f, &toolbar_index) ||
@@ -118,13 +185,13 @@ int main(void)
                                       &toolbar_index) ||
         wz_ui_layout_activate_toolbar(&registry, toolbar_index,
                                      arguments, &result) !=
-            WZ_RESULT_OK || machine.mutations != 2u) {
+            WZ_RESULT_OK || machine.mutations != 3u) {
         return fail("GUI toolbar hit target did not share registry dispatch");
     }
     if (!wz_telnet_do_format(&registry, "machine.reset", "", output,
                              sizeof(output), &output_length) ||
         output_length == 0u || strstr(output, "OK DO machine.reset") == NULL ||
-        machine.mutations != 3u) {
+        machine.mutations != 4u) {
         return fail("Telnet projection did not share registry dispatch");
     }
 
@@ -146,10 +213,11 @@ int main(void)
         worker.dispatch_result != WZ_RESULT_INVALID_STATE ||
         worker.command_result.reason == NULL ||
         strcmp(worker.command_result.reason, "wrong-thread") != 0 ||
-        machine.mutations != 3u) {
+        machine.mutations != 4u) {
         return fail("non-owner thread reached the machine mutation handler");
     }
 
-    puts("PASS application-command-boundary cases=4");
+    wz_machine_destroy(&canonical_machine);
+    puts("PASS application-command-boundary cases=6");
     return 0;
 }

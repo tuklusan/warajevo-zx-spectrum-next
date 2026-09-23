@@ -7,13 +7,16 @@ SANYALnet Labs." See LICENSE for full terms. -->
 
 # Application command boundary acceptance
 
-`tests/application-command-boundary.c` verifies four requirements using a single
-registry and a mutation-counting machine fixture:
+`tests/application-command-boundary.c` verifies six requirements with the
+command registry and an initialized canonical 48K machine:
 
 1. The application-test projection invokes the registered reset handler.
-2. A hit-tested GUI toolbar click invokes that same registered handler.
-3. The Telnet `DO machine.reset` projection invokes the same handler.
-4. A worker thread cannot rebind the finalized registry or execute the handler;
+2. A hit-tested Machine menu selection invokes that same reset handler.
+3. A hit-tested GUI toolbar click invokes that same registered handler.
+4. A host-only View menu command toggles status presentation without changing
+   the canonical machine-state hash.
+5. The Telnet `DO machine.reset` projection invokes the same handler.
+6. A worker thread cannot rebind the finalized registry or execute the handler;
    dispatch returns `wrong-thread` and leaves machine state unchanged.
 
 Run through the hosted matrix with:

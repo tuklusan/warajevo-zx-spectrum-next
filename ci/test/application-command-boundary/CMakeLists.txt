@@ -28,9 +28,29 @@ add_executable(wz_application_command_boundary
     "${SOURCE_ROOT}/app/wz_screenshot_service.c"
     "${SOURCE_ROOT}/app/wz_host_audio_policy.c"
     "${SOURCE_ROOT}/app/wz_speed_policy.c"
+    "${SOURCE_ROOT}/core/wz_machine_profile.c"
     "${SOURCE_ROOT}/core/wz_keyboard_matrix.c"
+    "${SOURCE_ROOT}/core/wz_kempston.c"
+    "${SOURCE_ROOT}/core/audio/wz_beeper.c"
+    "${SOURCE_ROOT}/core/audio/wz_ay.c"
+    "${SOURCE_ROOT}/core/audio/wz_audio_mixer.c"
+    "${SOURCE_ROOT}/core/audio/wz_audio_evidence.c"
+    "${SOURCE_ROOT}/core/wz_bus.c"
+    "${SOURCE_ROOT}/core/wz_debugger.c"
+    "${SOURCE_ROOT}/core/wz_machine.c"
+    "${SOURCE_ROOT}/core/wz_microdrive.c"
+    "${SOURCE_ROOT}/core/wz_printer.c"
+    "${SOURCE_ROOT}/core/wz_zxnet.c"
+    "${SOURCE_ROOT}/core/wz_raster.c"
     "${SOURCE_ROOT}/core/wz_presentation_snapshot.c"
-    "${SOURCE_ROOT}/core/wz_raster.c")
+    "${SOURCE_ROOT}/core/wz_raster_diagnostic.c"
+    "${SOURCE_ROOT}/core/wz_raster_evidence.c"
+    "${SOURCE_ROOT}/core/wz_runner.c"
+    "${SOURCE_ROOT}/core/wz_scheduler.c"
+    "${SOURCE_ROOT}/core/wz_tape.c"
+    "${SOURCE_ROOT}/core/wz_state.c"
+    "${SOURCE_ROOT}/core/wz_trace.c"
+    "${SOURCE_ROOT}/core/wz_z80.c")
 
 target_include_directories(wz_application_command_boundary PRIVATE
     "${SOURCE_ROOT}")
