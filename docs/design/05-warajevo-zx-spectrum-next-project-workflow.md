@@ -41,6 +41,9 @@ adjudication.
 
 Every push-triggered GitHub workflow is scoped to `main`. Manual dispatch jobs
 also require the selected ref to be `main`; pull-request triggers are prohibited.
+The pathname-policy workflow therefore validates direct pushes to `main` and
+manual runs on `main`; it must not require a pull request or an intermediate
+branch.
 
 ## 3. Local pre-push gate
 
