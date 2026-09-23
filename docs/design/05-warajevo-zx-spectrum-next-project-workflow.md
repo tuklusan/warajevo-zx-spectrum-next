@@ -23,18 +23,21 @@ The active scope is deliberately limited to the first two architectures:
    settings.
 3. `04-wzsn-architectures-1-2-developer-tasks.md` translates those documents
    into ordered implementation tasks and acceptance gates.
-4. This document defines repository, CI, test-proof, runner, and CR workflow.
+4. This document defines repository, CI, test-proof, runner, and change-record workflow.
 
 `03-zx48-mic-ear-router-network-architecture.md` is explicitly out of scope.
 
-## 2. Change workflow
+## 2. Change workflow — main only, no PRs, no branches
 
-Every change is developed as a small, reviewable commit tied to a task or CR.
-The developer identifies the applicable architecture/task, updates the
-implementation and deterministic tests, updates test evidence, runs the local
-pre-push gate, and resolves CI evidence before marking the CR ready to close.
-Automated review and test output are evidence; the responsible developer makes
-the final adjudication.
+All project work is committed directly to `main`. Do not create or use another
+branch, and do not open or use a pull request. Keep each commit small and tied
+to an Architecture #1/#2 task or change record. Before pushing, identify the
+applicable architecture/task, update the implementation and deterministic
+tests, update test evidence, and pass the mandatory local pre-push review gate
+in Section 3. Push directly to `main`; then resolve the required CI evidence
+for that commit before marking its change record ready to close. Automated
+review and test output are evidence; the responsible developer makes the final
+adjudication.
 
 ## 3. Local pre-push gate
 
@@ -43,8 +46,15 @@ The sole local validation entrypoint is `.githooks/pre-push`. The checkout uses
 
 The gate runs test-ledger validation, banned-term validation, license-header
 validation, local AI source review, and Git LFS validation. Banned matching is
-case-insensitive. Validation or tool/configuration failures stop the push before
-the remote is contacted; AI findings remain advisory.
+case-insensitive. Source review is mandatory whenever a pushed change contains
+source files covered by the reviewer. Start a 20-minute wall-clock timer when
+the review command starts. A completed review permits the gate to continue;
+review findings remain advisory and require developer adjudication. If the
+review has not completed when the timer expires, terminate it, record the
+outcome as `STALL` with elapsed time and available diagnostics, and reject the
+push. `STALL` is a failed gate, never a review pass. Missing credentials,
+reviewer errors, or other validation/tool configuration failures also reject
+the push before the remote is contacted.
 
 The local workstation is never a build or test machine. It may run the
 pre-push policy checks, but product compilation, emulator execution, media
@@ -109,18 +119,19 @@ the emulator host. Windows and macOS use their platform SDKs and native host
 dependencies. An unmatched or missing cache causes a fresh bootstrap and a
 new manifest record. No local installation substitutes for runner bootstrap.
 
-## 6. CR clean-build gate
+## 6. Change-record clean-build gate
 
-`cr-build-gate.yml` is the required clean-build check for CR closure. It runs a
+`cr-build-gate.yml` is the required clean-build check before a change record is
+closed. It runs a
 clean Release build on all four runner families and accepts only declared build
 entry points such as `src/cmake/CMakeLists.txt`, a Visual Studio solution, or a
 Python project. The build and all execution happen on hosted runners, not on
 the developer workstation.
 
 The repository currently has no product build entry point, so the gate
-intentionally fails with an actionable message until one is declared. Its check
-names must be made required in repository branch rules before they enforce merge
-or closure.
+intentionally fails with an actionable message until one is declared. Required
+CI checks apply to the exact commit pushed to `main`; there is no merge or PR
+stage.
 
 ## 7. ROM and difficult-media validation
 
@@ -211,7 +222,7 @@ tools/             general developer/repository utilities
 
 ## 10. Definition of ready to close
 
-A CR is ready to close only when the applicable Architecture #1/#2 task is clear,
+A change record is ready to close only when the applicable Architecture #1/#2 task is clear,
 the product build succeeds on all required runners, relevant tests have
 identifiable drivers and passing pinned proofs, ROM/media outcomes are recorded,
 no unexplained release-blocking timing/media divergence remains, and the
