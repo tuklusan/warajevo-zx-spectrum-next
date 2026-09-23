@@ -1,17 +1,43 @@
 {
   "testId": "multi-instance-stress",
-  "command": "cmake -S ci/test/multi-instance -B dist/multi-instance -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/multi-instance --config Release --target wz_multi_instance_worker --parallel 2 && python ci/test/multi-instance/run-stress.py dist/multi-instance/wz_multi_instance_worker",
-  "requiredCases": 5,
-  "processesPerContentionGroup": 12,
-  "runnerMatrix": [
-    "windows-2025",
-    "windows-11-arm",
-    "macos-15-intel",
-    "macos-15"
+  "status": "pass",
+  "commit": "70a0e998d9f2799ea6e82e4132426407c57a73f5",
+  "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
+  "timestamp": "2026-09-23T21:28:34+00:00",
+  "caseCount": 5,
+  "runners": [
+    {
+      "id": "windows-x64",
+      "label": "windows-x64",
+      "os": "Windows",
+      "architecture": "X64",
+      "runnerName": "win25-vs2026"
+    },
+    {
+      "id": "windows-arm64",
+      "label": "windows-arm64",
+      "os": "Windows",
+      "architecture": "ARM64",
+      "runnerName": "win11-arm64"
+    },
+    {
+      "id": "macos-intel",
+      "label": "macos-intel",
+      "os": "macOS",
+      "architecture": "X64",
+      "runnerName": "macos15"
+    },
+    {
+      "id": "macos-arm64",
+      "label": "macos-arm64",
+      "os": "macOS",
+      "architecture": "ARM64",
+      "runnerName": "macos15"
+    }
   ],
   "fixtures": [
     {
-      "path": "tests/multi-instance-stress.c",
+      "path": "ci/test/multi-instance/worker.c",
       "sha256": "f98e98bc37e5db86a0f3a46df5edc138bfc5761afbb91e19b03db6525f6319d0"
     },
     {
@@ -96,7 +122,7 @@
     },
     {
       "path": "ci/test/multi-instance/CMakeLists.txt",
-      "sha256": "96dbf0916e2d9548f407debb499c6c1128231c8e41c4a56e668c970d36fe003a"
+      "sha256": "b3a16c62916119d8db442984925f830faed8db19c5d0aef0129a66d48e8b26a6"
     },
     {
       "path": "ci/test/multi-instance/run-stress.py",
@@ -104,19 +130,23 @@
     },
     {
       "path": "ci/test/multi-instance/write-proof.py",
-      "sha256": "57f04f1c3b4991d116444a5e24a1a3f7c01773cd7fe6500aa22b66993220508c"
+      "sha256": "dc6a4f8dca4f198532e0a7ba32498ba2f22f1951d4fd1710552d29a022a6f52f"
     },
     {
       "path": "ci/test/multi-instance/README.md",
-      "sha256": "c21ec86d6adafc8fb0d1efb3dbabd364822be0a15bf04909ff79ae376d87931d"
+      "sha256": "7cb2e117685a1963c6d5cd68694d4ba8df2abf895df82fc2ada1738bdf566971"
     },
     {
-      "path": "tests/multi-instance-stress.md",
+      "path": "ci/test/multi-instance/test-description.md",
       "sha256": "0bd30dabae3bcdc59be15f3dc22adcf0c0c036a3978a16882a85c7eca2fd4ec9"
     },
     {
+      "path": "test-drivers/multi-instance-stress.driver.json",
+      "sha256": "d0dd6b64c4d6444d6284759bcfbcc41110ea0e2990b18fa2366c4a80fbf7ac36"
+    },
+    {
       "path": ".github/workflows/multi-instance-stress.yml",
-      "sha256": "b8f43bb22fbad41a6e9ae08bfcfbf9aed8e331cad5a27ac45ed2eeca9c22db84"
+      "sha256": "1072d4fb8e8ca3242bbfeb160da6df604a75ddcfdcb755a70cb280944dd1bcc9"
     }
   ]
 }

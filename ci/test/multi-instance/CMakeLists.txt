@@ -13,7 +13,7 @@ get_filename_component(WZSN_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE)
 add_subdirectory("${WZSN_ROOT}/src/cmake" "${CMAKE_CURRENT_BINARY_DIR}/product")
 
 add_executable(wz_multi_instance_worker
-    "${CMAKE_CURRENT_LIST_DIR}/worker.c"
+    "${WZSN_ROOT}/tests/multi-instance-stress.c"
     "${WZSN_ROOT}/src/app/wz_control_port.c"
     "${WZSN_ROOT}/src/app/wz_host_socket.c"
     "${WZSN_ROOT}/src/app/wz_host_config.c"

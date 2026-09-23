@@ -22,7 +22,7 @@ import sys
 REPO = Path(__file__).resolve().parents[3]
 MATRIX = ("windows-x64", "windows-arm64", "macos-intel", "macos-arm64")
 PROJECT_FILES = (
-    "ci/test/multi-instance/worker.c",
+    "tests/multi-instance-stress.c",
     "src/app/wz_control_port.c",
     "src/app/wz_control_port.h",
     "src/app/wz_host_config.c",
@@ -47,7 +47,7 @@ PROJECT_FILES = (
     "ci/test/multi-instance/run-stress.py",
     "ci/test/multi-instance/write-proof.py",
     "ci/test/multi-instance/README.md",
-    "ci/test/multi-instance/test-description.md",
+    "tests/multi-instance-stress.md",
     "test-drivers/multi-instance-stress.driver.json",
     ".github/workflows/multi-instance-stress.yml",
 )

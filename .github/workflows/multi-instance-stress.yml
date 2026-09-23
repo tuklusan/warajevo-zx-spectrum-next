@@ -16,6 +16,8 @@ on:
       - 'src/core/wz_presentation_snapshot.*'
       - 'src/cmake/CMakeLists.txt'
       - 'ci/test/multi-instance/**'
+      - 'tests/multi-instance-stress.c'
+      - 'tests/multi-instance-stress.md'
       - 'test-drivers/multi-instance-stress.driver.json'
       - '.github/workflows/multi-instance-stress.yml'
   workflow_dispatch:

@@ -9,6 +9,7 @@ SANYALnet Labs." See LICENSE for full terms. -->
 
 `run-stress.py` is run only on the four hosted project runner families. It uses
 twelve synchronized processes per contention case, checks lock release and
-retry recovery, and records per-runner output for proof aggregation. The
-stress worker invokes the project's Control Port, host configuration, media
-ownership, Telnet screenshot, and exclusive-output implementations directly.
+retry recovery, and records per-runner output for proof aggregation. The test
+worker in `tests/multi-instance-stress.c` invokes the project's Control Port,
+host configuration, media ownership, Telnet screenshot, and exclusive-output
+implementations directly.
