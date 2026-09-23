@@ -104,6 +104,7 @@ wz_result_t wz_command_registry_bind_owner_thread(
     }
     if (registry->finalized) return WZ_RESULT_INVALID_STATE;
     current_thread_id = wz_host_thread_current_id();
+    if (current_thread_id == 0u) return WZ_RESULT_INVALID_STATE;
     if (atomic_compare_exchange_strong_explicit(
             &registry->owner_thread_id, &expected_thread_id,
             current_thread_id, memory_order_release, memory_order_acquire) ||
@@ -120,7 +121,7 @@ bool wz_command_registry_is_owner_thread(
     if (registry == 0) return false;
     owner_thread_id = atomic_load_explicit(&registry->owner_thread_id,
                                            memory_order_acquire);
-    return owner_thread_id == 0u ||
+    return owner_thread_id != 0u &&
         owner_thread_id == wz_host_thread_current_id();
 }
 

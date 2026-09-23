@@ -13,7 +13,7 @@ import hashlib
 import json
 import subprocess
 from datetime import datetime, timezone
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 
 RUNNERS = ("windows-x64", "windows-arm64", "macos-intel", "macos-arm64")
@@ -42,8 +42,13 @@ def main() -> None:
 
     fixtures = []
     for record in driver["fixtures"]:
+        relative = PurePosixPath(record["path"])
+        if relative.is_absolute() or ".." in relative.parts:
+            raise SystemExit(f"fixture path is not repository relative: {record['path']}")
         committed = subprocess.check_output(
-            ["git", "show", f"HEAD:{record['path']}"]
+            ["git", "show", f"HEAD:{relative.as_posix()}"],
+            cwd=root,
+            stderr=subprocess.PIPE,
         )
         digest = hashlib.sha256(committed).hexdigest()
         if record["sha256"] != "PENDING" and record["sha256"] != digest:

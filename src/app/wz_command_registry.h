@@ -108,7 +108,7 @@ wz_result_t wz_command_registry_register(
     wz_command_registry_t* registry,
     wz_command_metadata_t metadata);
 wz_result_t wz_command_registry_finalize(wz_command_registry_t* registry);
-/* Bind dispatch to the calling application/machine owner thread. */
+/* Bind dispatch to the calling application/machine owner thread before use. */
 wz_result_t wz_command_registry_bind_owner_thread(
     wz_command_registry_t* registry);
 bool wz_command_registry_is_owner_thread(

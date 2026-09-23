@@ -11,16 +11,20 @@ SANYALnet Labs." See LICENSE for full terms.
 
 #include <stdatomic.h>
 
-static atomic_uint_fast64_t next_thread_id = ATOMIC_VAR_INIT(1u);
+static _Atomic uint64_t next_thread_id = ATOMIC_VAR_INIT(1u);
 static _Thread_local uint64_t current_thread_id;
 
 uint64_t wz_host_thread_current_id(void)
 {
     if (current_thread_id == 0u) {
-        do {
-            current_thread_id = (uint64_t)atomic_fetch_add_explicit(
-                &next_thread_id, 1u, memory_order_relaxed);
-        } while (current_thread_id == 0u);
+        uint64_t next = atomic_load_explicit(&next_thread_id,
+                                             memory_order_relaxed);
+        while (next != 0u &&
+               !atomic_compare_exchange_weak_explicit(
+                   &next_thread_id, &next, next + 1u,
+                   memory_order_relaxed, memory_order_relaxed)) {
+        }
+        current_thread_id = next;
     }
     return current_thread_id;
 }
