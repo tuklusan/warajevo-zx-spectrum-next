@@ -55,7 +55,7 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "223f078237c6479921c1cf259850e1af43469c1ddd68ef22db4e7e14963f174b"
+      "sha256": "fe6d8410b00461e8407c1c085ff2d08bd9bb8f79e7c630cde36952c354e55697"
     },
     {
       "path": "src/app/wz_ui_layout.h",
@@ -151,7 +151,7 @@
     },
     {
       "path": "tests/application-command-boundary.c",
-      "sha256": "6093a0e6e0ee30e879c6ccc6911ba8a5af4202b3feb110abd0e6a983c8060ef5"
+      "sha256": "000b5c62ec3bf3853c26b40465a004639909ac5e641806ec1953d8f282d923d9"
     },
     {
       "path": "tests/application-command-boundary.md",

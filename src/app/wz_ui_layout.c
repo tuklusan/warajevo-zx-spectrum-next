@@ -442,13 +442,15 @@ bool wz_ui_layout_toolbar_hit_test(float x, float y,
 bool wz_ui_layout_menu_hit_test(float x, float y, float viewport_width,
                                size_t* menu_index)
 {
+    const size_t menu_count = wz_ui_layout_menu_count();
     if (menu_index == 0 || viewport_width <= 0.0f || x < 0.0f ||
-        x >= viewport_width || y < 0.0f || y >= WZ_UI_MENU_BAR_HEIGHT) {
+        x >= viewport_width || y < 0.0f || y >= WZ_UI_MENU_BAR_HEIGHT ||
+        menu_count == 0u) {
         return false;
     }
     *menu_index = (size_t)(x / viewport_width *
-                           (float)wz_ui_layout_menu_count());
-    return *menu_index < wz_ui_layout_menu_count();
+                           (float)menu_count);
+    return *menu_index < menu_count;
 }
 
 size_t wz_ui_layout_menu_command_count(
@@ -503,15 +505,15 @@ bool wz_ui_layout_menu_command_hit_test(
     const float item_height = 24.0f;
     float left;
     float right;
+    const size_t menu_count = wz_ui_layout_menu_count();
     size_t count;
     size_t index;
     if (command_index == 0 || viewport_width <= 0.0f || x < 0.0f ||
         x >= viewport_width || y < WZ_UI_MENU_BAR_HEIGHT ||
-        menu_index >= wz_ui_layout_menu_count()) {
+        menu_count == 0u || menu_index >= menu_count) {
         return false;
     }
-    left = viewport_width * (float)menu_index /
-        (float)wz_ui_layout_menu_count();
+    left = viewport_width * (float)menu_index / (float)menu_count;
     right = left + menu_width;
     if (right > viewport_width) {
         right = viewport_width;

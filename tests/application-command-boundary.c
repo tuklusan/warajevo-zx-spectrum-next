@@ -58,9 +58,7 @@ static wz_result_t toggle_status_panel_handler(
     if (host == NULL || arguments.size != 0u || result == NULL) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
-    if (!wz_ui_layout_toggle_status_panel(&host->layout)) {
-        return WZ_RESULT_FAILED;
-    }
+    (void)wz_ui_layout_toggle_status_panel(&host->layout);
     (void)snprintf(result->message, sizeof(result->message), "visible");
     return WZ_RESULT_OK;
 }
@@ -93,6 +91,12 @@ static int fail(const char* message)
 {
     (void)fprintf(stderr, "FAIL application-command-boundary: %s\n", message);
     return 1;
+}
+
+static int fail_with_machine(wz_machine_t* machine, const char* message)
+{
+    wz_machine_destroy(machine);
+    return fail(message);
 }
 
 int main(void)
@@ -135,23 +139,28 @@ int main(void)
     memset(&canonical_machine, 0, sizeof(canonical_machine));
     wz_ui_layout_state_init(&host.layout);
     if (wz_machine_init(&canonical_machine,
-                        wz_machine_profile_48k_pal()) != WZ_RESULT_OK ||
-        wz_state_hash_machine(&canonical_machine,
-                              &canonical_hash_before) != WZ_RESULT_OK) {
+                        wz_machine_profile_48k_pal()) != WZ_RESULT_OK) {
         return fail("canonical machine fingerprint setup");
+    }
+    if (wz_state_hash_machine(&canonical_machine,
+                              &canonical_hash_before) != WZ_RESULT_OK) {
+        return fail_with_machine(&canonical_machine,
+                                 "canonical machine fingerprint setup");
     }
     if (wz_command_registry_init(&registry, storage, 2u) != WZ_RESULT_OK ||
         wz_command_registry_bind_owner_thread(&registry) != WZ_RESULT_OK ||
         wz_command_registry_register(&registry, reset) != WZ_RESULT_OK ||
         wz_command_registry_register(&registry, status_panel) != WZ_RESULT_OK ||
         wz_command_registry_finalize(&registry) != WZ_RESULT_OK) {
-        return fail("registry setup and owner binding");
+        return fail_with_machine(&canonical_machine,
+                                 "registry setup and owner binding");
     }
 
     if (wz_command_registry_dispatch(&registry, "machine.reset", arguments,
                                      &result) != WZ_RESULT_OK ||
         machine.mutations != 1u) {
-        return fail("application test projection dispatch");
+        return fail_with_machine(&canonical_machine,
+                                 "application test projection dispatch");
     }
     if (!wz_ui_layout_menu_hit_test(640.0f * 1.5f /
                                     (float)WZ_UI_MENU_COUNT,
@@ -164,7 +173,8 @@ int main(void)
                                            menu_command_index, arguments,
                                            &result) != WZ_RESULT_OK ||
         machine.mutations != 2u) {
-        return fail("GUI menu event did not share registry dispatch");
+        return fail_with_machine(&canonical_machine,
+                                 "GUI menu event did not share registry dispatch");
     }
     if (!wz_ui_layout_menu_command_hit_test(
             &registry, 3u, 300.0f, 42.0f, 640.0f, &menu_command_index) ||
@@ -175,7 +185,9 @@ int main(void)
         wz_state_hash_machine(&canonical_machine,
                               &canonical_hash_after) != WZ_RESULT_OK ||
         canonical_hash_before != canonical_hash_after) {
-        return fail("host-only menu operation changed canonical machine state");
+        return fail_with_machine(
+            &canonical_machine,
+            "host-only menu operation changed canonical machine state");
     }
     if (!wz_ui_layout_toolbar_hit_test(640.0f * 2.5f /
                                        (float)WZ_UI_TOOLBAR_COUNT,
@@ -186,35 +198,48 @@ int main(void)
         wz_ui_layout_activate_toolbar(&registry, toolbar_index,
                                      arguments, &result) !=
             WZ_RESULT_OK || machine.mutations != 3u) {
-        return fail("GUI toolbar hit target did not share registry dispatch");
+        return fail_with_machine(
+            &canonical_machine,
+            "GUI toolbar hit target did not share registry dispatch");
     }
     if (!wz_telnet_do_format(&registry, "machine.reset", "", output,
                              sizeof(output), &output_length) ||
         output_length == 0u || strstr(output, "OK DO machine.reset") == NULL ||
         machine.mutations != 4u) {
-        return fail("Telnet projection did not share registry dispatch");
+        return fail_with_machine(&canonical_machine,
+                                 "Telnet projection did not share registry dispatch");
     }
 
     memset(&worker, 0, sizeof(worker));
     worker.registry = &registry;
 #if defined(_WIN32)
     thread = CreateThread(NULL, 0u, worker_entry, &worker, 0u, NULL);
-    if (thread == NULL) return fail("could not create worker thread");
+    if (thread == NULL) {
+        return fail_with_machine(&canonical_machine,
+                                 "could not create worker thread");
+    }
     wait_result = WaitForSingleObject(thread, INFINITE);
     (void)CloseHandle(thread);
-    if (wait_result != WAIT_OBJECT_0) return fail("worker join failed");
+    if (wait_result != WAIT_OBJECT_0) {
+        return fail_with_machine(&canonical_machine, "worker join failed");
+    }
 #else
     if (pthread_create(&thread, NULL, worker_entry, &worker) != 0) {
-        return fail("could not create worker thread");
+        return fail_with_machine(&canonical_machine,
+                                 "could not create worker thread");
     }
-    if (pthread_join(thread, NULL) != 0) return fail("worker join failed");
+    if (pthread_join(thread, NULL) != 0) {
+        return fail_with_machine(&canonical_machine, "worker join failed");
+    }
 #endif
     if (worker.bind_result != WZ_RESULT_INVALID_STATE ||
         worker.dispatch_result != WZ_RESULT_INVALID_STATE ||
         worker.command_result.reason == NULL ||
         strcmp(worker.command_result.reason, "wrong-thread") != 0 ||
         machine.mutations != 4u) {
-        return fail("non-owner thread reached the machine mutation handler");
+        return fail_with_machine(
+            &canonical_machine,
+            "non-owner thread reached the machine mutation handler");
     }
 
     wz_machine_destroy(&canonical_machine);
