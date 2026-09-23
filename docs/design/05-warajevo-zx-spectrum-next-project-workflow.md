@@ -40,8 +40,9 @@ review and test output are evidence; the responsible developer makes the final
 adjudication.
 
 Every push-triggered GitHub workflow is scoped to `main`. Manual dispatch jobs
-also require the selected ref to be `main`; pull-request triggers are prohibited.
-The pathname-policy workflow therefore validates every direct push to `main`
+also require the selected ref to be `main`; an off-main dispatch fails its
+job guard, and pull-request triggers are prohibited. The pathname-policy workflow
+therefore validates the complete tracked tree for every direct push to `main`
 and manual runs on `main`; it must not require a pull request or an intermediate
 branch. GitHub's path restriction rules are not available for this public
 repository, so the hosted pathname workflow is the GitHub-side check and reports

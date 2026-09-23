@@ -1,9 +1,9 @@
 {
   "testId": "multi-instance-stress",
   "status": "pass",
-  "commit": "70a0e998d9f2799ea6e82e4132426407c57a73f5",
+  "commit": "3b5266b093759327ce8ec2ba2358266704a77b55",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-09-23T21:28:34+00:00",
+  "timestamp": "2026-09-23T21:36:21+00:00",
   "caseCount": 5,
   "runners": [
     {
@@ -37,8 +37,8 @@
   ],
   "fixtures": [
     {
-      "path": "ci/test/multi-instance/worker.c",
-      "sha256": "f98e98bc37e5db86a0f3a46df5edc138bfc5761afbb91e19b03db6525f6319d0"
+      "path": "tests/multi-instance-stress.c",
+      "sha256": "5ddb0bb2af26230d639c517186e41be070e9da95e37bb06d7cfdbcf0fbad43f0"
     },
     {
       "path": "src/app/wz_control_port.c",
@@ -122,7 +122,7 @@
     },
     {
       "path": "ci/test/multi-instance/CMakeLists.txt",
-      "sha256": "b3a16c62916119d8db442984925f830faed8db19c5d0aef0129a66d48e8b26a6"
+      "sha256": "96dbf0916e2d9548f407debb499c6c1128231c8e41c4a56e668c970d36fe003a"
     },
     {
       "path": "ci/test/multi-instance/run-stress.py",
@@ -130,23 +130,23 @@
     },
     {
       "path": "ci/test/multi-instance/write-proof.py",
-      "sha256": "dc6a4f8dca4f198532e0a7ba32498ba2f22f1951d4fd1710552d29a022a6f52f"
+      "sha256": "57f04f1c3b4991d116444a5e24a1a3f7c01773cd7fe6500aa22b66993220508c"
     },
     {
       "path": "ci/test/multi-instance/README.md",
-      "sha256": "7cb2e117685a1963c6d5cd68694d4ba8df2abf895df82fc2ada1738bdf566971"
+      "sha256": "c21ec86d6adafc8fb0d1efb3dbabd364822be0a15bf04909ff79ae376d87931d"
     },
     {
-      "path": "ci/test/multi-instance/test-description.md",
+      "path": "tests/multi-instance-stress.md",
       "sha256": "0bd30dabae3bcdc59be15f3dc22adcf0c0c036a3978a16882a85c7eca2fd4ec9"
     },
     {
       "path": "test-drivers/multi-instance-stress.driver.json",
-      "sha256": "d0dd6b64c4d6444d6284759bcfbcc41110ea0e2990b18fa2366c4a80fbf7ac36"
+      "sha256": "7276c4ff878efe8b14bfab8aec5cfc8b7c42e109a8e6895cf68cfd0091f7f207"
     },
     {
       "path": ".github/workflows/multi-instance-stress.yml",
-      "sha256": "1072d4fb8e8ca3242bbfeb160da6df604a75ddcfdcb755a70cb280944dd1bcc9"
+      "sha256": "b8f43bb22fbad41a6e9ae08bfcfbf9aed8e331cad5a27ac45ed2eeca9c22db84"
     }
   ]
 }
