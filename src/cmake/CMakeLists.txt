@@ -130,7 +130,10 @@ target_link_libraries(wz_headless PRIVATE wz_core)
 add_executable(wz_trace_dump ${WZSN_SOURCE_ROOT}/diagnostics/wz_trace_dump_main.c)
 target_link_libraries(wz_trace_dump PRIVATE wz_diagnostics)
 
-if(EXISTS "${WZSN_TEST_ROOT}/wz_tests_placeholder.c")
+if(WZSN_FUSE_Z80_TEST_INPUT AND WZSN_FUSE_Z80_TEST_EXPECTED)
+    add_executable(wz_tests ${WZSN_TEST_ROOT}/fuse-z80-conformance.c)
+    target_link_libraries(wz_tests PRIVATE wz_core wz_warnings)
+elseif(EXISTS "${WZSN_TEST_ROOT}/wz_tests_placeholder.c")
 add_executable(
     wz_tests
     ${WZSN_TEST_ROOT}/wz_tests_placeholder.c
@@ -165,11 +168,9 @@ target_link_libraries(wz_tests PRIVATE wz_core wz_diagnostics)
 if(WIN32)
     target_link_libraries(wz_tests PRIVATE ws2_32)
 endif()
-else()
-    add_executable(wz_tests ${WZSN_TEST_ROOT}/fuse-z80-conformance.c)
-    target_link_libraries(wz_tests PRIVATE wz_core wz_warnings)
 endif()
 
+if(EXISTS "${WZSN_TEST_ROOT}/wz_tests_placeholder.c")
 add_executable(wz_fuse_ed_runner ${WZSN_TEST_ROOT}/wz_fuse_ed_runner.c)
 target_link_libraries(wz_fuse_ed_runner PRIVATE wz_core)
 
@@ -308,11 +309,6 @@ target_link_libraries(wz_screen_inspection_tests PRIVATE wz_core)
 enable_testing()
 if(EXISTS "${WZSN_TEST_ROOT}/wz_tests_placeholder.c")
     add_test(NAME wz_tests_placeholder COMMAND wz_tests)
-endif()
-if(WZSN_FUSE_Z80_TEST_INPUT AND WZSN_FUSE_Z80_TEST_EXPECTED)
-    add_test(NAME fuse_z80_conformance
-        COMMAND wz_tests "${WZSN_FUSE_Z80_TEST_INPUT}"
-                        "${WZSN_FUSE_Z80_TEST_EXPECTED}")
 endif()
 add_test(NAME wz_zxnet_loopback COMMAND wz_zxnet_loopback)
 add_test(NAME wz_syslog_udp_tests COMMAND wz_syslog_udp_tests)
@@ -467,6 +463,13 @@ target_link_libraries(wz_host_output_tests PRIVATE wz_warnings)
 target_include_directories(wz_host_output_tests PRIVATE "${WZSN_SOURCE_ROOT}")
 add_test(NAME wz_host_output_tests COMMAND wz_host_output_tests)
 
+endif()
+if(WZSN_FUSE_Z80_TEST_INPUT AND WZSN_FUSE_Z80_TEST_EXPECTED)
+    enable_testing()
+    add_test(NAME fuse_z80_conformance
+        COMMAND wz_tests "${WZSN_FUSE_Z80_TEST_INPUT}"
+                        "${WZSN_FUSE_Z80_TEST_EXPECTED}")
+endif()
 if(WZSN_ENABLE_REVIEW_GATE_TESTS AND EXISTS "${WZSN_TEST_ROOT}/test_review_gate_v4.py")
     find_package(Python3 COMPONENTS Interpreter REQUIRED)
     add_test(
