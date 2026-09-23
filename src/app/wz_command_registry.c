@@ -1,12 +1,14 @@
 /*
-Warajevo ZX Spectrum Next
-Copyright (c) 2026 Supratim Sanyal, SANYALnet Labs, for new original project material.
-New original material is licensed under GNU GPL v2 or later (GPL-2.0-or-later), as stated in LICENSE.txt.
-Upstream Warajevo and third-party material retain their applicable copyrights and licenses.
-See LICENSE.txt and NOTICE.md for complete terms and provenance.
+Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+This file is governed by the SANYALnet Labs Non-Commercial License in the
+root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
+for AI/ML model training are prohibited unless separately authorized.
+Attribution is required: "Based on original work by Supratim Sanyal of
+SANYALnet Labs." See LICENSE for full terms.
 */
 
 #include "app/wz_command_registry.h"
+#include "app/wz_host_thread.h"
 
 #include <string.h>
 
@@ -88,7 +90,35 @@ wz_result_t wz_command_registry_init(
     registry->capacity = capacity;
     registry->count = 0u;
     registry->finalized = false;
+    registry->owner_thread_id = 0u;
+    registry->owner_thread_bound = false;
     return WZ_RESULT_OK;
+}
+
+wz_result_t wz_command_registry_bind_owner_thread(
+    wz_command_registry_t* registry)
+{
+    uint64_t current_thread_id;
+    if (registry == 0 || registry->storage == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (registry->finalized) return WZ_RESULT_INVALID_STATE;
+    current_thread_id = wz_host_thread_current_id();
+    if (registry->owner_thread_bound &&
+        registry->owner_thread_id != current_thread_id) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    registry->owner_thread_id = current_thread_id;
+    registry->owner_thread_bound = true;
+    return WZ_RESULT_OK;
+}
+
+bool wz_command_registry_is_owner_thread(
+    const wz_command_registry_t* registry)
+{
+    return registry != 0 &&
+        (!registry->owner_thread_bound ||
+         registry->owner_thread_id == wz_host_thread_current_id());
 }
 
 wz_result_t wz_command_registry_register(
@@ -233,6 +263,11 @@ wz_result_t wz_command_registry_dispatch(
     if (registry == 0 || !registry->finalized || id == 0 ||
         (arguments.size != 0u && arguments.data == 0)) {
         return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (!wz_command_registry_is_owner_thread(registry)) {
+        set_rejection(result, WZ_COMMAND_RESULT_REJECTED,
+                      WZ_RESULT_INVALID_STATE, "wrong-thread");
+        return WZ_RESULT_INVALID_STATE;
     }
     metadata = wz_command_registry_find(registry, id);
     if (metadata == 0) {

@@ -1,0 +1,129 @@
+name: Application command boundary
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/app/wz_command_registry.*'
+      - 'src/app/wz_host_thread.*'
+      - 'src/app/wz_ui_layout.*'
+      - 'src/app/wz_telnet_keyboard_command.*'
+      - 'src/app/wz_telnet_keymap.*'
+      - 'src/app/wz_host_output.*'
+      - 'src/app/wz_screenshot_service.*'
+      - 'src/app/wz_host_audio_policy.*'
+      - 'src/app/wz_speed_policy.*'
+      - 'src/app/wz_sokol_main.c'
+      - 'src/core/wz_keyboard_matrix.*'
+      - 'src/core/wz_presentation_snapshot.*'
+      - 'src/core/wz_raster.*'
+      - 'ci/test/application-command-boundary/**'
+      - 'src/cmake/CMakeLists.txt'
+      - 'test-drivers/application-command-boundary.driver.json'
+      - '.github/workflows/application-command-boundary.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  command-boundary:
+    if: github.ref == 'refs/heads/main'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: windows-x64
+            label: Windows Intel
+            runner: windows-2025
+          - id: windows-arm64
+            label: Windows ARM64
+            runner: windows-11-arm
+          - id: macos-intel
+            label: macOS Intel
+            runner: macos-15-intel
+          - id: macos-arm64
+            label: macOS ARM64
+            runner: macos-15
+    name: Acceptance ${{ matrix.label }}
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+
+      - name: Configure acceptance executable
+        run: cmake -S ci/test/application-command-boundary -B dist/application-command-boundary -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build acceptance executable
+        run: cmake --build dist/application-command-boundary --config Release --target wz_application_command_boundary --parallel 2
+
+      - name: Run acceptance cases
+        shell: bash
+        run: |
+          set -euo pipefail
+          exe=dist/application-command-boundary/wz_application_command_boundary
+          if [[ "$RUNNER_OS" == "Windows" ]]; then exe="$exe.exe"; fi
+          "$exe" | tee dist/application-command-boundary-run.log
+
+      - name: Save runner result
+        shell: bash
+        env:
+          MATRIX_ID: ${{ matrix.id }}
+        run: |
+          set -euo pipefail
+          result_dir="dist/application-command-boundary-artifacts/$MATRIX_ID"
+          mkdir -p "$result_dir"
+          cp dist/application-command-boundary-run.log "$result_dir/run.log"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          record = {
+              "id": os.environ["MATRIX_ID"],
+              "os": os.environ["RUNNER_OS"],
+              "architecture": os.environ["RUNNER_ARCH"],
+              "runnerName": os.environ.get("ImageOS", "hosted runner"),
+          }
+          Path(f"dist/application-command-boundary-artifacts/{record['id']}/runner.json").write_text(
+              json.dumps(record, indent=2) + "\n", encoding="utf-8")
+          PY
+
+      - name: Upload runner acceptance result
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-command-boundary-raw-${{ matrix.id }}
+          path: dist/application-command-boundary-artifacts/
+          if-no-files-found: error
+
+  proof:
+    name: Aggregate pinned proof
+    if: github.ref == 'refs/heads/main'
+    needs: command-boundary
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact source commit
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Download runner results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: application-command-boundary-raw-*
+          path: dist/application-command-boundary-artifacts
+          merge-multiple: true
+
+      - name: Aggregate pinned acceptance proof
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+        run: |
+          python3 ci/test/application-command-boundary/write-proof.py \
+            --project-commit "$GITHUB_SHA" \
+            --artifact-root dist/application-command-boundary-artifacts \
+            --proof-out dist/application-command-boundary.json
+
+      - name: Upload pinned proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-command-boundary-proof-${{ github.sha }}
+          path: dist/application-command-boundary.json
+          if-no-files-found: error

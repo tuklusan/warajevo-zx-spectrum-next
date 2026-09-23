@@ -1,0 +1,73 @@
+{
+  "testId": "application-command-boundary",
+  "command": "cmake -S ci/test/application-command-boundary -B dist/application-command-boundary -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/application-command-boundary --config Release --target wz_application_command_boundary --parallel 2 && dist/application-command-boundary/wz_application_command_boundary",
+  "requiredCases": 4,
+  "runnerMatrix": [
+    "windows-2025",
+    "windows-11-arm",
+    "macos-15-intel",
+    "macos-15"
+  ],
+  "fixtures": [
+    {
+      "path": "ci/test/application-command-boundary/worker.c",
+      "sha256": "aa230bb89ba3e291fd21642626c087c0952f24327269b11b94319daa4b47a04c"
+    },
+    {
+      "path": "ci/test/application-command-boundary/README.md",
+      "sha256": "fbc79a3bf83724aa5b5e933dca3e8670726c5623f7b25ed3fa52846034284d41"
+    },
+    {
+      "path": "ci/test/application-command-boundary/write-proof.py",
+      "sha256": "2ffffdae161a43ed6a1730de0a04bc38ed361413790ad107ca75c3dde0a49131"
+    },
+    {
+      "path": "src/app/wz_command_registry.c",
+      "sha256": "50a76fc1342e0e01bc5e5bb9d594064d53f04e8a5ebc6248a7db9fb49efacc5a"
+    },
+    {
+      "path": "src/app/wz_command_registry.h",
+      "sha256": "0e824fa77e6cf9c606cbc5c7e7f5a2b247c69bf10f9442eeba240a11c68db704"
+    },
+    {
+      "path": "src/app/wz_host_thread.c",
+      "sha256": "19e6561c083242a46330012d317a38129c3cf1dadb2797079cb93b2c25b64800"
+    },
+    {
+      "path": "src/app/wz_host_thread.h",
+      "sha256": "9278515336b15d105a2fb0f99b20a98a05d0cc4e62a717c49cd44583049489af"
+    },
+    {
+      "path": "src/app/wz_ui_layout.c",
+      "sha256": "6edbe51443dfb28b8f04b8c829ba1da5e19506270e8a3dbc430af33807d12589"
+    },
+    {
+      "path": "src/app/wz_ui_layout.h",
+      "sha256": "a1a20e5f78005ea0baa04f1a33b2d5e665e7045bdfff289430ee49a14e42fe3c"
+    },
+    {
+      "path": "src/app/wz_telnet_keyboard_command.c",
+      "sha256": "34459193b5233fb4131c9d9d9ac16a38875695100f792726c3e9ff88163a164d"
+    },
+    {
+      "path": "src/app/wz_telnet_keyboard_command.h",
+      "sha256": "d6e7553f89c46a15706508e474beacf8b3cce6ea9ed6be95599ec84bb446eed1"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "3bf432e38c539193e95ba7986602c47a010ae038a1eb77deb4d0ef3b1527dbb1"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "0c78a5b27d1107692e217e1020d4d424ca987b05d1456ffb6ba72e9c9a430797"
+    },
+    {
+      "path": "ci/test/application-command-boundary/CMakeLists.txt",
+      "sha256": "c01d7fc38089d8058b282b6bc687e1d0425d842ea092384ca7ccd039028bbdf5"
+    },
+    {
+      "path": ".github/workflows/application-command-boundary.yml",
+      "sha256": "57f26c9a2ce6c2ec5230fd1f85a3225d8a9f19792b4a8dfb29b2c1fba573c42e"
+    }
+  ]
+}

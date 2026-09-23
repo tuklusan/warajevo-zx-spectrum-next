@@ -140,7 +140,7 @@ add_executable(
     ${WZSN_SOURCE_ROOT}/app/wz_input_timing.c
     ${WZSN_SOURCE_ROOT}/app/wz_input_replay.c
     ${WZSN_SOURCE_ROOT}/app/wz_telnet_keyboard_command.c
-    ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c
+    ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c ${WZSN_SOURCE_ROOT}/app/wz_host_thread.c
     ${WZSN_SOURCE_ROOT}/app/wz_screenshot_service.c
     ${WZSN_SOURCE_ROOT}/app/wz_host_output.c
     ${WZSN_SOURCE_ROOT}/app/wz_input_arbiter.c
@@ -208,14 +208,14 @@ add_executable(
     wz_debugger_window_tests
     ${WZSN_TEST_ROOT}/wz_debugger_window_tests.c
     ${WZSN_SOURCE_ROOT}/app/wz_debugger_window.c
-    ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c)
+    ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c ${WZSN_SOURCE_ROOT}/app/wz_host_thread.c)
 target_link_libraries(wz_debugger_window_tests PRIVATE wz_core)
 
 add_executable(
     wz_diagnostics_window_tests
     ${WZSN_TEST_ROOT}/wz_diagnostics_window_tests.c
     ${WZSN_SOURCE_ROOT}/app/wz_diagnostics_window.c
-    ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c)
+    ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c ${WZSN_SOURCE_ROOT}/app/wz_host_thread.c)
 target_link_libraries(wz_diagnostics_window_tests PRIVATE wz_core wz_diagnostics)
 
 add_executable(wz_machine_reset_tests ${WZSN_TEST_ROOT}/wz_machine_reset_tests.c)
@@ -237,13 +237,13 @@ add_executable(wz_printer_manager_tests
     ${WZSN_TEST_ROOT}/wz_printer_manager_tests.c
     ${WZSN_SOURCE_ROOT}/app/wz_printer_manager.c
     ${WZSN_SOURCE_ROOT}/app/wz_printer_export.c
-    ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c)
+    ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c ${WZSN_SOURCE_ROOT}/app/wz_host_thread.c)
 target_link_libraries(wz_printer_manager_tests PRIVATE wz_core)
 
 add_executable(wz_printer_commands_tests
     ${WZSN_TEST_ROOT}/wz_printer_commands_tests.c
     ${WZSN_SOURCE_ROOT}/app/wz_printer_commands.c
-    ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c)
+    ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c ${WZSN_SOURCE_ROOT}/app/wz_host_thread.c)
 target_link_libraries(wz_printer_commands_tests PRIVATE wz_core)
 
 add_executable(wz_diagnostic_block_tests
@@ -260,14 +260,14 @@ target_link_libraries(wz_application_lifecycle_tests PRIVATE wz_core)
 add_executable(
     wz_command_registry_tests
     ${WZSN_TEST_ROOT}/wz_command_registry_tests.c
-    ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c)
+    ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c ${WZSN_SOURCE_ROOT}/app/wz_host_thread.c)
 target_link_libraries(wz_command_registry_tests PRIVATE wz_core)
 
 add_executable(
     wz_networking_commands_tests
     ${WZSN_TEST_ROOT}/wz_networking_commands_tests.c
     ${WZSN_SOURCE_ROOT}/app/wz_networking_commands.c
-    ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c)
+    ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c ${WZSN_SOURCE_ROOT}/app/wz_host_thread.c)
 target_link_libraries(wz_networking_commands_tests PRIVATE wz_core)
 
 add_executable(
@@ -275,7 +275,7 @@ add_executable(
     ${WZSN_TEST_ROOT}/wz_ui_layout_tests.c
     ${WZSN_SOURCE_ROOT}/app/wz_host_config.c
     ${WZSN_SOURCE_ROOT}/app/wz_ui_layout.c
-    ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c
+    ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c ${WZSN_SOURCE_ROOT}/app/wz_host_thread.c
     ${WZSN_SOURCE_ROOT}/app/wz_speed_policy.c
     ${WZSN_SOURCE_ROOT}/app/wz_host_audio_policy.c)
 target_link_libraries(wz_ui_layout_tests PRIVATE wz_core)
@@ -290,7 +290,7 @@ add_executable(
     wz_microdrive_manager_tests
     ${WZSN_TEST_ROOT}/wz_microdrive_manager_tests.c
     ${WZSN_SOURCE_ROOT}/app/wz_microdrive_manager.c
-    ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c)
+    ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c ${WZSN_SOURCE_ROOT}/app/wz_host_thread.c)
 target_link_libraries(wz_microdrive_manager_tests PRIVATE wz_core)
 
 add_executable(
@@ -298,7 +298,7 @@ add_executable(
     ${WZSN_TEST_ROOT}/wz_ui_window_tests.c
     ${WZSN_SOURCE_ROOT}/app/wz_ui_window.c
     ${WZSN_SOURCE_ROOT}/app/wz_ui_layout.c
-    ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c
+    ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c ${WZSN_SOURCE_ROOT}/app/wz_host_thread.c
     ${WZSN_SOURCE_ROOT}/app/wz_speed_policy.c
     ${WZSN_SOURCE_ROOT}/app/wz_host_audio_policy.c)
 target_link_libraries(wz_ui_window_tests PRIVATE wz_core)
@@ -508,9 +508,9 @@ if(WZSN_BUILD_SOKOL_HOST)
 
     find_package(Threads REQUIRED)
     if(APPLE)
-        add_executable(wz_sokol_host ${WZSN_SOURCE_ROOT}/app/wz_sokol_macos.m ${WZSN_SOURCE_ROOT}/app/wz_ui_window.c ${WZSN_SOURCE_ROOT}/app/wz_ui_layout.c ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c ${WZSN_SOURCE_ROOT}/app/wz_sokol_raster.c ${WZSN_SOURCE_ROOT}/app/wz_application_lifecycle.c ${WZSN_SOURCE_ROOT}/app/wz_host_presentation.c ${WZSN_SOURCE_ROOT}/app/wz_host_scaling.c ${WZSN_SOURCE_ROOT}/app/wz_host_effects.c ${WZSN_SOURCE_ROOT}/app/wz_input_arbiter.c ${WZSN_SOURCE_ROOT}/app/wz_input_timing.c ${WZSN_SOURCE_ROOT}/app/wz_input_focus.c ${WZSN_SOURCE_ROOT}/app/wz_kempston_mapping.c ${WZSN_SOURCE_ROOT}/app/wz_speed_policy.c ${WZSN_SOURCE_ROOT}/app/wz_host_pacing.c ${WZSN_SOURCE_ROOT}/app/wz_host_config.c ${WZSN_SOURCE_ROOT}/app/wz_host_media_ownership.c ${WZSN_SOURCE_ROOT}/app/wz_host_audio_push.c ${WZSN_SOURCE_ROOT}/app/wz_host_audio_policy.c ${WZSN_SOURCE_ROOT}/app/wz_sokol_audio.c ${WZSN_SOURCE_ROOT}/app/wz_host_socket.c ${WZSN_SOURCE_ROOT}/app/wz_control_port.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_client.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_negotiation.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_security.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_input.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_keymap.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_keyboard_command.c ${WZSN_SOURCE_ROOT}/app/wz_screenshot_service.c ${WZSN_SOURCE_ROOT}/app/wz_host_output.c)
+        add_executable(wz_sokol_host ${WZSN_SOURCE_ROOT}/app/wz_sokol_macos.m ${WZSN_SOURCE_ROOT}/app/wz_ui_window.c ${WZSN_SOURCE_ROOT}/app/wz_ui_layout.c ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c ${WZSN_SOURCE_ROOT}/app/wz_host_thread.c ${WZSN_SOURCE_ROOT}/app/wz_sokol_raster.c ${WZSN_SOURCE_ROOT}/app/wz_application_lifecycle.c ${WZSN_SOURCE_ROOT}/app/wz_host_presentation.c ${WZSN_SOURCE_ROOT}/app/wz_host_scaling.c ${WZSN_SOURCE_ROOT}/app/wz_host_effects.c ${WZSN_SOURCE_ROOT}/app/wz_input_arbiter.c ${WZSN_SOURCE_ROOT}/app/wz_input_timing.c ${WZSN_SOURCE_ROOT}/app/wz_input_focus.c ${WZSN_SOURCE_ROOT}/app/wz_kempston_mapping.c ${WZSN_SOURCE_ROOT}/app/wz_speed_policy.c ${WZSN_SOURCE_ROOT}/app/wz_host_pacing.c ${WZSN_SOURCE_ROOT}/app/wz_host_config.c ${WZSN_SOURCE_ROOT}/app/wz_host_media_ownership.c ${WZSN_SOURCE_ROOT}/app/wz_host_audio_push.c ${WZSN_SOURCE_ROOT}/app/wz_host_audio_policy.c ${WZSN_SOURCE_ROOT}/app/wz_sokol_audio.c ${WZSN_SOURCE_ROOT}/app/wz_host_socket.c ${WZSN_SOURCE_ROOT}/app/wz_control_port.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_client.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_negotiation.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_security.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_input.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_keymap.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_keyboard_command.c ${WZSN_SOURCE_ROOT}/app/wz_screenshot_service.c ${WZSN_SOURCE_ROOT}/app/wz_host_output.c)
     else()
-        add_executable(wz_sokol_host ${WZSN_SOURCE_ROOT}/app/wz_sokol_main.c ${WZSN_SOURCE_ROOT}/app/wz_ui_window.c ${WZSN_SOURCE_ROOT}/app/wz_ui_layout.c ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c ${WZSN_SOURCE_ROOT}/app/wz_sokol_raster.c ${WZSN_SOURCE_ROOT}/app/wz_application_lifecycle.c ${WZSN_SOURCE_ROOT}/app/wz_host_presentation.c ${WZSN_SOURCE_ROOT}/app/wz_host_scaling.c ${WZSN_SOURCE_ROOT}/app/wz_host_effects.c ${WZSN_SOURCE_ROOT}/app/wz_input_arbiter.c ${WZSN_SOURCE_ROOT}/app/wz_input_timing.c ${WZSN_SOURCE_ROOT}/app/wz_input_focus.c ${WZSN_SOURCE_ROOT}/app/wz_kempston_mapping.c ${WZSN_SOURCE_ROOT}/app/wz_speed_policy.c ${WZSN_SOURCE_ROOT}/app/wz_host_pacing.c ${WZSN_SOURCE_ROOT}/app/wz_host_config.c ${WZSN_SOURCE_ROOT}/app/wz_host_media_ownership.c ${WZSN_SOURCE_ROOT}/app/wz_host_audio_push.c ${WZSN_SOURCE_ROOT}/app/wz_host_audio_policy.c ${WZSN_SOURCE_ROOT}/app/wz_sokol_audio.c ${WZSN_SOURCE_ROOT}/app/wz_host_socket.c ${WZSN_SOURCE_ROOT}/app/wz_control_port.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_client.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_negotiation.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_security.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_input.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_keymap.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_keyboard_command.c ${WZSN_SOURCE_ROOT}/app/wz_screenshot_service.c ${WZSN_SOURCE_ROOT}/app/wz_host_output.c)
+        add_executable(wz_sokol_host ${WZSN_SOURCE_ROOT}/app/wz_sokol_main.c ${WZSN_SOURCE_ROOT}/app/wz_ui_window.c ${WZSN_SOURCE_ROOT}/app/wz_ui_layout.c ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c ${WZSN_SOURCE_ROOT}/app/wz_host_thread.c ${WZSN_SOURCE_ROOT}/app/wz_sokol_raster.c ${WZSN_SOURCE_ROOT}/app/wz_application_lifecycle.c ${WZSN_SOURCE_ROOT}/app/wz_host_presentation.c ${WZSN_SOURCE_ROOT}/app/wz_host_scaling.c ${WZSN_SOURCE_ROOT}/app/wz_host_effects.c ${WZSN_SOURCE_ROOT}/app/wz_input_arbiter.c ${WZSN_SOURCE_ROOT}/app/wz_input_timing.c ${WZSN_SOURCE_ROOT}/app/wz_input_focus.c ${WZSN_SOURCE_ROOT}/app/wz_kempston_mapping.c ${WZSN_SOURCE_ROOT}/app/wz_speed_policy.c ${WZSN_SOURCE_ROOT}/app/wz_host_pacing.c ${WZSN_SOURCE_ROOT}/app/wz_host_config.c ${WZSN_SOURCE_ROOT}/app/wz_host_media_ownership.c ${WZSN_SOURCE_ROOT}/app/wz_host_audio_push.c ${WZSN_SOURCE_ROOT}/app/wz_host_audio_policy.c ${WZSN_SOURCE_ROOT}/app/wz_sokol_audio.c ${WZSN_SOURCE_ROOT}/app/wz_host_socket.c ${WZSN_SOURCE_ROOT}/app/wz_control_port.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_client.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_negotiation.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_security.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_input.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_keymap.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_keyboard_command.c ${WZSN_SOURCE_ROOT}/app/wz_screenshot_service.c ${WZSN_SOURCE_ROOT}/app/wz_host_output.c)
     endif()
     set_target_properties(wz_sokol_host PROPERTIES OUTPUT_NAME "Warajevo-ZX-Spectrum-Next")
     target_include_directories(wz_sokol_host PRIVATE ${sokol_SOURCE_DIR} ${sokol_SOURCE_DIR}/util "${WZSN_SOURCE_ROOT}")

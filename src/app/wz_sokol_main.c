@@ -257,6 +257,10 @@ static bool wz_host_register_commands(void)
         }
     };
     size_t index;
+    if (wz_command_registry_bind_owner_thread(
+            &wz_host_session.command_registry) != WZ_RESULT_OK) {
+        return false;
+    }
     for (index = 0u; index < sizeof(commands) / sizeof(commands[0]); ++index) {
         if (wz_command_registry_register(&wz_host_session.command_registry,
                                          commands[index]) != WZ_RESULT_OK) {
