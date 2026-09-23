@@ -39,7 +39,7 @@ jobs:
         run: |
           # Construct the compatibility-provider name at runtime so it is not
           # stored in repository source or workflow text.
-          export LLM_API_TYPE="$(printf '%s' T3BlbkFJ | base64 --decode)"
+          export LLM_API_TYPE="$(printf '%s' b3BlbkFJ | base64 --decode)"
           gito --verbose review
 
       - name: Publish review for developer adjudication
