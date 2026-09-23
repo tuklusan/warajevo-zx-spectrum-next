@@ -61,7 +61,7 @@ def main():
     environment["WZSN_ROM_PATH"] = str(tape.parent.parent / "roms" / "48.rom")
     environment["WZSN_TAPE_PATH"] = str(tape)
     process = subprocess.Popen([str(binary)], env=environment,
-                               stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                               stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     try:
         sock = None
         for _ in range(120):
