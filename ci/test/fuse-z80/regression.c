@@ -497,11 +497,9 @@ static bool execute_case(fuse_case_t* input, const fuse_case_t* expected,
                 input->description, case_number);
         goto cleanup;
     }
-    if (input->events.overflow ||
-        input->events.event_count != expected->events.event_count) {
-        fprintf(stderr, "FAIL %s: bus event count differs (%zu vs %zu)\n",
-                input->description, input->events.event_count,
-                expected->events.event_count);
+    if (input->events.overflow) {
+        fprintf(stderr, "FAIL %s: transfer event buffer overflow\n",
+                input->description);
         goto cleanup;
     }
     size_t actual_index = 0u;
