@@ -2,6 +2,17 @@
 set -eu
 
 failed=0
+if command -v py >/dev/null 2>&1; then
+    PYTHON=py
+elif command -v python3 >/dev/null 2>&1; then
+    PYTHON=python3
+elif command -v python >/dev/null 2>&1; then
+    PYTHON=python
+else
+    printf '%s\n' "Test ledger rejected: Python is required to validate JSON records." >&2
+    exit 1
+fi
+
 for test_file in $(find tests -type f ! -name README.md -print 2>/dev/null); do
     base=$(basename "$test_file")
     base=${base%.*}
@@ -12,7 +23,7 @@ for test_file in $(find tests -type f ! -name README.md -print 2>/dev/null); do
         failed=1
         continue
     fi
-    py - "$driver" "$result" <<'PY' || failed=1
+    "$PYTHON" - "$driver" "$result" <<'PY' || failed=1
 import json
 import sys
 
