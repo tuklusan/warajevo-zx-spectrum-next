@@ -107,6 +107,7 @@ check_range() {
 }
 
 failed=0
+bash .githooks/validate-test-ledger.sh || failed=1
 while read -r local_ref local_sha remote_ref remote_sha; do
     [ -n "$local_ref" ] || continue
     check_banned_content "$remote_sha" "$local_sha" || failed=1

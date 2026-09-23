@@ -1,0 +1,22 @@
+name: Test ledger gate
+
+on:
+  push:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-test-ledger:
+    name: Validate test drivers and proofs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out revision
+        uses: actions/checkout@v5
+
+      - name: Validate test ledger
+        shell: bash
+        run: bash .githooks/validate-test-ledger.sh
