@@ -167,6 +167,65 @@ static bool read_memory_changes(FILE* stream, uint8_t* memory)
     return false;
 }
 
+static bool parse_memory_change_line(const char* line, uint8_t* memory)
+{
+    char* end = NULL;
+    long address;
+    const char* cursor = line;
+    errno = 0;
+    address = strtol(cursor, &end, 16);
+    if (end == cursor || errno != 0 || address < 0 ||
+        address >= (long)FUSE_MEMORY_SIZE) {
+        return false;
+    }
+    cursor = end;
+    for (;;) {
+        long value;
+        while (isspace((unsigned char)*cursor)) {
+            ++cursor;
+        }
+        if (*cursor == '\0') {
+            return false;
+        }
+        errno = 0;
+        value = strtol(cursor, &end, 16);
+        if (end == cursor || errno != 0) {
+            return false;
+        }
+        cursor = end;
+        if (value == -1) {
+            while (isspace((unsigned char)*cursor)) {
+                ++cursor;
+            }
+            return *cursor == '\0';
+        }
+        if (value < 0 || value > UINT8_MAX ||
+            address >= (long)FUSE_MEMORY_SIZE) {
+            return false;
+        }
+        memory[address++] = (uint8_t)value;
+    }
+}
+
+static bool read_expected_memory_changes(FILE* stream, uint8_t* memory)
+{
+    char line[FUSE_LINE_CAPACITY];
+    while (fgets(line, (int)sizeof(line), stream) != NULL) {
+        size_t length = strlen(line);
+        while (length > 0u && (line[length - 1u] == '\n' ||
+                               line[length - 1u] == '\r')) {
+            line[--length] = '\0';
+        }
+        if (length == 0u) {
+            return true;
+        }
+        if (!parse_memory_change_line(line, memory)) {
+            return false;
+        }
+    }
+    return feof(stream) != 0;
+}
+
 static bool read_input_case(FILE* stream, fuse_case_t* test)
 {
     unsigned int words[13];
@@ -281,7 +340,7 @@ static bool read_expected_case(FILE* stream, fuse_case_t* test)
         !parse_cpu_line(cpu_line, test)) {
         return false;
     }
-    return read_memory_changes(stream, test->memory);
+    return read_expected_memory_changes(stream, test->memory);
 }
 
 static uint8_t read_port(wz_bus_cycle_t cycle, wz_word_t address,
@@ -480,7 +539,7 @@ static bool execute_case(fuse_case_t* input, const fuse_case_t* expected,
     for (size_t address = 0u; address < FUSE_MEMORY_SIZE; ++address) {
         actual_memory[address] = wz_machine_memory_read(&machine, (wz_word_t)address);
     }
-    if (memcmp(actual_memory, expected->memory, sizeof(actual_memory)) != 0) {
+    if (memcmp(actual_memory, expected->memory, FUSE_MEMORY_SIZE) != 0) {
         fprintf(stderr, "FAIL %s: final memory differs (case %" PRIu32 ")\n",
                 input->description, case_number);
         goto cleanup;
