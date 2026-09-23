@@ -7,7 +7,7 @@ SANYALnet Labs." See LICENSE for full terms. -->
 
 # Core/System acceptance evidence audit
 
-Task 450 is in progress. `PASS` means the cited evidence directly covers the full criterion; `PARTIAL` records narrower evidence; `OPEN` means no adequate tracked proof was found. Source inspection and general builds do not count as behavioral proof. `test-ledger-gate` passed on commit `4f9cab5`, and the tracked test ledger currently contains only `canonical-core-regression`. The audit inventory is not a completion claim; the open criteria must be resolved before the architecture-complete milestone.
+Task 450 audit is complete; architecture acceptance is not. `PASS` means the cited evidence directly covers the full criterion; `PARTIAL` records narrower evidence; `OPEN` means no adequate tracked proof was found. Source inspection and general builds do not count as behavioral proof. On commit `b8fe44d`, the test-ledger gate passed (run `35895696009`), the four-runner clean Release build passed (run `35895695999`), four-runner project tests passed (run `35895696032`), and the pathname check passed (run `35895695983`). The tracked test ledger contains only `canonical-core-regression`. Every OPEN criterion is therefore an unresolved proof or implementation gap, not an implied pass.
 
 Four-runner baseline and determinism evidence: run `35894280373`. Four-runner clean Release build evidence: run `35894280436`. Four-runner GUI/Telnet DIZZY4K smoke evidence: run `35890238325`. Headless canonical core proof: run `35894160451`, pinned at `test-results/canonical-core-regression.json`.
 
