@@ -1,9 +1,9 @@
 {
   "testId": "multi-instance-stress",
   "status": "pass",
-  "commit": "3b5266b093759327ce8ec2ba2358266704a77b55",
+  "commit": "8d5003419b72c3ee53b359d9a6e2dba4f9c86502",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-09-23T21:36:21+00:00",
+  "timestamp": "2026-09-23T22:27:20+00:00",
   "caseCount": 5,
   "runners": [
     {
@@ -90,11 +90,19 @@
     },
     {
       "path": "src/app/wz_command_registry.c",
-      "sha256": "cc93872a17c44e79460c75822cbce642c522c5941873939ee74aa44e05c7dd7d"
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
     },
     {
       "path": "src/app/wz_command_registry.h",
-      "sha256": "f9b3dbd1fbd1d2efd26d2c242707188c6a63920bd00fe1e896479e042853d025"
+      "sha256": "80110080861a05baae47cd6d294315055bb6b1a636c79891b55c56717cb53c94"
+    },
+    {
+      "path": "src/app/wz_host_thread.c",
+      "sha256": "6f8cbe0e171adfe7b9f42d9517e31d72f7917048339ff8941d5bccadfa305151"
+    },
+    {
+      "path": "src/app/wz_host_thread.h",
+      "sha256": "bd4e189a40c8f9ad31f014dc12afc3c67b7a4bd5580df262b0cf92db8fbe8471"
     },
     {
       "path": "src/app/wz_telnet_keymap.c",
@@ -122,7 +130,7 @@
     },
     {
       "path": "ci/test/multi-instance/CMakeLists.txt",
-      "sha256": "96dbf0916e2d9548f407debb499c6c1128231c8e41c4a56e668c970d36fe003a"
+      "sha256": "22d988789ef67d53753f0bb5673c19f2e73f45bcb11f4895652253fcf752a753"
     },
     {
       "path": "ci/test/multi-instance/run-stress.py",
@@ -130,11 +138,11 @@
     },
     {
       "path": "ci/test/multi-instance/write-proof.py",
-      "sha256": "57f04f1c3b4991d116444a5e24a1a3f7c01773cd7fe6500aa22b66993220508c"
+      "sha256": "6f5e989abac1380a7c1ecb974f72d516b1966e236ee39e94e391f75669d39267"
     },
     {
       "path": "ci/test/multi-instance/README.md",
-      "sha256": "c21ec86d6adafc8fb0d1efb3dbabd364822be0a15bf04909ff79ae376d87931d"
+      "sha256": "e3b093545603795f7cdb78e804e9d62992e268515e93593f5fcdeaad2ce47592"
     },
     {
       "path": "tests/multi-instance-stress.md",
@@ -142,11 +150,11 @@
     },
     {
       "path": "test-drivers/multi-instance-stress.driver.json",
-      "sha256": "7276c4ff878efe8b14bfab8aec5cfc8b7c42e109a8e6895cf68cfd0091f7f207"
+      "sha256": "6133d9ab82998002e58c1093e9ab19d281b49fa1b0118497982adde166d923fe"
     },
     {
       "path": ".github/workflows/multi-instance-stress.yml",
-      "sha256": "b8f43bb22fbad41a6e9ae08bfcfbf9aed8e331cad5a27ac45ed2eeca9c22db84"
+      "sha256": "58deca885f66c92d841155797e0167a03ef5f04b9c2a5d802f1fcb5da392576a"
     }
   ]
 }
