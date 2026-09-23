@@ -74,6 +74,12 @@ def main():
             raise RuntimeError("GUI control port did not become available")
         sock.settimeout(1)
         command(sock, "HELP")
+        command(sock, "SPEED 800")
+        command(sock, "KEY PRESS J")
+        command(sock, "KEY DOWN SYMBOL_SHIFT")
+        command(sock, "KEY PRESS P")
+        command(sock, "KEY UP SYMBOL_SHIFT")
+        command(sock, "KEY PRESS ENTER")
         time.sleep(60)
         response = command(sock, "SCREENSHOT")
         match = re.search(
