@@ -74,7 +74,7 @@ def main() -> int:
         print("Fetched upstream revision does not match the pinned revision", file=sys.stderr)
         return 1
 
-    match = re.search(r"^PASS Fuse Z80 cases: (\d+)\s*$",
+    match = re.search(r"^\s*(?:\d+:\s*)?PASS Fuse Z80 cases: (\d+)\s*$",
                       arguments.run_log.read_text(encoding="utf-8"),
                       flags=re.MULTILINE)
     if match is None or int(match.group(1)) != REQUIRED_CASES:
