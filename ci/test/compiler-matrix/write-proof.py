@@ -16,14 +16,19 @@ import os
 from datetime import datetime, timezone
 from pathlib import Path
 import re
+import subprocess
 import sys
 
 
 REPO = Path(__file__).resolve().parents[3]
 
 
-def digest(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+def digest_tracked_file(path: Path, commit: str) -> str:
+    relative_path = path.relative_to(REPO).as_posix()
+    contents = subprocess.check_output(
+        ["git", "show", f"{commit}:{relative_path}"], cwd=REPO
+    )
+    return hashlib.sha256(contents).hexdigest()
 
 
 def read_cache(path: Path) -> dict[str, str]:
@@ -67,6 +72,9 @@ def main() -> int:
     parser.add_argument("--proof-out", required=True, type=Path)
     arguments = parser.parse_args()
 
+    commit = os.environ.get("GITHUB_SHA") or subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=REPO, text=True
+    ).strip()
     values = read_cache(arguments.cache)
     values.update(read_compiler_metadata(arguments.cache))
     compiler_id = values.get("CMAKE_C_COMPILER_ID", "")
@@ -86,13 +94,16 @@ def main() -> int:
         REPO / "test-drivers/canonical-core-regression.driver.json",
     )
     fixtures = [
-        {"path": path.relative_to(REPO).as_posix(), "sha256": digest(path)}
+        {
+            "path": path.relative_to(REPO).as_posix(),
+            "sha256": digest_tracked_file(path, commit),
+        }
         for path in fixture_paths
     ]
     proof = {
         "testId": "canonical-core-regression",
         "status": "pass" if not errors else "fail",
-        "commit": os.environ.get("GITHUB_SHA", "unknown"),
+        "commit": commit,
         "runner": f"{os.environ.get('RUNNER_OS', 'unknown')}/{os.environ.get('RUNNER_ARCH', 'unknown')}",
         "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "runId": os.environ.get("GITHUB_RUN_ID", "unknown"),
