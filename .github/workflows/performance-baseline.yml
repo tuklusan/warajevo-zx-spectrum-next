@@ -1,0 +1,67 @@
+name: Phase 16 performance baselines
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  baseline:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.label }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows Intel
+            id: windows-x64
+            label: windows-2025
+          - name: Windows ARM
+            id: windows-arm64
+            label: windows-11-arm
+          - name: macOS Intel
+            id: macos-x64
+            label: macos-15-intel
+          - name: macOS ARM
+            id: macos-arm64
+            label: macos-15
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+
+      - name: Configure benchmark build
+        shell: bash
+        run: cmake -S ci/test/performance -B dist/performance/${{ matrix.id }} -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build benchmark
+        shell: bash
+        run: cmake --build dist/performance/${{ matrix.id }} --config Release --target wz_performance_baseline --parallel 2
+
+      - name: Run correctness-checked baseline
+        shell: bash
+        env:
+          WZ_PERF_COMMIT: ${{ github.sha }}
+          WZ_PERF_RUNNER: ${{ runner.os }}-${{ matrix.id }}
+          WZ_PERF_ARCH: ${{ runner.arch }}
+        run: |
+          set -euo pipefail
+          export WZ_PERF_TIMESTAMP="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            executable="dist/performance/${{ matrix.id }}/Release/wz_performance_baseline.exe"
+          else
+            executable="dist/performance/${{ matrix.id }}/wz_performance_baseline"
+          fi
+          mkdir -p performance-results
+          "$executable" | tee "performance-results/${{ matrix.id }}.json"
+
+      - name: Upload raw baseline record
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-baseline-${{ matrix.id }}
+          path: performance-results/${{ matrix.id }}.json
+          if-no-files-found: error
+          retention-days: 90

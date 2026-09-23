@@ -1,0 +1,5 @@
+{
+  "testId": "phase16-performance-baseline",
+  "command": "cmake -S ci/test/performance -B dist/performance/<runner> -DCMAKE_BUILD_TYPE=Release && cmake --build dist/performance/<runner> --config Release --target wz_performance_baseline && run wz_performance_baseline on the assigned hosted runner",
+  "fixtures": []
+}
