@@ -467,7 +467,6 @@ target_link_libraries(wz_host_output_tests PRIVATE wz_warnings)
 target_include_directories(wz_host_output_tests PRIVATE "${WZSN_SOURCE_ROOT}")
 add_test(NAME wz_host_output_tests COMMAND wz_host_output_tests)
 
-endif()
 if(WZSN_ENABLE_REVIEW_GATE_TESTS AND EXISTS "${WZSN_TEST_ROOT}/test_review_gate_v4.py")
     find_package(Python3 COMPONENTS Interpreter REQUIRED)
     add_test(
