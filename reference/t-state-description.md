@@ -202,9 +202,10 @@ The 48K profile presents a 16K ROM region followed by 48K RAM:
 C000-FFFF  uncontended RAM
 ```
 
-The ROM is supplied externally to the emulator, identified by a declared hash,
-and loaded before the machine is released from reset. ROM bytes are not silently
-substituted by a host file or embedded into release artifacts.
+The ROM is supplied to the emulator, identified by a declared hash, and loaded
+before the machine is released from reset. Development/test checkouts may carry
+an approved ROM, as this repository currently does. Final public release
+artifacts must exclude ROM bytes unless redistribution rights are established.
 
 ### 4.2 Contention
 
@@ -289,7 +290,7 @@ The ROM is therefore required for meaningful loader tests. A runner must:
 
 1. obtain the approved ROM through the project-controlled runner setup;
 2. verify its expected identity/hash before execution;
-3. inject it into the machine profile without committing the ROM bytes;
+3. inject it into the machine profile after hash verification;
 4. reset the machine into the authentic ROM entry path;
 5. mount each supported tape image through the media subsystem;
 6. run in Normal mode first, preserving master-tick traces and EAR edges;

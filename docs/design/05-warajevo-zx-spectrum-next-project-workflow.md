@@ -97,9 +97,12 @@ or closure.
 
 ## 7. ROM and difficult-media validation
 
-The emulator requires an approved ROM on the runner. Runner setup must acquire
-it through controlled configuration, verify its declared hash, and inject it
-without committing ROM bytes into release artifacts.
+The emulator requires an approved ROM on the runner. Development and test
+checkouts may contain or obtain approved ROM bytes, as this repository currently
+does, provided their identity and licensing status are tracked. Runner setup
+must verify the declared hash before injection. The restriction applies to
+final public release artifacts: ROM bytes must be excluded from those artifacts
+unless redistribution rights have been explicitly established.
 
 The acceptance target is every usable tape in `test-media/`, beginning with
 Normal authentic-ROM loading and retaining deterministic master-tick, EAR-edge,
@@ -127,7 +130,8 @@ ci/test/           test orchestration and proof-generation harnesses
 tools/             general developer/repository maintenance utilities
 .github/workflows/ declarative CI workflows only
 .githooks/         thin local hook entrypoints and validators only
-roms/              approved ROM guidance/identities; no unapproved ROM bytes
+roms/              approved development/test ROMs, guidance, and identities;
+                   final public releases require a separate redistribution check
 test-media/        public difficult-media fixtures
 issues/            CR tracker and issue evidence
 ```
