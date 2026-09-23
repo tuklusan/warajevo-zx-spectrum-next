@@ -28,7 +28,7 @@ patent, trademark, and governing-law provisions.
 #endif
 
 #define WZ_PERF_REPETITIONS 3u
-#define WZ_CPU_STEPS 250000u
+#define WZ_CPU_STEPS 250005u
 #define WZ_RASTER_FRAMES 384u
 #define WZ_AUDIO_SAMPLES 2000000u
 #define WZ_TAPE_SEGMENT_COUNT 131072u
@@ -128,10 +128,23 @@ static bool cpu_run(void* context, uint64_t* fingerprint, double* seconds)
         free(machine);
         return false;
     }
-    wz_machine_memory_write(machine, 0x8000u, 0xc3u); /* JP 8000h */
-    wz_machine_memory_write(machine, 0x8001u, 0x00u);
-    wz_machine_memory_write(machine, 0x8002u, 0x80u);
+    {
+        static const wz_byte_t workload[] = {
+            0x3eu, 0x01u,             /* LD A,01h */
+            0x23u,                   /* INC HL */
+            0xafu,                   /* XOR A */
+            0x85u,                   /* ADD A,L */
+            0x32u, 0x00u, 0xc0u,     /* LD (C000h),A */
+            0x34u,                   /* INC (HL) */
+            0xc3u, 0x00u, 0x80u      /* JP 8000h */
+        };
+        for (size_t index = 0u; index < sizeof(workload); ++index) {
+            wz_machine_memory_write(machine, (wz_word_t)(0x8000u + index),
+                                    workload[index]);
+        }
+    }
     machine->cpu.program_counter = 0x8000u;
+    machine->cpu.main.h = 0xc0u;
 
     start = clock();
     if (start == (clock_t)-1) {
@@ -182,6 +195,18 @@ static bool raster_run(void* context, uint64_t* fingerprint, double* seconds)
                               WZ_RASTER_CANONICAL_WIDTH *
                                   WZ_RASTER_CANONICAL_HEIGHT);
     return true;
+}
+
+static void prepare_raster_machine(wz_machine_t* machine)
+{
+    for (size_t address = 0x4000u; address < 0x5b00u; ++address) {
+        machine->memory[address] =
+            (wz_byte_t)((address * 37u + (address >> 7u) * 11u) & 0xffu);
+    }
+    machine->border_color = 5u;
+    machine->master_tick =
+        (wz_master_tick_t)machine->profile->tstates_per_frame *
+        machine->profile->master_ticks_per_cpu_tstate * 16u;
 }
 
 static bool audio_run(void* context, uint64_t* fingerprint, double* seconds)
@@ -311,6 +336,12 @@ static bool ui_run(void* context, uint64_t* fingerprint, double* seconds)
             WZ_RESULT_OK) {
         return false;
     }
+    for (size_t index = 0u; index < WZ_RASTER_CANONICAL_WIDTH *
+                                    WZ_RASTER_CANONICAL_HEIGHT; ++index) {
+        ui->source_pixels[index] = (wz_byte_t)(
+            (index * 13u + index / WZ_RASTER_CANONICAL_WIDTH) %
+            (WZ_RASTER_BLANKING + 1u));
+    }
 
     clock_t start = clock();
     if (start == (clock_t)-1) return false;
@@ -392,6 +423,7 @@ int main(void)
         goto cleanup;
     }
     initialized = true;
+    prepare_raster_machine(&raster.machine);
     if (wz_raster_buffer_init(&raster.raster, WZ_RASTER_CANONICAL_WIDTH,
                               WZ_RASTER_CANONICAL_HEIGHT, raster.pixels,
                               WZ_RASTER_CANONICAL_WIDTH *
