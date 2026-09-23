@@ -60,8 +60,9 @@ def main():
     environment = os.environ.copy()
     environment["WZSN_ROM_PATH"] = str(tape.parent.parent / "roms" / "48.rom")
     environment["WZSN_TAPE_PATH"] = str(tape)
+    log_handle = (output / "emulator.log").open("w", encoding="utf-8")
     process = subprocess.Popen([str(binary)], env=environment,
-                               stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+                               stdout=log_handle, stderr=subprocess.STDOUT)
     try:
         sock = None
         for _ in range(120):
@@ -94,6 +95,7 @@ def main():
         except subprocess.TimeoutExpired:
             process.kill()
             process.wait()
+        log_handle.close()
 
 
 if __name__ == "__main__":
