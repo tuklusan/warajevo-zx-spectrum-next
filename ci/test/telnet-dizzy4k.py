@@ -52,6 +52,13 @@ def find_port():
     return None, None
 
 
+def press_key(sock, key):
+    command(sock, f"KEY DOWN {key}")
+    time.sleep(0.1)
+    command(sock, f"KEY UP {key}")
+    time.sleep(0.1)
+
+
 def main():
     binary = pathlib.Path(sys.argv[1]).resolve()
     tape = pathlib.Path(sys.argv[2]).resolve()
@@ -75,11 +82,16 @@ def main():
         sock.settimeout(1)
         command(sock, "HELP")
         command(sock, "SPEED 800")
-        command(sock, "KEY PRESS J")
+        press_key(sock, "J")
         command(sock, "KEY DOWN SYMBOL_SHIFT")
-        command(sock, "KEY PRESS P")
+        time.sleep(0.1)
+        command(sock, "KEY DOWN P")
+        time.sleep(0.1)
+        command(sock, "KEY UP P")
+        time.sleep(0.1)
         command(sock, "KEY UP SYMBOL_SHIFT")
-        command(sock, "KEY PRESS ENTER")
+        time.sleep(0.1)
+        press_key(sock, "ENTER")
         time.sleep(60)
         response = command(sock, "SCREENSHOT")
         match = re.search(
