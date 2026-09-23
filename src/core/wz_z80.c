@@ -545,9 +545,10 @@ static wz_result_t wz_z80_exchange_stack_pair(wz_machine_t* machine,
 
     low = (wz_byte_t)(original & 0xffu);
     high = (wz_byte_t)(original >> 8u);
-    if (wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 26u, stack_pointer, &low, 3u) != WZ_RESULT_OK ||
-        wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 32u,
-                   wz_z80_add16(stack_pointer, 1u), &high, 3u) != WZ_RESULT_OK) {
+    if (wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 22u,
+                   wz_z80_add16(stack_pointer, 1u), &high, 3u) != WZ_RESULT_OK ||
+        wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 28u,
+                   stack_pointer, &low, 3u) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_STATE;
     }
 
