@@ -34,17 +34,17 @@ jobs:
       - name: Require a declared build entry point
         shell: bash
         run: |
-          if [ ! -f CMakeLists.txt ] && ! find . -type f \( -name '*.sln' -o -name '*.vcxproj' -o -name 'Makefile' -o -name 'pyproject.toml' \) -print -quit | grep -q .; then
+          if [ ! -f src/cmake/CMakeLists.txt ] && ! find . -type f \( -name '*.sln' -o -name '*.vcxproj' -o -name 'Makefile' -o -name 'pyproject.toml' \) -print -quit | grep -q .; then
             echo 'CR build gate failed: no supported product build entry point is present.' >&2
             echo 'Add the intended product build definition before closing CRs.' >&2
             exit 1
           fi
 
       - name: Clean CMake configure and build
-        if: hashFiles('CMakeLists.txt') != ''
+        if: hashFiles('src/cmake/CMakeLists.txt') != ''
         shell: bash
         run: |
-          cmake -S . -B build/cr-gate -DCMAKE_BUILD_TYPE=Release
+          cmake -S src/cmake -B build/cr-gate -DCMAKE_BUILD_TYPE=Release
           cmake --build build/cr-gate --clean-first --parallel 2
 
       - name: Build declared Visual Studio solution

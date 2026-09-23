@@ -73,8 +73,8 @@ jobs:
           cat .ci/runner-bootstrap/manifest.txt
 
       - name: Configure and build when CMake is present
-        if: hashFiles('**/CMakeLists.txt') != ''
+        if: hashFiles('src/cmake/CMakeLists.txt') != ''
         shell: bash
         run: |
-          cmake -S . -B build/ci -DCMAKE_BUILD_TYPE=Debug
+          cmake -S src/cmake -B build/ci -DCMAKE_BUILD_TYPE=Debug
           cmake --build build/ci --parallel 2

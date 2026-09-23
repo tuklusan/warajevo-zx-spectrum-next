@@ -1,0 +1,92 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 25,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "release-windows-x86-64",
+      "displayName": "Warajevo Windows x86-64 Release",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/../../build/release-windows-x86-64",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "WZSN_BUILD_SOKOL_HOST": "ON",
+        "WZSN_ENABLE_WARNINGS": "ON",
+        "WZSN_ENABLE_SANITIZERS": "OFF"
+      }
+    },
+    {
+      "name": "release-linux-x86-64",
+      "displayName": "Warajevo Linux x86-64 Release",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/../../build/release-linux-x86-64",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "WZSN_BUILD_SOKOL_HOST": "ON",
+        "WZSN_ENABLE_WARNINGS": "ON",
+        "WZSN_ENABLE_SANITIZERS": "OFF"
+      }
+    },
+    {
+      "name": "release-linux-aarch64",
+      "displayName": "Warajevo Linux AArch64 Release",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/../../build/release-linux-aarch64",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "WZSN_BUILD_SOKOL_HOST": "ON",
+        "WZSN_ENABLE_WARNINGS": "ON",
+        "WZSN_ENABLE_SANITIZERS": "OFF"
+      }
+    },
+    {
+      "name": "release-macos-aarch64",
+      "displayName": "Warajevo macOS AArch64 Release",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/../../build/release-macos-aarch64",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "WZSN_BUILD_SOKOL_HOST": "ON",
+        "WZSN_ENABLE_WARNINGS": "ON",
+        "WZSN_ENABLE_SANITIZERS": "OFF"
+      }
+    },
+    {
+      "name": "release-macos-x86-64",
+      "displayName": "Warajevo macOS x86-64 Release",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/../../build/release-macos-x86-64",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "WZSN_BUILD_SOKOL_HOST": "ON",
+        "WZSN_ENABLE_WARNINGS": "ON",
+        "WZSN_ENABLE_SANITIZERS": "OFF"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "release-windows-x86-64",
+      "configurePreset": "release-windows-x86-64"
+    },
+    {
+      "name": "release-linux-x86-64",
+      "configurePreset": "release-linux-x86-64"
+    },
+    {
+      "name": "release-linux-aarch64",
+      "configurePreset": "release-linux-aarch64"
+    },
+    {
+      "name": "release-macos-aarch64",
+      "configurePreset": "release-macos-aarch64"
+    },
+    {
+      "name": "release-macos-x86-64",
+      "configurePreset": "release-macos-x86-64"
+    }
+  ]
+}
