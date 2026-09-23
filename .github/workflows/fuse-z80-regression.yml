@@ -1,0 +1,73 @@
+name: Required Fuse Z80 conformance
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/core/**'
+      - 'src/cmake/**'
+      - 'ci/test/fuse-z80/**'
+      - '.github/workflows/fuse-z80-regression.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fuse-z80-regression:
+    name: Fuse Z80 unit suite
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out project source
+        uses: actions/checkout@v5
+
+      - name: Fetch pinned Fuse test corpus
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist/fuse-upstream
+          git -C dist/fuse-upstream init
+          git -C dist/fuse-upstream remote add origin https://git.code.sf.net/p/fuse-emulator/fuse
+          git -C dist/fuse-upstream fetch --no-tags --depth=1 origin c94a5e611bb0b795d62e904a0f5af4f59f2a4eee
+          git -C dist/fuse-upstream checkout --detach FETCH_HEAD
+          test "$(git -C dist/fuse-upstream rev-parse HEAD)" = c94a5e611bb0b795d62e904a0f5af4f59f2a4eee
+
+      - name: Configure Release conformance runner
+        shell: bash
+        run: cmake -S ci/test/fuse-z80 -B dist/fuse-z80 -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build conformance runner
+        shell: bash
+        run: cmake --build dist/fuse-z80 --config Release --target wz_fuse_z80_regression --parallel 2
+
+      - name: Run all pinned Fuse Z80 tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          dist/fuse-z80/wz_fuse_z80_regression \
+            dist/fuse-upstream/z80/tests/tests.in \
+            dist/fuse-upstream/z80/tests/tests.expected \
+            | tee dist/fuse-z80-run.log
+
+      - name: Write pinned conformance proof
+        shell: bash
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          RUNNER_OS: ${{ runner.os }}
+          RUNNER_ARCH: ${{ runner.arch }}
+        run: |
+          set -euo pipefail
+          python3 ci/test/fuse-z80/write-proof.py \
+            --project-commit "$GITHUB_SHA" \
+            --upstream-commit "$(git -C dist/fuse-upstream rev-parse HEAD)" \
+            --run-log dist/fuse-z80-run.log \
+            --proof-out dist/fuse-z80-proof.json
+
+      - name: Upload pinned conformance proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: fuse-z80-conformance-${{ github.sha }}
+          path: dist/fuse-z80-proof.json
+          if-no-files-found: error

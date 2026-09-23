@@ -1,0 +1,17 @@
+{
+  "testId": "fuse-z80-conformance",
+  "command": "cmake -S ci/test/fuse-z80 -B dist/fuse-z80 -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/fuse-z80 --config Release --target wz_fuse_z80_regression --parallel 2 && dist/fuse-z80/wz_fuse_z80_regression dist/fuse-upstream/z80/tests/tests.in dist/fuse-upstream/z80/tests/tests.expected",
+  "upstreamRepository": "https://git.code.sf.net/p/fuse-emulator/fuse",
+  "upstreamRevision": "c94a5e611bb0b795d62e904a0f5af4f59f2a4eee",
+  "requiredCases": 1356,
+  "fixtures": [
+    {
+      "path": "fuse-emulator/fuse@c94a5e611bb0b795d62e904a0f5af4f59f2a4eee:z80/tests/tests.in",
+      "sha256": "9f36e866f22e72ff1f8bf2100bf70ffbf58edd97b453500aab60acf1f403ebbb"
+    },
+    {
+      "path": "fuse-emulator/fuse@c94a5e611bb0b795d62e904a0f5af4f59f2a4eee:z80/tests/tests.expected",
+      "sha256": "15a6946f4addcf97e137b5bdd1d5fdb08124ff91f1b169f36a8bf4afe4bab6e4"
+    }
+  ]
+}
