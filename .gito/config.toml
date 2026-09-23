@@ -6,12 +6,12 @@ requirements = """
 - Do not report documentation, formatting-only, or generated-file concerns.
 """
 
+# The structured issue review is sufficient for the pre-push gate. Avoid a
+# second model request for an optional prose summary.
+summary_prompt = ""
+
 [pipeline_steps.jira]
 enabled = false
 
 [pipeline_steps.linear]
 enabled = false
-
-# The structured issue review is sufficient for the pre-push gate. Avoid a
-# second model request for an optional prose summary.
-summary_prompt = ""
