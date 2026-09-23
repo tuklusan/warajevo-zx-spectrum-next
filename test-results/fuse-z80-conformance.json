@@ -1,33 +1,37 @@
 {
   "testId": "fuse-z80-conformance",
   "status": "pass",
-  "commit": "3e38e999113285015cde6f40c6aa74cbccf2080b",
+  "commit": "e891fecfb58bb98710f9bed1c4d1d2444b1f493e",
   "runner": "Linux/X64",
-  "timestamp": "2026-09-23T20:38:07+00:00",
-  "runId": "35917219164",
+  "timestamp": "2026-09-23T20:53:46+00:00",
+  "runId": "35918957994",
   "upstreamRevision": "c94a5e611bb0b795d62e904a0f5af4f59f2a4eee",
   "caseCount": 1356,
   "eventComparison": "Compare every MR/MW/PR/PW transfer and timestamp. MC/PC markers are excluded because upstream coretest emits synthetic contention-helper traces whose memory map differs from the 48K PAL profile; this suite does not claim profile contention conformance.",
   "fixtures": [
     {
-      "path": "ci/test/fuse-z80/regression.c",
+      "path": "tests/fuse-z80-conformance.c",
       "sha256": "bc134623728ef5453378cd3397e73e0de86ee9ad827bb2c53dca879c8cd1742a"
     },
     {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "1e2908066dddef69df8645880c5afe9596dcd9c32be9394a0f20118c20ddd2b1"
+    },
+    {
       "path": "ci/test/fuse-z80/CMakeLists.txt",
-      "sha256": "83c577fa00c0ea334cdfede76f4beaef75b31a91a85446e816564d9a5bd5f4e6"
+      "sha256": "9d1a5f0ff31ac5ee6678685a2e78e76621ed4414e90d519f5de3e6d61a30fe9c"
     },
     {
       "path": "ci/test/fuse-z80/driver.json",
-      "sha256": "c04e3c2315e506fc2a31024c4557850b07b57dceab32968cd100b8aaf7a79a05"
+      "sha256": "71aae3d21a7050c1ba25cec5abe8e0d165a06d6ed788675404717f1d9bd01161"
     },
     {
       "path": ".github/workflows/fuse-z80-regression.yml",
-      "sha256": "af192c1fb6e721da42f107248bda61b67b8df4d88552186a8f453a9a569e9bb9"
+      "sha256": "9bbb4297265be2ceff74d24b1dd9104768fa0db47b7b329ddd7723bcd063390a"
     },
     {
       "path": "ci/test/fuse-z80/write-proof.py",
-      "sha256": "aa61c28918e2f9aa2dbede4d472c4e04a519e73971bd63dc7dfad6d2fd8b0d5e"
+      "sha256": "49d8031b09e247bb5278d0cc41b506b2bfd9f81b81e8c9f9b681685bc16a4ff1"
     },
     {
       "path": "tests/fuse-z80-conformance.md",
@@ -35,7 +39,7 @@
     },
     {
       "path": "test-drivers/fuse-z80-conformance.driver.json",
-      "sha256": "c04e3c2315e506fc2a31024c4557850b07b57dceab32968cd100b8aaf7a79a05"
+      "sha256": "71aae3d21a7050c1ba25cec5abe8e0d165a06d6ed788675404717f1d9bd01161"
     },
     {
       "path": "fuse-emulator/fuse@c94a5e611bb0b795d62e904a0f5af4f59f2a4eee:z80/tests/tests.in",
