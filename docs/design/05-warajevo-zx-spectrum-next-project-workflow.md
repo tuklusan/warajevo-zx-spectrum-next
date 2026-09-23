@@ -53,14 +53,14 @@ The sole local validation entrypoint is `.githooks/pre-push`. The checkout uses
 The gate runs test-ledger validation, banned-term validation, license-header
 validation, local AI source review, and Git LFS validation. Banned matching is
 case-insensitive. Source review is mandatory whenever a pushed change contains
-source files covered by the reviewer. Start a 20-minute wall-clock timer when
-the review command starts. A completed review permits the gate to continue;
-review findings remain advisory and require developer adjudication. If the
-review has not completed when the timer expires, terminate it, record the
-outcome as `STALL` with elapsed time and available diagnostics, and reject the
-push. `STALL` is a failed gate, never a review pass. Missing credentials,
-reviewer errors, or other validation/tool configuration failures also reject
-the push before the remote is contacted.
+source files covered by the reviewer. The hook enforces a 20-minute wall-clock
+limit from review start, saves reviewer output under Git metadata, and on
+timeout records `STALL`, elapsed time, and the diagnostic log path in
+`wzsn-source-review-stall.log` under Git metadata. A completed review permits
+the gate to continue; review findings remain advisory and require developer
+adjudication. `STALL` is a failed gate, never a review pass. Missing
+credentials, reviewer errors, or other validation/tool configuration failures
+also reject the push before the remote is contacted.
 
 The local workstation is never a build or test machine. It may run the
 pre-push policy checks, but product compilation, emulator execution, media

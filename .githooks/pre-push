@@ -76,6 +76,15 @@ review_outgoing_source() {
         return 1
     fi
 
+    if command -v timeout >/dev/null 2>&1; then
+        review_timeout=timeout
+    elif command -v gtimeout >/dev/null 2>&1; then
+        review_timeout=gtimeout
+    else
+        printf '%s\n' "Push rejected: GNU timeout is required to enforce the 20-minute source-review limit." >&2
+        return 1
+    fi
+
     export LLM_API_KEY="$NVIDIA_API_KEY"
     export LLM_API_BASE='https://integrate.api.nvidia.com/v1'
     export MODEL='google/gemma-4-31b-it'
@@ -103,12 +112,27 @@ review_outgoing_source() {
     printf '%s\n' "Running source review before push..." >&2
     review_status=0
     review_filter='**/*.c,**/*.C,**/*.h,**/*.H,**/*.py,**/*.PY,**/*.asm,**/*.ASM,**/*.s,**/*.S,**/*.z80,**/*.Z80'
+    review_log=$(git rev-parse --git-path wzsn-source-review.log)
+    review_started=$(date +%s)
     if [ "$gito_runner" = "gito" ]; then
-        gito --verbose review --against="$oldrev" --filter="$review_filter" || review_status=$?
+        "$review_timeout" --signal=TERM --kill-after=10s 1200s \
+            gito --verbose review --against="$oldrev" --filter="$review_filter" \
+            >"$review_log" 2>&1 || review_status=$?
     elif [ "$gito_runner" = "py -m gito" ]; then
-        py -m gito --verbose review --against="$oldrev" --filter="$review_filter" || review_status=$?
+        "$review_timeout" --signal=TERM --kill-after=10s 1200s \
+            py -m gito --verbose review --against="$oldrev" --filter="$review_filter" \
+            >"$review_log" 2>&1 || review_status=$?
     else
-        python -m gito --verbose review --against="$oldrev" --filter="$review_filter" || review_status=$?
+        "$review_timeout" --signal=TERM --kill-after=10s 1200s \
+            python -m gito --verbose review --against="$oldrev" --filter="$review_filter" \
+            >"$review_log" 2>&1 || review_status=$?
+    fi
+    review_elapsed=$(($(date +%s) - review_started))
+    cat "$review_log" >&2
+    if [ "$review_status" -eq 124 ] && [ "$review_elapsed" -ge 1200 ]; then
+        stall_log=$(git rev-parse --git-path wzsn-source-review-stall.log)
+        printf 'STALL elapsed=%ss limit=1200s diagnostics=%s\n' \
+            "$review_elapsed" "$review_log" | tee -a "$stall_log" >&2
     fi
     rm -f "$review_lock/pid"
     rmdir "$review_lock" 2>/dev/null || true

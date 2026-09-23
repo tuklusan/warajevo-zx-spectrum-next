@@ -29,9 +29,33 @@ def digest(path: Path) -> str:
 def read_cache(path: Path) -> dict[str, str]:
     values = {}
     for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
-        match = re.match(r"^([^:#]+):[^=]*=(.*)$", line)
-        if match:
-            values[match.group(1)] = match.group(2)
+        if not line or line.startswith(("#", "//")):
+            continue
+        key_and_type, separator, value = line.partition("=")
+        if not separator:
+            continue
+        key, type_separator, _cache_type = key_and_type.partition(":")
+        if type_separator and key:
+            values[key] = value
+    return values
+
+
+def read_compiler_metadata(cache_path: Path) -> dict[str, str]:
+    metadata_files = sorted(
+        (cache_path.parent / "CMakeFiles").glob("*/CMakeCCompiler.cmake")
+    )
+    values = {}
+    for name in ("CMAKE_C_COMPILER_ID", "CMAKE_C_COMPILER_VERSION"):
+        pattern = rf'^\s*set\({name}\s+"([^"]+)"\s*\)'
+        for metadata_path in metadata_files:
+            match = re.search(
+                pattern,
+                metadata_path.read_text(encoding="utf-8", errors="replace"),
+                flags=re.MULTILINE,
+            )
+            if match:
+                values[name] = match.group(1)
+                break
     return values
 
 
@@ -44,6 +68,7 @@ def main() -> int:
     arguments = parser.parse_args()
 
     values = read_cache(arguments.cache)
+    values.update(read_compiler_metadata(arguments.cache))
     compiler_id = values.get("CMAKE_C_COMPILER_ID", "")
     compiler_version = values.get("CMAKE_C_COMPILER_VERSION", "")
     compiler_path = values.get("CMAKE_C_COMPILER", "")

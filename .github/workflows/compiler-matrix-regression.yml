@@ -31,14 +31,12 @@ jobs:
             platform: windows
             compiler: MSVC
             expected_id: MSVC
-            toolset: v143
           - name: Windows x86-64 / clang-cl
             id: windows-x64-clang-cl
             runner: windows-2025
             platform: windows
             compiler: clang-cl
             expected_id: Clang
-            toolset: ClangCL
           - name: Linux x86-64 / GCC
             id: linux-x64-gcc
             runner: ubuntu-24.04
@@ -80,6 +78,12 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v5
 
+      - name: Set up the Windows C++ compiler environment
+        if: matrix.platform == 'windows'
+        uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756
+        with:
+          arch: amd64
+
       - name: Install Linux build dependencies
         if: matrix.platform == 'linux'
         shell: bash
@@ -89,19 +93,17 @@ jobs:
 
       - name: Configure clean Release build with MSVC
         if: matrix.id == 'windows-x64-msvc'
-        shell: bash
+        shell: pwsh
         run: >-
-          cmake -S src/cmake -B dist/${{ matrix.id }}
-          -G "Visual Studio 17 2022" -A x64 -T ${{ matrix.toolset }}
-          -DCMAKE_BUILD_TYPE=Release
+          cmake -S src/cmake -B dist/${{ matrix.id }} -G Ninja
+          -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=cl
 
       - name: Configure clean Release build with clang-cl
         if: matrix.id == 'windows-x64-clang-cl'
-        shell: bash
+        shell: pwsh
         run: >-
-          cmake -S src/cmake -B dist/${{ matrix.id }}
-          -G "Visual Studio 17 2022" -A x64 -T ${{ matrix.toolset }}
-          -DCMAKE_BUILD_TYPE=Release
+          cmake -S src/cmake -B dist/${{ matrix.id }} -G Ninja
+          -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang-cl
 
       - name: Configure clean Release build with GCC or Clang
         if: matrix.platform == 'linux'
@@ -122,19 +124,17 @@ jobs:
 
       - name: Configure canonical regression with MSVC
         if: matrix.id == 'windows-x64-msvc'
-        shell: bash
+        shell: pwsh
         run: >-
           cmake -S ci/test/core-regression -B dist/${{ matrix.id }}-regression
-          -G "Visual Studio 17 2022" -A x64 -T ${{ matrix.toolset }}
-          -DCMAKE_BUILD_TYPE=Release
+          -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=cl
 
       - name: Configure canonical regression with clang-cl
         if: matrix.id == 'windows-x64-clang-cl'
-        shell: bash
+        shell: pwsh
         run: >-
           cmake -S ci/test/core-regression -B dist/${{ matrix.id }}-regression
-          -G "Visual Studio 17 2022" -A x64 -T ${{ matrix.toolset }}
-          -DCMAKE_BUILD_TYPE=Release
+          -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang-cl
 
       - name: Configure canonical regression with GCC or Clang
         if: matrix.platform == 'linux'
@@ -155,14 +155,16 @@ jobs:
         run: cmake --build dist/${{ matrix.id }}-regression --config Release --target wz_core_regression --parallel 2
 
       - name: Run canonical regression
+        if: matrix.platform != 'windows'
         shell: bash
         run: |
           set -euo pipefail
-          if [[ "$RUNNER_OS" == "Windows" ]]; then
-            ./dist/${{ matrix.id }}-regression/Release/wz_core_regression.exe
-          else
-            ./dist/${{ matrix.id }}-regression/wz_core_regression
-          fi
+          ./dist/${{ matrix.id }}-regression/wz_core_regression
+
+      - name: Run canonical regression on Windows
+        if: matrix.platform == 'windows'
+        shell: pwsh
+        run: ./dist/${{ matrix.id }}-regression/wz_core_regression.exe
 
       - name: Record compiler and regression proof
         shell: bash
