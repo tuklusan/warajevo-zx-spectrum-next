@@ -46,6 +46,11 @@ validation, local AI source review, and Git LFS validation. Banned matching is
 case-insensitive. Validation or tool/configuration failures stop the push before
 the remote is contacted; AI findings remain advisory.
 
+The local workstation is never a build or test machine. It may run the
+pre-push policy checks, but product compilation, emulator execution, media
+loading, screenshots, and test-proof generation must run on hosted project
+runners.
+
 ## 4. Test ledger contract
 
 The repository contains:
@@ -84,11 +89,33 @@ image. It uses architecture-specific bootstrap caches keyed by runner family
 and project build inputs, bootstrapping on cache misses. Hosted runner VMs are
 ephemeral; cached bootstrap artifacts are not persistent runner identities.
 
+Runner bootstrap fixtures are kept in the visible `ci/runner-bootstrap/`
+directory:
+
+```text
+ci/runner-bootstrap/
+  common/
+  windows-x86_64/
+  windows-arm64/
+  macos-x86_64/
+  macos-arm64/
+  manifests/
+```
+
+The fixtures contain pinned dependency manifests, installation scripts,
+toolchain setup, environment checks, and cache-key inputs. Linux runner
+bootstrap must include the X11 development/runtime dependencies required by
+the emulator host. Windows and macOS use their platform SDKs and native host
+dependencies. An unmatched or missing cache causes a fresh bootstrap and a
+new manifest record. No local installation substitutes for runner bootstrap.
+
 ## 6. CR clean-build gate
 
-`cr-build-gate.yml` is the required clean-build check for pull-request CRs. It
-runs a clean Release build on all four runner families and accepts only declared
-build entry points such as CMake, a Visual Studio solution, or a Python project.
+`cr-build-gate.yml` is the required clean-build check for CR closure. It runs a
+clean Release build on all four runner families and accepts only declared build
+entry points such as `src/cmake/CMakeLists.txt`, a Visual Studio solution, or a
+Python project. The build and all execution happen on hosted runners, not on
+the developer workstation.
 
 The repository currently has no product build entry point, so the gate
 intentionally fails with an actionable message until one is declared. Its check
@@ -124,9 +151,9 @@ src/               project-owned product source and build inputs
 tests/             executable tests and test fixtures only
 test-drivers/      one driver manifest per test; no test implementation here
 test-results/      one proof JSON per test; no unverified or ad-hoc logs here
-ci/runners/        runner bootstrap and environment harnesses
-ci/build/          platform build and packaging harnesses
-ci/test/           test orchestration and proof-generation harnesses
+ci/runner-bootstrap/ runner bootstrap fixtures and dependency manifests
+ci/build/            platform build and packaging harnesses
+ci/test/             test orchestration and proof-generation harnesses
 tools/             general developer/repository maintenance utilities
 .github/workflows/ declarative CI workflows only
 .githooks/         thin local hook entrypoints and validators only
@@ -165,7 +192,7 @@ Layout rules:
 ```text
 docs/design/       canonical architecture and workflow documents
 reference/         timing and historical/reference material
-ci/runners/        runner bootstrap harnesses
+ci/runner-bootstrap/ runner bootstrap fixtures and dependency manifests
 ci/build/          platform build harnesses
 ci/test/           test orchestration and proof generation
 tools/             general developer/repository utilities
