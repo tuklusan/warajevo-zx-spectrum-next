@@ -1,0 +1,13 @@
+#!/bin/sh
+set -eu
+
+# Encoded so this enforcement hook does not contain the strings it detects.
+BANNED=$(printf '%s\n' Q2xhdWRl Q29kZXg= QW50aHJvcGl4 T3BlbkFJ Q2hhdEdQVA== U1BEWC1MaWNlbnNlLUlkZW50aWZpZXI= U1BEWA== | base64 -d | paste -sd '|' -)
+
+if matches=$(git grep --cached -n -I -i -E "$BANNED" -- . 2>/dev/null); then
+    printf '%s\n' "Commit rejected: banned word or phrase found in staged content:" >&2
+    printf '%s\n' "$matches" >&2
+    exit 1
+fi
+
+exit 0
