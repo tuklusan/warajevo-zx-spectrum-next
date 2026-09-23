@@ -24,6 +24,12 @@ add_executable(
     "${WZSN_ROOT}/src/app/wz_ui_layout.c")
 target_include_directories(wz_performance_baseline PRIVATE "${WZSN_ROOT}/src")
 target_link_libraries(wz_performance_baseline PRIVATE wz_core wz_warnings)
+set_target_properties(
+    wz_performance_baseline
+    PROPERTIES
+    C_STANDARD 11
+    C_STANDARD_REQUIRED ON
+    C_EXTENSIONS OFF)
 target_compile_definitions(
     wz_performance_baseline
     PRIVATE
