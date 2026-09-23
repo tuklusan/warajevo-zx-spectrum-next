@@ -1,0 +1,14 @@
+{
+  "tracker": "CR-Tracker",
+  "version": 1,
+  "project": "Warajevo ZX Spectrum Next",
+  "lastUpdated": "2026-09-23",
+  "statusValues": [
+    "open",
+    "in_progress",
+    "blocked",
+    "ready_for_review",
+    "closed"
+  ],
+  "changeRequests": []
+}

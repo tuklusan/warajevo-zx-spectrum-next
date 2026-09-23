@@ -1,0 +1,62 @@
+name: CR clean-build gate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  clean-build:
+    name: Clean build / ${{ matrix.name }}
+    runs-on: ${{ matrix.label }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows Intel
+            label: windows-2025
+          - name: Windows ARM64
+            label: windows-11-arm
+          - name: macOS Intel
+            label: macos-15-intel
+          - name: macOS ARM64
+            label: macos-15
+
+    steps:
+      - name: Check out CR revision
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Require a declared build entry point
+        shell: bash
+        run: |
+          if [ ! -f CMakeLists.txt ] && ! find . -type f \( -name '*.sln' -o -name '*.vcxproj' -o -name 'Makefile' -o -name 'pyproject.toml' \) -print -quit | grep -q .; then
+            echo 'CR build gate failed: no supported product build entry point is present.' >&2
+            echo 'Add the intended product build definition before closing CRs.' >&2
+            exit 1
+          fi
+
+      - name: Clean CMake configure and build
+        if: hashFiles('CMakeLists.txt') != ''
+        shell: bash
+        run: |
+          cmake -S . -B build/cr-gate -DCMAKE_BUILD_TYPE=Release
+          cmake --build build/cr-gate --clean-first --parallel 2
+
+      - name: Build declared Visual Studio solution
+        if: runner.os == 'Windows' && hashFiles('**/*.sln') != ''
+        shell: pwsh
+        run: |
+          $solution = Get-ChildItem -Recurse -Filter *.sln | Select-Object -First 1
+          msbuild $solution.FullName /m /t:Rebuild /p:Configuration=Release
+
+      - name: Build declared Python project
+        if: hashFiles('pyproject.toml') != ''
+        shell: bash
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install .
