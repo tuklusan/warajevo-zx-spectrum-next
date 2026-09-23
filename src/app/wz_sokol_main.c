@@ -1,7 +1,9 @@
 /*
 Warajevo ZX Spectrum Next
-Copyright (c) 2026 Supratim Sanyal, SANYALnet Labs, for new original project material.
-New original material is licensed under GNU GPL v2 or later (GPL-2.0-or-later), as stated in LICENSE.txt.
+Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+This file is governed by the SANYALnet Labs Non-Commercial License in the
+root LICENSE file. New original material is separately identified where
+applicable; see LICENSE.txt and NOTICE.md for complete terms and provenance.
 Upstream Warajevo and third-party material retain their applicable copyrights and licenses.
 See LICENSE.txt and NOTICE.md for complete terms and provenance.
 */
@@ -635,6 +637,21 @@ static void wz_host_cleanup(void)
     wz_host_session_shutdown();
 }
 
+/* Project host input ownership into the single machine-owned keyboard matrix.
+ * The arbiter is deliberately host-side state; the core must receive the
+ * resolved level before each execution slice so a Telnet key is observable by
+ * the emulated ULA while it scans the keyboard. */
+static void wz_host_apply_keyboard_input(void)
+{
+    for (size_t key = 0u; key < WZ_INPUT_ARBITER_KEY_COUNT; ++key) {
+        bool pressed = wz_input_arbiter_key_down(
+            &wz_host_session.input_arbiter, key);
+        (void)wz_machine_set_keyboard_key(
+            &wz_host_session.machine, (wz_byte_t)(key / 5u),
+            (wz_byte_t)(key % 5u), pressed);
+    }
+}
+
 static void wz_host_frame(void)
 {
     if (!wz_host_session.initialized) {
@@ -652,6 +669,7 @@ static void wz_host_frame(void)
         }
     }
     wz_host_telnet_poll();
+    wz_host_apply_keyboard_input();
     (void)wz_headless_runner_execute(&wz_host_session.runner, 69888u);
     wz_host_render_raster();
     wz_ui_window_sync_remote_control(&wz_host_session.ui_window,
