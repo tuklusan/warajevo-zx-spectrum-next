@@ -1,0 +1,80 @@
+name: DIZZY4K runner demo proof
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  demo:
+    name: DIZZY4K / ${{ matrix.name }}
+    runs-on: ${{ matrix.label }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows Intel
+            id: windows-x86_64
+            label: windows-2025
+          - name: Windows ARM64
+            id: windows-arm64
+            label: windows-11-arm
+          - name: macOS Intel
+            id: macos-x86_64
+            label: macos-15-intel
+          - name: macOS ARM64
+            id: macos-arm64
+            label: macos-15
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+
+      - name: Restore bootstrap cache
+        id: bootstrap
+        uses: actions/cache@v4
+        with:
+          path: ci/.runner-bootstrap-cache
+          key: runner-bootstrap-${{ matrix.id }}-${{ hashFiles('ci/runner-bootstrap/manifests/**', 'ci/runner-bootstrap/**') }}
+
+      - name: Bootstrap Windows runner
+        if: runner.os == 'Windows' && steps.bootstrap.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: .\ci\runner-bootstrap\bootstrap-windows.ps1 ci\runner-bootstrap\manifests\${{ matrix.id }}.txt
+
+      - name: Bootstrap Unix runner
+        if: runner.os != 'Windows' && steps.bootstrap.outputs.cache-hit != 'true'
+        shell: bash
+        run: bash ci/runner-bootstrap/bootstrap-unix.sh ci/runner-bootstrap/manifests/${{ matrix.id }}.txt
+
+      - name: Record bootstrap identity
+        if: steps.bootstrap.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          mkdir -p ci/.runner-bootstrap-cache
+          {
+            echo "runner_label=${{ matrix.label }}"
+            echo "runner_name=${RUNNER_NAME}"
+            echo "runner_arch=${RUNNER_ARCH}"
+            echo "image=${ImageOS:-unknown}"
+            echo "manifest=ci/runner-bootstrap/manifests/${{ matrix.id }}.txt"
+            echo "recorded_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } > ci/.runner-bootstrap-cache/manifest.txt
+
+      - name: Configure and build on runner
+        shell: bash
+        run: |
+          cmake -S src/cmake -B build/dizzy4k -G Ninja -DCMAKE_BUILD_TYPE=Release -DWZSN_BUILD_SOKOL_HOST=ON
+          cmake --build build/dizzy4k --clean-first --parallel 2
+
+      - name: Run DIZZY4K tape/demo harness
+        shell: bash
+        run: bash ci/test/run-dizzy4k-demo.sh build/dizzy4k/Warajevo-ZX-Spectrum-Next test-media/DIZZY4K.TAP test-results/screenshots/${{ matrix.id }}
+
+      - name: Publish runner screenshot summary
+        if: always()
+        shell: bash
+        run: |
+          echo "## DIZZY4K / ${{ matrix.name }}" >> "$GITHUB_STEP_SUMMARY"
+          find test-results/screenshots/${{ matrix.id }} -maxdepth 1 -type f -print >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true

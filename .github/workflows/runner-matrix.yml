@@ -47,30 +47,30 @@ jobs:
         id: bootstrap-cache
         uses: actions/cache@v4
         with:
-          path: .ci/runner-bootstrap
-          key: runner-bootstrap-${{ matrix.id }}-${{ hashFiles('**/CMakeLists.txt', '**/pyproject.toml', '**/requirements*.txt', '**/package-lock.json', '**/Cargo.lock') }}
+          path: ci/.runner-bootstrap-cache
+          key: runner-bootstrap-${{ matrix.id }}-${{ hashFiles('ci/runner-bootstrap/**', '**/CMakeLists.txt', '**/pyproject.toml', '**/requirements*.txt', '**/package-lock.json', '**/Cargo.lock') }}
 
       - name: Bootstrap cached runner miss
         if: steps.bootstrap-cache.outputs.cache-hit != 'true'
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p .ci/runner-bootstrap
+          mkdir -p ci/.runner-bootstrap-cache
           {
             echo "runner_label=${{ matrix.label }}"
             echo "runner_name=${RUNNER_NAME}"
             echo "runner_arch=${RUNNER_ARCH}"
             echo "image=${ImageOS:-unknown}"
             echo "bootstrapped_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          } > .ci/runner-bootstrap/manifest.txt
+          } > ci/.runner-bootstrap-cache/manifest.txt
           cmake --version
           python3 --version || python --version
 
       - name: Validate cached bootstrap
         shell: bash
         run: |
-          test -s .ci/runner-bootstrap/manifest.txt
-          cat .ci/runner-bootstrap/manifest.txt
+          test -s ci/.runner-bootstrap-cache/manifest.txt
+          cat ci/.runner-bootstrap-cache/manifest.txt
 
       - name: Configure and build when CMake is present
         if: hashFiles('src/cmake/CMakeLists.txt') != ''

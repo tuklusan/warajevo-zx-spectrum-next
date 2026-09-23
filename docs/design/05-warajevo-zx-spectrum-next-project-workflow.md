@@ -139,6 +139,14 @@ inputs are explicit results, never silent passes.
 The CPU, bus, ULA, raster, ROM-loader, and tape timing contract is in
 `reference/t-state-description.md`.
 
+The runner-facing DIZZY4K proof is manually dispatched by
+`.github/workflows/dizzy4k-demo.yml`. It builds the GUI target, starts the
+application on the runner, connects through the control port, inserts
+`test-media/DIZZY4K.TAP`, resumes execution, waits for the demo interval, and
+requests a Spectrum-display PNG through the screenshot command. The process is
+terminated by the harness after capture; screenshots remain untracked runner
+output and are not committed to the repository.
+
 ## 8. Directory structure and layout rules
 
 The repository layout is functional, not decorative. New files must be placed
