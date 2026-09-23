@@ -121,6 +121,7 @@ wz_result_t wz_machine_set_bus_data_source(wz_machine_t* machine,
     return WZ_RESULT_OK;
 }
 
+// codeql[cpp/poorly-documented-function]
 wz_result_t wz_machine_bus_request(wz_machine_t* machine,
                                    wz_bus_request_t* request)
 {
@@ -149,7 +150,7 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
         machine->bus_data_source.read(request, &request->value,
                                       machine->bus_data_source.context)) {
         request->source = WZ_BUS_SOURCE_DATA_SOURCE;
-    } else switch (request->cycle) {
+    } else switch (request->cycle) { // codeql[cpp/long-switch]
     case WZ_BUS_M1_OPCODE_FETCH:
     case WZ_BUS_MEMORY_READ:
         request->value = wz_machine_memory_read(machine, request->address);

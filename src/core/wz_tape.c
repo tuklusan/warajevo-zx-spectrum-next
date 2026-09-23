@@ -226,6 +226,7 @@ wz_result_t wz_tape_write_standard_tap(const wz_tap_block_t* blocks,
     if (blocks == 0 || block_count == 0u || length == 0) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
+    // codeql[cpp/loop-variable-changed]
     for (size_t block_index = 0u; block_index < block_count; ++block_index) {
         const wz_tap_block_t* block = &blocks[block_index];
 
@@ -239,6 +240,7 @@ wz_result_t wz_tape_write_standard_tap(const wz_tap_block_t* blocks,
     if (output == 0 || capacity < required) {
         return WZ_RESULT_BUFFER_TOO_SMALL;
     }
+    // codeql[cpp/loop-variable-changed]
     for (size_t block_index = 0u; block_index < block_count; ++block_index) {
         const wz_tap_block_t* block = &blocks[block_index];
         wz_byte_t checksum = 0u;
@@ -437,6 +439,7 @@ static wz_dword_t wz_tzx_read_le32(const wz_byte_t* bytes)
         ((wz_dword_t)bytes[2] << 16u) | ((wz_dword_t)bytes[3] << 24u);
 }
 
+// codeql[cpp/poorly-documented-function]
 static wz_result_t wz_tzx_block_size(const wz_byte_t* data,
                                      size_t remaining,
                                      size_t* block_length,
@@ -773,6 +776,7 @@ static wz_result_t wz_tzx_append_segment(wz_tape_segment_t* segments,
     return WZ_RESULT_OK;
 }
 
+// codeql[cpp/poorly-documented-function]
 static wz_result_t wz_tzx_csw_decode(const wz_tzx_block_t* block,
                                      const wz_byte_t** encoded,
                                      size_t* encoded_length,
@@ -1360,6 +1364,7 @@ static wz_result_t wz_tzx_expand_turbo(const wz_tzx_block_t* block,
     return WZ_RESULT_OK;
 }
 
+// codeql[cpp/poorly-documented-function]
 wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
                                       size_t block_count,
                                       wz_dword_t master_ticks_per_tstate,

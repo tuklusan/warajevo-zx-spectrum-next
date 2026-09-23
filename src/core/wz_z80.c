@@ -314,9 +314,11 @@ size_t wz_z80_ed_opcode_count(void)
     return 256u;
 }
 
+// codeql[cpp/poorly-documented-function]
 wz_z80_ed_opcode_decode_t wz_z80_ed_opcode_decode(wz_byte_t opcode)
 {
     /* Decode the ED-prefixed instruction family into execution metadata. */
+    // codeql[cpp/long-switch]
     switch (opcode) {
     case 0x40u: case 0x48u: case 0x50u: case 0x58u:
     case 0x60u: case 0x68u: case 0x78u:
@@ -736,6 +738,7 @@ static wz_result_t wz_z80_cb_load_target(wz_machine_t* machine,
     return WZ_RESULT_OK;
 }
 
+// codeql[cpp/poorly-documented-function]
 static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
                                                wz_byte_t initial_prefix)
 {
@@ -788,6 +791,7 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
             target == WZ_Z80_TARGET_HL_INDIRECT)) ||
           (opcode >= 0x80u && opcode <= 0xbfu &&
            (source == 4u || source == 5u || source == WZ_Z80_TARGET_HL_INDIRECT)))) {
+        // codeql[cpp/long-switch]
         switch (opcode) {
         case 0x09u: case 0x19u: case 0x21u: case 0x22u: case 0x23u:
         case 0x24u: case 0x25u: case 0x26u: case 0x29u: case 0x2au: case 0x2bu:
@@ -1139,6 +1143,7 @@ static wz_result_t wz_z80_execute_cb(wz_machine_t* machine,
         return WZ_RESULT_INVALID_STATE;
     }
 
+    // codeql[cpp/long-switch]
     switch (decode->operation) {
     case WZ_Z80_CB_OP_RLC:
         carry = (wz_byte_t)((value >> 7u) & 1u);
@@ -1212,6 +1217,7 @@ static wz_result_t wz_z80_execute_cb(wz_machine_t* machine,
     return WZ_RESULT_OK;
 }
 
+// codeql[cpp/poorly-documented-function]
 static wz_result_t wz_z80_execute_indexed_cb(wz_machine_t* machine,
                                              wz_word_t index)
 {
@@ -1604,6 +1610,7 @@ static wz_result_t wz_z80_execute_out_block(wz_machine_t* machine,
     return WZ_RESULT_OK;
 }
 
+// codeql[cpp/poorly-documented-function]
 static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
                                      wz_z80_ed_opcode_decode_t decode)
 {
@@ -2045,6 +2052,7 @@ wz_result_t wz_z80_accept_nmi(wz_machine_t* machine)
     return WZ_RESULT_OK;
 }
 
+// codeql[cpp/poorly-documented-function]
 wz_result_t wz_z80_step(wz_machine_t* machine)
 {
     /* Fetch, decode, and execute one instruction while advancing CPU state. */

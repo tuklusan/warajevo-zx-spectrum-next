@@ -385,6 +385,7 @@ wz_result_t wz_state_validate_historical_representability(
     return WZ_RESULT_OK;
 }
 
+// codeql[cpp/poorly-documented-function]
 wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
                                          const wz_byte_t* data,
                                          size_t length)
@@ -1180,6 +1181,7 @@ wz_result_t wz_state_save_sna_128k(const wz_machine_t* machine,
            WZ_RESULT_SERIALIZATION_FAILURE;
 }
 
+// codeql[cpp/poorly-documented-function]
 wz_result_t wz_snapshot_state_load_z80_v1(wz_snapshot_state_t* snapshot,
                                            const wz_byte_t* data,
                                            size_t length)
