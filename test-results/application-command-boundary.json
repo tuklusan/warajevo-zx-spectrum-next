@@ -1,9 +1,9 @@
 {
   "testId": "application-command-boundary",
   "status": "pass",
-  "commit": "66f1790cd1d8574b91e13641cefc920d11d08939",
+  "commit": "8d5003419b72c3ee53b359d9a6e2dba4f9c86502",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-09-23T22:10:07+00:00",
+  "timestamp": "2026-09-23T22:27:13+00:00",
   "caseCount": 4,
   "runners": [
     {
@@ -33,12 +33,16 @@
   ],
   "fixtures": [
     {
-      "path": "ci/test/application-command-boundary/worker.c",
-      "sha256": "ef19f3cbf37e3803e137eebc7c4998725301cce2ff63e347253fde5621ed0177"
+      "path": ".github/workflows/application-command-boundary.yml",
+      "sha256": "08fca4f97769421f3400351926c1ddc3864ad3cd3042b90f60db02c451a5ce2b"
+    },
+    {
+      "path": "ci/test/application-command-boundary/CMakeLists.txt",
+      "sha256": "a58f4fcfb86773d7eacc29d6d106b8df4266a23bd32826878557303222201c56"
     },
     {
       "path": "ci/test/application-command-boundary/README.md",
-      "sha256": "a36df3170f706d089986305820ca21b16fc40a460a7c69d4288653111db986a0"
+      "sha256": "91128f8d43c262dd72b82e984f9ef7a24569d15116015f73bf7657a6c9948021"
     },
     {
       "path": "ci/test/application-command-boundary/write-proof.py",
@@ -46,27 +50,23 @@
     },
     {
       "path": "src/app/wz_command_registry.c",
-      "sha256": "ba04add7f0b2aad4298eceb3dea0a7fc9d2e2851be0c1dc3d00c9ceeea08c9e7"
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
     },
     {
       "path": "src/app/wz_command_registry.h",
-      "sha256": "fb34464296429f05a20ac7da804c30528c8810be85a4cf81c78a959d6e66e073"
+      "sha256": "80110080861a05baae47cd6d294315055bb6b1a636c79891b55c56717cb53c94"
     },
     {
       "path": "src/app/wz_host_thread.c",
-      "sha256": "9a7746a76a2d332c361fa0e3e796315fd0a847aa6ce16cefb5d33c643220f8e5"
+      "sha256": "6f8cbe0e171adfe7b9f42d9517e31d72f7917048339ff8941d5bccadfa305151"
     },
     {
       "path": "src/app/wz_host_thread.h",
-      "sha256": "47bf3a68d081b4f62402450cce7efb7b0ba69a4de44302e44dc2fb9f7a8bca32"
+      "sha256": "bd4e189a40c8f9ad31f014dc12afc3c67b7a4bd5580df262b0cf92db8fbe8471"
     },
     {
-      "path": "src/app/wz_ui_layout.c",
-      "sha256": "6edbe51443dfb28b8f04b8c829ba1da5e19506270e8a3dbc430af33807d12589"
-    },
-    {
-      "path": "src/app/wz_ui_layout.h",
-      "sha256": "a1a20e5f78005ea0baa04f1a33b2d5e665e7045bdfff289430ee49a14e42fe3c"
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "3bf432e38c539193e95ba7986602c47a010ae038a1eb77deb4d0ef3b1527dbb1"
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.c",
@@ -77,20 +77,24 @@
       "sha256": "d6e7553f89c46a15706508e474beacf8b3cce6ea9ed6be95599ec84bb446eed1"
     },
     {
-      "path": "src/app/wz_sokol_main.c",
-      "sha256": "3bf432e38c539193e95ba7986602c47a010ae038a1eb77deb4d0ef3b1527dbb1"
+      "path": "src/app/wz_ui_layout.c",
+      "sha256": "6edbe51443dfb28b8f04b8c829ba1da5e19506270e8a3dbc430af33807d12589"
+    },
+    {
+      "path": "src/app/wz_ui_layout.h",
+      "sha256": "a1a20e5f78005ea0baa04f1a33b2d5e665e7045bdfff289430ee49a14e42fe3c"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
       "sha256": "78fb432a79908239ba4efbd818cda04eec86692158ae2ab214c24eaa860d69b4"
     },
     {
-      "path": "ci/test/application-command-boundary/CMakeLists.txt",
-      "sha256": "43f40b4a34d897514054a68d72551e6b00b9eab70ef80ce1afe7995d4543a7a7"
+      "path": "tests/application-command-boundary.c",
+      "sha256": "ef19f3cbf37e3803e137eebc7c4998725301cce2ff63e347253fde5621ed0177"
     },
     {
-      "path": ".github/workflows/application-command-boundary.yml",
-      "sha256": "57f26c9a2ce6c2ec5230fd1f85a3225d8a9f19792b4a8dfb29b2c1fba573c42e"
+      "path": "tests/application-command-boundary.md",
+      "sha256": "a08410c25dc632965299fc33c3439a10736919db3cef655e2315ebf7b50a32e9"
     }
   ]
 }
