@@ -1,6 +1,13 @@
 /*
 Warajevo ZX Spectrum Next
-Copyright (c) 2026 Supratim Sanyal, SANYALnet Labs, for new original project material.
+Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+Proprietary rights reserved except as expressly licensed herein.
+This file is governed by the SANYALnet Labs Non-Commercial License in the
+root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
+for AI/ML model training are prohibited unless separately authorized.
+Attribution is required: "Based on original work by Supratim Sanyal of
+SANYALnet Labs." See LICENSE for full terms, warranty disclaimer, termination,
+patent, trademark, and governing-law provisions.
 New original material is licensed under GNU GPL v2 or later (GPL-2.0-or-later), as stated in LICENSE.txt.
 Upstream Warajevo and third-party material retain their applicable copyrights and licenses.
 See LICENSE.txt and NOTICE.md for complete terms and provenance.
@@ -1079,8 +1086,8 @@ wz_result_t wz_machine_ula_fetches_at_tick(const wz_machine_t* machine,
     }
     bitmap_tick = (wz_master_tick_t)tstate *
         profile->master_ticks_per_cpu_tstate;
-    attribute_tick = bitmap_tick + profile->ula_attribute_offset_tstates *
-        profile->master_ticks_per_cpu_tstate;
+    attribute_tick = bitmap_tick + (wz_master_tick_t)profile->ula_attribute_offset_tstates *
+        (wz_master_tick_t)profile->master_ticks_per_cpu_tstate;
     row = line;
     if (capacity < 2u || events == 0) {
         return WZ_RESULT_BUFFER_TOO_SMALL;
