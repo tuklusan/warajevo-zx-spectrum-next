@@ -82,8 +82,29 @@ review_outgoing_source() {
     export LLM_API_TYPE=$(printf '%s' b3BlbmFp | base64 -d)
     export LLM_DEFAULT_ARGS='{"temperature":0,"max_tokens":2048}'
 
+    review_lock=$(git rev-parse --git-path wzsn-source-review.lock)
+    if ! mkdir "$review_lock" 2>/dev/null; then
+        printf '%s\n' "Push rejected: another project source review is already active." >&2
+        printf '%s\n' "Wait for it to finish before starting another push." >&2
+        return 1
+    fi
+    printf '%s\n' "$$" > "$review_lock/pid"
+    trap 'rm -f "$review_lock/pid"; rmdir "$review_lock" 2>/dev/null || true' EXIT
+
     printf '%s\n' "Running source review before push..." >&2
-    eval "$gito_runner --verbose review --against=\"$oldrev\" --filter=\"**/*.c,**/*.C,**/*.h,**/*.H,**/*.py,**/*.PY,**/*.asm,**/*.ASM,**/*.s,**/*.S,**/*.z80,**/*.Z80\""
+    review_status=0
+    review_filter='**/*.c,**/*.C,**/*.h,**/*.H,**/*.py,**/*.PY,**/*.asm,**/*.ASM,**/*.s,**/*.S,**/*.z80,**/*.Z80'
+    if [ "$gito_runner" = "gito" ]; then
+        gito --verbose review --against="$oldrev" --filter="$review_filter" || review_status=$?
+    elif [ "$gito_runner" = "py -m gito" ]; then
+        py -m gito --verbose review --against="$oldrev" --filter="$review_filter" || review_status=$?
+    else
+        python -m gito --verbose review --against="$oldrev" --filter="$review_filter" || review_status=$?
+    fi
+    rm -f "$review_lock/pid"
+    rmdir "$review_lock" 2>/dev/null || true
+    trap - EXIT
+    return "$review_status"
 }
 
 check_range() {
