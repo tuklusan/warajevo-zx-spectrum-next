@@ -71,13 +71,21 @@ static bool measured(metric_run_fn run, void* context, metric_t* metric)
 
     for (size_t index = 0u; index < WZ_PERF_REPETITIONS; ++index) {
         uint64_t fingerprint = 0u;
-        if (!run(context, &fingerprint, &samples[index]) ||
-            samples[index] <= 0.0) {
+        if (!run(context, &fingerprint, &samples[index])) {
+            fprintf(stderr, "Benchmark workload failed: %s, repetition %zu.\n",
+                    metric->name, index + 1u);
+            return false;
+        }
+        if (samples[index] <= 0.0) {
+            fprintf(stderr, "Benchmark timer resolution was insufficient: %s.\n",
+                    metric->name);
             return false;
         }
         if (index == 0u) {
             expected_fingerprint = fingerprint;
         } else if (fingerprint != expected_fingerprint) {
+            fprintf(stderr, "Benchmark correctness fingerprint changed: %s.\n",
+                    metric->name);
             return false;
         }
     }
