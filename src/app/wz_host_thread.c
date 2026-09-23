@@ -17,12 +17,10 @@ static _Thread_local uint64_t current_thread_id;
 uint64_t wz_host_thread_current_id(void)
 {
     if (current_thread_id == 0u) {
-        current_thread_id = (uint64_t)atomic_fetch_add_explicit(
-            &next_thread_id, 1u, memory_order_relaxed);
-        if (current_thread_id == 0u) {
+        do {
             current_thread_id = (uint64_t)atomic_fetch_add_explicit(
                 &next_thread_id, 1u, memory_order_relaxed);
-        }
+        } while (current_thread_id == 0u);
     }
     return current_thread_id;
 }

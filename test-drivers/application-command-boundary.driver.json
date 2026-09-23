@@ -11,31 +11,31 @@
   "fixtures": [
     {
       "path": "ci/test/application-command-boundary/worker.c",
-      "sha256": "aa230bb89ba3e291fd21642626c087c0952f24327269b11b94319daa4b47a04c"
+      "sha256": "ef19f3cbf37e3803e137eebc7c4998725301cce2ff63e347253fde5621ed0177"
     },
     {
       "path": "ci/test/application-command-boundary/README.md",
-      "sha256": "fbc79a3bf83724aa5b5e933dca3e8670726c5623f7b25ed3fa52846034284d41"
+      "sha256": "6033401299e50687aaba14035f00f12bfff37d7afdbd207ff1b72e6b4522bc8c"
     },
     {
       "path": "ci/test/application-command-boundary/write-proof.py",
-      "sha256": "2ffffdae161a43ed6a1730de0a04bc38ed361413790ad107ca75c3dde0a49131"
+      "sha256": "b399683ef60badb149ad7e9dce200ef0cb09e1b6b05c7d36d94ff695202f813d"
     },
     {
       "path": "src/app/wz_command_registry.c",
-      "sha256": "50a76fc1342e0e01bc5e5bb9d594064d53f04e8a5ebc6248a7db9fb49efacc5a"
+      "sha256": "f31e5275d070e47b94da7f3f4ad87d9263ec4ae1b3b64e57beec70f3e0e60bea"
     },
     {
       "path": "src/app/wz_command_registry.h",
-      "sha256": "0e824fa77e6cf9c606cbc5c7e7f5a2b247c69bf10f9442eeba240a11c68db704"
+      "sha256": "3f8001a745f0eb65902f138fc26b5f5859ca4860fe9a5ad8b009b7d3940d7add"
     },
     {
       "path": "src/app/wz_host_thread.c",
-      "sha256": "19e6561c083242a46330012d317a38129c3cf1dadb2797079cb93b2c25b64800"
+      "sha256": "94c87b71f9f5745698303acbb86e87b917e23267ab1ca1f29988919215552654"
     },
     {
       "path": "src/app/wz_host_thread.h",
-      "sha256": "9278515336b15d105a2fb0f99b20a98a05d0cc4e62a717c49cd44583049489af"
+      "sha256": "47bf3a68d081b4f62402450cce7efb7b0ba69a4de44302e44dc2fb9f7a8bca32"
     },
     {
       "path": "src/app/wz_ui_layout.c",
@@ -59,11 +59,11 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "0c78a5b27d1107692e217e1020d4d424ca987b05d1456ffb6ba72e9c9a430797"
+      "sha256": "78fb432a79908239ba4efbd818cda04eec86692158ae2ab214c24eaa860d69b4"
     },
     {
       "path": "ci/test/application-command-boundary/CMakeLists.txt",
-      "sha256": "c01d7fc38089d8058b282b6bc687e1d0425d842ea092384ca7ccd039028bbdf5"
+      "sha256": "43f40b4a34d897514054a68d72551e6b00b9eab70ef80ce1afe7995d4543a7a7"
     },
     {
       "path": ".github/workflows/application-command-boundary.yml",

@@ -7,7 +7,7 @@ SANYALnet Labs." See LICENSE for full terms. -->
 
 # Application command boundary acceptance
 
-`application-command-boundary.c` verifies four requirements using a single
+`worker.c` verifies four requirements using a single
 registry and a mutation-counting machine fixture:
 
 1. The application-test projection invokes the registered reset handler.
@@ -27,3 +27,4 @@ dist/application-command-boundary/wz_application_command_boundary
 The Windows and POSIX test workers use native thread creation. The command
 registry owner identity itself is generated with C11 thread-local storage and
 atomics and does not inspect machine state from a worker thread.
+

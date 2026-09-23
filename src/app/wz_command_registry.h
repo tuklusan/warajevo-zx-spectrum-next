@@ -13,6 +13,7 @@ SANYALnet Labs." See LICENSE for full terms.
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdatomic.h>
 
 #include "core/wz_types.h"
 
@@ -89,8 +90,7 @@ typedef struct {
     size_t capacity;
     size_t count;
     bool finalized;
-    uint64_t owner_thread_id;
-    bool owner_thread_bound;
+    _Atomic uint64_t owner_thread_id;
 } wz_command_registry_t;
 
 typedef struct {

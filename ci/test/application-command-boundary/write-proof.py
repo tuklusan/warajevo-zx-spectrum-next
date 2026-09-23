@@ -11,15 +11,12 @@
 import argparse
 import hashlib
 import json
+import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
 
 RUNNERS = ("windows-x64", "windows-arm64", "macos-intel", "macos-arm64")
-
-
-def sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def main() -> None:
@@ -45,8 +42,10 @@ def main() -> None:
 
     fixtures = []
     for record in driver["fixtures"]:
-        path = root / record["path"]
-        digest = sha256(path)
+        committed = subprocess.check_output(
+            ["git", "show", f"HEAD:{record['path']}"]
+        )
+        digest = hashlib.sha256(committed).hexdigest()
         if record["sha256"] != "PENDING" and record["sha256"] != digest:
             raise SystemExit(f"pinned fixture changed: {record['path']}")
         fixtures.append({"path": record["path"], "sha256": digest})

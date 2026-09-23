@@ -90,8 +90,7 @@ wz_result_t wz_command_registry_init(
     registry->capacity = capacity;
     registry->count = 0u;
     registry->finalized = false;
-    registry->owner_thread_id = 0u;
-    registry->owner_thread_bound = false;
+    atomic_init(&registry->owner_thread_id, 0u);
     return WZ_RESULT_OK;
 }
 
@@ -99,26 +98,30 @@ wz_result_t wz_command_registry_bind_owner_thread(
     wz_command_registry_t* registry)
 {
     uint64_t current_thread_id;
+    uint64_t expected_thread_id = 0u;
     if (registry == 0 || registry->storage == 0) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
     if (registry->finalized) return WZ_RESULT_INVALID_STATE;
     current_thread_id = wz_host_thread_current_id();
-    if (registry->owner_thread_bound &&
-        registry->owner_thread_id != current_thread_id) {
-        return WZ_RESULT_INVALID_STATE;
+    if (atomic_compare_exchange_strong_explicit(
+            &registry->owner_thread_id, &expected_thread_id,
+            current_thread_id, memory_order_release, memory_order_acquire) ||
+        expected_thread_id == current_thread_id) {
+        return WZ_RESULT_OK;
     }
-    registry->owner_thread_id = current_thread_id;
-    registry->owner_thread_bound = true;
-    return WZ_RESULT_OK;
+    return WZ_RESULT_INVALID_STATE;
 }
 
 bool wz_command_registry_is_owner_thread(
     const wz_command_registry_t* registry)
 {
-    return registry != 0 &&
-        (!registry->owner_thread_bound ||
-         registry->owner_thread_id == wz_host_thread_current_id());
+    uint64_t owner_thread_id;
+    if (registry == 0) return false;
+    owner_thread_id = atomic_load_explicit(&registry->owner_thread_id,
+                                           memory_order_acquire);
+    return owner_thread_id == 0u ||
+        owner_thread_id == wz_host_thread_current_id();
 }
 
 wz_result_t wz_command_registry_register(
