@@ -1,9 +1,10 @@
 /*
-Warajevo ZX Spectrum Next
-Copyright (c) 2026 Supratim Sanyal, SANYALnet Labs, for new original project material.
-New original material is licensed under GNU GPL v2 or later (GPL-2.0-or-later), as stated in LICENSE.txt.
-Upstream Warajevo and third-party material retain their applicable copyrights and licenses.
-See LICENSE.txt and NOTICE.md for complete terms and provenance.
+Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+This file is governed by the SANYALnet Labs Non-Commercial License in the
+root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
+for AI/ML model training are prohibited unless separately authorized.
+Attribution is required: "Based on original work by Supratim Sanyal of
+SANYALnet Labs." See LICENSE for full terms.
 */
 
 #ifndef WZ_APP_WZ_UI_LAYOUT_H
@@ -20,6 +21,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #define WZ_UI_MENU_COUNT 7u
 #define WZ_UI_TOOLBAR_COUNT 11u
+#define WZ_UI_MENU_BAR_HEIGHT 28.0f
+#define WZ_UI_TOOLBAR_HEIGHT 28.0f
 #define WZ_UI_TAPE_ACTION_COUNT 5u
 #define WZ_UI_MICRODRIVE_ACTIONS_PER_SLOT 3u
 #define WZ_UI_MICRODRIVE_ACTION_COUNT \
@@ -135,6 +138,9 @@ size_t wz_ui_layout_menu_count(void);
 const wz_ui_menu_node_t* wz_ui_layout_menu_at(size_t index);
 size_t wz_ui_layout_toolbar_count(void);
 const wz_ui_toolbar_item_t* wz_ui_layout_toolbar_at(size_t index);
+bool wz_ui_layout_toolbar_hit_test(float x, float y,
+                                   float viewport_width,
+                                   size_t* toolbar_index);
 size_t wz_ui_layout_tape_action_count(void);
 const wz_ui_toolbar_item_t* wz_ui_layout_tape_action_at(size_t index);
 size_t wz_ui_layout_microdrive_action_count(void);

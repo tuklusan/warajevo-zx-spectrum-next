@@ -89,6 +89,7 @@ int main(void)
     worker_context_t worker;
     char output[128];
     size_t output_length = 0u;
+    size_t toolbar_index = 0u;
 #if defined(_WIN32)
     HANDLE thread;
     DWORD wait_result;
@@ -109,9 +110,16 @@ int main(void)
         machine.mutations != 1u) {
         return fail("application test projection dispatch");
     }
-    if (wz_ui_layout_activate_toolbar(&registry, 2u, arguments, &result) !=
+    if (!wz_ui_layout_toolbar_hit_test(640.0f * 2.5f /
+                                       (float)WZ_UI_TOOLBAR_COUNT,
+                                       42.0f, 640.0f, &toolbar_index) ||
+        toolbar_index != 2u ||
+        wz_ui_layout_toolbar_hit_test(640.0f, 42.0f, 640.0f,
+                                      &toolbar_index) ||
+        wz_ui_layout_activate_toolbar(&registry, toolbar_index,
+                                     arguments, &result) !=
             WZ_RESULT_OK || machine.mutations != 2u) {
-        return fail("toolbar projection did not share registry dispatch");
+        return fail("GUI toolbar hit target did not share registry dispatch");
     }
     if (!wz_telnet_do_format(&registry, "machine.reset", "", output,
                              sizeof(output), &output_length) ||

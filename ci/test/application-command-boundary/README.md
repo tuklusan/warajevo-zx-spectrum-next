@@ -11,7 +11,7 @@ SANYALnet Labs." See LICENSE for full terms. -->
 registry and a mutation-counting machine fixture:
 
 1. The application-test projection invokes the registered reset handler.
-2. The toolbar projection invokes that same registered handler.
+2. A hit-tested GUI toolbar click invokes that same registered handler.
 3. The Telnet `DO machine.reset` projection invokes the same handler.
 4. A worker thread cannot rebind the finalized registry or execute the handler;
    dispatch returns `wrong-thread` and leaves machine state unchanged.

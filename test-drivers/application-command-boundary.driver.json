@@ -19,7 +19,7 @@
     },
     {
       "path": "ci/test/application-command-boundary/README.md",
-      "sha256": "91128f8d43c262dd72b82e984f9ef7a24569d15116015f73bf7657a6c9948021"
+      "sha256": "d305ab4a32e4f3b44ac62102c2e293afd8b639507909d362eb1796e6c7a428f2"
     },
     {
       "path": "ci/test/application-command-boundary/write-proof.py",
@@ -43,7 +43,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "3bf432e38c539193e95ba7986602c47a010ae038a1eb77deb4d0ef3b1527dbb1"
+      "sha256": "d7f167de1eb14a8846638b72bb71ac47588ebea3371274489279ceb02b1ef47e"
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.c",
@@ -55,11 +55,11 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "6edbe51443dfb28b8f04b8c829ba1da5e19506270e8a3dbc430af33807d12589"
+      "sha256": "35b7c093732d06ba7cb942606cba4f687d47a07552d116c8c0c607f98b524d1b"
     },
     {
       "path": "src/app/wz_ui_layout.h",
-      "sha256": "a1a20e5f78005ea0baa04f1a33b2d5e665e7045bdfff289430ee49a14e42fe3c"
+      "sha256": "faffd4f06bf1577bef522c44c6d530c04b66e5e6bc0a6d43ac5b8c9508027cd6"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
@@ -67,11 +67,11 @@
     },
     {
       "path": "tests/application-command-boundary.c",
-      "sha256": "ef19f3cbf37e3803e137eebc7c4998725301cce2ff63e347253fde5621ed0177"
+      "sha256": "c0299a91ad1b71688bf3cfe06528384eb8364349ae127e7554c5cadeb48aa49d"
     },
     {
       "path": "tests/application-command-boundary.md",
-      "sha256": "a08410c25dc632965299fc33c3439a10736919db3cef655e2315ebf7b50a32e9"
+      "sha256": "b21c233e227572d6bf18b56f6a93be377ea8e8da9618ed3f04cd8934318aa786"
     }
   ]
 }

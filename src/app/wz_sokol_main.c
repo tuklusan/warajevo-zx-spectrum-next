@@ -426,8 +426,8 @@ static void wz_host_render_native_ui(float width, float height)
     size_t index;
     const size_t menu_count = wz_ui_layout_menu_count();
     const size_t toolbar_count = wz_ui_layout_toolbar_count();
-    const float menu_height = 28.0f;
-    const float toolbar_height = 28.0f;
+    const float menu_height = WZ_UI_MENU_BAR_HEIGHT;
+    const float toolbar_height = WZ_UI_TOOLBAR_HEIGHT;
     const float status_height = 24.0f;
     const float viewport_top = menu_height + toolbar_height;
     const float viewport_bottom = height - status_height;
@@ -683,9 +683,24 @@ static void wz_host_frame(void)
 
 static void wz_host_event(const sapp_event* event)
 {
+    if (event == NULL) return;
     if (event->type == SAPP_EVENTTYPE_KEY_DOWN && event->key_code == SAPP_KEYCODE_ESCAPE) {
         if (wz_application_request_quit(&wz_host_session.lifecycle) == WZ_RESULT_OK) {
             sapp_request_quit();
+        }
+        return;
+    }
+    if (wz_host_session.initialized &&
+        event->type == SAPP_EVENTTYPE_MOUSE_DOWN &&
+        event->mouse_button == SAPP_MOUSEBUTTON_LEFT) {
+        size_t toolbar_index;
+        wz_command_result_t result;
+        if (wz_ui_layout_toolbar_hit_test(
+                event->mouse_x, event->mouse_y, (float)sapp_width(),
+                &toolbar_index)) {
+            (void)wz_ui_layout_activate_toolbar(
+                &wz_host_session.command_registry, toolbar_index,
+                (wz_command_arguments_t){NULL, 0u}, &result);
         }
     }
 }
