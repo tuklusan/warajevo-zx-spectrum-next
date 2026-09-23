@@ -13,6 +13,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
 find_package(Threads REQUIRED)
+find_package(ZLIB REQUIRED)
 
 set(REPO_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../..")
 set(SOURCE_ROOT "${REPO_ROOT}/src")
@@ -54,4 +55,5 @@ add_executable(wz_application_command_boundary
 
 target_include_directories(wz_application_command_boundary PRIVATE
     "${SOURCE_ROOT}")
-target_link_libraries(wz_application_command_boundary PRIVATE Threads::Threads)
+target_link_libraries(wz_application_command_boundary PRIVATE
+    Threads::Threads ZLIB::ZLIB)
