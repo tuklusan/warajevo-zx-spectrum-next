@@ -21,6 +21,9 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include <windows.h>
 #define WZ_TRACE_PATH_MAX MAX_PATH
 #else
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
 #define WZ_TRACE_PATH_MAX PATH_MAX
 #endif
 #include "diagnostics/wz_trace_file.h"
