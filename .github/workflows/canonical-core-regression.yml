@@ -7,6 +7,9 @@ on:
       - 'src/core/**'
       - 'src/cmake/CMakeLists.txt'
       - 'ci/test/core-regression/**'
+      - 'tests/canonical-core-regression.c'
+      - 'test-drivers/canonical-core-regression.driver.json'
+      - 'test-results/canonical-core-regression.json'
       - '.github/workflows/canonical-core-regression.yml'
   workflow_dispatch:
 
