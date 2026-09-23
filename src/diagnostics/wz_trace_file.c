@@ -7,6 +7,14 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 */
 
 #include "diagnostics/wz_trace_file.h"
+#if defined(_WIN32)
+#include <fcntl.h>
+#include <io.h>
+#else
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#endif
 #include <string.h>
 
 #define WZ_TRACE_FORMAT_VERSION 4u
@@ -144,8 +152,24 @@ static bool write_header(wz_trace_file_t* t)
 
 wz_result_t wz_trace_file_create(wz_trace_file_t* t,const char* path,wz_qword_t sid,wz_dword_t profile,wz_qword_t rom,wz_dword_t mask)
 {
+    int fd;
     if(!t||!path||sid==0u)return WZ_RESULT_INVALID_ARGUMENT;
-    memset(t,0,sizeof(*t)); t->file=fopen(path,"wbx"); if(!t->file)return WZ_RESULT_TRACE_FAILURE;
+    memset(t,0,sizeof(*t));
+#if defined(_WIN32)
+    fd = _open(path, _O_WRONLY | _O_CREAT | _O_EXCL | _O_BINARY, _S_IREAD | _S_IWRITE);
+#else
+    fd = open(path, O_WRONLY | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
+#endif
+    if (fd < 0 || !(t->file = fdopen(fd, "wb"))) {
+        if (fd >= 0) {
+#if defined(_WIN32)
+            _close(fd);
+#else
+            close(fd);
+#endif
+        }
+        return WZ_RESULT_TRACE_FAILURE;
+    }
     t->session_id=sid;t->profile_kind=profile;t->rom_identity=rom;t->event_mask=mask;t->first_sequence=UINT64_MAX;
     if(fseek(t->file,(long)(WZ_TRACE_FILE_SIZE-1u),SEEK_SET)!=0||fputc(0,t->file)==EOF||!write_header(t)){
         fclose(t->file);t->file=0;return WZ_RESULT_TRACE_FAILURE;
