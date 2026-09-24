@@ -247,6 +247,7 @@ static bool verify_ula_fetch_schedule(void)
     wz_master_tick_t first_fetch_tick;
     wz_master_tick_t frame_ticks;
     size_t count = 0u;
+    wz_result_t init_result;
     bool success = false;
 
     memset(&machine, 0, sizeof(machine));
@@ -324,15 +325,21 @@ static bool verify_ula_fetch_schedule(void)
 
     invalid_profile = *profile;
     invalid_profile.ula_fetch_line_count = WZ_ULA_CAPTURE_LINE_COUNT + 1u;
-    if (wz_machine_init(&invalid_machine, &invalid_profile) !=
-        WZ_RESULT_INVALID_PROFILE) {
+    init_result = wz_machine_init(&invalid_machine, &invalid_profile);
+    if (init_result != WZ_RESULT_INVALID_PROFILE) {
+        if (init_result == WZ_RESULT_OK) {
+            wz_machine_destroy(&invalid_machine);
+        }
         goto cleanup;
     }
     invalid_profile = *profile;
     invalid_profile.ula_fetches_per_line =
         WZ_ULA_CAPTURE_CELLS_PER_LINE + 1u;
-    if (wz_machine_init(&invalid_machine, &invalid_profile) !=
-        WZ_RESULT_INVALID_PROFILE) {
+    init_result = wz_machine_init(&invalid_machine, &invalid_profile);
+    if (init_result != WZ_RESULT_INVALID_PROFILE) {
+        if (init_result == WZ_RESULT_OK) {
+            wz_machine_destroy(&invalid_machine);
+        }
         goto cleanup;
     }
 
@@ -341,7 +348,6 @@ static bool verify_ula_fetch_schedule(void)
 
 cleanup:
     wz_machine_destroy(&machine);
-    wz_machine_destroy(&invalid_machine);
     return success;
 }
 
