@@ -238,6 +238,90 @@ cleanup:
     return success;
 }
 
+static bool verify_full_border_raster_projection(void)
+{
+    const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
+    const size_t raster_size =
+        (size_t)WZ_RASTER_CANONICAL_WIDTH * WZ_RASTER_CANONICAL_HEIGHT;
+    wz_master_tick_t line_ticks;
+    wz_master_tick_t frame_ticks;
+    wz_machine_t machine;
+    wz_raster_buffer_t raster;
+    wz_byte_t* pixels = (wz_byte_t*)malloc(raster_size);
+    bool success = false;
+
+    memset(&machine, 0, sizeof(machine));
+    memset(&raster, 0, sizeof(raster));
+    if (profile == 0 || pixels == 0 ||
+        wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        free(pixels);
+        return false;
+    }
+    line_ticks = (wz_master_tick_t)profile->tstates_per_line *
+        profile->master_ticks_per_cpu_tstate;
+    frame_ticks = (wz_master_tick_t)profile->tstates_per_frame *
+        profile->master_ticks_per_cpu_tstate;
+    if (line_ticks != WZ_RASTER_CANONICAL_WIDTH ||
+        frame_ticks != (wz_master_tick_t)WZ_RASTER_CANONICAL_WIDTH *
+            WZ_RASTER_CANONICAL_HEIGHT) {
+        goto cleanup;
+    }
+
+    /* Three timestamped changes per row exercise all horizontal border spans. */
+    for (wz_dword_t row = 0u; row < profile->lines_per_frame; ++row) {
+        wz_byte_t left_active_color = (wz_byte_t)((row % 7u) + 1u);
+        wz_byte_t right_border_color = (wz_byte_t)((row + 3u) % 8u);
+        wz_byte_t left_border_color = (wz_byte_t)((row + 5u) % 8u);
+        wz_master_tick_t row_tick = (wz_master_tick_t)row * line_ticks;
+
+        wz_machine_ula_port_fe_write(&machine, 0u, left_active_color, row_tick);
+        wz_machine_ula_port_fe_write(&machine, 0u, right_border_color,
+                                     row_tick + 256u);
+        wz_machine_ula_port_fe_write(&machine, 0u, left_border_color,
+                                     row_tick + 352u);
+    }
+    machine.master_tick = frame_ticks;
+    if (wz_raster_buffer_init(&raster, WZ_RASTER_CANONICAL_WIDTH,
+                              WZ_RASTER_CANONICAL_HEIGHT, pixels,
+                              raster_size) != WZ_RESULT_OK ||
+        wz_machine_render_raster(&machine, &raster) != WZ_RESULT_OK) {
+        goto cleanup;
+    }
+
+    for (size_t y = 0u; y < WZ_RASTER_CANONICAL_HEIGHT; ++y) {
+        wz_byte_t active_span_color = (wz_byte_t)((y % 7u) + 1u);
+        wz_byte_t right_border_color = (wz_byte_t)((y + 3u) % 8u);
+        wz_byte_t left_border_color = (wz_byte_t)((y + 5u) % 8u);
+        bool active_line = y >= 64u && y < 256u;
+
+        for (size_t x = 0u; x < WZ_RASTER_CANONICAL_WIDTH; ++x) {
+            wz_byte_t sample = pixels[y * WZ_RASTER_CANONICAL_WIDTH + x];
+            if (x < 96u) {
+                if (sample != WZ_RASTER_BORDER_MIN + left_border_color) {
+                    goto cleanup;
+                }
+            } else if (x >= 352u) {
+                if (sample != WZ_RASTER_BORDER_MIN + right_border_color) {
+                    goto cleanup;
+                }
+            } else if (!active_line &&
+                       sample != WZ_RASTER_BORDER_MIN + active_span_color) {
+                goto cleanup;
+            } else if (active_line && sample > WZ_RASTER_ACTIVE_MAX) {
+                goto cleanup;
+            }
+        }
+    }
+
+    puts("PASS full_border_raster_projection");
+    success = true;
+
+cleanup:
+    wz_machine_destroy(&machine);
+    free(pixels);
+    return success;
+}
+
 static bool verify_flash_bright_semantics(void)
 {
     const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
@@ -886,6 +970,7 @@ int main(void)
         verify_timestamped_audio_and_ay_clock() &&
         verify_ay_envelope_noise_and_mixer() &&
         verify_border_event_timing() &&
+        verify_full_border_raster_projection() &&
         fingerprint_cpu(&actual[0]) &&
         fingerprint_raster(&actual[1]) &&
         fingerprint_audio(&actual[2]) &&
