@@ -237,6 +237,60 @@ cleanup:
     return success;
 }
 
+static bool verify_flash_bright_semantics(void)
+{
+    const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
+    wz_machine_t machine;
+    wz_master_tick_t frame_ticks;
+    wz_byte_t sample;
+    bool success = false;
+
+    memset(&machine, 0, sizeof(machine));
+    if (profile == 0 || wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        wz_machine_destroy(&machine);
+        return false;
+    }
+    frame_ticks = (wz_master_tick_t)profile->tstates_per_frame *
+        profile->master_ticks_per_cpu_tstate;
+
+    if (wz_raster_decode_attribute_phase(0x91u, true, false, &sample) !=
+            WZ_RESULT_OK || sample != 1u ||
+        wz_raster_decode_attribute_phase(0x91u, false, false, &sample) !=
+            WZ_RESULT_OK || sample != 2u ||
+        wz_raster_decode_attribute_phase(0x91u, true, true, &sample) !=
+            WZ_RESULT_OK || sample != 2u ||
+        wz_raster_decode_attribute_phase(0x91u, false, true, &sample) !=
+            WZ_RESULT_OK || sample != 1u ||
+        wz_raster_decode_attribute_phase(0xd1u, true, false, &sample) !=
+            WZ_RESULT_OK || sample != 9u ||
+        wz_raster_decode_attribute_phase(0xd1u, false, false, &sample) !=
+            WZ_RESULT_OK || sample != 10u ||
+        wz_raster_decode_attribute_phase(0xd1u, true, true, &sample) !=
+            WZ_RESULT_OK || sample != 10u ||
+        wz_raster_decode_attribute_phase(0xd1u, false, true, &sample) !=
+            WZ_RESULT_OK || sample != 9u ||
+        wz_raster_decode_attribute_phase(0x51u, true, true, &sample) !=
+            WZ_RESULT_OK || sample != 9u ||
+        wz_raster_decode_attribute_phase(0x51u, false, true, &sample) !=
+            WZ_RESULT_OK || sample != 10u) {
+        goto cleanup;
+    }
+
+    if (wz_machine_flash_phase(&machine, frame_ticks * 16u - 1u) ||
+        !wz_machine_flash_phase(&machine, frame_ticks * 16u) ||
+        !wz_machine_flash_phase(&machine, frame_ticks * 32u - 1u) ||
+        wz_machine_flash_phase(&machine, frame_ticks * 32u)) {
+        goto cleanup;
+    }
+
+    puts("PASS flash_bright_semantics");
+    success = true;
+
+cleanup:
+    wz_machine_destroy(&machine);
+    return success;
+}
+
 static bool verify_ula_fetch_schedule(void)
 {
     const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
@@ -549,6 +603,7 @@ int main(void)
 
     success = verify_ula_fetch_schedule() &&
         verify_raster_write_fetch_order() &&
+        verify_flash_bright_semantics() &&
         verify_border_event_timing() &&
         fingerprint_cpu(&actual[0]) &&
         fingerprint_raster(&actual[1]) &&
