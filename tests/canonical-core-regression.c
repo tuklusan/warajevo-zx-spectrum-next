@@ -388,16 +388,19 @@ static bool verify_ay_envelope_levels(wz_ay_t* ay, wz_byte_t shape,
         return false;
     }
     for (index = 0u; index < expected_count; ++index) {
+        wz_byte_t level;
+
         if (wz_ay_advance_master_ticks(ay, WZ_AY_MASTER_TICKS_PER_CLOCK) !=
             WZ_RESULT_OK) {
             fprintf(stderr, "AY envelope 0x%02x failed to advance at step %zu\n",
                     shape, index);
             return false;
         }
-        if (wz_ay_envelope_level(ay) != expected[index]) {
+        level = wz_ay_envelope_level(ay);
+        if (level != expected[index]) {
             fprintf(stderr,
                     "AY envelope 0x%02x step %zu: got %u, expected %u\n",
-                    shape, index, (unsigned)wz_ay_envelope_level(ay),
+                    shape, index, (unsigned)level,
                     (unsigned)expected[index]);
             return false;
         }
@@ -451,7 +454,7 @@ static bool verify_ay_envelope_noise_and_mixer(void)
 
     wz_ay_init(&ay);
     if (!write_ay_register(&ay, 6u, 1u) ||
-        wz_ay_advance_master_ticks(&ay, 15u * WZ_AY_MASTER_TICKS_PER_CLOCK) !=
+        wz_ay_advance_master_ticks(&ay, 16u * WZ_AY_MASTER_TICKS_PER_CLOCK) !=
             WZ_RESULT_OK || wz_ay_noise_level(&ay) != 1u ||
         wz_ay_advance_master_ticks(&ay, WZ_AY_MASTER_TICKS_PER_CLOCK) !=
             WZ_RESULT_OK || wz_ay_noise_level(&ay) != 0u) {
@@ -465,7 +468,7 @@ static bool verify_ay_envelope_noise_and_mixer(void)
         !write_ay_register(&ay, 7u, 0x37u) ||
         !write_ay_register(&ay, 8u, 0x0fu) ||
         wz_audio_mixer_ay_sample(&ay) != 65536 ||
-        wz_ay_advance_master_ticks(&ay, 16u * WZ_AY_MASTER_TICKS_PER_CLOCK) !=
+        wz_ay_advance_master_ticks(&ay, 17u * WZ_AY_MASTER_TICKS_PER_CLOCK) !=
             WZ_RESULT_OK || wz_audio_mixer_ay_sample(&ay) != -65536) {
         fputs("AY noise period and channel gating did not match the mixer trace\n",
               stderr);
