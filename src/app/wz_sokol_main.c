@@ -26,12 +26,19 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "sokol_audio.h"
 #include "sokol_glue.h"
 #include "sokol_gl.h"
+#include "sokol_time.h"
 
 #include <stddef.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#if defined(_WIN32)
+#include <windows.h>
+#else
+#include <errno.h>
+#include <time.h>
+#endif
 
 #include "core/wz_machine.h"
 #include "core/wz_runner.h"
@@ -42,6 +49,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "app/wz_host_socket.h"
 #include "app/wz_input_arbiter.h"
 #include "app/wz_sokol_audio.h"
+#include "app/wz_host_pacing.h"
+#include "app/wz_speed_policy.h"
 #include "app/wz_telnet_client.h"
 #include "app/wz_telnet_keyboard_command.h"
 #include "app/wz_telnet_negotiation.h"
@@ -64,6 +73,8 @@ static const uint8_t wz_host_palette[16u][4u] = {
 typedef struct {
     wz_machine_t machine;
     wz_sokol_audio_t audio;
+    wz_host_pacing_t pacing;
+    wz_speed_policy_t speed;
     wz_application_lifecycle_t lifecycle;
     wz_ui_window_t ui_window;
     wz_headless_runner_t runner;
@@ -89,6 +100,7 @@ typedef struct {
     sg_view raster_view;
     sg_sampler raster_sampler;
     bool graphics_initialized;
+    bool pacing_initialized;
     bool socket_system_initialized;
     bool initialized;
 } wz_host_session_t;
@@ -96,6 +108,40 @@ typedef struct {
 static wz_host_session_t wz_host_session;
 static bool wz_host_menu_open;
 static size_t wz_host_open_menu_index;
+
+static wz_qword_t wz_host_now_nanoseconds(void)
+{
+    double nanoseconds = stm_ns(stm_now());
+    return nanoseconds > 0.0 ? (wz_qword_t)nanoseconds : 0u;
+}
+
+static bool wz_host_sleep_nanoseconds(wz_qword_t nanoseconds, void* context)
+{
+    (void)context;
+#if defined(_WIN32)
+    {
+        wz_qword_t milliseconds =
+            nanoseconds / UINT64_C(1000000) +
+            (nanoseconds % UINT64_C(1000000) != 0u ? 1u : 0u);
+        if (milliseconds > UINT32_MAX) {
+            milliseconds = UINT32_MAX;
+        }
+        Sleep((DWORD)milliseconds);
+    }
+#else
+    {
+        struct timespec request;
+        request.tv_sec = (time_t)(nanoseconds / UINT64_C(1000000000));
+        request.tv_nsec = (long)(nanoseconds % UINT64_C(1000000000));
+        while (nanosleep(&request, &request) != 0) {
+            if (errno != EINTR) {
+                return false;
+            }
+        }
+    }
+#endif
+    return true;
+}
 
 static bool wz_host_read_file(const char* path, wz_byte_t** data, size_t* length)
 {
@@ -180,6 +226,9 @@ static wz_result_t wz_host_command_reset(
         result->reason = "machine-reset-failed";
         return WZ_RESULT_INVALID_STATE;
     }
+    if (session->pacing_initialized) {
+        (void)wz_host_pacing_set_speed(&session->pacing, session->speed);
+    }
     (void)snprintf(result->message, sizeof(result->message), "reset");
     return WZ_RESULT_OK;
 }
@@ -226,11 +275,19 @@ static wz_result_t wz_host_command_speed(
                    (int)arguments.size, (const char*)arguments.data);
     if (!wz_telnet_speed_parse(command, &speed) ||
         !wz_telnet_speed_apply(speed) ||
+        !wz_speed_policy_valid((wz_speed_policy_t)speed) ||
         !wz_ui_layout_select_speed(&session->ui_window.layout,
                                    (wz_speed_policy_t)speed)) {
         result->reason = "bad-speed";
         return WZ_RESULT_PARSE_ERROR;
     }
+    if (session->pacing_initialized &&
+        !wz_host_pacing_set_speed(&session->pacing,
+                                  (wz_speed_policy_t)speed)) {
+        result->reason = "speed-pacing-failed";
+        return WZ_RESULT_INVALID_STATE;
+    }
+    session->speed = (wz_speed_policy_t)speed;
     (void)snprintf(result->message, sizeof(result->message), "%s",
                    wz_ui_layout_speed_label((size_t)speed));
     return WZ_RESULT_OK;
@@ -541,6 +598,9 @@ static void wz_host_render_raster(void)
 
 static void wz_host_session_init(void)
 {
+    const wz_machine_profile_t* profile;
+    stm_setup();
+    wz_host_session.speed = WZ_SPEED_100;
     sg_setup(&(sg_desc){.environment = sglue_environment()});
     sgl_setup(&(sgl_desc_t){0});
     wz_host_session.graphics_initialized = sg_isvalid();
@@ -592,6 +652,25 @@ static void wz_host_session_init(void)
     wz_host_session.initialized =
         wz_machine_init(&wz_host_session.machine, wz_machine_profile_48k_pal()) == WZ_RESULT_OK;
     if (wz_host_session.initialized) {
+        profile = wz_host_session.machine.profile;
+        if (profile != NULL && profile->master_hz_den != 0u &&
+            profile->master_hz_num / profile->master_hz_den != 0u) {
+            wz_host_session.pacing_initialized = wz_host_pacing_init(
+                &wz_host_session.pacing,
+                profile->master_hz_num / profile->master_hz_den,
+                wz_host_session.speed, wz_host_now_nanoseconds(),
+                wz_host_session.machine.master_tick);
+        }
+        if (!wz_host_session.pacing_initialized) {
+            wz_machine_destroy(&wz_host_session.machine);
+            wz_host_session.initialized = false;
+            wz_control_port_owner_close(&wz_host_session.control_port);
+            if (wz_host_session.socket_system_initialized) {
+                wz_host_socket_system_shutdown();
+                wz_host_session.socket_system_initialized = false;
+            }
+            return;
+        }
         {
             const char* rom_path = getenv("WZSN_ROM_PATH");
             const char* tape_path = getenv("WZSN_TAPE_PATH");
@@ -679,6 +758,11 @@ static void wz_host_apply_keyboard_input(void)
 
 static void wz_host_frame(void)
 {
+    wz_qword_t requested_sleep_nanoseconds;
+    wz_qword_t frame_ticks;
+    wz_master_tick_t batch_ticks;
+    unsigned frame_count = 1u;
+
     if (!wz_host_session.initialized) {
         return;
     }
@@ -695,7 +779,34 @@ static void wz_host_frame(void)
     }
     wz_host_telnet_poll();
     wz_host_apply_keyboard_input();
-    (void)wz_headless_runner_execute(&wz_host_session.runner, 69888u);
+    frame_ticks = (wz_master_tick_t)wz_host_session.machine.profile->tstates_per_frame *
+        wz_host_session.machine.profile->master_ticks_per_cpu_tstate;
+    if (!wz_speed_policy_is_unlimited(wz_host_session.speed)) {
+        unsigned percent = wz_speed_policy_percent(wz_host_session.speed);
+        frame_count = percent > 100u ? percent / 100u : 1u;
+    }
+    batch_ticks = frame_ticks * frame_count;
+    if (wz_host_session.pacing_initialized) {
+        if (!wz_host_pacing_wait(
+                &wz_host_session.pacing, wz_host_now_nanoseconds(),
+                wz_host_session.machine.master_tick, NULL, NULL,
+                &requested_sleep_nanoseconds)) {
+            return;
+        }
+    }
+    if (wz_headless_runner_execute(&wz_host_session.runner, batch_ticks) !=
+        WZ_RESULT_OK) {
+        return;
+    }
+    if (wz_host_session.pacing_initialized) {
+        if (!wz_host_pacing_wait(
+                &wz_host_session.pacing, wz_host_now_nanoseconds(),
+                wz_host_session.machine.master_tick,
+                wz_host_sleep_nanoseconds, NULL,
+                &requested_sleep_nanoseconds)) {
+            return;
+        }
+    }
     wz_host_render_raster();
     wz_ui_window_sync_remote_control(&wz_host_session.ui_window,
                                      &wz_host_session.control_port,
@@ -761,6 +872,7 @@ int main(void)
         .width = 640,
         .height = 480,
         .window_title = "Warajevo ZX Spectrum Next",
+        .swap_interval = 0,
     });
     return 0;
 }

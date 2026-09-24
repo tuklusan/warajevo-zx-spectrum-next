@@ -1,4 +1,11 @@
 /*
+Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+This file is governed by the SANYALnet Labs Non-Commercial License in the
+root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
+for AI/ML model training are prohibited unless separately authorized.
+Attribution is required: "Based on original work by Supratim Sanyal of
+SANYALnet Labs." See LICENSE for full terms.
+
 Warajevo ZX Spectrum Next
 Copyright (c) 2026 Supratim Sanyal, SANYALnet Labs, for new original project material.
 New original material is licensed under GNU GPL v2 or later (GPL-2.0-or-later), as stated in LICENSE.txt.
@@ -130,6 +137,8 @@ bool wz_host_pacing_wait(wz_host_pacing_t* pacing,
     percent = wz_speed_policy_percent(pacing->speed);
     if (machine_tick < pacing->anchor_machine_tick ||
         host_nanoseconds < pacing->anchor_host_nanoseconds) {
+        pacing->anchor_machine_tick = machine_tick;
+        pacing->anchor_host_nanoseconds = host_nanoseconds;
         return true;
     }
     elapsed_ticks = machine_tick - pacing->anchor_machine_tick;
