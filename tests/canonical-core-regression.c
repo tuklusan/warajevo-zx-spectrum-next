@@ -240,6 +240,7 @@ cleanup:
 static bool verify_ula_fetch_schedule(void)
 {
     const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
+    wz_machine_profile_t invalid_profile;
     wz_machine_t machine;
     wz_ula_fetch_event_t events[2];
     wz_master_tick_t first_fetch_tick;
@@ -318,6 +319,24 @@ static bool verify_ula_fetch_schedule(void)
         events[1].address != 0x5800u || events[1].value != 0x16u) {
         goto cleanup;
     }
+
+    invalid_profile = *profile;
+    invalid_profile.ula_fetch_line_count = WZ_ULA_CAPTURE_LINE_COUNT + 1u;
+    machine.profile = &invalid_profile;
+    if (wz_machine_memory_write_at_tick(&machine, 0x4000u, 0x5au,
+                                        first_fetch_tick) !=
+        WZ_RESULT_INVALID_STATE) {
+        goto cleanup;
+    }
+    invalid_profile = *profile;
+    invalid_profile.ula_fetches_per_line =
+        WZ_ULA_CAPTURE_CELLS_PER_LINE + 1u;
+    if (wz_machine_memory_write_at_tick(&machine, 0x4000u, 0x5au,
+                                        first_fetch_tick) !=
+        WZ_RESULT_INVALID_STATE) {
+        goto cleanup;
+    }
+    machine.profile = profile;
 
     puts("PASS ula_fetch_schedule");
     success = true;

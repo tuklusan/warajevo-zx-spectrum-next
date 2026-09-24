@@ -1217,6 +1217,8 @@ static wz_result_t wz_machine_ula_capture_until(wz_machine_t* machine,
         profile->tstates_per_line == 0u ||
         profile->ula_fetch_line_count == 0u ||
         profile->ula_fetches_per_line == 0u ||
+        profile->ula_fetch_line_count > WZ_ULA_CAPTURE_LINE_COUNT ||
+        profile->ula_fetches_per_line > WZ_ULA_CAPTURE_CELLS_PER_LINE ||
         profile->ula_fetch_interval_tstates == 0u) {
         return WZ_RESULT_INVALID_STATE;
     }
@@ -1294,6 +1296,10 @@ static wz_result_t wz_machine_ula_capture_until(wz_machine_t* machine,
         if (event_tick > master_tick ||
             (!inclusive && event_tick == master_tick)) {
             return WZ_RESULT_OK;
+        }
+        if (row >= WZ_ULA_CAPTURE_LINE_COUNT ||
+            cell >= WZ_ULA_CAPTURE_CELLS_PER_LINE) {
+            return WZ_RESULT_INVALID_STATE;
         }
 
         capture = &machine->ula_frame_captures[machine->ula_capture_slot];
