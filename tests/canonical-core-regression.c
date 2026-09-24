@@ -337,6 +337,7 @@ static bool verify_raster_write_fetch_order(void)
     wz_byte_t* pixels = (wz_byte_t*)malloc(raster_size);
     wz_master_tick_t first_fetch_tick;
     wz_master_tick_t frame_ticks;
+    wz_master_tick_t final_fetch_tick;
     bool success = false;
 
     memset(&machine, 0, sizeof(machine));
@@ -354,6 +355,13 @@ static bool verify_raster_write_fetch_order(void)
         profile->master_ticks_per_cpu_tstate;
     frame_ticks = (wz_master_tick_t)profile->tstates_per_frame *
         profile->master_ticks_per_cpu_tstate;
+    final_fetch_tick = ((wz_master_tick_t)profile->ula_fetch_start_tstate +
+        (wz_master_tick_t)(profile->ula_fetch_line_count - 1u) *
+            profile->tstates_per_line +
+        (wz_master_tick_t)(profile->ula_fetches_per_line - 1u) *
+            profile->ula_fetch_interval_tstates +
+        profile->ula_attribute_offset_tstates) *
+            profile->master_ticks_per_cpu_tstate;
     wz_machine_memory_write(&machine, 0x4000u, 0x80u);
     wz_machine_memory_write(&machine, 0x5800u, 0x01u);
     wz_machine_memory_write(&machine, 0x4001u, 0x00u);
@@ -379,6 +387,12 @@ static bool verify_raster_write_fetch_order(void)
         pixels[64u * WZ_RASTER_CANONICAL_WIDTH + 96u] != 1u ||
         pixels[64u * WZ_RASTER_CANONICAL_WIDTH + 97u] != 0u ||
         pixels[64u * WZ_RASTER_CANONICAL_WIDTH + 104u] != 2u) {
+        goto cleanup;
+    }
+    if (wz_machine_memory_write_at_tick(&machine, 0x4000u, 0xffu,
+                                        final_fetch_tick) != WZ_RESULT_OK ||
+        wz_machine_memory_write_at_tick(&machine, 0x4000u, 0x55u,
+                                        frame_ticks - 1u) != WZ_RESULT_OK) {
         goto cleanup;
     }
 
