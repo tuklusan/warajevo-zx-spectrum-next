@@ -49,9 +49,15 @@ exact commit after each push to `main`.
 
 GitHub push rulesets can reject file paths before receipt only for private or
 internal repositories on eligible plans. This repository is public, so GitHub
-does not offer a server-side path restriction here. The hosted workflow detects
-and fails on a violation after the direct push; the local pre-push gate is the
-before-push safeguard used for project commits.
+does not offer a server-side path restriction here. Because all changes go
+directly to `main`, the hosted workflow cannot prevent a noncompliant commit
+from arriving: it detects and fails on a violation after receipt. Treat that
+failure as a blocked project state; remove the offending path in the next direct
+commit and wait for the pathname check to pass before continuing. The local
+pre-push gate is the before-push safeguard for normal project pushes, and must
+pass against the complete prospective `main` tree before Git contacts GitHub.
+GitHub-side pathname enforcement must not be represented as a pre-receipt
+blocker while this repository remains public.
 
 ## 3. Local pre-push gate
 
