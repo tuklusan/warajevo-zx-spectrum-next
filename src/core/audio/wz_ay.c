@@ -99,22 +99,28 @@ static void wz_ay_advance_envelope(wz_ay_t* ay)
 
 static void wz_ay_advance_clock(wz_ay_t* ay)
 {
-    wz_byte_t channel;
+    if (++ay->tone_input_clock_phase >= WZ_AY_TONE_INPUT_CLOCK_DIVIDER) {
+        wz_byte_t channel;
 
-    for (channel = 0u; channel < WZ_AY_CHANNEL_COUNT; ++channel) {
-        wz_word_t period = wz_ay_period(ay, channel);
-        if (ay->tone_counters[channel] == 0u ||
-            ay->tone_counters[channel] > period) {
-            ay->tone_counters[channel] = period;
-        }
-        ay->tone_counters[channel] -= 1u;
-        if (ay->tone_counters[channel] == 0u) {
-            ay->tone_counters[channel] = period;
-            ay->tone_levels[channel] ^= 1u;
+        ay->tone_input_clock_phase = 0u;
+        for (channel = 0u; channel < WZ_AY_CHANNEL_COUNT; ++channel) {
+            wz_word_t period = wz_ay_period(ay, channel);
+            if (ay->tone_counters[channel] == 0u ||
+                ay->tone_counters[channel] > period) {
+                ay->tone_counters[channel] = period;
+            }
+            ay->tone_counters[channel] -= 1u;
+            if (ay->tone_counters[channel] == 0u) {
+                ay->tone_counters[channel] = period;
+                ay->tone_levels[channel] ^= 1u;
+            }
         }
     }
-    {
+
+    if (++ay->noise_input_clock_phase >= WZ_AY_NOISE_INPUT_CLOCK_DIVIDER) {
         wz_byte_t period = wz_ay_noise_period_value(ay);
+
+        ay->noise_input_clock_phase = 0u;
         if (ay->noise_counter == 0u || ay->noise_counter > period) {
             ay->noise_counter = period;
         }
@@ -127,8 +133,10 @@ static void wz_ay_advance_clock(wz_ay_t* ay)
             ay->noise_level = (wz_byte_t)(ay->noise_lfsr & 1u);
         }
     }
-    {
+
+    if (++ay->envelope_input_clock_phase == 0u) {
         wz_word_t period = wz_ay_envelope_period_value(ay);
+
         if (ay->envelope_period != period) {
             ay->envelope_period = period;
         }

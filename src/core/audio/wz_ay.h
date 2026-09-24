@@ -1,9 +1,11 @@
 /*
-Warajevo ZX Spectrum Next
-Copyright (c) 2026 Supratim Sanyal, SANYALnet Labs, for new original project material.
-New original material is licensed under GNU GPL v2 or later (GPL-2.0-or-later), as stated in LICENSE.txt.
-Upstream Warajevo and third-party material retain their applicable copyrights and licenses.
-See LICENSE.txt and NOTICE.md for complete terms and provenance.
+Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+This file is governed by the SANYALnet Labs Non-Commercial License in the
+root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
+for AI/ML model training are prohibited unless separately authorized.
+Attribution is required: "Based on original work by Supratim Sanyal of
+SANYALnet Labs." See LICENSE for full terms, warranty disclaimer, termination,
+patent, trademark, and governing-law provisions.
 */
 
 #ifndef WZ_CORE_AUDIO_WZ_AY_H
@@ -17,6 +19,10 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #define WZ_AY_EVENT_CAPACITY 1024u
 #define WZ_AY_CHANNEL_COUNT 3u
 #define WZ_AY_MASTER_TICKS_PER_CLOCK 4u
+/* AY input-clock prescalers for tone edges, noise shifts, and envelope steps. */
+#define WZ_AY_TONE_INPUT_CLOCK_DIVIDER 8u
+#define WZ_AY_NOISE_INPUT_CLOCK_DIVIDER 16u
+#define WZ_AY_ENVELOPE_INPUT_CLOCK_DIVIDER 256u
 #define WZ_AY_ENVELOPE_LEVEL_COUNT 16u
 
 typedef enum {
@@ -45,6 +51,9 @@ typedef struct {
     wz_byte_t envelope_attack;
     wz_byte_t envelope_holding;
     wz_byte_t tone_master_tick_phase;
+    wz_byte_t tone_input_clock_phase;
+    wz_byte_t noise_input_clock_phase;
+    wz_byte_t envelope_input_clock_phase;
     wz_ay_event_t events[WZ_AY_EVENT_CAPACITY];
     size_t event_count;
 } wz_ay_t;

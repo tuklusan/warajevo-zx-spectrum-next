@@ -8,9 +8,6 @@ for AI/ML model training are prohibited unless separately authorized.
 Attribution is required: "Based on original work by Supratim Sanyal of
 SANYALnet Labs." See LICENSE for full terms, warranty disclaimer, termination,
 patent, trademark, and governing-law provisions.
-New original material is licensed under GNU GPL v2 or later (GPL-2.0-or-later), as stated in LICENSE.txt.
-Upstream Warajevo and third-party material retain their applicable copyrights and licenses.
-See LICENSE.txt and NOTICE.md for complete terms and provenance.
 */
 
 #include "core/wz_state.h"
@@ -20,7 +17,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include <stdlib.h>
 #include <string.h>
 
-#define WZ_STATE_VERSION 13u
+#define WZ_STATE_VERSION 14u
 #define WZ_STATE_HEADER_LENGTH WZ_STATE_MACHINE_MEMORY_OFFSET
 #define WZ_STATE_EXTENSION_MAGIC UINT32_C(0x4e535a57)
 #define WZ_STATE_EXTENSION_VERSION 1u
@@ -206,7 +203,9 @@ static wz_result_t wz_state_write_ay(wz_state_writer_t* writer,
         ay->noise_level > 1u || ay->noise_lfsr > 0x1ffffu ||
         ay->envelope_level >= WZ_AY_ENVELOPE_LEVEL_COUNT ||
         ay->envelope_attack > 1u || ay->envelope_holding > 1u ||
-        ay->tone_master_tick_phase >= WZ_AY_MASTER_TICKS_PER_CLOCK) {
+        ay->tone_master_tick_phase >= WZ_AY_MASTER_TICKS_PER_CLOCK ||
+        ay->tone_input_clock_phase >= WZ_AY_TONE_INPUT_CLOCK_DIVIDER ||
+        ay->noise_input_clock_phase >= WZ_AY_NOISE_INPUT_CLOCK_DIVIDER) {
         return WZ_RESULT_INVALID_STATE;
     }
     for (wz_byte_t channel = 0u; channel < WZ_AY_CHANNEL_COUNT; ++channel) {
@@ -232,7 +231,10 @@ static wz_result_t wz_state_write_ay(wz_state_writer_t* writer,
         wz_state_write_u8(writer, ay->envelope_level) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, ay->envelope_attack) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, ay->envelope_holding) != WZ_RESULT_OK ||
-        wz_state_write_u8(writer, ay->tone_master_tick_phase) != WZ_RESULT_OK) {
+        wz_state_write_u8(writer, ay->tone_master_tick_phase) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, ay->tone_input_clock_phase) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, ay->noise_input_clock_phase) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, ay->envelope_input_clock_phase) != WZ_RESULT_OK) {
         return WZ_RESULT_SERIALIZATION_FAILURE;
     }
     return WZ_RESULT_OK;
@@ -264,7 +266,9 @@ static bool wz_state_ay_data_valid(const wz_byte_t* data)
     offset += 2u;
     if (data[offset++] >= WZ_AY_ENVELOPE_LEVEL_COUNT ||
         data[offset++] > 1u || data[offset++] > 1u ||
-        data[offset] >= WZ_AY_MASTER_TICKS_PER_CLOCK) {
+        data[offset++] >= WZ_AY_MASTER_TICKS_PER_CLOCK ||
+        data[offset++] >= WZ_AY_TONE_INPUT_CLOCK_DIVIDER ||
+        data[offset] >= WZ_AY_NOISE_INPUT_CLOCK_DIVIDER) {
         return false;
     }
     return true;
@@ -537,11 +541,16 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
         machine->ay.envelope_attack = data[offset++];
         machine->ay.envelope_holding = data[offset++];
         machine->ay.tone_master_tick_phase = data[offset++];
+        machine->ay.tone_input_clock_phase = data[offset++];
+        machine->ay.noise_input_clock_phase = data[offset++];
+        machine->ay.envelope_input_clock_phase = data[offset++];
         machine->ay.event_count = 0u;
         if (machine->ay.noise_lfsr > 0x1ffffu || machine->ay.noise_level > 1u ||
             machine->ay.envelope_level >= WZ_AY_ENVELOPE_LEVEL_COUNT ||
             machine->ay.envelope_attack > 1u || machine->ay.envelope_holding > 1u ||
-            machine->ay.tone_master_tick_phase >= WZ_AY_MASTER_TICKS_PER_CLOCK) {
+            machine->ay.tone_master_tick_phase >= WZ_AY_MASTER_TICKS_PER_CLOCK ||
+            machine->ay.tone_input_clock_phase >= WZ_AY_TONE_INPUT_CLOCK_DIVIDER ||
+            machine->ay.noise_input_clock_phase >= WZ_AY_NOISE_INPUT_CLOCK_DIVIDER) {
             return WZ_RESULT_INVALID_STATE;
         }
         machine->interface1_control_latch = data[offset++];

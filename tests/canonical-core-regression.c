@@ -353,10 +353,14 @@ static bool verify_timestamped_audio_and_ay_clock(void)
         ay_events[1].kind != WZ_AY_EVENT_REGISTER_WRITE ||
         ay_events[1].master_tick != 3u || ay_events[1].register_index != 0u ||
         ay_events[1].value != 1u || wz_ay_tone_level(&machine.ay, 0u) != 0u ||
+        wz_headless_runner_advance(&runner, 28u) != WZ_RESULT_OK ||
+        machine.master_tick != 31u || wz_ay_tone_level(&machine.ay, 0u) != 0u ||
         wz_headless_runner_advance(&runner, 1u) != WZ_RESULT_OK ||
-        machine.master_tick != 4u || wz_ay_tone_level(&machine.ay, 0u) != 1u ||
-        wz_headless_runner_advance(&runner, 4u) != WZ_RESULT_OK ||
-        machine.master_tick != 8u || wz_ay_tone_level(&machine.ay, 0u) != 0u) {
+        machine.master_tick != 32u || wz_ay_tone_level(&machine.ay, 0u) != 1u ||
+        wz_headless_runner_advance(&runner, 31u) != WZ_RESULT_OK ||
+        machine.master_tick != 63u || wz_ay_tone_level(&machine.ay, 0u) != 1u ||
+        wz_headless_runner_advance(&runner, 1u) != WZ_RESULT_OK ||
+        machine.master_tick != 64u || wz_ay_tone_level(&machine.ay, 0u) != 0u) {
         goto cleanup;
     }
 
@@ -390,8 +394,9 @@ static bool verify_ay_envelope_levels(wz_ay_t* ay, wz_byte_t shape,
     for (index = 0u; index < expected_count; ++index) {
         wz_byte_t level;
 
-        if (wz_ay_advance_master_ticks(ay, WZ_AY_MASTER_TICKS_PER_CLOCK) !=
-            WZ_RESULT_OK) {
+        if (wz_ay_advance_master_ticks(ay,
+                WZ_AY_MASTER_TICKS_PER_CLOCK *
+                    WZ_AY_ENVELOPE_INPUT_CLOCK_DIVIDER) != WZ_RESULT_OK) {
             fprintf(stderr, "AY envelope 0x%02x failed to advance at step %zu\n",
                     shape, index);
             return false;
@@ -454,9 +459,13 @@ static bool verify_ay_envelope_noise_and_mixer(void)
 
     wz_ay_init(&ay);
     if (!write_ay_register(&ay, 6u, 1u) ||
-        wz_ay_advance_master_ticks(&ay, 16u * WZ_AY_MASTER_TICKS_PER_CLOCK) !=
+        wz_ay_advance_master_ticks(&ay,
+            16u * WZ_AY_NOISE_INPUT_CLOCK_DIVIDER *
+                WZ_AY_MASTER_TICKS_PER_CLOCK) !=
             WZ_RESULT_OK || wz_ay_noise_level(&ay) != 1u ||
-        wz_ay_advance_master_ticks(&ay, WZ_AY_MASTER_TICKS_PER_CLOCK) !=
+        wz_ay_advance_master_ticks(&ay,
+            WZ_AY_NOISE_INPUT_CLOCK_DIVIDER *
+                WZ_AY_MASTER_TICKS_PER_CLOCK) !=
             WZ_RESULT_OK || wz_ay_noise_level(&ay) != 0u) {
         fputs("AY noise LFSR did not produce the expected period-1 trace\n",
               stderr);
@@ -468,7 +477,9 @@ static bool verify_ay_envelope_noise_and_mixer(void)
         !write_ay_register(&ay, 7u, 0x37u) ||
         !write_ay_register(&ay, 8u, 0x0fu) ||
         wz_audio_mixer_ay_sample(&ay) != 65536 ||
-        wz_ay_advance_master_ticks(&ay, 17u * WZ_AY_MASTER_TICKS_PER_CLOCK) !=
+        wz_ay_advance_master_ticks(&ay,
+            17u * WZ_AY_NOISE_INPUT_CLOCK_DIVIDER *
+                WZ_AY_MASTER_TICKS_PER_CLOCK) !=
             WZ_RESULT_OK || wz_audio_mixer_ay_sample(&ay) != -65536) {
         fputs("AY noise period and channel gating did not match the mixer trace\n",
               stderr);
@@ -480,7 +491,9 @@ static bool verify_ay_envelope_noise_and_mixer(void)
         !write_ay_register(&ay, 8u, 0x10u) ||
         !write_ay_register(&ay, 13u, 0x0cu) ||
         wz_audio_mixer_ay_sample(&ay) != 0 ||
-        wz_ay_advance_master_ticks(&ay, WZ_AY_MASTER_TICKS_PER_CLOCK) !=
+        wz_ay_advance_master_ticks(&ay,
+            WZ_AY_MASTER_TICKS_PER_CLOCK *
+                WZ_AY_ENVELOPE_INPUT_CLOCK_DIVIDER) !=
             WZ_RESULT_OK || wz_ay_envelope_level(&ay) != 1u ||
         wz_audio_mixer_ay_sample(&ay) != 4096) {
         fputs("AY envelope level did not reach the fixed-point mixer\n",
@@ -761,6 +774,13 @@ static bool fingerprint_snapshot(fingerprint_t* output)
         return false;
     }
     wz_state_writer_init(&writer, bytes, WZ_STATE_MACHINE_LENGTH);
+    machine.ay.tone_master_tick_phase =
+        (wz_byte_t)(WZ_AY_MASTER_TICKS_PER_CLOCK - 1u);
+    machine.ay.tone_input_clock_phase =
+        (wz_byte_t)(WZ_AY_TONE_INPUT_CLOCK_DIVIDER - 1u);
+    machine.ay.noise_input_clock_phase =
+        (wz_byte_t)(WZ_AY_NOISE_INPUT_CLOCK_DIVIDER - 1u);
+    machine.ay.envelope_input_clock_phase = 0xffu;
     if (wz_state_serialize_machine(&machine, &writer) != WZ_RESULT_OK ||
         wz_state_hash_machine(&machine, &original_hash) != WZ_RESULT_OK ||
         wz_machine_init(&restored, wz_machine_profile_48k_pal()) != WZ_RESULT_OK) {
