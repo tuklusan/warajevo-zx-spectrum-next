@@ -268,7 +268,7 @@ static bool wz_state_ay_data_valid(const wz_byte_t* data)
     offset += 2u;
     if (data[offset++] >= WZ_AY_ENVELOPE_LEVEL_COUNT ||
         data[offset++] > 1u || data[offset++] > 1u ||
-        data[offset] >= WZ_AY_MASTER_TICKS_PER_CLOCK) {
+        data[offset++] >= WZ_AY_MASTER_TICKS_PER_CLOCK) {
         return false;
     }
     return true;
