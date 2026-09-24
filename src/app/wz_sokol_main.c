@@ -785,7 +785,11 @@ static void wz_host_frame(void)
         unsigned percent = wz_speed_policy_percent(wz_host_session.speed);
         frame_count = percent > 100u ? percent / 100u : 1u;
     }
-    batch_ticks = frame_ticks * frame_count;
+    if (frame_count == 0u ||
+        frame_ticks > UINT64_MAX / (wz_master_tick_t)frame_count) {
+        return;
+    }
+    batch_ticks = frame_ticks * (wz_master_tick_t)frame_count;
     if (wz_host_session.pacing_initialized) {
         if (!wz_host_pacing_wait(
                 &wz_host_session.pacing, wz_host_now_nanoseconds(),
