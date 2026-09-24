@@ -43,6 +43,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "core/wz_machine.h"
 #include "core/wz_runner.h"
 #include "core/wz_tape.h"
+#include "core/audio/wz_audio_mixer.h"
 #include "app/wz_command_registry.h"
 #include "app/wz_application_lifecycle.h"
 #include "app/wz_control_port.h"
@@ -50,6 +51,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "app/wz_input_arbiter.h"
 #include "app/wz_sokol_audio.h"
 #include "app/wz_host_pacing.h"
+#include "app/wz_host_audio_policy.h"
 #include "app/wz_speed_policy.h"
 #include "app/wz_telnet_client.h"
 #include "app/wz_telnet_keyboard_command.h"
@@ -60,6 +62,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #define WZ_HOST_COMMAND_CAPACITY 128u
 #define WZ_HOST_RASTER_BYTES (WZ_RASTER_CANONICAL_WIDTH * WZ_RASTER_CANONICAL_HEIGHT)
 #define WZ_HOST_TELNET_IO_CAPACITY 2048u
+#define WZ_HOST_AUDIO_FRAME_SAMPLE_CAPACITY 2048u
 
 static const uint8_t wz_host_palette[16u][4u] = {
     {0u, 0u, 0u, 255u}, {0u, 0u, 205u, 255u}, {205u, 0u, 0u, 255u},
@@ -75,6 +78,8 @@ typedef struct {
     wz_sokol_audio_t audio;
     wz_host_pacing_t pacing;
     wz_speed_policy_t speed;
+    wz_speed_policy_t audio_sample_speed;
+    wz_qword_t audio_sample_remainder;
     wz_application_lifecycle_t lifecycle;
     wz_ui_window_t ui_window;
     wz_headless_runner_t runner;
@@ -101,6 +106,7 @@ typedef struct {
     sg_sampler raster_sampler;
     bool graphics_initialized;
     bool pacing_initialized;
+    bool audio_sample_speed_initialized;
     bool socket_system_initialized;
     bool initialized;
 } wz_host_session_t;
@@ -141,6 +147,172 @@ static bool wz_host_sleep_nanoseconds(wz_qword_t nanoseconds, void* context)
     }
 #endif
     return true;
+}
+
+static void wz_host_audio_clear_frame_events(wz_machine_t* machine)
+{
+    machine->beeper.event_count = 0u;
+    machine->ay.event_count = 0u;
+}
+
+static bool wz_host_audio_replay_ay_event(wz_ay_t* ay,
+                                          const wz_ay_event_t* event)
+{
+    if (event->kind == WZ_AY_EVENT_REGISTER_SELECT) {
+        return wz_ay_select_register(ay, event->value,
+                                     event->master_tick) == WZ_RESULT_OK;
+    }
+    if (event->kind == WZ_AY_EVENT_REGISTER_WRITE) {
+        return wz_ay_write_data(ay, event->value,
+                                event->master_tick) == WZ_RESULT_OK;
+    }
+    return false;
+}
+
+static void wz_host_audio_render_frame(wz_host_session_t* session,
+                                       wz_master_tick_t start_tick,
+                                       wz_byte_t initial_beeper_level,
+                                       const wz_ay_t* initial_ay)
+{
+    wz_audio_sample_t samples[WZ_HOST_AUDIO_FRAME_SAMPLE_CAPACITY];
+    wz_machine_t* machine = &session->machine;
+    const wz_machine_profile_t* profile = machine->profile;
+    wz_qword_t master_hz;
+    wz_qword_t elapsed_ticks;
+    wz_qword_t scaled_samples;
+    wz_qword_t effective_sample_rate;
+    wz_qword_t render_sample_rate;
+    wz_qword_t rate_remainder;
+    wz_ay_t audio_ay;
+    wz_master_tick_t sample_cursor;
+    wz_qword_t sample_whole_ticks;
+    wz_qword_t sample_remainder_ticks;
+    wz_qword_t sample_tick_phase = 0u;
+    size_t sample_count;
+    size_t event_index = 0u;
+    size_t event_count = machine->ay.event_count;
+
+    if (!wz_host_audio_enabled(session->speed) ||
+        !wz_sokol_audio_valid(&session->audio) || initial_ay == NULL ||
+        profile == NULL || profile->master_hz_den == 0u) {
+        session->audio_sample_remainder = 0u;
+        session->audio_sample_speed_initialized = false;
+        wz_host_audio_clear_frame_events(machine);
+        return;
+    }
+    if (!session->audio_sample_speed_initialized ||
+        session->audio_sample_speed != session->speed) {
+        session->audio_sample_remainder = 0u;
+        session->audio_sample_speed = session->speed;
+        session->audio_sample_speed_initialized = true;
+    }
+
+    master_hz = profile->master_hz_num / profile->master_hz_den;
+    elapsed_ticks = machine->master_tick - start_tick;
+    effective_sample_rate =
+        (wz_qword_t)WZ_CANONICAL_AUDIO_SAMPLE_RATE * 100u /
+        wz_speed_policy_percent(session->speed);
+    if (master_hz == 0u || effective_sample_rate == 0u ||
+        effective_sample_rate > master_hz ||
+        elapsed_ticks > (UINT64_MAX - session->audio_sample_remainder) /
+                            effective_sample_rate) {
+        session->audio_sample_remainder = 0u;
+        wz_host_audio_clear_frame_events(machine);
+        return;
+    }
+    scaled_samples = elapsed_ticks * effective_sample_rate +
+                     session->audio_sample_remainder;
+    sample_count = (size_t)(scaled_samples / master_hz);
+    rate_remainder = scaled_samples % master_hz;
+    if (sample_count == 0u ||
+        sample_count > WZ_HOST_AUDIO_FRAME_SAMPLE_CAPACITY) {
+        session->audio_sample_remainder = rate_remainder;
+        wz_host_audio_clear_frame_events(machine);
+        return;
+    }
+    session->audio_sample_remainder = rate_remainder;
+
+    /* Select a rate whose final sample boundary cannot pass this frame. */
+    {
+        wz_qword_t rate_numerator = (wz_qword_t)sample_count * master_hz;
+        render_sample_rate = rate_numerator / elapsed_ticks;
+        if (rate_numerator % elapsed_ticks != 0u) {
+            ++render_sample_rate;
+        }
+    }
+    if (!wz_beeper_render_pcm(machine->beeper.events,
+                              machine->beeper.event_count,
+                              initial_beeper_level, start_tick, master_hz,
+                              render_sample_rate, samples, sample_count)) {
+        wz_host_audio_clear_frame_events(machine);
+        return;
+    }
+
+    audio_ay = *initial_ay;
+    audio_ay.event_count = 0u;
+    sample_cursor = start_tick;
+    sample_whole_ticks = master_hz / render_sample_rate;
+    sample_remainder_ticks = master_hz % render_sample_rate;
+    for (size_t sample_index = 0u; sample_index < sample_count; ++sample_index) {
+        wz_qword_t duration = sample_whole_ticks;
+        wz_master_tick_t sample_end;
+
+        if (sample_tick_phase >= render_sample_rate - sample_remainder_ticks) {
+            ++duration;
+            sample_tick_phase -= render_sample_rate - sample_remainder_ticks;
+        } else {
+            sample_tick_phase += sample_remainder_ticks;
+        }
+        if (duration == 0u || UINT64_MAX - sample_cursor < duration) {
+            wz_host_audio_clear_frame_events(machine);
+            return;
+        }
+        sample_end = sample_cursor + duration;
+        while (event_index < event_count &&
+               machine->ay.events[event_index].master_tick < sample_end) {
+            const wz_ay_event_t* event = &machine->ay.events[event_index];
+            if (event->master_tick < sample_cursor ||
+                wz_ay_advance_master_ticks(
+                    &audio_ay, event->master_tick - sample_cursor) != WZ_RESULT_OK ||
+                !wz_host_audio_replay_ay_event(&audio_ay, event)) {
+                wz_host_audio_clear_frame_events(machine);
+                return;
+            }
+            sample_cursor = event->master_tick;
+            ++event_index;
+        }
+        if (wz_ay_advance_master_ticks(&audio_ay,
+                                       sample_end - sample_cursor) != WZ_RESULT_OK) {
+            wz_host_audio_clear_frame_events(machine);
+            return;
+        }
+        sample_cursor = sample_end;
+        samples[sample_index] =
+            wz_audio_mixer_sample(samples[sample_index], &audio_ay);
+    }
+
+    while (event_index < event_count &&
+           machine->ay.events[event_index].master_tick <= machine->master_tick) {
+        const wz_ay_event_t* event = &machine->ay.events[event_index];
+        if (event->master_tick < sample_cursor ||
+            wz_ay_advance_master_ticks(&audio_ay,
+                                       event->master_tick - sample_cursor) != WZ_RESULT_OK ||
+            !wz_host_audio_replay_ay_event(&audio_ay, event)) {
+            wz_host_audio_clear_frame_events(machine);
+            return;
+        }
+        sample_cursor = event->master_tick;
+        ++event_index;
+    }
+    if (sample_cursor < machine->master_tick &&
+        wz_ay_advance_master_ticks(&audio_ay,
+                                   machine->master_tick - sample_cursor) != WZ_RESULT_OK) {
+        wz_host_audio_clear_frame_events(machine);
+        return;
+    }
+    (void)wz_sokol_audio_push(&session->audio, session->speed,
+                             samples, sample_count);
+    wz_host_audio_clear_frame_events(machine);
 }
 
 static bool wz_host_read_file(const char* path, wz_byte_t** data, size_t* length)
@@ -760,7 +932,6 @@ static void wz_host_frame(void)
 {
     wz_qword_t requested_sleep_nanoseconds;
     wz_qword_t frame_ticks;
-    wz_master_tick_t batch_ticks;
     unsigned frame_count = 1u;
 
     if (!wz_host_session.initialized) {
@@ -785,11 +956,6 @@ static void wz_host_frame(void)
         unsigned percent = wz_speed_policy_percent(wz_host_session.speed);
         frame_count = percent > 100u ? percent / 100u : 1u;
     }
-    if (frame_count == 0u ||
-        frame_ticks > UINT64_MAX / (wz_master_tick_t)frame_count) {
-        return;
-    }
-    batch_ticks = frame_ticks * (wz_master_tick_t)frame_count;
     if (wz_host_session.pacing_initialized) {
         if (!wz_host_pacing_wait(
                 &wz_host_session.pacing, wz_host_now_nanoseconds(),
@@ -798,9 +964,22 @@ static void wz_host_frame(void)
             return;
         }
     }
-    if (wz_headless_runner_execute(&wz_host_session.runner, batch_ticks) !=
-        WZ_RESULT_OK) {
-        return;
+    for (unsigned frame_index = 0u; frame_index < frame_count; ++frame_index) {
+        wz_master_tick_t frame_start_tick = wz_host_session.machine.master_tick;
+        wz_byte_t initial_beeper_level = wz_host_session.machine.beeper.level;
+        wz_ay_t initial_ay;
+        const wz_ay_t* initial_ay_state = &wz_host_session.machine.ay;
+        if (wz_host_audio_enabled(wz_host_session.speed) &&
+            wz_sokol_audio_valid(&wz_host_session.audio)) {
+            initial_ay = wz_host_session.machine.ay;
+            initial_ay_state = &initial_ay;
+        }
+        if (wz_headless_runner_execute(&wz_host_session.runner, frame_ticks) !=
+            WZ_RESULT_OK) {
+            return;
+        }
+        wz_host_audio_render_frame(&wz_host_session, frame_start_tick,
+                                   initial_beeper_level, initial_ay_state);
     }
     if (wz_host_session.pacing_initialized) {
         if (!wz_host_pacing_wait(

@@ -43,7 +43,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "e3bcc4f72b3a51a2887848885a75f7e5b40da707b6d9ce64ba204aaf9cdbdaa0"
+      "sha256": "3a8171fe3393d8a7a52e378544b9a7aa440e307462c9c201eb54fe205958a196"
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.c",
