@@ -1,9 +1,11 @@
 /*
-Warajevo ZX Spectrum Next
-Copyright (c) 2026 Supratim Sanyal, SANYALnet Labs, for new original project material.
-New original material is licensed under GNU GPL v2 or later (GPL-2.0-or-later), as stated in LICENSE.txt.
-Upstream Warajevo and third-party material retain their applicable copyrights and licenses.
-See LICENSE.txt and NOTICE.md for complete terms and provenance.
+Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+This file is governed by the SANYALnet Labs Non-Commercial License in the
+root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
+for AI/ML model training are prohibited unless separately authorized.
+Attribution is required: "Based on original work by Supratim Sanyal of
+SANYALnet Labs." See LICENSE for full terms, warranty disclaimer, termination,
+patent, trademark, and governing-law provisions.
 */
 
 #include "core/audio/wz_ay.h"
@@ -63,13 +65,17 @@ static void wz_ay_finish_envelope_cycle(wz_ay_t* ay)
         ay->envelope_level = 0u;
         ay->envelope_holding = 1u;
     } else if ((shape & 1u) != 0u) {
-        ay->envelope_level = ay->envelope_attack != 0u ? 15u : 0u;
+        ay->envelope_level = (shape & 2u) != 0u ?
+            (ay->envelope_attack != 0u ? 0u : 15u) :
+            (ay->envelope_attack != 0u ? 15u : 0u);
         ay->envelope_holding = 1u;
     } else {
         if ((shape & 2u) != 0u) {
             ay->envelope_attack ^= 1u;
+            ay->envelope_level = ay->envelope_attack != 0u ? 1u : 14u;
+        } else {
+            ay->envelope_level = ay->envelope_attack != 0u ? 0u : 15u;
         }
-        ay->envelope_level = ay->envelope_attack != 0u ? 0u : 15u;
     }
 }
 

@@ -318,7 +318,7 @@ cleanup:
 
 static bool verify_timestamped_audio_and_ay_clock(void)
 {
-    const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
+    const wz_machine_profile_t* profile = wz_machine_profile_128k_pal();
     wz_machine_t machine;
     wz_headless_runner_t runner;
     wz_beeper_event_t beeper_events[2];
@@ -366,6 +366,113 @@ static bool verify_timestamped_audio_and_ay_clock(void)
 cleanup:
     wz_machine_destroy(&machine);
     return success;
+}
+
+static bool write_ay_register(wz_ay_t* ay, wz_byte_t register_index,
+                              wz_byte_t value)
+{
+    return wz_ay_select_register(ay, register_index, 0u) == WZ_RESULT_OK &&
+        wz_ay_write_data(ay, value, 0u) == WZ_RESULT_OK;
+}
+
+static bool verify_ay_envelope_levels(wz_ay_t* ay, wz_byte_t shape,
+                                      const wz_byte_t* expected,
+                                      size_t expected_count)
+{
+    size_t index;
+
+    wz_ay_init(ay);
+    if (!write_ay_register(ay, 11u, 1u) ||
+        !write_ay_register(ay, 12u, 0u) ||
+        !write_ay_register(ay, 13u, shape)) {
+        return false;
+    }
+    for (index = 0u; index < expected_count; ++index) {
+        if (wz_ay_advance_master_ticks(ay, WZ_AY_MASTER_TICKS_PER_CLOCK) !=
+                WZ_RESULT_OK ||
+            wz_ay_envelope_level(ay) != expected[index]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+static bool verify_ay_envelope_noise_and_mixer(void)
+{
+    static const wz_byte_t triangle_levels[] = {
+        1u, 2u, 3u, 4u, 5u, 6u, 7u, 8u,
+        9u, 10u, 11u, 12u, 13u, 14u, 15u, 14u, 13u
+    };
+    static const wz_byte_t attack_hold_alternate_levels[] = {
+        1u, 2u, 3u, 4u, 5u, 6u, 7u, 8u,
+        9u, 10u, 11u, 12u, 13u, 14u, 15u, 0u, 0u
+    };
+    static const wz_byte_t decay_hold_alternate_levels[] = {
+        14u, 13u, 12u, 11u, 10u, 9u, 8u, 7u,
+        6u, 5u, 4u, 3u, 2u, 1u, 0u, 15u, 15u
+    };
+    static const wz_byte_t attack_hold_levels[] = {
+        1u, 2u, 3u, 4u, 5u, 6u, 7u, 8u,
+        9u, 10u, 11u, 12u, 13u, 14u, 15u, 15u
+    };
+    static const wz_byte_t decay_hold_levels[] = {
+        14u, 13u, 12u, 11u, 10u, 9u, 8u, 7u,
+        6u, 5u, 4u, 3u, 2u, 1u, 0u, 0u
+    };
+    wz_ay_t ay;
+
+    if (!verify_ay_envelope_levels(&ay, 0x0eu, triangle_levels,
+                                   sizeof(triangle_levels) /
+                                       sizeof(triangle_levels[0])) ||
+        !verify_ay_envelope_levels(&ay, 0x0fu,
+                                   attack_hold_alternate_levels,
+                                   sizeof(attack_hold_alternate_levels) /
+                                       sizeof(attack_hold_alternate_levels[0])) ||
+        !verify_ay_envelope_levels(&ay, 0x0bu,
+                                   decay_hold_alternate_levels,
+                                   sizeof(decay_hold_alternate_levels) /
+                                       sizeof(decay_hold_alternate_levels[0])) ||
+        !verify_ay_envelope_levels(&ay, 0x0du, attack_hold_levels,
+                                   sizeof(attack_hold_levels) /
+                                       sizeof(attack_hold_levels[0])) ||
+        !verify_ay_envelope_levels(&ay, 0x09u, decay_hold_levels,
+                                   sizeof(decay_hold_levels) /
+                                       sizeof(decay_hold_levels[0]))) {
+        return false;
+    }
+
+    wz_ay_init(&ay);
+    if (!write_ay_register(&ay, 6u, 1u) ||
+        wz_ay_advance_master_ticks(&ay, 15u * WZ_AY_MASTER_TICKS_PER_CLOCK) !=
+            WZ_RESULT_OK || wz_ay_noise_level(&ay) != 1u ||
+        wz_ay_advance_master_ticks(&ay, WZ_AY_MASTER_TICKS_PER_CLOCK) !=
+            WZ_RESULT_OK || wz_ay_noise_level(&ay) != 0u) {
+        return false;
+    }
+
+    wz_ay_init(&ay);
+    if (!write_ay_register(&ay, 6u, 1u) ||
+        !write_ay_register(&ay, 7u, 0x37u) ||
+        !write_ay_register(&ay, 8u, 0x0fu) ||
+        wz_audio_mixer_ay_sample(&ay) != 65536 ||
+        wz_ay_advance_master_ticks(&ay, 16u * WZ_AY_MASTER_TICKS_PER_CLOCK) !=
+            WZ_RESULT_OK || wz_audio_mixer_ay_sample(&ay) != -65536) {
+        return false;
+    }
+
+    wz_ay_init(&ay);
+    if (!write_ay_register(&ay, 7u, 0x3fu) ||
+        !write_ay_register(&ay, 8u, 0x10u) ||
+        !write_ay_register(&ay, 13u, 0x0cu) ||
+        wz_audio_mixer_ay_sample(&ay) != 0 ||
+        wz_ay_advance_master_ticks(&ay, WZ_AY_MASTER_TICKS_PER_CLOCK) !=
+            WZ_RESULT_OK || wz_ay_envelope_level(&ay) != 1u ||
+        wz_audio_mixer_ay_sample(&ay) != 4096) {
+        return false;
+    }
+
+    puts("PASS ay_envelope_noise_and_mixer");
+    return true;
 }
 
 static bool verify_ula_fetch_schedule(void)
@@ -682,6 +789,7 @@ int main(void)
         verify_raster_write_fetch_order() &&
         verify_flash_bright_semantics() &&
         verify_timestamped_audio_and_ay_clock() &&
+        verify_ay_envelope_noise_and_mixer() &&
         verify_border_event_timing() &&
         fingerprint_cpu(&actual[0]) &&
         fingerprint_raster(&actual[1]) &&
