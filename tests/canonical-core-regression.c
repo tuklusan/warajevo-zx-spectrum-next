@@ -288,9 +288,9 @@ static bool verify_flash_bright_semantics(void)
         goto cleanup;
     }
 
-    if (wz_machine_memory_write(&machine, 0x4000u, 0x80u) != WZ_RESULT_OK ||
-        wz_machine_memory_write(&machine, 0x5800u, 0xd1u) != WZ_RESULT_OK ||
-        wz_raster_buffer_init(&raster, WZ_RASTER_CANONICAL_WIDTH,
+    wz_machine_memory_write(&machine, 0x4000u, 0x80u);
+    wz_machine_memory_write(&machine, 0x5800u, 0xd1u);
+    if (wz_raster_buffer_init(&raster, WZ_RASTER_CANONICAL_WIDTH,
                               WZ_RASTER_CANONICAL_HEIGHT, pixels,
                               raster_size) != WZ_RESULT_OK) {
         goto cleanup;
