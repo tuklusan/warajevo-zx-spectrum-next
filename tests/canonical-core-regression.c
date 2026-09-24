@@ -166,8 +166,12 @@ static bool verify_border_event_timing(void)
     expected_events[4] = (wz_border_event_t){active_line + 352u, 4u};
     if (line_ticks != WZ_RASTER_CANONICAL_WIDTH ||
         frame_ticks != (wz_master_tick_t)WZ_RASTER_CANONICAL_WIDTH *
-                           WZ_RASTER_CANONICAL_HEIGHT ||
-        wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+                           WZ_RASTER_CANONICAL_HEIGHT) {
+        free(pixels);
+        return false;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        wz_machine_destroy(&machine);
         free(pixels);
         return false;
     }
@@ -218,6 +222,83 @@ static bool verify_border_event_timing(void)
 cleanup:
     wz_machine_destroy(&machine);
     free(pixels);
+    return success;
+}
+
+static bool verify_ula_fetch_schedule(void)
+{
+    const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
+    wz_machine_t machine;
+    wz_ula_fetch_event_t events[2];
+    wz_master_tick_t first_fetch_tick;
+    size_t count = 0u;
+    bool success = false;
+
+    memset(&machine, 0, sizeof(machine));
+    if (profile == 0) {
+        return false;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        wz_machine_destroy(&machine);
+        return false;
+    }
+    first_fetch_tick = (wz_master_tick_t)profile->ula_fetch_start_tstate *
+        profile->master_ticks_per_cpu_tstate;
+    wz_machine_memory_write(&machine, 0x4000u, 0xa5u);
+    wz_machine_memory_write(&machine, 0x5800u, 0x16u);
+    wz_machine_memory_write(&machine, 0x4001u, 0x3cu);
+    wz_machine_memory_write(&machine, 0x5801u, 0x25u);
+    wz_machine_memory_write(&machine, 0x4100u, 0x81u);
+
+    if (wz_machine_ula_fetches_at_tick(
+            &machine, first_fetch_tick - profile->master_ticks_per_cpu_tstate,
+            events, 2u, &count) != WZ_RESULT_OK || count != 0u ||
+        wz_machine_ula_fetches_at_tick(&machine, first_fetch_tick, events, 2u,
+                                       &count) != WZ_RESULT_OK || count != 2u ||
+        events[0].kind != WZ_ULA_FETCH_BITMAP ||
+        events[0].master_tick != first_fetch_tick ||
+        events[0].address != 0x4000u || events[0].value != 0xa5u ||
+        events[1].kind != WZ_ULA_FETCH_ATTRIBUTE ||
+        events[1].master_tick != first_fetch_tick + 2u ||
+        events[1].address != 0x5800u || events[1].value != 0x16u ||
+        wz_machine_floating_bus_value(&machine, first_fetch_tick) != 0xa5u ||
+        wz_machine_floating_bus_value(&machine, first_fetch_tick + 2u) != 0x16u) {
+        goto cleanup;
+    }
+
+    if (wz_machine_ula_fetches_at_tick(
+            &machine, first_fetch_tick +
+                4u * profile->master_ticks_per_cpu_tstate,
+            events, 2u, &count) != WZ_RESULT_OK || count != 2u ||
+        events[0].address != 0x4001u || events[0].value != 0x3cu ||
+        events[1].address != 0x5801u || events[1].value != 0x25u) {
+        goto cleanup;
+    }
+
+    if (wz_machine_ula_fetches_at_tick(
+            &machine, first_fetch_tick +
+                (wz_master_tick_t)profile->tstates_per_line *
+                    profile->master_ticks_per_cpu_tstate,
+            events, 2u, &count) != WZ_RESULT_OK || count != 2u ||
+        events[0].address != 0x4100u || events[0].value != 0x81u ||
+        events[1].address != 0x5800u) {
+        goto cleanup;
+    }
+
+    if (wz_machine_ula_fetches_at_tick(
+            &machine, first_fetch_tick +
+                (wz_master_tick_t)profile->ula_fetch_line_count *
+                    profile->tstates_per_line *
+                    profile->master_ticks_per_cpu_tstate,
+            events, 2u, &count) != WZ_RESULT_OK || count != 0u) {
+        goto cleanup;
+    }
+
+    puts("PASS ula_fetch_schedule");
+    success = true;
+
+cleanup:
+    wz_machine_destroy(&machine);
     return success;
 }
 
@@ -347,7 +428,8 @@ int main(void)
     };
     bool success;
 
-    success = verify_border_event_timing() &&
+    success = verify_ula_fetch_schedule() &&
+        verify_border_event_timing() &&
         fingerprint_cpu(&actual[0]) &&
         fingerprint_raster(&actual[1]) &&
         fingerprint_audio(&actual[2]) &&
