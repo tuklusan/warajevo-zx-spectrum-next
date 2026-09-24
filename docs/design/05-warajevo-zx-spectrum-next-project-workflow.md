@@ -40,11 +40,12 @@ review and test output are evidence; the responsible developer makes the final
 adjudication.
 
 Every push-triggered GitHub workflow is scoped to `main`. The local pre-push
-gate accepts branch updates only from local `main` to remote `main` and checks
-the complete outgoing tree for forbidden path terms, case-insensitively, before
-contacting GitHub. Manual dispatch jobs require `main`; pull-request triggers
-are prohibited. The pathname-policy workflow rechecks the complete tracked tree
-on each direct push to `main` and on manual runs there.
+gate accepts direct updates only from local `main` to remote `main` and checks
+every complete tracked pathname, including directory components, for forbidden
+terms case-insensitively before contacting GitHub. No branch other than `main`
+is created or used. Manual dispatch jobs require `main`; pull-request triggers are
+prohibited. The pathname-policy workflow rechecks every tracked pathname at the
+exact commit on each direct push to `main` and on manual runs there.
 
 GitHub push rulesets can reject file paths before receipt only for private or
 internal repositories on eligible plans. This repository is public, so GitHub
