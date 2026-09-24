@@ -26,8 +26,10 @@ wz_result_t wz_machine_reset_ula_capture(wz_machine_t* machine)
     if (machine == 0) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
-    memset(machine->ula_frame_captures, 0,
-           sizeof(machine->ula_frame_captures));
+    if (machine->ula_frame_captures != 0) {
+        memset(machine->ula_frame_captures, 0,
+               sizeof(*machine->ula_frame_captures) * 2u);
+    }
     machine->ula_capture_frame_number = 0u;
     machine->ula_capture_event_index = 0u;
     machine->ula_capture_last_tick = 0u;
@@ -48,10 +50,17 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     }
 
     machine->ram_128k = 0;
+    machine->ula_frame_captures = 0;
     if (profile->kind == WZ_MACHINE_128K_PAL) {
         machine->ram_128k = (wz_byte_t*)calloc(
             WZ_128K_RAM_BANK_COUNT, WZ_128K_RAM_BANK_SIZE);
         if (machine->ram_128k == 0) {
+            return WZ_RESULT_OUT_OF_MEMORY;
+        }
+    } else if (profile->kind == WZ_MACHINE_48K_PAL) {
+        machine->ula_frame_captures = (wz_ula_frame_capture_t*)calloc(
+            2u, sizeof(*machine->ula_frame_captures));
+        if (machine->ula_frame_captures == 0) {
             return WZ_RESULT_OUT_OF_MEMORY;
         }
     }
@@ -167,6 +176,8 @@ void wz_machine_destroy(wz_machine_t* machine)
     if (machine != 0) {
         free(machine->ram_128k);
         machine->ram_128k = 0;
+        free(machine->ula_frame_captures);
+        machine->ula_frame_captures = 0;
         machine->profile = 0;
         wz_bus_observer_init(&machine->bus_observer, 0, 0);
         wz_bus_input_init(&machine->bus_input, 0, 0);
@@ -1126,7 +1137,12 @@ static void wz_machine_ula_capture_clear_slot(wz_machine_t* machine,
                                               wz_byte_t slot,
                                               wz_qword_t frame_number)
 {
-    wz_ula_frame_capture_t* capture = &machine->ula_frame_captures[slot];
+    wz_ula_frame_capture_t* capture;
+
+    if (machine->ula_frame_captures == 0 || slot > 1u) {
+        return;
+    }
+    capture = &machine->ula_frame_captures[slot];
 
     memset(capture, 0, sizeof(*capture));
     capture->frame_number = frame_number;
@@ -1192,6 +1208,9 @@ static wz_result_t wz_machine_ula_capture_until(wz_machine_t* machine,
     profile = machine->profile;
     if (profile->kind != WZ_MACHINE_48K_PAL) {
         return WZ_RESULT_OK;
+    }
+    if (machine->ula_frame_captures == 0) {
+        return WZ_RESULT_INVALID_STATE;
     }
     if (profile->master_ticks_per_cpu_tstate == 0u ||
         profile->tstates_per_frame == 0u ||
@@ -1446,6 +1465,9 @@ wz_result_t wz_machine_render_raster(const wz_machine_t* machine,
         return WZ_RESULT_INVALID_STATE;
     }
     render_border_timeline = machine->profile->kind == WZ_MACHINE_48K_PAL;
+    if (render_border_timeline && machine->ula_frame_captures == 0) {
+        return WZ_RESULT_INVALID_STATE;
+    }
     top = render_border_timeline ? 64u :
         (WZ_RASTER_CANONICAL_HEIGHT - 192u) / 2u;
     line_ticks = (wz_qword_t)machine->profile->tstates_per_line *

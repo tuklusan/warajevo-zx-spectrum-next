@@ -148,7 +148,7 @@ typedef struct wz_machine {
     wz_border_event_t border_events[WZ_BORDER_EVENT_CAPACITY];
     size_t border_event_start;
     size_t border_event_count;
-    wz_ula_frame_capture_t ula_frame_captures[2u];
+    wz_ula_frame_capture_t* ula_frame_captures;
     wz_qword_t ula_capture_frame_number;
     wz_dword_t ula_capture_event_index;
     wz_master_tick_t ula_capture_last_tick;
