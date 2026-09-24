@@ -240,15 +240,20 @@ cleanup:
 static bool verify_flash_bright_semantics(void)
 {
     const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
+    const size_t raster_size =
+        (size_t)WZ_RASTER_CANONICAL_WIDTH * WZ_RASTER_CANONICAL_HEIGHT;
     wz_machine_t machine;
+    wz_raster_buffer_t raster;
     wz_master_tick_t frame_ticks;
     wz_byte_t sample;
+    wz_byte_t* pixels = (wz_byte_t*)malloc(raster_size);
     bool success = false;
 
     memset(&machine, 0, sizeof(machine));
-    if (profile == 0 || wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
-        wz_machine_destroy(&machine);
-        return false;
+    memset(&raster, 0, sizeof(raster));
+    if (profile == 0 || pixels == 0 ||
+        wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        goto cleanup;
     }
     frame_ticks = (wz_master_tick_t)profile->tstates_per_frame *
         profile->master_ticks_per_cpu_tstate;
@@ -283,11 +288,30 @@ static bool verify_flash_bright_semantics(void)
         goto cleanup;
     }
 
+    if (wz_machine_memory_write(&machine, 0x4000u, 0x80u) != WZ_RESULT_OK ||
+        wz_machine_memory_write(&machine, 0x5800u, 0xd1u) != WZ_RESULT_OK ||
+        wz_raster_buffer_init(&raster, WZ_RASTER_CANONICAL_WIDTH,
+                              WZ_RASTER_CANONICAL_HEIGHT, pixels,
+                              raster_size) != WZ_RESULT_OK) {
+        goto cleanup;
+    }
+    machine.master_tick = frame_ticks * 16u + 1u;
+    if (wz_machine_render_raster(&machine, &raster) != WZ_RESULT_OK ||
+        pixels[64u * WZ_RASTER_CANONICAL_WIDTH + 96u] != 10u) {
+        goto cleanup;
+    }
+    machine.master_tick = frame_ticks * 32u + 1u;
+    if (wz_machine_render_raster(&machine, &raster) != WZ_RESULT_OK ||
+        pixels[64u * WZ_RASTER_CANONICAL_WIDTH + 96u] != 9u) {
+        goto cleanup;
+    }
+
     puts("PASS flash_bright_semantics");
     success = true;
 
 cleanup:
     wz_machine_destroy(&machine);
+    free(pixels);
     return success;
 }
 
