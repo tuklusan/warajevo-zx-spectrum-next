@@ -1,9 +1,9 @@
 {
   "testId": "application-command-boundary",
   "status": "pass",
-  "commit": "1b4a9bc955dcd4a337fb1d0fc1436ead3e33b886",
+  "commit": "3b1b7823753511c94c8988c776b6c04872fc7e5c",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-09-23T23:13:47+00:00",
+  "timestamp": "2026-09-24T04:57:30+00:00",
   "caseCount": 6,
   "runners": [
     {
@@ -66,7 +66,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "c3bfb43ec590557607e2fd15cfc8687ae42db0693f67a6c9bbab7419f7a334e2"
+      "sha256": "e3bcc4f72b3a51a2887848885a75f7e5b40da707b6d9ce64ba204aaf9cdbdaa0"
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.c",
@@ -98,7 +98,7 @@
     },
     {
       "path": "src/core/audio/wz_ay.c",
-      "sha256": "6225b48ea86d0735d21d511864c428f62319ff015414bde49240a4270ac54022"
+      "sha256": "ddb27e2d878c5e9a0ca803e5198e04468c97f9c95a4dd9ac33d7324033c5ae39"
     },
     {
       "path": "src/core/audio/wz_beeper.c",
@@ -106,7 +106,7 @@
     },
     {
       "path": "src/core/wz_bus.c",
-      "sha256": "98414267eea61bc0a252d3f81ed1cbbe8aa340861a8e2d819940f9f469247398"
+      "sha256": "cf2a35b00d1edc55fff977402391e4d685bb3b3346640205a9c41340e12df704"
     },
     {
       "path": "src/core/wz_debugger.c",
@@ -122,7 +122,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "1144a874bff7b0d3c583fa900b1b68310884e66ed37085ac1b359084b3c51b5a"
+      "sha256": "f055b91867eae883871b2246a313f0213db85e94ff26c76e0cf88eb88fe230ed"
     },
     {
       "path": "src/core/wz_machine_profile.c",
@@ -154,7 +154,7 @@
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "187297bef4bdae24005193ccd54aadb8bbab9326bea3e763aee6bd98a34bb0b5"
+      "sha256": "32aa7ddaebe10ffc0a4d933162103c59d40280cd4392593d4136f41fba9338a7"
     },
     {
       "path": "src/core/wz_tape.c",
