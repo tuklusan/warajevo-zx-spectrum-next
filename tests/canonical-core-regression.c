@@ -64,7 +64,7 @@ static bool fingerprint_cpu(fingerprint_t* output)
     memset(&machine, 0, sizeof(machine));
     wz_result_t result = wz_machine_init(&machine, wz_machine_profile_48k_pal());
     if (result != WZ_RESULT_OK) {
-        fprintf(stderr, "cpu_execution machine init failed: %d\\n", (int)result);
+        fprintf(stderr, "cpu_execution machine init failed: %d\n", (int)result);
         return false;
     }
     for (size_t index = 0u; index < sizeof(program); ++index) {
@@ -76,7 +76,7 @@ static bool fingerprint_cpu(fingerprint_t* output)
     for (size_t index = 0u; index < CPU_STEPS; ++index) {
         result = wz_z80_step(&machine);
         if (result != WZ_RESULT_OK) {
-            fprintf(stderr, "cpu_execution step %zu failed: %d at PC %04x\\n",
+            fprintf(stderr, "cpu_execution step %zu failed: %d at PC %04x\n",
                     index, (int)result, machine.cpu.program_counter);
             wz_machine_destroy(&machine);
             return false;
@@ -84,14 +84,14 @@ static bool fingerprint_cpu(fingerprint_t* output)
     }
     output->name = "cpu_execution";
     if (machine.cpu.program_counter != 0x8000u) {
-        fprintf(stderr, "cpu_execution ended at unexpected PC %04x\\n",
+        fprintf(stderr, "cpu_execution ended at unexpected PC %04x\n",
                 machine.cpu.program_counter);
         wz_machine_destroy(&machine);
         return false;
     }
     result = wz_state_hash_machine(&machine, &output->value);
     if (result != WZ_RESULT_OK) {
-        fprintf(stderr, "cpu_execution state hash failed: %d\\n", (int)result);
+        fprintf(stderr, "cpu_execution state hash failed: %d\n", (int)result);
         wz_machine_destroy(&machine);
         return false;
     }
