@@ -29,3 +29,5 @@ When accepting an optimization, compare against the existing records first.
 Update the affected runner baselines only after the optimization has passing
 canonical correctness evidence and the before/after measurements have been
 reviewed. Keep the old records in the change history.
+
+The CPU execution and snapshot serialization fingerprint expectations were refreshed for state format v14 after AY divider phases became serialized. All four hosted runner artifacts on run `35952794245` agreed on the updated fingerprints; the pinned throughput measurements remain from the original baseline records. The state-format update passed the four-runner comparison on run `35953015461` against the unchanged throughput measurements.
