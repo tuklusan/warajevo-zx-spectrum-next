@@ -389,8 +389,16 @@ static bool verify_ay_envelope_levels(wz_ay_t* ay, wz_byte_t shape,
     }
     for (index = 0u; index < expected_count; ++index) {
         if (wz_ay_advance_master_ticks(ay, WZ_AY_MASTER_TICKS_PER_CLOCK) !=
-                WZ_RESULT_OK ||
-            wz_ay_envelope_level(ay) != expected[index]) {
+            WZ_RESULT_OK) {
+            fprintf(stderr, "AY envelope 0x%02x failed to advance at step %zu\n",
+                    shape, index);
+            return false;
+        }
+        if (wz_ay_envelope_level(ay) != expected[index]) {
+            fprintf(stderr,
+                    "AY envelope 0x%02x step %zu: got %u, expected %u\n",
+                    shape, index, (unsigned)wz_ay_envelope_level(ay),
+                    (unsigned)expected[index]);
             return false;
         }
     }
@@ -447,6 +455,8 @@ static bool verify_ay_envelope_noise_and_mixer(void)
             WZ_RESULT_OK || wz_ay_noise_level(&ay) != 1u ||
         wz_ay_advance_master_ticks(&ay, WZ_AY_MASTER_TICKS_PER_CLOCK) !=
             WZ_RESULT_OK || wz_ay_noise_level(&ay) != 0u) {
+        fputs("AY noise LFSR did not produce the expected period-1 trace\n",
+              stderr);
         return false;
     }
 
@@ -457,6 +467,8 @@ static bool verify_ay_envelope_noise_and_mixer(void)
         wz_audio_mixer_ay_sample(&ay) != 65536 ||
         wz_ay_advance_master_ticks(&ay, 16u * WZ_AY_MASTER_TICKS_PER_CLOCK) !=
             WZ_RESULT_OK || wz_audio_mixer_ay_sample(&ay) != -65536) {
+        fputs("AY noise period and channel gating did not match the mixer trace\n",
+              stderr);
         return false;
     }
 
@@ -468,6 +480,8 @@ static bool verify_ay_envelope_noise_and_mixer(void)
         wz_ay_advance_master_ticks(&ay, WZ_AY_MASTER_TICKS_PER_CLOCK) !=
             WZ_RESULT_OK || wz_ay_envelope_level(&ay) != 1u ||
         wz_audio_mixer_ay_sample(&ay) != 4096) {
+        fputs("AY envelope level did not reach the fixed-point mixer\n",
+              stderr);
         return false;
     }
 
