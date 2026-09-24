@@ -16,6 +16,7 @@
 #include "core/audio/wz_audio_mixer.h"
 #include "core/wz_machine.h"
 #include "core/wz_raster.h"
+#include "core/wz_runner.h"
 #include "core/wz_state.h"
 #include "canonical-fingerprints.h"
 
@@ -312,6 +313,58 @@ static bool verify_flash_bright_semantics(void)
 cleanup:
     wz_machine_destroy(&machine);
     free(pixels);
+    return success;
+}
+
+static bool verify_timestamped_audio_and_ay_clock(void)
+{
+    const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
+    wz_machine_t machine;
+    wz_headless_runner_t runner;
+    wz_beeper_event_t beeper_events[2];
+    wz_ay_event_t ay_events[2];
+    bool success = false;
+
+    memset(&machine, 0, sizeof(machine));
+    if (profile == 0 || wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        goto cleanup;
+    }
+
+    wz_machine_ula_port_fe_write(&machine, 0u, 0x08u, 7u);
+    wz_machine_ula_port_fe_write(&machine, 0u, 0x08u, 11u);
+    wz_machine_ula_port_fe_write(&machine, 0u, 0x00u, 13u);
+    if (wz_machine_beeper_events(&machine, beeper_events, 2u) != 2u ||
+        beeper_events[0].master_tick != 7u || beeper_events[0].level != 1u ||
+        beeper_events[1].master_tick != 13u || beeper_events[1].level != 0u) {
+        goto cleanup;
+    }
+
+    if (wz_headless_runner_init(&runner, &machine, 0) != WZ_RESULT_OK ||
+        wz_headless_runner_advance(&runner, 2u) != WZ_RESULT_OK ||
+        machine.master_tick != 2u || wz_ay_tone_level(&machine.ay, 0u) != 0u ||
+        wz_ay_select_register(&machine.ay, 0u, machine.master_tick) !=
+            WZ_RESULT_OK ||
+        wz_headless_runner_advance(&runner, 1u) != WZ_RESULT_OK ||
+        machine.master_tick != 3u ||
+        wz_ay_write_data(&machine.ay, 1u, machine.master_tick) != WZ_RESULT_OK ||
+        wz_machine_ay_events(&machine, ay_events, 2u) != 2u ||
+        ay_events[0].kind != WZ_AY_EVENT_REGISTER_SELECT ||
+        ay_events[0].master_tick != 2u || ay_events[0].register_index != 0u ||
+        ay_events[1].kind != WZ_AY_EVENT_REGISTER_WRITE ||
+        ay_events[1].master_tick != 3u || ay_events[1].register_index != 0u ||
+        ay_events[1].value != 1u || wz_ay_tone_level(&machine.ay, 0u) != 0u ||
+        wz_headless_runner_advance(&runner, 1u) != WZ_RESULT_OK ||
+        machine.master_tick != 4u || wz_ay_tone_level(&machine.ay, 0u) != 1u ||
+        wz_headless_runner_advance(&runner, 4u) != WZ_RESULT_OK ||
+        machine.master_tick != 8u || wz_ay_tone_level(&machine.ay, 0u) != 0u) {
+        goto cleanup;
+    }
+
+    puts("PASS timestamped_audio_and_ay_clock");
+    success = true;
+
+cleanup:
+    wz_machine_destroy(&machine);
     return success;
 }
 
@@ -628,6 +681,7 @@ int main(void)
     success = verify_ula_fetch_schedule() &&
         verify_raster_write_fetch_order() &&
         verify_flash_bright_semantics() &&
+        verify_timestamped_audio_and_ay_clock() &&
         verify_border_event_timing() &&
         fingerprint_cpu(&actual[0]) &&
         fingerprint_raster(&actual[1]) &&
