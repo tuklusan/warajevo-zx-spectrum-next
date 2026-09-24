@@ -1360,6 +1360,10 @@ wz_result_t wz_machine_ula_fetches_at_tick(const wz_machine_t* machine,
     frame_ticks = (wz_master_tick_t)profile->tstates_per_frame *
         profile->master_ticks_per_cpu_tstate;
     frame_start = (master_tick / frame_ticks) * frame_ticks;
+    if ((master_tick - frame_start) %
+            profile->master_ticks_per_cpu_tstate != 0u) {
+        return WZ_RESULT_OK;
+    }
     tstate = (wz_dword_t)((master_tick - frame_start) /
                           profile->master_ticks_per_cpu_tstate);
     if (tstate < profile->ula_fetch_start_tstate) {

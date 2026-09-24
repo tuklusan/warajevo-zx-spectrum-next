@@ -588,6 +588,15 @@ static bool verify_ula_fetch_schedule(void)
         events[1].address != 0x5800u || events[1].value != 0x16u) {
         goto cleanup;
     }
+    if (profile->master_ticks_per_cpu_tstate > 1u &&
+        (wz_machine_ula_fetches_at_tick(&machine, first_fetch_tick + 1u,
+                                        events, 2u, &count) != WZ_RESULT_OK ||
+         count != 0u ||
+         wz_machine_floating_bus_value(&machine, first_fetch_tick + 1u) !=
+             0xffu)) {
+        fputs("ULA fetch aliased to a non-boundary master tick\n", stderr);
+        goto cleanup;
+    }
 
     invalid_profile = *profile;
     invalid_profile.ula_fetch_line_count = WZ_ULA_CAPTURE_LINE_COUNT + 1u;
@@ -601,6 +610,55 @@ static bool verify_ula_fetch_schedule(void)
     init_result = wz_machine_init(&machine, &invalid_profile);
     if (init_result != WZ_RESULT_INVALID_PROFILE || machine.profile != profile) {
         goto cleanup;
+    }
+
+    /* Independently verify every bitmap and attribute fetch across one frame. */
+    for (wz_word_t address = 0x4000u; address < 0x5b00u; ++address) {
+        wz_byte_t value = (wz_byte_t)(((wz_dword_t)address * 37u +
+            ((wz_dword_t)address >> 7u) * 11u) & 0xffu);
+        wz_machine_memory_write(&machine, address, value);
+    }
+    for (wz_dword_t row = 0u; row < profile->ula_fetch_line_count; ++row) {
+        for (wz_dword_t cell = 0u; cell < profile->ula_fetches_per_line; ++cell) {
+            wz_dword_t tstate = profile->ula_fetch_start_tstate +
+                row * profile->tstates_per_line +
+                cell * profile->ula_fetch_interval_tstates;
+            wz_master_tick_t bitmap_tick = (wz_master_tick_t)tstate *
+                profile->master_ticks_per_cpu_tstate;
+            wz_master_tick_t attribute_tick = bitmap_tick +
+                (wz_master_tick_t)profile->ula_attribute_offset_tstates *
+                    profile->master_ticks_per_cpu_tstate;
+            wz_word_t bitmap_address = (wz_word_t)(0x4000u +
+                ((row & 0xc0u) << 5u) + ((row & 0x07u) << 8u) +
+                ((row & 0x38u) << 2u) + cell);
+            wz_word_t attribute_address = (wz_word_t)(0x5800u +
+                (row / 8u) * 32u + cell);
+            wz_byte_t bitmap_value = (wz_byte_t)(
+                ((wz_dword_t)bitmap_address * 37u +
+                 ((wz_dword_t)bitmap_address >> 7u) * 11u) & 0xffu);
+            wz_byte_t attribute_value = (wz_byte_t)(
+                ((wz_dword_t)attribute_address * 37u +
+                 ((wz_dword_t)attribute_address >> 7u) * 11u) & 0xffu);
+
+            if (wz_machine_ula_fetches_at_tick(&machine, bitmap_tick, events,
+                                               2u, &count) != WZ_RESULT_OK ||
+                count != 2u || events[0].kind != WZ_ULA_FETCH_BITMAP ||
+                events[0].master_tick != bitmap_tick ||
+                events[0].address != bitmap_address ||
+                events[0].value != bitmap_value ||
+                events[1].kind != WZ_ULA_FETCH_ATTRIBUTE ||
+                events[1].master_tick != attribute_tick ||
+                events[1].address != attribute_address ||
+                events[1].value != attribute_value ||
+                wz_machine_floating_bus_value(&machine, bitmap_tick) !=
+                    bitmap_value ||
+                wz_machine_floating_bus_value(&machine, attribute_tick) !=
+                    attribute_value) {
+                fprintf(stderr, "ULA full-frame fetch mismatch at row %u cell %u\n",
+                        (unsigned)row, (unsigned)cell);
+                goto cleanup;
+            }
+        }
     }
 
     puts("PASS ula_fetch_schedule");
