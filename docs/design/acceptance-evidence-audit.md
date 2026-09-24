@@ -29,7 +29,7 @@ Four-runner baseline and determinism evidence: run `35894280373`. Four-runner cl
 | 14 | same-master-edge hardware ordering is explicit and evidence-based; | OPEN | No criterion-specific tracked test or pinned proof has been recorded. |
 | 15 | the ULA fetches memory on an explicit raster schedule; | OPEN | No criterion-specific tracked test or pinned proof has been recorded. |
 | 16 | CPU writes become visible according to real bus ordering; | OPEN | No criterion-specific tracked test or pinned proof has been recorded. |
-| 17 | full border/raster timing is represented; | OPEN | No criterion-specific tracked test or pinned proof has been recorded. |
+| 17 | full border/raster timing is represented; | OPEN | `src/core/wz_machine.c` now maps the 48K PAL active region from frame line 64 and projects timestamped border events across the raster. The passing canonical raster fingerprint on `b509ee8` (run `35936294351`) and eight compiler/platform groups (run `35936294434`) exercise raster generation without border transitions; a border-event timing regression and full-raster evidence remain required. |
 | 18 | the 256 x 192 bitmap is not treated as the entire display; | OPEN | No criterion-specific tracked test or pinned proof has been recorded. |
 | 19 | FLASH and BRIGHT are emulated as Spectrum semantics; | OPEN | No criterion-specific tracked test or pinned proof has been recorded. |
 | 20 | floating-bus behavior is derived from the timed ULA model where supported; | OPEN | No criterion-specific tracked test or pinned proof has been recorded. |
