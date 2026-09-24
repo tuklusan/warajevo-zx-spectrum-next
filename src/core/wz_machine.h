@@ -31,6 +31,10 @@
 #define WZ_128K_RAM_BANK_COUNT 8u
 #define WZ_128K_RAM_BANK_SIZE 16384u
 #define WZ_BORDER_EVENT_CAPACITY 8192u
+#define WZ_ULA_CAPTURE_LINE_COUNT 192u
+#define WZ_ULA_CAPTURE_CELLS_PER_LINE 32u
+#define WZ_ULA_CAPTURE_CELL_COUNT \
+    (WZ_ULA_CAPTURE_LINE_COUNT * WZ_ULA_CAPTURE_CELLS_PER_LINE)
 #define WZ_INTERFACE1_CONTROL_RESET 0xeeu
 
 typedef struct {
@@ -79,6 +83,18 @@ typedef struct {
     wz_master_tick_t master_tick;
     wz_byte_t color;
 } wz_border_event_t;
+
+typedef struct {
+    wz_byte_t bitmap;
+    wz_byte_t attribute;
+    wz_byte_t fetched;
+} wz_ula_cell_capture_t;
+
+typedef struct {
+    wz_qword_t frame_number;
+    wz_byte_t valid;
+    wz_ula_cell_capture_t cells[WZ_ULA_CAPTURE_CELL_COUNT];
+} wz_ula_frame_capture_t;
 
 typedef struct wz_machine {
     const wz_machine_profile_t* profile;
@@ -132,6 +148,13 @@ typedef struct wz_machine {
     wz_border_event_t border_events[WZ_BORDER_EVENT_CAPACITY];
     size_t border_event_start;
     size_t border_event_count;
+    wz_ula_frame_capture_t ula_frame_captures[2u];
+    wz_qword_t ula_capture_frame_number;
+    wz_dword_t ula_capture_event_index;
+    wz_master_tick_t ula_capture_last_tick;
+    wz_byte_t ula_capture_slot;
+    wz_byte_t ula_capture_initialized;
+    wz_byte_t ula_capture_has_last_tick;
     wz_byte_t maskable_interrupt_line_low;
     wz_byte_t im0_injected_opcode;
     wz_byte_t im0_injected_opcode_pending;
@@ -227,8 +250,10 @@ wz_result_t wz_machine_128k_paging_write(wz_machine_t* machine,
 wz_byte_t wz_machine_128k_paging_value(const wz_machine_t* machine);
 wz_byte_t wz_machine_128k_screen_bank(const wz_machine_t* machine);
 wz_byte_t wz_machine_128k_rom_bank(const wz_machine_t* machine);
-void wz_machine_memory_write_at_tick(wz_machine_t* machine, wz_word_t address,
-                                     wz_byte_t value, wz_master_tick_t master_tick);
+wz_result_t wz_machine_memory_write_at_tick(wz_machine_t* machine,
+                                            wz_word_t address,
+                                            wz_byte_t value,
+                                            wz_master_tick_t master_tick);
 bool wz_machine_ula_port_fe_selected(wz_word_t address);
 wz_byte_t wz_machine_beeper_level(const wz_machine_t* machine);
 wz_byte_t wz_machine_mic_level(const wz_machine_t* machine);
@@ -262,6 +287,7 @@ wz_result_t wz_machine_ula_fetches_at_tick(const wz_machine_t* machine,
                                            wz_ula_fetch_event_t* events,
                                            size_t capacity,
                                            size_t* count);
+wz_result_t wz_machine_reset_ula_capture(wz_machine_t* machine);
 wz_byte_t wz_machine_floating_bus_value(const wz_machine_t* machine,
                                         wz_master_tick_t master_tick);
 bool wz_machine_flash_phase(const wz_machine_t* machine,

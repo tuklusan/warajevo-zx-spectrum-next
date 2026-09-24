@@ -18,6 +18,25 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include <stdlib.h>
 #include <string.h>
 
+static wz_result_t wz_machine_ula_capture_until(
+    wz_machine_t* machine, wz_master_tick_t master_tick, bool inclusive);
+
+wz_result_t wz_machine_reset_ula_capture(wz_machine_t* machine)
+{
+    if (machine == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    memset(machine->ula_frame_captures, 0,
+           sizeof(machine->ula_frame_captures));
+    machine->ula_capture_frame_number = 0u;
+    machine->ula_capture_event_index = 0u;
+    machine->ula_capture_last_tick = 0u;
+    machine->ula_capture_slot = 0u;
+    machine->ula_capture_initialized = 0u;
+    machine->ula_capture_has_last_tick = 0u;
+    return WZ_RESULT_OK;
+}
+
 wz_result_t wz_machine_init(wz_machine_t* machine,
                             const wz_machine_profile_t* profile)
 {
@@ -83,6 +102,7 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     machine->border_event_base_tick = 0u;
     machine->border_event_start = 0u;
     machine->border_event_count = 0u;
+    (void)wz_machine_reset_ula_capture(machine);
     machine->im0_injected_opcode = 0u;
     machine->im0_injected_opcode_pending = 0u;
     for (size_t index = 0u; index < sizeof(machine->memory); ++index) {
@@ -189,6 +209,7 @@ void wz_machine_destroy(wz_machine_t* machine)
         machine->border_event_base_tick = 0u;
         machine->border_event_start = 0u;
         machine->border_event_count = 0u;
+        (void)wz_machine_reset_ula_capture(machine);
         machine->im0_injected_opcode = 0u;
         machine->im0_injected_opcode_pending = 0u;
     }
@@ -761,8 +782,8 @@ wz_byte_t wz_machine_memory_read(const wz_machine_t* machine, wz_word_t address)
     return machine->memory[address];
 }
 
-void wz_machine_memory_write(wz_machine_t* machine, wz_word_t address,
-                             wz_byte_t value)
+static void wz_machine_memory_write_raw(wz_machine_t* machine,
+                                        wz_word_t address, wz_byte_t value)
 {
     if (machine != 0 && machine->profile != 0 &&
         machine->profile->kind == WZ_MACHINE_128K_PAL) {
@@ -777,6 +798,15 @@ void wz_machine_memory_write(wz_machine_t* machine, wz_word_t address,
     } else if (machine != 0 &&
                (!machine->has_48k_rom || address >= WZ_48K_ROM_SIZE)) {
         machine->memory[address] = value;
+    }
+}
+
+void wz_machine_memory_write(wz_machine_t* machine, wz_word_t address,
+                             wz_byte_t value)
+{
+    if (machine != 0) {
+        (void)wz_machine_memory_write_at_tick(machine, address, value,
+                                              machine->master_tick);
     }
 }
 
@@ -816,12 +846,39 @@ wz_byte_t wz_machine_128k_rom_bank(const wz_machine_t* machine)
     return machine == 0 ? 0u : (wz_byte_t)((machine->paging_7ffd >> 4u) & 1u);
 }
 
-void wz_machine_memory_write_at_tick(wz_machine_t* machine, wz_word_t address,
-                                     wz_byte_t value, wz_master_tick_t master_tick)
+wz_result_t wz_machine_memory_write_at_tick(wz_machine_t* machine,
+                                            wz_word_t address,
+                                            wz_byte_t value,
+                                            wz_master_tick_t master_tick)
 {
-    (void)master_tick;
-    /* CPU writes are applied before a same-tick ULA fetch by the scheduler contract. */
-    wz_machine_memory_write(machine, address, value);
+    wz_result_t result;
+
+    if (machine == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (machine->profile != 0 &&
+        machine->profile->kind == WZ_MACHINE_48K_PAL &&
+        address >= 0x4000u && address < 0x5b00u) {
+        if (machine->ula_capture_has_last_tick != 0u &&
+            master_tick < machine->ula_capture_last_tick) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        result = wz_machine_ula_capture_until(machine, master_tick, false);
+        if (result != WZ_RESULT_OK) {
+            return result;
+        }
+        wz_machine_memory_write_raw(machine, address, value);
+        /* CPU writes become visible before a same-tick ULA fetch. */
+        result = wz_machine_ula_capture_until(machine, master_tick, true);
+        if (result != WZ_RESULT_OK) {
+            return result;
+        }
+        machine->ula_capture_last_tick = master_tick;
+        machine->ula_capture_has_last_tick = 1u;
+        return WZ_RESULT_OK;
+    }
+    wz_machine_memory_write_raw(machine, address, value);
+    return WZ_RESULT_OK;
 }
 
 bool wz_machine_ula_port_fe_selected(wz_word_t address)
@@ -1065,6 +1122,167 @@ static wz_byte_t wz_machine_ula_memory_read(const wz_machine_t* machine,
     return machine->memory[address];
 }
 
+static void wz_machine_ula_capture_clear_slot(wz_machine_t* machine,
+                                              wz_byte_t slot,
+                                              wz_qword_t frame_number)
+{
+    wz_ula_frame_capture_t* capture = &machine->ula_frame_captures[slot];
+
+    memset(capture, 0, sizeof(*capture));
+    capture->frame_number = frame_number;
+    capture->valid = 1u;
+}
+
+static wz_result_t wz_machine_ula_capture_event_tick(
+    const wz_machine_profile_t* profile, wz_qword_t frame_number,
+    wz_dword_t event_index, wz_master_tick_t* event_tick,
+    wz_dword_t* row, wz_dword_t* cell, bool* attribute)
+{
+    const wz_qword_t events_per_line =
+        (wz_qword_t)profile->ula_fetches_per_line * 2u;
+    const wz_qword_t events_per_frame =
+        (wz_qword_t)profile->ula_fetch_line_count * events_per_line;
+    const wz_qword_t frame_ticks =
+        (wz_qword_t)profile->tstates_per_frame *
+        profile->master_ticks_per_cpu_tstate;
+    const wz_qword_t event_line = (wz_qword_t)event_index / events_per_line;
+    const wz_qword_t event_in_line = (wz_qword_t)event_index % events_per_line;
+    const wz_qword_t event_tstate =
+        (wz_qword_t)profile->ula_fetch_start_tstate +
+        event_line * profile->tstates_per_line +
+        (event_in_line / 2u) * profile->ula_fetch_interval_tstates +
+        ((event_in_line & 1u) != 0u ?
+            profile->ula_attribute_offset_tstates : 0u);
+    wz_qword_t frame_start;
+    wz_qword_t event_offset;
+
+    if (events_per_line == 0u || event_index >= events_per_frame ||
+        frame_ticks == 0u || event_tstate >= profile->tstates_per_frame ||
+        frame_number > UINT64_MAX / frame_ticks) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    frame_start = frame_number * frame_ticks;
+    if (event_tstate > UINT64_MAX /
+            profile->master_ticks_per_cpu_tstate) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    event_offset = event_tstate * profile->master_ticks_per_cpu_tstate;
+    if (frame_start > UINT64_MAX - event_offset) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    *event_tick = frame_start + event_offset;
+    *row = (wz_dword_t)event_line;
+    *cell = (wz_dword_t)(event_in_line / 2u);
+    *attribute = (event_in_line & 1u) != 0u;
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_machine_ula_capture_until(wz_machine_t* machine,
+                                                wz_master_tick_t master_tick,
+                                                bool inclusive)
+{
+    const wz_machine_profile_t* profile;
+    wz_qword_t frame_ticks;
+    wz_qword_t target_frame;
+    wz_qword_t events_per_frame;
+
+    if (machine == 0 || machine->profile == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    profile = machine->profile;
+    if (profile->kind != WZ_MACHINE_48K_PAL) {
+        return WZ_RESULT_OK;
+    }
+    if (profile->master_ticks_per_cpu_tstate == 0u ||
+        profile->tstates_per_frame == 0u ||
+        profile->tstates_per_line == 0u ||
+        profile->ula_fetch_line_count == 0u ||
+        profile->ula_fetches_per_line == 0u ||
+        profile->ula_fetch_interval_tstates == 0u) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    frame_ticks = (wz_qword_t)profile->tstates_per_frame *
+        profile->master_ticks_per_cpu_tstate;
+    events_per_frame = (wz_qword_t)profile->ula_fetch_line_count *
+        profile->ula_fetches_per_line * 2u;
+    if (frame_ticks == 0u || events_per_frame > UINT32_MAX) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    target_frame = master_tick / frame_ticks;
+
+    if (machine->ula_capture_initialized == 0u) {
+        machine->ula_capture_frame_number = target_frame == 0u ? 0u :
+            target_frame - 1u;
+        machine->ula_capture_event_index = 0u;
+        machine->ula_capture_slot = 0u;
+        wz_machine_ula_capture_clear_slot(
+            machine, 0u, machine->ula_capture_frame_number);
+        memset(&machine->ula_frame_captures[1], 0,
+               sizeof(machine->ula_frame_captures[1]));
+        machine->ula_capture_initialized = 1u;
+    } else if (target_frame < machine->ula_capture_frame_number) {
+        return WZ_RESULT_INVALID_STATE;
+    } else if (target_frame > machine->ula_capture_frame_number &&
+               target_frame - machine->ula_capture_frame_number > 1u) {
+        machine->ula_capture_frame_number = target_frame - 1u;
+        machine->ula_capture_event_index = 0u;
+        machine->ula_capture_slot = 0u;
+        wz_machine_ula_capture_clear_slot(
+            machine, 0u, machine->ula_capture_frame_number);
+        memset(&machine->ula_frame_captures[1], 0,
+               sizeof(machine->ula_frame_captures[1]));
+    }
+
+    for (;;) {
+        wz_master_tick_t event_tick;
+        wz_dword_t row;
+        wz_dword_t cell;
+        bool attribute;
+        wz_ula_frame_capture_t* capture;
+        wz_ula_cell_capture_t* cell_capture;
+        wz_word_t address;
+        wz_result_t result;
+
+        if ((wz_qword_t)machine->ula_capture_event_index >= events_per_frame) {
+            if (machine->ula_capture_frame_number == UINT64_MAX) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+            ++machine->ula_capture_frame_number;
+            machine->ula_capture_event_index = 0u;
+            machine->ula_capture_slot ^= 1u;
+            wz_machine_ula_capture_clear_slot(
+                machine, machine->ula_capture_slot,
+                machine->ula_capture_frame_number);
+        }
+        result = wz_machine_ula_capture_event_tick(
+            profile, machine->ula_capture_frame_number,
+            machine->ula_capture_event_index, &event_tick, &row, &cell,
+            &attribute);
+        if (result != WZ_RESULT_OK) {
+            return result;
+        }
+        if (event_tick > master_tick ||
+            (!inclusive && event_tick == master_tick)) {
+            return WZ_RESULT_OK;
+        }
+
+        capture = &machine->ula_frame_captures[machine->ula_capture_slot];
+        cell_capture = &capture->cells[
+            (size_t)row * WZ_ULA_CAPTURE_CELLS_PER_LINE + cell];
+        if (attribute) {
+            address = (wz_word_t)(0x5800u + (row / 8u) * 32u + cell);
+            cell_capture->attribute = wz_machine_ula_memory_read(machine,
+                                                                  address);
+            cell_capture->fetched |= 0x02u;
+        } else {
+            address = wz_ula_bitmap_address(row, cell);
+            cell_capture->bitmap = wz_machine_ula_memory_read(machine, address);
+            cell_capture->fetched |= 0x01u;
+        }
+        ++machine->ula_capture_event_index;
+    }
+}
+
 wz_result_t wz_machine_ula_fetches_at_tick(const wz_machine_t* machine,
                                            wz_master_tick_t master_tick,
                                            wz_ula_fetch_event_t* events,
@@ -1197,6 +1415,7 @@ wz_result_t wz_machine_render_raster(const wz_machine_t* machine,
     wz_qword_t frame_ticks;
     wz_master_tick_t latest_tick;
     wz_master_tick_t frame_start;
+    const wz_ula_frame_capture_t* ula_capture = 0;
     size_t event_index = 0u;
     wz_byte_t border_sample;
     wz_byte_t border_color;
@@ -1235,6 +1454,16 @@ wz_result_t wz_machine_render_raster(const wz_machine_t* machine,
     }
     latest_tick = machine->master_tick == 0u ? 0u : machine->master_tick - 1u;
     frame_start = render_border_timeline ? (latest_tick / frame_ticks) * frame_ticks : 0u;
+    if (render_border_timeline) {
+        const wz_qword_t frame_number = frame_start / frame_ticks;
+        for (size_t slot = 0u; slot < 2u; ++slot) {
+            if (machine->ula_frame_captures[slot].valid != 0u &&
+                machine->ula_frame_captures[slot].frame_number == frame_number) {
+                ula_capture = &machine->ula_frame_captures[slot];
+                break;
+            }
+        }
+    }
     border_color = !render_border_timeline || machine->border_event_count == 0u ?
         machine->border_color : machine->border_event_base_color;
     if (border_color > 7u) {
@@ -1298,6 +1527,17 @@ wz_result_t wz_machine_render_raster(const wz_machine_t* machine,
             wz_byte_t bitmap = wz_machine_memory_read(machine, bitmap_address);
             wz_byte_t attribute = wz_machine_memory_read(machine,
                                                           attribute_address);
+            if (ula_capture != 0) {
+                const wz_ula_cell_capture_t* cell_capture =
+                    &ula_capture->cells[y * WZ_ULA_CAPTURE_CELLS_PER_LINE +
+                                        cell];
+                if ((cell_capture->fetched & 0x01u) != 0u) {
+                    bitmap = cell_capture->bitmap;
+                }
+                if ((cell_capture->fetched & 0x02u) != 0u) {
+                    attribute = cell_capture->attribute;
+                }
+            }
             for (size_t bit = 0u; bit < 8u; ++bit) {
                 size_t x = cell * 8u + bit;
                 wz_byte_t sample;

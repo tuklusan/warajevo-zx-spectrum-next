@@ -315,6 +315,70 @@ cleanup:
     return success;
 }
 
+static bool verify_raster_write_fetch_order(void)
+{
+    const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
+    const size_t raster_size =
+        (size_t)WZ_RASTER_CANONICAL_WIDTH * WZ_RASTER_CANONICAL_HEIGHT;
+    wz_machine_t machine;
+    wz_raster_buffer_t raster;
+    wz_byte_t* pixels = (wz_byte_t*)malloc(raster_size);
+    wz_master_tick_t first_fetch_tick;
+    wz_master_tick_t frame_ticks;
+    bool success = false;
+
+    memset(&machine, 0, sizeof(machine));
+    memset(&raster, 0, sizeof(raster));
+    if (profile == 0 || pixels == 0) {
+        free(pixels);
+        return false;
+    }
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        wz_machine_destroy(&machine);
+        free(pixels);
+        return false;
+    }
+    first_fetch_tick = (wz_master_tick_t)profile->ula_fetch_start_tstate *
+        profile->master_ticks_per_cpu_tstate;
+    frame_ticks = (wz_master_tick_t)profile->tstates_per_frame *
+        profile->master_ticks_per_cpu_tstate;
+    wz_machine_memory_write(&machine, 0x4000u, 0x80u);
+    wz_machine_memory_write(&machine, 0x5800u, 0x01u);
+    wz_machine_memory_write(&machine, 0x4001u, 0x00u);
+    wz_machine_memory_write(&machine, 0x5801u, 0x01u);
+
+    /* A write after both fetches must preserve the values already seen. */
+    if (wz_machine_memory_write_at_tick(&machine, 0x4000u, 0x00u,
+                                        first_fetch_tick + 4u) != WZ_RESULT_OK ||
+        wz_machine_memory_write_at_tick(&machine, 0x5800u, 0x02u,
+                                        first_fetch_tick + 4u) != WZ_RESULT_OK ||
+        /* Same-tick CPU writes are visible to the following ULA fetch. */
+        wz_machine_memory_write_at_tick(&machine, 0x4001u, 0x80u,
+                                        first_fetch_tick + 8u) != WZ_RESULT_OK ||
+        wz_machine_memory_write_at_tick(&machine, 0x5801u, 0x02u,
+                                        first_fetch_tick + 10u) != WZ_RESULT_OK) {
+        goto cleanup;
+    }
+    machine.master_tick = frame_ticks;
+    if (wz_raster_buffer_init(&raster, WZ_RASTER_CANONICAL_WIDTH,
+                              WZ_RASTER_CANONICAL_HEIGHT, pixels,
+                              raster_size) != WZ_RESULT_OK ||
+        wz_machine_render_raster(&machine, &raster) != WZ_RESULT_OK ||
+        pixels[64u * WZ_RASTER_CANONICAL_WIDTH + 96u] != 1u ||
+        pixels[64u * WZ_RASTER_CANONICAL_WIDTH + 97u] != 0u ||
+        pixels[64u * WZ_RASTER_CANONICAL_WIDTH + 104u] != 2u) {
+        goto cleanup;
+    }
+
+    puts("PASS raster_write_fetch_order");
+    success = true;
+
+cleanup:
+    wz_machine_destroy(&machine);
+    free(pixels);
+    return success;
+}
+
 static bool fingerprint_audio(fingerprint_t* output)
 {
     wz_ay_t ay;
@@ -442,6 +506,7 @@ int main(void)
     bool success;
 
     success = verify_ula_fetch_schedule() &&
+        verify_raster_write_fetch_order() &&
         verify_border_event_timing() &&
         fingerprint_cpu(&actual[0]) &&
         fingerprint_raster(&actual[1]) &&

@@ -662,7 +662,7 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
         machine->microdrive = microdrive;
         machine->zxnet = zxnet;
     }
-    return WZ_RESULT_OK;
+    return wz_machine_reset_ula_capture(machine);
 }
 
 void wz_snapshot_state_init(wz_snapshot_state_t* snapshot)
@@ -1073,6 +1073,7 @@ static void wz_sna_128k_apply_candidate(wz_machine_t* machine,
     machine->tape_state = candidate->tape_state;
     machine->tape_state.tape = &machine->tape;
     machine->tape_mounted = 0u;
+    (void)wz_machine_reset_ula_capture(machine);
 }
 
 wz_result_t wz_state_load_sna_128k(wz_machine_t* machine,

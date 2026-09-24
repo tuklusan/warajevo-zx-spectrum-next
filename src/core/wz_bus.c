@@ -157,8 +157,11 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
         request->source = WZ_BUS_SOURCE_MEMORY;
         break;
     case WZ_BUS_MEMORY_WRITE:
-        wz_machine_memory_write_at_tick(machine, request->address,
-                                        request->value, request->master_tick);
+        if (wz_machine_memory_write_at_tick(machine, request->address,
+                                            request->value,
+                                            request->master_tick) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
         request->source = WZ_BUS_SOURCE_MEMORY;
         break;
     case WZ_BUS_IO_READ:
