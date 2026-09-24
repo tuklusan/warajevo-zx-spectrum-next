@@ -48,6 +48,11 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     if (profile == 0) {
         return WZ_RESULT_INVALID_PROFILE;
     }
+    if (profile->kind == WZ_MACHINE_48K_PAL &&
+        (profile->ula_fetch_line_count > WZ_ULA_CAPTURE_LINE_COUNT ||
+         profile->ula_fetches_per_line > WZ_ULA_CAPTURE_CELLS_PER_LINE)) {
+        return WZ_RESULT_INVALID_PROFILE;
+    }
 
     machine->ram_128k = 0;
     machine->ula_frame_captures = 0;
