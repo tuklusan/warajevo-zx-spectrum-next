@@ -379,6 +379,12 @@ static bool verify_raster_write_fetch_order(void)
                                         first_fetch_tick + 10u) != WZ_RESULT_OK) {
         goto cleanup;
     }
+    if (wz_machine_memory_write_at_tick(&machine, 0x4000u, 0xffu,
+                                        final_fetch_tick) != WZ_RESULT_OK ||
+        wz_machine_memory_write_at_tick(&machine, 0x4000u, 0x55u,
+                                        frame_ticks - 1u) != WZ_RESULT_OK) {
+        goto cleanup;
+    }
     machine.master_tick = frame_ticks;
     if (wz_raster_buffer_init(&raster, WZ_RASTER_CANONICAL_WIDTH,
                               WZ_RASTER_CANONICAL_HEIGHT, pixels,
@@ -387,12 +393,6 @@ static bool verify_raster_write_fetch_order(void)
         pixels[64u * WZ_RASTER_CANONICAL_WIDTH + 96u] != 1u ||
         pixels[64u * WZ_RASTER_CANONICAL_WIDTH + 97u] != 0u ||
         pixels[64u * WZ_RASTER_CANONICAL_WIDTH + 104u] != 2u) {
-        goto cleanup;
-    }
-    if (wz_machine_memory_write_at_tick(&machine, 0x4000u, 0xffu,
-                                        final_fetch_tick) != WZ_RESULT_OK ||
-        wz_machine_memory_write_at_tick(&machine, 0x4000u, 0x55u,
-                                        frame_ticks - 1u) != WZ_RESULT_OK) {
         goto cleanup;
     }
 

@@ -1247,6 +1247,7 @@ static wz_result_t wz_machine_ula_capture_until(wz_machine_t* machine,
             if (machine->ula_capture_frame_number == UINT64_MAX) {
                 return WZ_RESULT_INVALID_STATE;
             }
+            /* Keep the cursor on this frame through trailing blanking. */
             result = wz_machine_ula_capture_event_tick(
                 profile, machine->ula_capture_frame_number + 1u, 0u,
                 &event_tick, &row, &cell, &attribute);
