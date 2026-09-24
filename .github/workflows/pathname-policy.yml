@@ -1,11 +1,9 @@
 name: Repository pathname policy
 
 on:
-  # Direct commits to main are the only supported project update path.
+  # Run after every direct update to the sole project branch.
   push:
     branches: [main]
-  # Manual audits are also restricted to main by the guard below.
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -15,11 +13,11 @@ jobs:
     name: Main pathname policy
     runs-on: ubuntu-latest
     steps:
-      - name: Require a direct main push or main dispatch
+      - name: Require a push to main
         shell: bash
         run: |
-          if [[ "$GITHUB_REF" != "refs/heads/main" || ( "$GITHUB_EVENT_NAME" != "push" && "$GITHUB_EVENT_NAME" != "workflow_dispatch" ) ]]; then
-            echo "Pathname policy runs only for direct pushes to main or manual dispatch on main." >&2
+          if [[ "$GITHUB_REF" != "refs/heads/main" || "$GITHUB_EVENT_NAME" != "push" ]]; then
+            echo "Pathname policy runs only after pushes to main." >&2
             exit 1
           fi
 

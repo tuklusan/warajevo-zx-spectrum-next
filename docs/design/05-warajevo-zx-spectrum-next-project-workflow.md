@@ -45,7 +45,7 @@ every complete tracked pathname, including directory components, for forbidden
 terms case-insensitively before contacting GitHub. No branch other than `main`
 is created or used. Manual dispatch jobs require `main`; pull-request triggers are
 prohibited. The pathname-policy workflow rechecks every tracked pathname at the
-exact commit on each direct push to `main` and on manual runs there.
+exact commit after each push to `main`.
 
 GitHub push rulesets can reject file paths before receipt only for private or
 internal repositories on eligible plans. This repository is public, so GitHub
