@@ -231,6 +231,7 @@ static bool verify_ula_fetch_schedule(void)
     wz_machine_t machine;
     wz_ula_fetch_event_t events[2];
     wz_master_tick_t first_fetch_tick;
+    wz_master_tick_t frame_ticks;
     size_t count = 0u;
     bool success = false;
 
@@ -243,6 +244,8 @@ static bool verify_ula_fetch_schedule(void)
         return false;
     }
     first_fetch_tick = (wz_master_tick_t)profile->ula_fetch_start_tstate *
+        profile->master_ticks_per_cpu_tstate;
+    frame_ticks = (wz_master_tick_t)profile->tstates_per_frame *
         profile->master_ticks_per_cpu_tstate;
     wz_machine_memory_write(&machine, 0x4000u, 0xa5u);
     wz_machine_memory_write(&machine, 0x5800u, 0x16u);
@@ -291,6 +294,16 @@ static bool verify_ula_fetch_schedule(void)
                     profile->tstates_per_line *
                     profile->master_ticks_per_cpu_tstate,
             events, 2u, &count) != WZ_RESULT_OK || count != 0u) {
+        goto cleanup;
+    }
+
+    if (wz_machine_ula_fetches_at_tick(
+            &machine, frame_ticks + first_fetch_tick, events, 2u, &count) !=
+            WZ_RESULT_OK || count != 2u ||
+        events[0].master_tick != frame_ticks + first_fetch_tick ||
+        events[0].address != 0x4000u || events[0].value != 0xa5u ||
+        events[1].master_tick != frame_ticks + first_fetch_tick + 2u ||
+        events[1].address != 0x5800u || events[1].value != 0x16u) {
         goto cleanup;
     }
 

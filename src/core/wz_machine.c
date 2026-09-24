@@ -1077,6 +1077,9 @@ wz_result_t wz_machine_ula_fetches_at_tick(const wz_machine_t* machine,
     wz_dword_t line;
     wz_dword_t cell;
     wz_dword_t row;
+    wz_master_tick_t frame_ticks;
+    wz_master_tick_t frame_start;
+    wz_master_tick_t bitmap_offset;
     wz_master_tick_t bitmap_tick;
     wz_master_tick_t attribute_tick;
 
@@ -1088,12 +1091,18 @@ wz_result_t wz_machine_ula_fetches_at_tick(const wz_machine_t* machine,
     if ((profile->kind != WZ_MACHINE_48K_PAL &&
          profile->kind != WZ_MACHINE_128K_PAL) ||
         profile->master_ticks_per_cpu_tstate == 0u ||
+        profile->tstates_per_frame == 0u ||
+        profile->tstates_per_line == 0u ||
         profile->ula_fetch_line_count == 0u ||
         profile->ula_fetches_per_line == 0u ||
         profile->ula_fetch_interval_tstates == 0u) {
         return WZ_RESULT_OK;
     }
-    tstate = (wz_dword_t)(master_tick / profile->master_ticks_per_cpu_tstate);
+    frame_ticks = (wz_master_tick_t)profile->tstates_per_frame *
+        profile->master_ticks_per_cpu_tstate;
+    frame_start = (master_tick / frame_ticks) * frame_ticks;
+    tstate = (wz_dword_t)((master_tick - frame_start) /
+                          profile->master_ticks_per_cpu_tstate);
     if (tstate < profile->ula_fetch_start_tstate) {
         return WZ_RESULT_OK;
     }
@@ -1108,10 +1117,20 @@ wz_result_t wz_machine_ula_fetches_at_tick(const wz_machine_t* machine,
         (elapsed % profile->ula_fetch_interval_tstates) != 0u) {
         return WZ_RESULT_OK;
     }
-    bitmap_tick = (wz_master_tick_t)tstate *
+    bitmap_offset = (wz_master_tick_t)tstate *
         profile->master_ticks_per_cpu_tstate;
-    attribute_tick = bitmap_tick + (wz_master_tick_t)profile->ula_attribute_offset_tstates *
-        (wz_master_tick_t)profile->master_ticks_per_cpu_tstate;
+    if (frame_start > UINT64_MAX - bitmap_offset) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    bitmap_tick = frame_start + bitmap_offset;
+    if (bitmap_tick > UINT64_MAX -
+            (wz_master_tick_t)profile->ula_attribute_offset_tstates *
+                profile->master_ticks_per_cpu_tstate) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    attribute_tick = bitmap_tick +
+        (wz_master_tick_t)profile->ula_attribute_offset_tstates *
+            profile->master_ticks_per_cpu_tstate;
     row = line;
     if (capacity < 2u || events == 0) {
         return WZ_RESULT_BUFFER_TOO_SMALL;
