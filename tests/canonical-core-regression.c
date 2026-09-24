@@ -133,6 +133,94 @@ cleanup:
     return success;
 }
 
+static bool verify_border_event_timing(void)
+{
+    const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
+    wz_master_tick_t line_ticks;
+    wz_master_tick_t frame_ticks;
+    wz_master_tick_t active_line;
+    wz_border_event_t expected_events[5];
+    const size_t raster_size =
+        (size_t)WZ_RASTER_CANONICAL_WIDTH * WZ_RASTER_CANONICAL_HEIGHT;
+    wz_machine_t machine;
+    wz_raster_buffer_t raster;
+    wz_border_event_t recorded[sizeof(expected_events) / sizeof(expected_events[0])];
+    wz_byte_t* pixels = (wz_byte_t*)malloc(raster_size);
+    bool success = false;
+
+    memset(&machine, 0, sizeof(machine));
+    memset(&raster, 0, sizeof(raster));
+    if (profile == 0 || pixels == 0) {
+        free(pixels);
+        return false;
+    }
+    line_ticks = (wz_master_tick_t)profile->tstates_per_line *
+        profile->master_ticks_per_cpu_tstate;
+    frame_ticks = (wz_master_tick_t)profile->tstates_per_frame *
+        profile->master_ticks_per_cpu_tstate;
+    active_line = line_ticks * 64u;
+    expected_events[0] = (wz_border_event_t){0u, 2u};
+    expected_events[1] = (wz_border_event_t){1u, 3u};
+    expected_events[2] = (wz_border_event_t){active_line + 256u, 6u};
+    expected_events[3] = (wz_border_event_t){active_line + 280u, 1u};
+    expected_events[4] = (wz_border_event_t){active_line + 352u, 4u};
+    if (line_ticks != WZ_RASTER_CANONICAL_WIDTH ||
+        frame_ticks != (wz_master_tick_t)WZ_RASTER_CANONICAL_WIDTH *
+                           WZ_RASTER_CANONICAL_HEIGHT ||
+        wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        free(pixels);
+        return false;
+    }
+
+    wz_machine_ula_port_fe_write(&machine, 0u, 2u, expected_events[0].master_tick);
+    wz_machine_ula_port_fe_write(&machine, 0u, 3u, expected_events[1].master_tick);
+    wz_machine_ula_port_fe_write(&machine, 0u, 6u, expected_events[2].master_tick);
+    wz_machine_ula_port_fe_write(&machine, 0u, 1u, expected_events[3].master_tick);
+    wz_machine_ula_port_fe_write(&machine, 0u, 4u, expected_events[4].master_tick);
+    machine.master_tick = frame_ticks;
+
+    if (wz_machine_border_events(&machine, recorded,
+                                 sizeof(recorded) / sizeof(recorded[0])) !=
+            sizeof(expected_events) / sizeof(expected_events[0])) {
+        goto cleanup;
+    }
+    for (size_t index = 0u;
+         index < sizeof(expected_events) / sizeof(expected_events[0]); ++index) {
+        if (recorded[index].master_tick != expected_events[index].master_tick ||
+            recorded[index].color != expected_events[index].color) {
+            goto cleanup;
+        }
+    }
+
+    if (wz_raster_buffer_init(&raster, WZ_RASTER_CANONICAL_WIDTH,
+                              WZ_RASTER_CANONICAL_HEIGHT, pixels,
+                              raster_size) != WZ_RESULT_OK ||
+        wz_machine_render_raster(&machine, &raster) != WZ_RESULT_OK) {
+        goto cleanup;
+    }
+
+    /* Frame top border follows writes at adjacent master ticks. */
+    if (pixels[0u * WZ_RASTER_CANONICAL_WIDTH + 96u] != 0x12u ||
+        pixels[0u * WZ_RASTER_CANONICAL_WIDTH + 97u] != 0x13u ||
+        /* First active line's right border follows its timestamped changes. */
+        pixels[64u * WZ_RASTER_CANONICAL_WIDTH + 352u] != 0x16u ||
+        pixels[64u * WZ_RASTER_CANONICAL_WIDTH + 376u] != 0x11u ||
+        /* The final horizontal phase wraps into the left border. */
+        pixels[64u * WZ_RASTER_CANONICAL_WIDTH] != 0x14u ||
+        /* A border event must never overwrite an active display sample. */
+        pixels[64u * WZ_RASTER_CANONICAL_WIDTH + 200u] > WZ_RASTER_ACTIVE_MAX) {
+        goto cleanup;
+    }
+
+    puts("PASS border_event_timing");
+    success = true;
+
+cleanup:
+    wz_machine_destroy(&machine);
+    free(pixels);
+    return success;
+}
+
 static bool fingerprint_audio(fingerprint_t* output)
 {
     wz_ay_t ay;
@@ -259,7 +347,8 @@ int main(void)
     };
     bool success;
 
-    success = fingerprint_cpu(&actual[0]) &&
+    success = verify_border_event_timing() &&
+        fingerprint_cpu(&actual[0]) &&
         fingerprint_raster(&actual[1]) &&
         fingerprint_audio(&actual[2]) &&
         fingerprint_tape(&actual[3]) &&
