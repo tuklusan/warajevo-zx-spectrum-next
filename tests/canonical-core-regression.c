@@ -254,8 +254,7 @@ static bool verify_full_border_raster_projection(void)
     memset(&raster, 0, sizeof(raster));
     if (profile == 0 || pixels == 0 ||
         wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
-        free(pixels);
-        return false;
+        goto cleanup;
     }
     line_ticks = (wz_master_tick_t)profile->tstates_per_line *
         profile->master_ticks_per_cpu_tstate;
