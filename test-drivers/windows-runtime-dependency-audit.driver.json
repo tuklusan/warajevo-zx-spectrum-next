@@ -12,7 +12,7 @@
     },
     {
       "path": "ci/test/windows-runtime-dependencies/inspect_pe.py",
-      "sha256": "2b026bd8dc8b74cf2671487ecbcc355df74a013a7b480624aae154d1ff16be5c"
+      "sha256": "75072af6c4c79d1f4f6ea44f3d304c0b6abec415f3db6815fc11c3c8a3b33a77"
     },
     {
       "path": "src/cmake/CMakeLists.txt",

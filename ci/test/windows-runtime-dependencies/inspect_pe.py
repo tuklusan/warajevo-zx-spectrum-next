@@ -92,21 +92,24 @@ def imports_from_pe(image: bytes) -> tuple[int, list[str]]:
             return
         offset = rva_to_offset(rva)
         entry_size = 32 if delay else 20
-        for index in range(size // entry_size + 1):
-            entry_offset = offset + index * entry_size
+        directory_end = offset + size
+        if directory_end > len(image):
+            raise ValueError("PE import directory extends beyond file data")
+        entry_offset = offset
+        while entry_offset + entry_size <= directory_end:
             if delay:
                 attributes, name_value = struct.unpack_from("<II", image, entry_offset)
                 if attributes == 0 and name_value == 0:
-                    break
+                    return
                 name_rva = name_value if attributes & 1 else name_value - image_base
             else:
                 descriptor = struct.unpack_from("<IIIII", image, entry_offset)
                 if not any(descriptor):
-                    break
+                    return
                 name_rva = descriptor[3]
             found.add(read_name(name_rva))
-        else:
-            raise ValueError("PE import directory has no terminator")
+            entry_offset += entry_size
+        raise ValueError("PE import directory has no terminator within its declared size")
 
     read_import_directory(1, delay=False)
     read_import_directory(13, delay=True)
