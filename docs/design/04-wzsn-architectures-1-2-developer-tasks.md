@@ -306,10 +306,10 @@ Architecture #3 (`zx48-mic-ear-router-network-architecture.md`) is explicitly ou
 
 ## Phase 12A — UI implementation gate and command-registry foundation
 
-237. [P12][UI §49][Core §51] Select and freeze the exact C-compatible UI toolkit/revision before UI implementation begins — Nuklear v4.13.3 is pinned in `design/dependencies/nuklear-pin.md` and its Sokol renderer/event adapter is now connected to the host; hosted build and UI acceptance evidence remain pending. The mandatory source review's status-text truncation warning is adjudicated non-actionable: profile, speed, networking, and status labels are fixed bounded strings, the Control Port is drawn from its fixed range, and the 256-byte destination exceeds their combined bound.
-238. [P12][UI §49] Freeze the per-platform integration approach for Windows, Linux/X11, and macOS — the pinned Sokol-Nuklear backend uses D3D11, X11/OpenGL, and Metal respectively; hosted cross-platform build evidence remains pending.
+237. [P12][UI §49][Core §51] Select and freeze the exact C-compatible UI toolkit/revision before UI implementation begins — Nuklear v4.13.3 is pinned in `design/dependencies/nuklear-pin.md` and statically compiled through the Sokol renderer/event adapter. The four-platform host build and DIZZY4K smoke passed in hosted run `36369688936` at source `a75088f02610f5a64d7d01641b0f30353c39b9ca`; keyboard, focus, and accessibility acceptance remain open. The mandatory source review's status-text truncation warning is adjudicated non-actionable: profile, speed, networking, and status labels are fixed bounded strings, the Control Port is drawn from its fixed range, and the 256-byte destination exceeds their combined bound.
+238. [P12][UI §49] Freeze the per-platform integration approach for Windows, Linux/X11, and macOS — the pinned Sokol-Nuklear backend uses D3D11, X11/OpenGL, and Metal respectively; all four hosted builds passed in run `36369688936`.
 239. [P12][UI §49] Freeze font/text rendering strategy — use Nuklear's embedded default ProggyClean font; no external font file is required.
-240. [P12][UI §49] Freeze native-versus-in-window menu presentation per platform — render the seven semantic menus in-window on Windows, macOS, and Linux; native platform menu bars are not used.
+240. [P12][UI §49] Freeze native-versus-in-window menu presentation per platform — render the seven semantic menus in-window on Windows, macOS, and Linux; native platform menu bars are not used. The Nuklear menu bar is connected to the registry-backed host renderer; visible-menu and keyboard interaction evidence remains open.
 241. [P12][UI §49] Freeze file-dialog implementation.
 242. [P12][UI §§43,49] Freeze/document accessibility support supplied by the selected toolkit and any project-owned gaps — Nuklear provides in-window keyboard navigation; project-owned labels, focus order, visible focus, and actionable state remain acceptance requirements, and no platform accessibility bridge is claimed.
 243. [P12][UI §§44,49] Freeze window/panel persistence approach including interprocess-safe settings storage.
@@ -337,7 +337,7 @@ Architecture #3 (`zx48-mic-ear-router-network-architecture.md`) is explicitly ou
 
 ## Phase 12B — Main window, menus, toolbar, status, basic machine commands
 
-265. [P12][UI §§6,7] Implement the main application layout with menu bar/platform equivalent, compact toolbar, Spectrum viewport, status area, and on-demand panels.
+265. [P12][UI §§6,7] Implement the main application layout with menu bar/platform equivalent, compact toolbar, Spectrum viewport, status area, and on-demand panels — the Nuklear menu bar, toolbar, viewport, and machine-status line are connected and the four-platform host smoke passed in run `36369688936`; full controls/panels and UI-specific interaction evidence remain open.
 266. [P12][UI §7] Implement canonical top-level menus exactly as File, Machine, Media, View, Tools, Settings, Help.
 267. [P12][UI §§7.2] Implement Help and About actions with platform-standard relocation allowed without changing semantic IDs.
 268. [P12][UI §§8.5] Implement local `File > Quit` bound to `application.quit`, including orderly host shutdown and dirty-media resolution without treating machine reset as application exit.
