@@ -35,12 +35,15 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include <string.h>
 #if defined(_WIN32)
 #include <windows.h>
+#include <process.h>
 #else
 #include <errno.h>
 #include <time.h>
+#include <unistd.h>
 #endif
 
 #include "core/wz_machine.h"
+#include "diagnostics/wz_trace_file.h"
 #include "core/wz_keyboard_matrix.h"
 #include "core/wz_runner.h"
 #include "core/wz_tape.h"
@@ -84,6 +87,11 @@ static const uint8_t wz_host_palette[16u][4u] = {
 
 typedef struct {
     wz_machine_t machine;
+#ifndef NDEBUG
+    wz_trace_file_t timing_trace_file;
+    wz_trace_sink_t timing_trace_sink;
+    bool timing_trace_initialized;
+#endif
     wz_byte_t model_48k_rom[WZ_48K_ROM_SIZE];
     wz_qword_t model_48k_rom_identity;
     bool has_model_48k_rom;
@@ -144,6 +152,67 @@ static wz_qword_t wz_host_now_nanoseconds(void)
     double nanoseconds = stm_ns(stm_now());
     return nanoseconds > 0.0 ? (wz_qword_t)nanoseconds : 0u;
 }
+
+#ifndef NDEBUG
+static void wz_host_timing_trace_start(wz_host_session_t* session)
+{
+    char path[1024];
+    wz_qword_t session_id = wz_host_now_nanoseconds();
+    unsigned long process_id;
+    int path_length;
+    wz_result_t result;
+
+#if defined(_WIN32)
+    char directory[MAX_PATH];
+    DWORD directory_length = GetTempPathA((DWORD)sizeof(directory), directory);
+    if (directory_length == 0u || directory_length >= sizeof(directory)) {
+        (void)fprintf(stderr, "WZSN timing trace disabled: temporary path unavailable.\n");
+        return;
+    }
+    process_id = (unsigned long)_getpid();
+    path_length = snprintf(path, sizeof(path), "%swzsn-timing-%lu-%llu.wzt",
+                           directory, process_id,
+                           (unsigned long long)session_id);
+#else
+    const char* directory = getenv("TMPDIR");
+    const char* separator;
+    if (directory == NULL || directory[0] == '\0') directory = "/tmp";
+    process_id = (unsigned long)getpid();
+    separator = directory[strlen(directory) - 1u] == '/' ? "" : "/";
+    path_length = snprintf(path, sizeof(path), "%s%swzsn-timing-%lu-%llu.wzt",
+                           directory, separator, process_id,
+                           (unsigned long long)session_id);
+#endif
+    if (path_length < 0 || (size_t)path_length >= sizeof(path)) {
+        (void)fprintf(stderr, "WZSN timing trace disabled: path is too long.\n");
+        return;
+    }
+    result = wz_trace_file_create(&session->timing_trace_file, path, session_id,
+        (wz_dword_t)session->machine.profile->kind,
+        session->machine.rom_identity, UINT32_MAX);
+    if (result != WZ_RESULT_OK) {
+        (void)fprintf(stderr, "WZSN timing trace disabled: create failed (%d).\n",
+                      (int)result);
+        return;
+    }
+    wz_trace_sink_init(&session->timing_trace_sink, wz_trace_file_emit,
+                       &session->timing_trace_file);
+    wz_machine_set_timing_trace(&session->machine, &session->timing_trace_sink);
+    session->timing_trace_initialized = true;
+    (void)fprintf(stderr, "WZSN timing trace: %s\n", path);
+}
+
+static void wz_host_timing_trace_stop(wz_host_session_t* session)
+{
+    if (!session->timing_trace_initialized) return;
+    wz_machine_set_timing_trace(&session->machine, NULL);
+    if (wz_trace_file_freeze(&session->timing_trace_file) != WZ_RESULT_OK) {
+        (void)fprintf(stderr, "WZSN timing trace: freeze failed.\n");
+    }
+    wz_trace_file_close(&session->timing_trace_file);
+    session->timing_trace_initialized = false;
+}
+#endif
 
 static bool wz_host_sleep_nanoseconds(wz_qword_t nanoseconds, void* context)
 {
@@ -1565,6 +1634,9 @@ static void wz_host_session_init(void)
         wz_ui_window_sync_remote_control(&wz_host_session.ui_window,
                                          &wz_host_session.control_port,
                                          &wz_host_session.telnet_client);
+#ifndef NDEBUG
+        wz_host_timing_trace_start(&wz_host_session);
+#endif
         (void)wz_sokol_audio_init(&wz_host_session.audio);
     }
 }
@@ -1573,6 +1645,9 @@ static void wz_host_session_shutdown(void)
 {
     if (wz_host_session.initialized) {
         wz_telnet_client_disconnect(&wz_host_session.telnet_client);
+#ifndef NDEBUG
+        wz_host_timing_trace_stop(&wz_host_session);
+#endif
         wz_machine_destroy(&wz_host_session.machine);
         wz_ui_window_destroy(&wz_host_session.ui_window);
         wz_sokol_audio_shutdown(&wz_host_session.audio);
