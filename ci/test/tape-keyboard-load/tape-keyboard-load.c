@@ -199,7 +199,7 @@ int main(int argc, char** argv)
         wz_machine_memory_read(&machine, 0x5c08u), machine.keyboard_rows[6]);
     for (size_t index = 0u; index < 4u; ++index) {
         (void)printf("%02x", wz_machine_memory_read(&machine,
-            (wz_word_t)(edit_line - 4u + index)));
+            (wz_word_t)(edit_line >= 4u ? edit_line - 4u + index : index)));
     }
     (void)printf(" line=");
     for (size_t index = 0u; index < 8u; ++index) {
