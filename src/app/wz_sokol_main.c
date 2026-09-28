@@ -119,6 +119,7 @@ typedef struct {
     bool pacing_initialized;
     bool audio_sample_speed_initialized;
     bool socket_system_initialized;
+    bool remote_settings_visible;
     bool initialized;
 } wz_host_session_t;
 
@@ -1023,20 +1024,33 @@ static void wz_host_ui_draw_status(struct nk_context* context,
 {
     const wz_ui_layout_state_t* state =
         wz_ui_window_layout(&wz_host_session.ui_window);
+    const wz_ui_remote_control_status_t* remote_status =
+        wz_ui_window_remote_control(&wz_host_session.ui_window);
     char status[WZ_UI_STATUS_CAPACITY];
     char control_port[48];
     struct nk_vec2 saved_padding;
+    const char* listener;
+    const char* client;
     const char* model = wz_host_session.machine.profile == NULL ?
         "Unavailable" : wz_host_session.machine.profile->name;
-    if (state == NULL) return;
-    if (wz_host_session.ui_window.remote_control.selected_control_port_available) {
+    if (state == NULL || remote_status == NULL) return;
+    if (remote_status->selected_control_port_available) {
         (void)snprintf(control_port, sizeof(control_port), "%u",
-            wz_host_session.ui_window.remote_control.selected_control_port);
+            remote_status->selected_control_port);
     } else {
         (void)snprintf(control_port, sizeof(control_port), "unavailable");
     }
+    switch (remote_status->listener_state) {
+    case WZ_UI_REMOTE_LISTENER_UP: listener = "UP"; break;
+    case WZ_UI_REMOTE_LISTENER_DEGRADED: listener = "DEGRADED"; break;
+    case WZ_UI_REMOTE_LISTENER_DOWN: listener = "DOWN"; break;
+    case WZ_UI_REMOTE_LISTENER_UNAVAILABLE:
+    default: listener = "UNAVAILABLE"; break;
+    }
+    client = remote_status->active_client ? "ACTIVE" : "NONE";
     (void)snprintf(status, sizeof(status),
-        "%s | %s | %s | Audio %s | Tape %s | MDV1 %s | Net %s | Port %s",
+        "%s | %s | %s | Audio %s | Tape %s | MDV1 %s | Net %s | "
+        "Control Port: %s | Listener: %s | Telnet: %s",
         model,
         wz_ui_layout_speed_label((size_t)wz_host_session.speed),
         state->paused ? "Paused" : "Running",
@@ -1044,17 +1058,46 @@ static void wz_host_ui_draw_status(struct nk_context* context,
         state->tape_mounted ? "Mounted" : "Empty",
         state->microdrive1_mounted ? "Mounted" : "Empty",
         state->networking_mode == NULL ? "Unavailable" : state->networking_mode,
-        control_port);
+        control_port, listener, client);
     saved_padding = context->style.window.padding;
     context->style.window.padding = nk_vec2(0.0f, 0.0f);
     if (nk_begin(context, "Machine status",
             nk_rect(0.0f, height - 26.0f, width, 26.0f),
-            NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_NO_INPUT)) {
+            NK_WINDOW_NO_SCROLLBAR)) {
         nk_layout_row_dynamic(context, 20.0f, 1);
-        nk_label(context, status, NK_TEXT_LEFT);
+        if (nk_button_label(context, status)) {
+            wz_host_session.remote_settings_visible = true;
+        }
     }
     nk_end(context);
     context->style.window.padding = saved_padding;
+}
+
+static void wz_host_ui_draw_remote_settings(struct nk_context* context,
+                                           float width, float height)
+{
+    const wz_ui_remote_control_status_t* remote_status =
+        wz_ui_window_remote_control(&wz_host_session.ui_window);
+    char details[WZ_UI_REMOTE_STATUS_CAPACITY];
+    if (!wz_host_session.remote_settings_visible || remote_status == NULL) {
+        return;
+    }
+    if (!nk_begin(context, "Telnet Keyboard & Remote Control",
+            nk_rect(width - 440.0f, 48.0f, 420.0f, 190.0f),
+            NK_WINDOW_BORDER | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE |
+                NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE)) {
+        nk_end(context);
+        return;
+    }
+    wz_ui_layout_remote_control_status_page(
+        remote_status, details, sizeof(details));
+    nk_layout_row_dynamic(context, 118.0f, 1);
+    nk_label_wrap(context, details, NK_TEXT_LEFT);
+    nk_layout_row_dynamic(context, 24.0f, 1);
+    if (nk_button_label(context, "Close")) {
+        wz_host_session.remote_settings_visible = false;
+    }
+    nk_end(context);
 }
 
 static void wz_host_render_native_ui(struct nk_context* context,
@@ -1063,6 +1106,7 @@ static void wz_host_render_native_ui(struct nk_context* context,
     if (context == NULL) return;
     wz_host_ui_draw_menus(context, width);
     wz_host_ui_draw_toolbar(context, width);
+    wz_host_ui_draw_remote_settings(context, width, height);
     wz_host_ui_draw_status(context, width, height);
 }
 
