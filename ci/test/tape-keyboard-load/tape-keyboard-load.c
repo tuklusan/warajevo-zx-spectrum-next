@@ -184,7 +184,7 @@ int main(int argc, char** argv)
     REQUIRE(tap_key(&machine, &runner, frame_ticks, WZ_KEY_J));
     edit_line = (wz_word_t)(wz_machine_memory_read(&machine, 0x5c59u) |
         ((wz_word_t)wz_machine_memory_read(&machine, 0x5c5au) << 8u));
-    (void)printf("after J: E_LINE=%04x PC=%04x IFF=%u IRQ=%lu samples=%lu ULA=%lu/%lu FLAGS=%02x KSTATE=%02x%02x%02x%02x%02x LASTK=%02x keyrow=%02x bytes=",
+    (void)printf("after J: E_LINE=%04x PC=%04x IFF=%u IRQ=%lu samples=%lu ULA_PRESSED/ROW_READS=%lu/%lu FLAGS=%02x KSTATE=%02x%02x%02x%02x%02x LASTK=%02x keyrow=%02x before=",
         edit_line, machine.cpu.program_counter, (unsigned)machine.cpu.iff1,
         (unsigned long)trace_counts.interrupt_accepts,
         (unsigned long)trace_counts.interrupt_samples,
@@ -197,6 +197,11 @@ int main(int argc, char** argv)
         wz_machine_memory_read(&machine, 0x5c03u),
         wz_machine_memory_read(&machine, 0x5c04u),
         wz_machine_memory_read(&machine, 0x5c08u), machine.keyboard_rows[6]);
+    for (size_t index = 0u; index < 4u; ++index) {
+        (void)printf("%02x", wz_machine_memory_read(&machine,
+            (wz_word_t)(edit_line - 4u + index)));
+    }
+    (void)printf(" line=");
     for (size_t index = 0u; index < 8u; ++index) {
         (void)printf("%02x", wz_machine_memory_read(&machine,
             (wz_word_t)(edit_line + index)));
