@@ -44,6 +44,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #endif
 
 #include "core/wz_machine.h"
+#include "core/wz_keyboard_matrix.h"
 #include "core/wz_runner.h"
 #include "core/wz_tape.h"
 #include "core/audio/wz_audio_mixer.h"
@@ -53,6 +54,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "app/wz_control_port.h"
 #include "app/wz_host_socket.h"
 #include "app/wz_input_arbiter.h"
+#include "app/wz_input_focus.h"
 #include "app/wz_sokol_audio.h"
 #include "app/wz_host_pacing.h"
 #include "app/wz_host_audio_policy.h"
@@ -93,6 +95,7 @@ typedef struct {
     wz_ui_window_t ui_window;
     wz_headless_runner_t runner;
     wz_input_arbiter_t input_arbiter;
+    wz_input_focus_controller_t input_focus;
     wz_control_port_owner_t control_port;
     wz_telnet_client_gate_t telnet_client;
     wz_command_registry_t command_registry;
@@ -1020,10 +1023,12 @@ static void wz_host_ui_draw_status(struct nk_context* context,
     wz_ui_remote_control_indicator(
         remote_status, control_status, sizeof(control_status));
     (void)snprintf(status, sizeof(status),
-        "%s | %s | %s | Audio %s | Tape %s | MDV1 %s | Net %s",
+        "%s | %s | %s | Keyboard %s | Audio %s | Tape %s | MDV1 %s | Net %s",
         model,
         wz_ui_layout_speed_label((size_t)wz_host_session.speed),
         state->paused ? "Paused" : "Running",
+        wz_input_focus_forwards_viewport_keys(&wz_host_session.input_focus) ?
+            "Spectrum" : "UI",
         state->audio_muted ? "Muted" : "On",
         state->tape_mounted ? "Mounted" : "Empty",
         state->microdrive1_mounted ? "Mounted" : "Empty",
@@ -1210,6 +1215,8 @@ static void wz_host_session_init(void)
     wz_telnet_negotiator_init(&wz_host_session.telnet_negotiator);
     wz_telnet_command_buffer_init(&wz_host_session.telnet_commands);
     wz_input_arbiter_init(&wz_host_session.input_arbiter);
+    wz_input_focus_init(&wz_host_session.input_focus,
+                        &wz_host_session.input_arbiter);
     (void)wz_application_lifecycle_init(&wz_host_session.lifecycle, 0, 0);
     wz_host_session.socket_system_initialized = wz_host_socket_system_init();
     if (wz_host_session.socket_system_initialized) {
@@ -1316,6 +1323,82 @@ static void wz_host_cleanup(void)
     wz_host_session_shutdown();
 }
 
+static bool wz_host_keycode_to_spectrum_key(sapp_keycode key_code,
+                                             size_t* physical_key)
+{
+    static const wz_keyboard_key_t letters[26] = {
+        WZ_KEY_A, WZ_KEY_B, WZ_KEY_C, WZ_KEY_D, WZ_KEY_E, WZ_KEY_F,
+        WZ_KEY_G, WZ_KEY_H, WZ_KEY_I, WZ_KEY_J, WZ_KEY_K, WZ_KEY_L,
+        WZ_KEY_M, WZ_KEY_N, WZ_KEY_O, WZ_KEY_P, WZ_KEY_Q, WZ_KEY_R,
+        WZ_KEY_S, WZ_KEY_T, WZ_KEY_U, WZ_KEY_V, WZ_KEY_W, WZ_KEY_X,
+        WZ_KEY_Y, WZ_KEY_Z
+    };
+    static const wz_keyboard_key_t digits[10] = {
+        WZ_KEY_0, WZ_KEY_1, WZ_KEY_2, WZ_KEY_3, WZ_KEY_4,
+        WZ_KEY_5, WZ_KEY_6, WZ_KEY_7, WZ_KEY_8, WZ_KEY_9
+    };
+    if (physical_key == NULL) return false;
+    if (key_code >= SAPP_KEYCODE_A && key_code <= SAPP_KEYCODE_Z) {
+        *physical_key = (size_t)letters[key_code - SAPP_KEYCODE_A];
+        return true;
+    }
+    if (key_code >= SAPP_KEYCODE_0 && key_code <= SAPP_KEYCODE_9) {
+        *physical_key = (size_t)digits[key_code - SAPP_KEYCODE_0];
+        return true;
+    }
+    switch (key_code) {
+    case SAPP_KEYCODE_ENTER:
+        *physical_key = WZ_KEY_ENTER;
+        return true;
+    case SAPP_KEYCODE_SPACE:
+        *physical_key = WZ_KEY_SPACE;
+        return true;
+    case SAPP_KEYCODE_LEFT_SHIFT:
+    case SAPP_KEYCODE_RIGHT_SHIFT:
+        *physical_key = WZ_KEY_SHIFT;
+        return true;
+    case SAPP_KEYCODE_LEFT_CONTROL:
+    case SAPP_KEYCODE_RIGHT_CONTROL:
+        *physical_key = WZ_KEY_SYMBOL_SHIFT;
+        return true;
+    default:
+        return false;
+    }
+}
+
+static void wz_host_input_focus_from_mouse(const sapp_event* event)
+{
+    float scale = sapp_dpi_scale();
+    float width;
+    float height;
+    float panel_width;
+    float panel_height;
+    float panel_x;
+    float panel_y;
+    bool ui_target;
+    if (event == NULL) return;
+    if (scale <= 0.0f) scale = 1.0f;
+    width = (float)sapp_width() / scale;
+    height = (float)sapp_height() / scale;
+    ui_target = event->mouse_y <=
+        WZ_UI_MENU_BAR_HEIGHT + WZ_UI_TOOLBAR_HEIGHT ||
+        event->mouse_y >= height - 48.0f;
+    if (wz_host_session.remote_settings_visible) {
+        panel_width = width >= 440.0f ? 420.0f : width - 16.0f;
+        panel_height = height >= 238.0f ? 190.0f : height - 48.0f;
+        panel_x = width - panel_width - 8.0f;
+        panel_y = height - panel_height - 56.0f;
+        if (event->mouse_x >= panel_x &&
+            event->mouse_x <= panel_x + panel_width &&
+            event->mouse_y >= panel_y &&
+            event->mouse_y <= panel_y + panel_height) {
+            ui_target = true;
+        }
+    }
+    (void)wz_input_focus_set_target(&wz_host_session.input_focus,
+        ui_target ? WZ_INPUT_FOCUS_TEXT_CONTROL : WZ_INPUT_FOCUS_VIEWPORT);
+}
+
 /* Project host input ownership into the single machine-owned keyboard matrix.
  * The arbiter is deliberately host-side state; the core must receive the
  * resolved level before each execution slice so a Telnet key is observable by
@@ -1403,11 +1486,35 @@ static void wz_host_frame(void)
 
 static void wz_host_event(const sapp_event* event)
 {
+    size_t physical_key;
     if (event == NULL) return;
     if (wz_host_session.ui_toolkit_initialized) {
         (void)snk_handle_event(event);
     }
-    if (event->type == SAPP_EVENTTYPE_KEY_DOWN && event->key_code == SAPP_KEYCODE_ESCAPE) {
+    if (event->type == SAPP_EVENTTYPE_FOCUSED) {
+        (void)wz_input_focus_gained(&wz_host_session.input_focus);
+        return;
+    }
+    if (event->type == SAPP_EVENTTYPE_UNFOCUSED) {
+        (void)wz_input_focus_lost(&wz_host_session.input_focus);
+        return;
+    }
+    if (event->type == SAPP_EVENTTYPE_MOUSE_DOWN) {
+        wz_host_input_focus_from_mouse(event);
+        return;
+    }
+    if ((event->type == SAPP_EVENTTYPE_KEY_DOWN ||
+         event->type == SAPP_EVENTTYPE_KEY_UP) &&
+        wz_input_focus_forwards_viewport_keys(&wz_host_session.input_focus) &&
+        wz_host_keycode_to_spectrum_key(event->key_code, &physical_key)) {
+        (void)wz_input_arbiter_set(&wz_host_session.input_arbiter,
+            WZ_INPUT_SOURCE_LOCAL, physical_key,
+            event->type == SAPP_EVENTTYPE_KEY_DOWN);
+        return;
+    }
+    if (event->type == SAPP_EVENTTYPE_KEY_DOWN &&
+        event->key_code == SAPP_KEYCODE_ESCAPE &&
+        wz_input_focus_forwards_viewport_keys(&wz_host_session.input_focus)) {
         if (wz_application_request_quit(&wz_host_session.lifecycle) == WZ_RESULT_OK) {
             sapp_request_quit();
         }
