@@ -24,7 +24,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "616d73edfd9ae2f7e2e903ff05bd4b0d6fc1197ac0e7d8ccaad882ea65568dcf"
+      "sha256": "120d2b128795ad4e05d672989d31379685ae7bda302faca60bb11ff735dabb89"
     },
     {
       "path": "src/app/wz_telnet_alias_response.c",
@@ -84,7 +84,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "442f2564fd66e4fa56f6686a91c588f2293dbb9ddf37b0036330dca27a6d7369"
+      "sha256": "75dd8a10f4e965e81610260a20de6b07965f7bb22da5953a97691e1ea41bb70d"
     },
     {
       "path": "test-media/DIZZY4K.TAP",

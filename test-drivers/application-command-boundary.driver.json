@@ -87,7 +87,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "442f2564fd66e4fa56f6686a91c588f2293dbb9ddf37b0036330dca27a6d7369"
+      "sha256": "75dd8a10f4e965e81610260a20de6b07965f7bb22da5953a97691e1ea41bb70d"
     },
     {
       "path": "src/core/audio/wz_audio_evidence.c",
