@@ -176,10 +176,11 @@ int main(int argc, char** argv)
     REQUIRE(tap_key(&machine, &runner, frame_ticks, WZ_KEY_J));
     edit_line = (wz_word_t)(wz_machine_memory_read(&machine, 0x5c59u) |
         ((wz_word_t)wz_machine_memory_read(&machine, 0x5c5au) << 8u));
-    (void)printf("after J: E_LINE=%04x PC=%04x IFF=%u IRQ=%lu samples=%lu KSTATE=%02x%02x%02x%02x%02x LASTK=%02x keyrow=%02x bytes=",
+    (void)printf("after J: E_LINE=%04x PC=%04x IFF=%u IRQ=%lu samples=%lu FLAGS=%02x KSTATE=%02x%02x%02x%02x%02x LASTK=%02x keyrow=%02x bytes=",
         edit_line, machine.cpu.program_counter, (unsigned)machine.cpu.iff1,
         (unsigned long)trace_counts.interrupt_accepts,
         (unsigned long)trace_counts.interrupt_samples,
+        wz_machine_memory_read(&machine, 0x5c3bu),
         wz_machine_memory_read(&machine, 0x5c00u),
         wz_machine_memory_read(&machine, 0x5c01u),
         wz_machine_memory_read(&machine, 0x5c02u),
