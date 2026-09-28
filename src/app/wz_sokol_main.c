@@ -813,31 +813,16 @@ static void wz_host_telnet_poll(void)
 
 static wz_result_t wz_host_ui_set_speed(wz_speed_policy_t speed)
 {
-    char value[16];
     wz_command_result_t result;
-    int written;
-    if (!wz_speed_policy_valid(speed)) return WZ_RESULT_INVALID_ARGUMENT;
-    if (wz_speed_policy_is_unlimited(speed)) {
-        written = snprintf(value, sizeof(value), "unlimited");
-    } else {
-        written = snprintf(value, sizeof(value), "%u",
-                           wz_speed_policy_percent(speed));
-    }
-    if (written < 0 || (size_t)written >= sizeof(value)) {
-        return WZ_RESULT_BUFFER_TOO_SMALL;
-    }
-    return wz_command_registry_dispatch(
-        &wz_host_session.command_registry, "machine.speed.set",
-        (wz_command_arguments_t){value, (size_t)written}, &result);
+    return wz_ui_layout_activate_speed(
+        &wz_host_session.command_registry, speed, &result);
 }
 
 static wz_result_t wz_host_ui_set_model(const char* model)
 {
     wz_command_result_t result;
-    if (model == NULL) return WZ_RESULT_INVALID_ARGUMENT;
-    return wz_command_registry_dispatch(
-        &wz_host_session.command_registry, "machine.model.set",
-        (wz_command_arguments_t){model, strlen(model)}, &result);
+    return wz_ui_layout_activate_model(
+        &wz_host_session.command_registry, model, &result);
 }
 
 static void wz_host_ui_draw_speed_items(struct nk_context* context)

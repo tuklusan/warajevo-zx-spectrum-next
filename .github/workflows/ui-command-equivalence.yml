@@ -1,0 +1,100 @@
+name: UI command equivalence regression
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/ui-command-equivalence.yml'
+      - 'ci/test/ui-command-equivalence/**'
+      - 'src/app/wz_ui_layout.*'
+      - 'src/app/wz_sokol_main.c'
+      - 'test-drivers/ui-command-equivalence.driver.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    if: github.ref == 'refs/heads/main'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: windows-x64
+            runner: windows-2025
+          - id: windows-arm64
+            runner: windows-11-arm
+          - id: macos-x64
+            runner: macos-15-intel
+          - id: macos-arm64
+            runner: macos-15
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+      - name: Configure regression
+        run: cmake -S ci/test/ui-command-equivalence -B dist/ui-command-equivalence -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build regression
+        run: cmake --build dist/ui-command-equivalence --config Release --target wz_ui_command_equivalence_regression --parallel 2
+      - name: Run regression and save runner result
+        shell: bash
+        env:
+          MATRIX_ID: ${{ matrix.id }}
+        run: |
+          set -euo pipefail
+          executable=dist/ui-command-equivalence/wz_ui_command_equivalence_regression
+          if [[ "$RUNNER_OS" == "Windows" ]]; then executable="$executable.exe"; fi
+          result_dir="dist/ui-command-equivalence/results/$MATRIX_ID"
+          mkdir -p "$result_dir"
+          "$executable" | tee "$result_dir/run.log"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          record = {
+              "id": os.environ["MATRIX_ID"],
+              "os": os.environ["RUNNER_OS"],
+              "architecture": os.environ["RUNNER_ARCH"],
+              "runnerName": os.environ.get("ImageOS", "hosted runner"),
+          }
+          Path(f"dist/ui-command-equivalence/results/{record['id']}/runner.json").write_text(
+              json.dumps(record, indent=2) + "\n", encoding="utf-8")
+          PY
+      - name: Upload runner result
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-command-equivalence-raw-${{ matrix.id }}
+          path: dist/ui-command-equivalence/results/
+          if-no-files-found: error
+
+  proof:
+    if: github.ref == 'refs/heads/main'
+    needs: regression
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact source commit
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+      - name: Download runner results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ui-command-equivalence-raw-*
+          path: dist/ui-command-equivalence/artifacts
+          merge-multiple: true
+      - name: Validate and write pinned proof
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: |
+          python3 ci/test/ui-command-equivalence/write-proof.py \
+            --project-commit "$GITHUB_SHA" \
+            --run-id "$GITHUB_RUN_ID" \
+            --artifact-root dist/ui-command-equivalence/artifacts \
+            --proof-out dist/ui-command-equivalence/ui-command-equivalence.json
+      - name: Upload pinned proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-command-equivalence-proof-${{ github.sha }}
+          path: dist/ui-command-equivalence/ui-command-equivalence.json
+          if-no-files-found: error

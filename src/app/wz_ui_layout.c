@@ -843,6 +843,44 @@ wz_result_t wz_ui_layout_activate_toolbar(
                                         arguments, result);
 }
 
+wz_result_t wz_ui_layout_activate_speed(
+    const wz_command_registry_t* registry,
+    wz_speed_policy_t speed,
+    wz_command_result_t* result)
+{
+    char value[16];
+    int written;
+    if (registry == 0 || result == 0 || !wz_speed_policy_valid(speed)) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (wz_speed_policy_is_unlimited(speed)) {
+        written = snprintf(value, sizeof(value), "UNLIMITED");
+    } else {
+        written = snprintf(value, sizeof(value), "%u",
+                           wz_speed_policy_percent(speed));
+    }
+    if (written < 0 || (size_t)written >= sizeof(value)) {
+        return WZ_RESULT_BUFFER_TOO_SMALL;
+    }
+    return wz_command_registry_dispatch(
+        registry, "machine.speed.set",
+        (wz_command_arguments_t){value, (size_t)written}, result);
+}
+
+wz_result_t wz_ui_layout_activate_model(
+    const wz_command_registry_t* registry,
+    const char* model,
+    wz_command_result_t* result)
+{
+    if (registry == 0 || model == 0 || result == 0 ||
+        (strcmp(model, "48k") != 0 && strcmp(model, "128k") != 0)) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    return wz_command_registry_dispatch(
+        registry, "machine.model.set",
+        (wz_command_arguments_t){model, strlen(model)}, result);
+}
+
 wz_result_t wz_ui_layout_activate_tape_action(
     const wz_command_registry_t* registry,
     size_t index,

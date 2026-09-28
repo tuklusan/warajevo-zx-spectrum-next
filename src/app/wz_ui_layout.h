@@ -230,6 +230,14 @@ wz_result_t wz_ui_layout_activate_toolbar(
     size_t index,
     wz_command_arguments_t arguments,
     wz_command_result_t* result);
+wz_result_t wz_ui_layout_activate_speed(
+    const wz_command_registry_t* registry,
+    wz_speed_policy_t speed,
+    wz_command_result_t* result);
+wz_result_t wz_ui_layout_activate_model(
+    const wz_command_registry_t* registry,
+    const char* model,
+    wz_command_result_t* result);
 wz_result_t wz_ui_layout_activate_tape_action(
     const wz_command_registry_t* registry,
     size_t index,
