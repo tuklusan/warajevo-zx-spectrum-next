@@ -58,6 +58,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "app/wz_speed_policy.h"
 #include "app/wz_telnet_client.h"
 #include "app/wz_telnet_keyboard_command.h"
+#include "app/wz_telnet_status.h"
 #include "app/wz_telnet_negotiation.h"
 #include "app/wz_telnet_input.h"
 #include "app/wz_ui_window.h"
@@ -622,14 +623,22 @@ static void wz_host_telnet_process_command(const char* command)
             .control_port = wz_host_session.control_port.selected_port,
             .ipv4_up = wz_host_session.control_port.ipv4_active,
             .ipv6_up = wz_host_session.control_port.ipv6_active,
-            .client_active = wz_telnet_client_is_active(&wz_host_session.telnet_client),
-            .model = "48K",
-            .state = "RUNNING",
-            .speed = "100%",
-            .audio = "enabled",
-            .networking = "none"
+            .client_active = wz_telnet_client_is_active(
+                &wz_host_session.telnet_client)
         };
-        (void)wz_telnet_status_format(&status, output, sizeof(output), &length);
+        if (wz_telnet_status_project_machine(
+                &status, wz_host_session.machine.profile,
+                wz_machine_networking_mode(&wz_host_session.machine),
+                wz_host_session.ui_window.layout.paused,
+                wz_host_session.speed,
+                wz_sokol_audio_valid(&wz_host_session.audio),
+                wz_host_session.ui_window.layout.audio_muted)) {
+            (void)wz_telnet_status_format(&status, output, sizeof(output),
+                                          &length);
+        } else {
+            (void)wz_telnet_error_format(WZ_TELNET_ERROR_BAD_COMMAND,
+                                          output, sizeof(output), &length);
+        }
     } else if (wz_telnet_keyboard_command_key_down(command, &physical_key)) {
         key_ok = wz_telnet_input_set_key(&wz_host_session.input_arbiter,
                                          physical_key, true);

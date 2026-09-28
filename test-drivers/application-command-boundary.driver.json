@@ -1,6 +1,6 @@
 {
   "testId": "application-command-boundary",
-  "command": "cmake -S ci/test/application-command-boundary -B dist/application-command-boundary -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/application-command-boundary --config Release --target wz_application_command_boundary --parallel 2 && dist/application-command-boundary/wz_application_command_boundary",
+  "command": "cmake -S ci/test/application-command-boundary -B dist/application-command-boundary -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/application-command-boundary --config Release --target wz_application_command_boundary wz_telnet_status_regression --parallel 2 && dist/application-command-boundary/wz_application_command_boundary && dist/application-command-boundary/wz_telnet_status_regression",
   "requiredCases": 6,
   "runnerMatrix": [
     "windows-2025",
@@ -11,15 +11,19 @@
   "fixtures": [
     {
       "path": ".github/workflows/application-command-boundary.yml",
-      "sha256": "08fca4f97769421f3400351926c1ddc3864ad3cd3042b90f60db02c451a5ce2b"
+      "sha256": "00acafd497a3c7d108af9b244d059dec4b8cc0015535acc7b80a77909be298bc"
     },
     {
       "path": "ci/test/application-command-boundary/CMakeLists.txt",
-      "sha256": "62e00ce7eec4d36e3ff6c2dcf270d02a6fed73121ba596e89659291eef84c1c2"
+      "sha256": "1f27a271f65bc0d01997cc97d8307036cdb993c7d4a314630fcee86c77b1fe37"
     },
     {
       "path": "ci/test/application-command-boundary/README.md",
       "sha256": "9493c1c0cac6a78f56556542bd6c6626725364cb6f7a1fa16fcf2fcfb94af190"
+    },
+    {
+      "path": "ci/test/application-command-boundary/status-projection-regression.c",
+      "sha256": "f75ca9c43b4fbf4c75522aeb872247345d717931dfd6843808208fd538c3da6d"
     },
     {
       "path": "ci/test/application-command-boundary/write-proof.py",
@@ -43,7 +47,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "e62f347df251b285667c11b7bccdef455ce72fd37444f09709b527b06258c2fe"
+      "sha256": "acf010383f9dd47c1d493a8b50eaf73a64ef708b832f581dcd58fdaf00e4d310"
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.c",
@@ -52,6 +56,14 @@
     {
       "path": "src/app/wz_telnet_keyboard_command.h",
       "sha256": "d6e7553f89c46a15706508e474beacf8b3cce6ea9ed6be95599ec84bb446eed1"
+    },
+    {
+      "path": "src/app/wz_telnet_status.c",
+      "sha256": "96ef595b5ddf6c887d403ffd283955ffda471e40adf1dd9cde32aa7a44824bac"
+    },
+    {
+      "path": "src/app/wz_telnet_status.h",
+      "sha256": "aa2bc18df7ac175807c6cdecd428ab98cd2d72c342056caedaab49947a8d0f14"
     },
     {
       "path": "src/app/wz_ui_layout.c",
@@ -63,7 +75,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "845ae0aa6bef6eef497c1ad7dd1389e70dfc860065eacb3e5a0bf3cd26de4974"
+      "sha256": "3a81400949703de6c9a595247b4049a88f9f57c667a387fd70bafccdf24038b1"
     },
     {
       "path": "src/core/audio/wz_audio_evidence.c",

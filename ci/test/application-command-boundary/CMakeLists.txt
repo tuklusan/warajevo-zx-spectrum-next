@@ -76,3 +76,11 @@ target_include_directories(wz_application_command_boundary PRIVATE
     "${SOURCE_ROOT}")
 target_link_libraries(wz_application_command_boundary PRIVATE
     Threads::Threads ZLIB::ZLIB)
+
+add_executable(wz_telnet_status_regression
+    "${CMAKE_CURRENT_SOURCE_DIR}/status-projection-regression.c"
+    "${SOURCE_ROOT}/app/wz_telnet_status.c"
+    "${SOURCE_ROOT}/app/wz_speed_policy.c"
+    "${SOURCE_ROOT}/core/wz_machine_profile.c")
+target_include_directories(wz_telnet_status_regression PRIVATE
+    "${SOURCE_ROOT}")
