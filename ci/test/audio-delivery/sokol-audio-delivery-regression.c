@@ -41,11 +41,13 @@ int saudio_push(const float* frames, int num_frames)
     int accepted = num_frames < backend_accept_limit
                        ? num_frames
                        : backend_accept_limit;
+    size_t available = CAPTURE_CAPACITY - captured_count;
+
+    if ((size_t)accepted > available) {
+        accepted = (int)available;
+    }
 
     for (int index = 0; index < accepted; ++index) {
-        if (captured_count >= CAPTURE_CAPACITY) {
-            return 0;
-        }
         captured[captured_count++] = frames[index];
     }
     return accepted;
@@ -128,7 +130,7 @@ int main(void)
                         "backpressure_preserves_frame_order");
     backend_accept_limit = 8;
     failures += require(wz_sokol_audio_push(&audio, WZ_SPEED_100,
-                                             NULL, 0u) == 6u &&
+                                             NULL, 0u) == 0u &&
                         wz_host_audio_queued(&audio.pending) == 0u &&
                         captured_count == 8u,
                         "later_drain_delivers_pending_and_new_samples");
@@ -150,7 +152,7 @@ int main(void)
     backend_accept_limit = (int)WZ_HOST_AUDIO_QUEUE_CAPACITY;
     failures += require(wz_sokol_audio_push(&audio, WZ_SPEED_100,
                                              &newest, 1u) ==
-                            WZ_HOST_AUDIO_QUEUE_CAPACITY + 1u &&
+                            1u &&
                         wz_host_audio_queued(&audio.pending) == 0u &&
                         wz_host_audio_dropped(&audio.pending) == 0u &&
                         captured_count == 8u + WZ_HOST_AUDIO_QUEUE_CAPACITY + 1u &&

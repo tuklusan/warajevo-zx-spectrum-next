@@ -96,7 +96,11 @@ size_t wz_sokol_audio_push(wz_sokol_audio_t* audio,
                            const wz_audio_sample_t* samples,
                            size_t count)
 {
-    size_t submitted = 0u;
+    size_t pending_before;
+    size_t old_submitted;
+    size_t old_remaining;
+    size_t new_queued;
+    size_t new_submitted;
 
     if (audio == 0 || (samples == 0 && count != 0u)) {
         return 0u;
@@ -108,7 +112,16 @@ size_t wz_sokol_audio_push(wz_sokol_audio_t* audio,
     if (!wz_sokol_audio_valid(audio)) {
         return 0u;
     }
-    submitted = wz_sokol_audio_drain(audio);
-    (void)wz_host_audio_push(&audio->pending, samples, count);
-    return submitted + wz_sokol_audio_drain(audio);
+    pending_before = wz_host_audio_queued(&audio->pending);
+    old_submitted = wz_sokol_audio_drain(audio);
+    old_remaining = pending_before > old_submitted
+                        ? pending_before - old_submitted
+                        : 0u;
+    new_queued = wz_host_audio_push(&audio->pending, samples, count);
+    new_submitted = wz_sokol_audio_drain(audio);
+    return new_submitted > old_remaining
+               ? (new_submitted - old_remaining < new_queued
+                      ? new_submitted - old_remaining
+                      : new_queued)
+               : 0u;
 }

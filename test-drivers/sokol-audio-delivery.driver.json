@@ -7,7 +7,7 @@
     },
     {
       "path": "ci/test/audio-delivery/sokol-audio-delivery-regression.c",
-      "sha256": "577d9c12b144e908f28bc803e9cf4b336a82672ca1e3852697dd86f80e691aca"
+      "sha256": "f83c9bb4d57a23a55d5f5bfc810b18515210a874512d935ce875beb8aaed206f"
     },
     {
       "path": "ci/test/audio-delivery/sokol_audio_stub/sokol_audio.h",
@@ -35,7 +35,7 @@
     },
     {
       "path": "src/app/wz_sokol_audio.c",
-      "sha256": "1a05698cd24a956965e20341e0603f776acd7b8ed8e305145317586d7cea2dc9"
+      "sha256": "e11bcd48a5a8946290d5cdbbdff7cd46b88cbd049a4228a17e5966e6d09f9eb8"
     },
     {
       "path": "src/app/wz_sokol_audio.h",
