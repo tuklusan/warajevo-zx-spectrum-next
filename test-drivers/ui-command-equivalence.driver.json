@@ -107,7 +107,7 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "5e9d34e4045d9861305749c808445e4945fa992fdbe70a2566b4e5bbdd296ecd"
+      "sha256": "f92cd66a856419938fdb53e78aef3d3942c062cadfa44ad11f2f6bad6558104a"
     },
     {
       "path": "src/app/wz_ui_layout.h",
@@ -115,7 +115,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "d400839a5ba265c2530386d832249a24e3b09c578eb958efb2248e68d2b73699"
+      "sha256": "a0b6823b6ab6ee1f706c93d4380cf5ee43b54c53852b53c48e2157d769ab0dec"
     },
     {
       "path": "src/core/wz_keyboard_matrix.c",
