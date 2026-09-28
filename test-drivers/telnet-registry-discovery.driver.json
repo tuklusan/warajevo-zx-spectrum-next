@@ -99,7 +99,7 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "f92cd66a856419938fdb53e78aef3d3942c062cadfa44ad11f2f6bad6558104a"
+      "sha256": "5e9d34e4045d9861305749c808445e4945fa992fdbe70a2566b4e5bbdd296ecd"
     },
     {
       "path": "src/app/wz_ui_layout.h",
