@@ -45,6 +45,10 @@ inspectable without an installer.
 
 ## Acceptance state
 
-This freezes the initial Windows and macOS archive layouts. It does not claim
-that packages, notices, dependency inventories, signatures, or release hashes
-have passed their hosted audits; those remain under Task 456.
+This freezes the initial Windows and macOS archive layouts. The first hosted
+package audit passed in run `36462115153` at source
+`be2ad86aa34d2d2ffbb05f338c1bdee112956aff`: Windows x86-64 and macOS Intel
+and Apple Silicon archives passed their inventory, executable-architecture,
+checksum, license/notice, media-exclusion, and runtime-dependency checks. The
+macOS archives are unsigned and not notarized; Task 456 remains partial until
+the authorized public-release signing/notarization process is available.
