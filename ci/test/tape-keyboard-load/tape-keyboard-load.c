@@ -40,6 +40,8 @@ typedef struct {
     size_t keyboard_input_returns;
     size_t keyboard_input_flag_checks;
     size_t keyboard_input_empty_returns;
+    size_t keyboard_input_checks_with_flag;
+    size_t keyboard_input_checks_with_z;
     size_t keyboard_scans;
     size_t keyboard_lastk_writes;
     size_t keyboard_newkey_flag_writes;
@@ -76,6 +78,12 @@ static void count_trace(const wz_trace_event_t* event, void* context)
             ++counts->keyboard_input_flag_checks;
         if (event->program_counter == 0x10b4u)
             ++counts->keyboard_input_empty_returns;
+        if (event->program_counter == 0x10b4u && counts->machine != NULL) {
+            if ((counts->machine->memory[0x5c3bu] & 0x20u) != 0u)
+                ++counts->keyboard_input_checks_with_flag;
+            if ((counts->machine->cpu.main.f & 0x40u) != 0u)
+                ++counts->keyboard_input_checks_with_z;
+        }
         if (event->program_counter == 0x10b5u)
             ++counts->keyboard_input_returns;
     }
@@ -294,7 +302,7 @@ int main(int argc, char** argv)
     trace_counts.capture_keyboard_input = false;
     edit_line = (wz_word_t)(wz_machine_memory_read(&machine, 0x5c59u) |
         ((wz_word_t)wz_machine_memory_read(&machine, 0x5c5au) << 8u));
-    (void)printf("after J: E_LINE=%04x PC=%04x IFF=%u IY=%04x IM=%u IRQ/ENTRY=%lu/%lu KEYSCAN/LASTK/FLAGWRITE=%lu/%lu/%lu FLAGVALUE=%02x SAMPLE/IFF/ELIGIBLE=%lu/%lu/%lu IRQ_EI=%lu ISR_TICKS=%llu-%llu IFF_INST=%lu/%lu CLEAR=%lu@%04x>%04x EI/DI=%lu/%lu LINE=%lu/%lu IRQWINDOW_IFF/ELIGIBLE=%lu/%lu ULA_PRESSED/ROW_READS=%lu/%lu KPATH_RET/CHECK/EMPTY=%lu/%lu/%lu MODE=%02x FLAGS=%02x IYFLAGS=%02x KSTATE=%02x%02x%02x%02x%02x LASTK=%02x keyrow=%02x before=",
+    (void)printf("after J: E_LINE=%04x PC=%04x IFF=%u IY=%04x IM=%u IRQ/ENTRY=%lu/%lu KEYSCAN/LASTK/FLAGWRITE=%lu/%lu/%lu FLAGVALUE=%02x SAMPLE/IFF/ELIGIBLE=%lu/%lu/%lu IRQ_EI=%lu ISR_TICKS=%llu-%llu IFF_INST=%lu/%lu CLEAR=%lu@%04x>%04x EI/DI=%lu/%lu LINE=%lu/%lu IRQWINDOW_IFF/ELIGIBLE=%lu/%lu ULA_PRESSED/ROW_READS=%lu/%lu KPATH_RET/CHECK/EMPTY=%lu/%lu/%lu FLAGSET/Z=%lu/%lu MODE=%02x FLAGS=%02x IYFLAGS=%02x KSTATE=%02x%02x%02x%02x%02x LASTK=%02x keyrow=%02x before=",
         edit_line, machine.cpu.program_counter, (unsigned)machine.cpu.iff1,
         machine.cpu.iy,
         (unsigned)machine.cpu.interrupt_mode,
@@ -326,6 +334,8 @@ int main(int argc, char** argv)
         (unsigned long)trace_counts.keyboard_input_returns,
         (unsigned long)trace_counts.keyboard_input_flag_checks,
         (unsigned long)trace_counts.keyboard_input_empty_returns,
+        (unsigned long)trace_counts.keyboard_input_checks_with_flag,
+        (unsigned long)trace_counts.keyboard_input_checks_with_z,
         wz_machine_memory_read(&machine, 0x5c41u),
         wz_machine_memory_read(&machine, 0x5c3bu),
         wz_machine_memory_read(&machine, (wz_word_t)(machine.cpu.iy + 1u)),
