@@ -610,8 +610,13 @@ static void wz_host_telnet_process_command(const char* command)
             if (!wz_telnet_alias_response_rewrite(
                     command, dispatch_response, output, sizeof(output),
                     &alias_length)) {
-                memcpy(output, dispatch_response, dispatch_length + 1u);
-                alias_length = dispatch_length;
+                if (dispatch_length >= sizeof(output)) {
+                    output[0] = '\0';
+                    alias_length = 0u;
+                } else {
+                    memcpy(output, dispatch_response, dispatch_length + 1u);
+                    alias_length = dispatch_length;
+                }
             }
             wz_host_telnet_send(output, alias_length);
             return;

@@ -23,7 +23,7 @@
     },
     {
       "path": "ci/test/application-command-boundary/alias-response-regression.c",
-      "sha256": "7d83f34cf0c4862a43ddc97d563cbc2e3b2688817a9caeee482bc2f6c4d2dad5"
+      "sha256": "115a647a6af932ac531c8a6a6026f65a474cec062569450dfec5f9c510bccd20"
     },
     {
       "path": "ci/test/application-command-boundary/status-projection-regression.c",
@@ -51,7 +51,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "c309af87f724a88535161f98c840811099096d7c3a81e6a4567b182ba63e8caa"
+      "sha256": "2792f522233c2f4db3bc8730dc59664376be1c3b120a63059957e465e222af5c"
     },
     {
       "path": "src/app/wz_telnet_alias_response.c",
