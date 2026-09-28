@@ -167,7 +167,7 @@
     },
     {
       "path": "src/core/wz_runner.c",
-      "sha256": "6225a610d2b752d0edeeb073961bb84ba5c54ae446e58fe08569e68f33cd654d"
+      "sha256": "7e7b711c5d29b4df3a33a13d97a277fcdb1931706381e380ded9a9ec1a47c362"
     },
     {
       "path": "src/core/wz_scheduler.c",

@@ -1002,6 +1002,12 @@ The Z80 core must model:
 - memory accesses;
 - I/O accesses.
 
+The deterministic runner samples the profile-timed maskable interrupt line at
+each CPU instruction boundary. When the line is asserted and the Z80 accepts
+the interrupt, the runner performs the acknowledge/entry cycles on the shared
+master-tick timeline before continuing instruction execution. EI's one
+instruction delay remains in effect.
+
 ### 11.2 No instruction-end-only external effects
 
 This is forbidden as the final timing model:

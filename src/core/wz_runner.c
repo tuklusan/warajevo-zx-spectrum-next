@@ -1,12 +1,14 @@
-/*
-Warajevo ZX Spectrum Next
-Copyright (c) 2026 Supratim Sanyal, SANYALnet Labs, for new original project material.
-New original material is licensed under GNU GPL v2 or later (GPL-2.0-or-later), as stated in LICENSE.txt.
-Upstream Warajevo and third-party material retain their applicable copyrights and licenses.
-See LICENSE.txt and NOTICE.md for complete terms and provenance.
-*/
+/* Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+ * This file is governed by the SANYALnet Labs Non-Commercial License in the
+ * root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
+ * for AI/ML model training are prohibited unless separately authorized.
+ * Attribution is required: "Based on original work by Supratim Sanyal of
+ * SANYALnet Labs." See LICENSE for full terms.
+ */
 
 #include "core/wz_runner.h"
+
+#include "core/wz_z80.h"
 
 wz_result_t wz_headless_runner_init(wz_headless_runner_t* runner,
                                      wz_machine_t* machine,
@@ -60,7 +62,15 @@ wz_result_t wz_headless_runner_execute(wz_headless_runner_t* runner,
         wz_master_tick_t before = runner->machine->master_tick;
         wz_master_tick_t elapsed;
         wz_machine_update_interrupt_line(runner->machine);
-        if (wz_z80_step(runner->machine) != WZ_RESULT_OK) {
+        wz_result_t step_result;
+        wz_machine_update_interrupt_line(runner->machine);
+        if (wz_machine_maskable_interrupt_line_low(runner->machine) &&
+            wz_z80_maskable_interrupts_acceptable(&runner->machine->cpu)) {
+            step_result = wz_z80_accept_maskable_interrupt(runner->machine);
+        } else {
+            step_result = wz_z80_step(runner->machine);
+        }
+        if (step_result != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
         elapsed = runner->machine->master_tick - before;
