@@ -7,11 +7,11 @@ SANYALnet Labs." See LICENSE for full terms. -->
 
 # UI acceptance evidence audit
 
-Task 451 audit is complete; UI acceptance is not. PASS requires direct evidence for the full criterion; PARTIAL records narrower evidence; OPEN means required evidence is missing. The four-runner DIZZY4K proof exercised the GUI application through its Telnet surface and captured a Spectrum screenshot (run 35890238325). The six-case application-command boundary proof adds hosted evidence for shared GUI menu, toolbar, test, and Telnet dispatch plus host-only state preservation (run `35932389804`, commit `1b4a9bc`). These runs do not close the full UI regression/accessibility contract.
+Task 451 audit is complete; UI acceptance is not. Current status: 1 PASS, 7 PARTIAL, 59 OPEN. PASS requires direct evidence for the full criterion; PARTIAL records narrower evidence; OPEN means required evidence is missing. The four-runner DIZZY4K proof exercised the GUI application through its Telnet surface and captured a Spectrum screenshot (run 35890238325). The six-case application-command boundary proof adds hosted evidence for shared GUI menu, toolbar, test, and Telnet dispatch plus host-only state preservation (run `35932389804`, commit `1b4a9bc`). These runs do not close the full UI regression/accessibility contract.
 
 | # | UI §48 criterion | Status | Evidence or outstanding proof |
 |---:|---|---|---|
-| 1 | the semantic top-level menu tree is `File`, `Machine`, `Media`, `View`, `Tools`, `Settings`, `Help`; | OPEN | No criterion-specific proof is recorded. |
+| 1 | the semantic top-level menu tree is `File`, `Machine`, `Media`, `View`, `Tools`, `Settings`, `Help`; | PASS | The registry root catalog provides the seven exact IDs and labels in order (`src/app/wz_command_registry.c:15`), and the Nuklear host renderer creates each in-window menu from that catalog (`src/app/wz_sokol_main.c:741`, `934`). The four-platform GUI/Telnet DIZZY4K runtime smoke passed in run `36372262780`, pinned to `ab93bce12c0a3bbb43d800d247fc355025a84385`. |
 | 2 | the running Spectrum display is the primary application surface; | PARTIAL | Partial: four-runner GUI/Telnet smoke produced the Spectrum screenshot; the complete primary-surface contract lacks UI regression coverage (run `35890238325`). |
 | 3 | one shared command registry owns every cross-front-end semantic operation; | PARTIAL | Hosted application-command boundary case exercises one registry across GUI menu, toolbar, application-test, and Telnet reset projections (run `35932389804`, commit `1b4a9bc`); complete semantic command coverage remains open. |
 | 4 | stable command IDs are unique and independent of cosmetic GUI wording; | OPEN | No criterion-specific proof is recorded. |
