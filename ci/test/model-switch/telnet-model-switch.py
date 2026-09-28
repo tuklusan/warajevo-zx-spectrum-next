@@ -93,13 +93,17 @@ def main() -> None:
         status(sock, "48K", "RUNNING", "200")
 
         expect(sock, "PAUSE", "OK PAUSE\r\n")
+        status(sock, "48K", "PAUSED", "200")
         expect(sock, "PAUSE", "OK PAUSE\r\n")
+        status(sock, "48K", "PAUSED", "200")
         expect(sock, "MODEL 128K", "OK MODEL 128K\r\n")
         status(sock, "128K", "PAUSED", "200")
         expect(sock, "MODEL 48K", "OK MODEL 48K\r\n")
         status(sock, "48K", "PAUSED", "200")
         expect(sock, "RESUME", "OK RESUME\r\n")
+        status(sock, "48K", "RUNNING", "200")
         expect(sock, "RESUME", "OK RESUME\r\n")
+        status(sock, "48K", "RUNNING", "200")
         status(sock, "48K", "RUNNING", "200")
 
         expect(sock, "MODEL 16K", "ERR BAD_MODEL\r\n")
