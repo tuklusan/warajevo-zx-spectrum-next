@@ -7,7 +7,7 @@ SANYALnet Labs." See LICENSE for full terms. -->
 
 # UI acceptance evidence audit
 
-Task 451 audit is complete; UI acceptance is not. Current status: 1 PASS, 7 PARTIAL, 59 OPEN. PASS requires direct evidence for the full criterion; PARTIAL records narrower evidence; OPEN means required evidence is missing. The four-runner DIZZY4K proof exercised the GUI application through its Telnet surface and captured a Spectrum screenshot (run 35890238325). The six-case application-command boundary proof adds hosted evidence for shared GUI menu, toolbar, test, and Telnet dispatch plus host-only state preservation (run `35932389804`, commit `1b4a9bc`). These runs do not close the full UI regression/accessibility contract.
+Task 451 audit is complete; UI acceptance is not. Current status: 1 PASS, 8 PARTIAL, 58 OPEN. PASS requires direct evidence for the full criterion; PARTIAL records narrower evidence; OPEN means required evidence is missing. The four-runner DIZZY4K proof exercised the GUI application through its Telnet surface and captured a Spectrum screenshot (run 35890238325). The six-case application-command boundary proof adds hosted evidence for shared GUI menu, toolbar, test, and Telnet dispatch plus host-only state preservation (run `35932389804`, commit `1b4a9bc`). These runs do not close the full UI regression/accessibility contract.
 
 | # | UI §48 criterion | Status | Evidence or outstanding proof |
 |---:|---|---|---|
@@ -64,7 +64,7 @@ Task 451 audit is complete; UI acceptance is not. Current status: 1 PASS, 7 PART
 | 51 | successful Telnet keyboard commands return the Section 27.1 response and invalid/held-key cases return the frozen error responses; | OPEN | No criterion-specific proof is recorded. |
 | 52 | reset/model changes invoked while paused leave the application paused; | OPEN | No criterion-specific proof is recorded. |
 | 53 | `MENU TREE` uses the Section 35 record format and does not disclose dynamic Recent-file absolute paths; | OPEN | No criterion-specific proof is recorded. |
-| 54 | `STATUS`/`DESCRIBE` do not expose arbitrary absolute host media paths under the initial unauthenticated policy; | OPEN | No criterion-specific proof is recorded. |
+| 54 | `STATUS`/`DESCRIBE` do not expose arbitrary absolute host media paths under the initial unauthenticated policy; | PARTIAL | The four-runner status projection outputs only the frozen model/state/speed/audio/network fields and no host path field (run `36376643621`, source `fda5617`). A direct Telnet `DESCRIBE` assertion for path-free metadata remains open. |
 | 55 | `Tools > Snapshot Inspector...` exists and reuses shared state-inspection machinery rather than a separate snapshot-state implementation; | OPEN | No criterion-specific proof is recorded. |
 | 56 | every required Section 7.1 menu/action and non-menu semantic command ID is registered with the frozen metadata contract; | OPEN | No criterion-specific proof is recorded. |
 | 57 | the status line always exposes `Control Port: <number>` for an available listener or `Control Port: unavailable` after full range exhaustion; | OPEN | No criterion-specific proof is recorded. |
