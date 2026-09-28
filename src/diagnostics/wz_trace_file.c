@@ -27,6 +27,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include <sys/stat.h>
 #include <unistd.h>
 #endif
+#include <stdlib.h>
 #include <string.h>
 
 #define WZ_TRACE_FORMAT_VERSION 5u
@@ -291,7 +292,6 @@ wz_result_t wz_trace_file_recover(const char* path,wz_trace_recover_fn fn,void* 
     wz_qword_t* ticks = NULL;
     wz_qword_t sequence;
     wz_qword_t last_tick;
-    bool dropped_torn_oldest = false;
     size_t recovered = 0u;
     long file_size;
     wz_result_t result = WZ_RESULT_INVALID_STATE;
@@ -327,7 +327,6 @@ wz_result_t wz_trace_file_recover(const char* path,wz_trace_recover_fn fn,void* 
     if (!read_slot(f, first_slot, record) || record[0] != WZ_TRACE_RECORD_SIZE ||
         get32(record + WZ_TRACE_COMMIT_OFFSET) != WZ_TRACE_COMMIT) {
         if (record_count != slots) goto cleanup;
-        dropped_torn_oldest = true;
         first_slot = (first_slot + 1u) % slots;
         record_count--;
         if (record_count == 0u || !read_slot(f, first_slot, record) ||
