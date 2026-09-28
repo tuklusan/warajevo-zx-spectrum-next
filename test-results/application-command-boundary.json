@@ -1,9 +1,9 @@
 {
   "testId": "application-command-boundary",
   "status": "pass",
-  "commit": "b8c04e802db155e51b45478ab326277d847720a9",
+  "commit": "ba6276676474e43ebda4a1972e9641444c3cf95a",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-09-28T06:29:50+00:00",
+  "timestamp": "2026-09-28T07:17:42+00:00",
   "caseCount": 6,
   "runners": [
     {
@@ -74,7 +74,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "0913bbbbc11f9fe30b7fcc55aa3456233f969b1a543eed84d742e8e4ca482e0a"
+      "sha256": "f952293b4e69fabff38da5f7f660b18c1f31605942aef94f50f290df1841adb0"
     },
     {
       "path": "src/app/wz_telnet_alias_response.c",
@@ -102,15 +102,15 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "2d26449a2d98d0a8b35450e6937fe4b00855b4a985fed4d73f0ee6d131ad650b"
+      "sha256": "f23f7e5eb308636c80e439a15014b958f0b86be7f124d121f3b3e88d8418ea03"
     },
     {
       "path": "src/app/wz_ui_layout.h",
-      "sha256": "701a6e9d97019caa67e92656afea58b1e48347800f3046c5dea513a1724af47a"
+      "sha256": "32c18fef709e81fab1a933a4d051d3dfc3db7047fbeac2bab427f141b3e16c7e"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "442f2564fd66e4fa56f6686a91c588f2293dbb9ddf37b0036330dca27a6d7369"
+      "sha256": "75dd8a10f4e965e81610260a20de6b07965f7bb22da5953a97691e1ea41bb70d"
     },
     {
       "path": "src/core/audio/wz_audio_evidence.c",

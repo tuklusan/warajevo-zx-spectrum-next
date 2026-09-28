@@ -1,0 +1,76 @@
+{
+  "testId": "input-focus-telnet",
+  "status": "pass",
+  "commit": "1cea4d05d5c1defe629cd924ef25798ed529cbb2",
+  "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
+  "timestamp": "2026-09-28T07:29:33+00:00",
+  "runId": 36391807634,
+  "runners": [
+    {
+      "id": "windows-x64",
+      "os": "Windows",
+      "architecture": "X64",
+      "runnerName": "win25-vs2026"
+    },
+    {
+      "id": "windows-arm64",
+      "os": "Windows",
+      "architecture": "ARM64",
+      "runnerName": "win11-arm64"
+    },
+    {
+      "id": "macos-x64",
+      "os": "macOS",
+      "architecture": "X64",
+      "runnerName": "macos15"
+    },
+    {
+      "id": "macos-arm64",
+      "os": "macOS",
+      "architecture": "ARM64",
+      "runnerName": "macos15"
+    }
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/input-focus-telnet.yml",
+      "sha256": "0d24f855130942c1c24461e9ab6b1abcb01cda220e0028b3413c5caad2e11084"
+    },
+    {
+      "path": "ci/test/input-focus-telnet/CMakeLists.txt",
+      "sha256": "1242a36e8e5d0c898d6d941d3128034ee8e4adac44c892291e701e5a77c09c70"
+    },
+    {
+      "path": "ci/test/input-focus-telnet/input-focus-telnet-regression.c",
+      "sha256": "22466a087e3a8fea0a08569dc359e380b5b1965b108e2c9de24b521567311de1"
+    },
+    {
+      "path": "ci/test/input-focus-telnet/write-proof.py",
+      "sha256": "61d52e2dacb9c2524259037381944997c3ef598a4daaf791450ba2218c8913ae"
+    },
+    {
+      "path": "src/app/wz_input_arbiter.c",
+      "sha256": "52bc39d6c9d5326e76d695f4f4a725f410e02cb9852a48a5f13b266ce2523bcb"
+    },
+    {
+      "path": "src/app/wz_input_arbiter.h",
+      "sha256": "d16b682056e7bf3864c46083407eaca716956ae137e23ab83d51190afc1dffcd"
+    },
+    {
+      "path": "src/app/wz_input_focus.c",
+      "sha256": "4ce12b4b7f4045319753bf324d425a2f209e01583b710939a6e9f3e03671bfdb"
+    },
+    {
+      "path": "src/app/wz_input_focus.h",
+      "sha256": "ef2d8f3e72d10d7d7a3c221714cce84b43bdd6e9a87c7b20ae8e39cdcfb2cbdb"
+    },
+    {
+      "path": "src/app/wz_telnet_input.c",
+      "sha256": "e682ff54b87756ba572c84e5f48d7673df5957501da89656db39386d7ae64b0c"
+    },
+    {
+      "path": "src/app/wz_telnet_input.h",
+      "sha256": "e826751e33025bb69dd7199929ecb64a974598ae2ddc2cec208f5c34b030a4bc"
+    }
+  ]
+}

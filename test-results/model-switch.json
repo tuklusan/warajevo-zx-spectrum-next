@@ -1,10 +1,10 @@
 {
   "testId": "model-switch",
   "status": "pass",
-  "commit": "054d6479a52ef3aab28e1852a42ec0b4e45e6c26",
+  "commit": "ba6276676474e43ebda4a1972e9641444c3cf95a",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-09-28T05:20:04+00:00",
-  "runId": 36380971730,
+  "timestamp": "2026-09-28T07:21:54+00:00",
+  "runId": 36390711331,
   "runners": [
     {
       "id": "windows-x64",
@@ -58,15 +58,19 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "616d73edfd9ae2f7e2e903ff05bd4b0d6fc1197ac0e7d8ccaad882ea65568dcf"
+      "sha256": "f952293b4e69fabff38da5f7f660b18c1f31605942aef94f50f290df1841adb0"
     },
     {
       "path": "src/app/wz_telnet_alias_response.c",
-      "sha256": "6c36e41ec8261c72b6eafa556b38e246dc577356c6fb27956c9a85e6e4b14063"
+      "sha256": "3cbcf8d6e85cc444e63f7142ea6972b9850cde9eca6d4c8be029fb8ee59d8671"
     },
     {
       "path": "src/app/wz_telnet_alias_response.h",
       "sha256": "1d39dcff0ade48fcb6ede4297bd4ede2b6de81e6b8b6955cf76af7103d3a5334"
+    },
+    {
+      "path": "src/app/wz_telnet_keyboard_command.c",
+      "sha256": "cd94bf55c10f62bb706cbdeacd04f76edb649a6d677416dfdd2960316e4500d8"
     },
     {
       "path": "src/core/wz_machine.c",
@@ -114,7 +118,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "442f2564fd66e4fa56f6686a91c588f2293dbb9ddf37b0036330dca27a6d7369"
+      "sha256": "75dd8a10f4e965e81610260a20de6b07965f7bb22da5953a97691e1ea41bb70d"
     },
     {
       "path": "test-media/DIZZY4K.TAP",
