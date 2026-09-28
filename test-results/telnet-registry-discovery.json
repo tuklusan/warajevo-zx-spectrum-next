@@ -1,10 +1,10 @@
 {
   "testId": "telnet-registry-discovery",
   "status": "pass",
-  "commit": "61f520094db7d64af58befa58449587bb0323098",
+  "commit": "76ba1a4491f7d6528e45e31f866a4187e80f405c",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-09-28T05:53:34+00:00",
-  "runId": 36383781875,
+  "timestamp": "2026-09-28T06:07:02+00:00",
+  "runId": 36384791989,
   "runners": [
     {
       "id": "windows-x64",
@@ -62,7 +62,7 @@
     },
     {
       "path": "ci/test/telnet-registry-discovery/CMakeLists.txt",
-      "sha256": "83f3ee5e287d80f2442b77019f732f99571242cd1089b890e94e1b8293ed08ac"
+      "sha256": "697e148f1e3a169c53e3567392efe6201aab7c69bb5a2cb988173b8b4a7c6dfc"
     },
     {
       "path": "ci/test/telnet-registry-discovery/README.md",
@@ -70,7 +70,7 @@
     },
     {
       "path": "ci/test/telnet-registry-discovery/telnet-registry-discovery-regression.c",
-      "sha256": "08a991df36f49c23b84e83bb20523282a9095b2e3bc7bb3d4b6ed365f0bdac71"
+      "sha256": "66ec1c589184e65e3b78e2d2c292a1bb3e941a8bb527d9a36f2ef8b0937326b0"
     },
     {
       "path": "ci/test/telnet-registry-discovery/write-proof.py",
