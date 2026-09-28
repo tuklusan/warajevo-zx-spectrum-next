@@ -65,6 +65,7 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "app/wz_telnet_alias_response.h"
 #include "app/wz_telnet_negotiation.h"
 #include "app/wz_telnet_input.h"
+#include "app/wz_telnet_key_press.h"
 #include "app/wz_ui_window.h"
 
 #define WZ_HOST_COMMAND_CAPACITY 128u
@@ -95,6 +96,7 @@ typedef struct {
     wz_ui_window_t ui_window;
     wz_headless_runner_t runner;
     wz_input_arbiter_t input_arbiter;
+    wz_telnet_key_press_state_t telnet_key_presses;
     wz_input_focus_controller_t input_focus;
     bool local_left_shift_down;
     bool local_right_shift_down;
@@ -990,22 +992,37 @@ static void wz_host_telnet_process_command(const char* command)
                                           output, sizeof(output), &length);
         }
     } else if (wz_telnet_keyboard_command_key_down(command, &physical_key)) {
+        wz_telnet_key_press_cancel(&wz_host_session.telnet_key_presses,
+                                   physical_key);
         key_ok = wz_telnet_input_set_key(&wz_host_session.input_arbiter,
                                          physical_key, true);
         (void)wz_telnet_keyboard_command_format_response(
             key_ok ? WZ_TELNET_KEYBOARD_RESPONSE_OK : WZ_TELNET_KEYBOARD_RESPONSE_BAD_STATE,
             output, sizeof(output), &length);
     } else if (wz_telnet_keyboard_command_key_up(command, &physical_key)) {
+        wz_telnet_key_press_cancel(&wz_host_session.telnet_key_presses,
+                                   physical_key);
         key_ok = wz_telnet_input_set_key(&wz_host_session.input_arbiter,
                                          physical_key, false);
         (void)wz_telnet_keyboard_command_format_response(
             key_ok ? WZ_TELNET_KEYBOARD_RESPONSE_OK : WZ_TELNET_KEYBOARD_RESPONSE_BAD_STATE,
             output, sizeof(output), &length);
     } else if (wz_telnet_keyboard_command_key_press(command, &physical_key)) {
-        key_ok = wz_telnet_input_set_key(&wz_host_session.input_arbiter,
-                                         physical_key, true) &&
-            wz_telnet_input_set_key(&wz_host_session.input_arbiter,
-                                    physical_key, false);
+        const wz_machine_profile_t* profile =
+            wz_host_session.machine.profile;
+        wz_qword_t frame_ticks = profile == NULL ? 0u :
+            (wz_qword_t)profile->tstates_per_frame *
+            profile->master_ticks_per_cpu_tstate;
+        key_ok = wz_telnet_key_press_schedule(
+            &wz_host_session.telnet_key_presses,
+            &wz_host_session.input_arbiter, physical_key,
+            wz_host_session.machine.master_tick, frame_ticks);
+        (void)wz_telnet_keyboard_command_format_response(
+            key_ok ? WZ_TELNET_KEYBOARD_RESPONSE_OK : WZ_TELNET_KEYBOARD_RESPONSE_BAD_STATE,
+            output, sizeof(output), &length);
+    } else if (wz_telnet_keyboard_command_release_all(command)) {
+        wz_telnet_key_press_cancel_all(&wz_host_session.telnet_key_presses);
+        key_ok = wz_telnet_input_release_all(&wz_host_session.input_arbiter);
         (void)wz_telnet_keyboard_command_format_response(
             key_ok ? WZ_TELNET_KEYBOARD_RESPONSE_OK : WZ_TELNET_KEYBOARD_RESPONSE_BAD_STATE,
             output, sizeof(output), &length);
@@ -1036,6 +1053,7 @@ static void wz_host_telnet_poll(void)
                                       sizeof(wz_host_session.telnet_input));
     if (received == 0 || (received < 0 && !wz_host_socket_would_block())) {
         wz_telnet_client_disconnect(&wz_host_session.telnet_client);
+        wz_telnet_key_press_cancel_all(&wz_host_session.telnet_key_presses);
         return;
     }
     if (received < 0) return;
@@ -1473,6 +1491,7 @@ static void wz_host_session_init(void)
     wz_telnet_negotiator_init(&wz_host_session.telnet_negotiator);
     wz_telnet_command_buffer_init(&wz_host_session.telnet_commands);
     wz_input_arbiter_init(&wz_host_session.input_arbiter);
+    wz_telnet_key_press_state_init(&wz_host_session.telnet_key_presses);
     wz_input_focus_init(&wz_host_session.input_focus,
                         &wz_host_session.input_arbiter);
     (void)wz_application_lifecycle_init(&wz_host_session.lifecycle, 0, 0);
@@ -1753,6 +1772,10 @@ static void wz_host_frame(void)
                                           wz_host_session.control_port.ipv6_socket);
         }
     }
+    (void)wz_telnet_key_press_drain(
+        &wz_host_session.telnet_key_presses,
+        &wz_host_session.input_arbiter,
+        wz_host_session.machine.master_tick);
     wz_host_telnet_poll();
     wz_host_apply_keyboard_input();
     if (!wz_host_session.ui_window.layout.paused) {
@@ -1771,6 +1794,13 @@ static void wz_host_frame(void)
             }
         }
         for (unsigned frame_index = 0u; frame_index < frame_count; ++frame_index) {
+            if (frame_index != 0u) {
+                (void)wz_telnet_key_press_drain(
+                    &wz_host_session.telnet_key_presses,
+                    &wz_host_session.input_arbiter,
+                    wz_host_session.machine.master_tick);
+                wz_host_apply_keyboard_input();
+            }
             wz_master_tick_t frame_start_tick = wz_host_session.machine.master_tick;
             wz_byte_t initial_beeper_level = wz_host_session.machine.beeper.level;
             wz_ay_t initial_ay;
@@ -1787,6 +1817,10 @@ static void wz_host_frame(void)
             wz_host_audio_render_frame(&wz_host_session, frame_start_tick,
                                        initial_beeper_level, initial_ay_state);
         }
+        (void)wz_telnet_key_press_drain(
+            &wz_host_session.telnet_key_presses,
+            &wz_host_session.input_arbiter,
+            wz_host_session.machine.master_tick);
         if (wz_host_session.pacing_initialized) {
             if (!wz_host_pacing_wait(
                     &wz_host_session.pacing, wz_host_now_nanoseconds(),

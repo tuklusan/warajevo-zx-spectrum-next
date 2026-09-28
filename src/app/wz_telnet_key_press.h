@@ -21,6 +21,9 @@ typedef struct {
 } wz_telnet_key_press_state_t;
 
 void wz_telnet_key_press_state_init(wz_telnet_key_press_state_t* state);
+void wz_telnet_key_press_cancel(wz_telnet_key_press_state_t* state,
+                                size_t key);
+void wz_telnet_key_press_cancel_all(wz_telnet_key_press_state_t* state);
 bool wz_telnet_key_press_schedule(wz_telnet_key_press_state_t* state,
                                   wz_input_arbiter_t* arbiter,
                                   size_t key,

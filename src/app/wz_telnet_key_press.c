@@ -17,6 +17,22 @@ void wz_telnet_key_press_state_init(wz_telnet_key_press_state_t* state)
     }
 }
 
+void wz_telnet_key_press_cancel(wz_telnet_key_press_state_t* state,
+                                size_t key)
+{
+    if (state == 0 || key >= WZ_INPUT_ARBITER_KEY_COUNT) return;
+    state->release_tick[key] = 0u;
+    state->pending[key] = 0u;
+}
+
+void wz_telnet_key_press_cancel_all(wz_telnet_key_press_state_t* state)
+{
+    if (state == 0) return;
+    for (size_t key = 0u; key < WZ_INPUT_ARBITER_KEY_COUNT; ++key) {
+        wz_telnet_key_press_cancel(state, key);
+    }
+}
+
 bool wz_telnet_key_press_schedule(wz_telnet_key_press_state_t* state,
                                   wz_input_arbiter_t* arbiter,
                                   size_t key,

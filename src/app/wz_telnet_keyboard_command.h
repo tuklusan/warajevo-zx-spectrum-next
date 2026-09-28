@@ -27,6 +27,7 @@ bool wz_telnet_keyboard_command_key_up(const char* command,
                                        size_t* physical_key);
 bool wz_telnet_keyboard_command_key_press(const char* command,
                                           size_t* physical_key);
+bool wz_telnet_keyboard_command_release_all(const char* command);
 
 bool wz_telnet_keyboard_command_format_response(
     wz_telnet_keyboard_response_t response,

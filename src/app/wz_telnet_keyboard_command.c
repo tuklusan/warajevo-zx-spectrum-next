@@ -42,18 +42,29 @@ static bool parse_key_command(const char* command,
 {
     const char* operand;
     size_t length;
+    size_t prefix_length;
     char name[32];
 
-    if (command == NULL || prefix == NULL || physical_key == NULL ||
-        strncmp(command, prefix, strlen(prefix)) != 0) {
+    if (command == NULL || prefix == NULL || physical_key == NULL) {
         return false;
     }
-    operand = command + strlen(prefix);
+    prefix_length = strlen(prefix);
+    for (size_t index = 0u; index < prefix_length; ++index) {
+        if (command[index] == '\0' ||
+            toupper((unsigned char)command[index]) !=
+                toupper((unsigned char)prefix[index])) {
+            return false;
+        }
+    }
+    operand = command + prefix_length;
     length = strlen(operand);
     if (length == 0u || length >= sizeof(name)) {
         return false;
     }
-    memcpy(name, operand, length + 1u);
+    for (size_t index = 0u; index < length; ++index) {
+        name[index] = (char)toupper((unsigned char)operand[index]);
+    }
+    name[length] = '\0';
     return wz_telnet_keymap_lookup(name, physical_key);
 }
 
@@ -73,6 +84,20 @@ bool wz_telnet_keyboard_command_key_press(const char* command,
                                           size_t* physical_key)
 {
     return parse_key_command(command, "KEY PRESS ", physical_key);
+}
+
+bool wz_telnet_keyboard_command_release_all(const char* command)
+{
+    static const char expected[] = "RELEASE ALL";
+    if (command == NULL || strlen(command) != sizeof(expected) - 1u) {
+        return false;
+    }
+    for (size_t index = 0u; index < sizeof(expected) - 1u; ++index) {
+        if (toupper((unsigned char)command[index]) != expected[index]) {
+            return false;
+        }
+    }
+    return true;
 }
 
 bool wz_telnet_keyboard_command_format_response(
