@@ -1,0 +1,71 @@
+{
+  "testId": "sokol-audio-delivery",
+  "status": "pass",
+  "commit": "330adb78f5e82ba04030c6f42aaae3c6aea13beb",
+  "runId": 36412325799,
+  "runner": "Linux/X64",
+  "timestamp": "2026-09-28T10:53:13+00:00",
+  "caseCount": 11,
+  "fixtures": [
+    {
+      "path": ".github/workflows/audio-delivery-regression.yml",
+      "sha256": "664dc88a77e6755925b7390ca521c25fc272afbbb0ebdadd9838c46488ac6ca5"
+    },
+    {
+      "path": "ci/test/audio-delivery/sokol-audio-delivery-regression.c",
+      "sha256": "f83c9bb4d57a23a55d5f5bfc810b18515210a874512d935ce875beb8aaed206f"
+    },
+    {
+      "path": "ci/test/audio-delivery/sokol_audio_stub/sokol_audio.h",
+      "sha256": "241b80c7c29052de62cc2400f9ed6416b9d4cbb8d1b3ef470a84c74dede75193"
+    },
+    {
+      "path": "ci/test/audio-delivery/write-proof.py",
+      "sha256": "4f9d94889b33640ad51a16d0e51295511e691a661fceb2bf6805beaa7b69b76b"
+    },
+    {
+      "path": "test-drivers/sokol-audio-delivery.driver.json",
+      "sha256": "7656c4b6b140279753ca5e137a43c091729d4037ffe2c50da20397c524a0911b"
+    },
+    {
+      "path": "src/app/wz_host_audio_push.c",
+      "sha256": "ad903671d15ffc1dcb153ccd81f8452d205b8568aa727becbc4a8e37100f55ae"
+    },
+    {
+      "path": "src/app/wz_host_audio_push.h",
+      "sha256": "faa77183f9a4749d03ddb2108acf25606f831b044ba03af5660284e6674a9c82"
+    },
+    {
+      "path": "src/app/wz_host_audio_policy.c",
+      "sha256": "7248245e6f4ff506a436ab09a1121e0fefe68cb729be28267d25e4f54ca0cc68"
+    },
+    {
+      "path": "src/app/wz_host_audio_policy.h",
+      "sha256": "99f86c6701dec5ccae2b932b31daafc95909143dd192bf1cfe43bc91a5991430"
+    },
+    {
+      "path": "src/app/wz_sokol_audio.c",
+      "sha256": "738b8ccdba9466f23b1d9113e6a669921b7d321412f0c3a8b8bf10595ddeea43"
+    },
+    {
+      "path": "src/app/wz_sokol_audio.h",
+      "sha256": "74c59e994f84d04b0e6222c32ab654d593f67f5d31fa739a64b844ac63850399"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "8120ba4d745562e99840ac895b171cb98be1901fba6fb38afa036453b5ac7377"
+    },
+    {
+      "path": "src/app/wz_speed_policy.c",
+      "sha256": "cb9d2d0befc0becaa81558d794a257f399c4a46e1c1a0bdb19c4893d8f547183"
+    },
+    {
+      "path": "src/app/wz_speed_policy.h",
+      "sha256": "0895e0cac0254cb95d4b2347d911f0fdddfd0bab414d37e5dd4052cfc9eaa2df"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "cbb02015629f6b11f06fa297ca7742bcfc0f9674d0320ed6196a8ba6c8a7cd04"
+    }
+  ]
+}
