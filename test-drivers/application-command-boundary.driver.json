@@ -15,7 +15,7 @@
     },
     {
       "path": "ci/test/application-command-boundary/CMakeLists.txt",
-      "sha256": "1f27a271f65bc0d01997cc97d8307036cdb993c7d4a314630fcee86c77b1fe37"
+      "sha256": "e1deae5c3ccd65120fe242a83f51c2a5fd683988507157bde05beae90b74f985"
     },
     {
       "path": "ci/test/application-command-boundary/README.md",
@@ -75,7 +75,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "3349005a6ff5fa37e08bd35555ced0f7c33f839dfe9ba216e2f5842aa92c207a"
+      "sha256": "6e5803e6636ad982edbfc38520c2c3af1283367b695081639e314b4339c314e7"
     },
     {
       "path": "src/core/audio/wz_audio_evidence.c",
