@@ -336,14 +336,6 @@ add_test(NAME wz_printer_commands_tests COMMAND wz_printer_commands_tests)
 add_test(NAME wz_ui_window_tests COMMAND wz_ui_window_tests)
 
 add_executable(
-    wz_file_open_run_tests
-    ${WZSN_REPO_ROOT}/ci/test/file-open-run/wz_file_open_run_tests.c
-    ${WZSN_SOURCE_ROOT}/app/wz_file_open_run.c)
-target_link_libraries(wz_file_open_run_tests PRIVATE wz_warnings)
-target_include_directories(wz_file_open_run_tests PRIVATE "${WZSN_SOURCE_ROOT}")
-add_test(NAME wz_file_open_run_tests COMMAND wz_file_open_run_tests)
-
-add_executable(
     wz_recent_files_tests
     ${WZSN_TEST_ROOT}/wz_recent_files_tests.c
     ${WZSN_SOURCE_ROOT}/app/wz_recent_files.c)
@@ -464,6 +456,15 @@ target_include_directories(wz_host_output_tests PRIVATE "${WZSN_SOURCE_ROOT}")
 add_test(NAME wz_host_output_tests COMMAND wz_host_output_tests)
 
 endif()
+enable_testing()
+add_executable(
+    wz_file_open_run_tests
+    ${WZSN_REPO_ROOT}/ci/test/file-open-run/wz_file_open_run_tests.c
+    ${WZSN_SOURCE_ROOT}/app/wz_file_open_run.c)
+target_link_libraries(wz_file_open_run_tests PRIVATE wz_warnings)
+target_include_directories(wz_file_open_run_tests PRIVATE "${WZSN_SOURCE_ROOT}")
+add_test(NAME wz_file_open_run_tests COMMAND wz_file_open_run_tests)
+
 if(WZSN_FUSE_Z80_TEST_INPUT AND WZSN_FUSE_Z80_TEST_EXPECTED)
     enable_testing()
     add_test(NAME fuse_z80_conformance
