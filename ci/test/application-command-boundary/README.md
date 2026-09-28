@@ -7,7 +7,7 @@ SANYALnet Labs." See LICENSE for full terms. -->
 
 # Application command boundary acceptance
 
-`tests/application-command-boundary.c` verifies six requirements with the
+`tests/application-command-boundary.c` verifies eight requirements with the
 command registry and an initialized canonical 48K machine:
 
 1. The application-test projection invokes the registered reset handler.
@@ -18,6 +18,9 @@ command registry and an initialized canonical 48K machine:
 5. The Telnet `DO machine.reset` projection invokes the same handler.
 6. A worker thread cannot rebind the finalized registry or execute the handler;
    dispatch returns `wrong-thread` and leaves machine state unchanged.
+7. Registering a duplicate command ID is rejected.
+8. A command remains discoverable by its stable ID after its display label
+   changes.
 
 Run through the hosted matrix with:
 

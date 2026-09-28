@@ -101,8 +101,10 @@ static int fail_with_machine(wz_machine_t* machine, const char* message)
 
 int main(void)
 {
-    wz_command_metadata_t storage[2];
+    wz_command_metadata_t storage[3];
+    wz_command_metadata_t alternate_storage[1];
     wz_command_registry_t registry;
+    wz_command_registry_t alternate_registry;
     wz_command_result_t result;
     wz_command_arguments_t arguments = {NULL, 0u};
     wz_machine_t canonical_machine;
@@ -121,6 +123,8 @@ int main(void)
         WZ_COMMAND_LOCAL_ONLY, NULL, toggle_status_panel_handler, &host,
         false, false, NULL
     };
+    wz_command_metadata_t renamed_reset;
+    const wz_command_metadata_t* found_command;
     test_machine_t machine = {0u};
     worker_context_t worker;
     char output[128];
@@ -147,13 +151,36 @@ int main(void)
         return fail_with_machine(&canonical_machine,
                                  "canonical machine fingerprint setup");
     }
-    if (wz_command_registry_init(&registry, storage, 2u) != WZ_RESULT_OK ||
+    if (wz_command_registry_init(&registry, storage, 3u) != WZ_RESULT_OK ||
         wz_command_registry_bind_owner_thread(&registry) != WZ_RESULT_OK ||
         wz_command_registry_register(&registry, reset) != WZ_RESULT_OK ||
         wz_command_registry_register(&registry, status_panel) != WZ_RESULT_OK ||
+        wz_command_registry_register(&registry, reset) !=
+            WZ_RESULT_INVALID_ARGUMENT ||
         wz_command_registry_finalize(&registry) != WZ_RESULT_OK) {
         return fail_with_machine(&canonical_machine,
-                                 "registry setup and owner binding");
+                                 "registry uniqueness, setup, and owner binding");
+    }
+
+    renamed_reset = reset;
+    renamed_reset.label = "Machine Restart";
+    if (wz_command_registry_init(&alternate_registry, alternate_storage,
+                                 1u) != WZ_RESULT_OK ||
+        wz_command_registry_bind_owner_thread(&alternate_registry) !=
+            WZ_RESULT_OK ||
+        wz_command_registry_register(&alternate_registry, renamed_reset) !=
+            WZ_RESULT_OK ||
+        wz_command_registry_finalize(&alternate_registry) != WZ_RESULT_OK) {
+        return fail_with_machine(&canonical_machine,
+                                 "renamed command registration");
+    }
+    found_command = wz_command_registry_find(&alternate_registry,
+                                             "machine.reset");
+    if (found_command == NULL ||
+        strcmp(found_command->label, "Machine Restart") != 0) {
+        return fail_with_machine(
+            &canonical_machine,
+            "stable command ID lookup changed with cosmetic label");
     }
 
     if (wz_command_registry_dispatch(&registry, "machine.reset", arguments,
@@ -243,6 +270,6 @@ int main(void)
     }
 
     wz_machine_destroy(&canonical_machine);
-    puts("PASS application-command-boundary cases=6");
+    puts("PASS application-command-boundary cases=8");
     return 0;
 }
