@@ -1339,12 +1339,20 @@ static bool wz_host_keycode_to_spectrum_key(sapp_keycode key_code,
     };
     if (physical_key == NULL) return false;
     if (key_code >= SAPP_KEYCODE_A && key_code <= SAPP_KEYCODE_Z) {
-        *physical_key = (size_t)letters[key_code - SAPP_KEYCODE_A];
-        return true;
+        size_t index = (size_t)(key_code - SAPP_KEYCODE_A);
+        if (index < sizeof(letters) / sizeof(letters[0])) {
+            *physical_key = (size_t)letters[index];
+            return true;
+        }
+        return false;
     }
     if (key_code >= SAPP_KEYCODE_0 && key_code <= SAPP_KEYCODE_9) {
-        *physical_key = (size_t)digits[key_code - SAPP_KEYCODE_0];
-        return true;
+        size_t index = (size_t)(key_code - SAPP_KEYCODE_0);
+        if (index < sizeof(digits) / sizeof(digits[0])) {
+            *physical_key = (size_t)digits[index];
+            return true;
+        }
+        return false;
     }
     switch (key_code) {
     case SAPP_KEYCODE_ENTER:
