@@ -452,7 +452,7 @@ static wz_result_t wz_host_command_pause_resume(
     command_id = session->ui_window.layout.paused ? "machine.resume" :
         "machine.pause";
     return wz_command_registry_dispatch(
-        &wz_host_session.command_registry, command_id,
+        &session->command_registry, command_id,
         (wz_command_arguments_t){NULL, 0u}, result);
 }
 
