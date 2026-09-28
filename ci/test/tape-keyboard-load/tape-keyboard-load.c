@@ -21,6 +21,11 @@ typedef struct {
     size_t interrupt_samples;
     size_t sampled_interrupts_iff_enabled;
     size_t sampled_interrupts_acceptable;
+    size_t interrupt_handler_durations;
+    wz_master_tick_t last_interrupt_accept_tick;
+    wz_master_tick_t interrupt_handler_min_ticks;
+    wz_master_tick_t interrupt_handler_max_ticks;
+    bool interrupt_handler_active;
     size_t interrupt_asserts;
     size_t interrupt_deasserts;
     size_t j_row_reads;
@@ -60,8 +65,20 @@ static void count_trace(const wz_trace_event_t* event, void* context)
     if (event->kind == WZ_TRACE_CPU_INSTRUCTION) {
         if (event->program_counter == 0x0038u)
             ++counts->irq_handler_entries;
-        if (event->program_counter == 0x0051u)
+        if (event->program_counter == 0x0051u) {
             ++counts->irq_handler_ei;
+            if (counts->interrupt_handler_active) {
+                wz_master_tick_t elapsed = event->master_tick -
+                    counts->last_interrupt_accept_tick;
+                if (counts->interrupt_handler_durations == 0u ||
+                    elapsed < counts->interrupt_handler_min_ticks)
+                    counts->interrupt_handler_min_ticks = elapsed;
+                if (elapsed > counts->interrupt_handler_max_ticks)
+                    counts->interrupt_handler_max_ticks = elapsed;
+                ++counts->interrupt_handler_durations;
+                counts->interrupt_handler_active = false;
+            }
+        }
         if (event->value == 0xfbu) ++counts->ei_opcodes;
         if (event->value == 0xf3u) ++counts->di_opcodes;
         if (counts->machine != NULL &&
@@ -73,9 +90,11 @@ static void count_trace(const wz_trace_event_t* event, void* context)
         }
     }
     if (event->kind != WZ_TRACE_INTERRUPT) return;
-    if (event->value == WZ_TRACE_INTERRUPT_MASKABLE_ACCEPT)
+    if (event->value == WZ_TRACE_INTERRUPT_MASKABLE_ACCEPT) {
         ++counts->interrupt_accepts;
-    else if (event->value == WZ_TRACE_INTERRUPT_MASKABLE_SAMPLE) {
+        counts->last_interrupt_accept_tick = event->master_tick;
+        counts->interrupt_handler_active = true;
+    } else if (event->value == WZ_TRACE_INTERRUPT_MASKABLE_SAMPLE) {
         ++counts->interrupt_samples;
         if (counts->machine != NULL && counts->machine->cpu.iff1 != 0u) {
             ++counts->sampled_interrupts_iff_enabled;
@@ -237,7 +256,7 @@ int main(int argc, char** argv)
     trace_counts.capture_keyboard_input = false;
     edit_line = (wz_word_t)(wz_machine_memory_read(&machine, 0x5c59u) |
         ((wz_word_t)wz_machine_memory_read(&machine, 0x5c5au) << 8u));
-    (void)printf("after J: E_LINE=%04x PC=%04x IFF=%u IY=%04x IM=%u IRQ/ENTRY=%lu/%lu SAMPLE/IFF/ELIGIBLE=%lu/%lu/%lu IRQ_EI=%lu EI/DI=%lu/%lu LINE=%lu/%lu IRQWINDOW_IFF/ELIGIBLE=%lu/%lu ULA_PRESSED/ROW_READS=%lu/%lu KPATH_RET/CHECK/EMPTY=%lu/%lu/%lu MODE=%02x FLAGS=%02x IYFLAGS=%02x KSTATE=%02x%02x%02x%02x%02x LASTK=%02x keyrow=%02x before=",
+    (void)printf("after J: E_LINE=%04x PC=%04x IFF=%u IY=%04x IM=%u IRQ/ENTRY=%lu/%lu SAMPLE/IFF/ELIGIBLE=%lu/%lu/%lu IRQ_EI=%lu ISR_TICKS=%llu-%llu EI/DI=%lu/%lu LINE=%lu/%lu IRQWINDOW_IFF/ELIGIBLE=%lu/%lu ULA_PRESSED/ROW_READS=%lu/%lu KPATH_RET/CHECK/EMPTY=%lu/%lu/%lu MODE=%02x FLAGS=%02x IYFLAGS=%02x KSTATE=%02x%02x%02x%02x%02x LASTK=%02x keyrow=%02x before=",
         edit_line, machine.cpu.program_counter, (unsigned)machine.cpu.iff1,
         machine.cpu.iy,
         (unsigned)machine.cpu.interrupt_mode,
@@ -247,6 +266,8 @@ int main(int argc, char** argv)
         (unsigned long)trace_counts.sampled_interrupts_iff_enabled,
         (unsigned long)trace_counts.sampled_interrupts_acceptable,
         (unsigned long)trace_counts.irq_handler_ei,
+        (unsigned long long)trace_counts.interrupt_handler_min_ticks,
+        (unsigned long long)trace_counts.interrupt_handler_max_ticks,
         (unsigned long)trace_counts.ei_opcodes,
         (unsigned long)trace_counts.di_opcodes,
         (unsigned long)trace_counts.interrupt_asserts,
