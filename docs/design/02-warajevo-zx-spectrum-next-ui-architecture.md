@@ -2981,12 +2981,14 @@ portable in-window widgets and Sokol event translation. Sokol remains the
 viewport/presentation boundary, using D3D11 on Windows, Metal on macOS, and
 X11/OpenGL on Linux. The seven semantic menus render in-window on every
 platform; native menu bars are not used. The embedded default ProggyClean font
-is used, with no external font-file dependency. Native file dialogs remain the
-host-shell responsibility. Keyboard navigation, focus order, labels, and
-actionable states are mandatory project-owned accessibility behavior; a
-platform accessibility bridge is not yet implemented and does not waive those
-requirements. Versioned settings are host-only and interprocess-safe, and never
-contain canonical machine state.
+is used, with no external font-file dependency. File dialogs use Windows
+Common Item Dialog, AppKit panels on macOS, and GTK `GtkFileChooserNative` on
+Linux/X11. The complete platform, thread/pacing, persistence, and command API
+decisions are recorded in `design/ui-phase-12-decisions.md`. Keyboard
+navigation, focus order, labels, and actionable states are mandatory
+project-owned accessibility behavior; a platform accessibility bridge is not
+yet implemented and does not waive those requirements. Versioned settings are
+host-only and interprocess-safe, and never contain canonical machine state.
 
 Those choices may alter implementation but not the semantic menu tree,
 command IDs, manager ownership, Telnet grammar, or acceptance requirements in

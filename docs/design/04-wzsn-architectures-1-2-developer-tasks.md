@@ -310,12 +310,12 @@ Architecture #3 (`zx48-mic-ear-router-network-architecture.md`) is explicitly ou
 238. [P12][UI §49] Freeze the per-platform integration approach for Windows, Linux/X11, and macOS — the pinned Sokol-Nuklear backend uses D3D11, X11/OpenGL, and Metal respectively; all four hosted builds passed in run `36369688936`.
 239. [P12][UI §49] Freeze font/text rendering strategy — use Nuklear's embedded default ProggyClean font; no external font file is required.
 240. [P12][UI §49] Freeze native-versus-in-window menu presentation per platform — render the seven semantic menus in-window on Windows, macOS, and Linux; native platform menu bars are not used. The Nuklear menu bar is connected to the registry-backed host renderer; visible-menu and keyboard interaction evidence remains open.
-241. [P12][UI §49] Freeze file-dialog implementation.
-242. [P12][UI §§43,49] Freeze/document accessibility support supplied by the selected toolkit and any project-owned gaps — Nuklear provides in-window keyboard navigation; project-owned labels, focus order, visible focus, and actionable state remain acceptance requirements, and no platform accessibility bridge is claimed.
-243. [P12][UI §§44,49] Freeze window/panel persistence approach including interprocess-safe settings storage.
-244. [P12][UI §§4,49] Freeze the exact application command-registry C API.
-245. [P12][UI §§4,49] Freeze the exact command result/error representation used by GUI, tests, and later Telnet projection.
-246. [P12][UI §49] Record all Phase-12 gate decisions in the design/implementation notes and block UI coding until the gate is review-approved.
+241. [P12][UI §49] Freeze file-dialog implementation — Windows `IFileOpenDialog`/`IFileSaveDialog`, macOS `NSOpenPanel`/`NSSavePanel`, and Linux `GtkFileChooserNative`; the exact threading, cancellation, and pacing contract is in `design/ui-phase-12-decisions.md`.
+242. [P12][UI §§43,49] Freeze/document accessibility support supplied by the selected toolkit and any project-owned gaps — Nuklear supplies in-window keyboard input/navigation; project-owned labels, action state/reasons, focus order, and visible focus remain acceptance requirements; no native bridge is claimed. See `design/ui-phase-12-decisions.md`.
+243. [P12][UI §§44,49] Freeze window/panel persistence approach including interprocess-safe settings storage — versioned host-only `host-settings.v1` under each platform's user config directory, exclusive sibling lock, same-directory temp file, atomic replacement; see `design/ui-phase-12-decisions.md`.
+244. [P12][UI §§4,49] Freeze the exact application command-registry C API — use the caller-owned fixed-capacity registry API in `src/app/wz_command_registry.h`, with owner-thread binding and finalization before projection.
+245. [P12][UI §§4,49] Freeze the exact command result/error representation used by GUI, tests, and later Telnet projection — `wz_command_result_t` uses a status enum, `wz_result_t`, stable reason, and bounded message; see `design/ui-phase-12-decisions.md`.
+246. [P12][UI §49] Record all Phase-12 gate decisions in the design/implementation notes and block UI coding until the gate is review-approved — decision record is complete; formal gate review and implementation acceptance remain open.
 247. [P12][UI §§4.1–4.3] Implement the shared command registry with stable lowercase dotted IDs, metadata, labels, descriptions, parameter schemas, result schemas, handlers, and permission classes.
 248. [P12][UI §§4.4] Implement separation of semantic command execution from GUI parameter acquisition/file dialogs.
 249. [P12][UI §§4.5,40] Implement serialized dispatch for state-changing application commands on the machine-owning thread.

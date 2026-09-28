@@ -30,7 +30,9 @@ The active scope is deliberately limited to the first two architectures:
 ## 2. Change workflow — main only, no PRs, no branches
 
 All project work is committed directly to `main`. Do not create or use another
-branch, and do not open or use a pull request. Keep each commit small and tied
+branch, and do not open or use a pull request. Repository rules must preserve
+direct pushes to `main`; do not require a pull request or configure a rule that
+blocks the authorized direct-commit workflow. Keep each commit small and tied
 to an Architecture #1/#2 task or change record. Before pushing, identify the
 applicable architecture/task, update the implementation and deterministic
 tests, update test evidence, and pass the mandatory local pre-push review gate
@@ -51,9 +53,11 @@ the exact commit after each direct push to `main`.
 
 GitHub push rulesets can reject file paths before receipt only for private or
 internal repositories on eligible plans. This repository is public, so GitHub
-does not offer a server-side path restriction here. Because all changes go
-directly to `main`, the hosted workflow cannot prevent a noncompliant commit
-from arriving: it detects and fails on a violation after receipt. Treat that
+does not offer an active push ruleset for server-side path restriction here.
+The pathname workflow is an after-push audit, not a push blocker. Because all
+changes go directly to `main`, the hosted workflow cannot prevent a
+noncompliant commit from arriving: it detects and fails on a violation after
+receipt. Treat that
 failure as a blocked project state; remove the offending path in the next direct
 commit and wait for the pathname check to pass before continuing. The local
 pre-push gate is the before-push safeguard for normal project pushes, and must
