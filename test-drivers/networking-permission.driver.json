@@ -25,11 +25,11 @@
     },
     {
       "path": "src/app/wz_command_registry.c",
-      "sha256": "707bd4c4c9d0e12db0135ef857d3c7de8a5d6e7d717d790d09f3080bb90c9607"
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
     },
     {
       "path": "src/app/wz_command_registry.h",
-      "sha256": "089f17123ebfdc9be2ff8606aa849f72c06bc26036ac0f5710dbb978509b9d34"
+      "sha256": "80110080861a05baae47cd6d294315055bb6b1a636c79891b55c56717cb53c94"
     },
     {
       "path": "src/app/wz_networking_commands.c",
@@ -81,7 +81,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "0544204ba3f1d21082d86e5c78af197d8a7cd624c5fc29e42681eeda6fc4f4f0"
+      "sha256": "b26405f8cbcfb6e5d7145f2b0d87a15ea383bbaecb5e3fca6d504f2866660a99"
     },
     {
       "path": "src/core/wz_microdrive.c",
@@ -125,7 +125,7 @@
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "c4bbe57eaf51d51ac6332236a91ac60da83488d6a6614988bdc5caf419306dc9"
+      "sha256": "32aa7ddaebe10ffc0a4d933162103c59d40280cd4392593d4136f41fba9338a7"
     },
     {
       "path": "src/core/wz_trace.c",
@@ -133,7 +133,7 @@
     },
     {
       "path": "src/core/wz_z80.c",
-      "sha256": "c7cf9761cc3448474ccce3e88a20a4bc619ae35ee2b8357545debf901a50ba16"
+      "sha256": "4414a17180681cc18c03a3a84c960196c1fa0d7bdfe09f59d0b664919a369195"
     }
   ],
   "command": "cmake -S ci/test/networking-permission -B dist/networking-permission -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/networking-permission --config Release --target wz_networking_permission_regression --parallel 2 && dist/networking-permission/wz_networking_permission_regression",
