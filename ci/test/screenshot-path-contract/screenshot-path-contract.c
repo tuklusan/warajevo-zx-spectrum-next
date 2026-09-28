@@ -47,6 +47,21 @@ static int png_signature(const char* path)
     return valid;
 }
 
+static int expected_path(char* output, size_t capacity,
+                         const char* directory, const char* filename)
+{
+    size_t directory_length;
+    const char* separator;
+    int written;
+    if (output == NULL || directory == NULL || filename == NULL ||
+        directory[0] == '\0') return 0;
+    directory_length = strlen(directory);
+    separator = directory[directory_length - 1u] == '/' ? "" : "/";
+    written = snprintf(output, capacity, "%s%s%s", directory, separator,
+                       filename);
+    return written > 0 && (size_t)written < capacity;
+}
+
 int main(int argc, char** argv)
 {
     static const unsigned char sentinel[] = "preserve-existing-output";
@@ -56,14 +71,13 @@ int main(int argc, char** argv)
     wz_presentation_snapshot_t snapshot;
     char first_path[1024] = {0};
     char second_path[1024] = {0};
+    char expected_first_path[1024];
+    char expected_second_path[1024];
     char expected_name[64];
     char expected_collision_name[72];
     char date[16];
     struct tm local_time;
     time_t fixed_time = (time_t)1760000000;
-    size_t directory_length;
-    const char* first_name;
-    const char* second_name;
     FILE* file;
     unsigned char preserved[sizeof(sentinel)];
     int result = 1;
@@ -76,6 +90,10 @@ int main(int argc, char** argv)
                      "ZX-Screen-%s123.png", date) > 0);
     REQUIRE(snprintf(expected_collision_name, sizeof(expected_collision_name),
                      "ZX-Screen-%s123-1.png", date) > 0);
+    REQUIRE(expected_path(expected_first_path, sizeof(expected_first_path),
+                          argv[1], expected_name));
+    REQUIRE(expected_path(expected_second_path, sizeof(expected_second_path),
+                          argv[1], expected_collision_name));
     REQUIRE(wz_raster_buffer_init(&raster, 2u, 2u, source_pixels,
                                   sizeof(source_pixels)) == WZ_RESULT_OK);
     REQUIRE(wz_presentation_snapshot_init(&snapshot, 2u, 2u,
@@ -85,11 +103,7 @@ int main(int argc, char** argv)
 
     REQUIRE(wz_telnet_screenshot_save(&snapshot, first_path,
         sizeof(first_path)) == WZ_TELNET_SCREENSHOT_OK);
-    directory_length = strlen(argv[1]);
-    REQUIRE(strncmp(first_path, argv[1], directory_length) == 0);
-    REQUIRE(first_path[directory_length] == '/');
-    first_name = strrchr(first_path, '/') + 1;
-    REQUIRE(strcmp(first_name, expected_name) == 0);
+    REQUIRE(strcmp(first_path, expected_first_path) == 0);
     REQUIRE(png_signature(first_path));
 
     file = fopen(first_path, "wb");
@@ -99,10 +113,7 @@ int main(int argc, char** argv)
 
     REQUIRE(wz_telnet_screenshot_save(&snapshot, second_path,
         sizeof(second_path)) == WZ_TELNET_SCREENSHOT_OK);
-    REQUIRE(strncmp(second_path, argv[1], directory_length) == 0);
-    REQUIRE(second_path[directory_length] == '/');
-    second_name = strrchr(second_path, '/') + 1;
-    REQUIRE(strcmp(second_name, expected_collision_name) == 0);
+    REQUIRE(strcmp(second_path, expected_second_path) == 0);
     REQUIRE(strcmp(first_path, second_path) != 0);
     REQUIRE(png_signature(second_path));
 

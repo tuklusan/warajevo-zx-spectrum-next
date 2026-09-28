@@ -20,7 +20,7 @@
     },
     {
       "path": "ci/test/screenshot-path-contract/screenshot-path-contract.c",
-      "sha256": "a3b03563ee67bd0fde5e1d34ec910989f29ca79722348cde12c01f7a13122e54"
+      "sha256": "919a737cb746da083eff6a7799afc8ac7199505715309830e7eaf30ff64a0ba0"
     },
     {
       "path": "ci/test/screenshot-path-contract/README.md",
