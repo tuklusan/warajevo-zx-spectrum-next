@@ -1,0 +1,33 @@
+{
+  "testId": "native-runtime-dependency-audit",
+  "command": "cmake -S src/cmake -B dist/native-runtime -DCMAKE_BUILD_TYPE=Release -DWZSN_BUILD_SOKOL_HOST=ON && cmake --build dist/native-runtime --config Release --target wz_sokol_host --parallel 2 && python3 ci/test/runtime-dependencies/inspect_runtime.py --binary <native-release-executable> --runner-id <runner-id> --expected-architecture <x64-or-arm64> --proof-out dist/native-runtime/runner-proof.json",
+  "requiredCases": 4,
+  "runnerMatrix": [
+    "ubuntu-24.04",
+    "ubuntu-24.04-arm",
+    "macos-15-intel",
+    "macos-15"
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/native-runtime-dependency-audit.yml",
+      "sha256": "54c62ae0244fc3c3d3b7b065c4325d99f6160a6ea17296bc090e74d0bc562c5e"
+    },
+    {
+      "path": "ci/test/runtime-dependencies/README.md",
+      "sha256": "6c6615467d8c3ff84eb660cbb5ee9b6a1cfc44f16589a95e9664f09af69ddde3"
+    },
+    {
+      "path": "ci/test/runtime-dependencies/inspect_runtime.py",
+      "sha256": "05f3ef02e347ad67e74335221758fb5fe0f45c90743e20bfe526c07cb213ed03"
+    },
+    {
+      "path": "ci/test/runtime-dependencies/write_matrix_proof.py",
+      "sha256": "f60644e69afbefc4fcdf1336afef2dc78220cbad8223ad63cdca89c1c551b6a6"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "701ca9927cc2e5a29180d4c5d432e9ed1caf797f4f7c1bff01ffa1334c1c0f22"
+    }
+  ]
+}
