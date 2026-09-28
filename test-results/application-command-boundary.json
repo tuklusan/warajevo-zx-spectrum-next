@@ -1,10 +1,10 @@
 {
   "testId": "application-command-boundary",
   "status": "pass",
-  "commit": "0e6de33616e00c8fd02b08bf3fbdde92575c748c",
+  "commit": "bd0159b2eb542a9f26581ef44ee5521ee382abee",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-09-28T11:22:06+00:00",
-  "caseCount": 6,
+  "timestamp": "2026-09-28T11:38:00+00:00",
+  "caseCount": 8,
   "runners": [
     {
       "id": "windows-x64",
@@ -42,7 +42,7 @@
     },
     {
       "path": "ci/test/application-command-boundary/README.md",
-      "sha256": "9493c1c0cac6a78f56556542bd6c6626725364cb6f7a1fa16fcf2fcfb94af190"
+      "sha256": "2a8fdaefb88401e701dc06829d5290461a708dca34bc6a04b1e1748a7f2bba05"
     },
     {
       "path": "ci/test/application-command-boundary/alias-response-regression.c",
@@ -54,7 +54,7 @@
     },
     {
       "path": "ci/test/application-command-boundary/write-proof.py",
-      "sha256": "5fdd3cbbc31c8e94bc89ced592b782150269b566001c3da9c9a8f4f092e4fe83"
+      "sha256": "c338ce7f08b87a3e4e898c06a167609fd1d6593e8782382d26d9254b39e266a0"
     },
     {
       "path": "src/app/wz_command_registry.c",
@@ -198,7 +198,7 @@
     },
     {
       "path": "tests/application-command-boundary.c",
-      "sha256": "000b5c62ec3bf3853c26b40465a004639909ac5e641806ec1953d8f282d923d9"
+      "sha256": "6cf3a1ec3996d671685282809f2ce4fd2d7fd44802092424e880b92938298bb3"
     },
     {
       "path": "tests/application-command-boundary.md",
