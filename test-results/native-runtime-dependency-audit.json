@@ -1,0 +1,733 @@
+{
+  "testId": "native-runtime-dependency-audit",
+  "status": "pass",
+  "commit": "c517c60783409bcea052adbd967ff70ae992ae84",
+  "runId": 36426614355,
+  "runner": "Linux x86-64/AArch64 and macOS x86-64/Apple Silicon hosted matrix",
+  "timestamp": "2026-09-28T13:13:24+00:00",
+  "caseCount": 4,
+  "runners": [
+    {
+      "runnerId": "linux-arm64",
+      "os": "Linux",
+      "architecture": "aarch64",
+      "binary": "Warajevo-ZX-Spectrum-Next",
+      "binarySha256": "78d4988456255c0b4e55e95d675b088e632253755186a1f40f658620096b5380",
+      "dependencies": [
+        {
+          "name": "ld-linux-aarch64.so.1",
+          "path": "/usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1"
+        },
+        {
+          "name": "libGLdispatch.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libGLdispatch.so.0.0.0"
+        },
+        {
+          "name": "libOpenGL.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libOpenGL.so.0.0.0"
+        },
+        {
+          "name": "libX11.so.6",
+          "path": "/usr/lib/aarch64-linux-gnu/libX11.so.6.4.0"
+        },
+        {
+          "name": "libXau.so.6",
+          "path": "/usr/lib/aarch64-linux-gnu/libXau.so.6.0.0"
+        },
+        {
+          "name": "libXcomposite.so.1",
+          "path": "/usr/lib/aarch64-linux-gnu/libXcomposite.so.1.0.0"
+        },
+        {
+          "name": "libXcursor.so.1",
+          "path": "/usr/lib/aarch64-linux-gnu/libXcursor.so.1.0.2"
+        },
+        {
+          "name": "libXdamage.so.1",
+          "path": "/usr/lib/aarch64-linux-gnu/libXdamage.so.1.1.0"
+        },
+        {
+          "name": "libXdmcp.so.6",
+          "path": "/usr/lib/aarch64-linux-gnu/libXdmcp.so.6.0.0"
+        },
+        {
+          "name": "libXext.so.6",
+          "path": "/usr/lib/aarch64-linux-gnu/libXext.so.6.4.0"
+        },
+        {
+          "name": "libXfixes.so.3",
+          "path": "/usr/lib/aarch64-linux-gnu/libXfixes.so.3.1.0"
+        },
+        {
+          "name": "libXi.so.6",
+          "path": "/usr/lib/aarch64-linux-gnu/libXi.so.6.1.0"
+        },
+        {
+          "name": "libXinerama.so.1",
+          "path": "/usr/lib/aarch64-linux-gnu/libXinerama.so.1.0.0"
+        },
+        {
+          "name": "libXrandr.so.2",
+          "path": "/usr/lib/aarch64-linux-gnu/libXrandr.so.2.2.0"
+        },
+        {
+          "name": "libXrender.so.1",
+          "path": "/usr/lib/aarch64-linux-gnu/libXrender.so.1.3.0"
+        },
+        {
+          "name": "libasound.so.2",
+          "path": "/usr/lib/aarch64-linux-gnu/libasound.so.2.0.0"
+        },
+        {
+          "name": "libatk-1.0.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libatk-1.0.so.0.25209.1"
+        },
+        {
+          "name": "libatk-bridge-2.0.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libatk-bridge-2.0.so.0.0.0"
+        },
+        {
+          "name": "libatspi.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libatspi.so.0.0.1"
+        },
+        {
+          "name": "libblkid.so.1",
+          "path": "/usr/lib/aarch64-linux-gnu/libblkid.so.1.1.0"
+        },
+        {
+          "name": "libbrotlicommon.so.1",
+          "path": "/usr/lib/aarch64-linux-gnu/libbrotlicommon.so.1.1.0"
+        },
+        {
+          "name": "libbrotlidec.so.1",
+          "path": "/usr/lib/aarch64-linux-gnu/libbrotlidec.so.1.1.0"
+        },
+        {
+          "name": "libbsd.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libbsd.so.0.12.1"
+        },
+        {
+          "name": "libbz2.so.1.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libbz2.so.1.0.4"
+        },
+        {
+          "name": "libc.so.6",
+          "path": "/usr/lib/aarch64-linux-gnu/libc.so.6"
+        },
+        {
+          "name": "libcairo-gobject.so.2",
+          "path": "/usr/lib/aarch64-linux-gnu/libcairo-gobject.so.2.11800.0"
+        },
+        {
+          "name": "libcairo.so.2",
+          "path": "/usr/lib/aarch64-linux-gnu/libcairo.so.2.11800.0"
+        },
+        {
+          "name": "libcap.so.2",
+          "path": "/usr/lib/aarch64-linux-gnu/libcap.so.2.66"
+        },
+        {
+          "name": "libdatrie.so.1",
+          "path": "/usr/lib/aarch64-linux-gnu/libdatrie.so.1.4.0"
+        },
+        {
+          "name": "libdbus-1.so.3",
+          "path": "/usr/lib/aarch64-linux-gnu/libdbus-1.so.3.32.4"
+        },
+        {
+          "name": "libepoxy.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libepoxy.so.0.0.0"
+        },
+        {
+          "name": "libexpat.so.1",
+          "path": "/usr/lib/aarch64-linux-gnu/libexpat.so.1.9.1"
+        },
+        {
+          "name": "libffi.so.8",
+          "path": "/usr/lib/aarch64-linux-gnu/libffi.so.8.1.4"
+        },
+        {
+          "name": "libfontconfig.so.1",
+          "path": "/usr/lib/aarch64-linux-gnu/libfontconfig.so.1.12.1"
+        },
+        {
+          "name": "libfreetype.so.6",
+          "path": "/usr/lib/aarch64-linux-gnu/libfreetype.so.6.20.1"
+        },
+        {
+          "name": "libfribidi.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libfribidi.so.0.4.0"
+        },
+        {
+          "name": "libgcrypt.so.20",
+          "path": "/usr/lib/aarch64-linux-gnu/libgcrypt.so.20.4.3"
+        },
+        {
+          "name": "libgdk-3.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libgdk-3.so.0.2409.32"
+        },
+        {
+          "name": "libgdk_pixbuf-2.0.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libgdk_pixbuf-2.0.so.0.4200.10"
+        },
+        {
+          "name": "libgio-2.0.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libgio-2.0.so.0.8000.0"
+        },
+        {
+          "name": "libglib-2.0.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libglib-2.0.so.0.8000.0"
+        },
+        {
+          "name": "libgmodule-2.0.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libgmodule-2.0.so.0.8000.0"
+        },
+        {
+          "name": "libgobject-2.0.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libgobject-2.0.so.0.8000.0"
+        },
+        {
+          "name": "libgpg-error.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libgpg-error.so.0.34.0"
+        },
+        {
+          "name": "libgraphite2.so.3",
+          "path": "/usr/lib/aarch64-linux-gnu/libgraphite2.so.3.2.1"
+        },
+        {
+          "name": "libgtk-3.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libgtk-3.so.0.2409.32"
+        },
+        {
+          "name": "libharfbuzz.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libharfbuzz.so.0.60830.0"
+        },
+        {
+          "name": "libjpeg.so.8",
+          "path": "/usr/lib/aarch64-linux-gnu/libjpeg.so.8.2.2"
+        },
+        {
+          "name": "liblz4.so.1",
+          "path": "/usr/lib/aarch64-linux-gnu/liblz4.so.1.9.4"
+        },
+        {
+          "name": "liblzma.so.5",
+          "path": "/usr/lib/aarch64-linux-gnu/liblzma.so.5.4.5"
+        },
+        {
+          "name": "libm.so.6",
+          "path": "/usr/lib/aarch64-linux-gnu/libm.so.6"
+        },
+        {
+          "name": "libmd.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libmd.so.0.1.0"
+        },
+        {
+          "name": "libmount.so.1",
+          "path": "/usr/lib/aarch64-linux-gnu/libmount.so.1.1.0"
+        },
+        {
+          "name": "libpango-1.0.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libpango-1.0.so.0.5200.1"
+        },
+        {
+          "name": "libpangocairo-1.0.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libpangocairo-1.0.so.0.5200.1"
+        },
+        {
+          "name": "libpangoft2-1.0.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libpangoft2-1.0.so.0.5200.1"
+        },
+        {
+          "name": "libpcre2-8.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libpcre2-8.so.0.11.2"
+        },
+        {
+          "name": "libpixman-1.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libpixman-1.so.0.42.2"
+        },
+        {
+          "name": "libpng16.so.16",
+          "path": "/usr/lib/aarch64-linux-gnu/libpng16.so.16.43.0"
+        },
+        {
+          "name": "libselinux.so.1",
+          "path": "/usr/lib/aarch64-linux-gnu/libselinux.so.1"
+        },
+        {
+          "name": "libsystemd.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libsystemd.so.0.38.0"
+        },
+        {
+          "name": "libthai.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libthai.so.0.3.1"
+        },
+        {
+          "name": "libwayland-client.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libwayland-client.so.0.22.0"
+        },
+        {
+          "name": "libwayland-cursor.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libwayland-cursor.so.0.22.0"
+        },
+        {
+          "name": "libwayland-egl.so.1",
+          "path": "/usr/lib/aarch64-linux-gnu/libwayland-egl.so.1.22.0"
+        },
+        {
+          "name": "libxcb-render.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libxcb-render.so.0.0.0"
+        },
+        {
+          "name": "libxcb-shm.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libxcb-shm.so.0.0.0"
+        },
+        {
+          "name": "libxcb.so.1",
+          "path": "/usr/lib/aarch64-linux-gnu/libxcb.so.1.1.0"
+        },
+        {
+          "name": "libxkbcommon.so.0",
+          "path": "/usr/lib/aarch64-linux-gnu/libxkbcommon.so.0.0.0"
+        },
+        {
+          "name": "libz.so.1",
+          "path": "/usr/lib/aarch64-linux-gnu/libz.so.1.3"
+        },
+        {
+          "name": "libzstd.so.1",
+          "path": "/usr/lib/aarch64-linux-gnu/libzstd.so.1.5.5"
+        }
+      ]
+    },
+    {
+      "runnerId": "linux-x64",
+      "os": "Linux",
+      "architecture": "x86_64",
+      "binary": "Warajevo-ZX-Spectrum-Next",
+      "binarySha256": "dd7abe03dd0b006e527dc4fc5379dfc161f3e362e11172cb2ff456ee8fec1cd8",
+      "dependencies": [
+        {
+          "name": "ld-linux-x86-64.so.2",
+          "path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2"
+        },
+        {
+          "name": "libGLdispatch.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libGLdispatch.so.0.0.0"
+        },
+        {
+          "name": "libOpenGL.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libOpenGL.so.0.0.0"
+        },
+        {
+          "name": "libX11.so.6",
+          "path": "/usr/lib/x86_64-linux-gnu/libX11.so.6.4.0"
+        },
+        {
+          "name": "libXau.so.6",
+          "path": "/usr/lib/x86_64-linux-gnu/libXau.so.6.0.0"
+        },
+        {
+          "name": "libXcomposite.so.1",
+          "path": "/usr/lib/x86_64-linux-gnu/libXcomposite.so.1.0.0"
+        },
+        {
+          "name": "libXcursor.so.1",
+          "path": "/usr/lib/x86_64-linux-gnu/libXcursor.so.1.0.2"
+        },
+        {
+          "name": "libXdamage.so.1",
+          "path": "/usr/lib/x86_64-linux-gnu/libXdamage.so.1.1.0"
+        },
+        {
+          "name": "libXdmcp.so.6",
+          "path": "/usr/lib/x86_64-linux-gnu/libXdmcp.so.6.0.0"
+        },
+        {
+          "name": "libXext.so.6",
+          "path": "/usr/lib/x86_64-linux-gnu/libXext.so.6.4.0"
+        },
+        {
+          "name": "libXfixes.so.3",
+          "path": "/usr/lib/x86_64-linux-gnu/libXfixes.so.3.1.0"
+        },
+        {
+          "name": "libXi.so.6",
+          "path": "/usr/lib/x86_64-linux-gnu/libXi.so.6.1.0"
+        },
+        {
+          "name": "libXinerama.so.1",
+          "path": "/usr/lib/x86_64-linux-gnu/libXinerama.so.1.0.0"
+        },
+        {
+          "name": "libXrandr.so.2",
+          "path": "/usr/lib/x86_64-linux-gnu/libXrandr.so.2.2.0"
+        },
+        {
+          "name": "libXrender.so.1",
+          "path": "/usr/lib/x86_64-linux-gnu/libXrender.so.1.3.0"
+        },
+        {
+          "name": "libasound.so.2",
+          "path": "/usr/lib/x86_64-linux-gnu/libasound.so.2.0.0"
+        },
+        {
+          "name": "libatk-1.0.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libatk-1.0.so.0.25209.1"
+        },
+        {
+          "name": "libatk-bridge-2.0.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0.0.0"
+        },
+        {
+          "name": "libatspi.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libatspi.so.0.0.1"
+        },
+        {
+          "name": "libblkid.so.1",
+          "path": "/usr/lib/x86_64-linux-gnu/libblkid.so.1.1.0"
+        },
+        {
+          "name": "libbrotlicommon.so.1",
+          "path": "/usr/lib/x86_64-linux-gnu/libbrotlicommon.so.1.1.0"
+        },
+        {
+          "name": "libbrotlidec.so.1",
+          "path": "/usr/lib/x86_64-linux-gnu/libbrotlidec.so.1.1.0"
+        },
+        {
+          "name": "libbsd.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libbsd.so.0.12.1"
+        },
+        {
+          "name": "libbz2.so.1.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libbz2.so.1.0.4"
+        },
+        {
+          "name": "libc.so.6",
+          "path": "/usr/lib/x86_64-linux-gnu/libc.so.6"
+        },
+        {
+          "name": "libcairo-gobject.so.2",
+          "path": "/usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2.11800.0"
+        },
+        {
+          "name": "libcairo.so.2",
+          "path": "/usr/lib/x86_64-linux-gnu/libcairo.so.2.11800.0"
+        },
+        {
+          "name": "libcap.so.2",
+          "path": "/usr/lib/x86_64-linux-gnu/libcap.so.2.66"
+        },
+        {
+          "name": "libdatrie.so.1",
+          "path": "/usr/lib/x86_64-linux-gnu/libdatrie.so.1.4.0"
+        },
+        {
+          "name": "libdbus-1.so.3",
+          "path": "/usr/lib/x86_64-linux-gnu/libdbus-1.so.3.32.4"
+        },
+        {
+          "name": "libepoxy.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libepoxy.so.0.0.0"
+        },
+        {
+          "name": "libexpat.so.1",
+          "path": "/usr/lib/x86_64-linux-gnu/libexpat.so.1.9.1"
+        },
+        {
+          "name": "libffi.so.8",
+          "path": "/usr/lib/x86_64-linux-gnu/libffi.so.8.1.4"
+        },
+        {
+          "name": "libfontconfig.so.1",
+          "path": "/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.12.1"
+        },
+        {
+          "name": "libfreetype.so.6",
+          "path": "/usr/lib/x86_64-linux-gnu/libfreetype.so.6.20.1"
+        },
+        {
+          "name": "libfribidi.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libfribidi.so.0.4.0"
+        },
+        {
+          "name": "libgcrypt.so.20",
+          "path": "/usr/lib/x86_64-linux-gnu/libgcrypt.so.20.4.3"
+        },
+        {
+          "name": "libgdk-3.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libgdk-3.so.0.2409.32"
+        },
+        {
+          "name": "libgdk_pixbuf-2.0.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0.4200.10"
+        },
+        {
+          "name": "libgio-2.0.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.8000.0"
+        },
+        {
+          "name": "libglib-2.0.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libglib-2.0.so.0.8000.0"
+        },
+        {
+          "name": "libgmodule-2.0.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libgmodule-2.0.so.0.8000.0"
+        },
+        {
+          "name": "libgobject-2.0.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libgobject-2.0.so.0.8000.0"
+        },
+        {
+          "name": "libgpg-error.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libgpg-error.so.0.34.0"
+        },
+        {
+          "name": "libgraphite2.so.3",
+          "path": "/usr/lib/x86_64-linux-gnu/libgraphite2.so.3.2.1"
+        },
+        {
+          "name": "libgtk-3.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libgtk-3.so.0.2409.32"
+        },
+        {
+          "name": "libharfbuzz.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libharfbuzz.so.0.60830.0"
+        },
+        {
+          "name": "libjpeg.so.8",
+          "path": "/usr/lib/x86_64-linux-gnu/libjpeg.so.8.2.2"
+        },
+        {
+          "name": "liblz4.so.1",
+          "path": "/usr/lib/x86_64-linux-gnu/liblz4.so.1.9.4"
+        },
+        {
+          "name": "liblzma.so.5",
+          "path": "/usr/lib/x86_64-linux-gnu/liblzma.so.5.4.5"
+        },
+        {
+          "name": "libm.so.6",
+          "path": "/usr/lib/x86_64-linux-gnu/libm.so.6"
+        },
+        {
+          "name": "libmd.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libmd.so.0.1.0"
+        },
+        {
+          "name": "libmount.so.1",
+          "path": "/usr/lib/x86_64-linux-gnu/libmount.so.1.1.0"
+        },
+        {
+          "name": "libpango-1.0.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libpango-1.0.so.0.5200.1"
+        },
+        {
+          "name": "libpangocairo-1.0.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0.5200.1"
+        },
+        {
+          "name": "libpangoft2-1.0.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0.5200.1"
+        },
+        {
+          "name": "libpcre2-8.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libpcre2-8.so.0.11.2"
+        },
+        {
+          "name": "libpixman-1.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libpixman-1.so.0.42.2"
+        },
+        {
+          "name": "libpng16.so.16",
+          "path": "/usr/lib/x86_64-linux-gnu/libpng16.so.16.43.0"
+        },
+        {
+          "name": "libselinux.so.1",
+          "path": "/usr/lib/x86_64-linux-gnu/libselinux.so.1"
+        },
+        {
+          "name": "libsystemd.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libsystemd.so.0.38.0"
+        },
+        {
+          "name": "libthai.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libthai.so.0.3.1"
+        },
+        {
+          "name": "libwayland-client.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libwayland-client.so.0.22.0"
+        },
+        {
+          "name": "libwayland-cursor.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0.22.0"
+        },
+        {
+          "name": "libwayland-egl.so.1",
+          "path": "/usr/lib/x86_64-linux-gnu/libwayland-egl.so.1.22.0"
+        },
+        {
+          "name": "libxcb-render.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libxcb-render.so.0.0.0"
+        },
+        {
+          "name": "libxcb-shm.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libxcb-shm.so.0.0.0"
+        },
+        {
+          "name": "libxcb.so.1",
+          "path": "/usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0"
+        },
+        {
+          "name": "libxkbcommon.so.0",
+          "path": "/usr/lib/x86_64-linux-gnu/libxkbcommon.so.0.0.0"
+        },
+        {
+          "name": "libz.so.1",
+          "path": "/usr/lib/x86_64-linux-gnu/libz.so.1.3"
+        },
+        {
+          "name": "libzstd.so.1",
+          "path": "/usr/lib/x86_64-linux-gnu/libzstd.so.1.5.5"
+        }
+      ]
+    },
+    {
+      "runnerId": "macos-arm64",
+      "os": "Darwin",
+      "architecture": "arm64",
+      "binary": "Warajevo-ZX-Spectrum-Next",
+      "binarySha256": "6cfb639a2dd82c936414cdf157f2e6ced4f51182ac583e4b52c6ae36d547178c",
+      "dependencies": [
+        {
+          "name": "AppKit",
+          "path": "/System/Library/Frameworks/AppKit.framework/Versions/C/AppKit"
+        },
+        {
+          "name": "AudioToolbox",
+          "path": "/System/Library/Frameworks/AudioToolbox.framework/Versions/A/AudioToolbox"
+        },
+        {
+          "name": "Cocoa",
+          "path": "/System/Library/Frameworks/Cocoa.framework/Versions/A/Cocoa"
+        },
+        {
+          "name": "CoreAudio",
+          "path": "/System/Library/Frameworks/CoreAudio.framework/Versions/A/CoreAudio"
+        },
+        {
+          "name": "CoreFoundation",
+          "path": "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation"
+        },
+        {
+          "name": "CoreGraphics",
+          "path": "/System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics"
+        },
+        {
+          "name": "Foundation",
+          "path": "/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation"
+        },
+        {
+          "name": "Metal",
+          "path": "/System/Library/Frameworks/Metal.framework/Versions/A/Metal"
+        },
+        {
+          "name": "QuartzCore",
+          "path": "/System/Library/Frameworks/QuartzCore.framework/Versions/A/QuartzCore"
+        },
+        {
+          "name": "libSystem.B.dylib",
+          "path": "/usr/lib/libSystem.B.dylib"
+        },
+        {
+          "name": "libobjc.A.dylib",
+          "path": "/usr/lib/libobjc.A.dylib"
+        },
+        {
+          "name": "libz.1.dylib",
+          "path": "/usr/lib/libz.1.dylib"
+        }
+      ]
+    },
+    {
+      "runnerId": "macos-x64",
+      "os": "Darwin",
+      "architecture": "x86_64",
+      "binary": "Warajevo-ZX-Spectrum-Next",
+      "binarySha256": "994fd00bcf946d3069dd51d3007dcf40137ad44bd7a62a2e9aba611006579d3d",
+      "dependencies": [
+        {
+          "name": "AppKit",
+          "path": "/System/Library/Frameworks/AppKit.framework/Versions/C/AppKit"
+        },
+        {
+          "name": "AudioToolbox",
+          "path": "/System/Library/Frameworks/AudioToolbox.framework/Versions/A/AudioToolbox"
+        },
+        {
+          "name": "Cocoa",
+          "path": "/System/Library/Frameworks/Cocoa.framework/Versions/A/Cocoa"
+        },
+        {
+          "name": "CoreAudio",
+          "path": "/System/Library/Frameworks/CoreAudio.framework/Versions/A/CoreAudio"
+        },
+        {
+          "name": "CoreFoundation",
+          "path": "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation"
+        },
+        {
+          "name": "CoreGraphics",
+          "path": "/System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics"
+        },
+        {
+          "name": "Foundation",
+          "path": "/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation"
+        },
+        {
+          "name": "Metal",
+          "path": "/System/Library/Frameworks/Metal.framework/Versions/A/Metal"
+        },
+        {
+          "name": "QuartzCore",
+          "path": "/System/Library/Frameworks/QuartzCore.framework/Versions/A/QuartzCore"
+        },
+        {
+          "name": "libSystem.B.dylib",
+          "path": "/usr/lib/libSystem.B.dylib"
+        },
+        {
+          "name": "libobjc.A.dylib",
+          "path": "/usr/lib/libobjc.A.dylib"
+        },
+        {
+          "name": "libz.1.dylib",
+          "path": "/usr/lib/libz.1.dylib"
+        }
+      ]
+    }
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/native-runtime-dependency-audit.yml",
+      "sha256": "54c62ae0244fc3c3d3b7b065c4325d99f6160a6ea17296bc090e74d0bc562c5e"
+    },
+    {
+      "path": "ci/test/runtime-dependencies/README.md",
+      "sha256": "6c6615467d8c3ff84eb660cbb5ee9b6a1cfc44f16589a95e9664f09af69ddde3"
+    },
+    {
+      "path": "ci/test/runtime-dependencies/inspect_runtime.py",
+      "sha256": "83ca1a7134797de11725812b07c2ab0cebf2693a70c5c1961ebb5c3750c2d635"
+    },
+    {
+      "path": "ci/test/runtime-dependencies/write_matrix_proof.py",
+      "sha256": "2ee65b04c8378dc76d4438beaf9be7616700bba977b2a929dbb79160f98e42fa"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "d3c09a688001e54098b3789349fd2e6ae37119e273c9d229848e32662813b285"
+    }
+  ]
+}

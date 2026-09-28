@@ -1,12 +1,12 @@
 {
   "testId": "windows-runtime-dependency-audit",
   "status": "pass",
-  "commit": "b6639b53d7b541bd97f9dc733efa7cfaf6b8bc7c",
-  "runId": "36419611775",
+  "commit": "c517c60783409bcea052adbd967ff70ae992ae84",
+  "runId": "36427305860",
   "runner": "Windows/X64",
-  "timestamp": "2026-09-28T12:07:33+00:00",
+  "timestamp": "2026-09-28T13:20:20+00:00",
   "binary": "Warajevo-ZX-Spectrum-Next.exe",
-  "binarySha256": "e2d342b924d25634a6fba434853f57b46195d5dae928762243f2117bc8292196",
+  "binarySha256": "ac70c96e28b3f71e8630c87115711f7686ddd37dac6e9555923a12327f8040bc",
   "peMachine": "0x8664",
   "imports": [
     "api-ms-win-crt-environment-l1-1-0.dll",
