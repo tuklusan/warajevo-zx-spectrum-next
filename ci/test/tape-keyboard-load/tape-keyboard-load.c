@@ -97,7 +97,12 @@ static int tap_key(wz_machine_t* machine, wz_headless_runner_t* runner,
         if (wz_machine_set_tape_motor(machine, true) != WZ_RESULT_OK) return 0;
     }
     if (wz_machine_set_keyboard_key(machine, (wz_byte_t)row,
-                                    (wz_byte_t)column, true) != WZ_RESULT_OK ||
+                                    (wz_byte_t)column, true) != WZ_RESULT_OK) {
+        return 0;
+    }
+    if ((wz_machine_ula_port_fe_read(machine,
+            (wz_word_t)(0xfffeu & ~(1u << (8u + row)))) &
+            (wz_byte_t)(1u << column)) != 0u ||
         !run_frames(runner, frame_ticks, 8u)) return 0;
     if (wz_machine_set_keyboard_key(machine, (wz_byte_t)row,
                                     (wz_byte_t)column, false) != WZ_RESULT_OK ||
@@ -148,6 +153,14 @@ int main(int argc, char** argv)
 
     REQUIRE(run_frames(&runner, frame_ticks, 80u));
     REQUIRE(tap_key(&machine, &runner, frame_ticks, WZ_KEY_J));
+    edit_line = (wz_word_t)(wz_machine_memory_read(&machine, 0x5c59u) |
+        ((wz_word_t)wz_machine_memory_read(&machine, 0x5c5au) << 8u));
+    (void)printf("after J: E_LINE=%04x bytes=", edit_line);
+    for (size_t index = 0u; index < 8u; ++index) {
+        (void)printf("%02x", wz_machine_memory_read(&machine,
+            (wz_word_t)(edit_line + index)));
+    }
+    (void)putchar('\n');
     REQUIRE(wz_machine_set_keyboard_key(&machine, 7u, 1u, true) ==
             WZ_RESULT_OK);
     REQUIRE(run_frames(&runner, frame_ticks, 8u));
