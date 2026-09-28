@@ -818,6 +818,15 @@ static wz_result_t wz_host_ui_set_speed(wz_speed_policy_t speed)
         (wz_command_arguments_t){value, (size_t)written}, &result);
 }
 
+static wz_result_t wz_host_ui_set_model(const char* model)
+{
+    wz_command_result_t result;
+    if (model == NULL) return WZ_RESULT_INVALID_ARGUMENT;
+    return wz_command_registry_dispatch(
+        &wz_host_session.command_registry, "machine.model.set",
+        (wz_command_arguments_t){model, strlen(model)}, &result);
+}
+
 static void wz_host_ui_draw_speed_items(struct nk_context* context)
 {
     size_t index;
@@ -879,6 +888,20 @@ static void wz_host_ui_draw_menus(struct nk_context* context, float width)
                                         nk_vec2(160.0f, 7.0f * 25.0f))) {
                     nk_layout_row_dynamic(context, 24.0f, 1);
                     wz_host_ui_draw_speed_items(context);
+                    nk_menu_end(context);
+                }
+                if (!enabled) nk_widget_disable_end(context);
+            } else if (strcmp(command->id, "machine.model.set") == 0) {
+                if (!enabled) nk_widget_disable_begin(context);
+                if (nk_menu_begin_label(context, "Model", NK_TEXT_LEFT,
+                                        nk_vec2(160.0f, 2.0f * 25.0f))) {
+                    nk_layout_row_dynamic(context, 24.0f, 1);
+                    if (nk_menu_item_label(context, "48K", NK_TEXT_LEFT)) {
+                        (void)wz_host_ui_set_model("48k");
+                    }
+                    if (nk_menu_item_label(context, "128K", NK_TEXT_LEFT)) {
+                        (void)wz_host_ui_set_model("128k");
+                    }
                     nk_menu_end(context);
                 }
                 if (!enabled) nk_widget_disable_end(context);
