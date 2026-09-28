@@ -61,6 +61,39 @@ size_t wz_host_audio_pop(wz_host_audio_push_queue_t* queue,
     return accepted;
 }
 
+size_t wz_host_audio_peek(const wz_host_audio_push_queue_t* queue,
+                          wz_audio_sample_t* samples,
+                          size_t count)
+{
+    size_t accepted;
+    size_t read_index;
+
+    if (queue == 0 || (samples == 0 && count != 0u)) {
+        return 0u;
+    }
+    accepted = count < queue->count ? count : queue->count;
+    read_index = queue->read_index;
+    for (size_t index = 0u; index < accepted; ++index) {
+        samples[index] = queue->samples[read_index];
+        read_index = (read_index + 1u) % WZ_HOST_AUDIO_QUEUE_CAPACITY;
+    }
+    return accepted;
+}
+
+size_t wz_host_audio_discard(wz_host_audio_push_queue_t* queue, size_t count)
+{
+    size_t discarded;
+
+    if (queue == 0) {
+        return 0u;
+    }
+    discarded = count < queue->count ? count : queue->count;
+    queue->read_index = (queue->read_index + discarded) %
+                        WZ_HOST_AUDIO_QUEUE_CAPACITY;
+    queue->count -= discarded;
+    return discarded;
+}
+
 size_t wz_host_audio_queued(const wz_host_audio_push_queue_t* queue)
 {
     return queue == 0 ? 0u : queue->count;

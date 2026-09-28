@@ -472,6 +472,22 @@ add_executable(
 target_link_libraries(wz_host_pacing_tests PRIVATE wz_warnings)
 target_include_directories(wz_host_pacing_tests PRIVATE "${WZSN_SOURCE_ROOT}")
 add_test(NAME wz_host_pacing_tests COMMAND wz_host_pacing_tests)
+add_executable(
+    wz_sokol_audio_delivery_tests
+    ${WZSN_REPO_ROOT}/ci/test/audio-delivery/sokol-audio-delivery-regression.c
+    ${WZSN_SOURCE_ROOT}/app/wz_sokol_audio.c
+    ${WZSN_SOURCE_ROOT}/app/wz_host_audio_push.c
+    ${WZSN_SOURCE_ROOT}/app/wz_host_audio_policy.c
+    ${WZSN_SOURCE_ROOT}/app/wz_speed_policy.c)
+target_link_libraries(wz_sokol_audio_delivery_tests PRIVATE wz_warnings)
+target_include_directories(wz_sokol_audio_delivery_tests PRIVATE
+    "${WZSN_REPO_ROOT}/ci/test/audio-delivery/sokol_audio_stub"
+    "${WZSN_SOURCE_ROOT}")
+if(NOT MSVC)
+    target_link_libraries(wz_sokol_audio_delivery_tests PRIVATE m)
+endif()
+add_test(NAME wz_sokol_audio_delivery_tests
+         COMMAND wz_sokol_audio_delivery_tests)
 
 if(WZSN_FUSE_Z80_TEST_INPUT AND WZSN_FUSE_Z80_TEST_EXPECTED)
     enable_testing()

@@ -22,6 +22,7 @@ bool wz_sokol_audio_init(wz_sokol_audio_t* audio)
         return false;
     }
     audio->initialized = false;
+    wz_host_audio_push_init(&audio->pending);
     description = (saudio_desc){
         .sample_rate = WZ_CANONICAL_AUDIO_SAMPLE_RATE,
         .num_channels = 1,
@@ -35,9 +36,12 @@ bool wz_sokol_audio_init(wz_sokol_audio_t* audio)
 
 void wz_sokol_audio_shutdown(wz_sokol_audio_t* audio)
 {
-    if (audio != 0 && audio->initialized) {
-        saudio_shutdown();
-        audio->initialized = false;
+    if (audio != 0) {
+        if (audio->initialized) {
+            saudio_shutdown();
+            audio->initialized = false;
+        }
+        wz_host_audio_push_init(&audio->pending);
     }
 }
 
@@ -46,36 +50,66 @@ bool wz_sokol_audio_valid(const wz_sokol_audio_t* audio)
     return audio != 0 && audio->initialized && saudio_isvalid();
 }
 
-size_t wz_sokol_audio_push(wz_sokol_audio_t* audio,
-                           wz_speed_policy_t speed,
-                           const wz_audio_sample_t* samples,
-                           size_t count)
+void wz_sokol_audio_discard_pending(wz_sokol_audio_t* audio)
+{
+    if (audio != 0) {
+        wz_host_audio_push_init(&audio->pending);
+    }
+}
+
+static size_t wz_sokol_audio_drain(wz_sokol_audio_t* audio)
 {
     float packet[WZ_SOKOL_AUDIO_PACKET_FRAMES];
+    wz_audio_sample_t queued_packet[WZ_SOKOL_AUDIO_PACKET_FRAMES];
     size_t submitted = 0u;
 
-    if (!wz_sokol_audio_valid(audio) || !wz_host_audio_enabled(speed) ||
-        (samples == 0 && count != 0u)) {
-        return 0u;
-    }
-    while (submitted < count) {
-        size_t packet_count = count - submitted;
+    while (wz_host_audio_queued(&audio->pending) != 0u) {
+        size_t packet_count = wz_host_audio_queued(&audio->pending);
         int accepted;
+
         if (packet_count > WZ_SOKOL_AUDIO_PACKET_FRAMES) {
             packet_count = WZ_SOKOL_AUDIO_PACKET_FRAMES;
         }
+        packet_count = wz_host_audio_peek(&audio->pending, queued_packet,
+                                          packet_count);
         for (size_t index = 0u; index < packet_count; ++index) {
-            packet[index] = (float)samples[submitted + index] /
+            packet[index] = (float)queued_packet[index] /
                             (float)WZ_AUDIO_MIXER_ONE;
         }
         accepted = saudio_push(packet, (int)packet_count);
         if (accepted <= 0) {
             break;
         }
+        if ((size_t)accepted > packet_count) {
+            accepted = (int)packet_count;
+        }
+        (void)wz_host_audio_discard(&audio->pending, (size_t)accepted);
         submitted += (size_t)accepted;
         if ((size_t)accepted < packet_count) {
             break;
         }
     }
     return submitted;
+}
+
+size_t wz_sokol_audio_push(wz_sokol_audio_t* audio,
+                           wz_speed_policy_t speed,
+                           const wz_audio_sample_t* samples,
+                           size_t count)
+{
+    size_t submitted = 0u;
+
+    if (audio == 0 || (samples == 0 && count != 0u)) {
+        return 0u;
+    }
+    if (!wz_host_audio_enabled(speed)) {
+        wz_sokol_audio_discard_pending(audio);
+        return 0u;
+    }
+    if (!wz_sokol_audio_valid(audio)) {
+        return 0u;
+    }
+    submitted = wz_sokol_audio_drain(audio);
+    (void)wz_host_audio_push(&audio->pending, samples, count);
+    return submitted + wz_sokol_audio_drain(audio);
 }

@@ -221,6 +221,7 @@ static void wz_host_audio_render_frame(wz_host_session_t* session,
         profile == NULL || profile->master_hz_den == 0u) {
         session->audio_sample_remainder = 0u;
         session->audio_sample_speed_initialized = false;
+        wz_sokol_audio_discard_pending(&session->audio);
         wz_host_audio_clear_frame_events(machine);
         return;
     }

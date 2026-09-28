@@ -31,6 +31,10 @@ size_t wz_host_audio_push(wz_host_audio_push_queue_t* queue,
 size_t wz_host_audio_pop(wz_host_audio_push_queue_t* queue,
                          wz_audio_sample_t* samples,
                          size_t count);
+size_t wz_host_audio_peek(const wz_host_audio_push_queue_t* queue,
+                          wz_audio_sample_t* samples,
+                          size_t count);
+size_t wz_host_audio_discard(wz_host_audio_push_queue_t* queue, size_t count);
 size_t wz_host_audio_queued(const wz_host_audio_push_queue_t* queue);
 wz_qword_t wz_host_audio_dropped(const wz_host_audio_push_queue_t* queue);
 

@@ -1,0 +1,57 @@
+name: Sokol audio delivery regression
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/app/wz_host_audio_push.*'
+      - 'src/app/wz_host_audio_policy.*'
+      - 'src/app/wz_sokol_audio.*'
+      - 'src/app/wz_speed_policy.*'
+      - 'src/cmake/CMakeLists.txt'
+      - 'ci/test/audio-delivery/**'
+      - 'test-drivers/sokol-audio-delivery.driver.json'
+      - '.github/workflows/audio-delivery-regression.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audio-delivery:
+    name: Sokol audio backpressure continuity
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact main revision
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Configure regression target
+        run: cmake -S src/cmake -B dist/audio-delivery -DCMAKE_BUILD_TYPE=Debug
+
+      - name: Build and execute audio delivery regression
+        run: |
+          cmake --build dist/audio-delivery --config Debug --target wz_sokol_audio_delivery_tests --parallel 2
+          ctest --test-dir dist/audio-delivery --output-on-failure --verbose -R '^wz_sokol_audio_delivery_tests$'
+
+      - name: Write pinned proof
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          RUNNER_OS: ${{ runner.os }}
+          RUNNER_ARCH: ${{ runner.arch }}
+        run: |
+          python3 ci/test/audio-delivery/write-proof.py \
+            --commit "$GITHUB_SHA" \
+            --run-id "$GITHUB_RUN_ID" \
+            --runner "$RUNNER_OS/$RUNNER_ARCH" \
+            --proof dist/audio-delivery/sokol-audio-delivery.json
+
+      - name: Upload pinned proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: sokol-audio-delivery-${{ github.sha }}
+          path: dist/audio-delivery/sokol-audio-delivery.json
+          if-no-files-found: error

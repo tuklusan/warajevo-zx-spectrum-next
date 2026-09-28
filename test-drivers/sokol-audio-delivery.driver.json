@@ -1,0 +1,66 @@
+{
+  "testId": "sokol-audio-delivery",
+  "fixtures": [
+    {
+      "path": ".github/workflows/audio-delivery-regression.yml",
+      "sha256": "664dc88a77e6755925b7390ca521c25fc272afbbb0ebdadd9838c46488ac6ca5"
+    },
+    {
+      "path": "ci/test/audio-delivery/sokol-audio-delivery-regression.c",
+      "sha256": "0e6748467f7f9159161bc44c5f3dbd7f2124677279d93369a66796b023eb88a1"
+    },
+    {
+      "path": "ci/test/audio-delivery/sokol_audio_stub/sokol_audio.h",
+      "sha256": "cac7b970b44bddbf76344ebbdabfee7a632ea47f4d682edd6cb8075dcac55f95"
+    },
+    {
+      "path": "ci/test/audio-delivery/write-proof.py",
+      "sha256": "4f9d94889b33640ad51a16d0e51295511e691a661fceb2bf6805beaa7b69b76b"
+    },
+    {
+      "path": "src/app/wz_host_audio_push.c",
+      "sha256": "e143a40828101c787c7eccb84afb0fa3755fb1109e8f0ff8e47a41764b406a6f"
+    },
+    {
+      "path": "src/app/wz_host_audio_push.h",
+      "sha256": "b788e9f1d6a81cc02a9ddfd77cea3d745f02570df89a5374a6495b199929248f"
+    },
+    {
+      "path": "src/app/wz_host_audio_policy.c",
+      "sha256": "7248245e6f4ff506a436ab09a1121e0fefe68cb729be28267d25e4f54ca0cc68"
+    },
+    {
+      "path": "src/app/wz_host_audio_policy.h",
+      "sha256": "99f86c6701dec5ccae2b932b31daafc95909143dd192bf1cfe43bc91a5991430"
+    },
+    {
+      "path": "src/app/wz_sokol_audio.c",
+      "sha256": "e973db9915b1039235aef72c6e6a9b3612663acd7d8b66d0eeca3c9dd43966a6"
+    },
+    {
+      "path": "src/app/wz_sokol_audio.h",
+      "sha256": "632687f17b71ecccfdaad88d10cffcd5250eb0d8613f35f6b6b8c9472a8070cb"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "afbb0e7536557455c25240529bb17cf9da5e21c94b80f3d38f33926809f4b6fe"
+    },
+    {
+      "path": "src/app/wz_speed_policy.c",
+      "sha256": "cb9d2d0befc0becaa81558d794a257f399c4a46e1c1a0bdb19c4893d8f547183"
+    },
+    {
+      "path": "src/app/wz_speed_policy.h",
+      "sha256": "0895e0cac0254cb95d4b2347d911f0fdddfd0bab414d37e5dd4052cfc9eaa2df"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "da81d4113ec56ba371183789feee8b531a95c7b42229162f812efe8b4d7ada7a"
+    }
+  ],
+  "command": "cmake -S src/cmake -B dist/audio-delivery -DCMAKE_BUILD_TYPE=Debug && cmake --build dist/audio-delivery --config Debug --target wz_sokol_audio_delivery_tests --parallel 2 && ctest --test-dir dist/audio-delivery --output-on-failure --verbose -R '^wz_sokol_audio_delivery_tests$'",
+  "requiredCases": 11,
+  "runnerMatrix": [
+    "ubuntu-24.04"
+  ]
+}
