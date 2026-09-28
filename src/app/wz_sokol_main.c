@@ -47,8 +47,11 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "core/wz_keyboard_matrix.h"
 #include "core/wz_runner.h"
 #include "core/wz_tape.h"
+#include "core/wz_state.h"
 #include "core/audio/wz_audio_mixer.h"
 #include "app/wz_command_registry.h"
+#include "app/wz_file_dialog.h"
+#include "app/wz_file_open_run.h"
 #include "app/wz_networking_commands.h"
 #include "app/wz_application_lifecycle.h"
 #include "app/wz_control_port.h"
@@ -118,6 +121,9 @@ typedef struct {
     uint8_t telnet_command[WZ_TELNET_COMMAND_CAPACITY];
     wz_tape_segment_t* tape_segments;
     size_t tape_segment_count;
+    wz_byte_t* microdrive_data;
+    wz_mdr_image_t microdrive_image;
+    char file_notification[WZ_COMMAND_MESSAGE_CAPACITY];
     sg_image raster_image;
     sg_view raster_view;
     sg_sampler raster_sampler;
@@ -131,6 +137,7 @@ typedef struct {
 } wz_host_session_t;
 
 static wz_host_session_t wz_host_session;
+static void wz_host_release_local_keys(void);
 
 static wz_qword_t wz_host_now_nanoseconds(void)
 {
@@ -339,7 +346,25 @@ static bool wz_host_read_file(const char* path, wz_byte_t** data, size_t* length
     wz_byte_t* storage;
     size_t read_length;
     if (path == NULL || data == NULL || length == NULL || path[0] == '\0') return false;
+#if defined(_WIN32)
+    {
+        int wide_length = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS,
+                                               path, -1, NULL, 0);
+        wchar_t* wide_path;
+        if (wide_length <= 0) return false;
+        wide_path = (wchar_t*)malloc((size_t)wide_length * sizeof(*wide_path));
+        if (wide_path == NULL) return false;
+        if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, path, -1,
+                                wide_path, wide_length) != wide_length) {
+            free(wide_path);
+            return false;
+        }
+        file = _wfopen(wide_path, L"rb");
+        free(wide_path);
+    }
+#else
     file = fopen(path, "rb");
+#endif
     if (file == NULL || fseek(file, 0, SEEK_END) != 0) {
         if (file != NULL) fclose(file);
         return false;
@@ -376,32 +401,245 @@ static bool wz_host_load_external_rom(wz_host_session_t* session, const char* pa
     return loaded;
 }
 
-static bool wz_host_load_external_tap(wz_host_session_t* session, const char* path)
+static bool wz_host_extension_is(const char* path, const char* expected)
+{
+    const char* extension = strrchr(path, '.');
+    if (extension == NULL) return false;
+    while (*extension != '\0' && *expected != '\0') {
+        char left = *extension >= 'A' && *extension <= 'Z'
+            ? (char)(*extension - 'A' + 'a') : *extension;
+        char right = *expected >= 'A' && *expected <= 'Z'
+            ? (char)(*expected - 'A' + 'a') : *expected;
+        if (left != right) return false;
+        ++extension;
+        ++expected;
+    }
+    return *extension == '\0' && *expected == '\0';
+}
+
+static bool wz_host_mount_tape_segments(wz_host_session_t* session,
+                                        wz_tape_segment_t* segments,
+                                        size_t segment_count)
+{
+    if (wz_machine_mount_tape(&session->machine, segments, segment_count) !=
+        WZ_RESULT_OK) return false;
+    free(session->tape_segments);
+    session->tape_segments = segments;
+    session->tape_segment_count = segment_count;
+    session->ui_window.layout.tape_mounted = true;
+    return true;
+}
+
+static bool wz_host_load_external_tape(wz_host_session_t* session,
+                                       const char* path)
 {
     wz_byte_t* data = NULL;
     size_t length = 0u;
     size_t segment_count = 0u;
     wz_tape_segment_t* segments = NULL;
+    wz_tzx_block_t* blocks = NULL;
+    size_t block_count = 0u;
+    const wz_machine_profile_t* profile;
+    wz_result_t parsed = WZ_RESULT_INVALID_STATE;
     bool loaded = false;
     if (session == NULL || !wz_host_read_file(path, &data, &length)) return false;
-    if (wz_tape_parse_standard_tap(data, length, 2u, NULL, 0u,
-                                   &segment_count) == WZ_RESULT_BUFFER_TOO_SMALL &&
-        segment_count != 0u) {
-        segments = (wz_tape_segment_t*)malloc(segment_count * sizeof(*segments));
-        if (segments != NULL &&
-            wz_tape_parse_standard_tap(data, length, 2u, segments,
-                                       segment_count, &segment_count) == WZ_RESULT_OK &&
-            wz_machine_mount_tape(&session->machine, segments, segment_count) == WZ_RESULT_OK) {
-            free(session->tape_segments);
-            session->tape_segments = segments;
-            session->tape_segment_count = segment_count;
-            segments = NULL;
-            loaded = true;
+    profile = session->machine.profile;
+    if (profile == NULL || profile->master_hz_den == 0u) goto cleanup;
+    if (wz_host_extension_is(path, ".tap")) {
+        parsed = wz_tape_parse_standard_tap(data, length,
+            profile->master_ticks_per_cpu_tstate, NULL, 0u, &segment_count);
+        if (parsed == WZ_RESULT_BUFFER_TOO_SMALL && segment_count != 0u &&
+            segment_count <= SIZE_MAX / sizeof(*segments)) {
+            segments = (wz_tape_segment_t*)malloc(segment_count * sizeof(*segments));
+            if (segments != NULL) parsed = wz_tape_parse_standard_tap(
+                data, length, profile->master_ticks_per_cpu_tstate, segments,
+                segment_count, &segment_count);
+        }
+    } else if (wz_host_extension_is(path, ".tzx")) {
+        parsed = wz_tape_parse_tzx(data, length, NULL, 0u, &block_count);
+        if (parsed == WZ_RESULT_BUFFER_TOO_SMALL && block_count != 0u &&
+            block_count <= SIZE_MAX / sizeof(*blocks)) {
+            blocks = (wz_tzx_block_t*)malloc(block_count * sizeof(*blocks));
+            if (blocks == NULL || wz_tape_parse_tzx(data, length, blocks,
+                    block_count, &block_count) != WZ_RESULT_OK) goto cleanup;
+            parsed = wz_tape_expand_tzx_timing(blocks, block_count,
+                profile->master_ticks_per_cpu_tstate, NULL, 0u, &segment_count);
+            if (parsed == WZ_RESULT_BUFFER_TOO_SMALL && segment_count != 0u &&
+                segment_count <= SIZE_MAX / sizeof(*segments)) {
+                segments = (wz_tape_segment_t*)malloc(segment_count * sizeof(*segments));
+                if (segments != NULL) parsed = wz_tape_expand_tzx_timing(
+                    blocks, block_count, profile->master_ticks_per_cpu_tstate,
+                    segments, segment_count, &segment_count);
+            }
+        }
+    } else if (wz_host_extension_is(path, ".wav")) {
+        wz_qword_t master_hz = profile->master_hz_num / profile->master_hz_den;
+        if (master_hz > UINT32_MAX) goto cleanup;
+        parsed = wz_tape_parse_wav_pcm(data, length, (wz_dword_t)master_hz,
+                                      128u, 8u, NULL, 0u, &segment_count);
+        if (parsed == WZ_RESULT_BUFFER_TOO_SMALL && segment_count != 0u &&
+            segment_count <= SIZE_MAX / sizeof(*segments)) {
+            segments = (wz_tape_segment_t*)malloc(segment_count * sizeof(*segments));
+            if (segments != NULL) parsed = wz_tape_parse_wav_pcm(
+                data, length, (wz_dword_t)master_hz, 128u, 8u, segments,
+                segment_count, &segment_count);
         }
     }
+    if (parsed == WZ_RESULT_OK && segments != NULL && segment_count != 0u &&
+        wz_host_mount_tape_segments(session, segments, segment_count)) {
+        segments = NULL;
+        loaded = true;
+    }
+cleanup:
+    free(blocks);
     free(segments);
     free(data);
     return loaded;
+}
+
+static bool wz_host_load_external_snapshot(wz_host_session_t* session,
+                                           const char* path)
+{
+    wz_byte_t* data = NULL;
+    size_t length = 0u;
+    wz_snapshot_state_t snapshot;
+    wz_result_t result = WZ_RESULT_INVALID_STATE;
+    if (session == NULL || !wz_host_read_file(path, &data, &length)) return false;
+    if (wz_host_extension_is(path, ".sna") &&
+        length == WZ_SNA_128K_LENGTH) {
+        result = wz_state_load_sna_128k(&session->machine, data, length);
+    } else if (wz_host_extension_is(path, ".z80") &&
+               length >= WZ_Z80_V2_HEADER_LENGTH && data[6u] == 0u &&
+               data[7u] == 0u && wz_read_le16(data + 30u) == 23u &&
+               data[34u] == 4u && session->machine.profile != NULL &&
+               session->machine.profile->kind == WZ_MACHINE_128K_PAL) {
+        result = wz_state_load_z80_v2_128k(&session->machine, data, length);
+    } else if (wz_host_extension_is(path, ".sna") &&
+               length == WZ_SNA_48K_LENGTH) {
+        wz_snapshot_state_init(&snapshot);
+        result = wz_snapshot_state_load_sna_48k(&snapshot, data, length);
+        if (result == WZ_RESULT_OK) result = wz_state_deserialize_machine(
+            &session->machine, wz_snapshot_state_data(&snapshot),
+            wz_snapshot_state_length(&snapshot));
+    } else if (wz_host_extension_is(path, ".z80")) {
+        wz_snapshot_state_init(&snapshot);
+        if (length > 30u && data[6u] == 0u) {
+            result = wz_snapshot_state_load_z80_v1(&snapshot, data, length);
+        } else if (length > WZ_Z80_V2_HEADER_LENGTH &&
+                   wz_read_le16(data + 30u) == 23u) {
+            result = wz_snapshot_state_load_z80_v2(&snapshot, data, length);
+        } else if (length > WZ_Z80_V3_HEADER_LENGTH &&
+                   (wz_read_le16(data + 30u) == 54u ||
+                    wz_read_le16(data + 30u) == 55u)) {
+            result = wz_snapshot_state_load_z80_v3(&snapshot, data, length);
+        }
+        if (result == WZ_RESULT_OK) result = wz_state_deserialize_machine(
+            &session->machine, wz_snapshot_state_data(&snapshot),
+            wz_snapshot_state_length(&snapshot));
+    }
+    free(data);
+    return result == WZ_RESULT_OK;
+}
+
+static bool wz_host_load_external_microdrive(wz_host_session_t* session,
+                                             const char* path)
+{
+    wz_byte_t* data = NULL;
+    size_t length = 0u;
+    wz_mdr_image_t image;
+    if (session == NULL || wz_mdr_transport_is_dirty(&session->machine.microdrive) ||
+        !wz_host_read_file(path, &data, &length)) return false;
+    if (wz_mdr_image_init(&image, data, length) != WZ_RESULT_OK ||
+        wz_mdr_transport_mount(&session->machine.microdrive, &image) !=
+            WZ_RESULT_OK) {
+        free(data);
+        return false;
+    }
+    free(session->microdrive_data);
+    session->microdrive_data = data;
+    session->microdrive_image = image;
+    session->machine.microdrive.image = &session->microdrive_image;
+    session->ui_window.layout.microdrive1_mounted = true;
+    session->ui_window.layout.microdrive_mounted[0] = true;
+    return true;
+}
+
+static bool wz_host_open_run_tape(const char* path, void* context)
+{
+    return wz_host_load_external_tape((wz_host_session_t*)context, path);
+}
+
+static bool wz_host_open_run_snapshot(const char* path, void* context)
+{
+    return wz_host_load_external_snapshot((wz_host_session_t*)context, path);
+}
+
+static bool wz_host_open_run_microdrive(const char* path, void* context)
+{
+    return wz_host_load_external_microdrive((wz_host_session_t*)context, path);
+}
+
+static wz_result_t wz_host_command_open_run(
+    const void* context, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    wz_host_session_t* session = (wz_host_session_t*)context;
+    char path[4096];
+    wz_file_dialog_result_t dialog_result;
+    wz_open_run_handlers_t handlers;
+    wz_open_run_result_t open_result;
+    wz_qword_t sleep_nanoseconds;
+    (void)arguments;
+    if (session == NULL || result == NULL) return WZ_RESULT_INVALID_ARGUMENT;
+    wz_host_release_local_keys();
+    if (!wz_input_focus_dialog_enter(&session->input_focus)) {
+        result->reason = "file-dialog-focus-unavailable";
+        return WZ_RESULT_INVALID_STATE;
+    }
+    dialog_result = wz_file_dialog_open(path, sizeof(path));
+    (void)wz_input_focus_dialog_leave(&session->input_focus);
+    if (session->pacing_initialized &&
+        wz_host_pacing_set_speed(&session->pacing, session->speed)) {
+        (void)wz_host_pacing_wait(&session->pacing, wz_host_now_nanoseconds(),
+            session->machine.master_tick, NULL, NULL, &sleep_nanoseconds);
+    }
+    if (dialog_result == WZ_FILE_DIALOG_CANCELLED) {
+        (void)snprintf(result->message, sizeof(result->message), "cancelled");
+        (void)snprintf(session->file_notification,
+                       sizeof(session->file_notification), "Open / Run cancelled");
+        return WZ_RESULT_OK;
+    }
+    if (dialog_result != WZ_FILE_DIALOG_SELECTED) {
+        result->reason = "file-dialog-failed";
+        (void)snprintf(session->file_notification,
+                       sizeof(session->file_notification), "File dialog failed");
+        return WZ_RESULT_INVALID_STATE;
+    }
+    handlers.tape = wz_host_open_run_tape;
+    handlers.snapshot = wz_host_open_run_snapshot;
+    handlers.microdrive = wz_host_open_run_microdrive;
+    handlers.conversion = NULL;
+    handlers.context = session;
+    open_result = wz_file_open_run_dispatch(path, &handlers);
+    if (open_result != WZ_OPEN_RUN_OK) {
+        result->reason = open_result == WZ_OPEN_RUN_UNSUPPORTED_FORMAT
+            ? "unsupported-file-format" : "file-open-or-load-failed";
+        (void)snprintf(session->file_notification,
+            sizeof(session->file_notification), "%s",
+            open_result == WZ_OPEN_RUN_HANDLER_UNAVAILABLE
+                ? "This format is not available in the current workflow"
+                : open_result == WZ_OPEN_RUN_UNSUPPORTED_FORMAT
+                    ? "Unsupported file format"
+                    : "The selected file could not be loaded");
+        return WZ_RESULT_INVALID_STATE;
+    }
+    session->ui_window.layout.model_k =
+        session->machine.profile != NULL &&
+        session->machine.profile->kind == WZ_MACHINE_128K_PAL ? 128u : 48u;
+    (void)snprintf(session->file_notification,
+                   sizeof(session->file_notification), "File loaded");
+    (void)snprintf(result->message, sizeof(result->message), "loaded");
+    return WZ_RESULT_OK;
 }
 
 static wz_result_t wz_host_command_model_set(
@@ -586,6 +824,14 @@ static wz_result_t wz_host_command_speed(
 static bool wz_host_register_commands(void)
 {
     static const wz_command_metadata_t commands[] = {
+        {
+            "file.open_run", "Open / Run...",
+            "Choose a supported tape, snapshot, or Microdrive image",
+            "file", "NONE", "wz-command-result",
+            "wz_host_command_open_run", "native-file-dialog", NULL,
+            WZ_COMMAND_LOCAL_ONLY, NULL, wz_host_command_open_run,
+            &wz_host_session, true, false, NULL
+        },
         {
             "machine.pause_resume", "Pause", "Pause or resume the emulated machine",
             "machine", "NONE", NULL, "wz_host_command_pause_resume", "local",
@@ -1027,7 +1273,7 @@ static void wz_host_ui_draw_status(struct nk_context* context,
     wz_ui_remote_control_indicator(
         remote_status, control_status, sizeof(control_status));
     (void)snprintf(status, sizeof(status),
-        "%s | %s | %s | Keyboard %s | Audio %s | Tape %s | MDV1 %s | Net %s",
+        "%s | %s | %s | Keyboard %s | Audio %s | Tape %s | MDV1 %s | Net %s%s%s",
         model,
         wz_ui_layout_speed_label((size_t)wz_host_session.speed),
         state->paused ? "Paused" : "Running",
@@ -1038,7 +1284,9 @@ static void wz_host_ui_draw_status(struct nk_context* context,
         state->audio_muted ? "Muted" : "On",
         state->tape_mounted ? "Mounted" : "Empty",
         state->microdrive1_mounted ? "Mounted" : "Empty",
-        state->networking_mode == NULL ? "Unavailable" : state->networking_mode);
+        state->networking_mode == NULL ? "Unavailable" : state->networking_mode,
+        wz_host_session.file_notification[0] == '\0' ? "" : " | ",
+        wz_host_session.file_notification);
     saved_padding = context->style.window.padding;
     context->style.window.padding = nk_vec2(0.0f, 0.0f);
     if (nk_begin(context, "Machine status",
@@ -1261,7 +1509,7 @@ static void wz_host_session_init(void)
             if (rom_path != NULL && !wz_host_load_external_rom(&wz_host_session, rom_path)) {
                 (void)fprintf(stderr, "WZSN_ROM_PATH could not be loaded: %s\n", rom_path);
             }
-            if (tape_path != NULL && !wz_host_load_external_tap(&wz_host_session, tape_path)) {
+            if (tape_path != NULL && !wz_host_load_external_tape(&wz_host_session, tape_path)) {
                 (void)fprintf(stderr, "WZSN_TAPE_PATH could not be loaded: %s\n", tape_path);
             }
         }
@@ -1271,6 +1519,12 @@ static void wz_host_session_init(void)
             wz_control_port_owner_close(&wz_host_session.control_port);
             return;
         }
+        wz_host_session.ui_window.layout.tape_mounted =
+            wz_host_session.machine.tape_mounted != 0u;
+        wz_host_session.ui_window.layout.microdrive1_mounted =
+            wz_host_session.machine.microdrive.image_present != 0u;
+        wz_host_session.ui_window.layout.microdrive_mounted[0] =
+            wz_host_session.machine.microdrive.image_present != 0u;
         (void)wz_headless_runner_init(&wz_host_session.runner,
                                       &wz_host_session.machine, 0);
         if (!wz_host_register_commands()) {
@@ -1300,6 +1554,9 @@ static void wz_host_session_shutdown(void)
     free(wz_host_session.tape_segments);
     wz_host_session.tape_segments = NULL;
     wz_host_session.tape_segment_count = 0u;
+    free(wz_host_session.microdrive_data);
+    wz_host_session.microdrive_data = NULL;
+    wz_host_session.microdrive_image.data = NULL;
     wz_control_port_owner_close(&wz_host_session.control_port);
     if (wz_host_session.socket_system_initialized) {
         wz_host_socket_system_shutdown();

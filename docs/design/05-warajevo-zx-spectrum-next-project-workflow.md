@@ -53,19 +53,18 @@ branch or pull request is part of this workflow. Manual dispatch jobs require
 `main`; pull-request triggers are prohibited. Do not add branch protection
 that requires a pull request or prevents authorized direct updates to `main`.
 
-GitHub push rulesets can reject file paths before receipt only for private or
-internal repositories. This repository is public, so a GitHub push ruleset
-cannot enforce this pathname policy while retaining direct pushes.
-The pathname workflow is an after-push audit, not a push blocker. Because all
-changes go directly to `main`, the hosted workflow cannot prevent a
-noncompliant commit from arriving: it detects and fails on a violation after
-receipt. Treat that
-failure as a blocked project state; remove the offending path in the next direct
-commit and wait for the pathname check to pass before continuing. The local
-pre-push gate is the before-push safeguard for normal project pushes, and must
-pass against the complete prospective `main` tree before Git contacts GitHub.
-GitHub-side pathname enforcement must not be represented as a pre-receipt
-blocker while this repository remains public.
+The local pre-commit and pre-push pathname checks are mandatory because work
+must be committed and pushed directly to `main`. The pre-commit check rejects
+the complete staged tree before creating a commit; the pre-push check rejects
+the complete prospective tree before contacting GitHub. GitHub's repository
+ruleset API does not accept a file-path restriction for a branch-targeted rule,
+and push rulesets are limited to private or internal repositories. Therefore,
+the hosted pathname workflow is an after-push audit for this public repository,
+not a pre-receipt blocker. It validates the exact pushed commit and fails on a
+violation. If that audit fails, remove the offending path in the next direct
+commit and wait for the pathname check to pass before continuing. Do not add a
+pull-request requirement or claim that GitHub blocks a noncompliant direct
+push before receipt.
 
 ## 3. Local pathname and pre-push gates
 
