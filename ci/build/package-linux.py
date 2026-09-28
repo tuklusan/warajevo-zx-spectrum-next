@@ -95,7 +95,7 @@ def main() -> int:
         args.nuklear_license.resolve(strict=True),
         args.sokol_header.resolve(strict=True),
     ).encode("utf-8")
-    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.mkdir(parents=True, exist_ok=True)
     archive_name = f"{PRODUCT}-linux-{args.architecture}.tar.gz"
     archive_path = args.output / archive_name
     readme = ROOT / "ci/build/linux-package-README.md"
@@ -131,8 +131,10 @@ def main() -> int:
         actual = {member.name for member in archive.getmembers()}
         if actual != expected or len(archive.getmembers()) != len(expected):
             raise SystemExit(f"archive contents mismatch: {sorted(actual)}")
-        if any(not archive.extractfile(name) for name in actual):
-            raise SystemExit("archive contains an unreadable file")
+        for member in archive.getmembers():
+            contents = archive.extractfile(member)
+            if contents is None or len(contents.read()) != member.size:
+                raise SystemExit(f"archive member is unreadable: {member.name}")
 
     digest = hashlib.sha256(archive_path.read_bytes()).hexdigest()
     checksum = args.output / f"{archive_name}.sha256"
