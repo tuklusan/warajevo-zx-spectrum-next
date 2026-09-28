@@ -10,6 +10,23 @@ SANYALnet Labs." See LICENSE for full terms. -->
 These decisions complete the Phase 12 design record. They do not close the
 Phase 12 implementation or acceptance gate.
 
+## Phase 12 gate review
+
+Reviewed on 2026-09-27 against UI Architecture §§4–7, 18, 24–25, 43, and 49,
+and the Core host/core boundary. The choices retain the canonical semantic menu
+tree, shared registry, host-only preferences, and deterministic machine state.
+Platform-specific rendering and file-dialog dependencies stay in the host; the
+modal-dialog pacing contract re-anchors host time without changing core clock
+ratios; all returned file paths cross the command boundary as UTF-8. The
+registry result and permission metadata remain shared by GUI, application
+tests, and Telnet projections. No design conflict blocks implementation, so
+this baseline is approved for implementation.
+
+This review approves design choices only. File dialogs, the versioned settings
+reader/writer, complete registry population, and complete local UI workflows
+remain unimplemented or incomplete. Keyboard/focus behavior and platform
+accessibility exposure remain acceptance gaps; none is waived by this review.
+
 ## Toolkit, renderer, and text
 
 - Use Nuklear v4.13.3 at the immutable commit recorded in
