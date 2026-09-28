@@ -1,0 +1,47 @@
+{
+  "testId": "host-pacing-ratio-continuity",
+  "status": "pass",
+  "commit": "2d62db9fd2db93bf8bdf6b9a7f919ed5cfcc8e5a",
+  "runId": 36409330715,
+  "runner": "Linux/X64",
+  "timestamp": "2026-09-28T10:22:45+00:00",
+  "caseCount": 10,
+  "fixtures": [
+    {
+      "path": ".github/workflows/host-pacing-regression.yml",
+      "sha256": "e1afb846ac814875b9f857d67f2a4718e2c5adf869462d083a2552573c1fd4a0"
+    },
+    {
+      "path": "ci/test/host-pacing/pacing-regression.c",
+      "sha256": "a6a591a54ee138ab646127c4e3033e879592e50a22fecc06281f0145c3070e5e"
+    },
+    {
+      "path": "ci/test/host-pacing/write-proof.py",
+      "sha256": "268a7acabf2ac852475cafcc9c1e475d8f1f41d4b3620e88709a04d439331c69"
+    },
+    {
+      "path": "src/app/wz_host_pacing.c",
+      "sha256": "95f8c0e83dc00296de250ec8dedc643023182aa6dfe33cea015a0d3154a30ca7"
+    },
+    {
+      "path": "src/app/wz_host_pacing.h",
+      "sha256": "cc9cf2c62618116bc982299039942b56a0e110dd8ab720fe1e4f2c262185ebc1"
+    },
+    {
+      "path": "src/app/wz_speed_policy.c",
+      "sha256": "cb9d2d0befc0becaa81558d794a257f399c4a46e1c1a0bdb19c4893d8f547183"
+    },
+    {
+      "path": "src/app/wz_speed_policy.h",
+      "sha256": "0895e0cac0254cb95d4b2347d911f0fdddfd0bab414d37e5dd4052cfc9eaa2df"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "b5347e33a6d6e4082c056edd8963da4cbb4eab4d523db9a6e2bb20afaf32ff1a"
+    },
+    {
+      "path": "test-drivers/host-pacing.driver.json",
+      "sha256": "1308883f2b4ae2af4666c388e4e7c178004770200448c12c01b8fab8449898e4"
+    }
+  ]
+}
