@@ -16,7 +16,7 @@
     },
     {
       "path": "ci/test/tape-keyboard-load/tape-keyboard-load.c",
-      "sha256": "2406e197f0c36f830b903b14a0b85222aefa698e27dc6f7b4a8c751cf81540c0"
+      "sha256": "50c1c118cf772e4de2be5d1f881dc080f4ba1c9a63751462bbeef401565a412f"
     },
     {
       "path": "ci/test/tape-keyboard-load/write-proof.py",
