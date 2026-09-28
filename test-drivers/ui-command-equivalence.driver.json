@@ -19,7 +19,7 @@
     },
     {
       "path": "ci/test/ui-command-equivalence/ui-command-equivalence-regression.c",
-      "sha256": "09cc8d3c94bdae77ef62afff839a7ee0c54222acc6d3c2449643f75c794c2a3c"
+      "sha256": "ea1a3cbec2abf0cab914e03f4cdc26c94c2c175134902d495917f7767715ad9a"
     },
     {
       "path": "ci/test/ui-command-equivalence/write-proof.py",
