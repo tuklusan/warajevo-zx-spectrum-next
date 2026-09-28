@@ -306,7 +306,7 @@ Architecture #3 (`zx48-mic-ear-router-network-architecture.md`) is explicitly ou
 
 ## Phase 12A — UI implementation gate and command-registry foundation
 
-237. [P12][UI §49][Core §51] Select and freeze the exact C-compatible UI toolkit/revision before UI implementation begins — Nuklear v4.13.3 is pinned in `design/dependencies/nuklear-pin.md` and its Sokol renderer/event adapter is now connected to the host; hosted build and UI acceptance evidence remain pending.
+237. [P12][UI §49][Core §51] Select and freeze the exact C-compatible UI toolkit/revision before UI implementation begins — Nuklear v4.13.3 is pinned in `design/dependencies/nuklear-pin.md` and its Sokol renderer/event adapter is now connected to the host; hosted build and UI acceptance evidence remain pending. The mandatory source review's status-text truncation warning is adjudicated non-actionable: profile, speed, networking, and status labels are fixed bounded strings, the Control Port is drawn from its fixed range, and the 256-byte destination exceeds their combined bound.
 238. [P12][UI §49] Freeze the per-platform integration approach for Windows, Linux/X11, and macOS — the pinned Sokol-Nuklear backend uses D3D11, X11/OpenGL, and Metal respectively; hosted cross-platform build evidence remains pending.
 239. [P12][UI §49] Freeze font/text rendering strategy — use Nuklear's embedded default ProggyClean font; no external font file is required.
 240. [P12][UI §49] Freeze native-versus-in-window menu presentation per platform — render the seven semantic menus in-window on Windows, macOS, and Linux; native platform menu bars are not used.
