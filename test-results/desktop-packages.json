@@ -1,0 +1,292 @@
+{
+  "testId": "desktop-packages",
+  "status": "pass",
+  "commit": "4f0b2f9456415fd55800d1109832626963d65bf5",
+  "runner": "Windows x64 and macOS Intel/Apple Silicon hosted matrix",
+  "timestamp": "2026-09-28T18:16:27+00:00",
+  "runId": 36462749460,
+  "runners": [
+    {
+      "id": "windows-x86_64",
+      "runnerLabel": "windows-2025",
+      "os": "Windows",
+      "architecture": "X64",
+      "runnerName": "win25-vs2026",
+      "commit": "4f0b2f9456415fd55800d1109832626963d65bf5"
+    },
+    {
+      "id": "macos-x86_64",
+      "runnerLabel": "macos-15-intel",
+      "os": "macOS",
+      "architecture": "X64",
+      "runnerName": "macos15",
+      "commit": "4f0b2f9456415fd55800d1109832626963d65bf5"
+    },
+    {
+      "id": "macos-arm64",
+      "runnerLabel": "macos-15",
+      "os": "macOS",
+      "architecture": "ARM64",
+      "runnerName": "macos15",
+      "commit": "4f0b2f9456415fd55800d1109832626963d65bf5"
+    }
+  ],
+  "packages": [
+    {
+      "platform": "windows-x86_64",
+      "architecture": "x86_64",
+      "archive": "Warajevo-ZX-Spectrum-Next-windows-x86_64.zip",
+      "archiveSha256": "ffb92878ac4b3a719c7130e45b11a5245163e6ea3b3a1185cc0b18488b5268d6",
+      "binarySha256": "1614559674717bf7a1bac0ebee43b62395513536d1b9fe9a10ba71d0cffcd39f",
+      "members": [
+        "Warajevo-ZX-Spectrum-Next/LICENSE",
+        "Warajevo-ZX-Spectrum-Next/README.md",
+        "Warajevo-ZX-Spectrum-Next/THIRD-PARTY-NOTICES.md",
+        "Warajevo-ZX-Spectrum-Next/Warajevo-ZX-Spectrum-Next.exe"
+      ],
+      "signed": null,
+      "notarized": null,
+      "runtimeAudit": {
+        "testId": "windows-runtime-dependency-audit",
+        "status": "pass",
+        "commit": "4f0b2f9456415fd55800d1109832626963d65bf5",
+        "runId": "36462749460",
+        "runner": "Windows/X64",
+        "timestamp": "2026-09-28T18:07:37+00:00",
+        "binary": "Warajevo-ZX-Spectrum-Next.exe",
+        "binarySha256": "1614559674717bf7a1bac0ebee43b62395513536d1b9fe9a10ba71d0cffcd39f",
+        "peMachine": "0x8664",
+        "imports": [
+          "api-ms-win-crt-environment-l1-1-0.dll",
+          "api-ms-win-crt-heap-l1-1-0.dll",
+          "api-ms-win-crt-locale-l1-1-0.dll",
+          "api-ms-win-crt-math-l1-1-0.dll",
+          "api-ms-win-crt-private-l1-1-0.dll",
+          "api-ms-win-crt-runtime-l1-1-0.dll",
+          "api-ms-win-crt-stdio-l1-1-0.dll",
+          "api-ms-win-crt-string-l1-1-0.dll",
+          "api-ms-win-crt-time-l1-1-0.dll",
+          "api-ms-win-crt-utility-l1-1-0.dll",
+          "d3d11.dll",
+          "gdi32.dll",
+          "kernel32.dll",
+          "ole32.dll",
+          "shell32.dll",
+          "user32.dll",
+          "ws2_32.dll"
+        ],
+        "fixturePolicy": "only Windows system DLLs and Windows API-set DLLs are imported",
+        "fixtures": [
+          {
+            "path": ".github/workflows/windows-runtime-dependency-audit.yml",
+            "sha256": "7071125e29f009c1596ef0a17b5e1e36533bd06d4d8427798a29620396cb56ca"
+          },
+          {
+            "path": "ci/test/windows-runtime-dependencies/inspect_pe.py",
+            "sha256": "75072af6c4c79d1f4f6ea44f3d304c0b6abec415f3db6815fc11c3c8a3b33a77"
+          },
+          {
+            "path": "src/cmake/CMakeLists.txt",
+            "sha256": "4317571e64b373bd509c57127bfbe2ebd27489844f422646904be670d13ced08"
+          },
+          {
+            "path": "ci/test/windows-runtime-dependencies/README.md",
+            "sha256": "f788c860f6fdfde3ce15586f755e9e33e8440f8b1fec04e97ae657df8ffb3aef"
+          }
+        ]
+      }
+    },
+    {
+      "platform": "macos-x86_64",
+      "architecture": "x86_64",
+      "archive": "Warajevo-ZX-Spectrum-Next-macos-x86_64.zip",
+      "archiveSha256": "b09f76e049b66a86b0145c8b6735a36a0548c55f7c45c4ce5ef0d185fd2e550b",
+      "binarySha256": "1172226b1e020cc7ace6a68e793f939bf4e6c81e4c60b8b21489eec446b0b734",
+      "members": [
+        "Warajevo-ZX-Spectrum-Next/LICENSE",
+        "Warajevo-ZX-Spectrum-Next/README.md",
+        "Warajevo-ZX-Spectrum-Next/THIRD-PARTY-NOTICES.md",
+        "Warajevo-ZX-Spectrum-Next/Warajevo ZX Spectrum Next.app/Contents/Info.plist",
+        "Warajevo-ZX-Spectrum-Next/Warajevo ZX Spectrum Next.app/Contents/MacOS/Warajevo-ZX-Spectrum-Next"
+      ],
+      "signed": false,
+      "notarized": false,
+      "runtimeAudit": {
+        "runnerId": "macos-x64",
+        "os": "Darwin",
+        "architecture": "x86_64",
+        "binary": "Warajevo-ZX-Spectrum-Next",
+        "binarySha256": "1172226b1e020cc7ace6a68e793f939bf4e6c81e4c60b8b21489eec446b0b734",
+        "dependencies": [
+          {
+            "name": "AppKit",
+            "path": "/System/Library/Frameworks/AppKit.framework/Versions/C/AppKit"
+          },
+          {
+            "name": "AudioToolbox",
+            "path": "/System/Library/Frameworks/AudioToolbox.framework/Versions/A/AudioToolbox"
+          },
+          {
+            "name": "Cocoa",
+            "path": "/System/Library/Frameworks/Cocoa.framework/Versions/A/Cocoa"
+          },
+          {
+            "name": "CoreAudio",
+            "path": "/System/Library/Frameworks/CoreAudio.framework/Versions/A/CoreAudio"
+          },
+          {
+            "name": "CoreFoundation",
+            "path": "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation"
+          },
+          {
+            "name": "CoreGraphics",
+            "path": "/System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics"
+          },
+          {
+            "name": "Foundation",
+            "path": "/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation"
+          },
+          {
+            "name": "Metal",
+            "path": "/System/Library/Frameworks/Metal.framework/Versions/A/Metal"
+          },
+          {
+            "name": "QuartzCore",
+            "path": "/System/Library/Frameworks/QuartzCore.framework/Versions/A/QuartzCore"
+          },
+          {
+            "name": "libSystem.B.dylib",
+            "path": "/usr/lib/libSystem.B.dylib"
+          },
+          {
+            "name": "libobjc.A.dylib",
+            "path": "/usr/lib/libobjc.A.dylib"
+          },
+          {
+            "name": "libz.1.dylib",
+            "path": "/usr/lib/libz.1.dylib"
+          }
+        ]
+      }
+    },
+    {
+      "platform": "macos-arm64",
+      "architecture": "arm64",
+      "archive": "Warajevo-ZX-Spectrum-Next-macos-arm64.zip",
+      "archiveSha256": "f5f38acbc91f904dec710875f416280202da7e12b542c64a01c05d4906cff8af",
+      "binarySha256": "daf5349099a4cb6fc2b09673669253244689178587254aaad05a38800a021da4",
+      "members": [
+        "Warajevo-ZX-Spectrum-Next/LICENSE",
+        "Warajevo-ZX-Spectrum-Next/README.md",
+        "Warajevo-ZX-Spectrum-Next/THIRD-PARTY-NOTICES.md",
+        "Warajevo-ZX-Spectrum-Next/Warajevo ZX Spectrum Next.app/Contents/Info.plist",
+        "Warajevo-ZX-Spectrum-Next/Warajevo ZX Spectrum Next.app/Contents/MacOS/Warajevo-ZX-Spectrum-Next"
+      ],
+      "signed": false,
+      "notarized": false,
+      "runtimeAudit": {
+        "runnerId": "macos-arm64",
+        "os": "Darwin",
+        "architecture": "arm64",
+        "binary": "Warajevo-ZX-Spectrum-Next",
+        "binarySha256": "daf5349099a4cb6fc2b09673669253244689178587254aaad05a38800a021da4",
+        "dependencies": [
+          {
+            "name": "AppKit",
+            "path": "/System/Library/Frameworks/AppKit.framework/Versions/C/AppKit"
+          },
+          {
+            "name": "AudioToolbox",
+            "path": "/System/Library/Frameworks/AudioToolbox.framework/Versions/A/AudioToolbox"
+          },
+          {
+            "name": "Cocoa",
+            "path": "/System/Library/Frameworks/Cocoa.framework/Versions/A/Cocoa"
+          },
+          {
+            "name": "CoreAudio",
+            "path": "/System/Library/Frameworks/CoreAudio.framework/Versions/A/CoreAudio"
+          },
+          {
+            "name": "CoreFoundation",
+            "path": "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation"
+          },
+          {
+            "name": "CoreGraphics",
+            "path": "/System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics"
+          },
+          {
+            "name": "Foundation",
+            "path": "/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation"
+          },
+          {
+            "name": "Metal",
+            "path": "/System/Library/Frameworks/Metal.framework/Versions/A/Metal"
+          },
+          {
+            "name": "QuartzCore",
+            "path": "/System/Library/Frameworks/QuartzCore.framework/Versions/A/QuartzCore"
+          },
+          {
+            "name": "libSystem.B.dylib",
+            "path": "/usr/lib/libSystem.B.dylib"
+          },
+          {
+            "name": "libobjc.A.dylib",
+            "path": "/usr/lib/libobjc.A.dylib"
+          },
+          {
+            "name": "libz.1.dylib",
+            "path": "/usr/lib/libz.1.dylib"
+          }
+        ]
+      }
+    }
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/desktop-release-packages.yml",
+      "sha256": "cc79da8726c834ebe129e75818fd39db02c51e243daed6e7d58690aabe921d0a"
+    },
+    {
+      "path": "ci/build/desktop-package-README.md",
+      "sha256": "a4e7c57f51920da1877fedb641c44322ff03ca2555d246ea792e09413e92b968"
+    },
+    {
+      "path": "ci/build/package-desktop.py",
+      "sha256": "a11edc25f1c8b6d6e839f14986e490ad403588ac72b077052f373afe1f4d13da"
+    },
+    {
+      "path": "ci/build/write-desktop-package-proof.py",
+      "sha256": "67fef7ab0ff439d1ef7494289e531a9b5f280a692f2e42f566c226f90a8f3917"
+    },
+    {
+      "path": "ci/test/runtime-dependencies/inspect_runtime.py",
+      "sha256": "83ca1a7134797de11725812b07c2ab0cebf2693a70c5c1961ebb5c3750c2d635"
+    },
+    {
+      "path": "ci/test/windows-runtime-dependencies/inspect_pe.py",
+      "sha256": "75072af6c4c79d1f4f6ea44f3d304c0b6abec415f3db6815fc11c3c8a3b33a77"
+    },
+    {
+      "path": "docs/design/desktop-package-format-decision.md",
+      "sha256": "435446846f7ade5a1b3e33f0145c177130d1ba23dc75995f506124e8e868400b"
+    },
+    {
+      "path": "design/dependencies/nuklear-pin.md",
+      "sha256": "1a60ace14a26aa27f208b1d5bc2afa90b77a2a68bddf98420c2e02165b57f70f"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "f8162dbbb1609f9e2296c208ffd7714938fba6a0421778bcc882cc4ca6c6abe2"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "4317571e64b373bd509c57127bfbe2ebd27489844f422646904be670d13ced08"
+    },
+    {
+      "path": "test-drivers/windows-runtime-dependency-audit.driver.json",
+      "sha256": "0e9843331b85f024f269c211f539a8cf111bc2ee650d19f289155a4ca36fa823"
+    }
+  ]
+}
