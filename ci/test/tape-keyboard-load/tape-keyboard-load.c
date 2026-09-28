@@ -16,6 +16,7 @@
 #include "core/wz_trace.h"
 
 typedef struct {
+    wz_machine_t* machine;
     size_t interrupt_accepts;
     size_t interrupt_samples;
     size_t interrupt_asserts;
@@ -25,6 +26,8 @@ typedef struct {
     size_t keyboard_input_returns;
     size_t keyboard_input_flag_checks;
     size_t keyboard_input_empty_returns;
+    size_t interrupt_window_iff_enabled;
+    size_t interrupt_window_acceptable;
     bool capture_keyboard_input;
 } trace_counts_t;
 
@@ -47,6 +50,13 @@ static void count_trace(const wz_trace_event_t* event, void* context)
             ++counts->keyboard_input_empty_returns;
         if (event->program_counter == 0x10b5u)
             ++counts->keyboard_input_returns;
+    }
+    if (event->kind == WZ_TRACE_CPU_INSTRUCTION && counts->machine != NULL &&
+        wz_machine_maskable_interrupt_line_low(counts->machine) &&
+        counts->machine->cpu.iff1 != 0u) {
+        ++counts->interrupt_window_iff_enabled;
+        if (wz_z80_maskable_interrupts_acceptable(&counts->machine->cpu))
+            ++counts->interrupt_window_acceptable;
     }
     if (event->kind != WZ_TRACE_INTERRUPT) return;
     if (event->value == WZ_TRACE_INTERRUPT_MASKABLE_ACCEPT)
@@ -196,6 +206,7 @@ int main(int argc, char** argv)
     REQUIRE(wz_machine_mount_tape(&machine, segments, segment_count) ==
             WZ_RESULT_OK);
     wz_trace_sink_init(&trace, count_trace, &trace_counts);
+    trace_counts.machine = &machine;
     wz_machine_set_timing_trace(&machine, &trace);
     REQUIRE(wz_headless_runner_init(&runner, &machine, &trace) == WZ_RESULT_OK);
     frame_ticks = (wz_master_tick_t)profile->tstates_per_frame *
@@ -207,13 +218,16 @@ int main(int argc, char** argv)
     trace_counts.capture_keyboard_input = false;
     edit_line = (wz_word_t)(wz_machine_memory_read(&machine, 0x5c59u) |
         ((wz_word_t)wz_machine_memory_read(&machine, 0x5c5au) << 8u));
-    (void)printf("after J: E_LINE=%04x PC=%04x IFF=%u IY=%04x IRQ=%lu samples=%lu LINE=%lu/%lu ULA_PRESSED/ROW_READS=%lu/%lu KPATH_RET/CHECK/EMPTY=%lu/%lu/%lu MODE=%02x FLAGS=%02x IYFLAGS=%02x KSTATE=%02x%02x%02x%02x%02x LASTK=%02x keyrow=%02x before=",
+    (void)printf("after J: E_LINE=%04x PC=%04x IFF=%u IY=%04x IM=%u IRQ=%lu samples=%lu LINE=%lu/%lu IRQWINDOW_IFF/ELIGIBLE=%lu/%lu ULA_PRESSED/ROW_READS=%lu/%lu KPATH_RET/CHECK/EMPTY=%lu/%lu/%lu MODE=%02x FLAGS=%02x IYFLAGS=%02x KSTATE=%02x%02x%02x%02x%02x LASTK=%02x keyrow=%02x before=",
         edit_line, machine.cpu.program_counter, (unsigned)machine.cpu.iff1,
         machine.cpu.iy,
+        (unsigned)machine.cpu.interrupt_mode,
         (unsigned long)trace_counts.interrupt_accepts,
         (unsigned long)trace_counts.interrupt_samples,
         (unsigned long)trace_counts.interrupt_asserts,
         (unsigned long)trace_counts.interrupt_deasserts,
+        (unsigned long)trace_counts.interrupt_window_iff_enabled,
+        (unsigned long)trace_counts.interrupt_window_acceptable,
         (unsigned long)trace_counts.j_pressed_reads,
         (unsigned long)trace_counts.j_row_reads,
         (unsigned long)trace_counts.keyboard_input_returns,
