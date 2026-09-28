@@ -80,6 +80,9 @@ static const uint8_t wz_host_palette[16u][4u] = {
 
 typedef struct {
     wz_machine_t machine;
+    wz_byte_t model_48k_rom[WZ_48K_ROM_SIZE];
+    wz_qword_t model_48k_rom_identity;
+    bool has_model_48k_rom;
     wz_sokol_audio_t audio;
     wz_host_pacing_t pacing;
     wz_speed_policy_t speed;
@@ -413,9 +416,25 @@ static wz_result_t wz_host_command_model_set(
         result->reason = "bad-model";
         return WZ_RESULT_PARSE_ERROR;
     }
+    if (profile->kind == WZ_MACHINE_128K_PAL &&
+        session->machine.profile->kind == WZ_MACHINE_48K_PAL &&
+        session->machine.has_48k_rom != 0u) {
+        memcpy(session->model_48k_rom, session->machine.memory,
+               sizeof(session->model_48k_rom));
+        session->model_48k_rom_identity = session->machine.rom_identity;
+        session->has_model_48k_rom = true;
+    }
     if (wz_machine_reconfigure_profile(&session->machine, profile) !=
         WZ_RESULT_OK) {
         result->reason = "model-change-failed";
+        return WZ_RESULT_INVALID_STATE;
+    }
+    if (profile->kind == WZ_MACHINE_48K_PAL &&
+        session->has_model_48k_rom &&
+        session->model_48k_rom_identity == profile->expected_rom_identity &&
+        wz_machine_load_48k_rom(&session->machine, session->model_48k_rom,
+                                sizeof(session->model_48k_rom)) != WZ_RESULT_OK) {
+        result->reason = "model-rom-restore-failed";
         return WZ_RESULT_INVALID_STATE;
     }
     session->audio_sample_remainder = 0u;

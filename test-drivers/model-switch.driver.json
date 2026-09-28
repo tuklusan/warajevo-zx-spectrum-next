@@ -4,7 +4,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/model-switch-regression.yml",
-      "sha256": "7da2bccbbb5c33bf0f6298f3c71715fcf8d5cc6fb309c04a15db62423dcf4129"
+      "sha256": "f6e56f158d6e4be22ed52165d8454f798067f79b613d50cb4d2e76d8259cf794"
     },
     {
       "path": "ci/test/model-switch/CMakeLists.txt",
@@ -20,11 +20,11 @@
     },
     {
       "path": "ci/test/model-switch/write-proof.py",
-      "sha256": "61b7f293af16c041170c2734f05e5b47c9f73f9c068fd57613d081e8bc566f18"
+      "sha256": "2a2383555c02bb5bcba88eb4cff2d4d281dace3d009d64f2da983ffa82cad1d4"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "d0a400aa54b0a2c7ad349e8b56ecf32392b78cc70d89f3d0c1eeac3677d98e21"
+      "sha256": "643a4379b8a6d06af8ab5a9e9bee29fd6abb141de6b8df040000aa4e19e59e45"
     },
     {
       "path": "src/app/wz_telnet_alias_response.c",
@@ -45,6 +45,47 @@
     {
       "path": "src/core/wz_machine_profile.c",
       "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09"
+    },
+    {
+      "path": "ci/test/model-switch/telnet-model-switch.py",
+      "sha256": "7de40766bd0a5f3737e5a67d9174b8fd0ccaaee21a572b713c25eb6ca2d6f1ae"
+    },
+    {
+      "path": "ci/runner-bootstrap/bootstrap-unix.sh",
+      "sha256": "2425f329f0424995fdb476f3c452fa712045b861651d2e00b20970a2c9c67da4"
+    },
+    {
+      "path": "ci/runner-bootstrap/bootstrap-windows.ps1",
+      "sha256": "b93d8772e1bb8b5360e7368d30e1ad364bd8a9df826f2af51a382d0be22f3291"
+    },
+    {
+      "path": "ci/runner-bootstrap/manifests/windows-x86_64.txt",
+      "sha256": "d214577bcefed7d901b4316973c4932d06f3d629cbfdf7873b6f3c71bb6f7ab5"
+    },
+    {
+      "path": "ci/runner-bootstrap/manifests/windows-arm64.txt",
+      "sha256": "d214577bcefed7d901b4316973c4932d06f3d629cbfdf7873b6f3c71bb6f7ab5"
+    },
+    {
+      "path": "ci/runner-bootstrap/manifests/macos-x86_64.txt",
+      "sha256": "eb578acc9c5cde20f4de08e39f90187fbe937b066ba89a3295d45cad86b7af99"
+    },
+    {
+      "path": "ci/runner-bootstrap/manifests/macos-arm64.txt",
+      "sha256": "eb578acc9c5cde20f4de08e39f90187fbe937b066ba89a3295d45cad86b7af99"
+    },
+    {
+      "path": "roms/48.rom",
+      "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "442f2564fd66e4fa56f6686a91c588f2293dbb9ddf37b0036330dca27a6d7369"
+    },
+    {
+      "path": "test-media/DIZZY4K.TAP",
+      "sha256": "9bd60921359b2e2e39a35501b718319c7702a6f0cfd7493570b589300f4f2a27"
     }
-  ]
+  ],
+  "matrixWorkflow": ".github/workflows/model-switch-regression.yml"
 }

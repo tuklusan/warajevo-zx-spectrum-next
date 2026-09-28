@@ -20,6 +20,7 @@ RUNNERS = ("windows-x64", "windows-arm64", "macos-x64", "macos-arm64")
 REQUIRED_OUTPUT = (
     "model switch regression passed",
     "Telnet model alias regression passed",
+    "Telnet model switch live regression passed",
 )
 
 

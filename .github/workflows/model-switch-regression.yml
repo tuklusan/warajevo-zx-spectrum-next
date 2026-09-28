@@ -8,6 +8,9 @@ on:
       - 'src/app/wz_sokol_main.c'
       - 'src/app/wz_telnet_alias_response.*'
       - 'ci/test/model-switch/**'
+      - 'ci/runner-bootstrap/**'
+      - 'roms/48.rom'
+      - 'test-media/DIZZY4K.TAP'
       - 'test-drivers/model-switch.driver.json'
       - '.github/workflows/model-switch-regression.yml'
   workflow_dispatch:
@@ -24,16 +27,57 @@ jobs:
         include:
           - id: windows-x64
             runner: windows-2025
+            bootstrap: windows-x86_64
+            label: Windows Intel
           - id: windows-arm64
             runner: windows-11-arm
+            bootstrap: windows-arm64
+            label: Windows ARM64
           - id: macos-x64
             runner: macos-15-intel
+            bootstrap: macos-x86_64
+            label: macOS Intel
           - id: macos-arm64
             runner: macos-15
+            bootstrap: macos-arm64
+            label: macOS ARM64
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Check out source
         uses: actions/checkout@v5
+        with:
+          lfs: true
+
+      - name: Restore bootstrap cache
+        id: bootstrap
+        uses: actions/cache@v4
+        with:
+          path: ci/.runner-bootstrap-cache
+          key: runner-bootstrap-${{ matrix.bootstrap }}-${{ hashFiles('ci/runner-bootstrap/manifests/**', 'ci/runner-bootstrap/**') }}
+
+      - name: Bootstrap Windows runner
+        if: runner.os == 'Windows' && steps.bootstrap.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: .\ci\runner-bootstrap\bootstrap-windows.ps1 ci\runner-bootstrap\manifests\${{ matrix.bootstrap }}.txt
+
+      - name: Bootstrap Unix runner
+        if: runner.os != 'Windows' && steps.bootstrap.outputs.cache-hit != 'true'
+        shell: bash
+        run: bash ci/runner-bootstrap/bootstrap-unix.sh ci/runner-bootstrap/manifests/${{ matrix.bootstrap }}.txt
+
+      - name: Record bootstrap identity
+        if: steps.bootstrap.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          mkdir -p ci/.runner-bootstrap-cache
+          {
+            echo "runner_label=${{ matrix.runner }}"
+            echo "runner_name=${RUNNER_NAME}"
+            echo "runner_arch=${RUNNER_ARCH}"
+            echo "image=${ImageOS:-unknown}"
+            echo "manifest=ci/runner-bootstrap/manifests/${{ matrix.bootstrap }}.txt"
+            echo "recorded_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } > ci/.runner-bootstrap-cache/manifest.txt
 
       - name: Configure regression executables
         run: cmake -S ci/test/model-switch -B dist/model-switch -DCMAKE_BUILD_TYPE=Release
@@ -55,21 +99,45 @@ jobs:
           "$model" | tee dist/model-switch/results/run.log
           "$alias" | tee -a dist/model-switch/results/run.log
 
+      - name: Configure and build the desktop host
+        shell: bash
+        run: |
+          cmake -S src/cmake -B dist/model-switch/product -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release -DWZSN_BUILD_SOKOL_HOST=ON
+          cmake --build dist/model-switch/product --clean-first --parallel 2
+
+      - name: Run live Telnet model switch regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          binary=dist/model-switch/product/Warajevo-ZX-Spectrum-Next
+          python_bin=python3
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            binary="${binary}.exe"
+            python_bin=python
+          fi
+          "$python_bin" ci/test/model-switch/telnet-model-switch.py \
+            "$binary" test-media/DIZZY4K.TAP roms/48.rom \
+            dist/model-switch/results/live | tee -a dist/model-switch/results/run.log
+
       - name: Save runner metadata
         shell: bash
         env:
           MATRIX_ID: ${{ matrix.id }}
+          MATRIX_LABEL: ${{ matrix.label }}
         run: |
           python_bin=python3
           if ! command -v "$python_bin" >/dev/null 2>&1; then python_bin=python; fi
           result_dir="dist/model-switch/results/$MATRIX_ID"
           mkdir -p "$result_dir"
           cp dist/model-switch/results/run.log "$result_dir/run.log"
+          cp -R dist/model-switch/results/live "$result_dir/live"
           "$python_bin" - <<'PY'
           import json, os
           from pathlib import Path
           record = {
               "id": os.environ["MATRIX_ID"],
+              "runnerLabel": os.environ["MATRIX_LABEL"],
               "os": os.environ["RUNNER_OS"],
               "architecture": os.environ["RUNNER_ARCH"],
               "runnerName": os.environ.get("ImageOS", "hosted runner"),
