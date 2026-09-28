@@ -14,15 +14,15 @@
     },
     {
       "path": "ci/test/audio-delivery/write-proof.py",
-      "sha256": "26a7ed4ed5551d551c8471a09fc560e9bf1c9ecb036968b8c7801fb249d2a6fd"
+      "sha256": "9ec2d7eba4f6eda1652e88f25ef7a7a66e61557b866a5773b4b22e8094cb222a"
     },
     {
       "path": "src/app/wz_host_audio_push.c",
-      "sha256": "063757f4ad223bbc7de3190e8d1bc321b8c295ecc1da2d0d620a27d3725d1f23"
+      "sha256": "1a3a87bc6c19474d0f24883d6848f9de35ce460535f4a56edebb8231966e6f71"
     },
     {
       "path": "src/app/wz_host_audio_push.h",
-      "sha256": "5e864911c75396fbd9247d14e48cf8743656807fbb7174b6522d14527d130988"
+      "sha256": "78c2932e1a8a4569f386da3627e4fabd51cc51b7532c6243d9c21638a73f629d"
     },
     {
       "path": "src/app/wz_host_audio_policy.c",
@@ -38,31 +38,31 @@
     },
     {
       "path": "src/app/wz_command_registry.c",
-      "sha256": "707bd4c4c9d0e12db0135ef857d3c7de8a5d6e7d717d790d09f3080bb90c9607"
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
     },
     {
       "path": "src/app/wz_host_thread.c",
-      "sha256": "bd46ced2af90907b222a43fcaef3bfe8943b6ca32fd4831fbaca82483ec264c5"
+      "sha256": "6f8cbe0e171adfe7b9f42d9517e31d72f7917048339ff8941d5bccadfa305151"
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "3f94892539a4cd7e964396cac03bc5e43d726ba8a3e7ac4ce98e3e37eaff274f"
+      "sha256": "298943f37fe7df18bba9d16bdc5bbe64168ae4ca27f628f58ce30803735d6131"
     },
     {
       "path": "src/app/wz_ui_layout.h",
-      "sha256": "fd74f27d30d4a67ca815b9ccc71214bc8150adaa527bfa7bbbc0742ecad8e949"
+      "sha256": "cfe6cf9135dd1ef6771a1513e9dc3f72cd42636f4f005e576017aa745915d2d9"
     },
     {
       "path": "src/app/wz_sokol_audio.c",
-      "sha256": "43cf233b84cf42c75db6df98d728b24c777bc0cd7609dc02e556546ff19646e4"
+      "sha256": "104b26e4f27289dc4afbc58f92be8b8bbceb2cc52c7648c075b1c33aa40cbefc"
     },
     {
       "path": "src/app/wz_sokol_audio.h",
-      "sha256": "868841f7a1cff55649b5f7ca9e52db5b8612803563579372a01fb005017e80a2"
+      "sha256": "cec736aa3183a6b35db788456fa44273c4b82bd8cd13e19fa14f9e9944c61b68"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "67a398db49e8530c9c941b60d93a89d8b3e45c6b7f756a526a788f9dfa0531eb"
+      "sha256": "3e7d1019cc236fcedf47a2f76f71c4f1d4bccce9ddeeaf035a662fcfab390971"
     },
     {
       "path": "src/app/wz_speed_policy.c",
@@ -85,7 +85,7 @@
       "path": "src/app/wz_telnet_status.h"
     },
     {
-      "sha256": "11daa64ec21298ee94012c1246b17dc40ae6b2d88639c06a4f13361a314b55d0",
+      "sha256": "3f8aa903bf5e3628730f483200d5abdbf07a6f55c00213ff382c4a1171d7ecad",
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md"
     }
   ],

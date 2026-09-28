@@ -22,7 +22,7 @@
 int main(void)
 {
     wz_machine_t machine;
-    wz_tape_segment_t tape_segments[] = {{32u, 1u}, {64u, 0u}};
+    wz_tape_segment_t tape_segments[] = {{32u, 1u, 0u}, {64u, 0u, 0u}};
     wz_byte_t image_bytes[WZ_MDR_MIN_SECTORS * WZ_MDR_SECTOR_SIZE];
     wz_mdr_image_t image;
     wz_trace_sink_t trace;

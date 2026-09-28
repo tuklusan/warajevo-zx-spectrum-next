@@ -41,7 +41,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "cfc90743b387ad47e4032b16ab2cb575a6ca5521a88fc78e25d9c5f59b9800e8"
+      "sha256": "3e7d1019cc236fcedf47a2f76f71c4f1d4bccce9ddeeaf035a662fcfab390971"
     },
     {
       "path": "src/core/wz_machine_profile.c",
@@ -121,7 +121,7 @@
     },
     {
       "path": "src/core/wz_tape.c",
-      "sha256": "9691238f861d9c649690a2c3f94e7d9be52118c16d3aa6b3ae9de0ffa6a2fa96"
+      "sha256": "5792fabbfc3c6956444c3532097cb0febb1d3497e988fd2a62c9e677ea8aeac3"
     },
     {
       "path": "src/core/wz_state.c",

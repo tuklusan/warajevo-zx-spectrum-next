@@ -1,10 +1,9 @@
-<!--
-Warajevo ZX Spectrum Next
-Copyright (c) 2026 Supratim Sanyal, SANYALnet Labs, for new original project material.
-New original material is licensed under GNU GPL v2 or later (GPL-2.0-or-later), as stated in LICENSE.txt.
-Upstream Warajevo and third-party material retain their applicable copyrights and licenses.
-See LICENSE.txt and NOTICE.md for complete terms and provenance.
--->
+<!-- Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+This file is governed by the SANYALnet Labs Non-Commercial License in the
+root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
+for AI/ML model training are prohibited unless separately authorized.
+Attribution is required: "Based on original work by Supratim Sanyal of
+SANYALnet Labs." See LICENSE for full terms. -->
 
 # Warajevo ZX Spectrum Next - Core and System Architecture
 
@@ -1778,6 +1777,14 @@ program/data loaded by the emulated Spectrum itself
 
 Normal loading is the authenticity baseline and must not depend on a trap or
 ROM-loader interception.
+
+For standard TAP media, the virtual cassette transport pauses after the timed
+pause following each data block. The header and its associated data block play
+as one continuous ROM-visible stream; the completed data block leaves the
+transport stopped at the next block. A later load operation resumes from that
+position. The final data block stops at end-of-tape. This models the operator
+stopping a physical cassette after a successful block load without changing
+any pulse timing or bypassing the Spectrum ROM.
 
 This applies to ordinary TAP/TZX-style logical media after conversion to the
 appropriate timed pulse/edge representation, and to WAV/audio tape media after

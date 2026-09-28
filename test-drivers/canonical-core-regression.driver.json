@@ -19,7 +19,7 @@
     },
     {
       "path": "ci/test/core-regression/reset-retention-regression.c",
-      "sha256": "ff0bcc833315b337093ddc3221c38beece0041e59fdab7c92bbc40a6bff1551d"
+      "sha256": "8d5d9a1e423c729e10d46464026096a0aaadc8974a3adc00b06d2171b67b6583"
     }
   ]
 }

@@ -435,6 +435,7 @@ int main(void)
     for (size_t index = 0u; index < WZ_TAPE_SEGMENT_COUNT; ++index) {
         tape.segments[index].duration = 8u + (wz_master_tick_t)(index % 57u);
         tape.segments[index].ear_level = (wz_byte_t)((index / 3u) & 1u);
+        tape.segments[index].motor_stop_after = 0u;
     }
     if (wz_tape_mount(&tape.tape, tape.segments, WZ_TAPE_SEGMENT_COUNT) !=
         WZ_RESULT_OK) {

@@ -1,0 +1,74 @@
+{
+  "testId": "tape-keyboard-load",
+  "command": "cmake -S ci/test/tape-keyboard-load -B dist/tape-keyboard-load -G Ninja -DCMAKE_BUILD_TYPE=Release; cmake --build dist/tape-keyboard-load --target wz_tape_keyboard_load --parallel 2; dist/tape-keyboard-load/wz_tape_keyboard_load roms/48.rom test-media/DIZZY4K.TAP",
+  "requiredCases": 1,
+  "runnerMatrix": [
+    "ubuntu-24.04"
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/tape-keyboard-load.yml",
+      "sha256": "a82d2d61bb65815ff797496d9356194552765d62f9db5dd6a04f2f948331f7ea"
+    },
+    {
+      "path": "ci/test/tape-keyboard-load/CMakeLists.txt",
+      "sha256": "e188858dcabfbef6b28f2b1b04b42372931192926e52e8099f0d08aac7ee563e"
+    },
+    {
+      "path": "ci/test/tape-keyboard-load/tape-keyboard-load.c",
+      "sha256": "7ce5e1ec7b07b8f65ba0221df99da61c22355d91bbe0e5efe9aaad91aa785ab9"
+    },
+    {
+      "path": "ci/test/tape-keyboard-load/write-proof.py",
+      "sha256": "d96d7c7b69bda79a054af6a1a4a749c3782c7d4404fbbb8b8a3595a689cb7c72"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "c6893ae4fe7a4fbcc5cb287238e5a00db3723bd90c52fdcf1fec5b391ff0547e"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "84d9e0b84a02993917b0e74cb9ba0d71158f45223a707d801ce927029ab2b0aa"
+    },
+    {
+      "path": "src/core/wz_keyboard_matrix.c",
+      "sha256": "68deeb821563f28e5af3e0872765fedd5ae7e24a0491c011c24ebb9d4abbd575"
+    },
+    {
+      "path": "src/core/wz_keyboard_matrix.h",
+      "sha256": "85282af5969a6212c528cb92edafd7d3fbf71375bbb4be1bad5cd9622e1cf976"
+    },
+    {
+      "path": "src/core/wz_machine_profile.c",
+      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09"
+    },
+    {
+      "path": "src/core/wz_machine_profile.h",
+      "sha256": "099be5f41f428466e5da622452abec6e0daf6402abcf4ab2e7d8c2df47457cc4"
+    },
+    {
+      "path": "src/core/wz_runner.c",
+      "sha256": "6225a610d2b752d0edeeb073961bb84ba5c54ae446e58fe08569e68f33cd654d"
+    },
+    {
+      "path": "src/core/wz_runner.h",
+      "sha256": "b34e16b1c9ef80588bc6a563ce2b77099bdceb899ace0e5254a0a9669b5f6e51"
+    },
+    {
+      "path": "src/core/wz_tape.c",
+      "sha256": "5792fabbfc3c6956444c3532097cb0febb1d3497e988fd2a62c9e677ea8aeac3"
+    },
+    {
+      "path": "src/core/wz_tape.h",
+      "sha256": "d483f3f99bcfa26590bf259114193d2314dd2af2720316bf66021462f5c31fd6"
+    },
+    {
+      "path": "roms/48.rom",
+      "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"
+    },
+    {
+      "path": "test-media/DIZZY4K.TAP",
+      "sha256": "9bd60921359b2e2e39a35501b718319c7702a6f0cfd7493570b589300f4f2a27"
+    }
+  ]
+}

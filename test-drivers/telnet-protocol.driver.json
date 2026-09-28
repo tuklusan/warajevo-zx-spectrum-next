@@ -27,7 +27,7 @@
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.c",
-      "sha256": "cd94bf55c10f62bb706cbdeacd04f76edb649a6d677416dfdd2960316e4500d8"
+      "sha256": "f74a7067a930222a6036ddb1c80d3fd76f947fa85e7ff8769c6db0cef40c92d7"
     },
     {
       "path": "src/app/wz_telnet_negotiation.c",
@@ -35,7 +35,7 @@
     },
     {
       "path": "src/app/wz_telnet_status.c",
-      "sha256": "96ef595b5ddf6c887d403ffd283955ffda471e40adf1dd9cde32aa7a44824bac"
+      "sha256": "98e77532404a726162a1bd8b075df7934b66a231f085e901094a1aa2cee2f04f"
     }
   ]
 }

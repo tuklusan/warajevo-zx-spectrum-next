@@ -51,7 +51,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "cfc90743b387ad47e4032b16ab2cb575a6ca5521a88fc78e25d9c5f59b9800e8"
+      "sha256": "3e7d1019cc236fcedf47a2f76f71c4f1d4bccce9ddeeaf035a662fcfab390971"
     },
     {
       "path": "src/app/wz_telnet_alias_response.c",
@@ -63,11 +63,11 @@
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.c",
-      "sha256": "cd94bf55c10f62bb706cbdeacd04f76edb649a6d677416dfdd2960316e4500d8"
+      "sha256": "f74a7067a930222a6036ddb1c80d3fd76f947fa85e7ff8769c6db0cef40c92d7"
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.h",
-      "sha256": "d6e7553f89c46a15706508e474beacf8b3cce6ea9ed6be95599ec84bb446eed1"
+      "sha256": "1704f552714cf2f0183672bf8486dd5ac001f2c2223b371a704e71fc723e0656"
     },
     {
       "path": "src/app/wz_telnet_status.c",
@@ -159,7 +159,7 @@
     },
     {
       "path": "src/core/wz_tape.c",
-      "sha256": "9691238f861d9c649690a2c3f94e7d9be52118c16d3aa6b3ae9de0ffa6a2fa96"
+      "sha256": "5792fabbfc3c6956444c3532097cb0febb1d3497e988fd2a62c9e677ea8aeac3"
     },
     {
       "path": "src/core/wz_trace.c",

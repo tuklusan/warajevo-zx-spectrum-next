@@ -1,0 +1,61 @@
+name: DIZZY4K core tape keyboard load regression
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/core/wz_machine.c'
+      - 'src/core/wz_machine.h'
+      - 'src/core/wz_keyboard_matrix.c'
+      - 'src/core/wz_runner.c'
+      - 'src/core/wz_tape.c'
+      - 'src/core/wz_tape.h'
+      - 'ci/test/tape-keyboard-load/**'
+      - 'roms/48.rom'
+      - 'test-media/DIZZY4K.TAP'
+      - 'test-drivers/tape-keyboard-load.driver.json'
+      - '.github/workflows/tape-keyboard-load.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact main commit
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          lfs: true
+
+      - name: Configure regression target
+        run: cmake -S ci/test/tape-keyboard-load -B dist/tape-keyboard-load -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build core regression executable
+        run: cmake --build dist/tape-keyboard-load --target wz_tape_keyboard_load --parallel 2
+
+      - name: Run normal ROM tape loader
+        run: |
+          set -o pipefail
+          dist/tape-keyboard-load/wz_tape_keyboard_load roms/48.rom test-media/DIZZY4K.TAP 2>&1 | tee dist/tape-keyboard-load/run.log
+
+      - name: Write pinned hosted proof
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: |
+          python3 ci/test/tape-keyboard-load/write-proof.py \
+            --project-commit "$GITHUB_SHA" \
+            --run-id "$GITHUB_RUN_ID" \
+            --run-log dist/tape-keyboard-load/run.log \
+            --proof-out dist/tape-keyboard-load/tape-keyboard-load.json
+
+      - name: Upload pinned proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: tape-keyboard-load-proof-${{ github.sha }}
+          path: dist/tape-keyboard-load/tape-keyboard-load.json
+          if-no-files-found: error

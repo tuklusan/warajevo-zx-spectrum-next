@@ -872,6 +872,7 @@ static bool fingerprint_tape(fingerprint_t* output)
     for (size_t index = 0u; index < TAPE_SEGMENTS; ++index) {
         segments[index].duration = 8u + (wz_master_tick_t)(index % 57u);
         segments[index].ear_level = (wz_byte_t)((index / 3u) & 1u);
+        segments[index].motor_stop_after = 0u;
     }
     if (wz_tape_mount(&tape, segments, TAPE_SEGMENTS) != WZ_RESULT_OK ||
         wz_tape_state_init(&state, &tape) != WZ_RESULT_OK ||

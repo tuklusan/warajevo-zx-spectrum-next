@@ -23,7 +23,7 @@ int main(void)
 {
     wz_machine_t machine;
     wz_machine_profile_t invalid_profile;
-    wz_tape_segment_t segment = {1000u, 1u};
+    wz_tape_segment_t segment = {1000u, 1u, 0u};
     wz_byte_t interface1_rom[WZ_INTERFACE1_ROM_SIZE];
 
     memset(&machine, 0, sizeof(machine));

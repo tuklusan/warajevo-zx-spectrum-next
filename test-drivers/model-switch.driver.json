@@ -12,7 +12,7 @@
     },
     {
       "path": "ci/test/model-switch/model-switch-regression.c",
-      "sha256": "08e9a2f4ab6b34c16828cc8141f2e02bd05318e671e432b3dd2a284a9c5c6e18"
+      "sha256": "083ecc47dc25d2e463cd83f7f9e78c80f7883940292478a7d16b097124b384f6"
     },
     {
       "path": "ci/test/model-switch/telnet-model-alias-regression.c",
@@ -24,7 +24,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "cfc90743b387ad47e4032b16ab2cb575a6ca5521a88fc78e25d9c5f59b9800e8"
+      "sha256": "3e7d1019cc236fcedf47a2f76f71c4f1d4bccce9ddeeaf035a662fcfab390971"
     },
     {
       "path": "src/app/wz_telnet_alias_response.c",
@@ -36,7 +36,7 @@
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.c",
-      "sha256": "cd94bf55c10f62bb706cbdeacd04f76edb649a6d677416dfdd2960316e4500d8"
+      "sha256": "f74a7067a930222a6036ddb1c80d3fd76f947fa85e7ff8769c6db0cef40c92d7"
     },
     {
       "path": "src/core/wz_machine.c",

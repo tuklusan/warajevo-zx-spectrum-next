@@ -131,6 +131,7 @@ static wz_result_t wz_tape_tap_append(wz_tape_segment_t* segments,
     }
     segments[*index].duration = duration;
     segments[*index].ear_level = level;
+    segments[*index].motor_stop_after = 0u;
     *index += 1u;
     return WZ_RESULT_OK;
 }
@@ -208,6 +209,9 @@ wz_result_t wz_tape_parse_standard_tap(const wz_byte_t* data,
                                      master_ticks_per_tstate, segments,
                                      capacity, &index) != WZ_RESULT_OK) {
             return WZ_RESULT_PARSE_ERROR;
+        }
+        if (data[offset] == 0xffu) {
+            segments[index - 1u].motor_stop_after = 1u;
         }
         offset += block_length;
     }
@@ -772,6 +776,7 @@ static wz_result_t wz_tzx_append_segment(wz_tape_segment_t* segments,
     }
     segments[*index].duration = duration;
     segments[*index].ear_level = level;
+    segments[*index].motor_stop_after = 0u;
     ++*index;
     return WZ_RESULT_OK;
 }
@@ -1783,7 +1788,8 @@ wz_result_t wz_tape_validate(const wz_tape_segment_t* segments,
         return WZ_RESULT_INVALID_ARGUMENT;
     }
     for (index = 0u; index < segment_count; ++index) {
-        if (segments[index].duration == 0u || segments[index].ear_level > 1u) {
+        if (segments[index].duration == 0u || segments[index].ear_level > 1u ||
+            segments[index].motor_stop_after > 1u) {
             return WZ_RESULT_INVALID_ARGUMENT;
         }
     }
@@ -1830,7 +1836,7 @@ wz_result_t wz_tape_state_advance(wz_tape_state_t* state,
     if (!state->motor_on || state->at_end || remaining == 0u) {
         return WZ_RESULT_OK;
     }
-    while (remaining != 0u && !state->at_end) {
+    while (remaining != 0u && !state->at_end && state->motor_on) {
         const wz_tape_segment_t* segment =
             &state->tape->segments[state->segment_index];
         wz_master_tick_t available = segment->duration - state->segment_elapsed;
@@ -1841,6 +1847,14 @@ wz_result_t wz_tape_state_advance(wz_tape_state_t* state,
             continue;
         }
         remaining -= available;
+        if (available != 0u && segment->motor_stop_after != 0u) {
+            state->segment_elapsed = segment->duration;
+            if (state->segment_index + 1u >= state->tape->segment_count) {
+                state->at_end = true;
+            }
+            state->motor_on = false;
+            break;
+        }
         ++state->segment_index;
         state->segment_elapsed = 0u;
         if (state->segment_index >= state->tape->segment_count) {
@@ -2036,6 +2050,7 @@ wz_result_t wz_tape_parse_wav_pcm(const wz_byte_t* data, size_t length,
             if (tick > segment_start) {
                 segments[output_index].duration = tick - segment_start;
                 segments[output_index].ear_level = (wz_byte_t)level;
+                segments[output_index].motor_stop_after = 0u;
                 ++output_index;
             }
             level = next;
@@ -2043,6 +2058,7 @@ wz_result_t wz_tape_parse_wav_pcm(const wz_byte_t* data, size_t length,
         } else if (tick > segment_start) {
             segments[output_index].duration = tick - segment_start;
             segments[output_index].ear_level = (wz_byte_t)level;
+            segments[output_index].motor_stop_after = 0u;
             ++output_index;
         }
     }

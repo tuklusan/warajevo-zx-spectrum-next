@@ -901,6 +901,10 @@ flags/metadata where meaningful
 selection state
 ```
 
+The visible transport state distinguishes empty, mounted/stopped, and playing
+media. A standard TAP block boundary pause leaves the transport stopped at the
+next block; beginning the next ROM load resumes there rather than rewinding.
+
 ### 12.2 Required block operations
 
 The manager owns the modern equivalents of classic Warajevo's block functions:
