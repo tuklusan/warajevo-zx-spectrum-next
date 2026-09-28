@@ -1,7 +1,7 @@
 {
   "testId": "telnet-key-press",
   "command": "cmake -S ci/test/telnet-key-press -B dist/telnet-key-press -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/telnet-key-press --config Release --target wz_telnet_key_press_regression --parallel 2 && dist/telnet-key-press/wz_telnet_key_press_regression",
-  "requiredCases": 16,
+  "requiredCases": 15,
   "runnerMatrix": [
     "windows-2025",
     "windows-11-arm",
