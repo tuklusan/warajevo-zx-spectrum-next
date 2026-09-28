@@ -377,9 +377,14 @@ static bool screenshot_temp_directory(char* output, size_t capacity)
 static bool screenshot_path(char* output, size_t capacity, unsigned suffix)
 {
     char directory[WZ_SCREENSHOT_PATH_CAPACITY];
-    time_t now = time(NULL);
+    struct timespec timestamp;
+    time_t now;
     struct tm local_now;
+    unsigned milliseconds;
     int written;
+    if (timespec_get(&timestamp, TIME_UTC) != TIME_UTC) return false;
+    now = timestamp.tv_sec;
+    milliseconds = (unsigned)(timestamp.tv_nsec / 1000000L);
 #if defined(_WIN32)
     if (!screenshot_temp_directory(directory, sizeof(directory)) ||
         localtime_s(&local_now, &now) != 0) return false;
@@ -387,15 +392,21 @@ static bool screenshot_path(char* output, size_t capacity, unsigned suffix)
     if (!screenshot_temp_directory(directory, sizeof(directory))) return false;
     if (localtime_r(&now, &local_now) == NULL) return false;
 #endif
-    written = snprintf(output, capacity, "%s%sZX-Screen-%04d%02d%02d%02d%02d%02d000%s.png",
-        directory, directory[strlen(directory) - 1u] == '/' ||
-        directory[strlen(directory) - 1u] == '\\' ? "" : "/",
-        local_now.tm_year + 1900, local_now.tm_mon + 1, local_now.tm_mday,
-        local_now.tm_hour, local_now.tm_min, local_now.tm_sec,
-        suffix == 0u ? "" : "-");
-    if (suffix != 0u && written >= 0 && (size_t)written < capacity) {
-        written = snprintf(output + written, capacity - (size_t)written,
-                           "%u", suffix);
+    if (suffix == 0u) {
+        written = snprintf(output, capacity,
+            "%s%sZX-Screen-%04d%02d%02d%02d%02d%02d%03u.png",
+            directory, directory[strlen(directory) - 1u] == '/' ||
+            directory[strlen(directory) - 1u] == '\\' ? "" : "/",
+            local_now.tm_year + 1900, local_now.tm_mon + 1, local_now.tm_mday,
+            local_now.tm_hour, local_now.tm_min, local_now.tm_sec, milliseconds);
+    } else {
+        written = snprintf(output, capacity,
+            "%s%sZX-Screen-%04d%02d%02d%02d%02d%02d%03u-%u.png",
+            directory, directory[strlen(directory) - 1u] == '/' ||
+            directory[strlen(directory) - 1u] == '\\' ? "" : "/",
+            local_now.tm_year + 1900, local_now.tm_mon + 1, local_now.tm_mday,
+            local_now.tm_hour, local_now.tm_min, local_now.tm_sec, milliseconds,
+            suffix);
     }
     return written >= 0 && (size_t)written < capacity;
 }

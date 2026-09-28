@@ -63,7 +63,7 @@
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.c",
-      "sha256": "750f675b0a62a7abfcba792c75470d8a6fb82fda2c549bf487a1e27293de9c7d"
+      "sha256": "bd0bb370a0254a2811e05863a6ac83e38ee0e7035b86b7d6ba7eab13be9f9847"
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.h",
