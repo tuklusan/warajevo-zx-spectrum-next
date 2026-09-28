@@ -464,6 +464,14 @@ add_executable(
 target_link_libraries(wz_file_open_run_tests PRIVATE wz_warnings)
 target_include_directories(wz_file_open_run_tests PRIVATE "${WZSN_SOURCE_ROOT}")
 add_test(NAME wz_file_open_run_tests COMMAND wz_file_open_run_tests)
+add_executable(
+    wz_host_pacing_tests
+    ${WZSN_REPO_ROOT}/ci/test/host-pacing/pacing-regression.c
+    ${WZSN_SOURCE_ROOT}/app/wz_host_pacing.c
+    ${WZSN_SOURCE_ROOT}/app/wz_speed_policy.c)
+target_link_libraries(wz_host_pacing_tests PRIVATE wz_warnings)
+target_include_directories(wz_host_pacing_tests PRIVATE "${WZSN_SOURCE_ROOT}")
+add_test(NAME wz_host_pacing_tests COMMAND wz_host_pacing_tests)
 
 if(WZSN_FUSE_Z80_TEST_INPUT AND WZSN_FUSE_Z80_TEST_EXPECTED)
     enable_testing()

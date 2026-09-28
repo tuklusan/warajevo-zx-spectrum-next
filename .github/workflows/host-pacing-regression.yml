@@ -1,0 +1,56 @@
+name: Host pacing regression
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/app/wz_host_pacing.*'
+      - 'src/app/wz_speed_policy.*'
+      - 'src/cmake/CMakeLists.txt'
+      - 'ci/test/host-pacing/**'
+      - 'test-drivers/host-pacing.driver.json'
+      - '.github/workflows/host-pacing-regression.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  host-pacing:
+    name: Host pacing ratio and continuity regression
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact main revision
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Configure product and regression target
+        run: cmake -S src/cmake -B dist/host-pacing -DCMAKE_BUILD_TYPE=Debug
+
+      - name: Build host pacing regression
+        run: cmake --build dist/host-pacing --config Debug --target wz_host_pacing_tests --parallel 2
+
+      - name: Execute host pacing regression
+        run: ctest --test-dir dist/host-pacing --output-on-failure --verbose -R '^wz_host_pacing_tests$'
+
+      - name: Write pinned proof
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          RUNNER_OS: ${{ runner.os }}
+          RUNNER_ARCH: ${{ runner.arch }}
+        run: |
+          python3 ci/test/host-pacing/write-proof.py \
+            --commit "$GITHUB_SHA" \
+            --run-id "$GITHUB_RUN_ID" \
+            --runner "$RUNNER_OS/$RUNNER_ARCH" \
+            --proof dist/host-pacing/host-pacing.json
+
+      - name: Upload pinned proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: host-pacing-${{ github.sha }}
+          path: dist/host-pacing/host-pacing.json
+          if-no-files-found: error
