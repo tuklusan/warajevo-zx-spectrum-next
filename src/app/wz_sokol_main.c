@@ -96,6 +96,10 @@ typedef struct {
     wz_headless_runner_t runner;
     wz_input_arbiter_t input_arbiter;
     wz_input_focus_controller_t input_focus;
+    bool local_left_shift_down;
+    bool local_right_shift_down;
+    bool local_left_control_down;
+    bool local_right_control_down;
     wz_control_port_owner_t control_port;
     wz_telnet_client_gate_t telnet_client;
     wz_command_registry_t command_registry;
@@ -1027,8 +1031,10 @@ static void wz_host_ui_draw_status(struct nk_context* context,
         model,
         wz_ui_layout_speed_label((size_t)wz_host_session.speed),
         state->paused ? "Paused" : "Running",
-        wz_input_focus_forwards_viewport_keys(&wz_host_session.input_focus) ?
-            "Spectrum" : "UI",
+        !wz_input_focus_is_focused(&wz_host_session.input_focus) ?
+            "Inactive" :
+            wz_input_focus_forwards_viewport_keys(&wz_host_session.input_focus) ?
+                "Spectrum" : "UI",
         state->audio_muted ? "Muted" : "On",
         state->tape_mounted ? "Mounted" : "Empty",
         state->microdrive1_mounted ? "Mounted" : "Empty",
@@ -1361,17 +1367,50 @@ static bool wz_host_keycode_to_spectrum_key(sapp_keycode key_code,
     case SAPP_KEYCODE_SPACE:
         *physical_key = WZ_KEY_SPACE;
         return true;
-    case SAPP_KEYCODE_LEFT_SHIFT:
-    case SAPP_KEYCODE_RIGHT_SHIFT:
-        *physical_key = WZ_KEY_SHIFT;
-        return true;
-    case SAPP_KEYCODE_LEFT_CONTROL:
-    case SAPP_KEYCODE_RIGHT_CONTROL:
-        *physical_key = WZ_KEY_SYMBOL_SHIFT;
-        return true;
     default:
         return false;
     }
+}
+
+static bool wz_host_set_local_key(sapp_keycode key_code, bool pressed)
+{
+    size_t physical_key;
+    if (key_code == SAPP_KEYCODE_LEFT_SHIFT) {
+        wz_host_session.local_left_shift_down = pressed;
+        physical_key = WZ_KEY_SHIFT;
+        pressed = wz_host_session.local_left_shift_down ||
+                  wz_host_session.local_right_shift_down;
+    } else if (key_code == SAPP_KEYCODE_RIGHT_SHIFT) {
+        wz_host_session.local_right_shift_down = pressed;
+        physical_key = WZ_KEY_SHIFT;
+        pressed = wz_host_session.local_left_shift_down ||
+                  wz_host_session.local_right_shift_down;
+    } else if (key_code == SAPP_KEYCODE_LEFT_CONTROL) {
+        wz_host_session.local_left_control_down = pressed;
+        physical_key = WZ_KEY_SYMBOL_SHIFT;
+        pressed = wz_host_session.local_left_control_down ||
+                  wz_host_session.local_right_control_down;
+    } else if (key_code == SAPP_KEYCODE_RIGHT_CONTROL) {
+        wz_host_session.local_right_control_down = pressed;
+        physical_key = WZ_KEY_SYMBOL_SHIFT;
+        pressed = wz_host_session.local_left_control_down ||
+                  wz_host_session.local_right_control_down;
+    } else if (!wz_host_keycode_to_spectrum_key(key_code, &physical_key)) {
+        return false;
+    }
+    (void)wz_input_arbiter_set(&wz_host_session.input_arbiter,
+        WZ_INPUT_SOURCE_LOCAL, physical_key, pressed);
+    return true;
+}
+
+static void wz_host_release_local_keys(void)
+{
+    wz_host_session.local_left_shift_down = false;
+    wz_host_session.local_right_shift_down = false;
+    wz_host_session.local_left_control_down = false;
+    wz_host_session.local_right_control_down = false;
+    (void)wz_input_arbiter_release_source(&wz_host_session.input_arbiter,
+                                         WZ_INPUT_SOURCE_LOCAL);
 }
 
 static void wz_host_input_focus_from_mouse(const sapp_event* event)
@@ -1403,6 +1442,7 @@ static void wz_host_input_focus_from_mouse(const sapp_event* event)
             ui_target = true;
         }
     }
+    if (ui_target) wz_host_release_local_keys();
     (void)wz_input_focus_set_target(&wz_host_session.input_focus,
         ui_target ? WZ_INPUT_FOCUS_TEXT_CONTROL : WZ_INPUT_FOCUS_VIEWPORT);
 }
@@ -1494,7 +1534,6 @@ static void wz_host_frame(void)
 
 static void wz_host_event(const sapp_event* event)
 {
-    size_t physical_key;
     if (event == NULL) return;
     if (wz_host_session.ui_toolkit_initialized) {
         (void)snk_handle_event(event);
@@ -1504,6 +1543,7 @@ static void wz_host_event(const sapp_event* event)
         return;
     }
     if (event->type == SAPP_EVENTTYPE_UNFOCUSED) {
+        wz_host_release_local_keys();
         (void)wz_input_focus_lost(&wz_host_session.input_focus);
         return;
     }
@@ -1512,12 +1552,10 @@ static void wz_host_event(const sapp_event* event)
         return;
     }
     if ((event->type == SAPP_EVENTTYPE_KEY_DOWN ||
-         event->type == SAPP_EVENTTYPE_KEY_UP) &&
+        event->type == SAPP_EVENTTYPE_KEY_UP) &&
         wz_input_focus_forwards_viewport_keys(&wz_host_session.input_focus) &&
-        wz_host_keycode_to_spectrum_key(event->key_code, &physical_key)) {
-        (void)wz_input_arbiter_set(&wz_host_session.input_arbiter,
-            WZ_INPUT_SOURCE_LOCAL, physical_key,
-            event->type == SAPP_EVENTTYPE_KEY_DOWN);
+        wz_host_set_local_key(event->key_code,
+            event->type == SAPP_EVENTTYPE_KEY_DOWN)) {
         return;
     }
     if (event->type == SAPP_EVENTTYPE_KEY_DOWN &&
