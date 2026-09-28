@@ -1,0 +1,78 @@
+{
+  "testId": "timing-trace-file-contract",
+  "status": "pass",
+  "commit": "1cc9b774924eee72dea90d43b5172e8297542384",
+  "runId": 36498703560,
+  "runner": "Windows x64, Windows ARM64, macOS x64, and macOS ARM64 hosted runners",
+  "timestamp": "2026-09-28T23:35:17+00:00",
+  "caseCount": 28,
+  "observedOutput": "PASS timing trace isolation, fixed size, sparse wrap, freeze, and crash-tail recovery",
+  "runnerResults": [
+    {
+      "runner": "GitHub Actions 1000072997/macOS/ARM64",
+      "status": "pass",
+      "caseCount": 7,
+      "timestamp": "2026-09-28T23:34:33+00:00"
+    },
+    {
+      "runner": "GitHub Actions 1000073003/macOS/X64",
+      "status": "pass",
+      "caseCount": 7,
+      "timestamp": "2026-09-28T23:34:46+00:00"
+    },
+    {
+      "runner": "GitHub Actions 1000072994/Windows/ARM64",
+      "status": "pass",
+      "caseCount": 7,
+      "timestamp": "2026-09-28T23:35:17+00:00"
+    },
+    {
+      "runner": "GitHub Actions 1000073000/Windows/X64",
+      "status": "pass",
+      "caseCount": 7,
+      "timestamp": "2026-09-28T23:35:04+00:00"
+    }
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/timing-trace-contract.yml",
+      "sha256": "6b89132933922a158ca8fad9c059d024b3ad2ab7c60fb4b88c800785dd450cd2"
+    },
+    {
+      "path": "ci/test/timing-trace-contract/CMakeLists.txt",
+      "sha256": "cc1f362258ef7c798a125217a0d549ca16fd14367b1314b6ae03b659aa51e404"
+    },
+    {
+      "path": "ci/test/timing-trace-contract/README.md",
+      "sha256": "f9b72af4686bf8404c4f8497fad5c2ee3bd54f85733845d12abd8a43b8f34e37"
+    },
+    {
+      "path": "ci/test/timing-trace-contract/timing-trace-contract.c",
+      "sha256": "4ab246a146900053430e37349bcc0f1934eb25cfa67318e394d90ccadc10859a"
+    },
+    {
+      "path": "ci/test/timing-trace-contract/write-proof.py",
+      "sha256": "f8fa717ebff12184e1ee370b4b395da258dd1aa92774b1cbaea50e241a5b1494"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.c",
+      "sha256": "24aa5d6af631abfa220c1c4d43a4bdf4ff1dd27a8b9dab523acffded8a50fd70"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.h",
+      "sha256": "e39f47ab133980a1da378aecc1a0fd87f2c77289b3e29e7dd2c7423250f2119e"
+    },
+    {
+      "path": "src/core/wz_trace.h",
+      "sha256": "9730762f41380dc9ef42b8cd1d6ed454dc4d091fa83dd81c9578925f4bbd8466"
+    },
+    {
+      "path": "src/core/wz_types.h",
+      "sha256": "b989adaa74e4ac0ec7e753da23a3fd16a3c02561744cca893fcd66f7c077c409"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "4317571e64b373bd509c57127bfbe2ebd27489844f422646904be670d13ced08"
+    }
+  ]
+}
