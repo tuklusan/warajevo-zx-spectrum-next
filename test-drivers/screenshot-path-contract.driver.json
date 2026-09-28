@@ -8,22 +8,22 @@
   "fixtures": [
     {
       "path": ".github/workflows/screenshot-path-contract.yml",
-      "sha256": "5ae1622b2916b1bb5653dfa50b81a3bd572cdbaf1422713e1d9688328c340ff5"
+      "sha256": "3910f7f8023ad50ef758148948542a48eaff1a2265c1b3cb5723b159e028395b"
     },
     {
       "path": "ci/test/screenshot-path-contract/CMakeLists.txt",
-      "sha256": "d721dec74cf8aa87283e5ebf6bb0c98567d49959e772356108edd66046c91347"
+      "sha256": "e02abf7b69e80473e9f2caff6b88f95e6dd11cd58fe6953d4449cd57b92924b4"
     },
     {
       "path": "ci/test/screenshot-path-contract/write-proof.py",
       "sha256": "33f30674889a6156b0e0cc50ae7b7d36f1e3cec229c9b721151284ebe7ded78d"
     },
     {
-      "path": "tests/screenshot-path-contract.c",
+      "path": "ci/test/screenshot-path-contract/screenshot-path-contract.c",
       "sha256": "a3b03563ee67bd0fde5e1d34ec910989f29ca79722348cde12c01f7a13122e54"
     },
     {
-      "path": "tests/screenshot-path-contract.md",
+      "path": "ci/test/screenshot-path-contract/README.md",
       "sha256": "cd0abe8ca4be5862fd1d83a377197291c1805d2e5d73b2835b3dcbe8164538fa"
     },
     {

@@ -13,7 +13,7 @@ get_filename_component(WZSN_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE)
 add_subdirectory("${WZSN_ROOT}/src/cmake" "${CMAKE_CURRENT_BINARY_DIR}/product")
 
 add_executable(wz_screenshot_path_contract
-    "${WZSN_ROOT}/tests/screenshot-path-contract.c"
+    "${CMAKE_CURRENT_LIST_DIR}/screenshot-path-contract.c"
     "${WZSN_ROOT}/src/app/wz_host_output.c"
     "${WZSN_ROOT}/src/app/wz_screenshot_service.c"
     "${WZSN_ROOT}/src/app/wz_telnet_keyboard_command.c"

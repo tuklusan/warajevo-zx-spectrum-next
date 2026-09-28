@@ -21,7 +21,6 @@ on:
       - 'src/core/wz_presentation_snapshot.c'
       - 'src/core/wz_presentation_snapshot.h'
       - 'src/cmake/**'
-      - 'tests/screenshot-path-contract.*'
       - 'ci/test/screenshot-path-contract/**'
       - 'test-drivers/screenshot-path-contract.driver.json'
       - '.github/workflows/screenshot-path-contract.yml'
