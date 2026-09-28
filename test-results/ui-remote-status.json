@@ -1,10 +1,10 @@
 {
   "testId": "ui-remote-status",
   "status": "pass",
-  "commit": "5cb220039a9ac8c367851d567768930e1a2fa478",
+  "commit": "6a3fa6c1f6d2a153930123ae6e86a11f9bddda0c",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-09-28T09:50:16+00:00",
-  "runId": 36405825028,
+  "timestamp": "2026-09-28T10:29:12+00:00",
+  "runId": 36409808146,
   "runners": [
     {
       "id": "windows-x64",
@@ -102,7 +102,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "23842e3c1426ab2f40ff01ea0399780a1fe9f702903f9543f9acf48136e99488"
+      "sha256": "b5347e33a6d6e4082c056edd8963da4cbb4eab4d523db9a6e2bb20afaf32ff1a"
     }
   ]
 }
