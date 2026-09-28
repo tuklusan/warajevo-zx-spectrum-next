@@ -23,6 +23,7 @@ typedef struct {
 bool wz_sokol_audio_init(wz_sokol_audio_t* audio);
 void wz_sokol_audio_shutdown(wz_sokol_audio_t* audio);
 bool wz_sokol_audio_valid(const wz_sokol_audio_t* audio);
+bool wz_sokol_audio_degraded(const wz_sokol_audio_t* audio);
 void wz_sokol_audio_discard_pending(wz_sokol_audio_t* audio);
 size_t wz_sokol_audio_push(wz_sokol_audio_t* audio,
                            wz_speed_policy_t speed,

@@ -30,7 +30,7 @@ int main(void)
 
     REQUIRE(wz_telnet_status_project_machine(
         &snapshot, wz_machine_profile_48k_pal(), WZ_NETWORKING_NONE,
-        false, WZ_SPEED_100, true, false));
+        false, WZ_SPEED_100, true, false, false));
     REQUIRE(strcmp(snapshot.model, "48K") == 0);
     REQUIRE(strcmp(snapshot.state, "RUNNING") == 0);
     REQUIRE(strcmp(snapshot.speed, "100") == 0);
@@ -39,12 +39,12 @@ int main(void)
     for (size_t index = 0u; index < WZ_SPEED_COUNT; ++index) {
         REQUIRE(wz_telnet_status_project_machine(
             &snapshot, wz_machine_profile_48k_pal(), WZ_NETWORKING_NONE,
-            false, (wz_speed_policy_t)index, true, false));
+            false, (wz_speed_policy_t)index, true, false, false));
         REQUIRE(strcmp(snapshot.speed, speeds[index]) == 0);
     }
     REQUIRE(wz_telnet_status_project_machine(
         &snapshot, wz_machine_profile_128k_pal(), WZ_NETWORKING_INTERFACE1,
-        true, WZ_SPEED_800, true, false));
+        true, WZ_SPEED_800, true, false, false));
     REQUIRE(strcmp(snapshot.model, "128K") == 0);
     REQUIRE(strcmp(snapshot.state, "PAUSED") == 0);
     REQUIRE(strcmp(snapshot.speed, "800") == 0);
@@ -52,14 +52,19 @@ int main(void)
     REQUIRE(strcmp(snapshot.networking, "INTERFACE1") == 0);
 
     REQUIRE(wz_telnet_status_project_machine(
+        &snapshot, wz_machine_profile_48k_pal(), WZ_NETWORKING_NONE,
+        false, WZ_SPEED_100, true, false, true));
+    REQUIRE(strcmp(snapshot.audio, "DEGRADED") == 0);
+
+    REQUIRE(wz_telnet_status_project_machine(
         &snapshot, wz_machine_profile_48k_pal(), WZ_NETWORKING_EAR_MIC,
-        false, WZ_SPEED_UNLIMITED, false, false));
+        false, WZ_SPEED_UNLIMITED, false, false, false));
     REQUIRE(strcmp(snapshot.speed, speeds[WZ_SPEED_UNLIMITED]) == 0);
     REQUIRE(strcmp(snapshot.audio, "UNAVAILABLE") == 0);
     REQUIRE(strcmp(snapshot.networking, "EAR_MIC") == 0);
     REQUIRE(!wz_telnet_status_project_machine(
         &snapshot, wz_machine_profile_48k_pal(),
-        (wz_networking_mode_t)99, false, WZ_SPEED_100, true, false));
+        (wz_networking_mode_t)99, false, WZ_SPEED_100, true, false, false));
 
     puts("status projection regression passed");
     return 0;

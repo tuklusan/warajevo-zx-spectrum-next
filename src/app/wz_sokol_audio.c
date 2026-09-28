@@ -40,7 +40,7 @@ void wz_sokol_audio_shutdown(wz_sokol_audio_t* audio)
             saudio_shutdown();
             audio->initialized = false;
         }
-        wz_host_audio_push_init(&audio->pending);
+        wz_sokol_audio_discard_pending(audio);
     }
 }
 
@@ -49,10 +49,17 @@ bool wz_sokol_audio_valid(const wz_sokol_audio_t* audio)
     return audio != 0 && audio->initialized && saudio_isvalid();
 }
 
+bool wz_sokol_audio_degraded(const wz_sokol_audio_t* audio)
+{
+    return audio != 0 && wz_host_audio_dropped(&audio->pending) != 0u;
+}
+
 void wz_sokol_audio_discard_pending(wz_sokol_audio_t* audio)
 {
     if (audio != 0) {
-        wz_host_audio_push_init(&audio->pending);
+        audio->pending.read_index = 0u;
+        audio->pending.write_index = 0u;
+        audio->pending.count = 0u;
     }
 }
 

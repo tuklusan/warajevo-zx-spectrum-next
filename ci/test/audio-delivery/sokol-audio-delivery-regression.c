@@ -6,9 +6,11 @@ Attribution is required: "Based on original work by Supratim Sanyal of
 SANYALnet Labs." See LICENSE for full terms. */
 
 #include "app/wz_sokol_audio.h"
+#include "app/wz_ui_layout.h"
 
 #include <math.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "sokol_audio.h"
 
@@ -105,6 +107,7 @@ static bool verify_pending_ring(void)
 int main(void)
 {
     wz_sokol_audio_t audio;
+    wz_ui_layout_state_t ui_state;
     const wz_audio_sample_t first[] = { -2000, -1000, 0, 1000, 2000, 3000 };
     const wz_audio_sample_t second[] = { 4000, 5000 };
     wz_audio_sample_t backlog[WZ_HOST_AUDIO_QUEUE_CAPACITY];
@@ -168,6 +171,27 @@ int main(void)
     (void)wz_sokol_audio_push(&audio, WZ_SPEED_400, NULL, 0u);
     failures += require(wz_host_audio_queued(&audio.pending) == 0u,
                         "disabled_audio_discards_obsolete_pending_frames");
+
+    (void)wz_sokol_audio_push(&audio, WZ_SPEED_100, backlog,
+                              WZ_HOST_AUDIO_QUEUE_CAPACITY);
+    (void)wz_sokol_audio_push(&audio, WZ_SPEED_100, &newest, 1u);
+    failures += require(wz_host_audio_queued(&audio.pending) ==
+                            WZ_HOST_AUDIO_QUEUE_CAPACITY &&
+                        wz_sokol_audio_degraded(&audio) &&
+                        wz_host_audio_dropped(&audio.pending) == 1u,
+                        "bounded_audio_overflow_sets_degraded_state");
+    wz_ui_layout_state_init(&ui_state);
+    ui_state.audio_degraded = wz_sokol_audio_degraded(&audio);
+    {
+        char status[WZ_UI_STATUS_CAPACITY];
+        wz_ui_layout_status_line(&ui_state, status, sizeof(status));
+        failures += require(strstr(status, "Audio: degraded") != NULL,
+                            "audio_delivery_degradation_is_visible");
+    }
+    (void)wz_sokol_audio_push(&audio, WZ_SPEED_400, NULL, 0u);
+    failures += require(wz_host_audio_queued(&audio.pending) == 0u &&
+                        wz_sokol_audio_degraded(&audio),
+                        "muting_clears_pending_but_preserves_degraded_notice");
     wz_sokol_audio_shutdown(&audio);
     failures += require(!wz_sokol_audio_valid(&audio), "backend_shutdown");
     failures += require(verify_pending_ring(),

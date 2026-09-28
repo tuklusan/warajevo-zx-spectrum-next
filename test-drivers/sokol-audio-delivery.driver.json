@@ -1,13 +1,12 @@
 {
-  "testId": "sokol-audio-delivery",
   "fixtures": [
     {
       "path": ".github/workflows/audio-delivery-regression.yml",
-      "sha256": "664dc88a77e6755925b7390ca521c25fc272afbbb0ebdadd9838c46488ac6ca5"
+      "sha256": "d3787d282f86acdabe59c7ca84ee9ae7bd072bc99e8f5ecbd3f15fe0b64964e8"
     },
     {
       "path": "ci/test/audio-delivery/sokol-audio-delivery-regression.c",
-      "sha256": "f83c9bb4d57a23a55d5f5bfc810b18515210a874512d935ce875beb8aaed206f"
+      "sha256": "b07e3354fc266f49adbb013dd5cfc62c8f835c307942f742662c1d6a79ccddc9"
     },
     {
       "path": "ci/test/audio-delivery/sokol_audio_stub/sokol_audio.h",
@@ -15,7 +14,7 @@
     },
     {
       "path": "ci/test/audio-delivery/write-proof.py",
-      "sha256": "4f9d94889b33640ad51a16d0e51295511e691a661fceb2bf6805beaa7b69b76b"
+      "sha256": "9ec2d7eba4f6eda1652e88f25ef7a7a66e61557b866a5773b4b22e8094cb222a"
     },
     {
       "path": "src/app/wz_host_audio_push.c",
@@ -34,16 +33,36 @@
       "sha256": "99f86c6701dec5ccae2b932b31daafc95909143dd192bf1cfe43bc91a5991430"
     },
     {
+      "path": "src/app/wz_host_config.c",
+      "sha256": "5fdecc8d1f9abe5e9f6a4297c83fc7e0fe0590a2d4022dce15c3e49c5a76edaa"
+    },
+    {
+      "path": "src/app/wz_command_registry.c",
+      "sha256": "707bd4c4c9d0e12db0135ef857d3c7de8a5d6e7d717d790d09f3080bb90c9607"
+    },
+    {
+      "path": "src/app/wz_host_thread.c",
+      "sha256": "bd46ced2af90907b222a43fcaef3bfe8943b6ca32fd4831fbaca82483ec264c5"
+    },
+    {
+      "path": "src/app/wz_ui_layout.c",
+      "sha256": "5fd8e5e625b07ba94647c945488a5ade8a57ae192ddaceb0860f7a23db142095"
+    },
+    {
+      "path": "src/app/wz_ui_layout.h",
+      "sha256": "fd74f27d30d4a67ca815b9ccc71214bc8150adaa527bfa7bbbc0742ecad8e949"
+    },
+    {
       "path": "src/app/wz_sokol_audio.c",
-      "sha256": "e11bcd48a5a8946290d5cdbbdff7cd46b88cbd049a4228a17e5966e6d09f9eb8"
+      "sha256": "34c3535854eff61c03bde97ff0959f556539db16812f10817d77ac6273285f48"
     },
     {
       "path": "src/app/wz_sokol_audio.h",
-      "sha256": "7fac2737df36e5a4e6483ca3c4cbf0e91c5487bbd5fdec36069ca997067ef615"
+      "sha256": "868841f7a1cff55649b5f7ca9e52db5b8612803563579372a01fb005017e80a2"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "fee387474f2270576c37df8695171af484edc75afa9927eb7fbff43118f63b03"
+      "sha256": "9d4880535308a8819131e994d79478ebfafbb7c9896fa820ca8306939878b4f5"
     },
     {
       "path": "src/app/wz_speed_policy.c",
@@ -55,12 +74,25 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "da81d4113ec56ba371183789feee8b531a95c7b42229162f812efe8b4d7ada7a"
+      "sha256": "701ca9927cc2e5a29180d4c5d432e9ed1caf797f4f7c1bff01ffa1334c1c0f22"
+    },
+    {
+      "sha256": "ec28d1b7bb6798473d51c2000cf45a3a45523b5bcff4981ba8c9e1ecd09e8beb",
+      "path": "src/app/wz_telnet_status.c"
+    },
+    {
+      "sha256": "8bd49ab44fe070e0ad30b61c7118d36ac641f298ccb495186ee305c0449bc8d9",
+      "path": "src/app/wz_telnet_status.h"
+    },
+    {
+      "sha256": "6d9dc60529567bbe3b1ccc0bafa6bd82a54bd8e8c1b71b7ed08597ed2beed4dc",
+      "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md"
     }
   ],
-  "command": "cmake -S src/cmake -B dist/audio-delivery -DCMAKE_BUILD_TYPE=Debug && cmake --build dist/audio-delivery --config Debug --target wz_sokol_audio_delivery_tests --parallel 2 && ctest --test-dir dist/audio-delivery --output-on-failure --verbose -R '^wz_sokol_audio_delivery_tests$'",
-  "requiredCases": 11,
   "runnerMatrix": [
     "ubuntu-24.04"
-  ]
+  ],
+  "testId": "sokol-audio-delivery",
+  "command": "cmake -S src/cmake -B dist/audio-delivery -DCMAKE_BUILD_TYPE=Debug && cmake --build dist/audio-delivery --config Debug --target wz_sokol_audio_delivery_tests --parallel 2 && ctest --test-dir dist/audio-delivery --output-on-failure --verbose -R '^wz_sokol_audio_delivery_tests$'",
+  "requiredCases": 14
 }

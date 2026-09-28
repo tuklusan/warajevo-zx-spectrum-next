@@ -8,6 +8,7 @@ on:
       - 'src/app/wz_host_audio_policy.*'
       - 'src/app/wz_sokol_audio.*'
       - 'src/app/wz_speed_policy.*'
+      - 'src/app/wz_telnet_status.*'
       - 'src/cmake/CMakeLists.txt'
       - 'ci/test/audio-delivery/**'
       - 'test-drivers/sokol-audio-delivery.driver.json'

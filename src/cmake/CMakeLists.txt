@@ -478,8 +478,12 @@ add_executable(
     ${WZSN_SOURCE_ROOT}/app/wz_sokol_audio.c
     ${WZSN_SOURCE_ROOT}/app/wz_host_audio_push.c
     ${WZSN_SOURCE_ROOT}/app/wz_host_audio_policy.c
-    ${WZSN_SOURCE_ROOT}/app/wz_speed_policy.c)
-target_link_libraries(wz_sokol_audio_delivery_tests PRIVATE wz_warnings)
+    ${WZSN_SOURCE_ROOT}/app/wz_speed_policy.c
+    ${WZSN_SOURCE_ROOT}/app/wz_ui_layout.c
+    ${WZSN_SOURCE_ROOT}/app/wz_host_config.c
+    ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c
+    ${WZSN_SOURCE_ROOT}/app/wz_host_thread.c)
+target_link_libraries(wz_sokol_audio_delivery_tests PRIVATE wz_core wz_warnings)
 target_include_directories(wz_sokol_audio_delivery_tests PRIVATE
     "${WZSN_REPO_ROOT}/ci/test/audio-delivery/sokol_audio_stub"
     "${WZSN_SOURCE_ROOT}")

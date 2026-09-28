@@ -20,6 +20,7 @@ bool wz_telnet_status_project_machine(
     bool paused,
     wz_speed_policy_t speed,
     bool audio_available,
-    bool audio_muted);
+    bool audio_muted,
+    bool audio_degraded);
 
 #endif

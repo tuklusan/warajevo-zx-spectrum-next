@@ -119,6 +119,7 @@ typedef struct {
     bool unlimited_speed;
     bool paused;
     bool audio_muted;
+    bool audio_degraded;
     bool tape_mounted;
     bool microdrive1_mounted;
     bool microdrive_mounted[WZ_UI_MICRODRIVE_COUNT];

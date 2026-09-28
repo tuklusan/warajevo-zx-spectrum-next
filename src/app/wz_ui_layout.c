@@ -133,6 +133,7 @@ void wz_ui_layout_state_init(wz_ui_layout_state_t* state)
     state->unlimited_speed = false;
     state->paused = false;
     state->audio_muted = false;
+    state->audio_degraded = false;
     state->tape_mounted = false;
     state->microdrive1_mounted = false;
     for (size_t index = 0u; index < WZ_UI_MICRODRIVE_COUNT; ++index) {
@@ -174,7 +175,8 @@ void wz_ui_layout_status_panel(const wz_ui_layout_state_t* state,
                             state->model_k,
                             speed_text,
                             state->paused ? "paused" : "running",
-                            state->audio_muted ? "muted" : "audible",
+                            state->audio_degraded ? "degraded" :
+                                state->audio_muted ? "muted" : "audible",
                             state->tape_mounted ? "mounted" : "none");
     if (used >= capacity) {
         output[capacity - 1u] = '\0';
@@ -766,7 +768,8 @@ void wz_ui_layout_status_line(const wz_ui_layout_state_t* state,
         return;
     }
     pause_state = state->paused ? "paused" : "running";
-    audio_state = state->audio_muted ? "muted" : "audible";
+    audio_state = state->audio_degraded ? "degraded" :
+        state->audio_muted ? "muted" : "audible";
     control_port = state->control_port_available ? "available" : "unavailable";
     listener = remote_listener_state_label(state->remote_listener_state);
     if (state->unlimited_speed) {

@@ -334,6 +334,8 @@ static void wz_host_audio_render_frame(wz_host_session_t* session,
     }
     (void)wz_sokol_audio_push(&session->audio, session->speed,
                              samples, sample_count);
+    session->ui_window.layout.audio_degraded =
+        wz_sokol_audio_degraded(&session->audio);
     wz_host_audio_clear_frame_events(machine);
 }
 
@@ -978,7 +980,8 @@ static void wz_host_telnet_process_command(const char* command)
                 wz_host_session.ui_window.layout.paused,
                 wz_host_session.speed,
                 wz_sokol_audio_valid(&wz_host_session.audio),
-                wz_host_session.ui_window.layout.audio_muted)) {
+                wz_host_session.ui_window.layout.audio_muted,
+                wz_sokol_audio_degraded(&wz_host_session.audio))) {
             (void)wz_telnet_status_format(&status, output, sizeof(output),
                                           &length);
         } else {
@@ -1279,7 +1282,8 @@ static void wz_host_ui_draw_status(struct nk_context* context,
             "Inactive" :
             wz_input_focus_forwards_viewport_keys(&wz_host_session.input_focus) ?
                 "Spectrum" : "UI",
-        state->audio_muted ? "Muted" : "On",
+        state->audio_degraded ? "Degraded" :
+            state->audio_muted ? "Muted" : "On",
         state->tape_mounted ? "Mounted" : "Empty",
         state->microdrive1_mounted ? "Mounted" : "Empty",
         state->networking_mode == NULL ? "Unavailable" : state->networking_mode,

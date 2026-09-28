@@ -25,12 +25,20 @@ FIXTURES = (
     "src/app/wz_host_audio_push.h",
     "src/app/wz_host_audio_policy.c",
     "src/app/wz_host_audio_policy.h",
+    "src/app/wz_host_config.c",
+    "src/app/wz_command_registry.c",
+    "src/app/wz_host_thread.c",
+    "src/app/wz_ui_layout.c",
+    "src/app/wz_ui_layout.h",
     "src/app/wz_sokol_audio.c",
     "src/app/wz_sokol_audio.h",
     "src/app/wz_sokol_main.c",
+    "src/app/wz_telnet_status.c",
+    "src/app/wz_telnet_status.h",
     "src/app/wz_speed_policy.c",
     "src/app/wz_speed_policy.h",
     "src/cmake/CMakeLists.txt",
+    "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
 )
 
 
@@ -53,7 +61,7 @@ def main():
         "runId": args.run_id,
         "runner": args.runner,
         "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "caseCount": 11,
+        "caseCount": 14,
         "fixtures": fixtures,
     }
     args.proof.parent.mkdir(parents=True, exist_ok=True)

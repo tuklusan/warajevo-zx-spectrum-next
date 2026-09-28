@@ -1819,6 +1819,7 @@ active machine model
 emulation speed
 pause/running state
 host audio on/muted-by-speed state
+audio-delivery degradation after bounded queue sample loss
 mounted tape state
 primary Microdrive state
 networking mode
@@ -1992,15 +1993,17 @@ END
 Its required initial prefix is:
 
 ```text
-STATUS PROTOCOL=1 CONTROL_PORT=<30740..32787> IPV4=<UP|DOWN> IPV6=<UP|DOWN> CLIENT=<ACTIVE|NONE> MODEL=<48K|128K> STATE=<RUNNING|PAUSED> SPEED=<25|50|100|200|400|800|UNLIMITED> AUDIO=<ON|MUTED|UNAVAILABLE> NETWORKING=<NONE|INTERFACE1|EAR_MIC>
+STATUS PROTOCOL=1 CONTROL_PORT=<30740..32787> IPV4=<UP|DOWN> IPV6=<UP|DOWN> CLIENT=<ACTIVE|NONE> MODEL=<48K|128K> STATE=<RUNNING|PAUSED> SPEED=<25|50|100|200|400|800|UNLIMITED> AUDIO=<ON|MUTED|UNAVAILABLE|DEGRADED> NETWORKING=<NONE|INTERFACE1|EAR_MIC>
 ```
 
 Additional trailing `name=value` fields may be added compatibly, for example
 mounted-media summaries. Existing names and meanings may not silently change.
 
 `AUDIO=MUTED` includes speed-policy mute. `AUDIO=UNAVAILABLE` indicates that no
-usable host audio output is currently available. More detailed mute/error
-reasons may appear in optional trailing fields.
+usable host audio output is currently available. `AUDIO=DEGRADED` indicates
+that bounded host audio buffering discarded samples; this state remains visible
+for the session so the user can identify incomplete audio delivery. More
+detailed mute/error reasons may appear in optional trailing fields.
 
 Optional status fields exposed by the initial unauthenticated protocol must not
 contain arbitrary absolute host media paths. Mounted-media status may expose
