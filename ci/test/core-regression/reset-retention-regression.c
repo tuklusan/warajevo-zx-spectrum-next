@@ -57,11 +57,11 @@ int main(void)
     machine.timing_trace = &trace;
     machine.networking_mode = WZ_NETWORKING_INTERFACE1;
     machine.master_tick = 1234u;
-    machine.cpu.pc = 0x1234u;
+    machine.cpu.program_counter = 0x1234u;
 
     REQUIRE(wz_machine_reset(&machine) == WZ_RESULT_OK);
     REQUIRE(machine.master_tick == 0u);
-    REQUIRE(machine.cpu.pc == 0u);
+    REQUIRE(machine.cpu.program_counter == 0u);
     REQUIRE(machine.tape_mounted == 1u);
     REQUIRE(machine.tape.segments == tape_segments);
     REQUIRE(machine.tape_state.tape == &machine.tape);
