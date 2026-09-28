@@ -1,9 +1,9 @@
 {
   "testId": "application-command-boundary",
   "status": "pass",
-  "commit": "6a3fa6c1f6d2a153930123ae6e86a11f9bddda0c",
+  "commit": "0e6de33616e00c8fd02b08bf3fbdde92575c748c",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-09-28T10:29:26+00:00",
+  "timestamp": "2026-09-28T11:22:06+00:00",
   "caseCount": 6,
   "runners": [
     {
@@ -50,7 +50,7 @@
     },
     {
       "path": "ci/test/application-command-boundary/status-projection-regression.c",
-      "sha256": "f75ca9c43b4fbf4c75522aeb872247345d717931dfd6843808208fd538c3da6d"
+      "sha256": "0add79e429ea7a537cceab484258145eca36bd2dc4dcac1f7a4d435b238e8bc1"
     },
     {
       "path": "ci/test/application-command-boundary/write-proof.py",
@@ -74,7 +74,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "a0b6823b6ab6ee1f706c93d4380cf5ee43b54c53852b53c48e2157d769ab0dec"
+      "sha256": "3cf10294c51988e45577bc09e9e11b0e9465bf6035e1e376d94e7f115e9e73a6"
     },
     {
       "path": "src/app/wz_telnet_alias_response.c",
@@ -94,23 +94,23 @@
     },
     {
       "path": "src/app/wz_telnet_status.c",
-      "sha256": "96ef595b5ddf6c887d403ffd283955ffda471e40adf1dd9cde32aa7a44824bac"
+      "sha256": "98e77532404a726162a1bd8b075df7934b66a231f085e901094a1aa2cee2f04f"
     },
     {
       "path": "src/app/wz_telnet_status.h",
-      "sha256": "aa2bc18df7ac175807c6cdecd428ab98cd2d72c342056caedaab49947a8d0f14"
+      "sha256": "8bd49ab44fe070e0ad30b61c7118d36ac641f298ccb495186ee305c0449bc8d9"
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "5e9d34e4045d9861305749c808445e4945fa992fdbe70a2566b4e5bbdd296ecd"
+      "sha256": "298943f37fe7df18bba9d16bdc5bbe64168ae4ca27f628f58ce30803735d6131"
     },
     {
       "path": "src/app/wz_ui_layout.h",
-      "sha256": "5c0009f71141383426345f35fdd7d06982fb7ae0a482064bc12171c91cc50954"
+      "sha256": "cfe6cf9135dd1ef6771a1513e9dc3f72cd42636f4f005e576017aa745915d2d9"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "b5347e33a6d6e4082c056edd8963da4cbb4eab4d523db9a6e2bb20afaf32ff1a"
+      "sha256": "d3c09a688001e54098b3789349fd2e6ae37119e273c9d229848e32662813b285"
     },
     {
       "path": "src/core/audio/wz_audio_evidence.c",
