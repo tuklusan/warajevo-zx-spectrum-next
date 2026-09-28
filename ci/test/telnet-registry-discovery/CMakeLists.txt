@@ -41,6 +41,7 @@ add_executable(wz_telnet_registry_discovery
     telnet-registry-discovery-regression.c
     "${SOURCE_ROOT}/app/wz_command_registry.c"
     "${SOURCE_ROOT}/app/wz_host_thread.c"
+    "${SOURCE_ROOT}/app/wz_telnet_alias_response.c"
     "${SOURCE_ROOT}/app/wz_telnet_keyboard_command.c"
     "${SOURCE_ROOT}/app/wz_telnet_keymap.c"
     "${SOURCE_ROOT}/app/wz_host_output.c"

@@ -7,6 +7,7 @@
  */
 
 #include "app/wz_command_registry.h"
+#include "app/wz_telnet_alias_response.h"
 #include "app/wz_telnet_keyboard_command.h"
 
 #include <stdio.h>
@@ -71,6 +72,22 @@ int main(void)
         "ITEM application.quit PARENT=file TYPE=COMMAND STATE=ENABLED REMOTE=DENIED CLASS=APPLICATION_CONTROL LABEL=\"Quit\"\r\n"
         "ITEM local.toggle PARENT=view TYPE=COMMAND STATE=ENABLED REMOTE=DENIED CLASS=LOCAL_ONLY LABEL=\"Local toggle\"\r\n"
         "END\r\n";
+    static const struct {
+        const char* alias;
+        const char* command;
+    } alias_routes[] = {
+        {"RESET", "DO machine.reset"},
+        {"PAUSE", "DO machine.pause"},
+        {"RESUME", "DO machine.resume"},
+        {"SCREENSHOT", "DO host.screenshot.temp"},
+        {"SPEED 25", "DO machine.speed.set 25"},
+        {"SPEED 50", "DO machine.speed.set 50"},
+        {"SPEED 100", "DO machine.speed.set 100"},
+        {"SPEED 200", "DO machine.speed.set 200"},
+        {"SPEED 400", "DO machine.speed.set 400"},
+        {"SPEED 800", "DO machine.speed.set 800"},
+        {"SPEED UNLIMITED", "DO machine.speed.set UNLIMITED"}
+    };
     wz_command_registry_t registry;
     wz_command_metadata_t storage[8];
     handler_state_t handlers = {0u};
@@ -202,6 +219,22 @@ int main(void)
         strcmp(output, "ERR BAD_COMMAND_ID\r\n") != 0 ||
         handlers.calls != 1u) {
         return fail("state-disabled and unknown commands are controlled");
+    }
+    for (size_t index = 0u;
+         index < sizeof(alias_routes) / sizeof(alias_routes[0]); ++index) {
+        if (!wz_telnet_alias_to_do(alias_routes[index].alias, output,
+                                   sizeof(output)) ||
+            strcmp(output, alias_routes[index].command) != 0) {
+            return fail("special alias maps to its shared command ID");
+        }
+    }
+    if (!wz_telnet_model_alias_to_do("MODEL 48K", output, sizeof(output)) ||
+        strcmp(output, "DO machine.model.set 48k") != 0 ||
+        !wz_telnet_model_alias_to_do("MODEL 128K", output, sizeof(output)) ||
+        strcmp(output, "DO machine.model.set 128k") != 0 ||
+        !wz_telnet_model_alias_to_do("MODEL 16K", output, sizeof(output)) ||
+        strcmp(output, "DO machine.model.set invalid") != 0) {
+        return fail("model aliases map to the shared model command");
     }
     {
         static const struct {
