@@ -1,0 +1,70 @@
+name: Screenshot path and collision contract
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/app/wz_host_output.c'
+      - 'src/app/wz_host_output.h'
+      - 'src/app/wz_screenshot_service.c'
+      - 'src/app/wz_screenshot_service.h'
+      - 'src/app/wz_telnet_keyboard_command.c'
+      - 'src/app/wz_telnet_keyboard_command.h'
+      - 'src/app/wz_command_registry.c'
+      - 'src/app/wz_command_registry.h'
+      - 'src/app/wz_host_thread.c'
+      - 'src/app/wz_host_thread.h'
+      - 'src/app/wz_telnet_keymap.c'
+      - 'src/app/wz_telnet_keymap.h'
+      - 'src/core/wz_raster.c'
+      - 'src/core/wz_raster.h'
+      - 'src/core/wz_presentation_snapshot.c'
+      - 'src/core/wz_presentation_snapshot.h'
+      - 'src/cmake/**'
+      - 'tests/screenshot-path-contract.*'
+      - 'ci/test/screenshot-path-contract/**'
+      - 'test-drivers/screenshot-path-contract.driver.json'
+      - '.github/workflows/screenshot-path-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  screenshot-path-contract:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact main commit
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Configure regression target
+        run: cmake -S ci/test/screenshot-path-contract -B dist/screenshot-path-contract -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build regression executable
+        run: cmake --build dist/screenshot-path-contract --target wz_screenshot_path_contract --parallel 2
+
+      - name: Run exact-name and no-clobber regression
+        run: |
+          mkdir -p dist/screenshot-path-contract/output
+          dist/screenshot-path-contract/wz_screenshot_path_contract "$PWD/dist/screenshot-path-contract/output" | tee dist/screenshot-path-contract/run.log
+
+      - name: Write pinned hosted proof
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: |
+          python3 ci/test/screenshot-path-contract/write-proof.py \
+            --project-commit "$GITHUB_SHA" \
+            --run-id "$GITHUB_RUN_ID" \
+            --run-log dist/screenshot-path-contract/run.log \
+            --proof-out dist/screenshot-path-contract/screenshot-path-contract.json
+
+      - name: Upload pinned proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshot-path-contract-proof-${{ github.sha }}
+          path: dist/screenshot-path-contract/screenshot-path-contract.json
+          if-no-files-found: error
