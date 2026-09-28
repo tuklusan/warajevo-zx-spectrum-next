@@ -1,0 +1,168 @@
+{
+  "testId": "ui-command-equivalence",
+  "status": "pass",
+  "commit": "3c1d98a35641071a54917eadabbea612d1e40095",
+  "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
+  "timestamp": "2026-09-28T07:52:46+00:00",
+  "runId": 36393985044,
+  "runners": [
+    {
+      "id": "windows-x64",
+      "os": "Windows",
+      "architecture": "X64",
+      "runnerName": "win25-vs2026"
+    },
+    {
+      "id": "windows-arm64",
+      "os": "Windows",
+      "architecture": "ARM64",
+      "runnerName": "win11-arm64"
+    },
+    {
+      "id": "macos-x64",
+      "os": "macOS",
+      "architecture": "X64",
+      "runnerName": "macos15"
+    },
+    {
+      "id": "macos-arm64",
+      "os": "macOS",
+      "architecture": "ARM64",
+      "runnerName": "macos15"
+    }
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/ui-command-equivalence.yml",
+      "sha256": "35209193e222181df89d26b0e384a6e8cc86914538d2051201447ec51b6aaf9b"
+    },
+    {
+      "path": "ci/test/ui-command-equivalence/CMakeLists.txt",
+      "sha256": "0ac805a9b5593998af72cf3a50efea65cc929d85a91001f5b56f8c4a457221df"
+    },
+    {
+      "path": "ci/test/ui-command-equivalence/ui-command-equivalence-regression.c",
+      "sha256": "ea1a3cbec2abf0cab914e03f4cdc26c94c2c175134902d495917f7767715ad9a"
+    },
+    {
+      "path": "ci/test/ui-command-equivalence/write-proof.py",
+      "sha256": "2ef1cd6f554a66fbe876a8aac642e863a31b0afa3cb1e193eb1c03927dc45b1f"
+    },
+    {
+      "path": "src/app/wz_command_registry.c",
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
+    },
+    {
+      "path": "src/app/wz_command_registry.h",
+      "sha256": "80110080861a05baae47cd6d294315055bb6b1a636c79891b55c56717cb53c94"
+    },
+    {
+      "path": "src/app/wz_host_thread.c",
+      "sha256": "6f8cbe0e171adfe7b9f42d9517e31d72f7917048339ff8941d5bccadfa305151"
+    },
+    {
+      "path": "src/app/wz_host_thread.h",
+      "sha256": "bd4e189a40c8f9ad31f014dc12afc3c67b7a4bd5580df262b0cf92db8fbe8471"
+    },
+    {
+      "path": "src/app/wz_host_output.c",
+      "sha256": "504322b9d5c80d2c865f6e8362557af61bce90240df83ccd25ca7065441191e6"
+    },
+    {
+      "path": "src/app/wz_host_output.h",
+      "sha256": "0c415f0029214f54d2a92dd9aa46bfc53d1801dee71c7eeb9acd8bd65a104895"
+    },
+    {
+      "path": "src/app/wz_host_audio_policy.c",
+      "sha256": "7248245e6f4ff506a436ab09a1121e0fefe68cb729be28267d25e4f54ca0cc68"
+    },
+    {
+      "path": "src/app/wz_host_audio_policy.h",
+      "sha256": "99f86c6701dec5ccae2b932b31daafc95909143dd192bf1cfe43bc91a5991430"
+    },
+    {
+      "path": "src/app/wz_speed_policy.c",
+      "sha256": "cb9d2d0befc0becaa81558d794a257f399c4a46e1c1a0bdb19c4893d8f547183"
+    },
+    {
+      "path": "src/app/wz_speed_policy.h",
+      "sha256": "0895e0cac0254cb95d4b2347d911f0fdddfd0bab414d37e5dd4052cfc9eaa2df"
+    },
+    {
+      "path": "src/app/wz_screenshot_service.c",
+      "sha256": "05c8da60b7b90ca6b3a2b6b865ef6e00ab017ac739be8e282f196078fd195949"
+    },
+    {
+      "path": "src/app/wz_screenshot_service.h",
+      "sha256": "1b58549d40bf834a9b2ebf6afa4820119349fa2afce66082c0e041299b634017"
+    },
+    {
+      "path": "src/app/wz_screenshot_save_workflow.c",
+      "sha256": "b7c6732c2a8cd2949ecbf93a9bb58cd6e268a414817adc6ec34ac4a292c01a62"
+    },
+    {
+      "path": "src/app/wz_screenshot_save_workflow.h",
+      "sha256": "9adeeeff5d35c88126838db36d79373167c816530924e95aaac5ac54ce40b076"
+    },
+    {
+      "path": "src/app/wz_telnet_alias_response.c",
+      "sha256": "3cbcf8d6e85cc444e63f7142ea6972b9850cde9eca6d4c8be029fb8ee59d8671"
+    },
+    {
+      "path": "src/app/wz_telnet_alias_response.h",
+      "sha256": "1d39dcff0ade48fcb6ede4297bd4ede2b6de81e6b8b6955cf76af7103d3a5334"
+    },
+    {
+      "path": "src/app/wz_telnet_keyboard_command.c",
+      "sha256": "cd94bf55c10f62bb706cbdeacd04f76edb649a6d677416dfdd2960316e4500d8"
+    },
+    {
+      "path": "src/app/wz_telnet_keyboard_command.h",
+      "sha256": "d6e7553f89c46a15706508e474beacf8b3cce6ea9ed6be95599ec84bb446eed1"
+    },
+    {
+      "path": "src/app/wz_telnet_keymap.c",
+      "sha256": "c28b14ee6726eb99c6f26a4b7511c0b60dfaea008dcbe2cbe6bd7750a4092f3c"
+    },
+    {
+      "path": "src/app/wz_telnet_keymap.h",
+      "sha256": "056a9e1304fe7db114b1b860d6628f7d7866e84d0d4c44c75df4e58406bf1ff7"
+    },
+    {
+      "path": "src/app/wz_ui_layout.c",
+      "sha256": "5e9d34e4045d9861305749c808445e4945fa992fdbe70a2566b4e5bbdd296ecd"
+    },
+    {
+      "path": "src/app/wz_ui_layout.h",
+      "sha256": "5c0009f71141383426345f35fdd7d06982fb7ae0a482064bc12171c91cc50954"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "d400839a5ba265c2530386d832249a24e3b09c578eb958efb2248e68d2b73699"
+    },
+    {
+      "path": "src/core/wz_keyboard_matrix.c",
+      "sha256": "68deeb821563f28e5af3e0872765fedd5ae7e24a0491c011c24ebb9d4abbd575"
+    },
+    {
+      "path": "src/core/wz_keyboard_matrix.h",
+      "sha256": "85282af5969a6212c528cb92edafd7d3fbf71375bbb4be1bad5cd9622e1cf976"
+    },
+    {
+      "path": "src/core/wz_presentation_snapshot.c",
+      "sha256": "e486ad41490593ff803f647460d3542f69f425bf8c15bd0892e882962a685367"
+    },
+    {
+      "path": "src/core/wz_presentation_snapshot.h",
+      "sha256": "5dc1be78cf4627ed526b39e7d1ee4e961c3bff8b00f869e635675f2180af820d"
+    },
+    {
+      "path": "src/core/wz_raster.c",
+      "sha256": "d87884dda947060b1b52e5ba3af9bebb5178c0d58505aeda4699078f8fc346c2"
+    },
+    {
+      "path": "src/core/wz_raster.h",
+      "sha256": "c231c401076b312c4b8ae6ef55492fd7e4068742c59a3583b4efaefee0ec5396"
+    }
+  ]
+}
