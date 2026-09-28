@@ -1,0 +1,95 @@
+# Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+# This file is governed by the SANYALnet Labs Non-Commercial License in the
+# root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
+# for AI/ML model training are prohibited unless separately authorized.
+# Attribution is required: "Based on original work by Supratim Sanyal of
+# SANYALnet Labs." See LICENSE for full terms.
+
+name: Telnet client gate regression
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/telnet-client-gate-regression.yml'
+      - 'ci/test/telnet-client-gate/**'
+      - 'src/app/wz_control_port.*'
+      - 'src/app/wz_host_socket.*'
+      - 'src/app/wz_telnet_client.*'
+      - 'src/app/wz_telnet_input.*'
+      - 'src/app/wz_input_arbiter.*'
+      - 'test-drivers/telnet-client-gate.driver.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  regression:
+    if: github.ref == 'refs/heads/main'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: windows-x64
+            runner: windows-2025
+          - id: windows-arm64
+            runner: windows-11-arm
+          - id: macos-x64
+            runner: macos-15-intel
+          - id: macos-arm64
+            runner: macos-15
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build and run client gate regression
+        env:
+          MATRIX_ID: ${{ matrix.id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cmake -S ci/test/telnet-client-gate -B dist/telnet-client-gate -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build dist/telnet-client-gate --config Release --target wz_telnet_client_gate_regression --parallel 2
+          executable=dist/telnet-client-gate/wz_telnet_client_gate_regression
+          if [[ "$RUNNER_OS" == "Windows" ]]; then executable="$executable.exe"; fi
+          result_dir="dist/telnet-client-gate/results/$MATRIX_ID"
+          mkdir -p "$result_dir"
+          "$executable" | tee "$result_dir/run.log"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          Path(f"dist/telnet-client-gate/results/{os.environ['MATRIX_ID']}/runner.json").write_text(
+              json.dumps({"id": os.environ["MATRIX_ID"], "os": os.environ["RUNNER_OS"],
+                          "architecture": os.environ["RUNNER_ARCH"],
+                          "runnerName": os.environ.get("ImageOS", "hosted runner")}, indent=2) + "\n",
+              encoding="utf-8")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: telnet-client-gate-raw-${{ matrix.id }}
+          path: dist/telnet-client-gate/results/
+          if-no-files-found: error
+  proof:
+    if: github.ref == 'refs/heads/main'
+    needs: regression
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: telnet-client-gate-raw-*
+          path: dist/telnet-client-gate/artifacts
+          merge-multiple: true
+      - name: Validate and write pinned proof
+        env:
+          PROJECT_COMMIT: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          python3 ci/test/telnet-client-gate/write-proof.py \
+            --project-commit "$PROJECT_COMMIT" --run-id "$RUN_ID" \
+            --artifact-root dist/telnet-client-gate/artifacts \
+            --proof-out dist/telnet-client-gate/telnet-client-gate.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: telnet-client-gate-proof-${{ github.sha }}
+          path: dist/telnet-client-gate/telnet-client-gate.json
+          if-no-files-found: error
