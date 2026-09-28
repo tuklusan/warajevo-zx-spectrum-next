@@ -1,10 +1,10 @@
 {
   "testId": "model-switch",
   "status": "pass",
-  "commit": "ba6276676474e43ebda4a1972e9641444c3cf95a",
+  "commit": "5cb220039a9ac8c367851d567768930e1a2fa478",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-09-28T07:21:54+00:00",
-  "runId": 36390711331,
+  "timestamp": "2026-09-28T09:54:27+00:00",
+  "runId": 36405824731,
   "runners": [
     {
       "id": "windows-x64",
@@ -58,7 +58,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "f952293b4e69fabff38da5f7f660b18c1f31605942aef94f50f290df1841adb0"
+      "sha256": "a0b6823b6ab6ee1f706c93d4380cf5ee43b54c53852b53c48e2157d769ab0dec"
     },
     {
       "path": "src/app/wz_telnet_alias_response.c",
@@ -118,7 +118,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "75dd8a10f4e965e81610260a20de6b07965f7bb22da5953a97691e1ea41bb70d"
+      "sha256": "23842e3c1426ab2f40ff01ea0399780a1fe9f702903f9543f9acf48136e99488"
     },
     {
       "path": "test-media/DIZZY4K.TAP",

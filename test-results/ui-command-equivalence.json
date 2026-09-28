@@ -1,10 +1,10 @@
 {
   "testId": "ui-command-equivalence",
   "status": "pass",
-  "commit": "3c1d98a35641071a54917eadabbea612d1e40095",
+  "commit": "54070d338aaa77d7ab3e356d02430e19a2a027cd",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-09-28T07:52:46+00:00",
-  "runId": 36393985044,
+  "timestamp": "2026-09-28T09:46:57+00:00",
+  "runId": 36405489658,
   "runners": [
     {
       "id": "windows-x64",
@@ -138,7 +138,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "d400839a5ba265c2530386d832249a24e3b09c578eb958efb2248e68d2b73699"
+      "sha256": "a0b6823b6ab6ee1f706c93d4380cf5ee43b54c53852b53c48e2157d769ab0dec"
     },
     {
       "path": "src/core/wz_keyboard_matrix.c",
