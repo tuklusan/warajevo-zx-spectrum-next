@@ -1,10 +1,10 @@
 {
   "testId": "ui-remote-status",
   "status": "pass",
-  "commit": "89f0f82a3b49e83b35e86daf87ad40b2b6226747",
+  "commit": "2d494b11ba622ab9a31534867fc53217043849aa",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-09-28T14:29:10+00:00",
-  "runId": 36434335885,
+  "timestamp": "2026-09-28T17:27:32+00:00",
+  "runId": 36457752350,
   "runners": [
     {
       "id": "windows-x64",
@@ -58,7 +58,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "cfc90743b387ad47e4032b16ab2cb575a6ca5521a88fc78e25d9c5f59b9800e8"
+      "sha256": "92184ff908cb4498cd2c0a01a178d3722e0eed6e154fa67d9cbb2d97f5368f2d"
     },
     {
       "path": "src/app/wz_command_registry.c",
