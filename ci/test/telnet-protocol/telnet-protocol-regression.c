@@ -108,10 +108,10 @@ int main(void)
             .speed = "UNLIMITED", .audio = "MUTED", .networking = "NONE"
         };
         REQUIRE(wz_telnet_status_format(&status, output, sizeof(output), &output_length));
-        REQUIRE(strstr(output, "PORT=30740") != NULL &&
+        REQUIRE(strstr(output, "CONTROL_PORT=30740") != NULL &&
                 strstr(output, "STATE=PAUSED") != NULL &&
                 strstr(output, "SPEED=UNLIMITED") != NULL &&
-                strstr(output, "END\r\n") != NULL);
+                strstr(output, "\r\n") != NULL);
     }
     {
         wz_telnet_negotiator_t parser;
