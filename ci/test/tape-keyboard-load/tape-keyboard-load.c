@@ -28,6 +28,10 @@ typedef struct {
     size_t keyboard_input_empty_returns;
     size_t interrupt_window_iff_enabled;
     size_t interrupt_window_acceptable;
+    size_t irq_handler_entries;
+    size_t irq_handler_ei;
+    size_t ei_opcodes;
+    size_t di_opcodes;
     bool capture_keyboard_input;
 } trace_counts_t;
 
@@ -51,12 +55,20 @@ static void count_trace(const wz_trace_event_t* event, void* context)
         if (event->program_counter == 0x10b5u)
             ++counts->keyboard_input_returns;
     }
-    if (event->kind == WZ_TRACE_CPU_INSTRUCTION && counts->machine != NULL &&
-        wz_machine_maskable_interrupt_line_low(counts->machine) &&
-        counts->machine->cpu.iff1 != 0u) {
-        ++counts->interrupt_window_iff_enabled;
-        if (wz_z80_maskable_interrupts_acceptable(&counts->machine->cpu))
-            ++counts->interrupt_window_acceptable;
+    if (event->kind == WZ_TRACE_CPU_INSTRUCTION) {
+        if (event->program_counter == 0x0038u)
+            ++counts->irq_handler_entries;
+        if (event->program_counter == 0x0051u)
+            ++counts->irq_handler_ei;
+        if (event->value == 0xfbu) ++counts->ei_opcodes;
+        if (event->value == 0xf3u) ++counts->di_opcodes;
+        if (counts->machine != NULL &&
+            wz_machine_maskable_interrupt_line_low(counts->machine) &&
+            counts->machine->cpu.iff1 != 0u) {
+            ++counts->interrupt_window_iff_enabled;
+            if (wz_z80_maskable_interrupts_acceptable(&counts->machine->cpu))
+                ++counts->interrupt_window_acceptable;
+        }
     }
     if (event->kind != WZ_TRACE_INTERRUPT) return;
     if (event->value == WZ_TRACE_INTERRUPT_MASKABLE_ACCEPT)
@@ -218,12 +230,15 @@ int main(int argc, char** argv)
     trace_counts.capture_keyboard_input = false;
     edit_line = (wz_word_t)(wz_machine_memory_read(&machine, 0x5c59u) |
         ((wz_word_t)wz_machine_memory_read(&machine, 0x5c5au) << 8u));
-    (void)printf("after J: E_LINE=%04x PC=%04x IFF=%u IY=%04x IM=%u IRQ=%lu samples=%lu LINE=%lu/%lu IRQWINDOW_IFF/ELIGIBLE=%lu/%lu ULA_PRESSED/ROW_READS=%lu/%lu KPATH_RET/CHECK/EMPTY=%lu/%lu/%lu MODE=%02x FLAGS=%02x IYFLAGS=%02x KSTATE=%02x%02x%02x%02x%02x LASTK=%02x keyrow=%02x before=",
+    (void)printf("after J: E_LINE=%04x PC=%04x IFF=%u IY=%04x IM=%u IRQ/ENTRY=%lu/%lu IRQ_EI=%lu EI/DI=%lu/%lu LINE=%lu/%lu IRQWINDOW_IFF/ELIGIBLE=%lu/%lu ULA_PRESSED/ROW_READS=%lu/%lu KPATH_RET/CHECK/EMPTY=%lu/%lu/%lu MODE=%02x FLAGS=%02x IYFLAGS=%02x KSTATE=%02x%02x%02x%02x%02x LASTK=%02x keyrow=%02x before=",
         edit_line, machine.cpu.program_counter, (unsigned)machine.cpu.iff1,
         machine.cpu.iy,
         (unsigned)machine.cpu.interrupt_mode,
         (unsigned long)trace_counts.interrupt_accepts,
-        (unsigned long)trace_counts.interrupt_samples,
+        (unsigned long)trace_counts.irq_handler_entries,
+        (unsigned long)trace_counts.irq_handler_ei,
+        (unsigned long)trace_counts.ei_opcodes,
+        (unsigned long)trace_counts.di_opcodes,
         (unsigned long)trace_counts.interrupt_asserts,
         (unsigned long)trace_counts.interrupt_deasserts,
         (unsigned long)trace_counts.interrupt_window_iff_enabled,
