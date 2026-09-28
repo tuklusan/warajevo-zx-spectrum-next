@@ -66,6 +66,23 @@ static int run_until_tape_stops(wz_machine_t* machine,
     return !machine->tape_state.motor_on;
 }
 
+static wz_word_t find_basic_payload(wz_machine_t* machine)
+{
+    static const wz_byte_t prefix[] = {
+        0x00u, 0x0au, 0x1bu, 0x00u, 0xe7u, 0xc3u, 0xa7u, 0x3au
+    };
+    for (wz_word_t address = 0x4000u;
+         address <= (wz_word_t)(0x10000u - sizeof(prefix)); ++address) {
+        size_t index;
+        for (index = 0u; index < sizeof(prefix); ++index) {
+            if (wz_machine_memory_read(machine,
+                    (wz_word_t)(address + index)) != prefix[index]) break;
+        }
+        if (index == sizeof(prefix)) return address;
+    }
+    return 0u;
+}
+
 static int tap_key(wz_machine_t* machine, wz_headless_runner_t* runner,
                    wz_master_tick_t frame_ticks, wz_keyboard_key_t key)
 {
@@ -101,6 +118,7 @@ int main(int argc, char** argv)
     const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
     wz_master_tick_t frame_ticks;
     wz_word_t basic_address;
+    wz_word_t loaded_basic_address;
     int result = 1;
     int machine_initialized = 0;
 
@@ -154,8 +172,9 @@ int main(int argc, char** argv)
 
     basic_address = (wz_word_t)(wz_machine_memory_read(&machine, 0x5c53u) |
         ((wz_word_t)wz_machine_memory_read(&machine, 0x5c54u) << 8u));
-    (void)printf("after LOAD: PC=%04x PROG=%04x BASIC=%02x%02x%02x%02x tape-segment=%lu end=%u\n",
-        machine.cpu.program_counter, basic_address,
+    loaded_basic_address = find_basic_payload(&machine);
+    (void)printf("after LOAD: PC=%04x PROG=%04x payload=%04x BASIC=%02x%02x%02x%02x tape-segment=%lu end=%u\n",
+        machine.cpu.program_counter, basic_address, loaded_basic_address,
         wz_machine_memory_read(&machine, basic_address),
         wz_machine_memory_read(&machine, (wz_word_t)(basic_address + 1u)),
         wz_machine_memory_read(&machine, (wz_word_t)(basic_address + 2u)),
@@ -163,9 +182,8 @@ int main(int argc, char** argv)
         (unsigned long)machine.tape_state.segment_index,
         (unsigned)wz_tape_state_at_end(&machine.tape_state));
     REQUIRE(basic_address >= 0x5ccbu && basic_address < 0xfffcu);
-    REQUIRE(wz_machine_memory_read(&machine, basic_address) == 0x00u);
-    REQUIRE(wz_machine_memory_read(&machine,
-        (wz_word_t)(basic_address + 1u)) == 0x0au);
+    REQUIRE(loaded_basic_address != 0u);
+    REQUIRE(loaded_basic_address == basic_address);
 
     REQUIRE(tap_key(&machine, &runner, frame_ticks, WZ_KEY_R));
     REQUIRE(tap_key(&machine, &runner, frame_ticks, WZ_KEY_U));
