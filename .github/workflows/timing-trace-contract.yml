@@ -64,6 +64,7 @@ jobs:
           -R '^wz_timing_trace_contract$'
 
       - name: Write pinned hosted proof
+        shell: bash
         env:
           GITHUB_SHA: ${{ github.sha }}
           GITHUB_RUN_ID: ${{ github.run_id }}
