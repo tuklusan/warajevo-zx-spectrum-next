@@ -53,6 +53,12 @@ typedef struct {
     wz_byte_t flags_memory_after_newkey_write;
     wz_byte_t flags_memory_at_handler_ei;
     bool keyboard_newkey_seen;
+    size_t keyboard_flag_clear_entry_count;
+    wz_word_t keyboard_flag_clear_entry_previous_pc;
+    wz_word_t keyboard_flag_clear_entry_sp;
+    wz_word_t keyboard_flag_clear_entry_return_pc;
+    wz_byte_t keyboard_flag_clear_entry_flags;
+    wz_byte_t keyboard_flag_clear_entry_lastk;
     wz_byte_t last_newkey_flags;
     size_t interrupt_window_iff_enabled;
     size_t interrupt_window_acceptable;
@@ -113,6 +119,24 @@ static void count_trace(const wz_trace_event_t* event, void* context)
     }
     if (event->kind == WZ_TRACE_CPU_INSTRUCTION) {
         if (counts->machine != NULL) {
+            if (counts->keyboard_newkey_seen &&
+                event->program_counter == 0x1638u) {
+                ++counts->keyboard_flag_clear_entry_count;
+                if (counts->keyboard_flag_clear_entry_count == 1u) {
+                    wz_word_t sp = counts->machine->cpu.stack_pointer;
+                    counts->keyboard_flag_clear_entry_previous_pc =
+                        counts->previous_cpu_pc;
+                    counts->keyboard_flag_clear_entry_sp = sp;
+                    counts->keyboard_flag_clear_entry_return_pc =
+                        (wz_word_t)(wz_machine_memory_read(counts->machine, sp) |
+                        ((wz_word_t)wz_machine_memory_read(counts->machine,
+                        (wz_word_t)(sp + 1u)) << 8u));
+                    counts->keyboard_flag_clear_entry_flags =
+                        counts->machine->memory[0x5c3bu];
+                    counts->keyboard_flag_clear_entry_lastk =
+                        counts->machine->memory[0x5c08u];
+                }
+            }
             wz_byte_t iff1 = counts->machine->cpu.iff1;
             if (iff1 != 0u) ++counts->cpu_instructions_iff_enabled;
             else {
@@ -329,7 +353,7 @@ int main(int argc, char** argv)
     trace_counts.capture_keyboard_input = false;
     edit_line = (wz_word_t)(wz_machine_memory_read(&machine, 0x5c59u) |
         ((wz_word_t)wz_machine_memory_read(&machine, 0x5c5au) << 8u));
-    (void)printf("after J: E_LINE=%04x PC=%04x IFF=%u IY=%04x IM=%u IRQ/ENTRY=%lu/%lu KEYSCAN/LASTK/FLAGWRITE=%lu/%lu/%lu FLAGVALUE=%02x FLAGMEM/EI=%02x/%02x FLAGCLEAR=%lu/%lu@%04x FIRSTCLEAR=%04x:%02x SAMPLE/IFF/ELIGIBLE=%lu/%lu/%lu IRQ_EI=%lu ISR_TICKS=%llu-%llu IFF_INST=%lu/%lu CLEAR=%lu@%04x>%04x EI/DI=%lu/%lu LINE=%lu/%lu IRQWINDOW_IFF/ELIGIBLE=%lu/%lu ULA_PRESSED/ROW_READS=%lu/%lu KPATH_RET/CHECK/EMPTY=%lu/%lu/%lu FLAGSET/Z=%lu/%lu MODE=%02x FLAGS=%02x IYFLAGS=%02x KSTATE=%02x%02x%02x%02x%02x LASTK=%02x keyrow=%02x before=",
+    (void)printf("after J: E_LINE=%04x PC=%04x IFF=%u IY=%04x IM=%u IRQ/ENTRY=%lu/%lu KEYSCAN/LASTK/FLAGWRITE=%lu/%lu/%lu FLAGVALUE=%02x FLAGMEM/EI=%02x/%02x FLAGCLEAR=%lu/%lu@%04x FIRSTCLEAR=%04x:%02x CLEAR_ENTRY=%lu prev=%04x SP=%04x RET=%04x FLAGS=%02x LASTK=%02x SAMPLE/IFF/ELIGIBLE=%lu/%lu/%lu IRQ_EI=%lu ISR_TICKS=%llu-%llu IFF_INST=%lu/%lu CLEAR=%lu@%04x>%04x EI/DI=%lu/%lu LINE=%lu/%lu IRQWINDOW_IFF/ELIGIBLE=%lu/%lu ULA_PRESSED/ROW_READS=%lu/%lu KPATH_RET/CHECK/EMPTY=%lu/%lu/%lu FLAGSET/Z=%lu/%lu MODE=%02x FLAGS=%02x IYFLAGS=%02x KSTATE=%02x%02x%02x%02x%02x LASTK=%02x keyrow=%02x before=",
         edit_line, machine.cpu.program_counter, (unsigned)machine.cpu.iff1,
         machine.cpu.iy,
         (unsigned)machine.cpu.interrupt_mode,
@@ -346,6 +370,12 @@ int main(int argc, char** argv)
         (unsigned)trace_counts.last_keyboard_flag_clear_pc,
         (unsigned)trace_counts.first_keyboard_flag_clear_after_newkey_pc,
         (unsigned)trace_counts.first_keyboard_flag_clear_after_newkey_value,
+        (unsigned long)trace_counts.keyboard_flag_clear_entry_count,
+        (unsigned)trace_counts.keyboard_flag_clear_entry_previous_pc,
+        (unsigned)trace_counts.keyboard_flag_clear_entry_sp,
+        (unsigned)trace_counts.keyboard_flag_clear_entry_return_pc,
+        (unsigned)trace_counts.keyboard_flag_clear_entry_flags,
+        (unsigned)trace_counts.keyboard_flag_clear_entry_lastk,
         (unsigned long)trace_counts.interrupt_samples,
         (unsigned long)trace_counts.sampled_interrupts_iff_enabled,
         (unsigned long)trace_counts.sampled_interrupts_acceptable,
