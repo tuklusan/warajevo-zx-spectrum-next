@@ -911,6 +911,44 @@ static bool telnet_do_result_fields_valid(const char* fields)
     return true;
 }
 
+static bool telnet_parameter_matches(const char* schema, const char* arguments)
+{
+    static const char* const percent_values[] = {
+        "25", "50", "100", "200", "400", "800", "UNLIMITED"
+    };
+    if (schema == NULL || arguments == NULL) return false;
+    if (strcmp(schema, "NONE") == 0) return arguments[0] == '\0';
+    if (strcmp(schema, "PERCENT") == 0) {
+        for (size_t index = 0u;
+             index < sizeof(percent_values) / sizeof(percent_values[0]);
+             ++index) {
+            if (strcmp(arguments, percent_values[index]) == 0) return true;
+        }
+        return false;
+    }
+    {
+        const char* option = schema;
+        size_t argument_length = strlen(arguments);
+        while (*option != '\0') {
+            const char* end = strchr(option, '|');
+            size_t option_length = end == NULL ? strlen(option) :
+                (size_t)(end - option);
+            if (option_length == argument_length) {
+                size_t index = 0u;
+                while (index < option_length &&
+                       tolower((unsigned char)arguments[index]) ==
+                       tolower((unsigned char)option[index])) {
+                    ++index;
+                }
+                if (index == option_length) return true;
+            }
+            if (end == NULL) break;
+            option = end + 1;
+        }
+    }
+    return false;
+}
+
 bool wz_telnet_alias_to_do(const char* alias, char* output,
                            size_t output_capacity)
 {
@@ -968,6 +1006,13 @@ bool wz_telnet_do_format(const wz_command_registry_t* registry,
                                 "ERR BAD_COMMAND_ID\r\n") &&
             (*output_length = used, true);
     }
+    command_arguments.data = arguments;
+    command_arguments.size = strlen(arguments);
+    if (!telnet_parameter_matches(metadata->parameter_schema, arguments)) {
+        return menu_tree_append(output, output_capacity, &used,
+                                "ERR BAD_ARGUMENT\r\n") &&
+            (*output_length = used, true);
+    }
     if (wz_command_registry_state(registry, id, &reason) == WZ_COMMAND_DISABLED) {
         if (!menu_tree_append(output, output_capacity, &used,
                 "ERR BAD_STATE %s %s\r\n", id,
@@ -978,8 +1023,6 @@ bool wz_telnet_do_format(const wz_command_registry_t* registry,
         *output_length = used;
         return true;
     }
-    command_arguments.data = arguments;
-    command_arguments.size = strlen(arguments);
     remote_permission = wz_command_registry_remote_permission(
         registry, id, command_arguments);
     if (!wz_command_permission_is_remote_safe(remote_permission)) {

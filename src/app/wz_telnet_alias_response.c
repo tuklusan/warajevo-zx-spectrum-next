@@ -89,6 +89,11 @@ bool wz_telnet_alias_response_rewrite(const char* alias,
         return write_response("ERR BAD_MODEL\r\n", output, output_capacity,
                               output_length);
     }
+    if (strncmp(alias, "MODEL ", 6u) == 0 &&
+        strcmp(dispatch_response, "ERR BAD_ARGUMENT\r\n") == 0) {
+        return write_response("ERR BAD_MODEL\r\n", output, output_capacity,
+                              output_length);
+    }
     if (strncmp(alias, "SPEED ", 6u) != 0) {
         return false;
     }
