@@ -36,8 +36,53 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Configure, build, and run regression
+        env:
+          MATRIX_ID: ${{ matrix.id }}
         shell: bash
         run: |
+          set -euo pipefail
           cmake -S ci/test/telnet-protocol -B dist/telnet-protocol -G Ninja -DCMAKE_BUILD_TYPE=Release
           cmake --build dist/telnet-protocol --config Release --target wz_telnet_protocol_regression --parallel 2
-          dist/telnet-protocol/wz_telnet_protocol_regression
+          mkdir -p "dist/telnet-protocol/results/$MATRIX_ID"
+          dist/telnet-protocol/wz_telnet_protocol_regression | tee "dist/telnet-protocol/results/$MATRIX_ID/run.log"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          Path(f"dist/telnet-protocol/results/{os.environ['MATRIX_ID']}/runner.json").write_text(
+              json.dumps({"id": os.environ["MATRIX_ID"], "os": os.environ["RUNNER_OS"],
+                          "architecture": os.environ["RUNNER_ARCH"],
+                          "runnerName": os.environ.get("ImageOS", "hosted runner")}, indent=2) + "\n",
+              encoding="utf-8")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: telnet-protocol-raw-${{ matrix.id }}
+          path: dist/telnet-protocol/results/
+          if-no-files-found: error
+  proof:
+    if: github.ref == 'refs/heads/main'
+    needs: regression
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: telnet-protocol-raw-*
+          path: dist/telnet-protocol/artifacts
+          merge-multiple: true
+      - name: Validate and write pinned proof
+        env:
+          PROJECT_COMMIT: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          python3 ci/test/telnet-protocol/write-proof.py \
+            --project-commit "$PROJECT_COMMIT" --run-id "$RUN_ID" \
+            --artifact-root dist/telnet-protocol/artifacts \
+            --proof-out dist/telnet-protocol/telnet-protocol.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: telnet-protocol-proof-${{ github.sha }}
+          path: dist/telnet-protocol/telnet-protocol.json
+          if-no-files-found: error

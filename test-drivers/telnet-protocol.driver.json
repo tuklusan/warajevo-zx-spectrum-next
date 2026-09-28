@@ -1,0 +1,41 @@
+{
+  "testId": "telnet-protocol",
+  "command": "cmake -S ci/test/telnet-protocol -B dist/telnet-protocol -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/telnet-protocol --config Release --target wz_telnet_protocol_regression --parallel 2 && dist/telnet-protocol/wz_telnet_protocol_regression",
+  "requiredCases": 27,
+  "runnerMatrix": [
+    "windows-2025",
+    "windows-11-arm",
+    "macos-15-intel",
+    "macos-15"
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/telnet-protocol-regression.yml",
+      "sha256": "096ca9a2cd5ea0d0a333abb110eb78137e2fb6a4ead0c0b21a131beff10292b4"
+    },
+    {
+      "path": "ci/test/telnet-protocol/CMakeLists.txt",
+      "sha256": "1af8546686f9b1a1be376233c7416aa60d1ac5b7973114d5263db134e7a50246"
+    },
+    {
+      "path": "ci/test/telnet-protocol/telnet-protocol-regression.c",
+      "sha256": "af7c8c1894fb7248d49c37e77ca70dce9836a1ff13a7900d77fdd66f778b192f"
+    },
+    {
+      "path": "ci/test/telnet-protocol/write-proof.py",
+      "sha256": "020628724daff81f403de6d7c94d008b560b2c5044e692efc6362037dd99ef7d"
+    },
+    {
+      "path": "src/app/wz_telnet_keyboard_command.c",
+      "sha256": "cd94bf55c10f62bb706cbdeacd04f76edb649a6d677416dfdd2960316e4500d8"
+    },
+    {
+      "path": "src/app/wz_telnet_negotiation.c",
+      "sha256": "215a0ad15361f7c4698851b0c4cb9be44782cf01388ce3137bb99702996cffcb"
+    },
+    {
+      "path": "src/app/wz_telnet_status.c",
+      "sha256": "96ef595b5ddf6c887d403ffd283955ffda471e40adf1dd9cde32aa7a44824bac"
+    }
+  ]
+}\n
