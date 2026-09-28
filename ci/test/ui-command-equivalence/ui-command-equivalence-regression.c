@@ -192,7 +192,7 @@ int main(void)
         "SPEED 400", "SPEED 800", "SPEED UNLIMITED"
     };
     static const char* const speed_arguments[WZ_SPEED_COUNT] = {
-        "25", "50", "100", "200", "400", "800", "unlimited"
+        "25", "50", "100", "200", "400", "800", "UNLIMITED"
     };
     wz_byte_t raster_samples[12u];
     wz_byte_t snapshot_samples[12u];
