@@ -11,6 +11,7 @@
 import argparse
 import hashlib
 import json
+import re
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
@@ -23,6 +24,10 @@ def main() -> None:
     parser.add_argument("--run-log", required=True, type=Path)
     parser.add_argument("--proof-out", required=True, type=Path)
     args = parser.parse_args()
+
+    if re.fullmatch(r"(?:[0-9a-f]{40}|[0-9a-f]{64})",
+                    args.project_commit) is None:
+        raise SystemExit("project commit must be a full hexadecimal object ID")
 
     root = Path.cwd()
     driver = json.loads((root / "test-drivers/tape-keyboard-load.driver.json")

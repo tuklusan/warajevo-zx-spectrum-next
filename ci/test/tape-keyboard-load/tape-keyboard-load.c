@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "core/wz_keyboard_matrix.h"
 #include "core/wz_machine.h"
 #include "core/wz_runner.h"
 
@@ -16,7 +17,7 @@
     if (!(condition)) { \
         fprintf(stderr, "DIZZY4K tape load regression failed at line %d: %s\n", \
                 __LINE__, #condition); \
-        return 1; \
+        goto cleanup; \
     } \
 } while (0)
 
@@ -91,9 +92,9 @@ int main(int argc, char** argv)
 {
     wz_machine_t machine = {0};
     wz_headless_runner_t runner;
-    wz_byte_t* rom;
-    wz_byte_t* tap;
-    wz_tape_segment_t* segments;
+    wz_byte_t* rom = NULL;
+    wz_byte_t* tap = NULL;
+    wz_tape_segment_t* segments = NULL;
     size_t rom_length = 0u;
     size_t tap_length = 0u;
     size_t segment_count = 0u;
@@ -101,12 +102,14 @@ int main(int argc, char** argv)
     wz_master_tick_t frame_ticks;
     wz_word_t basic_address;
     int result = 1;
+    int machine_initialized = 0;
 
     REQUIRE(argc == 3);
     rom = read_file(argv[1], &rom_length);
     tap = read_file(argv[2], &tap_length);
     REQUIRE(rom != NULL && tap != NULL);
     REQUIRE(wz_machine_init(&machine, profile) == WZ_RESULT_OK);
+    machine_initialized = 1;
     REQUIRE(wz_machine_load_48k_rom(&machine, rom, rom_length) == WZ_RESULT_OK);
     REQUIRE(wz_tape_parse_standard_tap(tap, tap_length,
         profile->master_ticks_per_cpu_tstate, NULL, 0u, &segment_count) ==
@@ -182,7 +185,8 @@ int main(int argc, char** argv)
     (void)puts("DIZZY4K BASIC and machine-code blocks loaded through the normal ROM path");
     result = 0;
 
-    wz_machine_destroy(&machine);
+cleanup:
+    if (machine_initialized) wz_machine_destroy(&machine);
     free(segments);
     free(tap);
     free(rom);

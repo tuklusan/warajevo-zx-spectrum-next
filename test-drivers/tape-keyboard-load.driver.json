@@ -16,11 +16,11 @@
     },
     {
       "path": "ci/test/tape-keyboard-load/tape-keyboard-load.c",
-      "sha256": "7ce5e1ec7b07b8f65ba0221df99da61c22355d91bbe0e5efe9aaad91aa785ab9"
+      "sha256": "c1a56fae4839020ac4eeaf30506fe2c64985c5999ea8440af78f56a82e7764ef"
     },
     {
       "path": "ci/test/tape-keyboard-load/write-proof.py",
-      "sha256": "d96d7c7b69bda79a054af6a1a4a749c3782c7d4404fbbb8b8a3595a689cb7c72"
+      "sha256": "ee7b05e34f8abf55ebd89d7aeb0c4229c8d1fae9110cd3a56c00d63aa3f234f1"
     },
     {
       "path": "src/core/wz_machine.c",
