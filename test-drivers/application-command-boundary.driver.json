@@ -43,7 +43,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "3a8171fe3393d8a7a52e378544b9a7aa440e307462c9c201eb54fe205958a196"
+      "sha256": "ef20bc507ce7a3b41b9d9a892c42954c98142afaffa1b3ff9a58769b5bd09845"
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.c",
@@ -55,7 +55,7 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "fe6d8410b00461e8407c1c085ff2d08bd9bb8f79e7c630cde36952c354e55697"
+      "sha256": "2d26449a2d98d0a8b35450e6937fe4b00855b4a985fed4d73f0ee6d131ad650b"
     },
     {
       "path": "src/app/wz_ui_layout.h",
@@ -63,7 +63,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "78fb432a79908239ba4efbd818cda04eec86692158ae2ab214c24eaa860d69b4"
+      "sha256": "845ae0aa6bef6eef497c1ad7dd1389e70dfc860065eacb3e5a0bf3cd26de4974"
     },
     {
       "path": "src/core/audio/wz_audio_evidence.c",

@@ -27,6 +27,9 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "sokol_glue.h"
 #include "sokol_gl.h"
 #include "sokol_time.h"
+#define NK_IMPLEMENTATION
+#include "app/wz_nuklear_config.h"
+#include "sokol_nuklear.h"
 
 #include <stddef.h>
 #include <stdio.h>
@@ -105,6 +108,7 @@ typedef struct {
     sg_view raster_view;
     sg_sampler raster_sampler;
     bool graphics_initialized;
+    bool ui_toolkit_initialized;
     bool pacing_initialized;
     bool audio_sample_speed_initialized;
     bool socket_system_initialized;
@@ -112,8 +116,6 @@ typedef struct {
 } wz_host_session_t;
 
 static wz_host_session_t wz_host_session;
-static bool wz_host_menu_open;
-static size_t wz_host_open_menu_index;
 
 static wz_qword_t wz_host_now_nanoseconds(void)
 {
@@ -635,72 +637,227 @@ static void wz_host_telnet_poll(void)
     }
 }
 
-static void wz_host_ui_quad(float left, float top, float right, float bottom,
-                            float width, float height,
-                            float red, float green, float blue)
+static wz_result_t wz_host_ui_set_speed(wz_speed_policy_t speed)
 {
-    const float x0 = left / width * 2.0f - 1.0f;
-    const float x1 = right / width * 2.0f - 1.0f;
-    const float y0 = 1.0f - top / height * 2.0f;
-    const float y1 = 1.0f - bottom / height * 2.0f;
-    sgl_c4f(red, green, blue, 1.0f);
-    sgl_begin_quads();
-    sgl_v2f(x0, y1);
-    sgl_v2f(x1, y1);
-    sgl_v2f(x1, y0);
-    sgl_v2f(x0, y0);
-    sgl_end();
+    char value[16];
+    wz_command_result_t result;
+    int written;
+    if (!wz_speed_policy_valid(speed)) return WZ_RESULT_INVALID_ARGUMENT;
+    if (wz_speed_policy_is_unlimited(speed)) {
+        written = snprintf(value, sizeof(value), "unlimited");
+    } else {
+        written = snprintf(value, sizeof(value), "%u",
+                           wz_speed_policy_percent(speed));
+    }
+    if (written < 0 || (size_t)written >= sizeof(value)) {
+        return WZ_RESULT_BUFFER_TOO_SMALL;
+    }
+    return wz_command_registry_dispatch(
+        &wz_host_session.command_registry, "machine.speed.set",
+        (wz_command_arguments_t){value, (size_t)written}, &result);
 }
 
-static void wz_host_render_native_ui(float width, float height)
+static void wz_host_ui_draw_speed_items(struct nk_context* context)
 {
     size_t index;
-    const size_t menu_count = wz_ui_layout_menu_count();
-    const size_t toolbar_count = wz_ui_layout_toolbar_count();
-    const float menu_height = WZ_UI_MENU_BAR_HEIGHT;
-    const float toolbar_height = WZ_UI_TOOLBAR_HEIGHT;
-    const float status_height = 24.0f;
-    const float viewport_top = menu_height + toolbar_height;
-    const float viewport_bottom = height - status_height;
-    wz_host_ui_quad(0.0f, 0.0f, width, menu_height, width, height,
-                    0.04f, 0.08f, 0.20f);
-    wz_host_ui_quad(0.0f, menu_height, width, viewport_top, width, height,
-                    0.12f, 0.12f, 0.14f);
-    wz_host_ui_quad(0.0f, viewport_bottom, width, height, width, height,
-                    0.04f, 0.20f, 0.12f);
-    for (index = 0u; index < menu_count; ++index) {
-        float left = width * (float)index / (float)menu_count;
-        float right = width * (float)(index + 1u) / (float)menu_count;
-        wz_host_ui_quad(left + 1.0f, 2.0f, right - 1.0f,
-                        menu_height - 2.0f, width, height,
-                        0.08f, 0.16f + 0.02f * (float)(index & 3u), 0.32f);
-    }
-    for (index = 0u; index < toolbar_count; ++index) {
-        float left = width * (float)index / (float)toolbar_count;
-        float right = width * (float)(index + 1u) / (float)toolbar_count;
-        wz_host_ui_quad(left + 1.0f, menu_height + 2.0f,
-                        right - 1.0f, viewport_top - 2.0f,
-                        width, height, 0.22f, 0.22f, 0.26f);
-    }
-    if (wz_host_menu_open) {
-        const size_t item_count = wz_ui_layout_menu_command_count(
-            &wz_host_session.command_registry, wz_host_open_menu_index);
-        float left = width * (float)wz_host_open_menu_index /
-            (float)menu_count;
-        float right = left + 240.0f;
-        if (right > width) right = width;
-        if (item_count != 0u) {
-            wz_host_ui_quad(left, menu_height, right,
-                            menu_height + (float)item_count * 24.0f,
-                            width, height, 0.10f, 0.10f, 0.12f);
-            for (index = 0u; index < item_count; ++index) {
-                float top = menu_height + (float)index * 24.0f;
-                wz_host_ui_quad(left + 2.0f, top + 1.0f, right - 2.0f,
-                                top + 23.0f, width, height,
-                                0.18f, 0.18f, 0.22f);
-            }
+    for (index = 0u; index < WZ_SPEED_COUNT; ++index) {
+        const char* label = wz_ui_layout_speed_label(index);
+        if (label != NULL && nk_menu_item_label(context, label, NK_TEXT_LEFT)) {
+            (void)wz_host_ui_set_speed((wz_speed_policy_t)index);
         }
     }
+}
+
+static void wz_host_ui_draw_menus(struct nk_context* context, float width)
+{
+    size_t root_index;
+    size_t root_count = wz_command_registry_menu_root_count();
+    struct nk_vec2 saved_padding = context->style.window.padding;
+    context->style.window.padding = nk_vec2(0.0f, 0.0f);
+    if (!nk_begin(context, "Application menu",
+            nk_rect(0.0f, 0.0f, width, WZ_UI_MENU_BAR_HEIGHT),
+            NK_WINDOW_NO_SCROLLBAR)) {
+        nk_end(context);
+        context->style.window.padding = saved_padding;
+        return;
+    }
+    nk_menubar_begin(context);
+    nk_layout_row_begin(context, NK_DYNAMIC, WZ_UI_MENU_BAR_HEIGHT - 2.0f,
+                        (int)root_count);
+    for (root_index = 0u; root_index < root_count; ++root_index) {
+        const wz_command_menu_root_t* root =
+            wz_command_registry_menu_root_at(root_index);
+        size_t command_index;
+        nk_layout_row_push(context, root_count == 0u ? 0.0f :
+                           1.0f / (float)root_count);
+        if (root == NULL || !nk_menu_begin_label(
+                context, root->label, NK_TEXT_LEFT, nk_vec2(230.0f, 300.0f))) {
+            continue;
+        }
+        nk_layout_row_dynamic(context, 24.0f, 1);
+        for (command_index = 0u;
+             command_index < wz_command_registry_count(
+                 &wz_host_session.command_registry);
+             ++command_index) {
+            const wz_command_metadata_t* command =
+                wz_command_registry_at(&wz_host_session.command_registry,
+                                       command_index);
+            const char* disabled_reason = NULL;
+            bool enabled;
+            if (command == NULL || command->menu_group == NULL ||
+                strcmp(command->menu_group, root->id) != 0) {
+                continue;
+            }
+            enabled = wz_command_registry_state(
+                &wz_host_session.command_registry, command->id,
+                &disabled_reason) == WZ_COMMAND_ENABLED;
+            if (strcmp(command->id, "machine.speed.set") == 0) {
+                if (!enabled) nk_widget_disable_begin(context);
+                if (nk_menu_begin_label(context, "Emulation Speed",
+                                        NK_TEXT_LEFT,
+                                        nk_vec2(160.0f, 7.0f * 25.0f))) {
+                    nk_layout_row_dynamic(context, 24.0f, 1);
+                    wz_host_ui_draw_speed_items(context);
+                    nk_menu_end(context);
+                }
+                if (!enabled) nk_widget_disable_end(context);
+            } else if (command->parameter_schema != NULL &&
+                       strcmp(command->parameter_schema, "NONE") != 0) {
+                nk_widget_disable_begin(context);
+                (void)nk_menu_item_label(context, command->label, NK_TEXT_LEFT);
+                nk_widget_disable_end(context);
+            } else {
+                if (!enabled) nk_widget_disable_begin(context);
+                if (nk_menu_item_label(context, command->label, NK_TEXT_LEFT)) {
+                    wz_command_result_t result;
+                    (void)wz_command_registry_dispatch(
+                        &wz_host_session.command_registry, command->id,
+                        (wz_command_arguments_t){NULL, 0u}, &result);
+                }
+                if (!enabled) nk_widget_disable_end(context);
+            }
+        }
+        nk_menu_end(context);
+    }
+    nk_layout_row_end(context);
+    nk_menubar_end(context);
+    nk_end(context);
+    context->style.window.padding = saved_padding;
+}
+
+static void wz_host_ui_draw_toolbar(struct nk_context* context, float width)
+{
+    size_t index;
+    const size_t item_count = wz_ui_layout_toolbar_count();
+    struct nk_vec2 saved_padding = context->style.window.padding;
+    context->style.window.padding = nk_vec2(0.0f, 0.0f);
+    if (!nk_begin(context, "Host controls",
+                  nk_rect(0.0f, WZ_UI_MENU_BAR_HEIGHT, width,
+                          WZ_UI_TOOLBAR_HEIGHT),
+                  NK_WINDOW_NO_SCROLLBAR)) {
+        nk_end(context);
+        context->style.window.padding = saved_padding;
+        return;
+    }
+    nk_layout_row_dynamic(context, WZ_UI_TOOLBAR_HEIGHT - 4.0f,
+                          (int)item_count);
+    for (index = 0u; index < item_count; ++index) {
+        const wz_ui_toolbar_item_t* item = wz_ui_layout_toolbar_at(index);
+        bool enabled = false;
+        if (item != NULL && strcmp(item->command_id, "machine.speed") == 0) {
+            const char* speed_label = wz_ui_layout_speed_label(
+                (size_t)wz_host_session.speed);
+            const wz_command_metadata_t* speed_command =
+                wz_command_registry_find(&wz_host_session.command_registry,
+                                         "machine.speed.set");
+            enabled = speed_command != NULL && wz_command_registry_state(
+                &wz_host_session.command_registry, speed_command->id, NULL) ==
+                WZ_COMMAND_ENABLED;
+            if (!enabled) nk_widget_disable_begin(context);
+            if (nk_combo_begin_label(context,
+                    speed_label == NULL ? "Speed" : speed_label,
+                    nk_vec2(145.0f, 7.0f * 25.0f))) {
+                nk_layout_row_dynamic(context, 24.0f, 1);
+                for (size_t speed_index = 0u;
+                     speed_index < WZ_SPEED_COUNT; ++speed_index) {
+                    const char* label = wz_ui_layout_speed_label(speed_index);
+                    if (label != NULL && nk_combo_item_label(
+                            context, label, NK_TEXT_LEFT)) {
+                        (void)wz_host_ui_set_speed(
+                            (wz_speed_policy_t)speed_index);
+                    }
+                }
+                nk_combo_end(context);
+            }
+            if (!enabled) nk_widget_disable_end(context);
+        } else {
+            const wz_command_metadata_t* command = item == NULL ? NULL :
+                wz_command_registry_find(&wz_host_session.command_registry,
+                                         item->command_id);
+            enabled = command != NULL && command->parameter_schema != NULL &&
+                strcmp(command->parameter_schema, "NONE") == 0 &&
+                wz_command_registry_state(&wz_host_session.command_registry,
+                                          command->id, NULL) == WZ_COMMAND_ENABLED;
+            if (!enabled) nk_widget_disable_begin(context);
+            if (item != NULL && nk_button_label(context, item->label) && enabled) {
+                wz_command_result_t result;
+                (void)wz_command_registry_dispatch(
+                    &wz_host_session.command_registry, command->id,
+                    (wz_command_arguments_t){NULL, 0u}, &result);
+            }
+            if (!enabled) nk_widget_disable_end(context);
+        }
+    }
+    nk_end(context);
+    context->style.window.padding = saved_padding;
+}
+
+static void wz_host_ui_draw_status(struct nk_context* context,
+                                  float width, float height)
+{
+    const wz_ui_layout_state_t* state =
+        wz_ui_window_layout(&wz_host_session.ui_window);
+    char status[WZ_UI_STATUS_CAPACITY];
+    char control_port[48];
+    struct nk_vec2 saved_padding;
+    const char* model = wz_host_session.machine.profile == NULL ?
+        "Unavailable" : wz_host_session.machine.profile->name;
+    if (state == NULL) return;
+    if (wz_host_session.ui_window.remote_control.selected_control_port_available) {
+        (void)snprintf(control_port, sizeof(control_port), "%u",
+            wz_host_session.ui_window.remote_control.selected_control_port);
+    } else {
+        (void)snprintf(control_port, sizeof(control_port), "unavailable");
+    }
+    (void)snprintf(status, sizeof(status),
+        "%s | %s | %s | Audio %s | Tape %s | MDV1 %s | Net %s | Port %s",
+        model,
+        wz_ui_layout_speed_label((size_t)wz_host_session.speed),
+        state->paused ? "Paused" : "Running",
+        state->audio_muted ? "Muted" : "On",
+        state->tape_mounted ? "Mounted" : "Empty",
+        state->microdrive1_mounted ? "Mounted" : "Empty",
+        state->networking_mode == NULL ? "Unavailable" : state->networking_mode,
+        control_port);
+    saved_padding = context->style.window.padding;
+    context->style.window.padding = nk_vec2(0.0f, 0.0f);
+    if (nk_begin(context, "Machine status",
+            nk_rect(0.0f, height - 26.0f, width, 26.0f),
+            NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_NO_INPUT)) {
+        nk_layout_row_dynamic(context, 20.0f, 1);
+        nk_label(context, status, NK_TEXT_LEFT);
+    }
+    nk_end(context);
+    context->style.window.padding = saved_padding;
+}
+
+static void wz_host_render_native_ui(struct nk_context* context,
+                                     float width, float height)
+{
+    if (context == NULL) return;
+    wz_host_ui_draw_menus(context, width);
+    wz_host_ui_draw_toolbar(context, width);
+    wz_host_ui_draw_status(context, width, height);
 }
 
 static void wz_host_render_raster(void)
@@ -715,6 +872,14 @@ static void wz_host_render_raster(void)
         (float)WZ_RASTER_CANONICAL_WIDTH / (float)WZ_RASTER_CANONICAL_HEIGHT;
     const float viewport_left = (window_width - viewport_width) * 0.5f;
     const float viewport_right = viewport_left + viewport_width;
+    struct nk_context* ui_context = wz_host_session.ui_toolkit_initialized ?
+        snk_new_frame() : NULL;
+    {
+        float scale = sapp_dpi_scale();
+        if (scale <= 0.0f) scale = 1.0f;
+        wz_host_render_native_ui(ui_context,
+            (float)sapp_width() / scale, (float)sapp_height() / scale);
+    }
     if (!wz_host_session.graphics_initialized ||
         wz_machine_render_raster(&wz_host_session.machine,
                                  &wz_host_session.raster) != WZ_RESULT_OK) {
@@ -762,8 +927,9 @@ static void wz_host_render_raster(void)
     sgl_end();
     sgl_draw();
     sgl_disable_texture();
-    wz_host_render_native_ui(window_width, window_height);
-    sgl_draw();
+    if (wz_host_session.ui_toolkit_initialized) {
+        snk_render(sapp_width(), sapp_height());
+    }
     sg_end_pass();
     sg_commit();
 }
@@ -777,6 +943,8 @@ static void wz_host_session_init(void)
     sgl_setup(&(sgl_desc_t){0});
     wz_host_session.graphics_initialized = sg_isvalid();
     if (wz_host_session.graphics_initialized) {
+        snk_setup(&(snk_desc_t){.dpi_scale = sapp_dpi_scale()});
+        wz_host_session.ui_toolkit_initialized = true;
         (void)wz_presentation_snapshot_init(&wz_host_session.snapshot,
                                             WZ_RASTER_CANONICAL_WIDTH,
                                             WZ_RASTER_CANONICAL_HEIGHT,
@@ -894,6 +1062,10 @@ static void wz_host_session_shutdown(void)
         wz_host_session.socket_system_initialized = false;
     }
     if (wz_host_session.graphics_initialized) {
+        if (wz_host_session.ui_toolkit_initialized) {
+            snk_shutdown();
+            wz_host_session.ui_toolkit_initialized = false;
+        }
         sg_destroy_sampler(wz_host_session.raster_sampler);
         sg_destroy_view(wz_host_session.raster_view);
         sg_destroy_image(wz_host_session.raster_image);
@@ -999,49 +1171,14 @@ static void wz_host_frame(void)
 static void wz_host_event(const sapp_event* event)
 {
     if (event == NULL) return;
+    if (wz_host_session.ui_toolkit_initialized) {
+        (void)snk_handle_event(event);
+    }
     if (event->type == SAPP_EVENTTYPE_KEY_DOWN && event->key_code == SAPP_KEYCODE_ESCAPE) {
         if (wz_application_request_quit(&wz_host_session.lifecycle) == WZ_RESULT_OK) {
             sapp_request_quit();
         }
         return;
-    }
-    if (wz_host_session.initialized &&
-        event->type == SAPP_EVENTTYPE_MOUSE_DOWN &&
-        event->mouse_button == SAPP_MOUSEBUTTON_LEFT) {
-        size_t menu_index;
-        size_t menu_command_index;
-        wz_command_result_t result;
-        if (wz_ui_layout_menu_hit_test(
-                event->mouse_x, event->mouse_y, (float)sapp_width(),
-                &menu_index)) {
-            if (wz_host_menu_open && menu_index == wz_host_open_menu_index) {
-                wz_host_menu_open = false;
-            } else {
-                wz_host_open_menu_index = menu_index;
-                wz_host_menu_open = true;
-            }
-            return;
-        }
-        if (wz_host_menu_open && wz_ui_layout_menu_command_hit_test(
-                &wz_host_session.command_registry, wz_host_open_menu_index,
-                event->mouse_x, event->mouse_y, (float)sapp_width(),
-                &menu_command_index)) {
-            (void)wz_ui_layout_activate_menu_command(
-                &wz_host_session.command_registry, wz_host_open_menu_index,
-                menu_command_index, (wz_command_arguments_t){NULL, 0u},
-                &result);
-            wz_host_menu_open = false;
-            return;
-        }
-        wz_host_menu_open = false;
-        size_t toolbar_index;
-        if (wz_ui_layout_toolbar_hit_test(
-                event->mouse_x, event->mouse_y, (float)sapp_width(),
-                &toolbar_index)) {
-            (void)wz_ui_layout_activate_toolbar(
-                &wz_host_session.command_registry, toolbar_index,
-                (wz_command_arguments_t){NULL, 0u}, &result);
-        }
     }
 }
 
@@ -1052,8 +1189,8 @@ int main(void)
         .frame_cb = wz_host_frame,
         .cleanup_cb = wz_host_cleanup,
         .event_cb = wz_host_event,
-        .width = 640,
-        .height = 480,
+        .width = 1024,
+        .height = 768,
         .window_title = "Warajevo ZX Spectrum Next",
         .swap_interval = 0,
     });

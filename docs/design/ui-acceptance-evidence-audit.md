@@ -59,7 +59,7 @@ Task 451 audit is complete; UI acceptance is not. PASS requires direct evidence 
 | 46 | destructive local media actions require explicit confirmation; | OPEN | No criterion-specific proof is recorded. |
 | 47 | platform-specific menu relocation does not change semantic command IDs; | OPEN | No criterion-specific proof is recorded. |
 | 48 | the complete legacy-item disposition in Section 20 is represented in the backlog with no unclassified legacy menu command; | OPEN | No criterion-specific proof is recorded. |
-| 49 | Phase-12 UI toolkit selection documents static-link/single-binary fit, keyboard operation, and accessibility support; | OPEN | No criterion-specific proof is recorded. |
+| 49 | Phase-12 UI toolkit selection documents static-link/single-binary fit, keyboard operation, and accessibility support; | OPEN | The exact Nuklear pin and Sokol renderer/event integration are recorded in `design/dependencies/nuklear-pin.md` and the host source. Hosted build, keyboard-operation, focus, and accessibility evidence is not yet recorded. |
 | 50 | all Section 47 required regression tests applicable to the implemented milestone pass; | OPEN | No criterion-specific proof is recorded. |
 | 51 | successful Telnet keyboard commands return the Section 27.1 response and invalid/held-key cases return the frozen error responses; | OPEN | No criterion-specific proof is recorded. |
 | 52 | reset/model changes invoked while paused leave the application paused; | OPEN | No criterion-specific proof is recorded. |

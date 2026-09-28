@@ -506,6 +506,17 @@ if(WZSN_BUILD_SOKOL_HOST)
     )
     FetchContent_MakeAvailable(sokol)
 
+    FetchContent_Declare(
+        nuklear
+        GIT_REPOSITORY https://github.com/Immediate-Mode-UI/Nuklear.git
+        GIT_TAG a53ad2c658151071501372a5e0e5e978153835aa
+        GIT_SHALLOW FALSE
+    )
+    FetchContent_GetProperties(nuklear)
+    if(NOT nuklear_POPULATED)
+        FetchContent_Populate(nuklear)
+    endif()
+
     find_package(Threads REQUIRED)
     if(APPLE)
         add_executable(wz_sokol_host ${WZSN_SOURCE_ROOT}/app/wz_sokol_macos.m ${WZSN_SOURCE_ROOT}/app/wz_ui_window.c ${WZSN_SOURCE_ROOT}/app/wz_ui_layout.c ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c ${WZSN_SOURCE_ROOT}/app/wz_host_thread.c ${WZSN_SOURCE_ROOT}/app/wz_sokol_raster.c ${WZSN_SOURCE_ROOT}/app/wz_application_lifecycle.c ${WZSN_SOURCE_ROOT}/app/wz_host_presentation.c ${WZSN_SOURCE_ROOT}/app/wz_host_scaling.c ${WZSN_SOURCE_ROOT}/app/wz_host_effects.c ${WZSN_SOURCE_ROOT}/app/wz_input_arbiter.c ${WZSN_SOURCE_ROOT}/app/wz_input_timing.c ${WZSN_SOURCE_ROOT}/app/wz_input_focus.c ${WZSN_SOURCE_ROOT}/app/wz_kempston_mapping.c ${WZSN_SOURCE_ROOT}/app/wz_speed_policy.c ${WZSN_SOURCE_ROOT}/app/wz_host_pacing.c ${WZSN_SOURCE_ROOT}/app/wz_host_config.c ${WZSN_SOURCE_ROOT}/app/wz_host_media_ownership.c ${WZSN_SOURCE_ROOT}/app/wz_host_audio_push.c ${WZSN_SOURCE_ROOT}/app/wz_host_audio_policy.c ${WZSN_SOURCE_ROOT}/app/wz_sokol_audio.c ${WZSN_SOURCE_ROOT}/app/wz_host_socket.c ${WZSN_SOURCE_ROOT}/app/wz_control_port.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_client.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_negotiation.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_security.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_input.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_keymap.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_keyboard_command.c ${WZSN_SOURCE_ROOT}/app/wz_screenshot_service.c ${WZSN_SOURCE_ROOT}/app/wz_host_output.c)
@@ -513,7 +524,7 @@ if(WZSN_BUILD_SOKOL_HOST)
         add_executable(wz_sokol_host ${WZSN_SOURCE_ROOT}/app/wz_sokol_main.c ${WZSN_SOURCE_ROOT}/app/wz_ui_window.c ${WZSN_SOURCE_ROOT}/app/wz_ui_layout.c ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c ${WZSN_SOURCE_ROOT}/app/wz_host_thread.c ${WZSN_SOURCE_ROOT}/app/wz_sokol_raster.c ${WZSN_SOURCE_ROOT}/app/wz_application_lifecycle.c ${WZSN_SOURCE_ROOT}/app/wz_host_presentation.c ${WZSN_SOURCE_ROOT}/app/wz_host_scaling.c ${WZSN_SOURCE_ROOT}/app/wz_host_effects.c ${WZSN_SOURCE_ROOT}/app/wz_input_arbiter.c ${WZSN_SOURCE_ROOT}/app/wz_input_timing.c ${WZSN_SOURCE_ROOT}/app/wz_input_focus.c ${WZSN_SOURCE_ROOT}/app/wz_kempston_mapping.c ${WZSN_SOURCE_ROOT}/app/wz_speed_policy.c ${WZSN_SOURCE_ROOT}/app/wz_host_pacing.c ${WZSN_SOURCE_ROOT}/app/wz_host_config.c ${WZSN_SOURCE_ROOT}/app/wz_host_media_ownership.c ${WZSN_SOURCE_ROOT}/app/wz_host_audio_push.c ${WZSN_SOURCE_ROOT}/app/wz_host_audio_policy.c ${WZSN_SOURCE_ROOT}/app/wz_sokol_audio.c ${WZSN_SOURCE_ROOT}/app/wz_host_socket.c ${WZSN_SOURCE_ROOT}/app/wz_control_port.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_client.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_negotiation.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_security.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_input.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_keymap.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_keyboard_command.c ${WZSN_SOURCE_ROOT}/app/wz_screenshot_service.c ${WZSN_SOURCE_ROOT}/app/wz_host_output.c)
     endif()
     set_target_properties(wz_sokol_host PROPERTIES OUTPUT_NAME "Warajevo-ZX-Spectrum-Next")
-    target_include_directories(wz_sokol_host PRIVATE ${sokol_SOURCE_DIR} ${sokol_SOURCE_DIR}/util "${WZSN_SOURCE_ROOT}")
+    target_include_directories(wz_sokol_host PRIVATE ${sokol_SOURCE_DIR} ${sokol_SOURCE_DIR}/util ${nuklear_SOURCE_DIR} "${WZSN_SOURCE_ROOT}")
     target_link_libraries(wz_sokol_host PRIVATE wz_core wz_warnings Threads::Threads)
     if(WIN32)
         target_link_libraries(wz_sokol_host PRIVATE d3d11 dxgi user32 gdi32)

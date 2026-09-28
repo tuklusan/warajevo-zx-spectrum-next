@@ -1,10 +1,9 @@
-<!--
-Warajevo ZX Spectrum Next
-Copyright (c) 2026 Supratim Sanyal, SANYALnet Labs, for new original project material.
-New original material is licensed under GNU GPL v2 or later (GPL-2.0-or-later), as stated in LICENSE.txt.
-Upstream Warajevo and third-party material retain their applicable copyrights and licenses.
-See LICENSE.txt and NOTICE.md for complete terms and provenance.
--->
+<!-- Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+This file is governed by the SANYALnet Labs Non-Commercial License in the
+root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
+for AI/ML model training are prohibited unless separately authorized.
+Attribution is required: "Based on original work by Supratim Sanyal of
+SANYALnet Labs." See LICENSE for full terms. -->
 
 # Warajevo ZX Spectrum Next - UI Architecture
 
@@ -2976,15 +2975,18 @@ exact application command-registry C API
 exact command result/error representation
 ```
 
-The Phase-12 toolkit decision is frozen as follows: Nuklear at the immutable
-revision recorded in `design/dependencies/nuklear-pin.md` supplies portable
-in-window widgets and event translation. Sokol remains the viewport/presentation
-boundary. Native platform menus and file dialogs are used where they provide
-the expected desktop behavior, with semantic command IDs remaining unchanged.
-Keyboard navigation, focus order, labels, and actionable states are mandatory
-project-owned accessibility behavior; host adapters expose those semantics to
-platform accessibility facilities where available. Versioned settings are
-host-only and interprocess-safe, and never contain canonical machine state.
+The Phase-12 toolkit decision is frozen as follows: Nuklear v4.13.3 at the
+immutable revision recorded in `design/dependencies/nuklear-pin.md` supplies
+portable in-window widgets and Sokol event translation. Sokol remains the
+viewport/presentation boundary, using D3D11 on Windows, Metal on macOS, and
+X11/OpenGL on Linux. The seven semantic menus render in-window on every
+platform; native menu bars are not used. The embedded default ProggyClean font
+is used, with no external font-file dependency. Native file dialogs remain the
+host-shell responsibility. Keyboard navigation, focus order, labels, and
+actionable states are mandatory project-owned accessibility behavior; a
+platform accessibility bridge is not yet implemented and does not waive those
+requirements. Versioned settings are host-only and interprocess-safe, and never
+contain canonical machine state.
 
 Those choices may alter implementation but not the semantic menu tree,
 command IDs, manager ownership, Telnet grammar, or acceptance requirements in

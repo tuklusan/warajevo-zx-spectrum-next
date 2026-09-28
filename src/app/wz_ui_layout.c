@@ -364,7 +364,7 @@ void wz_ui_accessibility_descriptor_init(
     }
     descriptor->toolkit = "Nuklear";
     descriptor->toolkit_revision =
-        "e3e18dc1e4d3de935095d372aaa211f12183befb";
+        "a53ad2c658151071501372a5e0e5e978153835aa";
     descriptor->project_semantics_enabled = true;
     descriptor->native_adapter_available = false;
     descriptor->native_adapter_state = "unavailable-not-claimed";

@@ -306,12 +306,12 @@ Architecture #3 (`zx48-mic-ear-router-network-architecture.md`) is explicitly ou
 
 ## Phase 12A — UI implementation gate and command-registry foundation
 
-237. [P12][UI §49][Core §51] Select and freeze the exact C-compatible UI toolkit/revision before UI implementation begins.
-238. [P12][UI §49] Freeze the per-platform integration approach for Windows, Linux/X11, and macOS.
-239. [P12][UI §49] Freeze font/text rendering strategy.
-240. [P12][UI §49] Freeze native-versus-in-window menu presentation per platform.
+237. [P12][UI §49][Core §51] Select and freeze the exact C-compatible UI toolkit/revision before UI implementation begins — Nuklear v4.13.3 is pinned in `design/dependencies/nuklear-pin.md` and its Sokol renderer/event adapter is now connected to the host; hosted build and UI acceptance evidence remain pending.
+238. [P12][UI §49] Freeze the per-platform integration approach for Windows, Linux/X11, and macOS — the pinned Sokol-Nuklear backend uses D3D11, X11/OpenGL, and Metal respectively; hosted cross-platform build evidence remains pending.
+239. [P12][UI §49] Freeze font/text rendering strategy — use Nuklear's embedded default ProggyClean font; no external font file is required.
+240. [P12][UI §49] Freeze native-versus-in-window menu presentation per platform — render the seven semantic menus in-window on Windows, macOS, and Linux; native platform menu bars are not used.
 241. [P12][UI §49] Freeze file-dialog implementation.
-242. [P12][UI §§43,49] Freeze/document accessibility support supplied by the selected toolkit and any project-owned gaps.
+242. [P12][UI §§43,49] Freeze/document accessibility support supplied by the selected toolkit and any project-owned gaps — Nuklear provides in-window keyboard navigation; project-owned labels, focus order, visible focus, and actionable state remain acceptance requirements, and no platform accessibility bridge is claimed.
 243. [P12][UI §§44,49] Freeze window/panel persistence approach including interprocess-safe settings storage.
 244. [P12][UI §§4,49] Freeze the exact application command-registry C API.
 245. [P12][UI §§4,49] Freeze the exact command result/error representation used by GUI, tests, and later Telnet projection.
