@@ -14,9 +14,16 @@ add_subdirectory("${WZSN_ROOT}/src/cmake" wzsn-product)
 
 add_executable(wz_core_regression
     "${WZSN_ROOT}/tests/canonical-core-regression.c")
+add_executable(wz_reset_retention_regression
+    "${CMAKE_CURRENT_LIST_DIR}/reset-retention-regression.c")
 set_target_properties(wz_core_regression PROPERTIES
+    C_STANDARD 11
+    C_STANDARD_REQUIRED ON
+    C_EXTENSIONS OFF)
+set_target_properties(wz_reset_retention_regression PROPERTIES
     C_STANDARD 11
     C_STANDARD_REQUIRED ON
     C_EXTENSIONS OFF)
 target_include_directories(wz_core_regression PRIVATE "${CMAKE_CURRENT_LIST_DIR}")
 target_link_libraries(wz_core_regression PRIVATE wz_core wz_warnings)
+target_link_libraries(wz_reset_retention_regression PRIVATE wz_core wz_warnings)

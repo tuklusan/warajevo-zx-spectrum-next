@@ -1,6 +1,6 @@
 {
   "testId": "canonical-core-regression",
-  "command": "cmake -S ci/test/core-regression -B dist/core-regression -DCMAKE_BUILD_TYPE=Release && cmake --build dist/core-regression --config Release --target wz_core_regression --parallel 2 && ./dist/core-regression/wz_core_regression",
+  "command": "cmake -S ci/test/core-regression -B dist/core-regression -DCMAKE_BUILD_TYPE=Release && cmake --build dist/core-regression --config Release --target wz_core_regression wz_reset_retention_regression --parallel 2 && ./dist/core-regression/wz_core_regression && ./dist/core-regression/wz_reset_retention_regression",
   "matrixWorkflow": ".github/workflows/compiler-matrix-regression.yml",
   "compilerMatrix": [
     "Windows x86-64 / MSVC",
@@ -16,6 +16,10 @@
     {
       "path": "ci/test/core-regression/canonical-fingerprints.h",
       "sha256": "6bc9750d51de798b649b2aa0f2ea9ee80ffa55236de7eb044f5ca0b488072aa0"
+    },
+    {
+      "path": "ci/test/core-regression/reset-retention-regression.c",
+      "sha256": "2b3ba43c2116af099ce255c877dc9a318aa3605d75251c491e506001f0e5a4f4"
     }
   ]
 }
