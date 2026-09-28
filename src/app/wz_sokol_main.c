@@ -1,12 +1,9 @@
-/*
-Warajevo ZX Spectrum Next
-Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+/* Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
 This file is governed by the SANYALnet Labs Non-Commercial License in the
-root LICENSE file. New original material is separately identified where
-applicable; see LICENSE.txt and NOTICE.md for complete terms and provenance.
-Upstream Warajevo and third-party material retain their applicable copyrights and licenses.
-See LICENSE.txt and NOTICE.md for complete terms and provenance.
-*/
+root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
+for AI/ML model training are prohibited unless separately authorized.
+Attribution is required: "Based on original work by Supratim Sanyal of
+SANYALnet Labs." See LICENSE for full terms. */
 
 #if !defined(_WIN32) && !defined(__APPLE__)
 #define _POSIX_C_SOURCE 200809L

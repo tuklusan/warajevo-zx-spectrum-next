@@ -19,11 +19,11 @@
     },
     {
       "path": "src/app/wz_host_audio_push.c",
-      "sha256": "e143a40828101c787c7eccb84afb0fa3755fb1109e8f0ff8e47a41764b406a6f"
+      "sha256": "d646533b901351503679ab52dd7f5392297317b9a5e3c58e9efb34e4c24f3e4b"
     },
     {
       "path": "src/app/wz_host_audio_push.h",
-      "sha256": "b788e9f1d6a81cc02a9ddfd77cea3d745f02570df89a5374a6495b199929248f"
+      "sha256": "119e4cb654828a08b2559a4abb6f2b40b77024fa2dd35e839e8fc9dee7666d02"
     },
     {
       "path": "src/app/wz_host_audio_policy.c",
@@ -35,15 +35,15 @@
     },
     {
       "path": "src/app/wz_sokol_audio.c",
-      "sha256": "e973db9915b1039235aef72c6e6a9b3612663acd7d8b66d0eeca3c9dd43966a6"
+      "sha256": "1a05698cd24a956965e20341e0603f776acd7b8ed8e305145317586d7cea2dc9"
     },
     {
       "path": "src/app/wz_sokol_audio.h",
-      "sha256": "632687f17b71ecccfdaad88d10cffcd5250eb0d8613f35f6b6b8c9472a8070cb"
+      "sha256": "7fac2737df36e5a4e6483ca3c4cbf0e91c5487bbd5fdec36069ca997067ef615"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "afbb0e7536557455c25240529bb17cf9da5e21c94b80f3d38f33926809f4b6fe"
+      "sha256": "fee387474f2270576c37df8695171af484edc75afa9927eb7fbff43118f63b03"
     },
     {
       "path": "src/app/wz_speed_policy.c",
