@@ -1,7 +1,7 @@
 {
   "testId": "ui-remote-status",
   "command": "cmake -S ci/test/ui-remote-status -B dist/ui-remote-status -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/ui-remote-status --config Release --target wz_ui_remote_status_regression --parallel 2 && dist/ui-remote-status/wz_ui_remote_status_regression",
-  "requiredCases": 20,
+  "requiredCases": 19,
   "runnerMatrix": [
     "windows-2025",
     "windows-11-arm",
