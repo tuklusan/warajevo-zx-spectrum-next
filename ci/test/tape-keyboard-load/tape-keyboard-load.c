@@ -273,6 +273,8 @@ int main(int argc, char** argv)
                   profile->master_ticks_per_cpu_tstate;
 
     REQUIRE(run_frames(&runner, frame_ticks, 80u));
+    trace_counts = (trace_counts_t){0};
+    trace_counts.machine = &machine;
     trace_counts.capture_keyboard_input = true;
     REQUIRE(tap_key(&machine, &runner, frame_ticks, WZ_KEY_J));
     trace_counts.capture_keyboard_input = false;
