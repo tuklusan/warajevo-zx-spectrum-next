@@ -1652,6 +1652,10 @@ wz_result_t wz_machine_render_raster(const wz_machine_t* machine,
             wz_byte_t bitmap = wz_machine_memory_read(machine, bitmap_address);
             wz_byte_t attribute = wz_machine_memory_read(machine,
                                                           attribute_address);
+            wz_byte_t ink_color;
+            wz_byte_t paper_color;
+            wz_byte_t brightness;
+            size_t row_offset;
             if (ula_capture != 0) {
                 const wz_ula_cell_capture_t* cell_capture =
                     &ula_capture->cells[y * WZ_ULA_CAPTURE_CELLS_PER_LINE +
@@ -1663,17 +1667,22 @@ wz_result_t wz_machine_render_raster(const wz_machine_t* machine,
                     attribute = cell_capture->attribute;
                 }
             }
+            ink_color = (wz_byte_t)(attribute & 0x07u);
+            paper_color = (wz_byte_t)((attribute >> 3u) & 0x07u);
+            if ((attribute & 0x80u) != 0u && flash_phase) {
+                wz_byte_t swap = ink_color;
+                ink_color = paper_color;
+                paper_color = swap;
+            }
+            brightness = (attribute & 0x40u) != 0u ? 8u : 0u;
+            row_offset = (top + y) * destination->width + left + cell * 8u;
+            /* Fixed raster dimensions and loop bounds constrain this span. */
             for (size_t bit = 0u; bit < 8u; ++bit) {
-                size_t x = cell * 8u + bit;
-                wz_byte_t sample;
-                if (wz_raster_decode_attribute_phase(
-                        attribute,
-                        (bitmap & (wz_byte_t)(0x80u >> bit)) != 0u,
-                        flash_phase, &sample) != WZ_RESULT_OK ||
-                    wz_raster_buffer_write(destination, left + x, top + y,
-                                           sample) != WZ_RESULT_OK) {
-                    return WZ_RESULT_INVALID_STATE;
-                }
+                wz_byte_t color =
+                    (bitmap & (wz_byte_t)(0x80u >> bit)) != 0u ?
+                    ink_color : paper_color;
+                destination->samples[row_offset + bit] =
+                    (wz_byte_t)(color + brightness);
             }
         }
     }
