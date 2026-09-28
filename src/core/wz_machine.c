@@ -168,6 +168,8 @@ wz_result_t wz_machine_reset(wz_machine_t* machine)
     replacement.tape_state.tape = &replacement.tape;
     replacement.tape_mounted = machine->tape_mounted;
     replacement.tape_loading_mode = machine->tape_loading_mode;
+    replacement.microdrive = machine->microdrive;
+    replacement.printer = machine->printer;
     replacement.networking_mode = machine->networking_mode;
 
     wz_machine_destroy(machine);
