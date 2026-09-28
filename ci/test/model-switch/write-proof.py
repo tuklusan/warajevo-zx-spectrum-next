@@ -53,8 +53,13 @@ def main() -> None:
         relative = PurePosixPath(record["path"])
         if relative.is_absolute() or ".." in relative.parts:
             raise SystemExit(f"fixture path is unsafe: {record['path']}")
-        committed = subprocess.check_output(
-            ["git", "show", f"HEAD:{relative.as_posix()}"], cwd=root)
+        try:
+            committed = subprocess.check_output(
+                ["git", "show", f"HEAD:{relative.as_posix()}"], cwd=root,
+                stderr=subprocess.PIPE)
+        except subprocess.CalledProcessError as error:
+            raise SystemExit(
+                f"could not read pinned fixture: {record['path']}") from error
         digest = hashlib.sha256(committed).hexdigest()
         if record["sha256"] != digest:
             raise SystemExit(f"fixture hash mismatch: {record['path']}")

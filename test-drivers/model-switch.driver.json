@@ -20,11 +20,11 @@
     },
     {
       "path": "ci/test/model-switch/write-proof.py",
-      "sha256": "3782b40a25b4a184d361a32a76d2a37b4abde1c7bdca330a9c484af2c8597edb"
+      "sha256": "61b7f293af16c041170c2734f05e5b47c9f73f9c068fd57613d081e8bc566f18"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "77b1b9e1b6be61fbd48a41077f01d8029089d5ed90c06bd203363c9df0736808"
+      "sha256": "d0a400aa54b0a2c7ad349e8b56ecf32392b78cc70d89f3d0c1eeac3677d98e21"
     },
     {
       "path": "src/app/wz_telnet_alias_response.c",
@@ -36,7 +36,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "9e193a7f7a2ef1d5501291bc175281e019defc020f9a1ff6789c4eee04245aea"
+      "sha256": "b26405f8cbcfb6e5d7145f2b0d87a15ea383bbaecb5e3fca6d504f2866660a99"
     },
     {
       "path": "src/core/wz_machine.h",

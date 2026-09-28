@@ -199,6 +199,7 @@ wz_result_t wz_machine_reconfigure_profile(
     }
     result = wz_machine_init(replacement, profile);
     if (result != WZ_RESULT_OK) {
+        wz_machine_destroy(replacement);
         free(replacement);
         return result;
     }

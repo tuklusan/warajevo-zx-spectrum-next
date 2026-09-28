@@ -637,8 +637,6 @@ static void wz_host_telnet_process_command(const char* command)
     if (command == NULL) return;
     if (wz_telnet_alias_to_do(command, projected, sizeof(projected)) ||
         wz_telnet_model_alias_to_do(command, projected, sizeof(projected))) {
-        char id[WZ_HOST_TELNET_IO_CAPACITY];
-        char arguments[WZ_HOST_TELNET_IO_CAPACITY];
         char dispatch_response[WZ_HOST_TELNET_IO_CAPACITY];
         size_t dispatch_length = 0u;
         if (wz_telnet_do_parse(projected, id, sizeof(id), arguments,
