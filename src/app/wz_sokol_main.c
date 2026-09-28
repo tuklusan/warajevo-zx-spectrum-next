@@ -1010,13 +1010,17 @@ static void wz_host_telnet_process_command(const char* command)
     } else if (wz_telnet_keyboard_command_key_press(command, &physical_key)) {
         const wz_machine_profile_t* profile =
             wz_host_session.machine.profile;
-        wz_qword_t frame_ticks = profile == NULL ? 0u :
-            (wz_qword_t)profile->tstates_per_frame *
-            profile->master_ticks_per_cpu_tstate;
-        key_ok = wz_telnet_key_press_schedule(
-            &wz_host_session.telnet_key_presses,
-            &wz_host_session.input_arbiter, physical_key,
-            wz_host_session.machine.master_tick, frame_ticks);
+        if (profile == NULL) {
+            key_ok = false;
+        } else {
+            wz_qword_t frame_ticks =
+                (wz_qword_t)profile->tstates_per_frame *
+                profile->master_ticks_per_cpu_tstate;
+            key_ok = wz_telnet_key_press_schedule(
+                &wz_host_session.telnet_key_presses,
+                &wz_host_session.input_arbiter, physical_key,
+                wz_host_session.machine.master_tick, frame_ticks);
+        }
         (void)wz_telnet_keyboard_command_format_response(
             key_ok ? WZ_TELNET_KEYBOARD_RESPONSE_OK : WZ_TELNET_KEYBOARD_RESPONSE_BAD_STATE,
             output, sizeof(output), &length);
