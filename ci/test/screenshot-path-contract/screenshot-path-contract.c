@@ -56,10 +56,11 @@ static int expected_path(char* output, size_t capacity,
     if (output == NULL || directory == NULL || filename == NULL ||
         directory[0] == '\0') return 0;
     directory_length = strlen(directory);
-    separator = directory[directory_length - 1u] == '/' ? "" : "/";
+    separator = directory[directory_length - 1u] == '/' ||
+        directory[directory_length - 1u] == '\\' ? "" : "/";
     written = snprintf(output, capacity, "%s%s%s", directory, separator,
                        filename);
-    return written > 0 && (size_t)written < capacity;
+    return written >= 0 && (size_t)written < capacity;
 }
 
 int main(int argc, char** argv)
