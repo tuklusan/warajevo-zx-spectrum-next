@@ -174,6 +174,13 @@ int main(void)
         !contains(output, "END\r\n")) {
         return fail("case-insensitive MENU FIND");
     }
+    if (!wz_telnet_menu_find_parse("MENU FIND C:\\Users", arguments,
+                                  sizeof(arguments)) ||
+        !wz_telnet_menu_find_format(&registry, arguments, output,
+                                    sizeof(output), &output_length) ||
+        strcmp(output, "END\r\n") != 0) {
+        return fail("MENU FIND cannot disclose arbitrary host paths");
+    }
     if (!wz_telnet_describe_parse("DESCRIBE machine.model.set", id,
                                  sizeof(id)) ||
         !wz_telnet_describe_format(&registry, id, output, sizeof(output),
@@ -182,6 +189,25 @@ int main(void)
         !contains(output, "REMOTE_ALLOWED=YES\r\n") ||
         contains(output, "C:\\") || contains(output, "/home/")) {
         return fail("DESCRIBE metadata and path privacy");
+    }
+    {
+        wz_telnet_status_snapshot_t status = {
+            .control_port = 30740u,
+            .ipv4_up = true,
+            .ipv6_up = false,
+            .client_active = true,
+            .model = "48K",
+            .state = "RUNNING",
+            .speed = "100",
+            .audio = "ENABLED",
+            .networking = "NONE"
+        };
+        if (!wz_telnet_status_format(&status, output, sizeof(output),
+                                     &output_length) ||
+            contains(output, "C:\\") || contains(output, "/home/") ||
+            contains(output, "PATH=")) {
+            return fail("STATUS exposes no arbitrary host path");
+        }
     }
 
     if (!wz_telnet_do_parse("DO machine.model.set 128k", id, sizeof(id),

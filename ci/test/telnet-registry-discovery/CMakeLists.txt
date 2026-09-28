@@ -47,6 +47,7 @@ add_executable(wz_telnet_registry_discovery
     "${SOURCE_ROOT}/app/wz_host_output.c"
     "${SOURCE_ROOT}/app/wz_screenshot_service.c"
     "${SOURCE_ROOT}/app/wz_speed_policy.c"
+    "${SOURCE_ROOT}/app/wz_telnet_status.c"
     "${SOURCE_ROOT}/core/wz_machine_profile.c"
     "${SOURCE_ROOT}/core/wz_keyboard_matrix.c"
     "${SOURCE_ROOT}/core/wz_kempston.c"
