@@ -22,6 +22,13 @@ typedef struct {
     size_t sampled_interrupts_iff_enabled;
     size_t sampled_interrupts_acceptable;
     size_t interrupt_handler_durations;
+    size_t cpu_instructions_iff_enabled;
+    size_t cpu_instructions_iff_disabled;
+    size_t unexpected_iff_clears;
+    wz_word_t iff_clear_previous_pc;
+    wz_word_t iff_clear_current_pc;
+    wz_byte_t previous_cpu_iff1;
+    wz_word_t previous_cpu_pc;
     wz_master_tick_t last_interrupt_accept_tick;
     wz_master_tick_t interrupt_handler_min_ticks;
     wz_master_tick_t interrupt_handler_max_ticks;
@@ -63,6 +70,21 @@ static void count_trace(const wz_trace_event_t* event, void* context)
             ++counts->keyboard_input_returns;
     }
     if (event->kind == WZ_TRACE_CPU_INSTRUCTION) {
+        if (counts->machine != NULL) {
+            wz_byte_t iff1 = counts->machine->cpu.iff1;
+            if (iff1 != 0u) ++counts->cpu_instructions_iff_enabled;
+            else {
+                ++counts->cpu_instructions_iff_disabled;
+                if (counts->previous_cpu_iff1 != 0u &&
+                    event->program_counter != 0x0038u) {
+                    ++counts->unexpected_iff_clears;
+                    counts->iff_clear_previous_pc = counts->previous_cpu_pc;
+                    counts->iff_clear_current_pc = event->program_counter;
+                }
+            }
+            counts->previous_cpu_iff1 = iff1;
+            counts->previous_cpu_pc = event->program_counter;
+        }
         if (event->program_counter == 0x0038u)
             ++counts->irq_handler_entries;
         if (event->program_counter == 0x0051u) {
@@ -256,7 +278,7 @@ int main(int argc, char** argv)
     trace_counts.capture_keyboard_input = false;
     edit_line = (wz_word_t)(wz_machine_memory_read(&machine, 0x5c59u) |
         ((wz_word_t)wz_machine_memory_read(&machine, 0x5c5au) << 8u));
-    (void)printf("after J: E_LINE=%04x PC=%04x IFF=%u IY=%04x IM=%u IRQ/ENTRY=%lu/%lu SAMPLE/IFF/ELIGIBLE=%lu/%lu/%lu IRQ_EI=%lu ISR_TICKS=%llu-%llu EI/DI=%lu/%lu LINE=%lu/%lu IRQWINDOW_IFF/ELIGIBLE=%lu/%lu ULA_PRESSED/ROW_READS=%lu/%lu KPATH_RET/CHECK/EMPTY=%lu/%lu/%lu MODE=%02x FLAGS=%02x IYFLAGS=%02x KSTATE=%02x%02x%02x%02x%02x LASTK=%02x keyrow=%02x before=",
+    (void)printf("after J: E_LINE=%04x PC=%04x IFF=%u IY=%04x IM=%u IRQ/ENTRY=%lu/%lu SAMPLE/IFF/ELIGIBLE=%lu/%lu/%lu IRQ_EI=%lu ISR_TICKS=%llu-%llu IFF_INST=%lu/%lu CLEAR=%lu@%04x>%04x EI/DI=%lu/%lu LINE=%lu/%lu IRQWINDOW_IFF/ELIGIBLE=%lu/%lu ULA_PRESSED/ROW_READS=%lu/%lu KPATH_RET/CHECK/EMPTY=%lu/%lu/%lu MODE=%02x FLAGS=%02x IYFLAGS=%02x KSTATE=%02x%02x%02x%02x%02x LASTK=%02x keyrow=%02x before=",
         edit_line, machine.cpu.program_counter, (unsigned)machine.cpu.iff1,
         machine.cpu.iy,
         (unsigned)machine.cpu.interrupt_mode,
@@ -268,6 +290,10 @@ int main(int argc, char** argv)
         (unsigned long)trace_counts.irq_handler_ei,
         (unsigned long long)trace_counts.interrupt_handler_min_ticks,
         (unsigned long long)trace_counts.interrupt_handler_max_ticks,
+        (unsigned long)trace_counts.cpu_instructions_iff_enabled,
+        (unsigned long)trace_counts.cpu_instructions_iff_disabled,
+        (unsigned long)trace_counts.unexpected_iff_clears,
+        trace_counts.iff_clear_previous_pc, trace_counts.iff_clear_current_pc,
         (unsigned long)trace_counts.ei_opcodes,
         (unsigned long)trace_counts.di_opcodes,
         (unsigned long)trace_counts.interrupt_asserts,
