@@ -32,6 +32,8 @@ def main() -> None:
     runners = []
     for runner_id in RUNNERS:
         runner_dir = args.artifact_root / runner_id
+        if not (runner_dir / "runner.json").is_file() or not (runner_dir / "run.log").is_file():
+            raise SystemExit(f"runner proof missing or mismatched: {runner_id}")
         metadata = json.loads((runner_dir / "runner.json").read_text(encoding="utf-8"))
         output = (runner_dir / "run.log").read_text(encoding="utf-8")
         if metadata.get("id") != runner_id or PASS_MARKER not in output:
