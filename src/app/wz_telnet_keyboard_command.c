@@ -897,7 +897,11 @@ bool wz_telnet_alias_to_do(const char* alias, char* output,
     const char* speed_value = NULL;
     int written;
     if (alias == NULL || output == NULL || output_capacity == 0u) return false;
-    if (strcmp(alias, "RESET") == 0) {
+    if (strcmp(alias, "PAUSE") == 0) {
+        written = snprintf(output, output_capacity, "DO machine.pause");
+    } else if (strcmp(alias, "RESUME") == 0) {
+        written = snprintf(output, output_capacity, "DO machine.resume");
+    } else if (strcmp(alias, "RESET") == 0) {
         written = snprintf(output, output_capacity, "DO machine.reset");
     } else if (strcmp(alias, "SCREENSHOT") == 0) {
         written = snprintf(output, output_capacity, "DO host.screenshot.temp");

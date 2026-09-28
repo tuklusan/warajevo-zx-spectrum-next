@@ -43,11 +43,11 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "ef20bc507ce7a3b41b9d9a892c42954c98142afaffa1b3ff9a58769b5bd09845"
+      "sha256": "8736c35778a52d5f2bc35797c6324bcc2cbbb5693c88cd3949fec31c4ddf018f"
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.c",
-      "sha256": "34459193b5233fb4131c9d9d9ac16a38875695100f792726c3e9ff88163a164d"
+      "sha256": "0f8b5e12d28f20a1810beaa1bcbe22019683c4181c2a19ee43245f3e0cdeecb1"
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.h",

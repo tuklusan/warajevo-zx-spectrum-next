@@ -407,6 +407,55 @@ static wz_result_t wz_host_command_reset(
     return WZ_RESULT_OK;
 }
 
+static wz_result_t wz_host_command_pause(
+    const void* context, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    wz_host_session_t* session = (wz_host_session_t*)context;
+    (void)arguments;
+    if (session == NULL || result == NULL) return WZ_RESULT_INVALID_ARGUMENT;
+    if (!session->ui_window.layout.paused) {
+        session->ui_window.layout.paused = true;
+        session->ui_window.layout.audio_muted = true;
+    }
+    (void)snprintf(result->message, sizeof(result->message), "paused");
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_host_command_resume(
+    const void* context, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    wz_host_session_t* session = (wz_host_session_t*)context;
+    (void)arguments;
+    if (session == NULL || result == NULL) return WZ_RESULT_INVALID_ARGUMENT;
+    if (session->ui_window.layout.paused && session->pacing_initialized &&
+        !wz_host_pacing_set_speed(&session->pacing, session->speed)) {
+        result->reason = "pacing-reanchor-failed";
+        return WZ_RESULT_INVALID_STATE;
+    }
+    session->ui_window.layout.paused = false;
+    session->ui_window.layout.audio_muted =
+        !wz_host_audio_enabled(session->speed);
+    (void)snprintf(result->message, sizeof(result->message), "running");
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_host_command_pause_resume(
+    const void* context, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    const wz_host_session_t* session = (const wz_host_session_t*)context;
+    const char* command_id;
+    (void)arguments;
+    if (session == NULL || result == NULL) return WZ_RESULT_INVALID_ARGUMENT;
+    command_id = session->ui_window.layout.paused ? "machine.resume" :
+        "machine.pause";
+    return wz_command_registry_dispatch(
+        &wz_host_session.command_registry, command_id,
+        (wz_command_arguments_t){NULL, 0u}, result);
+}
+
 static wz_result_t wz_host_command_screenshot(
     const void* context, wz_command_arguments_t arguments,
     wz_command_result_t* result)
@@ -462,6 +511,9 @@ static wz_result_t wz_host_command_speed(
         return WZ_RESULT_INVALID_STATE;
     }
     session->speed = (wz_speed_policy_t)speed;
+    session->ui_window.layout.audio_muted =
+        session->ui_window.layout.paused ||
+        !wz_host_audio_enabled((wz_speed_policy_t)speed);
     (void)snprintf(result->message, sizeof(result->message), "%s",
                    wz_ui_layout_speed_label((size_t)speed));
     return WZ_RESULT_OK;
@@ -470,6 +522,24 @@ static wz_result_t wz_host_command_speed(
 static bool wz_host_register_commands(void)
 {
     static const wz_command_metadata_t commands[] = {
+        {
+            "machine.pause_resume", "Pause", "Pause or resume the emulated machine",
+            "machine", "NONE", NULL, "wz_host_command_pause_resume", "local",
+            NULL, WZ_COMMAND_REMOTE_SAFE, NULL, wz_host_command_pause_resume,
+            &wz_host_session, false, true, NULL
+        },
+        {
+            "machine.pause", "Pause", "Pause the emulated machine",
+            NULL, "NONE", NULL, "wz_host_command_pause", "shared",
+            NULL, WZ_COMMAND_REMOTE_SAFE, NULL,
+            wz_host_command_pause, &wz_host_session, true, true, NULL
+        },
+        {
+            "machine.resume", "Resume", "Resume the emulated machine",
+            NULL, "NONE", NULL, "wz_host_command_resume", "shared",
+            NULL, WZ_COMMAND_REMOTE_SAFE, NULL,
+            wz_host_command_resume, &wz_host_session, true, true, NULL
+        },
         {
             "machine.reset", "Reset", "Reset the emulated machine",
             "machine", "NONE", NULL, "wz_host_command_reset", "telnet",
@@ -728,11 +798,18 @@ static void wz_host_ui_draw_menus(struct nk_context* context, float width)
                 nk_widget_disable_end(context);
             } else {
                 if (!enabled) nk_widget_disable_begin(context);
-                if (nk_menu_item_label(context, command->label, NK_TEXT_LEFT)) {
-                    wz_command_result_t result;
-                    (void)wz_command_registry_dispatch(
-                        &wz_host_session.command_registry, command->id,
-                        (wz_command_arguments_t){NULL, 0u}, &result);
+                {
+                    const char* label = command->label;
+                    if (strcmp(command->id, "machine.pause_resume") == 0) {
+                        label = wz_host_session.ui_window.layout.paused ?
+                            "Resume" : "Pause";
+                    }
+                    if (nk_menu_item_label(context, label, NK_TEXT_LEFT)) {
+                        wz_command_result_t result;
+                        (void)wz_command_registry_dispatch(
+                            &wz_host_session.command_registry, command->id,
+                            (wz_command_arguments_t){NULL, 0u}, &result);
+                    }
                 }
                 if (!enabled) nk_widget_disable_end(context);
             }
@@ -799,7 +876,10 @@ static void wz_host_ui_draw_toolbar(struct nk_context* context, float width)
                 wz_command_registry_state(&wz_host_session.command_registry,
                                           command->id, NULL) == WZ_COMMAND_ENABLED;
             if (!enabled) nk_widget_disable_begin(context);
-            if (item != NULL && nk_button_label(context, item->label) && enabled) {
+            if (item != NULL && nk_button_label(context,
+                    strcmp(item->command_id, "machine.pause_resume") == 0 ?
+                        (wz_host_session.ui_window.layout.paused ?
+                            "Resume" : "Pause") : item->label) && enabled) {
                 wz_command_result_t result;
                 (void)wz_command_registry_dispatch(
                     &wz_host_session.command_registry, command->id,
@@ -1122,44 +1202,46 @@ static void wz_host_frame(void)
     }
     wz_host_telnet_poll();
     wz_host_apply_keyboard_input();
-    frame_ticks = (wz_master_tick_t)wz_host_session.machine.profile->tstates_per_frame *
-        wz_host_session.machine.profile->master_ticks_per_cpu_tstate;
-    if (!wz_speed_policy_is_unlimited(wz_host_session.speed)) {
-        unsigned percent = wz_speed_policy_percent(wz_host_session.speed);
-        frame_count = percent > 100u ? percent / 100u : 1u;
-    }
-    if (wz_host_session.pacing_initialized) {
-        if (!wz_host_pacing_wait(
-                &wz_host_session.pacing, wz_host_now_nanoseconds(),
-                wz_host_session.machine.master_tick, NULL, NULL,
-                &requested_sleep_nanoseconds)) {
-            return;
+    if (!wz_host_session.ui_window.layout.paused) {
+        frame_ticks = (wz_master_tick_t)wz_host_session.machine.profile->tstates_per_frame *
+            wz_host_session.machine.profile->master_ticks_per_cpu_tstate;
+        if (!wz_speed_policy_is_unlimited(wz_host_session.speed)) {
+            unsigned percent = wz_speed_policy_percent(wz_host_session.speed);
+            frame_count = percent > 100u ? percent / 100u : 1u;
         }
-    }
-    for (unsigned frame_index = 0u; frame_index < frame_count; ++frame_index) {
-        wz_master_tick_t frame_start_tick = wz_host_session.machine.master_tick;
-        wz_byte_t initial_beeper_level = wz_host_session.machine.beeper.level;
-        wz_ay_t initial_ay;
-        const wz_ay_t* initial_ay_state = &wz_host_session.machine.ay;
-        if (wz_host_audio_enabled(wz_host_session.speed) &&
-            wz_sokol_audio_valid(&wz_host_session.audio)) {
-            initial_ay = wz_host_session.machine.ay;
-            initial_ay_state = &initial_ay;
+        if (wz_host_session.pacing_initialized) {
+            if (!wz_host_pacing_wait(
+                    &wz_host_session.pacing, wz_host_now_nanoseconds(),
+                    wz_host_session.machine.master_tick, NULL, NULL,
+                    &requested_sleep_nanoseconds)) {
+                return;
+            }
         }
-        if (wz_headless_runner_execute(&wz_host_session.runner, frame_ticks) !=
-            WZ_RESULT_OK) {
-            return;
+        for (unsigned frame_index = 0u; frame_index < frame_count; ++frame_index) {
+            wz_master_tick_t frame_start_tick = wz_host_session.machine.master_tick;
+            wz_byte_t initial_beeper_level = wz_host_session.machine.beeper.level;
+            wz_ay_t initial_ay;
+            const wz_ay_t* initial_ay_state = &wz_host_session.machine.ay;
+            if (wz_host_audio_enabled(wz_host_session.speed) &&
+                wz_sokol_audio_valid(&wz_host_session.audio)) {
+                initial_ay = wz_host_session.machine.ay;
+                initial_ay_state = &initial_ay;
+            }
+            if (wz_headless_runner_execute(&wz_host_session.runner, frame_ticks) !=
+                WZ_RESULT_OK) {
+                return;
+            }
+            wz_host_audio_render_frame(&wz_host_session, frame_start_tick,
+                                       initial_beeper_level, initial_ay_state);
         }
-        wz_host_audio_render_frame(&wz_host_session, frame_start_tick,
-                                   initial_beeper_level, initial_ay_state);
-    }
-    if (wz_host_session.pacing_initialized) {
-        if (!wz_host_pacing_wait(
-                &wz_host_session.pacing, wz_host_now_nanoseconds(),
-                wz_host_session.machine.master_tick,
-                wz_host_sleep_nanoseconds, NULL,
-                &requested_sleep_nanoseconds)) {
-            return;
+        if (wz_host_session.pacing_initialized) {
+            if (!wz_host_pacing_wait(
+                    &wz_host_session.pacing, wz_host_now_nanoseconds(),
+                    wz_host_session.machine.master_tick,
+                    wz_host_sleep_nanoseconds, NULL,
+                    &requested_sleep_nanoseconds)) {
+                return;
+            }
         }
     }
     wz_host_render_raster();
