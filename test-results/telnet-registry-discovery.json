@@ -1,10 +1,10 @@
 {
   "testId": "telnet-registry-discovery",
   "status": "pass",
-  "commit": "6a3fa6c1f6d2a153930123ae6e86a11f9bddda0c",
+  "commit": "56de09d2dd112bf8f232dea597358de6bd5321a7",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-09-28T10:29:59+00:00",
-  "runId": 36409807952,
+  "timestamp": "2026-09-28T12:50:45+00:00",
+  "runId": 36422303797,
   "runners": [
     {
       "id": "windows-x64",
@@ -46,7 +46,7 @@
     },
     {
       "path": "ci/test/application-command-boundary/README.md",
-      "sha256": "9493c1c0cac6a78f56556542bd6c6626725364cb6f7a1fa16fcf2fcfb94af190"
+      "sha256": "2a8fdaefb88401e701dc06829d5290461a708dca34bc6a04b1e1748a7f2bba05"
     },
     {
       "path": "ci/test/application-command-boundary/alias-response-regression.c",
@@ -54,11 +54,11 @@
     },
     {
       "path": "ci/test/application-command-boundary/status-projection-regression.c",
-      "sha256": "f75ca9c43b4fbf4c75522aeb872247345d717931dfd6843808208fd538c3da6d"
+      "sha256": "0add79e429ea7a537cceab484258145eca36bd2dc4dcac1f7a4d435b238e8bc1"
     },
     {
       "path": "ci/test/application-command-boundary/write-proof.py",
-      "sha256": "5fdd3cbbc31c8e94bc89ced592b782150269b566001c3da9c9a8f4f092e4fe83"
+      "sha256": "c338ce7f08b87a3e4e898c06a167609fd1d6593e8782382d26d9254b39e266a0"
     },
     {
       "path": "ci/test/telnet-registry-discovery/CMakeLists.txt",
@@ -94,7 +94,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "a0b6823b6ab6ee1f706c93d4380cf5ee43b54c53852b53c48e2157d769ab0dec"
+      "sha256": "3cf10294c51988e45577bc09e9e11b0e9465bf6035e1e376d94e7f115e9e73a6"
     },
     {
       "path": "src/app/wz_telnet_alias_response.c",
@@ -114,23 +114,23 @@
     },
     {
       "path": "src/app/wz_telnet_status.c",
-      "sha256": "96ef595b5ddf6c887d403ffd283955ffda471e40adf1dd9cde32aa7a44824bac"
+      "sha256": "98e77532404a726162a1bd8b075df7934b66a231f085e901094a1aa2cee2f04f"
     },
     {
       "path": "src/app/wz_telnet_status.h",
-      "sha256": "aa2bc18df7ac175807c6cdecd428ab98cd2d72c342056caedaab49947a8d0f14"
+      "sha256": "8bd49ab44fe070e0ad30b61c7118d36ac641f298ccb495186ee305c0449bc8d9"
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "5e9d34e4045d9861305749c808445e4945fa992fdbe70a2566b4e5bbdd296ecd"
+      "sha256": "298943f37fe7df18bba9d16bdc5bbe64168ae4ca27f628f58ce30803735d6131"
     },
     {
       "path": "src/app/wz_ui_layout.h",
-      "sha256": "5c0009f71141383426345f35fdd7d06982fb7ae0a482064bc12171c91cc50954"
+      "sha256": "cfe6cf9135dd1ef6771a1513e9dc3f72cd42636f4f005e576017aa745915d2d9"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "b5347e33a6d6e4082c056edd8963da4cbb4eab4d523db9a6e2bb20afaf32ff1a"
+      "sha256": "d3c09a688001e54098b3789349fd2e6ae37119e273c9d229848e32662813b285"
     },
     {
       "path": "src/core/audio/wz_audio_evidence.c",
@@ -166,7 +166,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "b26405f8cbcfb6e5d7145f2b0d87a15ea383bbaecb5e3fca6d504f2866660a99"
+      "sha256": "c6893ae4fe7a4fbcc5cb287238e5a00db3723bd90c52fdcf1fec5b391ff0547e"
     },
     {
       "path": "src/core/wz_machine_profile.c",
@@ -218,7 +218,7 @@
     },
     {
       "path": "tests/application-command-boundary.c",
-      "sha256": "000b5c62ec3bf3853c26b40465a004639909ac5e641806ec1953d8f282d923d9"
+      "sha256": "6cf3a1ec3996d671685282809f2ce4fd2d7fd44802092424e880b92938298bb3"
     },
     {
       "path": "tests/application-command-boundary.md",
