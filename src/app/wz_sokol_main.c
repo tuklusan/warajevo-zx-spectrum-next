@@ -100,6 +100,7 @@ typedef struct {
     bool local_right_shift_down;
     bool local_left_control_down;
     bool local_right_control_down;
+    bool tape_enter_down;
     wz_control_port_owner_t control_port;
     wz_telnet_client_gate_t telnet_client;
     wz_command_registry_t command_registry;
@@ -423,10 +424,6 @@ static bool wz_host_mount_tape_segments(wz_host_session_t* session,
 {
     if (wz_machine_mount_tape(&session->machine, segments, segment_count) !=
         WZ_RESULT_OK) return false;
-    if (wz_machine_set_tape_motor(&session->machine, true) != WZ_RESULT_OK) {
-        (void)wz_machine_unmount_tape(&session->machine);
-        return false;
-    }
     free(session->tape_segments);
     session->tape_segments = segments;
     session->tape_segment_count = segment_count;
@@ -1717,6 +1714,16 @@ static void wz_host_input_focus_from_mouse(const sapp_event* event)
  * the emulated ULA while it scans the keyboard. */
 static void wz_host_apply_keyboard_input(void)
 {
+    bool enter_down = wz_input_arbiter_key_down(
+        &wz_host_session.input_arbiter, WZ_KEY_ENTER);
+    if (enter_down && !wz_host_session.tape_enter_down &&
+        wz_host_session.machine.tape_mounted != 0u) {
+        if (wz_tape_state_at_end(&wz_host_session.machine.tape_state)) {
+            (void)wz_machine_rewind_tape(&wz_host_session.machine);
+        }
+        (void)wz_machine_set_tape_motor(&wz_host_session.machine, true);
+    }
+    wz_host_session.tape_enter_down = enter_down;
     for (size_t key = 0u; key < WZ_INPUT_ARBITER_KEY_COUNT; ++key) {
         bool pressed = wz_input_arbiter_key_down(
             &wz_host_session.input_arbiter, key);
