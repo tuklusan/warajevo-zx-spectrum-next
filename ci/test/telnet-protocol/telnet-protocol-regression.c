@@ -65,16 +65,18 @@ int main(void)
         size_t command_length = 0u;
         uint8_t line[WZ_TELNET_COMMAND_CAPACITY + 2u];
         memset(line, 'A', sizeof(line));
-        line[WZ_TELNET_COMMAND_CAPACITY + 1u] = '\n';
+        line[WZ_TELNET_COMMAND_CAPACITY] = '\n';
         wz_telnet_command_buffer_init(&buffer);
         REQUIRE(wz_telnet_command_buffer_feed(&buffer, line,
                     WZ_TELNET_COMMAND_CAPACITY, command, sizeof(command),
                     &command_length, &malformed, &error));
         REQUIRE(command_length == 0u && !malformed);
-        REQUIRE(wz_telnet_command_buffer_feed(&buffer, line + WZ_TELNET_COMMAND_CAPACITY + 1u,
+        REQUIRE(wz_telnet_command_buffer_feed(&buffer, line + WZ_TELNET_COMMAND_CAPACITY,
                     1u, command, sizeof(command), &command_length, &malformed, &error));
         REQUIRE(command_length == WZ_TELNET_COMMAND_CAPACITY && !malformed);
         wz_telnet_command_buffer_init(&buffer);
+        line[WZ_TELNET_COMMAND_CAPACITY] = 'A';
+        line[WZ_TELNET_COMMAND_CAPACITY + 1u] = '\n';
         REQUIRE(wz_telnet_command_buffer_feed(&buffer, line, sizeof(line),
                     command, sizeof(command), &command_length, &malformed, &error));
         REQUIRE(malformed && error == WZ_TELNET_COMMAND_ERROR_LINE_TOO_LONG);
