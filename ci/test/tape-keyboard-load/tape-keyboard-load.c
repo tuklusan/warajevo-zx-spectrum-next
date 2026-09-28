@@ -119,6 +119,7 @@ int main(int argc, char** argv)
     wz_master_tick_t frame_ticks;
     wz_word_t basic_address;
     wz_word_t loaded_basic_address;
+    wz_word_t edit_line;
     int result = 1;
     int machine_initialized = 0;
 
@@ -165,6 +166,14 @@ int main(int argc, char** argv)
     REQUIRE(wz_machine_set_keyboard_key(&machine, 7u, 1u, false) ==
             WZ_RESULT_OK);
     REQUIRE(run_frames(&runner, frame_ticks, 8u));
+    edit_line = (wz_word_t)(wz_machine_memory_read(&machine, 0x5c59u) |
+        ((wz_word_t)wz_machine_memory_read(&machine, 0x5c5au) << 8u));
+    (void)printf("before ENTER: E_LINE=%04x bytes=", edit_line);
+    for (size_t index = 0u; index < 12u; ++index) {
+        (void)printf("%02x", wz_machine_memory_read(&machine,
+            (wz_word_t)(edit_line + index)));
+    }
+    (void)putchar('\n');
     REQUIRE(tap_key(&machine, &runner, frame_ticks, WZ_KEY_ENTER));
     REQUIRE(run_until_tape_stops(&machine, &runner, frame_ticks));
     REQUIRE(machine.tape_state.motor_on == false);
