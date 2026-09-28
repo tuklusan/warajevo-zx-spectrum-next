@@ -55,11 +55,11 @@
     },
     {
       "path": "src/app/wz_telnet_alias_response.c",
-      "sha256": "108e0fb65b5392e11bf7879e615432b70ccbdfdff64be3bc8adc8bc1740afefc"
+      "sha256": "6c36e41ec8261c72b6eafa556b38e246dc577356c6fb27956c9a85e6e4b14063"
     },
     {
       "path": "src/app/wz_telnet_alias_response.h",
-      "sha256": "3d3cd9b184f18d1313090ae01a0a439b48450b8a63c14a5973928476991ae219"
+      "sha256": "1d39dcff0ade48fcb6ede4297bd4ede2b6de81e6b8b6955cf76af7103d3a5334"
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.c",
@@ -123,7 +123,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "b86911cc84e5fab4550db02b881c9c1156561e7608084d749ff1496676c3279c"
+      "sha256": "b26405f8cbcfb6e5d7145f2b0d87a15ea383bbaecb5e3fca6d504f2866660a99"
     },
     {
       "path": "src/core/wz_machine_profile.c",
@@ -182,4 +182,4 @@
       "sha256": "51e351ed2fc47dd4fcab19a1b1e48620d5e8e59a35a1adc2c5336ad184681503"
     }
   ]
-}
+}\n
