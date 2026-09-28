@@ -140,7 +140,6 @@ add_executable(
     ${WZSN_SOURCE_ROOT}/app/wz_input_timing.c
     ${WZSN_SOURCE_ROOT}/app/wz_input_replay.c
     ${WZSN_SOURCE_ROOT}/app/wz_telnet_keyboard_command.c
-    ${WZSN_SOURCE_ROOT}/app/wz_telnet_status.c
     ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c ${WZSN_SOURCE_ROOT}/app/wz_host_thread.c
     ${WZSN_SOURCE_ROOT}/app/wz_screenshot_service.c
     ${WZSN_SOURCE_ROOT}/app/wz_host_output.c
