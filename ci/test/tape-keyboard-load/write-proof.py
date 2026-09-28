@@ -25,7 +25,7 @@ def main() -> None:
     parser.add_argument("--proof-out", required=True, type=Path)
     args = parser.parse_args()
 
-    if re.fullmatch(r"(?:[0-9a-f]{40}|[0-9a-f]{64})",
+    if re.fullmatch(r"(?:[0-9a-fA-F]{40}|[0-9a-fA-F]{64})",
                     args.project_commit) is None:
         raise SystemExit("project commit must be a full hexadecimal object ID")
 

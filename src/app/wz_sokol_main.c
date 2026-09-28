@@ -1308,7 +1308,7 @@ static void wz_host_ui_draw_status(struct nk_context* context,
         state->audio_muted && state->audio_degraded ? "Muted/Degraded" :
             state->audio_muted ? "Muted" :
             state->audio_degraded ? "Degraded" : "On",
-        state->tape_mounted == 0u ? "Empty" :
+        wz_host_session.machine.tape_mounted == 0u ? "Empty" :
             wz_host_session.machine.tape_state.at_end ? "At end" :
             wz_host_session.machine.tape_state.motor_on ? "Playing" : "Stopped",
         state->microdrive1_mounted ? "Mounted" : "Empty",

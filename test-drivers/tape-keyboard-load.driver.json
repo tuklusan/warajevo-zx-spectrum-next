@@ -20,7 +20,7 @@
     },
     {
       "path": "ci/test/tape-keyboard-load/write-proof.py",
-      "sha256": "ee7b05e34f8abf55ebd89d7aeb0c4229c8d1fae9110cd3a56c00d63aa3f234f1"
+      "sha256": "c36faa8c9af3e250f7d6df317441859953603756ea519b558ddf63f92128aaab"
     },
     {
       "path": "src/core/wz_machine.c",
