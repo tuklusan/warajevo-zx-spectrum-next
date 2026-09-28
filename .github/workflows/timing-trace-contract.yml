@@ -1,0 +1,87 @@
+name: Timing trace file contract
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/diagnostics/wz_trace_file.c'
+      - 'src/diagnostics/wz_trace_file.h'
+      - 'src/core/wz_trace.h'
+      - 'src/core/wz_types.h'
+      - 'src/cmake/CMakeLists.txt'
+      - 'ci/test/timing-trace-contract/**'
+      - 'test-drivers/timing-trace-contract.driver.json'
+      - '.github/workflows/timing-trace-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  trace-contract:
+    if: github.ref == 'refs/heads/main'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows Intel
+            id: windows-x64
+            label: windows-2025
+          - name: Windows ARM
+            id: windows-arm64
+            label: windows-11-arm
+          - name: macOS Intel
+            id: macos-x64
+            label: macos-15-intel
+          - name: macOS ARM
+            id: macos-arm64
+            label: macos-15
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.label }}
+    steps:
+      - name: Check out exact main revision
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Configure trace regression target
+        shell: bash
+        run: >-
+          cmake -S ci/test/timing-trace-contract
+          -B dist/timing-trace-contract
+          -DCMAKE_BUILD_TYPE=Debug
+
+      - name: Build trace regression
+        run: >-
+          cmake --build dist/timing-trace-contract --config Debug
+          --target wz_timing_trace_contract --parallel 2
+
+      - name: Run trace file contract
+        shell: bash
+        run: >-
+          ctest --test-dir dist/timing-trace-contract
+          -C Debug --output-on-failure --verbose
+          -R '^wz_timing_trace_contract$'
+
+      - name: Write pinned hosted proof
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          RUNNER_OS: ${{ runner.os }}
+          RUNNER_ARCH: ${{ runner.arch }}
+          RUNNER_NAME: ${{ matrix.name }}
+        run: |
+          if command -v python3 >/dev/null 2>&1; then python_bin=python3; else python_bin=python; fi
+          "$python_bin" ci/test/timing-trace-contract/write-proof.py \
+            --commit "$GITHUB_SHA" \
+            --run-id "$GITHUB_RUN_ID" \
+            --runner "$RUNNER_NAME/$RUNNER_OS/$RUNNER_ARCH" \
+            --run-log dist/timing-trace-contract/Testing/Temporary/LastTest.log \
+            --proof dist/timing-trace-contract/timing-trace-contract.json
+
+      - name: Upload pinned trace proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: timing-trace-contract-${{ matrix.id }}-${{ github.sha }}
+          path: dist/timing-trace-contract/timing-trace-contract.json
+          if-no-files-found: error

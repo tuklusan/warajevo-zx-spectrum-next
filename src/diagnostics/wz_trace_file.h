@@ -24,6 +24,7 @@ typedef struct {
     wz_qword_t rom_identity;
     wz_qword_t next_slot;
     wz_qword_t generation;
+    wz_qword_t record_count;
     wz_qword_t first_sequence;
     wz_qword_t last_sequence;
     wz_master_tick_t last_master_tick;

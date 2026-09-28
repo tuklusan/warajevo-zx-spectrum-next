@@ -1,0 +1,53 @@
+{
+  "testId": "timing-trace-file-contract",
+  "command": "cmake -S ci/test/timing-trace-contract -B dist/timing-trace-contract -DCMAKE_BUILD_TYPE=Debug && cmake --build dist/timing-trace-contract --config Debug --target wz_timing_trace_contract --parallel 2 && ctest --test-dir dist/timing-trace-contract -C Debug --output-on-failure --verbose -R '^wz_timing_trace_contract$'",
+  "requiredCases": 7,
+  "runnerMatrix": [
+    "windows-2025",
+    "windows-11-arm",
+    "macos-15-intel",
+    "macos-15"
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/timing-trace-contract.yml",
+      "sha256": "f6cf05e6e1bd647befd726ec7b3c58f9f00e6b8a892d4ccd2144b3a71c2e87bb"
+    },
+    {
+      "path": "ci/test/timing-trace-contract/CMakeLists.txt",
+      "sha256": "cc1f362258ef7c798a125217a0d549ca16fd14367b1314b6ae03b659aa51e404"
+    },
+    {
+      "path": "ci/test/timing-trace-contract/README.md",
+      "sha256": "f9b72af4686bf8404c4f8497fad5c2ee3bd54f85733845d12abd8a43b8f34e37"
+    },
+    {
+      "path": "ci/test/timing-trace-contract/timing-trace-contract.c",
+      "sha256": "4ab246a146900053430e37349bcc0f1934eb25cfa67318e394d90ccadc10859a"
+    },
+    {
+      "path": "ci/test/timing-trace-contract/write-proof.py",
+      "sha256": "f8fa717ebff12184e1ee370b4b395da258dd1aa92774b1cbaea50e241a5b1494"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.c",
+      "sha256": "0f9bec01a747d599fe023b069fc3ba6bb3659cc795a55fd43d2b835b2b5335a5"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.h",
+      "sha256": "bb0c16ab1d64468a2b851dcb7bd9d74662cb9923a2a7d90e84be38c7d19a682c"
+    },
+    {
+      "path": "src/core/wz_trace.h",
+      "sha256": "9730762f41380dc9ef42b8cd1d6ed454dc4d091fa83dd81c9578925f4bbd8466"
+    },
+    {
+      "path": "src/core/wz_types.h",
+      "sha256": "b989adaa74e4ac0ec7e753da23a3fd16a3c02561744cca893fcd66f7c077c409"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "4317571e64b373bd509c57127bfbe2ebd27489844f422646904be670d13ced08"
+    }
+  ]
+}

@@ -29,7 +29,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #endif
 #include <string.h>
 
-#define WZ_TRACE_FORMAT_VERSION 4u
+#define WZ_TRACE_FORMAT_VERSION 5u
 #define WZ_TRACE_COMMIT UINT32_C(0x57415a43)
 
 static void put32(wz_byte_t* p, wz_dword_t v)
@@ -63,7 +63,38 @@ static wz_qword_t get64(const wz_byte_t* p)
 }
 static wz_qword_t slot_count(void)
 {
+#if defined(WZ_TRACE_FILE_TEST_SLOT_COUNT)
+    return (wz_qword_t)WZ_TRACE_FILE_TEST_SLOT_COUNT;
+#else
     return (WZ_TRACE_FILE_SIZE - WZ_TRACE_HEADER_SIZE) / WZ_TRACE_RECORD_SIZE;
+#endif
+}
+
+static bool read_slot(FILE* file, wz_qword_t slot,
+                      wz_byte_t record[WZ_TRACE_RECORD_SIZE])
+{
+    long offset = (long)(WZ_TRACE_HEADER_SIZE + slot * WZ_TRACE_RECORD_SIZE);
+    return fseek(file, offset, SEEK_SET) == 0 &&
+        fread(record, 1u, WZ_TRACE_RECORD_SIZE, file) == WZ_TRACE_RECORD_SIZE;
+}
+
+static bool sequence_before_with_low(wz_qword_t upper_bound,
+                                     wz_dword_t low_sequence,
+                                     wz_qword_t* sequence)
+{
+    const wz_qword_t wrap = UINT64_C(1) << 32u;
+    const wz_qword_t mask = wrap - 1u;
+    wz_qword_t candidate;
+
+    if (sequence == NULL) return false;
+    candidate = (upper_bound & ~mask) | (wz_qword_t)low_sequence;
+    if (candidate > upper_bound) {
+        if (candidate < wrap) return false;
+        candidate -= wrap;
+    }
+    if (candidate > upper_bound) return false;
+    *sequence = candidate;
+    return true;
 }
 
 static void unpack_bank(wz_z80_register_bank_t* bank, wz_qword_t packed)
@@ -158,7 +189,7 @@ static bool write_header(wz_trace_file_t* t)
     put64(h+40u,t->next_slot); put64(h+48u,t->generation);
     put64(h+56u,t->first_sequence); put64(h+64u,t->last_sequence); h[72]=t->frozen?1u:0u;
     put64(h+80u,t->rom_identity); put32(h+88u,WZ_TRACE_RECORD_SIZE); put32(h+92u,WZ_TRACE_RECORD_SIZE);
-    put64(h+96u,t->last_master_tick);
+    put64(h+96u,t->last_master_tick); put64(h+104u,t->record_count);
     return fseek(t->file,0,SEEK_SET)==0 && fwrite(h,1u,sizeof(h),t->file)==sizeof(h) && fflush(t->file)==0;
 }
 
@@ -168,23 +199,24 @@ wz_result_t wz_trace_file_create(wz_trace_file_t* t,const char* path,wz_qword_t 
     if(!t||!path||sid==0u)return WZ_RESULT_INVALID_ARGUMENT;
     memset(t,0,sizeof(*t));
 #if defined(_WIN32)
-    fd = _open(path, _O_WRONLY | _O_CREAT | _O_EXCL | _O_BINARY, _S_IREAD | _S_IWRITE);
+    fd = _open(path, _O_RDWR | _O_CREAT | _O_EXCL | _O_BINARY, _S_IREAD | _S_IWRITE);
 #else
-    fd = open(path, O_WRONLY | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
+    fd = open(path, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR);
 #endif
-    if (fd < 0 || !(t->file = fdopen(fd, "wb"))) {
-        if (fd >= 0) {
+    if (fd < 0) return WZ_RESULT_TRACE_FAILURE;
+    t->file = fdopen(fd, "w+b");
+    if (t->file == NULL) {
 #if defined(_WIN32)
-            _close(fd);
+        _close(fd);
 #else
-            close(fd);
+        close(fd);
 #endif
-        }
+        (void)remove(path);
         return WZ_RESULT_TRACE_FAILURE;
     }
     t->session_id=sid;t->profile_kind=profile;t->rom_identity=rom;t->event_mask=mask;t->first_sequence=UINT64_MAX;
     if(fseek(t->file,(long)(WZ_TRACE_FILE_SIZE-1u),SEEK_SET)!=0||fputc(0,t->file)==EOF||!write_header(t)){
-        fclose(t->file);t->file=0;return WZ_RESULT_TRACE_FAILURE;
+        fclose(t->file);t->file=0;(void)remove(path);return WZ_RESULT_TRACE_FAILURE;
     }
     return WZ_RESULT_OK;
 }
@@ -204,6 +236,10 @@ void wz_trace_file_emit(const wz_trace_event_t* e,void* context)
     if ((unsigned)e->kind >= 32u || (t->event_mask & (UINT32_C(1) << (unsigned)e->kind)) == 0u) return;
     if (e->master_tick < t->last_master_tick ||
         e->master_tick - t->last_master_tick > UINT32_MAX) { t->failed=true; return; }
+    if (t->record_count != 0u && e->sequence <= t->last_sequence) {
+        t->failed = true;
+        return;
+    }
     tick_delta = (wz_dword_t)(e->master_tick - t->last_master_tick);
     memset(r,0,sizeof(r)); r[0]=(wz_byte_t)WZ_TRACE_RECORD_SIZE;
     r[1]=(wz_byte_t)e->kind; r[2]=e->cycle; r[3]=e->t_states;
@@ -218,10 +254,22 @@ void wz_trace_file_emit(const wz_trace_event_t* e,void* context)
     put32(r+WZ_TRACE_COMMIT_OFFSET,WZ_TRACE_COMMIT);
     if(fseek(t->file,(long)(WZ_TRACE_HEADER_SIZE+t->next_slot*WZ_TRACE_RECORD_SIZE),SEEK_SET)!=0||
        fwrite(r,1u,sizeof(r),t->file)!=sizeof(r)){t->failed=true;return;}
-    if(t->first_sequence==UINT64_MAX)t->first_sequence=e->sequence;
+    if (t->record_count == 0u) t->first_sequence = e->sequence;
     t->last_sequence=e->sequence;t->last_master_tick=e->master_tick;t->next_slot++;
     if(t->next_slot==slots){t->next_slot=0u;t->generation++;}
-    if(t->last_sequence>=slots)t->first_sequence=t->last_sequence-slots+1u;
+    if (t->record_count < slots) {
+        t->record_count++;
+    } else {
+        wz_byte_t oldest[WZ_TRACE_RECORD_SIZE];
+        if (!read_slot(t->file, t->next_slot, oldest) ||
+            oldest[0] != WZ_TRACE_RECORD_SIZE ||
+            get32(oldest + WZ_TRACE_COMMIT_OFFSET) != WZ_TRACE_COMMIT ||
+            !sequence_before_with_low(e->sequence, get32(oldest + 4u),
+                                      &t->first_sequence)) {
+            t->failed = true;
+            return;
+        }
+    }
     if(!write_header(t)){t->failed=true;return;}
     if(t->append_emit)t->append_emit(e,t->append_context);
 }
@@ -231,44 +279,128 @@ void wz_trace_file_close(wz_trace_file_t* t){if(t&&t->file){fclose(t->file);t->f
 
 wz_result_t wz_trace_file_recover(const char* path,wz_trace_recover_fn fn,void* context,size_t* count)
 {
-    FILE* f;wz_byte_t h[WZ_TRACE_HEADER_SIZE],r[WZ_TRACE_RECORD_SIZE];wz_qword_t first,last,tick;size_t n=0u;
-    if (!path || !fn || !count) return WZ_RESULT_INVALID_ARGUMENT;
+    FILE* f;
+    wz_byte_t header[WZ_TRACE_HEADER_SIZE];
+    wz_byte_t record[WZ_TRACE_RECORD_SIZE];
+    wz_qword_t slots = slot_count();
+    wz_qword_t first_sequence;
+    wz_qword_t last_sequence;
+    wz_qword_t next_slot;
+    wz_qword_t record_count;
+    wz_qword_t first_slot;
+    wz_qword_t* ticks = NULL;
+    wz_qword_t sequence;
+    wz_qword_t last_tick;
+    bool dropped_torn_oldest = false;
+    size_t recovered = 0u;
+    long file_size;
+    wz_result_t result = WZ_RESULT_INVALID_STATE;
+
+    if (path == NULL || fn == NULL || count == NULL) return WZ_RESULT_INVALID_ARGUMENT;
     *count = 0u;
     f = fopen(path, "rb");
-    if (!f) return WZ_RESULT_TRACE_FAILURE;
-    if(fread(h,1u,sizeof(h),f)!=sizeof(h)||memcmp(h,"WZSNTRC",7u)!=0||get32(h+8u)!=WZ_TRACE_FORMAT_VERSION){fclose(f);return WZ_RESULT_INVALID_STATE;}
-    first=get64(h+56u);last=get64(h+64u);tick=get64(h+96u);
-    if(first!=UINT64_MAX)for(wz_qword_t seq=last;seq>first;--seq){
-        wz_qword_t slot=seq%slot_count();
-        if(fseek(f,(long)(WZ_TRACE_HEADER_SIZE+slot*WZ_TRACE_RECORD_SIZE),SEEK_SET)!=0||
-           fread(r,1u,sizeof(r),f)!=sizeof(r)||r[0]!=WZ_TRACE_RECORD_SIZE||
-           get32(r+WZ_TRACE_COMMIT_OFFSET)!=WZ_TRACE_COMMIT||get32(r+4u)!=(wz_dword_t)seq)break;
-        tick-=get32(r+8u);
+    if (f == NULL) return WZ_RESULT_TRACE_FAILURE;
+    if (fseek(f, 0L, SEEK_END) != 0 || (file_size = ftell(f)) < 0 ||
+        (wz_qword_t)file_size != WZ_TRACE_FILE_SIZE || fseek(f, 0L, SEEK_SET) != 0 ||
+        fread(header, 1u, sizeof(header), f) != sizeof(header) ||
+        memcmp(header, "WZSNTRC", 7u) != 0 ||
+        get32(header + 8u) != WZ_TRACE_FORMAT_VERSION ||
+        get32(header + 12u) != WZ_TRACE_HEADER_SIZE ||
+        get32(header + 16u) != WZ_TRACE_RECORD_SIZE ||
+        get32(header + 20u) != WZ_TRACE_FILE_SIZE ||
+        get32(header + 88u) != WZ_TRACE_RECORD_SIZE ||
+        get32(header + 92u) != WZ_TRACE_RECORD_SIZE) goto cleanup;
+
+    next_slot = get64(header + 40u);
+    first_sequence = get64(header + 56u);
+    last_sequence = get64(header + 64u);
+    last_tick = get64(header + 96u);
+    record_count = get64(header + 104u);
+    if (slots == 0u || next_slot >= slots || record_count > slots) goto cleanup;
+    if (record_count == 0u) {
+        if (first_sequence != UINT64_MAX) goto cleanup;
+        result = WZ_RESULT_OK;
+        goto cleanup;
     }
-    if(first!=UINT64_MAX)for(wz_qword_t seq=first;seq<=last;++seq){
-        wz_qword_t slot=seq%slot_count();wz_trace_event_t e;
-        if(fseek(f,(long)(WZ_TRACE_HEADER_SIZE+slot*WZ_TRACE_RECORD_SIZE),SEEK_SET)!=0||fread(r,1u,sizeof(r),f)!=sizeof(r))break;
-        if(r[0]!=WZ_TRACE_RECORD_SIZE||get32(r+WZ_TRACE_COMMIT_OFFSET)!=WZ_TRACE_COMMIT||get32(r+4u)!=(wz_dword_t)seq)continue;
-        memset(&e, 0, sizeof(e)); e.kind=(wz_trace_event_kind_t)r[1];
-        e.cycle=r[2]; e.t_states=r[3]; e.sequence=seq; e.master_tick=tick;
-        if (e.kind == WZ_TRACE_CPU_STATE_SYNC || e.kind == WZ_TRACE_CPU_STATE_DELTA) {
-            e.register_snapshot=get64(r+12u);
+    if (first_sequence == UINT64_MAX || last_sequence < first_sequence) goto cleanup;
+    first_slot = (next_slot + slots - (record_count % slots)) % slots;
+    if (!read_slot(f, first_slot, record) || record[0] != WZ_TRACE_RECORD_SIZE ||
+        get32(record + WZ_TRACE_COMMIT_OFFSET) != WZ_TRACE_COMMIT) {
+        if (record_count != slots) goto cleanup;
+        dropped_torn_oldest = true;
+        first_slot = (first_slot + 1u) % slots;
+        record_count--;
+        if (record_count == 0u || !read_slot(f, first_slot, record) ||
+            record[0] != WZ_TRACE_RECORD_SIZE ||
+            get32(record + WZ_TRACE_COMMIT_OFFSET) != WZ_TRACE_COMMIT ||
+            !sequence_before_with_low(last_sequence, get32(record + 4u),
+                                      &first_sequence)) goto cleanup;
+    }
+
+    if (record_count > SIZE_MAX / sizeof(*ticks)) goto cleanup;
+    ticks = (wz_qword_t*)malloc((size_t)record_count * sizeof(*ticks));
+    if (ticks == NULL) {
+        result = WZ_RESULT_OUT_OF_MEMORY;
+        goto cleanup;
+    }
+    ticks[record_count - 1u] = last_tick;
+    for (wz_qword_t index = record_count; index-- > 1u;) {
+        wz_qword_t slot = (first_slot + index) % slots;
+        if (!read_slot(f, slot, record) || record[0] != WZ_TRACE_RECORD_SIZE ||
+            record[1] >= 32u ||
+            get32(record + WZ_TRACE_COMMIT_OFFSET) != WZ_TRACE_COMMIT ||
+            get32(record + 8u) > ticks[index]) goto cleanup;
+        ticks[index - 1u] = ticks[index] - get32(record + 8u);
+    }
+
+    sequence = first_sequence;
+    for (wz_qword_t index = 0u; index < record_count; ++index) {
+        wz_qword_t slot = (first_slot + index) % slots;
+        wz_dword_t low_sequence;
+        if (!read_slot(f, slot, record) || record[0] != WZ_TRACE_RECORD_SIZE ||
+            record[1] >= 32u ||
+            get32(record + WZ_TRACE_COMMIT_OFFSET) != WZ_TRACE_COMMIT) goto cleanup;
+        low_sequence = get32(record + 4u);
+        if (index == 0u) {
+            if ((wz_dword_t)sequence != low_sequence) goto cleanup;
         } else {
-            e.address=get16(r+12u); e.program_counter=get16(r+14u);
-            e.value=r[16]; e.auxiliary=r[17]; e.register_snapshot=get16(r+18u);
+            wz_dword_t sequence_delta = low_sequence - (wz_dword_t)sequence;
+            if (sequence_delta == 0u || UINT64_MAX - sequence < sequence_delta) goto cleanup;
+            sequence += sequence_delta;
         }
-        n++;if(!fn(&e,context))break;
-        /* A record stores its tick relative to its predecessor, so use the
-           following committed record to advance the recovered timeline. */
-        if (seq < last) {
-            wz_qword_t next_slot = (seq + 1u) % slot_count();
-            if (fseek(f, (long)(WZ_TRACE_HEADER_SIZE + next_slot * WZ_TRACE_RECORD_SIZE), SEEK_SET) != 0 ||
-                fread(r, 1u, sizeof(r), f) != sizeof(r) || r[0] != WZ_TRACE_RECORD_SIZE ||
-                get32(r + WZ_TRACE_COMMIT_OFFSET) != WZ_TRACE_COMMIT ||
-                get32(r + 4u) != (wz_dword_t)(seq + 1u)) break;
-            tick += get32(r + 8u);
-        }
-        if(seq==UINT64_MAX)break;
     }
-    fclose(f);*count=n;return WZ_RESULT_OK;
+    if (sequence != last_sequence) goto cleanup;
+
+    sequence = first_sequence;
+    for (wz_qword_t index = 0u; index < record_count; ++index) {
+        wz_qword_t slot = (first_slot + index) % slots;
+        wz_trace_event_t event;
+        if (!read_slot(f, slot, record)) goto cleanup;
+        if (index != 0u) sequence += (wz_dword_t)(get32(record + 4u) - (wz_dword_t)sequence);
+        memset(&event, 0, sizeof(event));
+        event.kind = (wz_trace_event_kind_t)record[1];
+        event.cycle = record[2];
+        event.t_states = record[3];
+        event.sequence = sequence;
+        event.master_tick = ticks[index];
+        if (event.kind == WZ_TRACE_CPU_STATE_SYNC ||
+            event.kind == WZ_TRACE_CPU_STATE_DELTA) {
+            event.register_snapshot = get64(record + 12u);
+        } else {
+            event.address = get16(record + 12u);
+            event.program_counter = get16(record + 14u);
+            event.value = record[16];
+            event.auxiliary = record[17];
+            event.register_snapshot = get16(record + 18u);
+        }
+        recovered++;
+        if (!fn(&event, context)) break;
+    }
+    *count = recovered;
+    result = WZ_RESULT_OK;
+
+cleanup:
+    free(ticks);
+    fclose(f);
+    return result;
 }
