@@ -66,9 +66,13 @@ int main(void)
         "ITEM machine.model.set PARENT=machine TYPE=COMMAND STATE=ENABLED REMOTE=ALLOWED CLASS=REMOTE_SAFE LABEL=\"Set model\"\r\n"
         "ITEM host.secret.read PARENT=settings TYPE=COMMAND STATE=ENABLED REMOTE=DENIED CLASS=HOST_READ LABEL=\"Read secret\"\r\n"
         "ITEM media.write PARENT=media TYPE=COMMAND STATE=DISABLED REMOTE=DENIED CLASS=MEDIA_DESTRUCTIVE LABEL=\"Write media\" REASON=media-dirty\r\n"
+        "ITEM host.file.write PARENT=settings TYPE=COMMAND STATE=ENABLED REMOTE=DENIED CLASS=HOST_WRITE LABEL=\"Write file\"\r\n"
+        "ITEM media.delete PARENT=media TYPE=COMMAND STATE=ENABLED REMOTE=DENIED CLASS=MEDIA_DESTRUCTIVE LABEL=\"Delete media\"\r\n"
+        "ITEM application.quit PARENT=file TYPE=COMMAND STATE=ENABLED REMOTE=DENIED CLASS=APPLICATION_CONTROL LABEL=\"Quit\"\r\n"
+        "ITEM local.toggle PARENT=view TYPE=COMMAND STATE=ENABLED REMOTE=DENIED CLASS=LOCAL_ONLY LABEL=\"Local toggle\"\r\n"
         "END\r\n";
     wz_command_registry_t registry;
-    wz_command_metadata_t storage[4];
+    wz_command_metadata_t storage[8];
     handler_state_t handlers = {0u};
     wz_command_metadata_t commands[] = {
         {"machine.reset", "Reset", "Reset the machine", "machine", "NONE",
@@ -85,7 +89,23 @@ int main(void)
         {"media.write", "Write media", "Write mounted media", "media",
          "ERASE", NULL, "test-media", "telnet", NULL,
          WZ_COMMAND_MEDIA_DESTRUCTIVE, command_unavailable, command_handler,
-         &handlers, false, false, NULL}
+         &handlers, false, false, NULL},
+        {"host.file.write", "Write file", "Write a host file", "settings",
+         "YES|NO", NULL, "test-host-write", "telnet", NULL,
+         WZ_COMMAND_HOST_WRITE, NULL, command_handler, &handlers, false, false,
+         NULL},
+        {"media.delete", "Delete media", "Delete mounted media", "media",
+         "ERASE", NULL, "test-media-delete", "telnet", NULL,
+         WZ_COMMAND_MEDIA_DESTRUCTIVE, NULL, command_handler, &handlers, false,
+         false, NULL},
+        {"application.quit", "Quit", "Quit the application", "file", "NONE",
+         NULL, "test-quit", "telnet", NULL,
+         WZ_COMMAND_APPLICATION_CONTROL, NULL, command_handler, &handlers,
+         false, false, NULL},
+        {"local.toggle", "Local toggle", "Change a local setting", "view",
+         "NONE", NULL, "test-local", "telnet", NULL,
+         WZ_COMMAND_LOCAL_ONLY, NULL, command_handler, &handlers, false, false,
+         NULL}
     };
     char output[8192];
     char id[128];
@@ -93,7 +113,7 @@ int main(void)
     size_t output_length = 0u;
     wz_command_result_t dispatch_result;
 
-    if (wz_command_registry_init(&registry, storage, 4u) != WZ_RESULT_OK ||
+    if (wz_command_registry_init(&registry, storage, 8u) != WZ_RESULT_OK ||
         wz_command_registry_bind_owner_thread(&registry) != WZ_RESULT_OK) {
         return fail("registry initialization and owner binding");
     }
@@ -170,7 +190,10 @@ int main(void)
         handlers.calls != 1u) {
         return fail("argument validation precedes remote permission");
     }
-    if (!wz_telnet_do_format(&registry, "media.write", "ERASE", output,
+    if (!wz_telnet_do_format(&registry, "media.write", "NOPE", output,
+                             sizeof(output), &output_length) ||
+        strcmp(output, "ERR BAD_ARGUMENT\r\n") != 0 ||
+        !wz_telnet_do_format(&registry, "media.write", "ERASE", output,
                              sizeof(output), &output_length) ||
         strcmp(output,
                "ERR BAD_STATE media.write media-dirty\r\n") != 0 ||
@@ -179,6 +202,28 @@ int main(void)
         strcmp(output, "ERR BAD_COMMAND_ID\r\n") != 0 ||
         handlers.calls != 1u) {
         return fail("state-disabled and unknown commands are controlled");
+    }
+    {
+        static const struct {
+            const char* id;
+            const char* arguments;
+            const char* response;
+        } denied[] = {
+            {"host.secret.read", "YES", "DENIED host.secret.read HOST_READ\r\n"},
+            {"host.file.write", "YES", "DENIED host.file.write HOST_WRITE\r\n"},
+            {"media.delete", "ERASE", "DENIED media.delete MEDIA_DESTRUCTIVE\r\n"},
+            {"application.quit", "", "DENIED application.quit APPLICATION_CONTROL\r\n"},
+            {"local.toggle", "", "DENIED local.toggle LOCAL_ONLY\r\n"}
+        };
+        for (size_t index = 0u; index < sizeof(denied) / sizeof(denied[0]); ++index) {
+            if (!wz_telnet_do_format(&registry, denied[index].id,
+                                     denied[index].arguments, output,
+                                     sizeof(output), &output_length) ||
+                strcmp(output, denied[index].response) != 0 ||
+                handlers.calls != 1u) {
+                return fail("unauthenticated policy denies every unsafe class");
+            }
+        }
     }
     puts("Telnet registry discovery and DO regression passed");
     return 0;

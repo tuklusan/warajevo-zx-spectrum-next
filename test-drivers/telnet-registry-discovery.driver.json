@@ -1,7 +1,7 @@
 {
   "testId": "telnet-registry-discovery",
   "command": "cmake -S ci/test/telnet-registry-discovery -B dist/telnet-registry-discovery -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/telnet-registry-discovery --config Release --target wz_telnet_registry_discovery --parallel 2 && dist/telnet-registry-discovery/wz_telnet_registry_discovery",
-  "requiredCases": 9,
+  "requiredCases": 17,
   "runnerMatrix": [
     "windows-2025",
     "windows-11-arm",
@@ -47,7 +47,7 @@
     },
     {
       "path": "ci/test/telnet-registry-discovery/telnet-registry-discovery-regression.c",
-      "sha256": "08a991df36f49c23b84e83bb20523282a9095b2e3bc7bb3d4b6ed365f0bdac71"
+      "sha256": "e7c9eea69267e4bfdf27ddcb31a3916b539076836948ab109dcebe09781c2620"
     },
     {
       "path": "ci/test/telnet-registry-discovery/write-proof.py",
