@@ -1,10 +1,10 @@
 {
   "testId": "networking-permission",
   "status": "pass",
-  "commit": "852bfed221e89d96eb37e61d3e87da3509df381d",
+  "commit": "63f753817743f3683b1532195e06a98540ba1489",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-09-28T14:15:15+00:00",
-  "runId": 36431455755,
+  "timestamp": "2026-09-28T14:29:37+00:00",
+  "runId": 36434898188,
   "runners": [
     {
       "id": "windows-x64",
