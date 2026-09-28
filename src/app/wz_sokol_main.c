@@ -423,6 +423,10 @@ static bool wz_host_mount_tape_segments(wz_host_session_t* session,
 {
     if (wz_machine_mount_tape(&session->machine, segments, segment_count) !=
         WZ_RESULT_OK) return false;
+    if (wz_machine_set_tape_motor(&session->machine, true) != WZ_RESULT_OK) {
+        (void)wz_machine_unmount_tape(&session->machine);
+        return false;
+    }
     free(session->tape_segments);
     session->tape_segments = segments;
     session->tape_segment_count = segment_count;
