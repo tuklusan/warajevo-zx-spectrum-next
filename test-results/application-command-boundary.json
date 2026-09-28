@@ -1,9 +1,9 @@
 {
   "testId": "application-command-boundary",
   "status": "pass",
-  "commit": "fda5617b72d3693bbf72013cf5ec002c3f4e32cc",
+  "commit": "322964d77c6d28162488fc080ee65cc0c19d7275",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-09-28T04:12:55+00:00",
+  "timestamp": "2026-09-28T05:29:22+00:00",
   "caseCount": 6,
   "runners": [
     {
@@ -34,15 +34,19 @@
   "fixtures": [
     {
       "path": ".github/workflows/application-command-boundary.yml",
-      "sha256": "00acafd497a3c7d108af9b244d059dec4b8cc0015535acc7b80a77909be298bc"
+      "sha256": "cb824b17c60fe7a183b70290c56622ac99521ba6e36ad4d74512bbb70d77dae4"
     },
     {
       "path": "ci/test/application-command-boundary/CMakeLists.txt",
-      "sha256": "e1deae5c3ccd65120fe242a83f51c2a5fd683988507157bde05beae90b74f985"
+      "sha256": "67875d643da89a4712c0d9ce2bdf3c14ebca0cd864e49e24de32c250902a8e52"
     },
     {
       "path": "ci/test/application-command-boundary/README.md",
       "sha256": "9493c1c0cac6a78f56556542bd6c6626725364cb6f7a1fa16fcf2fcfb94af190"
+    },
+    {
+      "path": "ci/test/application-command-boundary/alias-response-regression.c",
+      "sha256": "115a647a6af932ac531c8a6a6026f65a474cec062569450dfec5f9c510bccd20"
     },
     {
       "path": "ci/test/application-command-boundary/status-projection-regression.c",
@@ -70,11 +74,19 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "acf010383f9dd47c1d493a8b50eaf73a64ef708b832f581dcd58fdaf00e4d310"
+      "sha256": "616d73edfd9ae2f7e2e903ff05bd4b0d6fc1197ac0e7d8ccaad882ea65568dcf"
+    },
+    {
+      "path": "src/app/wz_telnet_alias_response.c",
+      "sha256": "6c36e41ec8261c72b6eafa556b38e246dc577356c6fb27956c9a85e6e4b14063"
+    },
+    {
+      "path": "src/app/wz_telnet_alias_response.h",
+      "sha256": "1d39dcff0ade48fcb6ede4297bd4ede2b6de81e6b8b6955cf76af7103d3a5334"
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.c",
-      "sha256": "750f675b0a62a7abfcba792c75470d8a6fb82fda2c549bf487a1e27293de9c7d"
+      "sha256": "bd0bb370a0254a2811e05863a6ac83e38ee0e7035b86b7d6ba7eab13be9f9847"
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.h",
@@ -98,7 +110,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "6e5803e6636ad982edbfc38520c2c3af1283367b695081639e314b4339c314e7"
+      "sha256": "442f2564fd66e4fa56f6686a91c588f2293dbb9ddf37b0036330dca27a6d7369"
     },
     {
       "path": "src/core/audio/wz_audio_evidence.c",
@@ -134,7 +146,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "b86911cc84e5fab4550db02b881c9c1156561e7608084d749ff1496676c3279c"
+      "sha256": "b26405f8cbcfb6e5d7145f2b0d87a15ea383bbaecb5e3fca6d504f2866660a99"
     },
     {
       "path": "src/core/wz_machine_profile.c",
