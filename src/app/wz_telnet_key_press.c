@@ -21,6 +21,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 void wz_telnet_key_press_state_init(wz_telnet_key_press_state_t* state)
 {
     if (state == 0) return;
+    state->observed_tick = 0u;
+    state->clock_initialized = 0u;
     for (size_t key = 0u; key < WZ_INPUT_ARBITER_KEY_COUNT; ++key) {
         state->release_tick[key] = 0u;
         state->pending[key] = 0u;
@@ -60,6 +62,8 @@ bool wz_telnet_key_press_schedule(wz_telnet_key_press_state_t* state,
     }
     state->release_tick[key] = start_tick + (2u * frame_ticks);
     state->pending[key] = 1u;
+    state->observed_tick = start_tick;
+    state->clock_initialized = 1u;
     return true;
 }
 
@@ -69,6 +73,21 @@ size_t wz_telnet_key_press_drain(wz_telnet_key_press_state_t* state,
 {
     size_t released = 0u;
     if (state == 0 || arbiter == 0) return 0u;
+    if (state->clock_initialized != 0u &&
+        current_tick < state->observed_tick) {
+        for (size_t key = 0u; key < WZ_INPUT_ARBITER_KEY_COUNT; ++key) {
+            if (state->pending[key] != 0u) {
+                wz_master_tick_t remaining =
+                    state->release_tick[key] > state->observed_tick ?
+                    state->release_tick[key] - state->observed_tick : 0u;
+                state->release_tick[key] =
+                    remaining > UINT64_MAX - current_tick ? UINT64_MAX :
+                    current_tick + remaining;
+            }
+        }
+    }
+    state->observed_tick = current_tick;
+    state->clock_initialized = 1u;
     for (size_t key = 0u; key < WZ_INPUT_ARBITER_KEY_COUNT; ++key) {
         if (state->pending[key] != 0u &&
             current_tick >= state->release_tick[key]) {

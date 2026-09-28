@@ -1,0 +1,21 @@
+{
+  "testId": "telnet-key-press",
+  "command": "cmake -S ci/test/telnet-key-press -B dist/telnet-key-press -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/telnet-key-press --config Release --target wz_telnet_key_press_regression --parallel 2 && dist/telnet-key-press/wz_telnet_key_press_regression",
+  "requiredCases": 16,
+  "runnerMatrix": [
+    "windows-2025",
+    "windows-11-arm",
+    "macos-15-intel",
+    "macos-15"
+  ],
+  "fixtures": [
+    { "path": ".github/workflows/telnet-key-press.yml", "sha256": "3032e41d6d86aa9018f12fe7762bae0d00558cd073be47bc317feaed0c9765dc" },
+    { "path": "ci/test/telnet-key-press/CMakeLists.txt", "sha256": "8f7d9ac255fe847a7616e8cf91c3fa1068d161d537cf23a6c133aca582343769" },
+    { "path": "ci/test/telnet-key-press/telnet-key-press-regression.c", "sha256": "9bbd1d029a902564af591b70d4bd1496ce4e8a2d20ddb3cc928ba7d5d660bd55" },
+    { "path": "ci/test/telnet-key-press/write-proof.py", "sha256": "fe01f7634ba292b0a27f7681ff1650e982bdc35284dfbf0ced3d2781861ab484" },
+    { "path": "src/app/wz_input_arbiter.c", "sha256": "52bc39d6c9d5326e76d695f4f4a725f410e02cb9852a48a5f13b266ce2523bcb" },
+    { "path": "src/app/wz_input_arbiter.h", "sha256": "d16b682056e7bf3864c46083407eaca716956ae137e23ab83d51190afc1dffcd" },
+    { "path": "src/app/wz_telnet_key_press.c", "sha256": "685c661e44e262da46958eddb6ac9cb170f7e17d1c9b6d9cbfc2554aef0922b9" },
+    { "path": "src/app/wz_telnet_key_press.h", "sha256": "f3d629ef06bf5a9ea766f5b3a260b8f6d1eb586b8af2c13b74a4e1a6fcf6379d" }
+  ]
+}

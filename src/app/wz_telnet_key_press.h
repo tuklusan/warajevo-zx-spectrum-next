@@ -27,7 +27,9 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 typedef struct {
     wz_master_tick_t release_tick[WZ_INPUT_ARBITER_KEY_COUNT];
+    wz_master_tick_t observed_tick;
     unsigned char pending[WZ_INPUT_ARBITER_KEY_COUNT];
+    unsigned char clock_initialized;
 } wz_telnet_key_press_state_t;
 
 void wz_telnet_key_press_state_init(wz_telnet_key_press_state_t* state);
