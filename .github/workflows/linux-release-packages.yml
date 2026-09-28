@@ -1,0 +1,85 @@
+name: Linux release package audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/app/**'
+      - 'src/core/**'
+      - 'src/cmake/CMakeLists.txt'
+      - 'ci/build/**'
+      - 'design/dependencies/nuklear-pin.md'
+      - 'docs/design/linux-package-format-decision.md'
+      - 'LICENSE'
+      - '.github/workflows/linux-release-packages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    name: Linux ${{ matrix.architecture }} release archive
+    if: github.ref == 'refs/heads/main'
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - architecture: x86_64
+            runner: ubuntu-24.04
+            audit-id: linux-x64
+            audit-architecture: x64
+          - architecture: aarch64
+            runner: ubuntu-24.04-arm
+            audit-id: linux-arm64
+            audit-architecture: arm64
+    steps:
+      - name: Check out exact main revision
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Install Linux host development libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes libasound2-dev libgl-dev libgtk-3-dev libxcursor-dev libxi-dev libx11-dev pkg-config
+
+      - name: Configure native Release application
+        run: cmake -S src/cmake -B dist/package-build -G Ninja -DCMAKE_BUILD_TYPE=Release -DWZSN_BUILD_SOKOL_HOST=ON
+
+      - name: Build native Release executable
+        run: cmake --build dist/package-build --config Release --target wz_sokol_host --parallel 2
+
+      - name: Audit binary architecture and system dependencies
+        env:
+          RUNNER_ID: ${{ matrix.audit-id }}
+          EXPECTED_ARCHITECTURE: ${{ matrix.audit-architecture }}
+        run: |
+          python3 ci/test/runtime-dependencies/inspect_runtime.py \
+            --binary dist/package-build/Warajevo-ZX-Spectrum-Next \
+            --runner-id "$RUNNER_ID" \
+            --expected-architecture "$EXPECTED_ARCHITECTURE" \
+            --proof-out dist/package-build/runtime-dependencies.json
+
+      - name: Create and inspect portable archive
+        env:
+          ARCHITECTURE: ${{ matrix.architecture }}
+        run: |
+          python3 ci/build/package-linux.py \
+            --binary dist/package-build/Warajevo-ZX-Spectrum-Next \
+            --architecture "$ARCHITECTURE" \
+            --nuklear-license dist/package-build/_deps/nuklear-src/LICENSE \
+            --sokol-header dist/package-build/_deps/sokol-src/util/sokol_nuklear.h \
+            --output dist/packages
+
+      - name: Upload audited archive and checksum
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-release-${{ matrix.architecture }}-${{ github.sha }}
+          path: |
+            dist/packages/*.tar.gz
+            dist/packages/*.sha256
+            dist/package-build/runtime-dependencies.json
+          if-no-files-found: error
+          retention-days: 90
