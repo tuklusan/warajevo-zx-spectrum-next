@@ -1,0 +1,75 @@
+{
+  "testId": "tape-keyboard-load",
+  "status": "pass",
+  "commit": "1b7400cc5830e27604c57f5e8fac0a0d0f4cf4b7",
+  "runner": "Ubuntu 24.04 x86-64 hosted runner",
+  "timestamp": "2026-09-28T22:15:07+00:00",
+  "runId": 36491212264,
+  "observedOutput": "after J: E_LINE=5ccc PC=10af IFF=1 IY=5c3a IM=1 IRQ/ENTRY=16/16 KEYSCAN/LASTK/FLAGWRITE=16/1/1 FLAGVALUE=20 FLAGMEM/EI=20/0c FLAGCLEAR=16/16@0b6e FIRSTCLEAR=10b8:00 CLEAR_ENTRY=1 prev=1634 SP=ff42 RET=0d99 FLAGS=00 LASTK=ef SAMPLE/IFF/ELIGIBLE=32/16/16 IRQ_EI=16 ISR_TICKS=1762-2836 IFF_INST=112388/2138 CLEAR=1@03b5>03b6 EI/DI=17/1 LINE=16/16 IRQWINDOW_IFF/ELIGIBLE=0/0 ULA_PRESSED/ROW_READS=8/16 KPATH_RET/CHECK/EMPTY=1/4719/4719 FLAGSET/Z=1/4718 MODE=00 FLAGS=0c IYFLAGS=0c KSTATE=ff000000ff LASTK=ef keyrow=1f before=15508080 line=ef0d800000000000\nbefore ENTER: E_LINE=5ccc bytes=ef22220d8000000000000000\nafter LOAD: PC=05ee PROG=5ccb payload=5ccb BASIC=000a1b00 tape-segment=14267 end=0\nafter RUN: PC=61f1 code=f3110060 tape-segment=91431 end=1\nDIZZY4K BASIC and machine-code blocks loaded through the normal ROM path",
+  "fixtures": [
+    {
+      "path": ".github/workflows/tape-keyboard-load.yml",
+      "sha256": "a82d2d61bb65815ff797496d9356194552765d62f9db5dd6a04f2f948331f7ea"
+    },
+    {
+      "path": "ci/test/tape-keyboard-load/CMakeLists.txt",
+      "sha256": "e188858dcabfbef6b28f2b1b04b42372931192926e52e8099f0d08aac7ee563e"
+    },
+    {
+      "path": "ci/test/tape-keyboard-load/tape-keyboard-load.c",
+      "sha256": "50c1c118cf772e4de2be5d1f881dc080f4ba1c9a63751462bbeef401565a412f"
+    },
+    {
+      "path": "ci/test/tape-keyboard-load/write-proof.py",
+      "sha256": "c36faa8c9af3e250f7d6df317441859953603756ea519b558ddf63f92128aaab"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "c6893ae4fe7a4fbcc5cb287238e5a00db3723bd90c52fdcf1fec5b391ff0547e"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "84d9e0b84a02993917b0e74cb9ba0d71158f45223a707d801ce927029ab2b0aa"
+    },
+    {
+      "path": "src/core/wz_keyboard_matrix.c",
+      "sha256": "68deeb821563f28e5af3e0872765fedd5ae7e24a0491c011c24ebb9d4abbd575"
+    },
+    {
+      "path": "src/core/wz_keyboard_matrix.h",
+      "sha256": "85282af5969a6212c528cb92edafd7d3fbf71375bbb4be1bad5cd9622e1cf976"
+    },
+    {
+      "path": "src/core/wz_machine_profile.c",
+      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09"
+    },
+    {
+      "path": "src/core/wz_machine_profile.h",
+      "sha256": "099be5f41f428466e5da622452abec6e0daf6402abcf4ab2e7d8c2df47457cc4"
+    },
+    {
+      "path": "src/core/wz_runner.c",
+      "sha256": "ded90228d1227ef361170e1bc95d2b98365fa380136fd5269733b6119d8c7b90"
+    },
+    {
+      "path": "src/core/wz_runner.h",
+      "sha256": "b34e16b1c9ef80588bc6a563ce2b77099bdceb899ace0e5254a0a9669b5f6e51"
+    },
+    {
+      "path": "src/core/wz_tape.c",
+      "sha256": "5792fabbfc3c6956444c3532097cb0febb1d3497e988fd2a62c9e677ea8aeac3"
+    },
+    {
+      "path": "src/core/wz_tape.h",
+      "sha256": "d483f3f99bcfa26590bf259114193d2314dd2af2720316bf66021462f5c31fd6"
+    },
+    {
+      "path": "roms/48.rom",
+      "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"
+    },
+    {
+      "path": "test-media/DIZZY4K.TAP",
+      "sha256": "9bd60921359b2e2e39a35501b718319c7702a6f0cfd7493570b589300f4f2a27"
+    }
+  ]
+}
