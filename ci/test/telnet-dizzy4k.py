@@ -19,6 +19,9 @@ import subprocess
 import sys
 import time
 
+# At 800% speed, 20 ms wall time is 160 ms of emulated keyboard hold.
+KEY_HOLD_SECONDS = 0.02
+
 
 def command(sock, text):
     sock.sendall((text + "\n").encode("ascii"))
@@ -54,9 +57,9 @@ def find_port():
 
 def press_key(sock, key):
     command(sock, f"KEY DOWN {key}")
-    time.sleep(0.1)
+    time.sleep(KEY_HOLD_SECONDS)
     command(sock, f"KEY UP {key}")
-    time.sleep(0.1)
+    time.sleep(KEY_HOLD_SECONDS)
 
 
 def main():
@@ -84,14 +87,14 @@ def main():
         command(sock, "SPEED 800")
         press_key(sock, "J")
         command(sock, "KEY DOWN SYMBOL_SHIFT")
-        time.sleep(0.1)
+        time.sleep(KEY_HOLD_SECONDS)
         for _ in range(2):
             command(sock, "KEY DOWN P")
-            time.sleep(0.1)
+            time.sleep(KEY_HOLD_SECONDS)
             command(sock, "KEY UP P")
-            time.sleep(0.1)
+            time.sleep(KEY_HOLD_SECONDS)
         command(sock, "KEY UP SYMBOL_SHIFT")
-        time.sleep(0.1)
+        time.sleep(KEY_HOLD_SECONDS)
         press_key(sock, "ENTER")
         time.sleep(15)
         press_key(sock, "R")
