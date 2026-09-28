@@ -1,0 +1,49 @@
+{
+  "testId": "windows-runtime-dependency-audit",
+  "status": "pass",
+  "commit": "b6639b53d7b541bd97f9dc733efa7cfaf6b8bc7c",
+  "runId": "36419611775",
+  "runner": "Windows/X64",
+  "timestamp": "2026-09-28T12:07:33+00:00",
+  "binary": "Warajevo-ZX-Spectrum-Next.exe",
+  "binarySha256": "e2d342b924d25634a6fba434853f57b46195d5dae928762243f2117bc8292196",
+  "peMachine": "0x8664",
+  "imports": [
+    "api-ms-win-crt-environment-l1-1-0.dll",
+    "api-ms-win-crt-heap-l1-1-0.dll",
+    "api-ms-win-crt-locale-l1-1-0.dll",
+    "api-ms-win-crt-math-l1-1-0.dll",
+    "api-ms-win-crt-runtime-l1-1-0.dll",
+    "api-ms-win-crt-stdio-l1-1-0.dll",
+    "api-ms-win-crt-string-l1-1-0.dll",
+    "api-ms-win-crt-time-l1-1-0.dll",
+    "api-ms-win-crt-utility-l1-1-0.dll",
+    "d3d11.dll",
+    "gdi32.dll",
+    "kernel32.dll",
+    "ole32.dll",
+    "shell32.dll",
+    "user32.dll",
+    "vcruntime140.dll",
+    "ws2_32.dll"
+  ],
+  "fixturePolicy": "only Windows system DLLs and Windows API-set DLLs are imported",
+  "fixtures": [
+    {
+      "path": ".github/workflows/windows-runtime-dependency-audit.yml",
+      "sha256": "7071125e29f009c1596ef0a17b5e1e36533bd06d4d8427798a29620396cb56ca"
+    },
+    {
+      "path": "ci/test/windows-runtime-dependencies/inspect_pe.py",
+      "sha256": "75072af6c4c79d1f4f6ea44f3d304c0b6abec415f3db6815fc11c3c8a3b33a77"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "d3c09a688001e54098b3789349fd2e6ae37119e273c9d229848e32662813b285"
+    },
+    {
+      "path": "ci/test/windows-runtime-dependencies/README.md",
+      "sha256": "f788c860f6fdfde3ce15586f755e9e33e8440f8b1fec04e97ae657df8ffb3aef"
+    }
+  ]
+}
