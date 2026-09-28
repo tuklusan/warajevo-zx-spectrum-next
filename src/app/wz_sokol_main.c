@@ -526,7 +526,7 @@ static bool wz_host_register_commands(void)
             "machine.pause_resume", "Pause", "Pause or resume the emulated machine",
             "machine", "NONE", NULL, "wz_host_command_pause_resume", "local",
             NULL, WZ_COMMAND_REMOTE_SAFE, NULL, wz_host_command_pause_resume,
-            &wz_host_session, false, true, NULL
+            &wz_host_session, true, true, NULL
         },
         {
             "machine.pause", "Pause", "Pause the emulated machine",
