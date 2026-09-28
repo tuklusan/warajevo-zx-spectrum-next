@@ -70,7 +70,7 @@ int main(void)
         REQUIRE(wz_telnet_command_buffer_feed(&buffer, line,
                     WZ_TELNET_COMMAND_CAPACITY, command, sizeof(command),
                     &command_length, &malformed, &error));
-        REQUIRE(command_length == WZ_TELNET_COMMAND_CAPACITY && !malformed);
+        REQUIRE(command_length == 0u && !malformed);
         REQUIRE(wz_telnet_command_buffer_feed(&buffer, line + WZ_TELNET_COMMAND_CAPACITY,
                     1u, command, sizeof(command), &command_length, &malformed, &error));
         REQUIRE(command_length == WZ_TELNET_COMMAND_CAPACITY && !malformed);
