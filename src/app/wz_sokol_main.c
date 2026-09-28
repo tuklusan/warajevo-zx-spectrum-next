@@ -1015,7 +1015,7 @@ static void wz_host_telnet_process_command(const char* command)
         } else {
             wz_qword_t frame_ticks =
                 (wz_qword_t)profile->tstates_per_frame *
-                profile->master_ticks_per_cpu_tstate;
+                (wz_qword_t)profile->master_ticks_per_cpu_tstate;
             key_ok = wz_telnet_key_press_schedule(
                 &wz_host_session.telnet_key_presses,
                 &wz_host_session.input_arbiter, physical_key,
