@@ -24,6 +24,7 @@ typedef struct {
 } wz_host_audio_push_queue_t;
 
 void wz_host_audio_push_init(wz_host_audio_push_queue_t* queue);
+/* Discard queued samples while preserving the cumulative dropped-sample count. */
 void wz_host_audio_clear_pending(wz_host_audio_push_queue_t* queue);
 size_t wz_host_audio_push(wz_host_audio_push_queue_t* queue,
                           const wz_audio_sample_t* samples,

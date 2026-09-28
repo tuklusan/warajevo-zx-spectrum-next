@@ -22,7 +22,7 @@
     },
     {
       "path": "src/app/wz_host_audio_push.h",
-      "sha256": "fad43801c34a1ef5121b79e752c53da47db45bc75e16faced192f4f321bf4946"
+      "sha256": "5e864911c75396fbd9247d14e48cf8743656807fbb7174b6522d14527d130988"
     },
     {
       "path": "src/app/wz_host_audio_policy.c",
