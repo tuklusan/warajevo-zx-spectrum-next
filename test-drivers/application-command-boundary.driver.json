@@ -51,7 +51,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "120d2b128795ad4e05d672989d31379685ae7bda302faca60bb11ff735dabb89"
+      "sha256": "f952293b4e69fabff38da5f7f660b18c1f31605942aef94f50f290df1841adb0"
     },
     {
       "path": "src/app/wz_telnet_alias_response.c",
@@ -79,11 +79,11 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "2d26449a2d98d0a8b35450e6937fe4b00855b4a985fed4d73f0ee6d131ad650b"
+      "sha256": "f23f7e5eb308636c80e439a15014b958f0b86be7f124d121f3b3e88d8418ea03"
     },
     {
       "path": "src/app/wz_ui_layout.h",
-      "sha256": "701a6e9d97019caa67e92656afea58b1e48347800f3046c5dea513a1724af47a"
+      "sha256": "32c18fef709e81fab1a933a4d051d3dfc3db7047fbeac2bab427f141b3e16c7e"
     },
     {
       "path": "src/cmake/CMakeLists.txt",

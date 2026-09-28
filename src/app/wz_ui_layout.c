@@ -324,6 +324,36 @@ void wz_ui_remote_control_status_page(
     output[capacity - 1u] = '\0';
 }
 
+void wz_ui_remote_control_indicator(
+    const wz_ui_remote_control_status_t* status,
+    char* output,
+    size_t capacity)
+{
+    char selected[24];
+    if (output == 0 || capacity == 0u) {
+        return;
+    }
+    if (status == 0) {
+        output[0] = '\0';
+        return;
+    }
+    if (status->selected_control_port_available) {
+        (void)snprintf(selected, sizeof(selected), "%u",
+                       status->selected_control_port);
+    } else {
+        (void)snprintf(selected, sizeof(selected), "unavailable");
+    }
+    (void)snprintf(output, capacity,
+                   "Control Port: %s | IPv4: %s | IPv6: %s | "
+                   "Listener: %s | Telnet: %s",
+                   selected,
+                   status->ipv4_listener_up ? "UP" : "DOWN",
+                   status->ipv6_listener_up ? "UP" : "DOWN",
+                   remote_listener_state_label(status->listener_state),
+                   status->active_client ? "ACTIVE" : "NONE");
+    output[capacity - 1u] = '\0';
+}
+
 void wz_ui_keyboard_status_init(wz_ui_keyboard_status_t* status)
 {
     if (status == 0) {

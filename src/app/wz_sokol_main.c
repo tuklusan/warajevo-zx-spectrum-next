@@ -1027,45 +1027,31 @@ static void wz_host_ui_draw_status(struct nk_context* context,
     const wz_ui_remote_control_status_t* remote_status =
         wz_ui_window_remote_control(&wz_host_session.ui_window);
     char status[WZ_UI_STATUS_CAPACITY];
-    char control_port[48];
+    char control_status[WZ_UI_STATUS_CAPACITY];
     struct nk_vec2 saved_padding;
-    const char* listener;
-    const char* client;
     const char* model = wz_host_session.machine.profile == NULL ?
         "Unavailable" : wz_host_session.machine.profile->name;
     if (state == NULL || remote_status == NULL) return;
-    if (remote_status->selected_control_port_available) {
-        (void)snprintf(control_port, sizeof(control_port), "%u",
-            remote_status->selected_control_port);
-    } else {
-        (void)snprintf(control_port, sizeof(control_port), "unavailable");
-    }
-    switch (remote_status->listener_state) {
-    case WZ_UI_REMOTE_LISTENER_UP: listener = "UP"; break;
-    case WZ_UI_REMOTE_LISTENER_DEGRADED: listener = "DEGRADED"; break;
-    case WZ_UI_REMOTE_LISTENER_DOWN: listener = "DOWN"; break;
-    case WZ_UI_REMOTE_LISTENER_UNAVAILABLE:
-    default: listener = "UNAVAILABLE"; break;
-    }
-    client = remote_status->active_client ? "ACTIVE" : "NONE";
+    wz_ui_remote_control_indicator(
+        remote_status, control_status, sizeof(control_status));
     (void)snprintf(status, sizeof(status),
-        "%s | %s | %s | Audio %s | Tape %s | MDV1 %s | Net %s | "
-        "Control Port: %s | Listener: %s | Telnet: %s",
+        "%s | %s | %s | Audio %s | Tape %s | MDV1 %s | Net %s",
         model,
         wz_ui_layout_speed_label((size_t)wz_host_session.speed),
         state->paused ? "Paused" : "Running",
         state->audio_muted ? "Muted" : "On",
         state->tape_mounted ? "Mounted" : "Empty",
         state->microdrive1_mounted ? "Mounted" : "Empty",
-        state->networking_mode == NULL ? "Unavailable" : state->networking_mode,
-        control_port, listener, client);
+        state->networking_mode == NULL ? "Unavailable" : state->networking_mode);
     saved_padding = context->style.window.padding;
     context->style.window.padding = nk_vec2(0.0f, 0.0f);
     if (nk_begin(context, "Machine status",
-            nk_rect(0.0f, height - 26.0f, width, 26.0f),
+            nk_rect(0.0f, height - 48.0f, width, 48.0f),
             NK_WINDOW_NO_SCROLLBAR)) {
         nk_layout_row_dynamic(context, 20.0f, 1);
-        if (nk_button_label(context, status)) {
+        nk_label(context, status, NK_TEXT_LEFT);
+        nk_layout_row_dynamic(context, 20.0f, 1);
+        if (nk_button_label(context, control_status)) {
             wz_host_session.remote_settings_visible = true;
         }
     }
@@ -1092,7 +1078,7 @@ static void wz_host_ui_draw_remote_settings(struct nk_context* context,
         return;
     }
     panel_x = width - panel_width - 8.0f;
-    panel_y = height - panel_height - 36.0f;
+    panel_y = height - panel_height - 56.0f;
     if (!nk_begin(context, "Telnet Keyboard & Remote Control",
             nk_rect(panel_x, panel_y, panel_width, panel_height),
             NK_WINDOW_BORDER | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE |
@@ -1126,7 +1112,7 @@ static void wz_host_render_raster(void)
     const float window_width = (float)sapp_width();
     const float window_height = (float)sapp_height();
     const float viewport_top = 56.0f;
-    const float viewport_bottom = window_height - 24.0f;
+    const float viewport_bottom = window_height - 48.0f;
     const float viewport_height = viewport_bottom - viewport_top;
     const float viewport_width = viewport_height *
         (float)WZ_RASTER_CANONICAL_WIDTH / (float)WZ_RASTER_CANONICAL_HEIGHT;

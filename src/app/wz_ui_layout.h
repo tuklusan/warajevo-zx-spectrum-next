@@ -192,6 +192,10 @@ void wz_ui_remote_control_status_page(
     const wz_ui_remote_control_status_t* status,
     char* output,
     size_t capacity);
+void wz_ui_remote_control_indicator(
+    const wz_ui_remote_control_status_t* status,
+    char* output,
+    size_t capacity);
 void wz_ui_keyboard_status_init(wz_ui_keyboard_status_t* status);
 void wz_ui_keyboard_status_page(const wz_ui_keyboard_status_t* status,
                                char* output,

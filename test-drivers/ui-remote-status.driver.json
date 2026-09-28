@@ -1,0 +1,85 @@
+{
+  "testId": "ui-remote-status",
+  "command": "cmake -S ci/test/ui-remote-status -B dist/ui-remote-status -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/ui-remote-status --config Release --target wz_ui_remote_status_regression --parallel 2 && dist/ui-remote-status/wz_ui_remote_status_regression",
+  "requiredCases": 20,
+  "runnerMatrix": [
+    "windows-2025",
+    "windows-11-arm",
+    "macos-15-intel",
+    "macos-15"
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/ui-remote-status.yml",
+      "sha256": "840c482fc747a625d945652d5edcb22fcf348b0c9204d658437bd6b5bdba1e93"
+    },
+    {
+      "path": "ci/test/ui-remote-status/CMakeLists.txt",
+      "sha256": "0dcbc08c4f8ae7442b5e699b3aa5ec52ed72f4e13248332b727e871b54e68a61"
+    },
+    {
+      "path": "ci/test/ui-remote-status/remote-status-regression.c",
+      "sha256": "feaadb6ad4529f8f46159e5173252aeb9fe03a90357d9f08a30fc10af2e814d0"
+    },
+    {
+      "path": "ci/test/ui-remote-status/write-proof.py",
+      "sha256": "caac55ef632b0ff2f37a2d226b74cbbe464298a8d9dc19be492521cba9c88a66"
+    },
+    {
+      "path": "src/app/wz_ui_layout.c",
+      "sha256": "f23f7e5eb308636c80e439a15014b958f0b86be7f124d121f3b3e88d8418ea03"
+    },
+    {
+      "path": "src/app/wz_ui_layout.h",
+      "sha256": "32c18fef709e81fab1a933a4d051d3dfc3db7047fbeac2bab427f141b3e16c7e"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "f952293b4e69fabff38da5f7f660b18c1f31605942aef94f50f290df1841adb0"
+    },
+    {
+      "path": "src/app/wz_command_registry.c",
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
+    },
+    {
+      "path": "src/app/wz_command_registry.h",
+      "sha256": "80110080861a05baae47cd6d294315055bb6b1a636c79891b55c56717cb53c94"
+    },
+    {
+      "path": "src/app/wz_host_thread.c",
+      "sha256": "6f8cbe0e171adfe7b9f42d9517e31d72f7917048339ff8941d5bccadfa305151"
+    },
+    {
+      "path": "src/app/wz_host_thread.h",
+      "sha256": "bd4e189a40c8f9ad31f014dc12afc3c67b7a4bd5580df262b0cf92db8fbe8471"
+    },
+    {
+      "path": "src/app/wz_host_audio_policy.c",
+      "sha256": "7248245e6f4ff506a436ab09a1121e0fefe68cb729be28267d25e4f54ca0cc68"
+    },
+    {
+      "path": "src/app/wz_host_audio_policy.h",
+      "sha256": "99f86c6701dec5ccae2b932b31daafc95909143dd192bf1cfe43bc91a5991430"
+    },
+    {
+      "path": "src/app/wz_speed_policy.c",
+      "sha256": "cb9d2d0befc0becaa81558d794a257f399c4a46e1c1a0bdb19c4893d8f547183"
+    },
+    {
+      "path": "src/app/wz_speed_policy.h",
+      "sha256": "0895e0cac0254cb95d4b2347d911f0fdddfd0bab414d37e5dd4052cfc9eaa2df"
+    },
+    {
+      "path": "src/app/wz_control_port.h",
+      "sha256": "44a2a09d58c56dff09494d2176a43f8de0982ff719e3914fb53853fcca4ea32a"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "84d9e0b84a02993917b0e74cb9ba0d71158f45223a707d801ce927029ab2b0aa"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "75dd8a10f4e965e81610260a20de6b07965f7bb22da5953a97691e1ea41bb70d"
+    }
+  ]
+}

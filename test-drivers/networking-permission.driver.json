@@ -41,7 +41,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "120d2b128795ad4e05d672989d31379685ae7bda302faca60bb11ff735dabb89"
+      "sha256": "f952293b4e69fabff38da5f7f660b18c1f31605942aef94f50f290df1841adb0"
     },
     {
       "path": "src/core/wz_machine_profile.c",
