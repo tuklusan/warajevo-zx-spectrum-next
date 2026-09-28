@@ -12,6 +12,23 @@
 #include "core/wz_keyboard_matrix.h"
 #include "core/wz_machine.h"
 #include "core/wz_runner.h"
+#include "core/wz_trace.h"
+
+typedef struct {
+    size_t interrupt_accepts;
+    size_t interrupt_samples;
+} trace_counts_t;
+
+static void count_trace(const wz_trace_event_t* event, void* context)
+{
+    trace_counts_t* counts = (trace_counts_t*)context;
+    if (event == NULL || counts == NULL ||
+        event->kind != WZ_TRACE_INTERRUPT) return;
+    if (event->value == WZ_TRACE_INTERRUPT_MASKABLE_ACCEPT)
+        ++counts->interrupt_accepts;
+    else if (event->value == WZ_TRACE_INTERRUPT_MASKABLE_SAMPLE)
+        ++counts->interrupt_samples;
+}
 
 #define REQUIRE(condition) do { \
     if (!(condition)) { \
@@ -114,6 +131,8 @@ int main(int argc, char** argv)
 {
     wz_machine_t machine = {0};
     wz_headless_runner_t runner;
+    wz_trace_sink_t trace;
+    trace_counts_t trace_counts = {0u, 0u};
     wz_byte_t* rom = NULL;
     wz_byte_t* tap = NULL;
     wz_tape_segment_t* segments = NULL;
@@ -147,7 +166,9 @@ int main(int argc, char** argv)
         &segment_count) == WZ_RESULT_OK);
     REQUIRE(wz_machine_mount_tape(&machine, segments, segment_count) ==
             WZ_RESULT_OK);
-    REQUIRE(wz_headless_runner_init(&runner, &machine, NULL) == WZ_RESULT_OK);
+    wz_trace_sink_init(&trace, count_trace, &trace_counts);
+    wz_machine_set_timing_trace(&machine, &trace);
+    REQUIRE(wz_headless_runner_init(&runner, &machine, &trace) == WZ_RESULT_OK);
     frame_ticks = (wz_master_tick_t)profile->tstates_per_frame *
                   profile->master_ticks_per_cpu_tstate;
 
@@ -155,7 +176,10 @@ int main(int argc, char** argv)
     REQUIRE(tap_key(&machine, &runner, frame_ticks, WZ_KEY_J));
     edit_line = (wz_word_t)(wz_machine_memory_read(&machine, 0x5c59u) |
         ((wz_word_t)wz_machine_memory_read(&machine, 0x5c5au) << 8u));
-    (void)printf("after J: E_LINE=%04x bytes=", edit_line);
+    (void)printf("after J: E_LINE=%04x PC=%04x IFF=%u IRQ=%lu samples=%lu bytes=",
+        edit_line, machine.cpu.program_counter, (unsigned)machine.cpu.iff1,
+        (unsigned long)trace_counts.interrupt_accepts,
+        (unsigned long)trace_counts.interrupt_samples);
     for (size_t index = 0u; index < 8u; ++index) {
         (void)printf("%02x", wz_machine_memory_read(&machine,
             (wz_word_t)(edit_line + index)));
