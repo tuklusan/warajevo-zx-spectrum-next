@@ -106,7 +106,8 @@ int main(void)
                                     &output_length) ||
         !contains(output, "ITEM machine.reset PARENT=machine TYPE=COMMAND") ||
         !contains(output, "ITEM host.secret.read PARENT=settings") ||
-        !contains(output, "ITEM media.write PARENT=media STATE=DISABLED") ||
+        !contains(output,
+                  "ITEM media.write PARENT=media TYPE=COMMAND STATE=DISABLED") ||
         !contains(output, "REASON=media-dirty\r\n") ||
         !contains(output, "END\r\n")) {
         return fail("MENU TREE fields, state, reason, and terminator");
