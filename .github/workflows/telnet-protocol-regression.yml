@@ -1,0 +1,43 @@
+# Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+# This file is governed by the SANYALnet Labs Non-Commercial License in the
+# root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
+# for AI/ML model training are prohibited unless separately authorized.
+# Attribution is required: "Based on original work by Supratim Sanyal of
+# SANYALnet Labs." See LICENSE for full terms.
+
+name: Telnet protocol regression
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/telnet-protocol-regression.yml'
+      - 'ci/test/telnet-protocol/**'
+      - 'src/app/wz_telnet_*.c'
+      - 'src/app/wz_telnet_*.h'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  regression:
+    if: github.ref == 'refs/heads/main'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: windows-x64
+            runner: windows-2025
+          - id: windows-arm64
+            runner: windows-11-arm
+          - id: macos-x64
+            runner: macos-15-intel
+          - id: macos-arm64
+            runner: macos-15
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure, build, and run regression
+        shell: bash
+        run: |
+          cmake -S ci/test/telnet-protocol -B dist/telnet-protocol -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build dist/telnet-protocol --config Release --target wz_telnet_protocol_regression --parallel 2
+          dist/telnet-protocol/wz_telnet_protocol_regression
