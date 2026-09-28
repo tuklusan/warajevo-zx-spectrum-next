@@ -46,7 +46,11 @@ typedef struct {
     size_t keyboard_lastk_writes;
     size_t keyboard_newkey_flag_writes;
     size_t keyboard_flag_clears;
+    size_t keyboard_flag_clears_after_newkey;
     wz_word_t last_keyboard_flag_clear_pc;
+    wz_byte_t flags_memory_after_newkey_write;
+    wz_byte_t flags_memory_at_handler_ei;
+    bool keyboard_newkey_seen;
     wz_byte_t last_newkey_flags;
     size_t interrupt_window_iff_enabled;
     size_t interrupt_window_acceptable;
@@ -71,9 +75,14 @@ static void count_trace(const wz_trace_event_t* event, void* context)
         if ((event->value & 0x20u) != 0u) {
             ++counts->keyboard_newkey_flag_writes;
             counts->last_newkey_flags = event->value;
+            counts->keyboard_newkey_seen = true;
+            counts->flags_memory_after_newkey_write =
+                counts->machine->memory[0x5c3bu];
         } else {
             ++counts->keyboard_flag_clears;
             counts->last_keyboard_flag_clear_pc = counts->previous_cpu_pc;
+            if (counts->keyboard_newkey_seen)
+                ++counts->keyboard_flag_clears_after_newkey;
         }
     }
     if (counts->capture_keyboard_input &&
@@ -117,6 +126,9 @@ static void count_trace(const wz_trace_event_t* event, void* context)
             ++counts->keyboard_lastk_writes;
         if (event->program_counter == 0x0051u) {
             ++counts->irq_handler_ei;
+            if (counts->machine != NULL)
+                counts->flags_memory_at_handler_ei =
+                    counts->machine->memory[0x5c3bu];
             if (counts->interrupt_handler_active) {
                 wz_master_tick_t elapsed = event->master_tick -
                     counts->last_interrupt_accept_tick;
@@ -308,7 +320,7 @@ int main(int argc, char** argv)
     trace_counts.capture_keyboard_input = false;
     edit_line = (wz_word_t)(wz_machine_memory_read(&machine, 0x5c59u) |
         ((wz_word_t)wz_machine_memory_read(&machine, 0x5c5au) << 8u));
-    (void)printf("after J: E_LINE=%04x PC=%04x IFF=%u IY=%04x IM=%u IRQ/ENTRY=%lu/%lu KEYSCAN/LASTK/FLAGWRITE=%lu/%lu/%lu FLAGVALUE=%02x FLAGCLEAR=%lu@%04x SAMPLE/IFF/ELIGIBLE=%lu/%lu/%lu IRQ_EI=%lu ISR_TICKS=%llu-%llu IFF_INST=%lu/%lu CLEAR=%lu@%04x>%04x EI/DI=%lu/%lu LINE=%lu/%lu IRQWINDOW_IFF/ELIGIBLE=%lu/%lu ULA_PRESSED/ROW_READS=%lu/%lu KPATH_RET/CHECK/EMPTY=%lu/%lu/%lu FLAGSET/Z=%lu/%lu MODE=%02x FLAGS=%02x IYFLAGS=%02x KSTATE=%02x%02x%02x%02x%02x LASTK=%02x keyrow=%02x before=",
+    (void)printf("after J: E_LINE=%04x PC=%04x IFF=%u IY=%04x IM=%u IRQ/ENTRY=%lu/%lu KEYSCAN/LASTK/FLAGWRITE=%lu/%lu/%lu FLAGVALUE=%02x FLAGMEM/EI=%02x/%02x FLAGCLEAR=%lu/%lu@%04x SAMPLE/IFF/ELIGIBLE=%lu/%lu/%lu IRQ_EI=%lu ISR_TICKS=%llu-%llu IFF_INST=%lu/%lu CLEAR=%lu@%04x>%04x EI/DI=%lu/%lu LINE=%lu/%lu IRQWINDOW_IFF/ELIGIBLE=%lu/%lu ULA_PRESSED/ROW_READS=%lu/%lu KPATH_RET/CHECK/EMPTY=%lu/%lu/%lu FLAGSET/Z=%lu/%lu MODE=%02x FLAGS=%02x IYFLAGS=%02x KSTATE=%02x%02x%02x%02x%02x LASTK=%02x keyrow=%02x before=",
         edit_line, machine.cpu.program_counter, (unsigned)machine.cpu.iff1,
         machine.cpu.iy,
         (unsigned)machine.cpu.interrupt_mode,
@@ -318,7 +330,10 @@ int main(int argc, char** argv)
         (unsigned long)trace_counts.keyboard_lastk_writes,
         (unsigned long)trace_counts.keyboard_newkey_flag_writes,
         (unsigned)trace_counts.last_newkey_flags,
+        (unsigned)trace_counts.flags_memory_after_newkey_write,
+        (unsigned)trace_counts.flags_memory_at_handler_ei,
         (unsigned long)trace_counts.keyboard_flag_clears,
+        (unsigned long)trace_counts.keyboard_flag_clears_after_newkey,
         (unsigned)trace_counts.last_keyboard_flag_clear_pc,
         (unsigned long)trace_counts.interrupt_samples,
         (unsigned long)trace_counts.sampled_interrupts_iff_enabled,
