@@ -75,6 +75,7 @@ def main() -> int:
 
     if not args.binary.is_file():
         raise SystemExit(f"release executable not found: {args.binary}")
+    binary = args.binary.resolve(strict=True)
     actual_architecture = platform.machine().casefold()
     accepted_architectures = {
         "x64": {"x86_64", "amd64"},
@@ -86,18 +87,18 @@ def main() -> int:
         )
 
     if platform.system() == "Linux":
-        dependencies = linux_dependencies(args.binary)
+        dependencies = linux_dependencies(binary)
     elif platform.system() == "Darwin":
-        dependencies = macos_dependencies(args.binary)
+        dependencies = macos_dependencies(binary)
     else:
         raise SystemExit(f"unsupported audit host: {platform.system()}")
 
-    binary_bytes = args.binary.read_bytes()
+    binary_bytes = binary.read_bytes()
     proof = {
         "runnerId": args.runner_id,
         "os": platform.system(),
         "architecture": actual_architecture,
-        "binary": args.binary.name,
+        "binary": binary.name,
         "binarySha256": hashlib.sha256(binary_bytes).hexdigest(),
         "dependencies": dependencies,
     }

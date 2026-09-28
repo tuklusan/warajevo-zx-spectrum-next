@@ -19,11 +19,11 @@
     },
     {
       "path": "ci/test/runtime-dependencies/inspect_runtime.py",
-      "sha256": "05f3ef02e347ad67e74335221758fb5fe0f45c90743e20bfe526c07cb213ed03"
+      "sha256": "83ca1a7134797de11725812b07c2ab0cebf2693a70c5c1961ebb5c3750c2d635"
     },
     {
       "path": "ci/test/runtime-dependencies/write_matrix_proof.py",
-      "sha256": "f60644e69afbefc4fcdf1336afef2dc78220cbad8223ad63cdca89c1c551b6a6"
+      "sha256": "2ee65b04c8378dc76d4438beaf9be7616700bba977b2a929dbb79160f98e42fa"
     },
     {
       "path": "src/cmake/CMakeLists.txt",

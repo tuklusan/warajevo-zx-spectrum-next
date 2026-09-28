@@ -27,11 +27,16 @@ def main() -> int:
     parser.add_argument("--proof-out", required=True, type=Path)
     args = parser.parse_args()
 
+    commit = os.environ.get("GITHUB_SHA")
+    run_id = os.environ.get("GITHUB_RUN_ID")
+    if not commit or not run_id:
+        raise SystemExit("GITHUB_SHA and GITHUB_RUN_ID are required for a pinned proof")
+
     driver = json.loads(args.driver.read_text(encoding="utf-8"))
     fixtures = []
     for item in driver["fixtures"]:
         data = subprocess.check_output(
-            ["git", "show", f"{os.environ['GITHUB_SHA']}:{item['path']}"]
+            ["git", "show", f"{commit}:{item['path']}"]
         )
         digest = hashlib.sha256(data).hexdigest()
         if digest != item["sha256"]:
@@ -51,8 +56,8 @@ def main() -> int:
     proof = {
         "testId": driver["testId"],
         "status": "pass",
-        "commit": os.environ["GITHUB_SHA"],
-        "runId": int(os.environ["GITHUB_RUN_ID"]),
+        "commit": commit,
+        "runId": int(run_id),
         "runner": "Linux x86-64/AArch64 and macOS x86-64/Apple Silicon hosted matrix",
         "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "caseCount": len(reports),
