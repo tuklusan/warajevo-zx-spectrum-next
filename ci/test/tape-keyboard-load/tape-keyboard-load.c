@@ -19,6 +19,8 @@ typedef struct {
     wz_machine_t* machine;
     size_t interrupt_accepts;
     size_t interrupt_samples;
+    size_t sampled_interrupts_iff_enabled;
+    size_t sampled_interrupts_acceptable;
     size_t interrupt_asserts;
     size_t interrupt_deasserts;
     size_t j_row_reads;
@@ -73,9 +75,14 @@ static void count_trace(const wz_trace_event_t* event, void* context)
     if (event->kind != WZ_TRACE_INTERRUPT) return;
     if (event->value == WZ_TRACE_INTERRUPT_MASKABLE_ACCEPT)
         ++counts->interrupt_accepts;
-    else if (event->value == WZ_TRACE_INTERRUPT_MASKABLE_SAMPLE)
+    else if (event->value == WZ_TRACE_INTERRUPT_MASKABLE_SAMPLE) {
         ++counts->interrupt_samples;
-    else if (event->value == WZ_TRACE_INTERRUPT_LINE_ASSERT)
+        if (counts->machine != NULL && counts->machine->cpu.iff1 != 0u) {
+            ++counts->sampled_interrupts_iff_enabled;
+            if (wz_z80_maskable_interrupts_acceptable(&counts->machine->cpu))
+                ++counts->sampled_interrupts_acceptable;
+        }
+    } else if (event->value == WZ_TRACE_INTERRUPT_LINE_ASSERT)
         ++counts->interrupt_asserts;
     else if (event->value == WZ_TRACE_INTERRUPT_LINE_DEASSERT)
         ++counts->interrupt_deasserts;
@@ -230,12 +237,15 @@ int main(int argc, char** argv)
     trace_counts.capture_keyboard_input = false;
     edit_line = (wz_word_t)(wz_machine_memory_read(&machine, 0x5c59u) |
         ((wz_word_t)wz_machine_memory_read(&machine, 0x5c5au) << 8u));
-    (void)printf("after J: E_LINE=%04x PC=%04x IFF=%u IY=%04x IM=%u IRQ/ENTRY=%lu/%lu IRQ_EI=%lu EI/DI=%lu/%lu LINE=%lu/%lu IRQWINDOW_IFF/ELIGIBLE=%lu/%lu ULA_PRESSED/ROW_READS=%lu/%lu KPATH_RET/CHECK/EMPTY=%lu/%lu/%lu MODE=%02x FLAGS=%02x IYFLAGS=%02x KSTATE=%02x%02x%02x%02x%02x LASTK=%02x keyrow=%02x before=",
+    (void)printf("after J: E_LINE=%04x PC=%04x IFF=%u IY=%04x IM=%u IRQ/ENTRY=%lu/%lu SAMPLE/IFF/ELIGIBLE=%lu/%lu/%lu IRQ_EI=%lu EI/DI=%lu/%lu LINE=%lu/%lu IRQWINDOW_IFF/ELIGIBLE=%lu/%lu ULA_PRESSED/ROW_READS=%lu/%lu KPATH_RET/CHECK/EMPTY=%lu/%lu/%lu MODE=%02x FLAGS=%02x IYFLAGS=%02x KSTATE=%02x%02x%02x%02x%02x LASTK=%02x keyrow=%02x before=",
         edit_line, machine.cpu.program_counter, (unsigned)machine.cpu.iff1,
         machine.cpu.iy,
         (unsigned)machine.cpu.interrupt_mode,
         (unsigned long)trace_counts.interrupt_accepts,
         (unsigned long)trace_counts.irq_handler_entries,
+        (unsigned long)trace_counts.interrupt_samples,
+        (unsigned long)trace_counts.sampled_interrupts_iff_enabled,
+        (unsigned long)trace_counts.sampled_interrupts_acceptable,
         (unsigned long)trace_counts.irq_handler_ei,
         (unsigned long)trace_counts.ei_opcodes,
         (unsigned long)trace_counts.di_opcodes,
