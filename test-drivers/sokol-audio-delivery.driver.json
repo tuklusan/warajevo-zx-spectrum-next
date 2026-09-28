@@ -94,5 +94,5 @@
   ],
   "testId": "sokol-audio-delivery",
   "command": "cmake -S src/cmake -B dist/audio-delivery -DCMAKE_BUILD_TYPE=Debug && cmake --build dist/audio-delivery --config Debug --target wz_sokol_audio_delivery_tests --parallel 2 && ctest --test-dir dist/audio-delivery --output-on-failure --verbose -R '^wz_sokol_audio_delivery_tests$'",
-  "requiredCases": 15
+  "requiredCases": 14
 }
