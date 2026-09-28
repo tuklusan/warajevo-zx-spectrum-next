@@ -54,6 +54,19 @@ static bool contains(const char* text, const char* fragment)
 
 int main(void)
 {
+    static const char expected_tree[] =
+        "ITEM file PARENT=ROOT TYPE=MENU STATE=ENABLED REMOTE=ALLOWED CLASS=REMOTE_SAFE LABEL=\"File\"\r\n"
+        "ITEM machine PARENT=ROOT TYPE=MENU STATE=ENABLED REMOTE=ALLOWED CLASS=REMOTE_SAFE LABEL=\"Machine\"\r\n"
+        "ITEM media PARENT=ROOT TYPE=MENU STATE=ENABLED REMOTE=ALLOWED CLASS=REMOTE_SAFE LABEL=\"Media\"\r\n"
+        "ITEM view PARENT=ROOT TYPE=MENU STATE=ENABLED REMOTE=ALLOWED CLASS=REMOTE_SAFE LABEL=\"View\"\r\n"
+        "ITEM tools PARENT=ROOT TYPE=MENU STATE=ENABLED REMOTE=ALLOWED CLASS=REMOTE_SAFE LABEL=\"Tools\"\r\n"
+        "ITEM settings PARENT=ROOT TYPE=MENU STATE=ENABLED REMOTE=ALLOWED CLASS=REMOTE_SAFE LABEL=\"Settings\"\r\n"
+        "ITEM help PARENT=ROOT TYPE=MENU STATE=ENABLED REMOTE=ALLOWED CLASS=REMOTE_SAFE LABEL=\"Help\"\r\n"
+        "ITEM machine.reset PARENT=machine TYPE=COMMAND STATE=ENABLED REMOTE=ALLOWED CLASS=REMOTE_SAFE LABEL=\"Reset\"\r\n"
+        "ITEM machine.model.set PARENT=machine TYPE=COMMAND STATE=ENABLED REMOTE=ALLOWED CLASS=REMOTE_SAFE LABEL=\"Set model\"\r\n"
+        "ITEM host.secret.read PARENT=settings TYPE=COMMAND STATE=ENABLED REMOTE=DENIED CLASS=HOST_READ LABEL=\"Read secret\"\r\n"
+        "ITEM media.write PARENT=media TYPE=COMMAND STATE=DISABLED REMOTE=DENIED CLASS=MEDIA_DESTRUCTIVE LABEL=\"Write media\" REASON=media-dirty\r\n"
+        "END\r\n";
     wz_command_registry_t registry;
     wz_command_metadata_t storage[4];
     handler_state_t handlers = {0u};
@@ -104,12 +117,7 @@ int main(void)
     if (!wz_telnet_menu_tree_parse("MENU TREE") ||
         !wz_telnet_menu_tree_format(&registry, output, sizeof(output),
                                     &output_length) ||
-        !contains(output, "ITEM machine.reset PARENT=machine TYPE=COMMAND") ||
-        !contains(output, "ITEM host.secret.read PARENT=settings") ||
-        !contains(output,
-                  "ITEM media.write PARENT=media TYPE=COMMAND STATE=DISABLED") ||
-        !contains(output, "REASON=media-dirty\r\n") ||
-        !contains(output, "END\r\n")) {
+        strcmp(output, expected_tree) != 0) {
         return fail("MENU TREE fields, state, reason, and terminator");
     }
     if (!wz_telnet_menu_id_parse("MENU machine", id, sizeof(id)) ||

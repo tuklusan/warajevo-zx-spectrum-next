@@ -47,7 +47,7 @@
     },
     {
       "path": "ci/test/telnet-registry-discovery/telnet-registry-discovery-regression.c",
-      "sha256": "da1b22a878be40378e1a4ffb9136eef469402c43ee8da1e894dc22dc58f3a5ac"
+      "sha256": "08a991df36f49c23b84e83bb20523282a9095b2e3bc7bb3d4b6ed365f0bdac71"
     },
     {
       "path": "ci/test/telnet-registry-discovery/write-proof.py",
