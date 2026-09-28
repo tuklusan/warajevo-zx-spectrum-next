@@ -1,0 +1,26 @@
+{
+  "testId": "windows-runtime-dependency-audit",
+  "command": "cmake -S src/cmake -B dist/windows-runtime-dependencies -DCMAKE_BUILD_TYPE=Release -DWZSN_BUILD_SOKOL_HOST=ON && cmake --build dist/windows-runtime-dependencies --config Release --target wz_sokol_host --parallel 2 && py -3 ci/test/windows-runtime-dependencies/inspect_pe.py --binary <release-executable> --driver test-drivers/windows-runtime-dependency-audit.driver.json --proof-out dist/windows-runtime-dependency-audit.json",
+  "requiredCases": 1,
+  "runnerMatrix": [
+    "windows-2025"
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/windows-runtime-dependency-audit.yml",
+      "sha256": "7071125e29f009c1596ef0a17b5e1e36533bd06d4d8427798a29620396cb56ca"
+    },
+    {
+      "path": "ci/test/windows-runtime-dependencies/inspect_pe.py",
+      "sha256": "2b026bd8dc8b74cf2671487ecbcc355df74a013a7b480624aae154d1ff16be5c"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "d3c09a688001e54098b3789349fd2e6ae37119e273c9d229848e32662813b285"
+    },
+    {
+      "path": "ci/test/windows-runtime-dependencies/README.md",
+      "sha256": "f788c860f6fdfde3ce15586f755e9e33e8440f8b1fec04e97ae657df8ffb3aef"
+    }
+  ]
+}

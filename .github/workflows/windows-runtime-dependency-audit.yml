@@ -1,0 +1,57 @@
+name: Windows runtime dependency audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/app/**'
+      - 'src/core/**'
+      - 'src/cmake/CMakeLists.txt'
+      - 'ci/test/windows-runtime-dependencies/**'
+      - 'ci/test/windows-runtime-dependencies/README.md'
+      - 'test-drivers/windows-runtime-dependency-audit.driver.json'
+      - '.github/workflows/windows-runtime-dependency-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-runtime-dependencies:
+    name: Windows x64 Release runtime imports
+    if: github.ref == 'refs/heads/main'
+    runs-on: windows-2025
+    steps:
+      - name: Check out exact main revision
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Configure Windows Release application
+        shell: pwsh
+        run: cmake -S src/cmake -B dist/windows-runtime-dependencies -DCMAKE_BUILD_TYPE=Release -DWZSN_BUILD_SOKOL_HOST=ON
+
+      - name: Build the packaged application executable
+        shell: pwsh
+        run: cmake --build dist/windows-runtime-dependencies --config Release --target wz_sokol_host --parallel 2
+
+      - name: Inspect executable imports and write pinned proof
+        shell: pwsh
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: |
+          $binary = Get-ChildItem -LiteralPath dist/windows-runtime-dependencies -Recurse -File -Filter 'Warajevo-ZX-Spectrum-Next.exe' | Select-Object -First 1
+          if ($null -eq $binary) { throw 'Release application executable was not produced.' }
+          py -3 ci/test/windows-runtime-dependencies/inspect_pe.py `
+            --binary $binary.FullName `
+            --driver test-drivers/windows-runtime-dependency-audit.driver.json `
+            --proof-out dist/windows-runtime-dependency-audit.json
+
+      - name: Upload pinned dependency proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-runtime-dependency-audit-${{ github.sha }}
+          path: dist/windows-runtime-dependency-audit.json
+          if-no-files-found: error
+          retention-days: 90
