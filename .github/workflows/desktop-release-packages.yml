@@ -1,0 +1,159 @@
+name: Windows and macOS release package audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/app/**'
+      - 'src/core/**'
+      - 'src/cmake/CMakeLists.txt'
+      - 'ci/build/**'
+      - 'ci/test/runtime-dependencies/**'
+      - 'ci/test/windows-runtime-dependencies/**'
+      - 'design/dependencies/nuklear-pin.md'
+      - 'docs/design/desktop-package-format-decision.md'
+      - 'LICENSE'
+      - '.github/workflows/desktop-release-packages.yml'
+      - 'test-drivers/desktop-packages.driver.json'
+      - 'test-drivers/windows-runtime-dependency-audit.driver.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    if: github.ref == 'refs/heads/main'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: windows-x86_64
+            runner: windows-2025
+            audit-id: windows-x64
+            audit-architecture: x64
+          - id: macos-x86_64
+            runner: macos-15-intel
+            audit-id: macos-x64
+            audit-architecture: x64
+          - id: macos-arm64
+            runner: macos-15
+            audit-id: macos-arm64
+            audit-architecture: arm64
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - name: Check out exact main revision
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+      - name: Configure native Release application
+        run: cmake -S src/cmake -B dist/desktop-package -G Ninja -DCMAKE_BUILD_TYPE=Release -DWZSN_BUILD_SOKOL_HOST=ON
+      - name: Build native Release executable
+        run: cmake --build dist/desktop-package --config Release --target wz_sokol_host --parallel 2
+      - name: Audit Windows runtime imports
+        if: matrix.id == 'windows-x86_64'
+        shell: pwsh
+        run: |
+          $binary = Get-ChildItem -LiteralPath dist/desktop-package -Recurse -File -Filter 'Warajevo-ZX-Spectrum-Next.exe' | Select-Object -First 1
+          if ($null -eq $binary) { throw 'Release application executable was not produced.' }
+          py -3 ci/test/windows-runtime-dependencies/inspect_pe.py `
+            --binary $binary.FullName `
+            --driver test-drivers/windows-runtime-dependency-audit.driver.json `
+            --proof-out dist/runtime-audit.json
+      - name: Audit macOS runtime dependencies
+        if: runner.os == 'macOS'
+        env:
+          RUNNER_ID: ${{ matrix.audit-id }}
+          EXPECTED_ARCHITECTURE: ${{ matrix.audit-architecture }}
+        run: |
+          python3 ci/test/runtime-dependencies/inspect_runtime.py \
+            --binary dist/desktop-package/Warajevo-ZX-Spectrum-Next \
+            --runner-id "$RUNNER_ID" \
+            --expected-architecture "$EXPECTED_ARCHITECTURE" \
+            --proof-out dist/runtime-audit.json
+      - name: Create and inspect portable archive
+        shell: bash
+        env:
+          PACKAGE_PLATFORM: ${{ matrix.id }}
+          RUNNER_ID: ${{ matrix.id }}
+          RUNNER_LABEL: ${{ matrix.runner }}
+          GITHUB_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          proof_python=python3
+          if [[ "$RUNNER_OS" == "Windows" ]]; then proof_python=python; fi
+          binary=dist/desktop-package/Warajevo-ZX-Spectrum-Next
+          if [[ "$RUNNER_OS" == "Windows" ]]; then binary="${binary}.exe"; fi
+          mkdir -p dist/package-output
+          if [[ "$RUNNER_OS" == "Windows" ]]; then python ci/build/package-desktop.py \
+            --binary "$binary" --platform "$PACKAGE_PLATFORM" \
+            --nuklear-license dist/desktop-package/_deps/nuklear-src/LICENSE \
+            --sokol-header dist/desktop-package/_deps/sokol-src/util/sokol_nuklear.h \
+            --output dist/package-output
+          else python3 ci/build/package-desktop.py \
+            --binary "$binary" --platform "$PACKAGE_PLATFORM" \
+            --nuklear-license dist/desktop-package/_deps/nuklear-src/LICENSE \
+            --sokol-header dist/desktop-package/_deps/sokol-src/util/sokol_nuklear.h \
+            --output dist/package-output
+          fi
+          "$proof_python" - <<'PY'
+          import json, os
+          from pathlib import Path
+          identity = os.environ["RUNNER_ID"]
+          record = {
+              "id": identity,
+              "runnerLabel": os.environ["RUNNER_LABEL"],
+              "os": os.environ["RUNNER_OS"],
+              "architecture": os.environ["RUNNER_ARCH"],
+              "runnerName": os.environ.get("ImageOS", "hosted runner"),
+              "commit": os.environ["GITHUB_SHA"],
+          }
+          Path(f"dist/package-output/runner-{identity}.json").write_text(
+              json.dumps(record, indent=2) + "\n", encoding="utf-8")
+          audit = Path("dist/runtime-audit.json")
+          if not audit.is_file():
+              audit.write_text(json.dumps({
+                  "status": "missing",
+                  "binarySha256": "",
+              }, indent=2) + "\n", encoding="utf-8")
+          identity = os.environ["RUNNER_ID"]
+          audit.rename(f"dist/package-output/runtime-audit-{identity}.json")
+          PY
+      - name: Upload audited package and runner evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-package-raw-${{ matrix.id }}
+          path: dist/package-output/*
+          if-no-files-found: error
+
+  proof:
+    if: github.ref == 'refs/heads/main'
+    needs: package
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact source commit
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+      - name: Download package evidence
+        uses: actions/download-artifact@v4
+        with:
+          pattern: desktop-package-raw-*
+          path: dist/desktop-packages/artifacts
+          merge-multiple: true
+      - name: Verify inventories and write pinned proof
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: |
+          python3 ci/build/write-desktop-package-proof.py \
+            --project-commit "$GITHUB_SHA" \
+            --run-id "$GITHUB_RUN_ID" \
+            --artifact-root dist/desktop-packages/artifacts \
+            --proof-out dist/desktop-packages/desktop-packages.json
+      - name: Upload pinned package proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-packages-proof-${{ github.sha }}
+          path: dist/desktop-packages/desktop-packages.json
+          if-no-files-found: error

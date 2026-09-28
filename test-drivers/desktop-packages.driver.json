@@ -1,0 +1,23 @@
+{
+  "testId": "desktop-packages",
+  "command": "On main, configure and build the native Release host on Windows x64, macOS Intel, and macOS Apple Silicon; audit executable architecture and runtime dependencies; create, inspect, checksum, and consolidate the three portable desktop archives.",
+  "requiredCases": 3,
+  "runnerMatrix": [
+    "windows-2025",
+    "macos-15-intel",
+    "macos-15"
+  ],
+  "fixtures": [
+    { "path": ".github/workflows/desktop-release-packages.yml", "sha256": "cc79da8726c834ebe129e75818fd39db02c51e243daed6e7d58690aabe921d0a" },
+    { "path": "ci/build/desktop-package-README.md", "sha256": "a4e7c57f51920da1877fedb641c44322ff03ca2555d246ea792e09413e92b968" },
+    { "path": "ci/build/package-desktop.py", "sha256": "a11edc25f1c8b6d6e839f14986e490ad403588ac72b077052f373afe1f4d13da" },
+    { "path": "ci/build/write-desktop-package-proof.py", "sha256": "67fef7ab0ff439d1ef7494289e531a9b5f280a692f2e42f566c226f90a8f3917" },
+    { "path": "ci/test/runtime-dependencies/inspect_runtime.py", "sha256": "83ca1a7134797de11725812b07c2ab0cebf2693a70c5c1961ebb5c3750c2d635" },
+    { "path": "ci/test/windows-runtime-dependencies/inspect_pe.py", "sha256": "75072af6c4c79d1f4f6ea44f3d304c0b6abec415f3db6815fc11c3c8a3b33a77" },
+    { "path": "docs/design/desktop-package-format-decision.md", "sha256": "199dbc63fd66ebcbdbe4a6bb613a8077f88449cc7c164a46713daf66ad6eb033" },
+    { "path": "design/dependencies/nuklear-pin.md", "sha256": "1a60ace14a26aa27f208b1d5bc2afa90b77a2a68bddf98420c2e02165b57f70f" },
+    { "path": "LICENSE", "sha256": "f8162dbbb1609f9e2296c208ffd7714938fba6a0421778bcc882cc4ca6c6abe2" },
+    { "path": "src/cmake/CMakeLists.txt", "sha256": "d3c09a688001e54098b3789349fd2e6ae37119e273c9d229848e32662813b285" },
+    { "path": "test-drivers/windows-runtime-dependency-audit.driver.json", "sha256": "2c8741d4ba884c86c92428ff77fc085de50a4d2ac40018c86d302cfc1968e646" }
+  ]
+}
