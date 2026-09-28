@@ -15,7 +15,7 @@ Four-runner baseline and determinism evidence: run `35894280373`. Four-runner cl
 |---:|---|---|---|
 | 1 | the emulation core is portable C; | PASS | C11 Release build on all four matrix runners; run `35894280436`. |
 | 2 | the core runs headlessly without Sokol; | PASS | Headless `wz_core` CPU/raster/audio/tape/snapshot run with Sokol disabled; run `35894160451`. |
-| 3 | the deterministic core has no host/Sokol/socket dependency; | OPEN | No criterion-specific tracked test or pinned proof has been recorded. |
+| 3 | the deterministic core has no host/Sokol/socket dependency; | PASS | Hosted dependency-boundary audit run `36415991619` on source `a908b42` inspected every core include and host API call, verified the resolved `wz_core` source inventory and approved dependency graph, and passed forbidden-include negative controls. Pinned proof: [core-dependency-boundary.json](../../test-results/core-dependency-boundary.json); all 50 source fixture hashes match the tested Git tree. |
 | 4 | application/orchestration code bridges core output/input to host services; | PARTIAL | GUI/Telnet DIZZY4K flow reached a Spectrum screenshot on all four runners; run `35890238325`. |
 | 5 | Sokol code is compiled into release program binaries; | PARTIAL | GUI host build and binary packaging passed on all four runners; run `35890238325`; dependency inventory remains open. |
 | 6 | there is no project-supplied multimedia shared library required at runtime; | OPEN | No criterion-specific tracked test or pinned proof has been recorded. |

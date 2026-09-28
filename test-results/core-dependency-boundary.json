@@ -1,0 +1,219 @@
+{
+  "testId": "core-dependency-boundary",
+  "status": "pass",
+  "commit": "a908b42f00273280899b9c0fcdc16c237af9fa45",
+  "runner": "Linux/X64",
+  "timestamp": "2026-09-28T11:30:00+00:00",
+  "runId": "36415991619",
+  "fixtures": [
+    {
+      "path": "src/core/audio/wz_audio_evidence.c",
+      "sha256": "8e01e5376bd09b00cc2f14d4497b9c5877f7201132ac3f5ec33a2a964fa37192"
+    },
+    {
+      "path": "src/core/audio/wz_audio_evidence.h",
+      "sha256": "9bd3603d658fdf075082c80f4de7199ed4cd6ac3cf98056655ea6aaf4d091ae3"
+    },
+    {
+      "path": "src/core/audio/wz_audio_mixer.c",
+      "sha256": "2236bdde5587652100b7f94390b439985166a848573114e71252faac43adfd67"
+    },
+    {
+      "path": "src/core/audio/wz_audio_mixer.h",
+      "sha256": "45a035e297abc7d23d20dc636c5e6f581fb5935a81c67045489c40db6d5d2572"
+    },
+    {
+      "path": "src/core/audio/wz_audio_policy.h",
+      "sha256": "5c2b37fcff6fe8a88ca79fc7ad2c0a56a9edff04d45379233aa128cb4e6ab4a2"
+    },
+    {
+      "path": "src/core/audio/wz_ay.c",
+      "sha256": "ddb27e2d878c5e9a0ca803e5198e04468c97f9c95a4dd9ac33d7324033c5ae39"
+    },
+    {
+      "path": "src/core/audio/wz_ay.h",
+      "sha256": "5cff8be704c4f33e8cbb54ea09c9b5ed4ac2f2b39fc4f9fc92f4dedf6b920da3"
+    },
+    {
+      "path": "src/core/audio/wz_ay_mixer_policy.h",
+      "sha256": "6c82188f4013932b8d77f2f529036c6d320a50deddd671814a4a24aee318ccea"
+    },
+    {
+      "path": "src/core/audio/wz_beeper.c",
+      "sha256": "c6afe70cf3939f33d3af3084fe72faf85898ab25c7046f991980ddb5fff20b6c"
+    },
+    {
+      "path": "src/core/audio/wz_beeper.h",
+      "sha256": "c8acd904d8c7af162a4817237cdd1983f13c6bcafd7d6f49466419e6c4d5f958"
+    },
+    {
+      "path": "src/core/wz_bus.c",
+      "sha256": "cf2a35b00d1edc55fff977402391e4d685bb3b3346640205a9c41340e12df704"
+    },
+    {
+      "path": "src/core/wz_bus.h",
+      "sha256": "0a6019987ae86f7c7293e1f428d086f52684ea5353eadb758c0b2d056677abaa"
+    },
+    {
+      "path": "src/core/wz_debugger.c",
+      "sha256": "479b238f1aa668002aba6a4959750296cef553c2d4fe4425b0164b7f08e35eaf"
+    },
+    {
+      "path": "src/core/wz_debugger.h",
+      "sha256": "9c14eda410b6b50fdad279fc6076a385da5ff26b160c54fbf957c1e8c31041a1"
+    },
+    {
+      "path": "src/core/wz_input_types.h",
+      "sha256": "98bb13139b82463056f7d43af4abf16e2d052a200a17876e2527b0ad088b3154"
+    },
+    {
+      "path": "src/core/wz_kempston.c",
+      "sha256": "3a5a7d442da3debf4d114b660ae6b606f95ab963244fc5987e190689cd40b35a"
+    },
+    {
+      "path": "src/core/wz_kempston.h",
+      "sha256": "21ddeac1344f770e29180b8b015c5b8ebad3deffa2031beaad2ad09db2b947bd"
+    },
+    {
+      "path": "src/core/wz_keyboard_matrix.c",
+      "sha256": "68deeb821563f28e5af3e0872765fedd5ae7e24a0491c011c24ebb9d4abbd575"
+    },
+    {
+      "path": "src/core/wz_keyboard_matrix.h",
+      "sha256": "85282af5969a6212c528cb92edafd7d3fbf71375bbb4be1bad5cd9622e1cf976"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "b26405f8cbcfb6e5d7145f2b0d87a15ea383bbaecb5e3fca6d504f2866660a99"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "84d9e0b84a02993917b0e74cb9ba0d71158f45223a707d801ce927029ab2b0aa"
+    },
+    {
+      "path": "src/core/wz_machine_profile.c",
+      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09"
+    },
+    {
+      "path": "src/core/wz_machine_profile.h",
+      "sha256": "099be5f41f428466e5da622452abec6e0daf6402abcf4ab2e7d8c2df47457cc4"
+    },
+    {
+      "path": "src/core/wz_microdrive.c",
+      "sha256": "0d80d9a9144cdc39f5df0b8a9abb8e5e21bc71cfeb92f13ee2f7f34e532bc522"
+    },
+    {
+      "path": "src/core/wz_microdrive.h",
+      "sha256": "fa4e47c5efc658d533e14b6bf571712447771951202b66eb8575c6869f60a90c"
+    },
+    {
+      "path": "src/core/wz_presentation_snapshot.c",
+      "sha256": "e486ad41490593ff803f647460d3542f69f425bf8c15bd0892e882962a685367"
+    },
+    {
+      "path": "src/core/wz_presentation_snapshot.h",
+      "sha256": "5dc1be78cf4627ed526b39e7d1ee4e961c3bff8b00f869e635675f2180af820d"
+    },
+    {
+      "path": "src/core/wz_printer.c",
+      "sha256": "fbcd4ceb9d809fe626517fe336ece5a0dd07f3a7ff3b00dfbb2b64bc7bd58e52"
+    },
+    {
+      "path": "src/core/wz_printer.h",
+      "sha256": "9ec8c70d7e7ad3c74c38859ee5801524e80907e326f39d4527147d743152e7ac"
+    },
+    {
+      "path": "src/core/wz_raster.c",
+      "sha256": "d87884dda947060b1b52e5ba3af9bebb5178c0d58505aeda4699078f8fc346c2"
+    },
+    {
+      "path": "src/core/wz_raster.h",
+      "sha256": "c231c401076b312c4b8ae6ef55492fd7e4068742c59a3583b4efaefee0ec5396"
+    },
+    {
+      "path": "src/core/wz_raster_diagnostic.c",
+      "sha256": "313a045ff4a389f25a296df239061cc16ea924891bc8cc9073477e8b0617fbe2"
+    },
+    {
+      "path": "src/core/wz_raster_diagnostic.h",
+      "sha256": "a1b85009cd7b7ebd1c5e0d3a66c32968a40ef1abd8f9b31ea862bb21f652d178"
+    },
+    {
+      "path": "src/core/wz_raster_evidence.c",
+      "sha256": "5380a2fd77e8534a95cfe23ec621ec39d78aa6735e4fe28f8f1a0731ffb66576"
+    },
+    {
+      "path": "src/core/wz_raster_evidence.h",
+      "sha256": "79d4a94cf82d44455dd2127bd08c06db138f06ba2f53f926798e7a8f271e8b74"
+    },
+    {
+      "path": "src/core/wz_runner.c",
+      "sha256": "6225a610d2b752d0edeeb073961bb84ba5c54ae446e58fe08569e68f33cd654d"
+    },
+    {
+      "path": "src/core/wz_runner.h",
+      "sha256": "b34e16b1c9ef80588bc6a563ce2b77099bdceb899ace0e5254a0a9669b5f6e51"
+    },
+    {
+      "path": "src/core/wz_scheduler.c",
+      "sha256": "524f6560c883d1a374548e1418bb23a05f1270f7c57561f284fa13452543f6f3"
+    },
+    {
+      "path": "src/core/wz_scheduler.h",
+      "sha256": "f6eeb64f6019dcaf046b4d4c32d5e4ca38636cf1e537185d65dda648fa12f705"
+    },
+    {
+      "path": "src/core/wz_state.c",
+      "sha256": "32aa7ddaebe10ffc0a4d933162103c59d40280cd4392593d4136f41fba9338a7"
+    },
+    {
+      "path": "src/core/wz_state.h",
+      "sha256": "311dc111529c01924b0f4ed3bb1e4e1bb782461ab21b7c446473dd73b4a664c1"
+    },
+    {
+      "path": "src/core/wz_tape.c",
+      "sha256": "9691238f861d9c649690a2c3f94e7d9be52118c16d3aa6b3ae9de0ffa6a2fa96"
+    },
+    {
+      "path": "src/core/wz_tape.h",
+      "sha256": "143211c69f0932fe3b360596546f47c917dbdd432c1a2c0f83994e76adaca78f"
+    },
+    {
+      "path": "src/core/wz_trace.c",
+      "sha256": "d5283eff30dcaadb192ab2465901423abef769976687129c967e521f22bb8dd2"
+    },
+    {
+      "path": "src/core/wz_trace.h",
+      "sha256": "9730762f41380dc9ef42b8cd1d6ed454dc4d091fa83dd81c9578925f4bbd8466"
+    },
+    {
+      "path": "src/core/wz_types.h",
+      "sha256": "b989adaa74e4ac0ec7e753da23a3fd16a3c02561744cca893fcd66f7c077c409"
+    },
+    {
+      "path": "src/core/wz_z80.c",
+      "sha256": "4414a17180681cc18c03a3a84c960196c1fa0d7bdfe09f59d0b664919a369195"
+    },
+    {
+      "path": "src/core/wz_z80.h",
+      "sha256": "c32d23b4a650ae13031f8f61dd41f66cd8ac19136f058cb47502a2e54df5f8cd"
+    },
+    {
+      "path": "src/core/wz_zxnet.c",
+      "sha256": "827a71779f8b9ea11dd7644c2b2c757dea33d8a955dd8548fa110dd57325cef5"
+    },
+    {
+      "path": "src/core/wz_zxnet.h",
+      "sha256": "581f7036c6121664326968b0af57dff12340115cd6bf5eac6690f4cf961bb348"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "d3c09a688001e54098b3789349fd2e6ae37119e273c9d229848e32662813b285"
+    },
+    {
+      "path": "dist/core-boundary/build/core-boundary-targets.txt",
+      "sha256": "67aa1a8e1cbfa4770f2b867bdedc814559cef146f713f6c4ba155991ebe7f5b3"
+    }
+  ],
+  "errors": []
+}
