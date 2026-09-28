@@ -1,0 +1,34 @@
+{
+  "testId": "file-open-run-routing",
+  "command": "cmake -S src/cmake -B dist/file-open-run -DCMAKE_BUILD_TYPE=Debug && cmake --build dist/file-open-run --config Debug --target wz_file_open_run_tests --parallel 2 && ctest --test-dir dist/file-open-run --output-on-failure --verbose -R '^wz_file_open_run_tests$'",
+  "requiredCases": 23,
+  "runnerMatrix": [
+    "ubuntu-24.04"
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/file-open-run-regression.yml",
+      "sha256": "abb3a3a5b58c236e6d3287cfcee7405d2c845e7b64a94656e30dd91975d2a8c1"
+    },
+    {
+      "path": "ci/test/file-open-run/write-proof.py",
+      "sha256": "5938d60b7022d46278aa0e837f19943d47bb631b8296f52ca92d763d113b642c"
+    },
+    {
+      "path": "ci/test/file-open-run/wz_file_open_run_tests.c",
+      "sha256": "c1ab1d3938fb04d1345ae272fa81cc95a8b23a356a542ba36047790948322134"
+    },
+    {
+      "path": "src/app/wz_file_open_run.c",
+      "sha256": "67883bb4e03fbb1563d983766763ee34d2b8e14863f9e099d1093a143dc2e38d"
+    },
+    {
+      "path": "src/app/wz_file_open_run.h",
+      "sha256": "6147d0501cab7ede9919fca4198fb3621f7c35d8825b9c4fd17a02a199e3512d"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "b73d4b271e88b2a6b5b9304206b0cce9d532fe5a81f895ceb6d2f0415f5276c1"
+    }
+  ]
+}

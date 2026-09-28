@@ -1,0 +1,55 @@
+name: Open Run routing regression
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/app/wz_file_open_run.*'
+      - 'src/cmake/CMakeLists.txt'
+      - 'ci/test/file-open-run/**'
+      - 'test-drivers/file-open-run.driver.json'
+      - '.github/workflows/file-open-run-regression.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  file-open-run:
+    name: Open Run routing regression
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact main revision
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Configure product and regression target
+        run: cmake -S src/cmake -B dist/file-open-run -DCMAKE_BUILD_TYPE=Debug
+
+      - name: Build Open Run routing regression
+        run: cmake --build dist/file-open-run --config Debug --target wz_file_open_run_tests --parallel 2
+
+      - name: Execute routing regression
+        run: ctest --test-dir dist/file-open-run --output-on-failure --verbose -R '^wz_file_open_run_tests$'
+
+      - name: Write pinned proof
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          RUNNER_OS: ${{ runner.os }}
+          RUNNER_ARCH: ${{ runner.arch }}
+        run: |
+          python3 ci/test/file-open-run/write-proof.py \
+            --commit "$GITHUB_SHA" \
+            --run-id "$GITHUB_RUN_ID" \
+            --runner "$RUNNER_OS/$RUNNER_ARCH" \
+            --proof dist/file-open-run/file-open-run.json
+
+      - name: Upload pinned proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: file-open-run-${{ github.sha }}
+          path: dist/file-open-run/file-open-run.json
+          if-no-files-found: error
