@@ -84,3 +84,9 @@ add_executable(wz_telnet_status_regression
     "${SOURCE_ROOT}/core/wz_machine_profile.c")
 target_include_directories(wz_telnet_status_regression PRIVATE
     "${SOURCE_ROOT}")
+
+add_executable(wz_telnet_alias_response_regression
+    "${CMAKE_CURRENT_SOURCE_DIR}/alias-response-regression.c"
+    "${SOURCE_ROOT}/app/wz_telnet_alias_response.c")
+target_include_directories(wz_telnet_alias_response_regression PRIVATE
+    "${SOURCE_ROOT}")

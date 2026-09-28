@@ -9,6 +9,7 @@ on:
       - 'src/app/wz_ui_layout.*'
       - 'src/app/wz_telnet_keyboard_command.*'
       - 'src/app/wz_telnet_status.*'
+      - 'src/app/wz_telnet_alias_response.*'
       - 'src/app/wz_telnet_keymap.*'
       - 'src/app/wz_host_output.*'
       - 'src/app/wz_screenshot_service.*'
@@ -57,7 +58,7 @@ jobs:
         run: cmake -S ci/test/application-command-boundary -B dist/application-command-boundary -G Ninja -DCMAKE_BUILD_TYPE=Release
 
       - name: Build acceptance executable
-        run: cmake --build dist/application-command-boundary --config Release --target wz_application_command_boundary wz_telnet_status_regression --parallel 2
+        run: cmake --build dist/application-command-boundary --config Release --target wz_application_command_boundary wz_telnet_status_regression wz_telnet_alias_response_regression --parallel 2
 
       - name: Run acceptance cases
         shell: bash
@@ -65,10 +66,13 @@ jobs:
           set -euo pipefail
           exe=dist/application-command-boundary/wz_application_command_boundary
           status_exe=dist/application-command-boundary/wz_telnet_status_regression
+          alias_exe=dist/application-command-boundary/wz_telnet_alias_response_regression
           if [[ "$RUNNER_OS" == "Windows" ]]; then exe="$exe.exe"; fi
           "$exe" | tee dist/application-command-boundary-run.log
           if [[ "$RUNNER_OS" == "Windows" ]]; then status_exe="$status_exe.exe"; fi
           "$status_exe" | tee -a dist/application-command-boundary-run.log
+          if [[ "$RUNNER_OS" == "Windows" ]]; then alias_exe="$alias_exe.exe"; fi
+          "$alias_exe" | tee -a dist/application-command-boundary-run.log
 
       - name: Save runner result
         shell: bash

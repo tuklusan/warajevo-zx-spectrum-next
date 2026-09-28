@@ -59,6 +59,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "app/wz_telnet_client.h"
 #include "app/wz_telnet_keyboard_command.h"
 #include "app/wz_telnet_status.h"
+#include "app/wz_telnet_alias_response.h"
 #include "app/wz_telnet_negotiation.h"
 #include "app/wz_telnet_input.h"
 #include "app/wz_ui_window.h"
@@ -596,6 +597,25 @@ static void wz_host_telnet_process_command(const char* command)
     bool key_ok = false;
     if (command == NULL) return;
     if (wz_telnet_alias_to_do(command, projected, sizeof(projected))) {
+        char id[WZ_HOST_TELNET_IO_CAPACITY];
+        char arguments[WZ_HOST_TELNET_IO_CAPACITY];
+        char dispatch_response[WZ_HOST_TELNET_IO_CAPACITY];
+        size_t dispatch_length = 0u;
+        if (wz_telnet_do_parse(projected, id, sizeof(id), arguments,
+                               sizeof(arguments)) &&
+            wz_telnet_do_format(&wz_host_session.command_registry, id,
+                                arguments, dispatch_response,
+                                sizeof(dispatch_response), &dispatch_length)) {
+            size_t alias_length = 0u;
+            if (!wz_telnet_alias_response_rewrite(
+                    command, dispatch_response, output, sizeof(output),
+                    &alias_length)) {
+                memcpy(output, dispatch_response, dispatch_length + 1u);
+                alias_length = dispatch_length;
+            }
+            wz_host_telnet_send(output, alias_length);
+            return;
+        }
         wz_host_telnet_process_command(projected);
         return;
     } else if (strcmp(command, "HELP") == 0) {
