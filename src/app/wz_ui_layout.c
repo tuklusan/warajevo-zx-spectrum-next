@@ -123,6 +123,17 @@ static const wz_ui_networking_option_t networking_options[
      WZ_UI_NETWORKING_EAR_MIC_DISABLED_REASON}
 };
 
+static const char* wz_ui_layout_audio_status(const wz_ui_layout_state_t* state)
+{
+    if (state->audio_muted && state->audio_degraded) {
+        return "muted, degraded";
+    }
+    if (state->audio_muted) {
+        return "muted";
+    }
+    return state->audio_degraded ? "degraded" : "audible";
+}
+
 void wz_ui_layout_state_init(wz_ui_layout_state_t* state)
 {
     if (state == 0) {
@@ -175,8 +186,7 @@ void wz_ui_layout_status_panel(const wz_ui_layout_state_t* state,
                             state->model_k,
                             speed_text,
                             state->paused ? "paused" : "running",
-                            state->audio_degraded ? "degraded" :
-                                state->audio_muted ? "muted" : "audible",
+                            wz_ui_layout_audio_status(state),
                             state->tape_mounted ? "mounted" : "none");
     if (used >= capacity) {
         output[capacity - 1u] = '\0';
@@ -768,8 +778,7 @@ void wz_ui_layout_status_line(const wz_ui_layout_state_t* state,
         return;
     }
     pause_state = state->paused ? "paused" : "running";
-    audio_state = state->audio_degraded ? "degraded" :
-        state->audio_muted ? "muted" : "audible";
+    audio_state = wz_ui_layout_audio_status(state);
     control_port = state->control_port_available ? "available" : "unavailable";
     listener = remote_listener_state_label(state->remote_listener_state);
     if (state->unlimited_speed) {

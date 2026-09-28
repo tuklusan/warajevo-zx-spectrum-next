@@ -27,7 +27,7 @@
     },
     {
       "path": "ci/test/application-command-boundary/status-projection-regression.c",
-      "sha256": "d94e7f955ca36db7bccc590822de878a575787f3c70aa3f3daba34b6635c9220"
+      "sha256": "0add79e429ea7a537cceab484258145eca36bd2dc4dcac1f7a4d435b238e8bc1"
     },
     {
       "path": "ci/test/application-command-boundary/write-proof.py",
@@ -51,7 +51,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "9d4880535308a8819131e994d79478ebfafbb7c9896fa820ca8306939878b4f5"
+      "sha256": "67a398db49e8530c9c941b60d93a89d8b3e45c6b7f756a526a788f9dfa0531eb"
     },
     {
       "path": "src/app/wz_telnet_alias_response.c",
@@ -71,7 +71,7 @@
     },
     {
       "path": "src/app/wz_telnet_status.c",
-      "sha256": "ec28d1b7bb6798473d51c2000cf45a3a45523b5bcff4981ba8c9e1ecd09e8beb"
+      "sha256": "98e77532404a726162a1bd8b075df7934b66a231f085e901094a1aa2cee2f04f"
     },
     {
       "path": "src/app/wz_telnet_status.h",
@@ -79,7 +79,7 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "5fd8e5e625b07ba94647c945488a5ade8a57ae192ddaceb0860f7a23db142095"
+      "sha256": "3f94892539a4cd7e964396cac03bc5e43d726ba8a3e7ac4ce98e3e37eaff274f"
     },
     {
       "path": "src/app/wz_ui_layout.h",

@@ -17,6 +17,15 @@ void wz_host_audio_push_init(wz_host_audio_push_queue_t* queue)
     }
 }
 
+void wz_host_audio_clear_pending(wz_host_audio_push_queue_t* queue)
+{
+    if (queue != 0) {
+        queue->read_index = 0u;
+        queue->write_index = 0u;
+        queue->count = 0u;
+    }
+}
+
 size_t wz_host_audio_push(wz_host_audio_push_queue_t* queue,
                           const wz_audio_sample_t* samples,
                           size_t count)

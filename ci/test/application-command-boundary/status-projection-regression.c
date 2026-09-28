@@ -55,6 +55,10 @@ int main(void)
         &snapshot, wz_machine_profile_48k_pal(), WZ_NETWORKING_NONE,
         false, WZ_SPEED_100, true, false, true));
     REQUIRE(strcmp(snapshot.audio, "DEGRADED") == 0);
+    REQUIRE(wz_telnet_status_project_machine(
+        &snapshot, wz_machine_profile_48k_pal(), WZ_NETWORKING_NONE,
+        false, WZ_SPEED_400, true, true, true));
+    REQUIRE(strcmp(snapshot.audio, "MUTED_DEGRADED") == 0);
 
     REQUIRE(wz_telnet_status_project_machine(
         &snapshot, wz_machine_profile_48k_pal(), WZ_NETWORKING_EAR_MIC,

@@ -6,7 +6,7 @@
     },
     {
       "path": "ci/test/audio-delivery/sokol-audio-delivery-regression.c",
-      "sha256": "b07e3354fc266f49adbb013dd5cfc62c8f835c307942f742662c1d6a79ccddc9"
+      "sha256": "148feb78f4a3a258cff10fb8378e212df08dbd0c3d024a14583b48df07a5ea84"
     },
     {
       "path": "ci/test/audio-delivery/sokol_audio_stub/sokol_audio.h",
@@ -14,15 +14,15 @@
     },
     {
       "path": "ci/test/audio-delivery/write-proof.py",
-      "sha256": "9ec2d7eba4f6eda1652e88f25ef7a7a66e61557b866a5773b4b22e8094cb222a"
+      "sha256": "26a7ed4ed5551d551c8471a09fc560e9bf1c9ecb036968b8c7801fb249d2a6fd"
     },
     {
       "path": "src/app/wz_host_audio_push.c",
-      "sha256": "d646533b901351503679ab52dd7f5392297317b9a5e3c58e9efb34e4c24f3e4b"
+      "sha256": "063757f4ad223bbc7de3190e8d1bc321b8c295ecc1da2d0d620a27d3725d1f23"
     },
     {
       "path": "src/app/wz_host_audio_push.h",
-      "sha256": "119e4cb654828a08b2559a4abb6f2b40b77024fa2dd35e839e8fc9dee7666d02"
+      "sha256": "fad43801c34a1ef5121b79e752c53da47db45bc75e16faced192f4f321bf4946"
     },
     {
       "path": "src/app/wz_host_audio_policy.c",
@@ -46,7 +46,7 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "5fd8e5e625b07ba94647c945488a5ade8a57ae192ddaceb0860f7a23db142095"
+      "sha256": "3f94892539a4cd7e964396cac03bc5e43d726ba8a3e7ac4ce98e3e37eaff274f"
     },
     {
       "path": "src/app/wz_ui_layout.h",
@@ -54,7 +54,7 @@
     },
     {
       "path": "src/app/wz_sokol_audio.c",
-      "sha256": "34c3535854eff61c03bde97ff0959f556539db16812f10817d77ac6273285f48"
+      "sha256": "43cf233b84cf42c75db6df98d728b24c777bc0cd7609dc02e556546ff19646e4"
     },
     {
       "path": "src/app/wz_sokol_audio.h",
@@ -62,7 +62,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "9d4880535308a8819131e994d79478ebfafbb7c9896fa820ca8306939878b4f5"
+      "sha256": "67a398db49e8530c9c941b60d93a89d8b3e45c6b7f756a526a788f9dfa0531eb"
     },
     {
       "path": "src/app/wz_speed_policy.c",
@@ -77,7 +77,7 @@
       "sha256": "701ca9927cc2e5a29180d4c5d432e9ed1caf797f4f7c1bff01ffa1334c1c0f22"
     },
     {
-      "sha256": "ec28d1b7bb6798473d51c2000cf45a3a45523b5bcff4981ba8c9e1ecd09e8beb",
+      "sha256": "98e77532404a726162a1bd8b075df7934b66a231f085e901094a1aa2cee2f04f",
       "path": "src/app/wz_telnet_status.c"
     },
     {
@@ -85,7 +85,7 @@
       "path": "src/app/wz_telnet_status.h"
     },
     {
-      "sha256": "6d9dc60529567bbe3b1ccc0bafa6bd82a54bd8e8c1b71b7ed08597ed2beed4dc",
+      "sha256": "11daa64ec21298ee94012c1246b17dc40ae6b2d88639c06a4f13361a314b55d0",
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md"
     }
   ],
@@ -94,5 +94,5 @@
   ],
   "testId": "sokol-audio-delivery",
   "command": "cmake -S src/cmake -B dist/audio-delivery -DCMAKE_BUILD_TYPE=Debug && cmake --build dist/audio-delivery --config Debug --target wz_sokol_audio_delivery_tests --parallel 2 && ctest --test-dir dist/audio-delivery --output-on-failure --verbose -R '^wz_sokol_audio_delivery_tests$'",
-  "requiredCases": 14
+  "requiredCases": 15
 }

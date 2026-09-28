@@ -57,9 +57,7 @@ bool wz_sokol_audio_degraded(const wz_sokol_audio_t* audio)
 void wz_sokol_audio_discard_pending(wz_sokol_audio_t* audio)
 {
     if (audio != 0) {
-        audio->pending.read_index = 0u;
-        audio->pending.write_index = 0u;
-        audio->pending.count = 0u;
+        wz_host_audio_clear_pending(&audio->pending);
     }
 }
 

@@ -1282,8 +1282,9 @@ static void wz_host_ui_draw_status(struct nk_context* context,
             "Inactive" :
             wz_input_focus_forwards_viewport_keys(&wz_host_session.input_focus) ?
                 "Spectrum" : "UI",
-        state->audio_degraded ? "Degraded" :
-            state->audio_muted ? "Muted" : "On",
+        state->audio_muted && state->audio_degraded ? "Muted/Degraded" :
+            state->audio_muted ? "Muted" :
+            state->audio_degraded ? "Degraded" : "On",
         state->tape_mounted ? "Mounted" : "Empty",
         state->microdrive1_mounted ? "Mounted" : "Empty",
         state->networking_mode == NULL ? "Unavailable" : state->networking_mode,

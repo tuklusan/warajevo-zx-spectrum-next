@@ -39,7 +39,8 @@ bool wz_telnet_status_project_machine(
     snapshot->state = paused ? "PAUSED" : "RUNNING";
     snapshot->speed = speed_values[speed];
     snapshot->audio = !audio_available ? "UNAVAILABLE" :
-        audio_degraded ? "DEGRADED" :
+        audio_degraded ?
+            (audio_muted || paused ? "MUTED_DEGRADED" : "DEGRADED") :
         (audio_muted || paused ? "MUTED" : "ON");
     return true;
 }

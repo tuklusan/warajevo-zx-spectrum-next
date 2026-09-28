@@ -187,6 +187,10 @@ int main(void)
         wz_ui_layout_status_line(&ui_state, status, sizeof(status));
         failures += require(strstr(status, "Audio: degraded") != NULL,
                             "audio_delivery_degradation_is_visible");
+        ui_state.audio_muted = true;
+        wz_ui_layout_status_line(&ui_state, status, sizeof(status));
+        failures += require(strstr(status, "Audio: muted, degraded") != NULL,
+                            "muted_and_degraded_states_are_both_visible");
     }
     (void)wz_sokol_audio_push(&audio, WZ_SPEED_400, NULL, 0u);
     failures += require(wz_host_audio_queued(&audio.pending) == 0u &&
