@@ -48,6 +48,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "core/wz_tape.h"
 #include "core/audio/wz_audio_mixer.h"
 #include "app/wz_command_registry.h"
+#include "app/wz_networking_commands.h"
 #include "app/wz_application_lifecycle.h"
 #include "app/wz_control_port.h"
 #include "app/wz_host_socket.h"
@@ -96,6 +97,7 @@ typedef struct {
     wz_telnet_client_gate_t telnet_client;
     wz_command_registry_t command_registry;
     wz_command_metadata_t command_storage[WZ_HOST_COMMAND_CAPACITY];
+    wz_networking_command_context_t networking_command_context;
     wz_raster_buffer_t raster;
     wz_byte_t raster_samples[WZ_HOST_RASTER_BYTES];
     wz_byte_t raster_rgba[WZ_HOST_RASTER_BYTES * 4u];
@@ -629,6 +631,16 @@ static bool wz_host_register_commands(void)
                                          commands[index]) != WZ_RESULT_OK) {
             return false;
         }
+    }
+    wz_host_session.networking_command_context.machine =
+        &wz_host_session.machine;
+    wz_host_session.networking_command_context.flush_callback = NULL;
+    wz_host_session.networking_command_context.flush_context = NULL;
+    wz_host_session.networking_command_context.discard_dirty_media = false;
+    if (wz_networking_commands_register(
+            &wz_host_session.command_registry,
+            &wz_host_session.networking_command_context) != WZ_RESULT_OK) {
+        return false;
     }
     return wz_command_registry_finalize(&wz_host_session.command_registry) ==
         WZ_RESULT_OK;
