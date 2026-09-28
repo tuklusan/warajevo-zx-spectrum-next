@@ -1,0 +1,72 @@
+{
+  "testId": "telnet-client-gate",
+  "status": "pass",
+  "commit": "f6bd1286f96848377ff97192b81432dde0c37492",
+  "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
+  "timestamp": "2026-09-28T08:34:31+00:00",
+  "runId": 36398085826,
+  "runners": [
+    {
+      "id": "windows-x64",
+      "os": "Windows",
+      "architecture": "X64",
+      "runnerName": "win25-vs2026"
+    },
+    {
+      "id": "windows-arm64",
+      "os": "Windows",
+      "architecture": "ARM64",
+      "runnerName": "win11-arm64"
+    },
+    {
+      "id": "macos-x64",
+      "os": "macOS",
+      "architecture": "X64",
+      "runnerName": "macos15"
+    },
+    {
+      "id": "macos-arm64",
+      "os": "macOS",
+      "architecture": "ARM64",
+      "runnerName": "macos15"
+    }
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/telnet-client-gate-regression.yml",
+      "sha256": "d448d156cf5fd5a59c3d1df73d7c01addc01842108096c186cbb0ba1750daf34"
+    },
+    {
+      "path": "ci/test/telnet-client-gate/CMakeLists.txt",
+      "sha256": "614136cf19fcdc9cb5d663943775b64f626708bb7d7b0b1e9c31fca25b48178d"
+    },
+    {
+      "path": "ci/test/telnet-client-gate/telnet-client-gate-regression.c",
+      "sha256": "3aa0a7dde3bd3c82daeb82532d3f86d0d91493ad10c90a94a5ae57171103bdca"
+    },
+    {
+      "path": "ci/test/telnet-client-gate/write-proof.py",
+      "sha256": "5566bb2bff4a23f21087759c6b055b864d5015a57be1678a39420661396a0e25"
+    },
+    {
+      "path": "src/app/wz_control_port.c",
+      "sha256": "07821a10c7e1a7be357b808dd2ad729bd04d684f5782950d3131bf72edb3a18c"
+    },
+    {
+      "path": "src/app/wz_host_socket.c",
+      "sha256": "f7c9c9eb5032b170a6c152064bb9556e2a5bf41805eff683bc53b02a7f5c2259"
+    },
+    {
+      "path": "src/app/wz_telnet_client.c",
+      "sha256": "9f480cd87be95c0721464487456069b61e8ff26491adc9b551a72ea87094d976"
+    },
+    {
+      "path": "src/app/wz_telnet_input.c",
+      "sha256": "e682ff54b87756ba572c84e5f48d7673df5957501da89656db39386d7ae64b0c"
+    },
+    {
+      "path": "src/app/wz_input_arbiter.c",
+      "sha256": "52bc39d6c9d5326e76d695f4f4a725f410e02cb9852a48a5f13b266ce2523bcb"
+    }
+  ]
+}

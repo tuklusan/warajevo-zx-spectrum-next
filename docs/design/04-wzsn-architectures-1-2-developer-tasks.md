@@ -490,7 +490,7 @@ Architecture #3 (`zx48-mic-ear-router-network-architecture.md`) is explicitly ou
 391. [P15][Core §§55.17] Implement bounded network buffers and malformed-input recovery with no unbounded allocation.
 392. [P15][Core §§55.16] Route network-thread/nonblocking-poll output through a bounded host command/input queue; never mutate machine state directly from socket code.
 393. [P15][Core §§55.18] Surface the plaintext/no-authentication security state to the application/UI.
-394. [P15][Core §§55.19] Add automated first-free, simultaneous-start, IP-family, exhaustion, one-client, reconnect, malformed-input, and negotiation transport tests.
+394. [P15][Core §§55.19][PARTIAL] Add automated first-free, simultaneous-start, IP-family, exhaustion, one-client, reconnect, malformed-input, and negotiation transport tests — new live-socket coverage verifies one-client admission, exact `BUSY` response, preservation of the active connection, reconnect after disconnect, and independent local/Telnet key release on four hosted runners (run `36398085826`, source `f6bd1286f96848377ff97192b81432dde0c37492`; proof: [telnet-client-gate.json](../../test-results/telnet-client-gate.json)). Existing multi-instance stress covers first-free probing and concurrent ownership; protocol boundary tests cover malformed input and negotiation. Full-range exhaustion and family-collision behavior remain unproven. Review findings are false positives: the bounded `recv` result is compared by its returned length, the fixed `HEAD:` object argument is passed without a shell after path validation, the active socket is established before `select`, and the proof output contains a space after the numeric count.
 395. [P15][Core §§55.20] Complete the transport-only acceptance subset before adding keyboard/control grammar.
 
 ## Phase 15B — Telnet keyboard source and deterministic input integration
@@ -504,7 +504,7 @@ Architecture #3 (`zx48-mic-ear-router-network-architecture.md`) is explicitly ou
 402. [P15][Core §§55.11] Implement `KEY UP <key>`.
 403. [P15][Core §§55.11] Implement `KEY PRESS <key>` with exactly two active-machine emulated frame periods and rejection of already-held/pending keys.
 404. [P15][Core §§55.11] Implement `RELEASE ALL` affecting only Telnet-owned keys.
-405. [P15][Core §§55.12] Release all Telnet-owned keys on disconnect while preserving local key state.
+405. [P15][Core §§55.12][COMPLETE] Release all Telnet-owned keys on disconnect while preserving local key state — live socket regression sets the same key as locally and remotely owned, disconnects the Telnet client, then verifies local/effective ownership remains and Telnet ownership is cleared on all four hosted runners (run `36398085826`; proof: [telnet-client-gate.json](../../test-results/telnet-client-gate.json)).
 406. [P15][Core §§55.13] Preserve local/Telnet key ownership and pending KEY PRESS releases across ordinary emulated Spectrum Reset as frozen.
 407. [P15][Core §§55.14] Record/replay normalized effective key transitions/master ticks rather than raw TCP arrival timing.
 408. [P15][Core §§55.19] Add local-vs-Telnet equivalence, same-key-two-source, modifier, multi-row, disconnect, KEY PRESS duration, reset, speed-change, and headless replay tests.
