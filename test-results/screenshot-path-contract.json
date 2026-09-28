@@ -1,0 +1,100 @@
+{
+  "testId": "screenshot-path-contract",
+  "status": "pass",
+  "commit": "c0933452777ed9b1b621e3bc2381798b27eeee47",
+  "runner": "Ubuntu 24.04 x86-64 hosted runner",
+  "timestamp": "2026-09-28T22:41:55+00:00",
+  "runId": 36493878315,
+  "caseCount": 1,
+  "observedOutput": "PASS screenshot destination, filename, and no-clobber collision contract",
+  "fixtures": [
+    {
+      "path": ".github/workflows/screenshot-path-contract.yml",
+      "sha256": "3910f7f8023ad50ef758148948542a48eaff1a2265c1b3cb5723b159e028395b"
+    },
+    {
+      "path": "ci/test/screenshot-path-contract/CMakeLists.txt",
+      "sha256": "e02abf7b69e80473e9f2caff6b88f95e6dd11cd58fe6953d4449cd57b92924b4"
+    },
+    {
+      "path": "ci/test/screenshot-path-contract/write-proof.py",
+      "sha256": "33f30674889a6156b0e0cc50ae7b7d36f1e3cec229c9b721151284ebe7ded78d"
+    },
+    {
+      "path": "ci/test/screenshot-path-contract/screenshot-path-contract.c",
+      "sha256": "a3b03563ee67bd0fde5e1d34ec910989f29ca79722348cde12c01f7a13122e54"
+    },
+    {
+      "path": "ci/test/screenshot-path-contract/README.md",
+      "sha256": "cd0abe8ca4be5862fd1d83a377197291c1805d2e5d73b2835b3dcbe8164538fa"
+    },
+    {
+      "path": "src/app/wz_host_output.c",
+      "sha256": "504322b9d5c80d2c865f6e8362557af61bce90240df83ccd25ca7065441191e6"
+    },
+    {
+      "path": "src/app/wz_host_output.h",
+      "sha256": "0c415f0029214f54d2a92dd9aa46bfc53d1801dee71c7eeb9acd8bd65a104895"
+    },
+    {
+      "path": "src/app/wz_screenshot_service.c",
+      "sha256": "05c8da60b7b90ca6b3a2b6b865ef6e00ab017ac739be8e282f196078fd195949"
+    },
+    {
+      "path": "src/app/wz_screenshot_service.h",
+      "sha256": "1b58549d40bf834a9b2ebf6afa4820119349fa2afce66082c0e041299b634017"
+    },
+    {
+      "path": "src/app/wz_telnet_keyboard_command.c",
+      "sha256": "f74a7067a930222a6036ddb1c80d3fd76f947fa85e7ff8769c6db0cef40c92d7"
+    },
+    {
+      "path": "src/app/wz_telnet_keyboard_command.h",
+      "sha256": "1704f552714cf2f0183672bf8486dd5ac001f2c2223b371a704e71fc723e0656"
+    },
+    {
+      "path": "src/app/wz_command_registry.c",
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
+    },
+    {
+      "path": "src/app/wz_command_registry.h",
+      "sha256": "80110080861a05baae47cd6d294315055bb6b1a636c79891b55c56717cb53c94"
+    },
+    {
+      "path": "src/app/wz_host_thread.c",
+      "sha256": "6f8cbe0e171adfe7b9f42d9517e31d72f7917048339ff8941d5bccadfa305151"
+    },
+    {
+      "path": "src/app/wz_host_thread.h",
+      "sha256": "bd4e189a40c8f9ad31f014dc12afc3c67b7a4bd5580df262b0cf92db8fbe8471"
+    },
+    {
+      "path": "src/app/wz_telnet_keymap.c",
+      "sha256": "c28b14ee6726eb99c6f26a4b7511c0b60dfaea008dcbe2cbe6bd7750a4092f3c"
+    },
+    {
+      "path": "src/app/wz_telnet_keymap.h",
+      "sha256": "056a9e1304fe7db114b1b860d6628f7d7866e84d0d4c44c75df4e58406bf1ff7"
+    },
+    {
+      "path": "src/core/wz_raster.c",
+      "sha256": "d87884dda947060b1b52e5ba3af9bebb5178c0d58505aeda4699078f8fc346c2"
+    },
+    {
+      "path": "src/core/wz_raster.h",
+      "sha256": "c231c401076b312c4b8ae6ef55492fd7e4068742c59a3583b4efaefee0ec5396"
+    },
+    {
+      "path": "src/core/wz_presentation_snapshot.c",
+      "sha256": "e486ad41490593ff803f647460d3542f69f425bf8c15bd0892e882962a685367"
+    },
+    {
+      "path": "src/core/wz_presentation_snapshot.h",
+      "sha256": "5dc1be78cf4627ed526b39e7d1ee4e961c3bff8b00f869e635675f2180af820d"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "4317571e64b373bd509c57127bfbe2ebd27489844f422646904be670d13ced08"
+    }
+  ]
+}
