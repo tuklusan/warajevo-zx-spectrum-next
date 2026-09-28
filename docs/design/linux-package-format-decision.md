@@ -54,6 +54,32 @@ its X11/OpenGL/ALSA stack resolve from operating-system library paths. The
 format therefore does not need to embed or install project-owned runtime
 libraries.
 
+## External configuration and user data
+
+The host-only settings file is stored in the platform user-configuration
+location selected by the Phase-12 decision:
+
+- Windows: `%LOCALAPPDATA%\Warajevo-ZX-Spectrum-Next\host-settings.v1`
+- macOS: `~/Library/Application Support/Warajevo-ZX-Spectrum-Next/host-settings.v1`
+- Linux: `${XDG_CONFIG_HOME:-$HOME/.config}/warajevo-zx-spectrum-next/host-settings.v1`
+
+Settings contain host preferences only; they do not contain machine/session
+state, ROM or media contents, or remote secrets. Writes use the already frozen
+exclusive sibling lock, same-directory temporary file, and atomic replacement
+policy.
+
+There is no application-owned ROM or media directory. ROM firmware and tape
+or Microdrive images are supplied by the user through the supported media
+workflows. Snapshots, exports, and other persistent outputs go to a
+user-selected destination. Telnet screenshots use the operating-system
+temporary directory and the exclusive-create collision policy. Temporary
+screenshots are not persisted user data.
+
+The release archives and their README contain no ROMs, firmware, test media,
+private corpus, snapshots, or generated screenshots. The README explains that
+required firmware must be supplied by the user and that test/private media is
+not part of the release.
+
 ## Acceptance state
 
 This freezes format and archive layout only. It does not claim that the
