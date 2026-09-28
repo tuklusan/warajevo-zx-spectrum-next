@@ -48,7 +48,7 @@
     },
     {
       "path": "src/core/wz_runner.c",
-      "sha256": "7e7b711c5d29b4df3a33a13d97a277fcdb1931706381e380ded9a9ec1a47c362"
+      "sha256": "698968da9e55b8e81ca0aa67a646f759253bc495cfea7f158cf9e1e0f4dca388"
     },
     {
       "path": "src/core/wz_runner.h",

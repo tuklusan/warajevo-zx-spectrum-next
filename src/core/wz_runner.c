@@ -63,7 +63,6 @@ wz_result_t wz_headless_runner_execute(wz_headless_runner_t* runner,
         wz_master_tick_t elapsed;
         wz_machine_update_interrupt_line(runner->machine);
         wz_result_t step_result;
-        wz_machine_update_interrupt_line(runner->machine);
         if (wz_machine_maskable_interrupt_line_low(runner->machine) &&
             wz_z80_maskable_interrupts_acceptable(&runner->machine->cpu)) {
             step_result = wz_z80_accept_maskable_interrupt(runner->machine);
