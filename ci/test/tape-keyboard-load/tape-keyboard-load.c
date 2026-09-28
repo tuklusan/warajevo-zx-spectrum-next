@@ -22,6 +22,9 @@ typedef struct {
     size_t interrupt_deasserts;
     size_t j_row_reads;
     size_t j_pressed_reads;
+    size_t keyboard_input_returns;
+    size_t keyboard_input_range_instructions;
+    bool capture_keyboard_input;
 } trace_counts_t;
 
 static void count_trace(const wz_trace_event_t* event, void* context)
@@ -32,6 +35,14 @@ static void count_trace(const wz_trace_event_t* event, void* context)
         (event->address & 0xfffeu) == 0xbffeu) {
         ++counts->j_row_reads;
         if ((event->value & 0x08u) == 0u) ++counts->j_pressed_reads;
+    }
+    if (counts->capture_keyboard_input &&
+        event->kind == WZ_TRACE_CPU_INSTRUCTION &&
+        event->program_counter >= 0x10a8u &&
+        event->program_counter <= 0x111cu) {
+        ++counts->keyboard_input_range_instructions;
+        if (event->program_counter == 0x10b5u)
+            ++counts->keyboard_input_returns;
     }
     if (event->kind != WZ_TRACE_INTERRUPT) return;
     if (event->value == WZ_TRACE_INTERRUPT_MASKABLE_ACCEPT)
@@ -187,10 +198,12 @@ int main(int argc, char** argv)
                   profile->master_ticks_per_cpu_tstate;
 
     REQUIRE(run_frames(&runner, frame_ticks, 80u));
+    trace_counts.capture_keyboard_input = true;
     REQUIRE(tap_key(&machine, &runner, frame_ticks, WZ_KEY_J));
+    trace_counts.capture_keyboard_input = false;
     edit_line = (wz_word_t)(wz_machine_memory_read(&machine, 0x5c59u) |
         ((wz_word_t)wz_machine_memory_read(&machine, 0x5c5au) << 8u));
-    (void)printf("after J: E_LINE=%04x PC=%04x IFF=%u IRQ=%lu samples=%lu LINE=%lu/%lu ULA_PRESSED/ROW_READS=%lu/%lu MODE=%02x FLAGS=%02x KSTATE=%02x%02x%02x%02x%02x LASTK=%02x keyrow=%02x before=",
+    (void)printf("after J: E_LINE=%04x PC=%04x IFF=%u IRQ=%lu samples=%lu LINE=%lu/%lu ULA_PRESSED/ROW_READS=%lu/%lu KEYRET=%lu/%lu MODE=%02x FLAGS=%02x KSTATE=%02x%02x%02x%02x%02x LASTK=%02x keyrow=%02x before=",
         edit_line, machine.cpu.program_counter, (unsigned)machine.cpu.iff1,
         (unsigned long)trace_counts.interrupt_accepts,
         (unsigned long)trace_counts.interrupt_samples,
@@ -198,6 +211,8 @@ int main(int argc, char** argv)
         (unsigned long)trace_counts.interrupt_deasserts,
         (unsigned long)trace_counts.j_pressed_reads,
         (unsigned long)trace_counts.j_row_reads,
+        (unsigned long)trace_counts.keyboard_input_returns,
+        (unsigned long)trace_counts.keyboard_input_range_instructions,
         wz_machine_memory_read(&machine, 0x5c41u),
         wz_machine_memory_read(&machine, 0x5c3bu),
         wz_machine_memory_read(&machine, 0x5c00u),
