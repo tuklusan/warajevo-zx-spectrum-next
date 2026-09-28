@@ -48,7 +48,7 @@
     },
     {
       "path": "ci/test/model-switch/telnet-model-switch.py",
-      "sha256": "4d7603e9426eb2e4cd6ffb620fd3e481c8eae8f9a51442a21b160c3be22579d7"
+      "sha256": "d04900bac32c10e89df9092e803e43cfa223e8768288958acd027aa3b2f65727"
     },
     {
       "path": "ci/runner-bootstrap/bootstrap-unix.sh",

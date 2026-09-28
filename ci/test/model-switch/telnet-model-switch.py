@@ -83,6 +83,9 @@ def main() -> None:
                                    stdout=log_handle, stderr=subprocess.STDOUT)
         sock = connect(range(30740, 32788))
         status(sock, "48K", "RUNNING", "100")
+        for speed in ("25", "50", "100", "200", "400", "800", "UNLIMITED"):
+            expect(sock, f"SPEED {speed}", f"OK SPEED {speed}\r\n")
+            status(sock, "48K", "RUNNING", speed)
         expect(sock, "SPEED 200", "OK SPEED 200\r\n")
         expect(sock, "MODEL 128K", "OK MODEL 128K\r\n")
         status(sock, "128K", "RUNNING", "200")
@@ -90,10 +93,12 @@ def main() -> None:
         status(sock, "48K", "RUNNING", "200")
 
         expect(sock, "PAUSE", "OK PAUSE\r\n")
+        expect(sock, "PAUSE", "OK PAUSE\r\n")
         expect(sock, "MODEL 128K", "OK MODEL 128K\r\n")
         status(sock, "128K", "PAUSED", "200")
         expect(sock, "MODEL 48K", "OK MODEL 48K\r\n")
         status(sock, "48K", "PAUSED", "200")
+        expect(sock, "RESUME", "OK RESUME\r\n")
         expect(sock, "RESUME", "OK RESUME\r\n")
         status(sock, "48K", "RUNNING", "200")
 
