@@ -1079,20 +1079,30 @@ static void wz_host_ui_draw_remote_settings(struct nk_context* context,
     const wz_ui_remote_control_status_t* remote_status =
         wz_ui_window_remote_control(&wz_host_session.ui_window);
     char details[WZ_UI_REMOTE_STATUS_CAPACITY];
+    float panel_width;
+    float panel_height;
+    float panel_x;
+    float panel_y;
     if (!wz_host_session.remote_settings_visible || remote_status == NULL) {
         return;
     }
+    panel_width = width >= 440.0f ? 420.0f : width - 16.0f;
+    panel_height = height >= 238.0f ? 190.0f : height - 48.0f;
+    if (panel_width < 160.0f || panel_height < 120.0f) {
+        return;
+    }
+    panel_x = width - panel_width - 8.0f;
+    panel_y = height - panel_height - 36.0f;
     if (!nk_begin(context, "Telnet Keyboard & Remote Control",
-            nk_rect(width - 440.0f, 48.0f, 420.0f, 190.0f),
+            nk_rect(panel_x, panel_y, panel_width, panel_height),
             NK_WINDOW_BORDER | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE |
                 NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE)) {
         nk_end(context);
         return;
     }
-    wz_ui_layout_remote_control_status_page(
-        remote_status, details, sizeof(details));
-    nk_layout_row_dynamic(context, 118.0f, 1);
-    nk_label_wrap(context, details, NK_TEXT_LEFT);
+    wz_ui_remote_control_status_page(remote_status, details, sizeof(details));
+    nk_layout_row_dynamic(context, panel_height - 70.0f, 1);
+    nk_label_wrap(context, details);
     nk_layout_row_dynamic(context, 24.0f, 1);
     if (nk_button_label(context, "Close")) {
         wz_host_session.remote_settings_visible = false;
