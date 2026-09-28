@@ -1,10 +1,10 @@
 {
   "testId": "ui-remote-status",
   "status": "pass",
-  "commit": "6a3fa6c1f6d2a153930123ae6e86a11f9bddda0c",
+  "commit": "852bfed221e89d96eb37e61d3e87da3509df381d",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-09-28T10:29:12+00:00",
-  "runId": 36409808146,
+  "timestamp": "2026-09-28T14:11:57+00:00",
+  "runId": 36431455199,
   "runners": [
     {
       "id": "windows-x64",
@@ -50,15 +50,15 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "5e9d34e4045d9861305749c808445e4945fa992fdbe70a2566b4e5bbdd296ecd"
+      "sha256": "298943f37fe7df18bba9d16bdc5bbe64168ae4ca27f628f58ce30803735d6131"
     },
     {
       "path": "src/app/wz_ui_layout.h",
-      "sha256": "5c0009f71141383426345f35fdd7d06982fb7ae0a482064bc12171c91cc50954"
+      "sha256": "cfe6cf9135dd1ef6771a1513e9dc3f72cd42636f4f005e576017aa745915d2d9"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "a0b6823b6ab6ee1f706c93d4380cf5ee43b54c53852b53c48e2157d769ab0dec"
+      "sha256": "cfc90743b387ad47e4032b16ab2cb575a6ca5521a88fc78e25d9c5f59b9800e8"
     },
     {
       "path": "src/app/wz_command_registry.c",
@@ -102,7 +102,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "b5347e33a6d6e4082c056edd8963da4cbb4eab4d523db9a6e2bb20afaf32ff1a"
+      "sha256": "d3c09a688001e54098b3789349fd2e6ae37119e273c9d229848e32662813b285"
     }
   ]
 }
