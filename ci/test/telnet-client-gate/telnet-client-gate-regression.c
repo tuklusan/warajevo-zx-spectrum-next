@@ -111,6 +111,20 @@ static bool set_receive_timeout(native_socket_t client)
 #endif
 }
 
+static bool wait_readable(wz_host_socket_t socket_handle)
+{
+    fd_set read_set;
+    struct timeval timeout = {5, 0};
+    FD_ZERO(&read_set);
+#if defined(_WIN32)
+    FD_SET((SOCKET)socket_handle, &read_set);
+    return select(0, &read_set, NULL, NULL, &timeout) > 0;
+#else
+    FD_SET((int)socket_handle, &read_set);
+    return select((int)socket_handle + 1, &read_set, NULL, NULL, &timeout) > 0;
+#endif
+}
+
 int main(void)
 {
     unsigned cases = 0u;
@@ -148,6 +162,7 @@ int main(void)
     REQUIRE(native_receive(second, response, sizeof(response)) == 0);
 
     REQUIRE(native_send(first, "ping", 4u) == 4);
+    REQUIRE(wait_readable(gate.active_client));
     received = wz_host_socket_receive(gate.active_client, response, sizeof(response));
     REQUIRE(received == 4 && memcmp(response, "ping", 4u) == 0);
 

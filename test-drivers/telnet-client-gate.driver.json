@@ -1,7 +1,7 @@
 {
   "testId": "telnet-client-gate",
   "command": "cmake -S ci/test/telnet-client-gate -B dist/telnet-client-gate -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/telnet-client-gate --config Release --target wz_telnet_client_gate_regression --parallel 2 && dist/telnet-client-gate/wz_telnet_client_gate_regression",
-  "requiredCases": 23,
+  "requiredCases": 24,
   "runnerMatrix": [
     "windows-2025",
     "windows-11-arm",
@@ -19,7 +19,7 @@
     },
     {
       "path": "ci/test/telnet-client-gate/telnet-client-gate-regression.c",
-      "sha256": "4607a38a39ff014cd34cffb2ea929fd3718e7a1f58732f89535861fea9bb4f5a"
+      "sha256": "3aa0a7dde3bd3c82daeb82532d3f86d0d91493ad10c90a94a5ae57171103bdca"
     },
     {
       "path": "ci/test/telnet-client-gate/write-proof.py",
