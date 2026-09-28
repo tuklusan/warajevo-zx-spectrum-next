@@ -7,11 +7,11 @@
     },
     {
       "path": "ci/test/audio-delivery/sokol-audio-delivery-regression.c",
-      "sha256": "0e6748467f7f9159161bc44c5f3dbd7f2124677279d93369a66796b023eb88a1"
+      "sha256": "577d9c12b144e908f28bc803e9cf4b336a82672ca1e3852697dd86f80e691aca"
     },
     {
       "path": "ci/test/audio-delivery/sokol_audio_stub/sokol_audio.h",
-      "sha256": "cac7b970b44bddbf76344ebbdabfee7a632ea47f4d682edd6cb8075dcac55f95"
+      "sha256": "241b80c7c29052de62cc2400f9ed6416b9d4cbb8d1b3ef470a84c74dede75193"
     },
     {
       "path": "ci/test/audio-delivery/write-proof.py",
