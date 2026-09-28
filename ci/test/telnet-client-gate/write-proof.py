@@ -36,7 +36,7 @@ def main() -> None:
         output = (runner_dir / "run.log").read_text(encoding="utf-8")
         if metadata.get("id") != runner_id or PASS_MARKER not in output:
             raise SystemExit(f"runner proof missing or mismatched: {runner_id}")
-        count = output.split(PASS_MARKER, 1)[1].split(")", 1)[0]
+        count = output.split(PASS_MARKER, 1)[1].split(" ", 1)[0]
         if not count.isdigit() or int(count) != driver["requiredCases"]:
             raise SystemExit(f"case count mismatch: {runner_id}")
         runners.append(metadata)
