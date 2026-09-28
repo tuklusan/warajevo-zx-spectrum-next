@@ -74,11 +74,13 @@ def main() -> None:
     environment = os.environ.copy()
     environment["WZSN_TAPE_PATH"] = str(tape)
     environment["WZSN_ROM_PATH"] = str(rom)
-    log_handle = (output / "emulator.log").open("w", encoding="utf-8")
-    process = subprocess.Popen([str(binary)], env=environment,
-                               stdout=log_handle, stderr=subprocess.STDOUT)
+    log_handle = None
+    process = None
     sock = None
     try:
+        log_handle = (output / "emulator.log").open("w", encoding="utf-8")
+        process = subprocess.Popen([str(binary)], env=environment,
+                                   stdout=log_handle, stderr=subprocess.STDOUT)
         sock = connect(range(30740, 32788))
         status(sock, "48K", "RUNNING", "100")
         expect(sock, "SPEED 200", "OK SPEED 200\r\n")
@@ -109,13 +111,16 @@ def main() -> None:
     finally:
         if sock is not None:
             sock.close()
-        process.terminate()
-        try:
-            process.wait(timeout=10)
-        except subprocess.TimeoutExpired:
-            process.kill()
-            process.wait()
-        log_handle.close()
+        if process is not None:
+            if process.poll() is None:
+                process.terminate()
+                try:
+                    process.wait(timeout=10)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                    process.wait()
+        if log_handle is not None:
+            log_handle.close()
 
 
 if __name__ == "__main__":
