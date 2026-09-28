@@ -41,12 +41,12 @@ for that commit before marking its change record ready to close. Automated
 review and test output are evidence; the responsible developer makes the final
 adjudication.
 
-Every push-triggered GitHub workflow is scoped to `main`. The local pre-push
-gate accepts direct updates only from local `main` to remote `main` and checks
-every complete tracked pathname, including every directory component, for
-forbidden terms case-insensitively before contacting GitHub. The pathname policy
-applies to direct commits and pushes to `main`: the local
-gate validates the complete prospective tree, not just changed paths, and the
+Every project commit is made directly on local `main`, and every push updates
+remote `main`; no other branch or pull request is used. Every push-triggered
+GitHub workflow is scoped to `main`. The pre-commit hook checks every pathname
+in the complete staged index, including directory components, for forbidden
+terms case-insensitively before creating a commit. The pre-push gate repeats
+the check against the complete prospective tree before contacting GitHub. The
 GitHub workflow audits every tracked pathname at the exact pushed commit.
 Git metadata and the fixed `main` ref are not repository pathnames. No other
 branch or pull request is part of this workflow. Manual dispatch jobs require
@@ -67,10 +67,13 @@ pass against the complete prospective `main` tree before Git contacts GitHub.
 GitHub-side pathname enforcement must not be represented as a pre-receipt
 blocker while this repository remains public.
 
-## 3. Local pre-push gate
+## 3. Local pathname and pre-push gates
 
-The sole local validation entrypoint is `.githooks/pre-push`. The checkout uses
-`core.hooksPath=.githooks`; new checkouts must enable that setting.
+The checkout uses `core.hooksPath=.githooks`; new checkouts must enable that
+setting. `.githooks/pre-commit` rejects a staged index containing a forbidden
+pathname before a direct `main` commit is created. `.githooks/pre-push` is the
+sole local push-validation entrypoint and independently validates the complete
+prospective tree.
 
 The gate runs test-ledger validation, banned-term validation, license-header
 validation, local AI source review, and Git LFS validation. Banned matching is

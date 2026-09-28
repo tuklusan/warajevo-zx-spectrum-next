@@ -29,10 +29,14 @@ TERMS = tuple(base64.b64decode(value, validate=True).decode("ascii").casefold()
 
 
 def main():
-    tree = sys.argv[1] if len(sys.argv) == 2 else "HEAD"
-    raw_paths = subprocess.check_output(
-        ["git", "ls-tree", "-r", "--name-only", "-z", tree]
-    )
+    if sys.argv[1:] == ["--index"]:
+        tree = "staged index"
+        raw_paths = subprocess.check_output(["git", "ls-files", "--cached", "-z"])
+    else:
+        tree = sys.argv[1] if len(sys.argv) == 2 else "HEAD"
+        raw_paths = subprocess.check_output(
+            ["git", "ls-tree", "-r", "--name-only", "-z", tree]
+        )
     paths = [os.fsdecode(item) for item in raw_paths.split(b"\0") if item]
     violations = []
     for path in paths:

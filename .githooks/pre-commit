@@ -1,0 +1,13 @@
+#!/bin/sh
+set -eu
+
+if command -v python3 >/dev/null 2>&1; then
+    python3 ci/validate-pathnames.py --index
+elif command -v py >/dev/null 2>&1; then
+    py -3 ci/validate-pathnames.py --index
+elif command -v python >/dev/null 2>&1; then
+    python ci/validate-pathnames.py --index
+else
+    printf '%s\n' "Commit rejected: Python is required to validate staged pathnames." >&2
+    exit 1
+fi
