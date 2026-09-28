@@ -1,6 +1,12 @@
 #!/bin/sh
 set -eu
 
+branch=$(git symbolic-ref --quiet --short HEAD || true)
+if [ "$branch" != "main" ]; then
+    printf '%s\n' "Commit rejected: this project commits directly to main only." >&2
+    exit 1
+fi
+
 if command -v python3 >/dev/null 2>&1; then
     python3 ci/validate-pathnames.py --index
 elif command -v py >/dev/null 2>&1; then
