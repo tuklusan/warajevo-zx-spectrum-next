@@ -391,6 +391,39 @@ static bool wz_host_load_external_tap(wz_host_session_t* session, const char* pa
     return loaded;
 }
 
+static wz_result_t wz_host_command_model_set(
+    const void* context, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    wz_host_session_t* session = (wz_host_session_t*)context;
+    const wz_machine_profile_t* profile;
+    const char* response;
+    if (session == NULL || result == NULL || arguments.data == NULL) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (arguments.size == 3u &&
+        memcmp(arguments.data, "48k", 3u) == 0) {
+        profile = wz_machine_profile_48k_pal();
+        response = "48k";
+    } else if (arguments.size == 4u &&
+               memcmp(arguments.data, "128k", 4u) == 0) {
+        profile = wz_machine_profile_128k_pal();
+        response = "128k";
+    } else {
+        result->reason = "bad-model";
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    if (wz_machine_reconfigure_profile(&session->machine, profile) !=
+        WZ_RESULT_OK) {
+        result->reason = "model-change-failed";
+        return WZ_RESULT_INVALID_STATE;
+    }
+    session->audio_sample_remainder = 0u;
+    session->audio_sample_speed_initialized = false;
+    (void)snprintf(result->message, sizeof(result->message), "%s", response);
+    return WZ_RESULT_OK;
+}
+
 static wz_result_t wz_host_command_reset(
     const void* context, wz_command_arguments_t arguments,
     wz_command_result_t* result)
@@ -543,6 +576,12 @@ static bool wz_host_register_commands(void)
             wz_host_command_resume, &wz_host_session, true, true, NULL
         },
         {
+            "machine.model.set", "Set model", "Switch between certified 48K and 128K profiles",
+            "machine", "48K|128K", NULL, "wz_host_command_model_set", "telnet",
+            NULL, WZ_COMMAND_REMOTE_SAFE, NULL, wz_host_command_model_set,
+            &wz_host_session, true, true, NULL
+        },
+        {
             "machine.reset", "Reset", "Reset the emulated machine",
             "machine", "NONE", NULL, "wz_host_command_reset", "telnet",
             NULL, WZ_COMMAND_REMOTE_SAFE, NULL, wz_host_command_reset,
@@ -596,7 +635,8 @@ static void wz_host_telnet_process_command(const char* command)
     size_t physical_key = 0u;
     bool key_ok = false;
     if (command == NULL) return;
-    if (wz_telnet_alias_to_do(command, projected, sizeof(projected))) {
+    if (wz_telnet_alias_to_do(command, projected, sizeof(projected)) ||
+        wz_telnet_model_alias_to_do(command, projected, sizeof(projected))) {
         char id[WZ_HOST_TELNET_IO_CAPACITY];
         char arguments[WZ_HOST_TELNET_IO_CAPACITY];
         char dispatch_response[WZ_HOST_TELNET_IO_CAPACITY];

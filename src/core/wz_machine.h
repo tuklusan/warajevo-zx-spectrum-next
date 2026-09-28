@@ -164,6 +164,10 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
                             const wz_machine_profile_t* profile);
 /* Reset emulated state while preserving host bindings and mounted media. */
 wz_result_t wz_machine_reset(wz_machine_t* machine);
+/* Cold-switch a certified model profile while retaining media and host
+ * bindings; incompatible Spectrum RAM and CPU execution state are cleared. */
+wz_result_t wz_machine_reconfigure_profile(
+    wz_machine_t* machine, const wz_machine_profile_t* profile);
 void wz_machine_destroy(wz_machine_t* machine);
 const char* wz_machine_boot_message(void);
 void wz_machine_set_timing_trace(wz_machine_t* machine, wz_trace_sink_t* trace);

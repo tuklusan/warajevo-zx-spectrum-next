@@ -23,6 +23,20 @@ static bool write_response(const char* response, char* output,
     return true;
 }
 
+bool wz_telnet_model_alias_to_do(const char* alias, char* output,
+                                 size_t output_capacity)
+{
+    const char* model = NULL;
+    int written;
+    if (alias == NULL || output == NULL || output_capacity == 0u) return false;
+    if (strncmp(alias, "MODEL ", 6u) != 0) return false;
+    if (strcmp(alias, "MODEL 48K") == 0) model = "48k";
+    else if (strcmp(alias, "MODEL 128K") == 0) model = "128k";
+    if (model == NULL) model = "invalid";
+    written = snprintf(output, output_capacity, "DO machine.model.set %s", model);
+    return written >= 0 && (size_t)written < output_capacity;
+}
+
 bool wz_telnet_alias_response_rewrite(const char* alias,
                                       const char* dispatch_response,
                                       char* output,
@@ -57,6 +71,22 @@ bool wz_telnet_alias_response_rewrite(const char* alias,
     if (strcmp(alias, "RESUME") == 0 &&
         strcmp(dispatch_response, "OK DO machine.resume running\r\n") == 0) {
         return write_response("OK RESUME\r\n", output, output_capacity,
+                              output_length);
+    }
+    if (strcmp(alias, "MODEL 48K") == 0 &&
+        strcmp(dispatch_response, "OK DO machine.model.set 48k\r\n") == 0) {
+        return write_response("OK MODEL 48K\r\n", output, output_capacity,
+                              output_length);
+    }
+    if (strcmp(alias, "MODEL 128K") == 0 &&
+        strcmp(dispatch_response, "OK DO machine.model.set 128k\r\n") == 0) {
+        return write_response("OK MODEL 128K\r\n", output, output_capacity,
+                              output_length);
+    }
+    if (strncmp(alias, "MODEL ", 6u) == 0 &&
+        strcmp(dispatch_response,
+               "ERR DO machine.model.set bad-model\r\n") == 0) {
+        return write_response("ERR BAD_MODEL\r\n", output, output_capacity,
                               output_length);
     }
     if (strncmp(alias, "SPEED ", 6u) != 0) {

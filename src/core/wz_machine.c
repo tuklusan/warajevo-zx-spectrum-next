@@ -178,6 +178,80 @@ wz_result_t wz_machine_reset(wz_machine_t* machine)
     return WZ_RESULT_OK;
 }
 
+wz_result_t wz_machine_reconfigure_profile(
+    wz_machine_t* machine, const wz_machine_profile_t* profile)
+{
+    wz_machine_t* replacement;
+    wz_result_t result;
+
+    if (machine == 0 || profile == 0 || machine->profile == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (profile->kind != WZ_MACHINE_48K_PAL &&
+        profile->kind != WZ_MACHINE_128K_PAL) {
+        return WZ_RESULT_INVALID_PROFILE;
+    }
+    if (profile->kind == machine->profile->kind) return WZ_RESULT_OK;
+
+    replacement = (wz_machine_t*)calloc(1u, sizeof(*replacement));
+    if (replacement == 0) {
+        return WZ_RESULT_OUT_OF_MEMORY;
+    }
+    result = wz_machine_init(replacement, profile);
+    if (result != WZ_RESULT_OK) {
+        free(replacement);
+        return result;
+    }
+
+    replacement->bus_observer = machine->bus_observer;
+    replacement->bus_input = machine->bus_input;
+    replacement->bus_data_source = machine->bus_data_source;
+    replacement->timing_trace = machine->timing_trace;
+    replacement->hardware_io_decode_enabled =
+        machine->hardware_io_decode_enabled;
+    replacement->tape = machine->tape;
+    replacement->tape_state = machine->tape_state;
+    replacement->tape_state.tape = &replacement->tape;
+    replacement->tape_mounted = machine->tape_mounted;
+    replacement->tape_loading_mode = machine->tape_loading_mode;
+    replacement->microdrive = machine->microdrive;
+    replacement->printer = machine->printer;
+    replacement->networking_mode = machine->networking_mode;
+    replacement->zxnet = machine->zxnet;
+    replacement->interface1_rom_page = machine->interface1_rom_page;
+    replacement->interface1_control_latch =
+        machine->interface1_control_latch;
+    replacement->interface1_previous_control_latch =
+        machine->interface1_previous_control_latch;
+    replacement->interface1_motor_shift = machine->interface1_motor_shift;
+    replacement->interface1_active_motor = machine->interface1_active_motor;
+    replacement->interface1_control_latch_tick =
+        machine->interface1_control_latch_tick;
+
+    if (machine->has_48k_rom != 0u &&
+        profile->expected_rom_identity != 0u &&
+        machine->rom_identity == profile->expected_rom_identity) {
+        memcpy(replacement->memory, machine->memory, WZ_48K_ROM_SIZE);
+        replacement->has_48k_rom = 1u;
+        replacement->rom_identity = machine->rom_identity;
+    }
+    if (machine->has_interface1_rom != 0u) {
+        memcpy(replacement->interface1_rom, machine->interface1_rom,
+               sizeof(replacement->interface1_rom));
+        replacement->has_interface1_rom = 1u;
+        replacement->interface1_rom_variant =
+            machine->interface1_rom_variant;
+        replacement->interface1_rom_identity =
+            machine->interface1_rom_identity;
+    }
+
+    wz_machine_destroy(machine);
+    *machine = *replacement;
+    free(replacement);
+    machine->tape_state.tape = &machine->tape;
+    return WZ_RESULT_OK;
+}
+
 void wz_machine_destroy(wz_machine_t* machine)
 {
     if (machine != 0) {

@@ -1,0 +1,50 @@
+{
+  "testId": "model-switch",
+  "command": "cmake -S ci/test/model-switch -B dist/model-switch -DCMAKE_BUILD_TYPE=Release && cmake --build dist/model-switch --config Release --target wz_model_switch_regression wz_telnet_model_alias_regression --parallel 2 && dist/model-switch/wz_model_switch_regression && dist/model-switch/wz_telnet_model_alias_regression",
+  "fixtures": [
+    {
+      "path": ".github/workflows/model-switch-regression.yml",
+      "sha256": "c667331a8954090d11b5fdbec19546598281eb53593185ecdcf09a696edce20d"
+    },
+    {
+      "path": "ci/test/model-switch/CMakeLists.txt",
+      "sha256": "7427c2b375bb6ac9e1eb83e14fc87dbdae7a90ce68606af1628f3170ed76e411"
+    },
+    {
+      "path": "ci/test/model-switch/model-switch-regression.c",
+      "sha256": "08e9a2f4ab6b34c16828cc8141f2e02bd05318e671e432b3dd2a284a9c5c6e18"
+    },
+    {
+      "path": "ci/test/model-switch/telnet-model-alias-regression.c",
+      "sha256": "27c935c1d5e6d32df05a6c9dda4f89c317106de3a353a454d3cea14ef44bedb9"
+    },
+    {
+      "path": "ci/test/model-switch/write-proof.py",
+      "sha256": "3782b40a25b4a184d361a32a76d2a37b4abde1c7bdca330a9c484af2c8597edb"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "77b1b9e1b6be61fbd48a41077f01d8029089d5ed90c06bd203363c9df0736808"
+    },
+    {
+      "path": "src/app/wz_telnet_alias_response.c",
+      "sha256": "6c36e41ec8261c72b6eafa556b38e246dc577356c6fb27956c9a85e6e4b14063"
+    },
+    {
+      "path": "src/app/wz_telnet_alias_response.h",
+      "sha256": "1d39dcff0ade48fcb6ede4297bd4ede2b6de81e6b8b6955cf76af7103d3a5334"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "9e193a7f7a2ef1d5501291bc175281e019defc020f9a1ff6789c4eee04245aea"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "84d9e0b84a02993917b0e74cb9ba0d71158f45223a707d801ce927029ab2b0aa"
+    },
+    {
+      "path": "src/core/wz_machine_profile.c",
+      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09"
+    }
+  ]
+}

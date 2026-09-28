@@ -1,0 +1,118 @@
+name: Certified model switch regression
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/core/wz_machine.*'
+      - 'src/app/wz_sokol_main.c'
+      - 'src/app/wz_telnet_alias_response.*'
+      - 'ci/test/model-switch/**'
+      - 'test-drivers/model-switch.driver.json'
+      - '.github/workflows/model-switch-regression.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    if: github.ref == 'refs/heads/main'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: windows-x64
+            runner: windows-2025
+          - id: windows-arm64
+            runner: windows-11-arm
+          - id: macos-x64
+            runner: macos-15-intel
+          - id: macos-arm64
+            runner: macos-15
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+
+      - name: Configure regression executables
+        run: cmake -S ci/test/model-switch -B dist/model-switch -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build regression executables
+        run: cmake --build dist/model-switch --config Release --target wz_model_switch_regression wz_telnet_model_alias_regression --parallel 2
+
+      - name: Run model and Telnet regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          model=dist/model-switch/wz_model_switch_regression
+          alias=dist/model-switch/wz_telnet_model_alias_regression
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            model=dist/model-switch/Release/wz_model_switch_regression.exe
+            alias=dist/model-switch/Release/wz_telnet_model_alias_regression.exe
+          fi
+          mkdir -p dist/model-switch/results
+          "$model" | tee dist/model-switch/results/run.log
+          "$alias" | tee -a dist/model-switch/results/run.log
+
+      - name: Save runner metadata
+        shell: bash
+        env:
+          MATRIX_ID: ${{ matrix.id }}
+        run: |
+          python_bin=python3
+          if ! command -v "$python_bin" >/dev/null 2>&1; then python_bin=python; fi
+          "$python_bin" - <<'PY'
+          import json, os
+          from pathlib import Path
+          record = {
+              "id": os.environ["MATRIX_ID"],
+              "os": os.environ["RUNNER_OS"],
+              "architecture": os.environ["RUNNER_ARCH"],
+              "runnerName": os.environ.get("ImageOS", "hosted runner"),
+          }
+          Path("dist/model-switch/results/runner.json").write_text(
+              json.dumps(record, indent=2) + "\n", encoding="utf-8")
+          PY
+
+      - name: Upload runner results
+        uses: actions/upload-artifact@v4
+        with:
+          name: model-switch-raw-${{ matrix.id }}
+          path: dist/model-switch/results/
+          if-no-files-found: error
+
+  proof:
+    if: github.ref == 'refs/heads/main'
+    needs: regression
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out tested commit
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Download runner results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: model-switch-raw-*
+          path: dist/model-switch/results
+          merge-multiple: true
+
+      - name: Aggregate pinned model switch proof
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: |
+          python3 ci/test/model-switch/write-proof.py \
+            --project-commit "$GITHUB_SHA" \
+            --run-id "$GITHUB_RUN_ID" \
+            --artifact-root dist/model-switch/results \
+            --proof-out dist/model-switch/model-switch.json
+
+      - name: Upload pinned proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: model-switch-proof-${{ github.sha }}
+          path: dist/model-switch/model-switch.json
+          if-no-files-found: error

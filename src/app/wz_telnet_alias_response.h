@@ -12,6 +12,9 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+bool wz_telnet_model_alias_to_do(const char* alias, char* output,
+                                 size_t output_capacity);
+
 bool wz_telnet_alias_response_rewrite(const char* alias,
                                       const char* dispatch_response,
                                       char* output,
