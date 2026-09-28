@@ -1,9 +1,9 @@
 {
   "testId": "application-command-boundary",
   "status": "pass",
-  "commit": "322964d77c6d28162488fc080ee65cc0c19d7275",
+  "commit": "b8c04e802db155e51b45478ab326277d847720a9",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-09-28T05:29:22+00:00",
+  "timestamp": "2026-09-28T06:29:50+00:00",
   "caseCount": 6,
   "runners": [
     {
@@ -74,11 +74,11 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "616d73edfd9ae2f7e2e903ff05bd4b0d6fc1197ac0e7d8ccaad882ea65568dcf"
+      "sha256": "0913bbbbc11f9fe30b7fcc55aa3456233f969b1a543eed84d742e8e4ca482e0a"
     },
     {
       "path": "src/app/wz_telnet_alias_response.c",
-      "sha256": "6c36e41ec8261c72b6eafa556b38e246dc577356c6fb27956c9a85e6e4b14063"
+      "sha256": "3cbcf8d6e85cc444e63f7142ea6972b9850cde9eca6d4c8be029fb8ee59d8671"
     },
     {
       "path": "src/app/wz_telnet_alias_response.h",
@@ -86,7 +86,7 @@
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.c",
-      "sha256": "bd0bb370a0254a2811e05863a6ac83e38ee0e7035b86b7d6ba7eab13be9f9847"
+      "sha256": "cd94bf55c10f62bb706cbdeacd04f76edb649a6d677416dfdd2960316e4500d8"
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.h",
