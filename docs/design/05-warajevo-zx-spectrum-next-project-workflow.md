@@ -43,13 +43,14 @@ adjudication.
 
 Every push-triggered GitHub workflow is scoped to `main`. The local pre-push
 gate accepts direct updates only from local `main` to remote `main` and checks
-every complete tracked pathname, including directory components, for forbidden
-terms case-insensitively before contacting GitHub. This check applies to paths
-in the prospective tracked repository tree; Git metadata and the `main` ref name
-are not file paths and are not checked as pathnames. No branch other than `main`
-is created or used. Manual dispatch jobs require `main`; pull-request triggers
-are prohibited. The pathname-policy workflow rechecks every tracked pathname at
-the exact commit after each direct push to `main`.
+every complete tracked pathname, including every directory component, for
+forbidden terms case-insensitively before contacting GitHub. The checked set is
+the complete prospective tree for the direct `main` commit, not just changed
+paths. Git metadata and the fixed `main` ref are outside the pathname set. No
+other branch or pull request is part of this workflow. Manual dispatch jobs
+require `main`; pull-request triggers are prohibited. The pathname-policy
+workflow rechecks every tracked pathname at the exact commit after each direct
+push to `main`.
 
 GitHub push rulesets can reject file paths before receipt only for private or
 internal repositories on eligible plans. This repository is public, so GitHub
