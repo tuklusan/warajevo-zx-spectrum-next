@@ -117,6 +117,10 @@ static bool check_48k_contract(void)
                      14335u, 4u, 0u) ||
         !check_delay(&machine, WZ_BUS_IO_WRITE, 0x40ffu,
                      14335u, 5u, 0u) ||
+        !check_delay(&machine, WZ_BUS_MEMORY_READ, 0x4000u,
+                     14335u + 191u * 224u, 3u, 6u) ||
+        !check_delay(&machine, WZ_BUS_MEMORY_READ, 0x4000u,
+                     14335u + 192u * 224u, 3u, 0u) ||
         !check_io_bus_advance(profile, 0x40ffu, 12u) ||
         !check_io_bus_advance(profile, 0x00feu, 5u) ||
         !check_oversized_io_request_rejected(profile)) {
@@ -149,6 +153,10 @@ static bool check_128k_contract(void)
                      14361u + 128u, 3u, 0u) ||
         !check_delay(&machine, WZ_BUS_MEMORY_READ, 0x4000u,
                      14361u + 228u, 3u, 6u) ||
+        !check_delay(&machine, WZ_BUS_MEMORY_READ, 0x4000u,
+                     14361u + 191u * 228u, 3u, 6u) ||
+        !check_delay(&machine, WZ_BUS_MEMORY_READ, 0x4000u,
+                     14361u + 192u * 228u, 3u, 0u) ||
         !check_delay(&machine, WZ_BUS_MEMORY_READ, 0x4000u,
                      70908u + 14361u, 3u, 6u)) {
         wz_machine_destroy(&machine);
