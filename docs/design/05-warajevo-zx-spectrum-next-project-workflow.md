@@ -86,6 +86,11 @@ adjudication. `STALL` is a failed gate, never a review pass. Missing
 credentials, reviewer errors, or other validation/tool configuration failures
 also reject the push before the remote is contacted.
 
+When an already tracked source file has the project's established GPL header,
+the push gate requires that header to remain intact. New source files must use
+the current project license header. Existing license terms must not be replaced
+or combined with contradictory terms merely to satisfy validation.
+
 The local workstation is never a build or test machine. It may run the
 pre-push policy checks, but product compilation, emulator execution, media
 loading, screenshots, and test-proof generation must run on hosted project

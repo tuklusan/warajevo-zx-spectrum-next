@@ -52,14 +52,22 @@ check_license_headers() {
             *) continue ;;
         esac
         contents=$(git show "$newrev:$file" 2>/dev/null || true)
-        printf '%s\n' "$contents" | grep -Fq 'Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.' || {
-            printf '%s\n' "Push rejected: missing license header in $file" >&2
-            exit 1
-        }
-        printf '%s\n' "$contents" | grep -Fq 'This file is governed by the SANYALnet Labs Non-Commercial License' || {
-            printf '%s\n' "Push rejected: incomplete license header in $file" >&2
-            exit 1
-        }
+        previous=$(git show "$oldrev:$file" 2>/dev/null || true)
+        if printf '%s\n' "$previous" | grep -Fq 'New original material is licensed under GNU GPL v2 or later'; then
+            printf '%s\n' "$contents" | grep -Fq 'New original material is licensed under GNU GPL v2 or later' || {
+                printf '%s\n' "Push rejected: existing GPL license header changed in $file" >&2
+                exit 1
+            }
+        else
+            printf '%s\n' "$contents" | grep -Fq 'Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.' || {
+                printf '%s\n' "Push rejected: missing license header in $file" >&2
+                exit 1
+            }
+            printf '%s\n' "$contents" | grep -Fq 'This file is governed by the SANYALnet Labs Non-Commercial License' || {
+                printf '%s\n' "Push rejected: incomplete license header in $file" >&2
+                exit 1
+            }
+        fi
     done
 }
 
