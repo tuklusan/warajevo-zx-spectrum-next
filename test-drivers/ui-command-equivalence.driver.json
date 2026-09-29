@@ -115,7 +115,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "23df8d4b430d2e1ec889f1fc6650c435242d032218dfbf2efbd665c2eb1ec9c0"
+      "sha256": "514b70e7163d77857b738ea12557254945dc32b150a97e82c7c111995100253e"
     },
     {
       "path": "src/core/wz_keyboard_matrix.c",
