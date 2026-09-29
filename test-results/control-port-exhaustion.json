@@ -1,10 +1,10 @@
 {
   "testId": "control-port-exhaustion",
   "status": "pass",
-  "commit": "4e780f8a2eb9f0475fb7cf710b591c1ff35abc37",
-  "runId": 36589928461,
+  "commit": "046b89d82afa14946954d5c83072c6489306b74f",
+  "runId": 36617973384,
   "runner": "Linux/X64",
-  "timestamp": "2026-09-29T15:32:38+00:00",
+  "timestamp": "2026-09-29T19:18:37+00:00",
   "caseCount": 1,
   "occupiedPortCount": 2048,
   "fixtures": [
@@ -26,7 +26,7 @@
     },
     {
       "path": "test-drivers/control-port-exhaustion.driver.json",
-      "sha256": "6c14288eb02ca087ab3aa150f0763692229b9a74276f871eead3391e445278a8"
+      "sha256": "45aafad79773e6f50d048764856ce1929cfeb13f57c7c7437552f34f211d674d"
     },
     {
       "path": "src/app/wz_control_port.c",

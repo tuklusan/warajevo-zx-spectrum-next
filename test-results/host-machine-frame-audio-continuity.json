@@ -1,10 +1,10 @@
 {
   "testId": "host-machine-frame-audio-continuity",
   "status": "pass",
-  "commit": "e03b77c87b0eaafea95efdbbebe200f9a175b052",
-  "runId": 36554049170,
+  "commit": "046b89d82afa14946954d5c83072c6489306b74f",
+  "runId": 36617973635,
   "runner": "Linux/X64",
-  "timestamp": "2026-09-29T10:12:00+00:00",
+  "timestamp": "2026-09-29T19:15:56+00:00",
   "caseCount": 56,
   "fixtures": [
     {
@@ -65,7 +65,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "8a6368a21d6c9000cd39e8c88147b3596354f89b1ea428b14a3a109cd203292e"
+      "sha256": "3e67cb171009e06fda0f5e7a4c9df2c9f7c31d2ecbf5e16ea389e778aa580a27"
     },
     {
       "path": "src/app/wz_speed_policy.c",
@@ -93,11 +93,11 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "71baaae8ab59240cf9af91f53679a102f07229947d9241112d84ed963068e632"
+      "sha256": "9ecafdaf9f137684e77a3b722e7d1dd289ba9e8b3333af1244844e2d604436c0"
     },
     {
       "path": "test-drivers/host-machine-frame.driver.json",
-      "sha256": "4cfcba9b869d8eedb55aa1805594b1a2522b5d89bc5e1fd32cd14ae818fa2a76"
+      "sha256": "352811ab705ed055334cd7778a2458ab8903499e0480efcf81cd71ed8c14391e"
     }
   ]
 }

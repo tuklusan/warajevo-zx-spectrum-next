@@ -1,10 +1,10 @@
 {
   "testId": "ui-networking-mode",
   "status": "pass",
-  "commit": "61efdbf1bbb51c1714cd69ccc805109ff3d78b26",
-  "runId": 36596854806,
+  "commit": "046b89d82afa14946954d5c83072c6489306b74f",
+  "runId": 36617973615,
   "runner": "Linux/X64",
-  "timestamp": "2026-09-29T16:20:01+00:00",
+  "timestamp": "2026-09-29T19:22:23+00:00",
   "caseCount": 16,
   "fixtures": [
     {
@@ -25,7 +25,7 @@
     },
     {
       "path": "test-drivers/ui-networking-mode.driver.json",
-      "sha256": "dbc4cbb4d2f07aa8a5c38eb53ee0120cf80b33be2397026f57c4c77d53d743e6"
+      "sha256": "46243324c8e1db277eeffa81bead01beae6e820bd3bfe1ea1dd648329ead84a8"
     },
     {
       "path": "src/app/wz_command_registry.c",

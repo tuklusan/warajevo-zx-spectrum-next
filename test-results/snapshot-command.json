@@ -1,10 +1,10 @@
 {
   "testId": "snapshot-command",
   "status": "pass",
-  "commit": "e8ec753bbc25d28f8cb64f634ecf5edbb4f847e6",
-  "runId": 36576303281,
+  "commit": "046b89d82afa14946954d5c83072c6489306b74f",
+  "runId": 36617973322,
   "runner": "Linux/X64",
-  "timestamp": "2026-09-29T13:39:10+00:00",
+  "timestamp": "2026-09-29T19:16:59+00:00",
   "caseCount": 4,
   "fixtures": [
     {
@@ -53,7 +53,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "1dc15fc16d6d6d28b07c449f19e6c7d0e6bbc97c35c54cc20a5b9a9691c9a9b3"
+      "sha256": "3e67cb171009e06fda0f5e7a4c9df2c9f7c31d2ecbf5e16ea389e778aa580a27"
     },
     {
       "path": "src/core/wz_state.c",
@@ -65,7 +65,7 @@
     },
     {
       "path": "test-drivers/snapshot-command.driver.json",
-      "sha256": "f3160635eb2931107d213bc2bd1532f55d49a13d54e47736df28637200391d67"
+      "sha256": "58b726017fcabbdc75c7b1a8cddd11dde4604d160d03827038d00f5b78cd0fcd"
     }
   ]
 }

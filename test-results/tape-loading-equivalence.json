@@ -1,10 +1,10 @@
 {
   "testId": "tape-loading-equivalence",
   "status": "pass",
-  "commit": "5db5f7b5127f94d38d9f63885cbc038f908c82dc",
-  "runId": 36585333631,
+  "commit": "046b89d82afa14946954d5c83072c6489306b74f",
+  "runId": 36617973557,
   "runner": "Linux/X64",
-  "timestamp": "2026-09-29T14:53:46+00:00",
+  "timestamp": "2026-09-29T19:23:45+00:00",
   "caseCount": 2,
   "fixtures": [
     {
@@ -25,7 +25,7 @@
     },
     {
       "path": "test-drivers/tape-loading-equivalence.driver.json",
-      "sha256": "3fccaf90c12b325b7ea2abdfab8d1e2f983d39eb098672995a1d486a41d77f4c"
+      "sha256": "15eed51e090b98af1256f7c6534ad04d4754f65ce3606479b3bafa016839770a"
     },
     {
       "path": "src/core/wz_machine.c",
@@ -53,7 +53,7 @@
     },
     {
       "path": "src/core/wz_tape.c",
-      "sha256": "5792fabbfc3c6956444c3532097cb0febb1d3497e988fd2a62c9e677ea8aeac3"
+      "sha256": "20c4523214f828d5129cbde2fb2c0d077ed15dae0daa923d019d1934b0c33d0b"
     },
     {
       "path": "src/core/wz_tape.h",
@@ -69,7 +69,7 @@
     },
     {
       "path": "docs/design/01-warajevo-zx-spectrum-next-architecture.md",
-      "sha256": "502bca7a36ff0832fbc80c717e69c3c24a9bc6ea73c85147f2ea576256dde686"
+      "sha256": "dc5cf052d8ad6e6df51e81a5a1156fa6d7c874881bd6a7617b4115029cf0d990"
     }
   ]
 }

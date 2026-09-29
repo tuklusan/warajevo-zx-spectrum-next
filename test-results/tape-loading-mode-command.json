@@ -1,10 +1,10 @@
 {
   "testId": "tape-loading-mode-command",
   "status": "pass",
-  "commit": "cc902303bf914ca35fcaf4c93b4a9dbe456208d2",
+  "commit": "046b89d82afa14946954d5c83072c6489306b74f",
   "runner": "Linux/x86_64",
-  "timestamp": "2026-09-29T05:58:40.357663+00:00",
-  "runId": 36528657211,
+  "timestamp": "2026-09-29T19:22:00.257701+00:00",
+  "runId": 36617973444,
   "fixtures": [
     {
       "path": "ci/test/tape-loading-mode-command/tape-loading-mode-command.c",
@@ -32,7 +32,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "224d130dcd6214b12cda239a157de528a26a7e3c0b4e5bc31348d963d2e92205"
+      "sha256": "ff2f9f8f2e9c3237accb07b0c300e0e6a2af060ca6d6628b635c5745874cbb21"
     },
     {
       "path": "src/core/wz_machine.h",
@@ -56,7 +56,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "b79f1ca809f1968e30116d9cf19b47a3e17e5883e5372052eb3e708219f7a448"
+      "sha256": "9ecafdaf9f137684e77a3b722e7d1dd289ba9e8b3333af1244844e2d604436c0"
     },
     {
       "path": ".github/workflows/tape-loading-mode-command.yml",
@@ -64,11 +64,11 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "8bd7f3b2f6d6077726d010c7867abd43c6db2f79a03cbc46bb729098f9cf96dc"
+      "sha256": "3e67cb171009e06fda0f5e7a4c9df2c9f7c31d2ecbf5e16ea389e778aa580a27"
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "c5d78a80f060ead6700d53e1da6fc9f8b51ecb45c919b73cfc89c833dff5caa3"
+      "sha256": "7d78188b959e29cd031382c7f9a788f7fe837d9d24d3ebe446137cc8c4d28b38"
     },
     {
       "path": "src/app/wz_tape_media_commands.c",
@@ -80,19 +80,19 @@
     },
     {
       "path": "src/app/wz_file_dialog.h",
-      "sha256": "3b86ef82087dd5c345b14d6d6549c3466ff5e99991829e7edb291d6333bf19a3"
+      "sha256": "6686668d4a0e92030066f7e177824169e09aeb137de4beaf2eb43958f982f41b"
     },
     {
       "path": "src/app/wz_file_dialog_linux.c",
-      "sha256": "14033d8ddf81e77df1bb5dcd7fe3bec1b07827489c8619516a01d685876f3144"
+      "sha256": "d4c8d61d56da6efa47636f12fff0a68474b5e682490e9704c39d725146f86408"
     },
     {
       "path": "src/app/wz_file_dialog_macos.m",
-      "sha256": "09edd90a01527ecf8bd5f39224a31fbc12669279f7e560547150ea00c9270b79"
+      "sha256": "03046b36b1bff1a6fd5ae4e700bf042c0db66672614db6ebde86ef2c9c854ca3"
     },
     {
       "path": "src/app/wz_file_dialog_win32.c",
-      "sha256": "efe7f4708b5db6a5c5d708755139d4bfaa3eafdebfdf43e37dca7aa810601280"
+      "sha256": "bcf5a298feaad7e6c11cd378c8c18bd47eacd8e2ded89f7b664712f47d8017c1"
     },
     {
       "path": "src/app/wz_host_output.c",
@@ -100,11 +100,11 @@
     },
     {
       "path": "src/app/wz_tape_manager.c",
-      "sha256": "28867fb3cf689c41b15c0c4e6ffa09641599a1a6171892de50c3737043dd27d9"
+      "sha256": "7a08c91c117233f94182465b75ea98964dab4f97a5e9560f3cdc58d67a79a076"
     },
     {
       "path": "src/app/wz_tape_manager.h",
-      "sha256": "f41f420f87526a890a05ea14eabe5070aca3477ff214a45ec2547ea4576b7752"
+      "sha256": "cf005620d51c51f9e219c61d8910f579dd3ec366bf172d34c01b3058c2037586"
     }
   ]
 }

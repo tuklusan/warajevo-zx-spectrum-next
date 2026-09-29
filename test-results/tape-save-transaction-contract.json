@@ -1,10 +1,10 @@
 {
   "testId": "tape-save-transaction-contract",
   "status": "pass",
-  "commit": "c50bbb22b06d47507a158d254ef285f3c51ba010",
+  "commit": "046b89d82afa14946954d5c83072c6489306b74f",
   "runner": "Linux/x86_64",
-  "timestamp": "2026-09-29T07:19:21.252038+00:00",
-  "runId": 36535921647,
+  "timestamp": "2026-09-29T19:22:44.016000+00:00",
+  "runId": 36617973536,
   "fixtures": [
     {
       "path": "ci/test/tape-save-transaction-contract/tape-save-transaction-contract.c",
@@ -24,15 +24,15 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "3c3b5930212e5d1b9197533ad64265d8d7c88c63519048fe6ae195665f2c2547"
+      "sha256": "3e67cb171009e06fda0f5e7a4c9df2c9f7c31d2ecbf5e16ea389e778aa580a27"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "268274ac2da8629ce615a3337d7f326a6115043d5557d29c16e952543e3dec12"
+      "sha256": "9ecafdaf9f137684e77a3b722e7d1dd289ba9e8b3333af1244844e2d604436c0"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "224d130dcd6214b12cda239a157de528a26a7e3c0b4e5bc31348d963d2e92205"
+      "sha256": "ff2f9f8f2e9c3237accb07b0c300e0e6a2af060ca6d6628b635c5745874cbb21"
     },
     {
       "path": "src/core/wz_machine.h",
@@ -40,7 +40,7 @@
     },
     {
       "path": "src/core/wz_tape.c",
-      "sha256": "5792fabbfc3c6956444c3532097cb0febb1d3497e988fd2a62c9e677ea8aeac3"
+      "sha256": "20c4523214f828d5129cbde2fb2c0d077ed15dae0daa923d019d1934b0c33d0b"
     },
     {
       "path": "src/core/wz_tape.h",

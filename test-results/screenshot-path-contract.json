@@ -1,10 +1,10 @@
 {
   "testId": "screenshot-path-contract",
   "status": "pass",
-  "commit": "c0933452777ed9b1b621e3bc2381798b27eeee47",
+  "commit": "046b89d82afa14946954d5c83072c6489306b74f",
   "runner": "Ubuntu 24.04 x86-64 hosted runner",
-  "timestamp": "2026-09-28T22:41:55+00:00",
-  "runId": 36493878315,
+  "timestamp": "2026-09-29T19:21:51+00:00",
+  "runId": 36617973445,
   "caseCount": 1,
   "observedOutput": "PASS screenshot destination, filename, and no-clobber collision contract",
   "fixtures": [
@@ -22,7 +22,7 @@
     },
     {
       "path": "ci/test/screenshot-path-contract/screenshot-path-contract.c",
-      "sha256": "a3b03563ee67bd0fde5e1d34ec910989f29ca79722348cde12c01f7a13122e54"
+      "sha256": "52759753de1a414224764e98ae3304c06b51c7cab42767649a8ff108eb3fa664"
     },
     {
       "path": "ci/test/screenshot-path-contract/README.md",
@@ -46,7 +46,7 @@
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.c",
-      "sha256": "f74a7067a930222a6036ddb1c80d3fd76f947fa85e7ff8769c6db0cef40c92d7"
+      "sha256": "240c70171a4ea43836a83198f7935560e03391f60bc3528ba95d16e323e08f3b"
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.h",
@@ -94,7 +94,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "4317571e64b373bd509c57127bfbe2ebd27489844f422646904be670d13ced08"
+      "sha256": "9ecafdaf9f137684e77a3b722e7d1dd289ba9e8b3333af1244844e2d604436c0"
     }
   ]
 }
