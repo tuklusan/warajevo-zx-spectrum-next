@@ -5,7 +5,7 @@
   "fixtures": [
     {
       "path": "ci/test/cassette-speed-contract/cassette-speed-contract.c",
-      "sha256": "28d215b3e04eb5637dc062a4beb6c9437d1714ed5bed137cbdb64fa4de77e372"
+      "sha256": "956248d30df7e6b0fda168b40c5f06f555fea555e6bb0d015ce460f9704ad14b"
     },
     {
       "path": "ci/test/cassette-speed-contract/CMakeLists.txt",
