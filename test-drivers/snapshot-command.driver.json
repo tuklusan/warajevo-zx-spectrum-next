@@ -16,7 +16,7 @@
     },
     {
       "path": "ci/test/snapshot-command/snapshot-command-contract.c",
-      "sha256": "e60e8b4dfdab8a381715c6be04d846fdf0685586e0082c86235c74900233959a"
+      "sha256": "bfdb598364d40915540c2a92fd5ac1497662793102fdfc156bdd93033c82ea2b"
     },
     {
       "path": "ci/test/snapshot-command/write-proof.py",
@@ -52,7 +52,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "b7200e35148781033ef32fa2afcca6989c25ed1865dca96a26b6ffb44c738cad"
+      "sha256": "e9d74632e9d78bccd71ec6de16f024544b0d6484686c1c4f54b37ca54e2dca9b"
     },
     {
       "path": "src/core/wz_state.c",

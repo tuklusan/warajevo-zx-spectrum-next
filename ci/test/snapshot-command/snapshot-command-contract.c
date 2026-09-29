@@ -128,7 +128,12 @@ static bool verify_128k_writers(void)
         WZ_SNA_128K_LENGTH : WZ_Z80_128K_V2_LENGTH;
     wz_byte_t* image = (wz_byte_t*)malloc(capacity);
     bool ok = false;
-    REQUIRE(machine != NULL && image != NULL);
+    if (machine == NULL || image == NULL) {
+        free(image);
+        free(machine);
+        fputs("failed: 128K writer allocations\n", stderr);
+        return false;
+    }
     if (wz_machine_init(machine, wz_machine_profile_128k_pal()) != WZ_RESULT_OK) {
         free(image);
         free(machine);
