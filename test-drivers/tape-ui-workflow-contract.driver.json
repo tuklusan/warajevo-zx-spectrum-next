@@ -9,7 +9,7 @@
     },
     {
       "path": "ci/test/tape-ui-workflow-contract/tape-ui-workflow-contract.c",
-      "sha256": "b47ae298e317c84290d6589212f094d02e4c551f3aeb16881b0c3ffefaf00e1d"
+      "sha256": "4172f91607b547039b997412c180dd8de395972bdcde0b0c4cbbcec8d3ada405"
     },
     {
       "path": "src/app/wz_tape_insert_action.c",

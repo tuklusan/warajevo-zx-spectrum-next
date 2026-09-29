@@ -68,8 +68,8 @@ static void release_tape(void* opaque)
 int main(void)
 {
     static const wz_tape_segment_t original[] = {{19u, 1u, 0u}};
-    static const wz_byte_t invalid_tap[] = {0u, 0u};
-    static const wz_byte_t valid_tap[] = {1u, 0u, 0xffu};
+    static const wz_byte_t invalid_tap[] = {2u, 0u, 0xffu, 0u};
+    static const wz_byte_t valid_tap[] = {2u, 0u, 0xffu, 0xffu};
     static const char path[] = "selected.tap";
     wz_machine_t machine = {0};
     wz_tape_t saved_tape;
