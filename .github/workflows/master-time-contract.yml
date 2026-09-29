@@ -1,0 +1,74 @@
+name: Master-time contract
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/core/**'
+      - 'ci/test/master-time/**'
+      - 'test-drivers/master-time-contract.driver.json'
+      - '.github/workflows/master-time-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: ${{ matrix.name }}
+    if: github.ref == 'refs/heads/main'
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows x64
+            id: windows-x64
+            runner: windows-2025
+          - name: Windows ARM64
+            id: windows-arm64
+            runner: windows-11-arm
+          - name: macOS Intel
+            id: macos-x64
+            runner: macos-15-intel
+          - name: macOS ARM64
+            id: macos-arm64
+            runner: macos-15
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+
+      - name: Configure contract
+        run: cmake -S ci/test/master-time -B dist/master-time -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build and run contract
+        run: |
+          cmake --build dist/master-time --config Release --target wz_master_time_contract --parallel 2
+          ctest --test-dir dist/master-time -C Release --output-on-failure
+
+      - name: Record hosted proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          test_hash="$(sha256sum ci/test/master-time/master-time-contract.c | cut -d ' ' -f 1)"
+          cmake_hash="$(sha256sum ci/test/master-time/CMakeLists.txt | cut -d ' ' -f 1)"
+          type_hash="$(sha256sum src/core/wz_types.h | cut -d ' ' -f 1)"
+          machine_hash="$(sha256sum src/core/wz_machine.c | cut -d ' ' -f 1)"
+          machine_header_hash="$(sha256sum src/core/wz_machine.h | cut -d ' ' -f 1)"
+          profile_hash="$(sha256sum src/core/wz_machine_profile.c | cut -d ' ' -f 1)"
+          profile_header_hash="$(sha256sum src/core/wz_machine_profile.h | cut -d ' ' -f 1)"
+          z80_hash="$(sha256sum src/core/wz_z80.c | cut -d ' ' -f 1)"
+          z80_header_hash="$(sha256sum src/core/wz_z80.h | cut -d ' ' -f 1)"
+          workflow_hash="$(sha256sum .github/workflows/master-time-contract.yml | cut -d ' ' -f 1)"
+          mkdir -p dist/master-time/proof
+          cat > dist/master-time/proof/master-time-contract.json <<EOF
+          {"testId":"master-time-contract","status":"pass","commit":"${GITHUB_SHA}","runner":"${RUNNER_OS}/${RUNNER_ARCH}","timestamp":"$(date -u +%Y-%m-%dT%H:%M:%SZ)","runId":${GITHUB_RUN_ID},"fixtures":[{"path":"ci/test/master-time/master-time-contract.c","sha256":"${test_hash}"},{"path":"ci/test/master-time/CMakeLists.txt","sha256":"${cmake_hash}"},{"path":"src/core/wz_types.h","sha256":"${type_hash}"},{"path":"src/core/wz_machine.c","sha256":"${machine_hash}"},{"path":"src/core/wz_machine.h","sha256":"${machine_header_hash}"},{"path":"src/core/wz_machine_profile.c","sha256":"${profile_hash}"},{"path":"src/core/wz_machine_profile.h","sha256":"${profile_header_hash}"},{"path":"src/core/wz_z80.c","sha256":"${z80_hash}"},{"path":"src/core/wz_z80.h","sha256":"${z80_header_hash}"},{"path":".github/workflows/master-time-contract.yml","sha256":"${workflow_hash}"}]}
+          EOF
+
+      - name: Upload hosted proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: master-time-contract-${{ matrix.id }}-${{ github.sha }}
+          path: dist/master-time/proof/master-time-contract.json
+          if-no-files-found: error
