@@ -1541,6 +1541,7 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
     const wz_machine_t* machine = &wz_host_session.machine;
     size_t first_segment;
     size_t end_segment;
+    size_t current_segment;
     float panel_width;
     if (!wz_host_session.tape_manager_open) return;
     panel_width = width >= 480.0f ? 460.0f : width - 16.0f;
@@ -1582,11 +1583,15 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
         wz_machine_tape_loading_mode(machine) == WZ_TAPE_LOADING_NORMAL ?
             "Normal" : "Instant / Trap");
     nk_label(context, line, NK_TEXT_LEFT);
+    current_segment = machine->tape_state.segment_index;
+    if (current_segment >= wz_host_session.tape_segment_count) {
+        current_segment = wz_host_session.tape_segment_count - 1u;
+    }
     (void)snprintf(line, sizeof(line),
         "Transport: %s | Signal segment %llu / %llu",
         machine->tape_state.motor_on ? "Playing" :
             machine->tape_state.at_end ? "At end" : "Stopped",
-        (unsigned long long)(machine->tape_state.segment_index + 1u),
+        (unsigned long long)(current_segment + 1u),
         (unsigned long long)wz_host_session.tape_segment_count);
     nk_label(context, line, NK_TEXT_LEFT);
     nk_label(context, "Transport signal segments (read only)", NK_TEXT_LEFT);
