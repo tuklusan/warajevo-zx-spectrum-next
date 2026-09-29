@@ -1,0 +1,34 @@
+{
+  "testId": "canonical-core-regression",
+  "status": "pass",
+  "commit": "3d424ae5b7af3b7f15482a141cd575b67e2f958b",
+  "runner": "macOS/ARM64",
+  "timestamp": "2026-09-29T09:09:43+00:00",
+  "runId": "36547307722",
+  "compiler": {
+    "requested": "clang",
+    "id": "AppleClang",
+    "version": "17.0.0.17000013",
+    "path": "/usr/bin/clang",
+    "generator": "Unix Makefiles"
+  },
+  "fixtures": [
+    {
+      "path": "ci/test/core-regression/canonical-fingerprints.h",
+      "sha256": "199eca93f073043a8caa3f222fbef8e2cf7f213accc74354db5d050837138865"
+    },
+    {
+      "path": "tests/canonical-core-regression.c",
+      "sha256": "94957f0fc595ff7c66abda8abbd17132296c7b5d81ccf5a44d9ca8052d25fa76"
+    },
+    {
+      "path": "ci/test/core-regression/CMakeLists.txt",
+      "sha256": "9c101dd6d93e68691b5947f504f8c3bfdf59b9e9e422d7483134f2d54ef128bd"
+    },
+    {
+      "path": "test-drivers/canonical-core-regression.driver.json",
+      "sha256": "5dccbda17d594a6142e508c267b07c221c90951cd54302af10f16f669e8acdff"
+    }
+  ],
+  "errors": []
+}
