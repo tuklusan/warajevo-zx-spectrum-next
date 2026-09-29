@@ -32,7 +32,9 @@ static wz_qword_t expected_wait(wz_master_tick_t ticks,
                                 wz_qword_t ticks_per_second,
                                 unsigned percent)
 {
-    wz_qword_t elapsed = ticks * UINT64_C(1000000000) / ticks_per_second;
+    wz_qword_t elapsed = (ticks / ticks_per_second) * UINT64_C(1000000000) +
+        ((ticks % ticks_per_second) * UINT64_C(1000000000)) /
+            ticks_per_second;
     return elapsed * 100u / percent;
 }
 
@@ -47,6 +49,7 @@ static bool run_speed_transition(wz_speed_policy_t initial_speed,
     wz_host_pacing_t pacing;
     wz_master_tick_t frame_ticks;
     wz_master_tick_t first_boundary;
+    wz_master_tick_t first_frame_tick;
     wz_master_tick_t second_boundary;
     wz_qword_t host_elapsed;
     wz_qword_t requested_wait;
@@ -99,6 +102,7 @@ static bool run_speed_transition(wz_speed_policy_t initial_speed,
             first_boundary - machine.master_tick) != WZ_RESULT_OK) {
         goto cleanup;
     }
+    first_frame_tick = machine.master_tick;
     if (!wz_host_pacing_wait(&pacing, 0u, machine.master_tick, NULL, NULL,
                              &requested_wait) ||
         requested_wait != expected_wait(machine.master_tick,
@@ -145,8 +149,8 @@ static bool run_speed_transition(wz_speed_policy_t initial_speed,
         output->mic_levels[index] = events[index].level;
     }
     if (output->mic_ticks[0] != 28u || output->mic_ticks[1] != 58u ||
-        output->mic_ticks[2] != first_boundary + 28u ||
-        output->mic_ticks[3] != first_boundary + 58u) {
+        output->mic_ticks[2] != first_frame_tick + 28u ||
+        output->mic_ticks[3] != first_frame_tick + 58u) {
         goto cleanup;
     }
     success = true;
