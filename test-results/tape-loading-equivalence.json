@@ -1,0 +1,75 @@
+{
+  "testId": "tape-loading-equivalence",
+  "status": "pass",
+  "commit": "5db5f7b5127f94d38d9f63885cbc038f908c82dc",
+  "runId": 36585333631,
+  "runner": "Linux/X64",
+  "timestamp": "2026-09-29T14:53:46+00:00",
+  "caseCount": 2,
+  "fixtures": [
+    {
+      "path": ".github/workflows/tape-loading-equivalence.yml",
+      "sha256": "b05408496e4ef8576e5981a7489838c3497eb3b1cad52e419cba73f185109757"
+    },
+    {
+      "path": "ci/test/tape-loading-equivalence/CMakeLists.txt",
+      "sha256": "342e64f5f164cb2c88e4a992d98be692b734309a934180d5e83c0f59763e0232"
+    },
+    {
+      "path": "ci/test/tape-loading-equivalence/tape-loading-equivalence.c",
+      "sha256": "6ca74cf02bbd16ed498b65ba6f04cb6a1574563f30560c704fd21b65262a23af"
+    },
+    {
+      "path": "ci/test/tape-loading-equivalence/write-proof.py",
+      "sha256": "cd9cca86eefe9f915935cb6743c769950af2fcc934659eddd2a18c3efeb99215"
+    },
+    {
+      "path": "test-drivers/tape-loading-equivalence.driver.json",
+      "sha256": "3fccaf90c12b325b7ea2abdfab8d1e2f983d39eb098672995a1d486a41d77f4c"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "ff2f9f8f2e9c3237accb07b0c300e0e6a2af060ca6d6628b635c5745874cbb21"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "84d9e0b84a02993917b0e74cb9ba0d71158f45223a707d801ce927029ab2b0aa"
+    },
+    {
+      "path": "src/core/wz_runner.c",
+      "sha256": "ded90228d1227ef361170e1bc95d2b98365fa380136fd5269733b6119d8c7b90"
+    },
+    {
+      "path": "src/core/wz_runner.h",
+      "sha256": "b34e16b1c9ef80588bc6a563ce2b77099bdceb899ace0e5254a0a9669b5f6e51"
+    },
+    {
+      "path": "src/core/wz_state.c",
+      "sha256": "32aa7ddaebe10ffc0a4d933162103c59d40280cd4392593d4136f41fba9338a7"
+    },
+    {
+      "path": "src/core/wz_state.h",
+      "sha256": "311dc111529c01924b0f4ed3bb1e4e1bb782461ab21b7c446473dd73b4a664c1"
+    },
+    {
+      "path": "src/core/wz_tape.c",
+      "sha256": "5792fabbfc3c6956444c3532097cb0febb1d3497e988fd2a62c9e677ea8aeac3"
+    },
+    {
+      "path": "src/core/wz_tape.h",
+      "sha256": "d483f3f99bcfa26590bf259114193d2314dd2af2720316bf66021462f5c31fd6"
+    },
+    {
+      "path": "src/core/wz_keyboard_matrix.c",
+      "sha256": "68deeb821563f28e5af3e0872765fedd5ae7e24a0491c011c24ebb9d4abbd575"
+    },
+    {
+      "path": "src/core/wz_keyboard_matrix.h",
+      "sha256": "85282af5969a6212c528cb92edafd7d3fbf71375bbb4be1bad5cd9622e1cf976"
+    },
+    {
+      "path": "docs/design/01-warajevo-zx-spectrum-next-architecture.md",
+      "sha256": "502bca7a36ff0832fbc80c717e69c3c24a9bc6ea73c85147f2ea576256dde686"
+    }
+  ]
+}

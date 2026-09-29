@@ -222,7 +222,7 @@ Debug application startup/shutdown now attaches, freezes, and closes a per-proce
 163. [P7][Core §§23.4.1] Add tests proving ordinary Tape transport is unavailable when the upstream networking mode is `EAR_MIC`, without implementing Architecture #3 behavior.
 164. [P7][Core §§46] Fuzz TAP/TZX/WAV parsers for malformed lengths, overflows, invalid control flow, and truncation under sanitizers.
 165. [P7][Core §§23.13] Run Normal-mode ROM-loader, border/loading, error, and multiple-runtime-speed regressions.
-166. [P7][Core §§23.13] Run Instant/Trap equivalence and safe-fallback regressions.
+166. [P7][Core §§23.13][COMPLETE] Run Instant/Trap equivalence and safe-fallback regressions. Hosted run `36585333631` compared the post-load normalized full-state hash, BASIC destination, and tape position for Normal and Instant-selected DIZZY4K ROM loads; the unknown loader remained on the authentic ROM path. Proof: [tape-loading-equivalence](../../test-results/tape-loading-equivalence.json). No accelerated trap path is claimed.
 167. [P7][Core §§36.2] Run any available private difficult tape/TZX media as development regression without imposing metadata requirements.
 168. [P7][Core §49.1] Close the Phase-7 gate.
 
@@ -569,7 +569,7 @@ also passed on this commit in run `36495266071`.
 
 ## Final Architecture-#1/#2 acceptance and release-readiness sweep
 
-450. [FINAL][Core §50][AUDITED; gaps remain] Inventory all 75 criteria and record conservative evidence status in [acceptance-evidence-audit.md](acceptance-evidence-audit.md); current status is 23 PASS, 28 PARTIAL, and 24 OPEN. The audit is complete; architecture completion remains gated on resolving the OPEN criteria.
+450. [FINAL][Core §50][AUDITED; gaps remain] Inventory all 75 criteria and record conservative evidence status in [acceptance-evidence-audit.md](acceptance-evidence-audit.md); current status is 25 PASS, 28 PARTIAL, and 22 OPEN. The audit is complete; architecture completion remains gated on resolving the OPEN criteria.
 451. [FINAL][UI §48][AUDITED; gaps remain] Inventory all 67 criteria in [ui-acceptance-evidence-audit.md](ui-acceptance-evidence-audit.md); current status is 5 PASS, 28 PARTIAL, and 34 OPEN. Criteria 16 and 55 now record hosted snapshot-route/save semantics and the shared-debugger Snapshot Inspector implementation/build evidence; native GUI interaction remains unverified. Criterion 11 records native Open/Run routing, cross-platform build evidence, and hosted route/dispatch regression, while native-dialog interaction and actual media-load runtime proof remain open. Resolve the listed proof gaps before declaring UI acceptance.
 452. [FINAL][Core §2.5][AUDITED; implementation/evidence gaps remain] Reconciled all 32 dispositions in [legacy-feature-disposition-audit.md](legacy-feature-disposition-audit.md); REQUIRED rows have implementation/evidence gaps recorded, and deferred/replaced rows remain scoped. This inventory does not close release acceptance. Current four-runner proof `36563713245` in [model-switch.json](../../test-results/model-switch.json) covers 128K paging, normalized Kempston controls, and direct port reads; GUI mapping, profile interrupt/raster evidence, and hardware correlation remain open.
 453. [FINAL][UI §20][AUDITED; implementation/evidence gaps remain] Reconciled every Section 20 legacy-menu category against its declared modern destination or explicit disposition in [ui-legacy-disposition-audit.md](ui-legacy-disposition-audit.md); destination implementation and acceptance evidence gaps remain open.
