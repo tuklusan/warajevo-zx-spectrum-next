@@ -15,25 +15,9 @@ permissions:
 
 jobs:
   contract:
-    name: ${{ matrix.name }}
+    name: Ubuntu x64
     if: github.ref == 'refs/heads/main'
-    runs-on: ${{ matrix.runner }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - name: Windows x64
-            id: windows-x64
-            runner: windows-2025
-          - name: Windows ARM64
-            id: windows-arm64
-            runner: windows-11-arm
-          - name: macOS Intel
-            id: macos-x64
-            runner: macos-15-intel
-          - name: macOS ARM64
-            id: macos-arm64
-            runner: macos-15
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Check out source
@@ -69,6 +53,6 @@ jobs:
       - name: Upload hosted proof
         uses: actions/upload-artifact@v4
         with:
-          name: master-time-contract-${{ matrix.id }}-${{ github.sha }}
+          name: master-time-contract-${{ github.sha }}
           path: dist/master-time/proof/master-time-contract.json
           if-no-files-found: error
