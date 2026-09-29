@@ -111,7 +111,7 @@ int main(void)
             machine.networking_mode == WZ_NETWORKING_NONE &&
             machine.memory[0x4002u] == 0x3cu);
     REQUIRE(wz_command_registry_state(&registry, WZ_NETWORKING_COMMAND_ID,
-                                     &reason) == WZ_COMMAND_AVAILABLE);
+                                     &reason) == WZ_COMMAND_ENABLED);
     cases += 4u;
 
     wz_machine_destroy(&machine);
