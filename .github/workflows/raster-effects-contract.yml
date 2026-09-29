@@ -1,0 +1,52 @@
+name: Raster effects contract
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/core/**'
+      - 'ci/test/raster-effects-contract/**'
+      - 'test-drivers/raster-effects-contract.driver.json'
+      - '.github/workflows/raster-effects-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: Ubuntu x64
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+      - name: Configure contract
+        run: cmake -S ci/test/raster-effects-contract -B dist/raster-effects-contract -DCMAKE_BUILD_TYPE=Release
+      - name: Build and run contract
+        run: |
+          cmake --build dist/raster-effects-contract --config Release --target wz_raster_effects_contract --parallel 2
+          ctest --test-dir dist/raster-effects-contract -C Release -R '^wz_raster_effects_contract$' --output-on-failure
+      - name: Record hosted proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          test_hash="$(sha256sum ci/test/raster-effects-contract/raster-effects-contract.c | cut -d ' ' -f 1)"
+          cmake_hash="$(sha256sum ci/test/raster-effects-contract/CMakeLists.txt | cut -d ' ' -f 1)"
+          machine_hash="$(sha256sum src/core/wz_machine.c | cut -d ' ' -f 1)"
+          machine_header_hash="$(sha256sum src/core/wz_machine.h | cut -d ' ' -f 1)"
+          raster_hash="$(sha256sum src/core/wz_raster.c | cut -d ' ' -f 1)"
+          raster_header_hash="$(sha256sum src/core/wz_raster.h | cut -d ' ' -f 1)"
+          profile_hash="$(sha256sum src/core/wz_machine_profile.c | cut -d ' ' -f 1)"
+          profile_header_hash="$(sha256sum src/core/wz_machine_profile.h | cut -d ' ' -f 1)"
+          workflow_hash="$(sha256sum .github/workflows/raster-effects-contract.yml | cut -d ' ' -f 1)"
+          mkdir -p dist/raster-effects-contract/proof
+          cat > dist/raster-effects-contract/proof/raster-effects-contract.json <<EOF
+          {"testId":"raster-effects-contract","status":"pass","commit":"${GITHUB_SHA}","runner":"${RUNNER_OS}/${RUNNER_ARCH}","timestamp":"$(date -u +%Y-%m-%dT%H:%M:%SZ)","runId":${GITHUB_RUN_ID},"fixtures":[{"path":"ci/test/raster-effects-contract/raster-effects-contract.c","sha256":"${test_hash}"},{"path":"ci/test/raster-effects-contract/CMakeLists.txt","sha256":"${cmake_hash}"},{"path":"src/core/wz_machine.c","sha256":"${machine_hash}"},{"path":"src/core/wz_machine.h","sha256":"${machine_header_hash}"},{"path":"src/core/wz_raster.c","sha256":"${raster_hash}"},{"path":"src/core/wz_raster.h","sha256":"${raster_header_hash}"},{"path":"src/core/wz_machine_profile.c","sha256":"${profile_hash}"},{"path":"src/core/wz_machine_profile.h","sha256":"${profile_header_hash}"},{"path":".github/workflows/raster-effects-contract.yml","sha256":"${workflow_hash}"}]}
+          EOF
+      - name: Upload hosted proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: raster-effects-contract-${{ github.sha }}
+          path: dist/raster-effects-contract/proof/raster-effects-contract.json
+          if-no-files-found: error
