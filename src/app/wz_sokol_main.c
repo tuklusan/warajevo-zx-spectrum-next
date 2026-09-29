@@ -57,6 +57,7 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "app/wz_networking_commands.h"
 #include "app/wz_tape_loading_commands.h"
 #include "app/wz_tape_media_commands.h"
+#include "app/wz_tape_insert_action.h"
 #include "app/wz_tape_manager.h"
 #include "app/wz_application_lifecycle.h"
 #include "app/wz_control_port.h"
@@ -1159,7 +1160,8 @@ static void wz_host_ui_insert_tape(void)
 {
     char path[4096];
     wz_file_dialog_result_t dialog_result;
-    wz_command_result_t result;
+    wz_tape_insert_action_result_t action_result;
+    wz_command_result_t result = {0};
     wz_qword_t sleep_nanoseconds;
     wz_host_release_local_keys();
     if (!wz_input_focus_dialog_enter(&wz_host_session.input_focus)) {
@@ -1174,23 +1176,22 @@ static void wz_host_ui_insert_tape(void)
             wz_host_now_nanoseconds(), wz_host_session.machine.master_tick,
             NULL, NULL, &sleep_nanoseconds);
     }
-    if (dialog_result == WZ_FILE_DIALOG_CANCELLED) {
+    action_result = wz_tape_insert_action_dispatch(dialog_result, path,
+        &wz_host_session.command_registry, &result);
+    if (action_result == WZ_TAPE_INSERT_ACTION_CANCELLED) {
         (void)snprintf(wz_host_session.file_notification,
             sizeof(wz_host_session.file_notification), "Tape insert cancelled");
         return;
     }
-    if (dialog_result != WZ_FILE_DIALOG_SELECTED) {
+    if (action_result != WZ_TAPE_INSERT_ACTION_INSERTED) {
+        if (dialog_result == WZ_FILE_DIALOG_SELECTED &&
+            result.reason != NULL) {
+            (void)snprintf(wz_host_session.file_notification,
+                sizeof(wz_host_session.file_notification), "%s", result.reason);
+            return;
+        }
         (void)snprintf(wz_host_session.file_notification,
             sizeof(wz_host_session.file_notification), "File dialog failed");
-        return;
-    }
-    if (wz_command_registry_dispatch(&wz_host_session.command_registry,
-            WZ_TAPE_INSERT_COMMAND_ID,
-            (wz_command_arguments_t){path, strlen(path)}, &result) !=
-        WZ_RESULT_OK) {
-        (void)snprintf(wz_host_session.file_notification,
-            sizeof(wz_host_session.file_notification), "%s",
-            result.reason == NULL ? "Tape insert failed" : result.reason);
         return;
     }
     (void)snprintf(wz_host_session.file_notification,
