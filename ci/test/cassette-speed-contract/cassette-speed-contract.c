@@ -49,16 +49,18 @@ static bool run_speed_transition(wz_speed_policy_t initial_speed,
     wz_host_pacing_t pacing;
     wz_master_tick_t frame_ticks;
     wz_master_tick_t first_boundary;
-    wz_master_tick_t first_frame_tick;
+    wz_master_tick_t first_frame_tick = 0u;
     wz_master_tick_t second_boundary;
     wz_qword_t host_elapsed;
     wz_qword_t requested_wait;
     wz_mic_event_t events[4];
     size_t event_count;
+    unsigned failure_stage = 0u;
     bool success = false;
 
     memset(&machine, 0, sizeof(machine));
     memset(output, 0, sizeof(*output));
+    failure_stage = 1u;
     if (profile == NULL || profile->master_hz_den == 0u ||
         profile->master_hz_num % profile->master_hz_den != 0u ||
         wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
@@ -91,6 +93,7 @@ static bool run_speed_transition(wz_speed_policy_t initial_speed,
     wz_machine_memory_write(&machine, 0x8005u, 0xd3u);
     wz_machine_memory_write(&machine, 0x8006u, 0xfeu);
     machine.cpu.program_counter = 0x8000u;
+    failure_stage = 2u;
     if (wz_headless_runner_execute(&runner, 66u) != WZ_RESULT_OK) {
         goto cleanup;
     }
@@ -98,11 +101,13 @@ static bool run_speed_transition(wz_speed_policy_t initial_speed,
     frame_ticks = (wz_master_tick_t)profile->tstates_per_frame *
         profile->master_ticks_per_cpu_tstate;
     first_boundary = frame_ticks + 2u;
+    failure_stage = 3u;
     if (wz_headless_runner_execute(&runner,
             first_boundary - machine.master_tick) != WZ_RESULT_OK) {
         goto cleanup;
     }
     first_frame_tick = machine.master_tick;
+    failure_stage = 4u;
     if (!wz_host_pacing_wait(&pacing, 0u, machine.master_tick, NULL, NULL,
                              &requested_wait) ||
         requested_wait != expected_wait(machine.master_tick,
@@ -122,6 +127,7 @@ static bool run_speed_transition(wz_speed_policy_t initial_speed,
         goto cleanup;
     }
 
+    failure_stage = 5u;
     second_boundary = first_boundary + frame_ticks + 2u;
     machine.cpu.program_counter = 0x8000u;
     if (wz_headless_runner_execute(&runner, 66u) != WZ_RESULT_OK ||
@@ -139,6 +145,7 @@ static bool run_speed_transition(wz_speed_policy_t initial_speed,
     output->tape_segment = machine.tape_state.segment_index;
     output->tape_elapsed = machine.tape_state.segment_elapsed;
     output->ear_level = wz_machine_tape_ear_level(&machine);
+    failure_stage = 6u;
     event_count = wz_machine_mic_events(&machine, events, 4u);
     if (event_count != 4u) {
         goto cleanup;
@@ -148,6 +155,7 @@ static bool run_speed_transition(wz_speed_policy_t initial_speed,
         output->mic_ticks[index] = events[index].master_tick;
         output->mic_levels[index] = events[index].level;
     }
+    failure_stage = 7u;
     if (output->mic_ticks[0] != 28u || output->mic_ticks[1] != 58u ||
         output->mic_ticks[2] != first_frame_tick + 28u ||
         output->mic_ticks[3] != first_frame_tick + 58u) {
@@ -156,6 +164,19 @@ static bool run_speed_transition(wz_speed_policy_t initial_speed,
     success = true;
 
 cleanup:
+    if (!success) {
+        event_count = wz_machine_mic_events(&machine, events, 4u);
+        fprintf(stderr,
+            "cassette case failed at stage %u: tick=%llu frame=%llu events=%zu",
+            failure_stage, (unsigned long long)machine.master_tick,
+            (unsigned long long)first_frame_tick, event_count);
+        for (size_t index = 0u; index < event_count && index < 4u; ++index) {
+            fprintf(stderr, " %llu/%u",
+                    (unsigned long long)events[index].master_tick,
+                    (unsigned)events[index].level);
+        }
+        fputc('\n', stderr);
+    }
     wz_machine_destroy(&machine);
     return success;
 }
@@ -174,9 +195,9 @@ static bool same_emulated_waveform(const cassette_result_t* left,
 
 int main(void)
 {
-    cassette_result_t half_to_double;
-    cassette_result_t double_to_half;
-    cassette_result_t normal_to_quad;
+    cassette_result_t half_to_double = {0};
+    cassette_result_t double_to_half = {0};
+    cassette_result_t normal_to_quad = {0};
 
     if (!run_speed_transition(WZ_SPEED_50, WZ_SPEED_200, &half_to_double) ||
         !run_speed_transition(WZ_SPEED_200, WZ_SPEED_50, &double_to_half) ||
@@ -189,8 +210,30 @@ int main(void)
             4u * half_to_double.changed_speed_wait ||
         half_to_double.changed_speed_wait !=
             2u * normal_to_quad.changed_speed_wait) {
-        fputs("cassette playback or MIC timing changed with runtime speed\n",
-              stderr);
+        fprintf(stderr,
+            "cassette scenarios differ: mic=%zu/%zu/%zu tick=%llu/%llu/%llu "
+            "wait=%llu/%llu/%llu changed=%llu/%llu/%llu tape=%zu,%llu,%u "
+            "/%zu,%llu,%u /%zu,%llu,%u\n",
+            half_to_double.mic_count, double_to_half.mic_count,
+            normal_to_quad.mic_count,
+            (unsigned long long)half_to_double.final_tick,
+            (unsigned long long)double_to_half.final_tick,
+            (unsigned long long)normal_to_quad.final_tick,
+            (unsigned long long)half_to_double.first_frame_wait,
+            (unsigned long long)double_to_half.first_frame_wait,
+            (unsigned long long)normal_to_quad.first_frame_wait,
+            (unsigned long long)half_to_double.changed_speed_wait,
+            (unsigned long long)double_to_half.changed_speed_wait,
+            (unsigned long long)normal_to_quad.changed_speed_wait,
+            half_to_double.tape_segment,
+            (unsigned long long)half_to_double.tape_elapsed,
+            (unsigned)half_to_double.ear_level,
+            double_to_half.tape_segment,
+            (unsigned long long)double_to_half.tape_elapsed,
+            (unsigned)double_to_half.ear_level,
+            normal_to_quad.tape_segment,
+            (unsigned long long)normal_to_quad.tape_elapsed,
+            (unsigned)normal_to_quad.ear_level);
         return 1;
     }
     puts("PASS cassette master-time and speed-scaled host pacing");
