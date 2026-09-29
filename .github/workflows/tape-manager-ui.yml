@@ -1,0 +1,67 @@
+name: Tape Manager GUI interaction
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/app/wz_sokol_main.c'
+      - 'src/app/wz_file_dialog_linux.c'
+      - 'src/app/wz_ui_layout.c'
+      - 'src/cmake/CMakeLists.txt'
+      - 'ci/test/tape-manager-ui/**'
+      - 'test-drivers/tape-manager-ui.driver.json'
+      - '.github/workflows/tape-manager-ui.yml'
+      - 'test-media/DIZZY4K.TAP'
+      - 'roms/48.rom'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gui:
+    name: Ubuntu x64 X11
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+        with:
+          lfs: true
+      - name: Install host and UI automation dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes build-essential cmake ninja-build pkg-config libgtk-3-dev libx11-dev libxi-dev libxcursor-dev libgl1-mesa-dev libasound2-dev zlib1g-dev xvfb xdotool imagemagick tesseract-ocr
+      - name: Configure application
+        run: cmake -S src/cmake -B dist/tape-manager-ui -G Ninja -DCMAKE_BUILD_TYPE=Debug -DWZSN_BUILD_SOKOL_HOST=ON
+      - name: Build and interact with the GUI
+        run: |
+          cmake --build dist/tape-manager-ui --parallel 2 --target wz_sokol_host
+          mkdir -p dist/tape-manager-ui/proof
+          xvfb-run -a -s '-screen 0 1280x1024x24 +extension GLX' python3 ci/test/tape-manager-ui/run-manager-ui.py dist/tape-manager-ui/Warajevo-ZX-Spectrum-Next "$GITHUB_WORKSPACE" dist/tape-manager-ui/proof
+      - name: Record hosted proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import datetime, hashlib, json, os, pathlib, platform
+          driver = json.loads(pathlib.Path('test-drivers/tape-manager-ui.driver.json').read_text())
+          fixtures = []
+          for item in driver['fixtures']:
+              path = pathlib.Path(item['path'])
+              digest = hashlib.sha256(path.read_bytes()).hexdigest()
+              if digest != item['sha256']:
+                  raise SystemExit(f"fixture hash mismatch: {item['path']}")
+              fixtures.append({'path': item['path'], 'sha256': digest})
+          result = json.loads(pathlib.Path('dist/tape-manager-ui/proof/gui-result.json').read_text())
+          output = pathlib.Path('dist/tape-manager-ui/proof/tape-manager-ui.json')
+          output.write_text(json.dumps({'testId': driver['testId'], 'status': result['result'], 'commit': os.environ['GITHUB_SHA'], 'runner': f"{platform.system()}/{platform.machine()}", 'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'runId': int(os.environ['GITHUB_RUN_ID']), 'visibleText': result['visibleText'], 'screenshotSha256': result['screenshotSha256'], 'fixtures': fixtures}, indent=2) + '\n')
+          PY
+      - name: Upload interaction proof and screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: tape-manager-ui-${{ github.sha }}
+          path: |
+            dist/tape-manager-ui/proof/tape-manager-ui.json
+            dist/tape-manager-ui/proof/tape-manager.png
+          if-no-files-found: error
