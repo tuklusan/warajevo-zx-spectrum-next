@@ -1,0 +1,57 @@
+name: Tape native chooser regression
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/app/wz_file_dialog_linux.c'
+      - 'ci/test/tape-native-dialog/**'
+      - 'test-drivers/tape-native-dialog.driver.json'
+      - '.github/workflows/tape-native-dialog.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-dialog:
+    name: Ubuntu x64 X11
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+      - name: Install GTK and virtual-display tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes libgtk-3-dev xvfb xdotool
+      - name: Configure contract
+        run: cmake -S ci/test/tape-native-dialog -B dist/tape-native-dialog -DCMAKE_BUILD_TYPE=Release
+      - name: Build and run native chooser cancellation
+        run: |
+          cmake --build dist/tape-native-dialog --config Release --target wz_tape_native_dialog_contract --parallel 2
+          xvfb-run -a python3 ci/test/tape-native-dialog/run-cancel-contract.py dist/tape-native-dialog/wz_tape_native_dialog_contract
+      - name: Record hosted proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import datetime, hashlib, json, os, pathlib, platform
+          driver = json.loads(pathlib.Path('test-drivers/tape-native-dialog.driver.json').read_text())
+          fixtures = []
+          for item in driver['fixtures']:
+              path = pathlib.Path(item['path'])
+              digest = hashlib.sha256(path.read_bytes()).hexdigest()
+              if digest != item['sha256']:
+                  raise SystemExit(f"fixture hash mismatch: {item['path']}")
+              fixtures.append({'path': item['path'], 'sha256': digest})
+          output = pathlib.Path('dist/tape-native-dialog/proof/tape-native-dialog.json')
+          output.parent.mkdir(parents=True, exist_ok=True)
+          output.write_text(json.dumps({'testId': driver['testId'], 'status': 'pass', 'commit': os.environ['GITHUB_SHA'], 'runner': f"{platform.system()}/{platform.machine()}", 'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'runId': int(os.environ['GITHUB_RUN_ID']), 'fixtures': fixtures}, indent=2) + '\n')
+          PY
+      - name: Upload hosted proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: tape-native-dialog-${{ github.sha }}
+          path: dist/tape-native-dialog/proof/tape-native-dialog.json
+          if-no-files-found: error
