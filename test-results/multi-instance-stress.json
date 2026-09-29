@@ -1,9 +1,9 @@
 {
   "testId": "multi-instance-stress",
   "status": "pass",
-  "commit": "8f93bb7b366a889cdc5d5279916bc4b196f9c13a",
+  "commit": "4e780f8a2eb9f0475fb7cf710b591c1ff35abc37",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-09-28T15:00:11+00:00",
+  "timestamp": "2026-09-29T16:05:21+00:00",
   "caseCount": 5,
   "runners": [
     {
@@ -42,7 +42,7 @@
     },
     {
       "path": "src/app/wz_control_port.c",
-      "sha256": "07821a10c7e1a7be357b808dd2ad729bd04d684f5782950d3131bf72edb3a18c"
+      "sha256": "c26016fe66e2f3932bf80070f8a00c873946c3ea893b0458e7994f06fbba1ef5"
     },
     {
       "path": "src/app/wz_control_port.h",
@@ -82,11 +82,11 @@
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.c",
-      "sha256": "cd94bf55c10f62bb706cbdeacd04f76edb649a6d677416dfdd2960316e4500d8"
+      "sha256": "240c70171a4ea43836a83198f7935560e03391f60bc3528ba95d16e323e08f3b"
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.h",
-      "sha256": "d6e7553f89c46a15706508e474beacf8b3cce6ea9ed6be95599ec84bb446eed1"
+      "sha256": "1704f552714cf2f0183672bf8486dd5ac001f2c2223b371a704e71fc723e0656"
     },
     {
       "path": "src/app/wz_command_registry.c",
@@ -150,7 +150,7 @@
     },
     {
       "path": "test-drivers/multi-instance-stress.driver.json",
-      "sha256": "ee82d48c1dec175fd2fb504a0906d7a736b301afe81b48b79d394b21c2be12a7"
+      "sha256": "7e90656b754550f6991fa43e4bced3bd6acf9c306d10ec8c73380460176afe2e"
     },
     {
       "path": ".github/workflows/multi-instance-stress.yml",
