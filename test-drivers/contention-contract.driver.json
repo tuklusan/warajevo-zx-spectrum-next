@@ -5,7 +5,7 @@
   "fixtures": [
     {
       "path": "ci/test/contention-contract/contention-contract.c",
-      "sha256": "54ece53727d64beb0c6c0be1b9cab49f4dcd347a678d6029dccf88dd486077f0"
+      "sha256": "fd459dd6d45dea2135f93acfd80bf4441d4dd55c0082a55e0dc756215c7ccb5d"
     },
     {
       "path": "ci/test/contention-contract/CMakeLists.txt",
@@ -13,7 +13,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "70a74d3abb8b018353a24169eab529f2938678c25298b1c199f41fe379f86ec4"
+      "sha256": "224d130dcd6214b12cda239a157de528a26a7e3c0b4e5bc31348d963d2e92205"
     },
     {
       "path": "src/core/wz_machine.h",
@@ -21,7 +21,7 @@
     },
     {
       "path": "src/core/wz_bus.c",
-      "sha256": "cf2a35b00d1edc55fff977402391e4d685bb3b3346640205a9c41340e12df704"
+      "sha256": "02b445abd2dc00128f8c141050f50757a1ee1bcd76188d9840a40403e447d540"
     },
     {
       "path": "src/core/wz_bus.h",

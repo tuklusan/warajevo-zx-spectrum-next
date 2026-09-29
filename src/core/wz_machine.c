@@ -606,8 +606,9 @@ wz_byte_t wz_machine_contention_delay(const wz_machine_t* machine,
         }
         return 0u;
     }
+    /* Standard Z80 port cycles are at most four T-states. */
     if ((cycle != WZ_BUS_IO_READ && cycle != WZ_BUS_IO_WRITE) ||
-        t_states == 0u) {
+        t_states == 0u || t_states > 4u) {
         return 0u;
     }
     if ((address & 0xff00u) >= 0x4000u && (address & 0xff00u) <= 0x7f00u) {

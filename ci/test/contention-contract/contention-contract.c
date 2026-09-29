@@ -59,6 +59,28 @@ static bool check_io_bus_advance(const wz_machine_profile_t* profile,
     return true;
 }
 
+static bool check_oversized_io_request_rejected(
+    const wz_machine_profile_t* profile)
+{
+    wz_machine_t machine;
+    wz_bus_request_t request;
+    wz_master_tick_t start = (wz_master_tick_t)14335u * 2u;
+
+    memset(&machine, 0, sizeof(machine));
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        return false;
+    }
+    machine.master_tick = start;
+    wz_bus_request_init(&request, WZ_BUS_IO_WRITE, start, 0x40ffu, 0x5au, 5u);
+    if (wz_machine_bus_request(&machine, &request) != WZ_RESULT_INVALID_ARGUMENT ||
+        machine.master_tick != start) {
+        wz_machine_destroy(&machine);
+        return false;
+    }
+    wz_machine_destroy(&machine);
+    return true;
+}
+
 static bool check_48k_contract(void)
 {
     static const wz_byte_t delay_pattern[8] = {6u, 5u, 4u, 3u, 2u, 1u, 0u, 0u};
@@ -93,8 +115,11 @@ static bool check_48k_contract(void)
                      14335u, 4u, 12u) ||
         !check_delay(&machine, WZ_BUS_IO_WRITE, 0x00ffu,
                      14335u, 4u, 0u) ||
+        !check_delay(&machine, WZ_BUS_IO_WRITE, 0x40ffu,
+                     14335u, 5u, 0u) ||
         !check_io_bus_advance(profile, 0x40ffu, 12u) ||
-        !check_io_bus_advance(profile, 0x00feu, 5u)) {
+        !check_io_bus_advance(profile, 0x00feu, 5u) ||
+        !check_oversized_io_request_rejected(profile)) {
         wz_machine_destroy(&machine);
         return false;
     }

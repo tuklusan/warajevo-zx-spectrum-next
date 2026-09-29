@@ -131,6 +131,10 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
     if (machine == 0 || request == 0) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
+    if ((request->cycle == WZ_BUS_IO_READ || request->cycle == WZ_BUS_IO_WRITE) &&
+        request->t_states > 4u) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
 
     contention_delay = wz_machine_contention_delay(machine, request->cycle,
                                                    request->address,
