@@ -1,10 +1,10 @@
 {
   "testId": "core-dependency-boundary",
   "status": "pass",
-  "commit": "a908b42f00273280899b9c0fcdc16c237af9fa45",
+  "commit": "17f22a09c9964031e79dc2680dae1dbbc0b7b58b",
   "runner": "Linux/X64",
-  "timestamp": "2026-09-28T11:30:00+00:00",
-  "runId": "36415991619",
+  "timestamp": "2026-09-29T02:15:21+00:00",
+  "runId": "36511448574",
   "fixtures": [
     {
       "path": "src/core/audio/wz_audio_evidence.c",
@@ -48,7 +48,7 @@
     },
     {
       "path": "src/core/wz_bus.c",
-      "sha256": "cf2a35b00d1edc55fff977402391e4d685bb3b3346640205a9c41340e12df704"
+      "sha256": "02b445abd2dc00128f8c141050f50757a1ee1bcd76188d9840a40403e447d540"
     },
     {
       "path": "src/core/wz_bus.h",
@@ -84,7 +84,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "b26405f8cbcfb6e5d7145f2b0d87a15ea383bbaecb5e3fca6d504f2866660a99"
+      "sha256": "224d130dcd6214b12cda239a157de528a26a7e3c0b4e5bc31348d963d2e92205"
     },
     {
       "path": "src/core/wz_machine.h",
@@ -148,7 +148,7 @@
     },
     {
       "path": "src/core/wz_runner.c",
-      "sha256": "6225a610d2b752d0edeeb073961bb84ba5c54ae446e58fe08569e68f33cd654d"
+      "sha256": "ded90228d1227ef361170e1bc95d2b98365fa380136fd5269733b6119d8c7b90"
     },
     {
       "path": "src/core/wz_runner.h",
@@ -172,11 +172,11 @@
     },
     {
       "path": "src/core/wz_tape.c",
-      "sha256": "9691238f861d9c649690a2c3f94e7d9be52118c16d3aa6b3ae9de0ffa6a2fa96"
+      "sha256": "5792fabbfc3c6956444c3532097cb0febb1d3497e988fd2a62c9e677ea8aeac3"
     },
     {
       "path": "src/core/wz_tape.h",
-      "sha256": "143211c69f0932fe3b360596546f47c917dbdd432c1a2c0f83994e76adaca78f"
+      "sha256": "d483f3f99bcfa26590bf259114193d2314dd2af2720316bf66021462f5c31fd6"
     },
     {
       "path": "src/core/wz_trace.c",
@@ -208,7 +208,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "d3c09a688001e54098b3789349fd2e6ae37119e273c9d229848e32662813b285"
+      "sha256": "7f4523a7e3d23eb0f1dbb3258beefd406f92d2d77f87660ad6d064bdae3bbf1a"
     },
     {
       "path": "dist/core-boundary/build/core-boundary-targets.txt",
