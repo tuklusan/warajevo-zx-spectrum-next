@@ -1,0 +1,34 @@
+{
+  "testId": "keyboard-matrix",
+  "command": "cmake -S ci/test/keyboard-matrix -B dist/keyboard-matrix -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/keyboard-matrix --config Release --target wz_keyboard_matrix_contract --parallel 2 && dist/keyboard-matrix/wz_keyboard_matrix_contract",
+  "requiredCases": 4,
+  "runnerMatrix": [
+    "ubuntu-24.04"
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/keyboard-matrix-contract.yml",
+      "sha256": "86ccc4dd50f48601c7918b085f23a755cf40cd8597b6630ee76f40787ec1d85f"
+    },
+    {
+      "path": "ci/test/keyboard-matrix/CMakeLists.txt",
+      "sha256": "cbc504cffe5c505d4715850ceafffc636db313dc9767e3afbc44ec4108a4efda"
+    },
+    {
+      "path": "ci/test/keyboard-matrix/keyboard-matrix-contract.c",
+      "sha256": "4255e8b8f6e779036f6a3f11ecfb3b2e69c4ff9d851b15a2af7e7eede93d6939"
+    },
+    {
+      "path": "ci/test/keyboard-matrix/write-proof.py",
+      "sha256": "2c06ade729d76b5ffa0de55253b3538be1191d11fb585703e795d5917acba0b2"
+    },
+    {
+      "path": "src/core/wz_keyboard_matrix.c",
+      "sha256": "68deeb821563f28e5af3e0872765fedd5ae7e24a0491c011c24ebb9d4abbd575"
+    },
+    {
+      "path": "src/core/wz_keyboard_matrix.h",
+      "sha256": "85282af5969a6212c528cb92edafd7d3fbf71375bbb4be1bad5cd9622e1cf976"
+    }
+  ]
+}
