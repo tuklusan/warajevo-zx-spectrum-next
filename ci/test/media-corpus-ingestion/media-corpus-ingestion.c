@@ -30,6 +30,8 @@ typedef struct {
     size_t tzx_failures;
     size_t read_failures;
     size_t failure_case;
+    size_t tzx_failure_phase;
+    size_t tzx_failure_result;
 } corpus_counts_t;
 
 static wz_byte_t* read_file(const char* path, size_t* length)
@@ -109,19 +111,34 @@ static int parse_tap(const wz_byte_t* data, size_t length,
 
 static int parse_tzx(const wz_byte_t* data, size_t length,
                      wz_dword_t ticks_per_tstate,
-                     size_t* unsupported_blocks, int* unsupported_media)
+                     size_t* unsupported_blocks, int* unsupported_media,
+                     size_t* failure_phase, size_t* failure_result)
 {
     size_t block_count = 0u;
     wz_result_t result = wz_tape_parse_tzx(data, length, NULL, 0u, &block_count);
     wz_tzx_block_t* blocks;
     size_t segment_count = 0u;
     wz_tape_segment_t* segments = NULL;
-    if (result != WZ_RESULT_BUFFER_TOO_SMALL || block_count == 0u ||
-        block_count > SIZE_MAX / sizeof(*blocks)) return 0;
+    if (result != WZ_RESULT_BUFFER_TOO_SMALL) {
+        *failure_phase = 1u;
+        *failure_result = (size_t)result;
+        return 0;
+    }
+    if (block_count == 0u || block_count > SIZE_MAX / sizeof(*blocks)) {
+        *failure_phase = 1u;
+        *failure_result = (size_t)WZ_RESULT_PARSE_ERROR;
+        return 0;
+    }
     blocks = (wz_tzx_block_t*)malloc(block_count * sizeof(*blocks));
-    if (blocks == NULL) return 0;
+    if (blocks == NULL) {
+        *failure_phase = 1u;
+        *failure_result = (size_t)WZ_RESULT_OUT_OF_MEMORY;
+        return 0;
+    }
     result = wz_tape_parse_tzx(data, length, blocks, block_count, &block_count);
     if (result != WZ_RESULT_OK) {
+        *failure_phase = 2u;
+        *failure_result = (size_t)result;
         free(blocks);
         return 0;
     }
@@ -138,11 +155,15 @@ static int parse_tzx(const wz_byte_t* data, size_t length,
     }
     if (result != WZ_RESULT_BUFFER_TOO_SMALL || segment_count == 0u ||
         segment_count > SIZE_MAX / sizeof(*segments)) {
+        *failure_phase = 3u;
+        *failure_result = (size_t)result;
         free(blocks);
         return 0;
     }
     segments = (wz_tape_segment_t*)malloc(segment_count * sizeof(*segments));
     if (segments == NULL) {
+        *failure_phase = 3u;
+        *failure_result = (size_t)WZ_RESULT_OUT_OF_MEMORY;
         free(blocks);
         return 0;
     }
@@ -150,6 +171,10 @@ static int parse_tzx(const wz_byte_t* data, size_t length,
                                        segments, segment_count, &segment_count);
     free(segments);
     free(blocks);
+    if (result != WZ_RESULT_OK) {
+        *failure_phase = 4u;
+        *failure_result = (size_t)result;
+    }
     return result == WZ_RESULT_OK;
 }
 
@@ -172,6 +197,8 @@ int main(int argc, char** argv)
         int is_tap = has_extension(entry->d_name, "tap");
         int is_tzx = has_extension(entry->d_name, "tzx");
         size_t length = 0u;
+        size_t failure_phase = 0u;
+        size_t failure_result = 0u;
         wz_byte_t* data;
         int supported;
         int unsupported_media = 0;
@@ -202,12 +229,17 @@ int main(int argc, char** argv)
         supported = is_tap ? parse_tap(data, length,
             profile->master_ticks_per_cpu_tstate) : parse_tzx(data, length,
             profile->master_ticks_per_cpu_tstate,
-            &counts.unsupported_tzx_blocks, &unsupported_media);
+            &counts.unsupported_tzx_blocks, &unsupported_media,
+            &failure_phase, &failure_result);
         free(data);
         if (!supported) {
             ++counts.malformed;
             if (is_tap) ++counts.tap_failures;
-            else ++counts.tzx_failures;
+            else {
+                ++counts.tzx_failures;
+                counts.tzx_failure_phase = failure_phase;
+                counts.tzx_failure_result = failure_result;
+            }
             counts.failure_case = case_index;
         }
         else if (unsupported_media) ++counts.unsupported;
@@ -219,12 +251,14 @@ int main(int argc, char** argv)
            "\"tzxFiles\":%zu,\"supported\":%zu,\"unsupported\":%zu,"
            "\"unsupportedTzxBlocks\":%zu,\"malformed\":%zu,"
            "\"tapFailures\":%zu,\"tzxFailures\":%zu,\"readFailures\":%zu,"
-           "\"failureCase\":%zu}\n",
+           "\"failureCase\":%zu,\"tzxFailurePhase\":%zu,"
+           "\"tzxFailureResult\":%zu}\n",
            counts.files != 0u && counts.malformed == 0u ? "pass" : "fail",
            counts.files, counts.tap_files, counts.tzx_files, counts.supported,
            counts.unsupported, counts.unsupported_tzx_blocks, counts.malformed,
            counts.tap_failures, counts.tzx_failures, counts.read_failures,
-           counts.failure_case);
+           counts.failure_case, counts.tzx_failure_phase,
+           counts.tzx_failure_result);
     if (counts.files == 0u || counts.malformed != 0u) {
         fputs("media corpus contract: at least one tape was malformed or unreadable\n",
               stderr);

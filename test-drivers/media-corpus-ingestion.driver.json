@@ -17,7 +17,7 @@
     },
     {
       "path": "ci/test/media-corpus-ingestion/media-corpus-ingestion.c",
-      "sha256": "781a2fe98e4f59832d443092de8a3c694732b185a8cc432f91ee262d619ced82"
+      "sha256": "184692dee7258b35bd8e93d472d9a24c95110701117cdb20f5c08f870149d724"
     },
     {
       "path": "ci/test/media-corpus-ingestion/write-proof.py",
