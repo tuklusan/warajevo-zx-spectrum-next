@@ -1,0 +1,78 @@
+{
+  "testId": "tape-ui-workflow-contract",
+  "status": "pass",
+  "commit": "9ec847e639cb855d364966d7691016edc4c21fd4",
+  "runner": "Linux/x86_64",
+  "timestamp": "2026-09-29T07:38:54.784097+00:00",
+  "runId": 36537819674,
+  "fixtures": [
+    {
+      "path": "ci/test/tape-ui-workflow-contract/CMakeLists.txt",
+      "sha256": "d0c3db7b53ac7189139fd56b5ecb8d9f606eeffbe9bf86f90b3249f3d78d471c"
+    },
+    {
+      "path": "ci/test/tape-ui-workflow-contract/tape-ui-workflow-contract.c",
+      "sha256": "4172f91607b547039b997412c180dd8de395972bdcde0b0c4cbbcec8d3ada405"
+    },
+    {
+      "path": "src/app/wz_tape_insert_action.c",
+      "sha256": "d72d1aa1824b7b815d9af0b7819bc5bc942b6e35a3f84324623d37e3952330b5"
+    },
+    {
+      "path": "src/app/wz_tape_insert_action.h",
+      "sha256": "77b86a312216b6d3efb16e588e4cac8476c62955756797f5e03fdf4350eed3c7"
+    },
+    {
+      "path": "src/app/wz_tape_media_commands.c",
+      "sha256": "f92f691c68a8ab55d7c4472e6860160935fe0c6c78593f1ff28393d03294f67c"
+    },
+    {
+      "path": "src/app/wz_tape_media_commands.h",
+      "sha256": "81fd3289f37b5a4d6c0f8848f7b891543a23e9816a7125b92ccccdfb4e56a4f8"
+    },
+    {
+      "path": "src/app/wz_command_registry.c",
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
+    },
+    {
+      "path": "src/app/wz_command_registry.h",
+      "sha256": "80110080861a05baae47cd6d294315055bb6b1a636c79891b55c56717cb53c94"
+    },
+    {
+      "path": "src/app/wz_host_thread.c",
+      "sha256": "6f8cbe0e171adfe7b9f42d9517e31d72f7917048339ff8941d5bccadfa305151"
+    },
+    {
+      "path": "src/app/wz_host_thread.h",
+      "sha256": "bd4e189a40c8f9ad31f014dc12afc3c67b7a4bd5580df262b0cf92db8fbe8471"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "224d130dcd6214b12cda239a157de528a26a7e3c0b4e5bc31348d963d2e92205"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "84d9e0b84a02993917b0e74cb9ba0d71158f45223a707d801ce927029ab2b0aa"
+    },
+    {
+      "path": "src/core/wz_machine_profile.c",
+      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09"
+    },
+    {
+      "path": "src/core/wz_machine_profile.h",
+      "sha256": "099be5f41f428466e5da622452abec6e0daf6402abcf4ab2e7d8c2df47457cc4"
+    },
+    {
+      "path": "src/core/wz_tape.c",
+      "sha256": "5792fabbfc3c6956444c3532097cb0febb1d3497e988fd2a62c9e677ea8aeac3"
+    },
+    {
+      "path": "src/core/wz_tape.h",
+      "sha256": "d483f3f99bcfa26590bf259114193d2314dd2af2720316bf66021462f5c31fd6"
+    },
+    {
+      "path": "src/core/wz_types.h",
+      "sha256": "b989adaa74e4ac0ec7e753da23a3fd16a3c02561744cca893fcd66f7c077c409"
+    }
+  ]
+}
