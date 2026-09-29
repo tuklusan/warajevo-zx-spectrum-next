@@ -47,13 +47,16 @@ static bool check_timed_raster_effects(void)
     first_bitmap_tick =
         (wz_master_tick_t)profile->ula_fetch_start_tstate * ticks_per_tstate;
 
+    for (wz_dword_t row = 0u; row < 8u; ++row) {
+        wz_word_t bitmap_address = (wz_word_t)(0x4000u + row * 0x100u);
+        wz_machine_memory_write(&machine, bitmap_address, 0xffu);
+    }
+
     /* Change one ordinary Spectrum attribute at each scanline's bitmap fetch,
      * before the following attribute fetch. */
     for (wz_dword_t row = 0u; row < 8u; ++row) {
-        wz_word_t bitmap_address = (wz_word_t)(0x4000u + row * 0x100u);
         wz_master_tick_t attribute_tick = first_bitmap_tick +
             (wz_master_tick_t)row * line_ticks;
-        wz_machine_memory_write(&machine, bitmap_address, 0xffu);
         if (wz_machine_memory_write_at_tick(&machine, 0x5800u,
                 attributes[row], attribute_tick) != WZ_RESULT_OK) {
             goto cleanup;
