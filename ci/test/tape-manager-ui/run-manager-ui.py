@@ -44,14 +44,15 @@ def focus_application(environment):
     raise RuntimeError("application window not found or could not be focused")
 
 
-def capture_words(window, destination, environment):
-    run(["import", "-window", window, str(destination)], environment)
+def capture_words(destination, environment):
+    run(["import", "-window", "root", "-descend", str(destination)],
+        environment)
     output = run(["tesseract", str(destination), "stdout", "tsv",
                   "--psm", "11"], environment)
     return list(csv.DictReader(output.splitlines(), delimiter="\t"))
 
 
-def click_word(window, words, expected, environment):
+def click_word(words, expected, environment):
     match = next((word for word in words
                   if word.get("level") == "5" and
                   expected.casefold() in word.get("text", "").casefold()), None)
@@ -61,8 +62,8 @@ def click_word(window, words, expected, environment):
         raise RuntimeError(f"visible text not found: {expected}; OCR: {observed}")
     x = int(match["left"]) + int(match["width"]) // 2
     y = int(match["top"]) + int(match["height"]) // 2
-    run(["xdotool", "mousemove", "--sync", "--window", window, str(x),
-         str(y), "click", "1"], environment)
+    run(["xdotool", "mousemove", "--sync", str(x), str(y), "click", "1"],
+        environment)
 
 
 def main():
@@ -79,22 +80,29 @@ def main():
         "WZSN_TAPE_PATH": str(root / "test-media" / "DIZZY4K.TAP"),
     })
     log_path = output / "application.log"
-    with log_path.open("w", encoding="utf-8") as log:
-        process = subprocess.Popen([str(binary)], env=environment,
-                                   stdout=log, stderr=subprocess.STDOUT)
+    compositor = subprocess.Popen(["xcompmgr", "-a"], env=environment,
+                                   stdout=subprocess.DEVNULL,
+                                   stderr=subprocess.DEVNULL)
+    process = None
     try:
+        time.sleep(0.5)
+        if compositor.poll() is not None:
+            raise RuntimeError("X11 compositor failed to start")
+        with log_path.open("w", encoding="utf-8") as log:
+            process = subprocess.Popen([str(binary)], env=environment,
+                                       stdout=log, stderr=subprocess.STDOUT)
         window = focus_application(environment)
         time.sleep(2.0)
         initial = output / "initial.png"
-        initial_words = capture_words(window, initial, environment)
-        click_word(window, initial_words, "Media", environment)
+        initial_words = capture_words(initial, environment)
+        click_word(initial_words, "Media", environment)
         time.sleep(0.4)
         menu = output / "media-menu.png"
-        menu_words = capture_words(window, menu, environment)
-        click_word(window, menu_words, "Manager", environment)
+        menu_words = capture_words(menu, environment)
+        click_word(menu_words, "Manager", environment)
         time.sleep(0.8)
         opened = output / "tape-manager.png"
-        manager_words = capture_words(window, opened, environment)
+        manager_words = capture_words(opened, environment)
         visible = " ".join(word.get("text", "") for word in manager_words
                            if word.get("level") == "5").casefold()
         required = ("tape", "manager", "format", "tap", "transport",
@@ -113,15 +121,24 @@ def main():
             json.dumps(result, indent=2) + "\n", encoding="utf-8")
         print(json.dumps(result))
     finally:
-        if process.poll() is None:
+        if process is not None and process.poll() is None:
             process.terminate()
             try:
                 process.wait(timeout=10)
             except subprocess.TimeoutExpired:
                 process.kill()
                 process.wait(timeout=5)
-        if process.poll() is None:
+        if process is not None and process.poll() is None:
             raise RuntimeError("application process did not terminate")
+        if compositor.poll() is None:
+            compositor.terminate()
+            try:
+                compositor.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                compositor.kill()
+                compositor.wait(timeout=5)
+        if compositor.poll() is None:
+            raise RuntimeError("X11 compositor process did not terminate")
 
 
 if __name__ == "__main__":

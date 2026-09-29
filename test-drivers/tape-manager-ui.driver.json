@@ -5,11 +5,11 @@
   "fixtures": [
     {
       "path": ".github/workflows/tape-manager-ui.yml",
-      "sha256": "5521f54f0bae6e5ce72d793723588ecdb4b239802943729ba987e633ba6a5244"
+      "sha256": "54a5ec5c8f66b5d377cef07d4b3eeb8323875eeb5edab8311edbb4b22ad89ef5"
     },
     {
       "path": "ci/test/tape-manager-ui/run-manager-ui.py",
-      "sha256": "822411abb17f5ca93b9f76c4b4d9b070b26eba5c7673b60b62c0a09f0007d445"
+      "sha256": "185ee2b4906bca07c03810d794927e98f5014f1ecd1ef6095d25daf636591bc1"
     },
     {
       "path": "src/app/wz_command_registry.c",
