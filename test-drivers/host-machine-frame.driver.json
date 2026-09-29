@@ -12,7 +12,7 @@
     },
     {
       "path": "ci/test/host-frame-audio/frame-audio-regression.c",
-      "sha256": "bac61af21ffef18b90e9b7e1750f7c7f69e9c3651325d2dd44fe8e0d586a9b3e"
+      "sha256": "62474715346bd1c680e7caceb43fc8e8035f5f37add60b95e832df8794ff5bdb"
     },
     {
       "path": "ci/test/host-frame-audio/write-proof.py",

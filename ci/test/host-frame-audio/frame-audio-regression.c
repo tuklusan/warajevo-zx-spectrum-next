@@ -73,6 +73,15 @@ static bool record_sleep(wz_qword_t nanoseconds, void* context)
     return true;
 }
 
+static wz_qword_t expected_elapsed_nanoseconds(wz_master_tick_t elapsed_ticks,
+                                               wz_qword_t ticks_per_second)
+{
+    wz_qword_t whole_seconds = elapsed_ticks / ticks_per_second;
+    wz_qword_t remainder_ticks = elapsed_ticks % ticks_per_second;
+    return whole_seconds * UINT64_C(1000000000) +
+        remainder_ticks * UINT64_C(1000000000) / ticks_per_second;
+}
+
 static bool reject_output(void* context, wz_master_tick_t start_tick,
                           wz_byte_t initial_beeper_level,
                           const wz_ay_t* initial_ay)
@@ -219,8 +228,9 @@ int main(void)
                 if (!wz_speed_policy_is_unlimited(speed)) {
                     wz_qword_t elapsed_ticks = machine.master_tick -
                         pacing.anchor_machine_tick;
-                    wz_qword_t target_nanoseconds = elapsed_ticks *
-                        UINT64_C(1000000000) / fake_ticks_per_second;
+                    wz_qword_t target_nanoseconds =
+                        expected_elapsed_nanoseconds(elapsed_ticks,
+                                                     fake_ticks_per_second);
                     wz_qword_t host_elapsed = fake_host_nanoseconds -
                         pacing.anchor_host_nanoseconds;
                     target_nanoseconds = target_nanoseconds * 100u /
