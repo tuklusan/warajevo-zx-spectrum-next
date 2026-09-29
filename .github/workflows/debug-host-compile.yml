@@ -1,0 +1,43 @@
+name: Debug host compile
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/app/wz_sokol_main.c'
+      - 'src/cmake/CMakeLists.txt'
+      - '.github/workflows/debug-host-compile.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  debug-host:
+    if: github.ref == 'refs/heads/main'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows Intel
+            label: windows-2025
+          - name: Windows ARM64
+            label: windows-11-arm
+          - name: macOS Intel
+            label: macos-15-intel
+          - name: macOS ARM64
+            label: macos-15
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.label }}
+    steps:
+      - name: Check out exact main revision
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Configure debug application
+        shell: bash
+        run: cmake -S src/cmake -B dist/debug-host -DCMAKE_BUILD_TYPE=Debug
+
+      - name: Compile debug application
+        run: cmake --build dist/debug-host --config Debug --target wz_sokol_host --parallel 2
