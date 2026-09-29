@@ -1,0 +1,77 @@
+name: Desktop native chooser cancellation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/app/wz_file_dialog_win32.c'
+      - 'src/app/wz_file_dialog_macos.m'
+      - 'ci/test/tape-native-dialog-desktop/**'
+      - 'test-drivers/tape-native-dialog-desktop.driver.json'
+      - '.github/workflows/tape-native-dialog-desktop.yml'
+      - 'src/core/wz_machine.c'
+      - 'src/core/wz_machine.h'
+      - 'src/core/wz_tape.c'
+      - 'src/core/wz_tape.h'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-dialog:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: Windows x64
+            runner: windows-2025
+            platform: windows
+          - label: macOS Intel
+            runner: macos-15-intel
+            platform: macos
+          - label: macOS ARM64
+            runner: macos-15
+            platform: macos
+    name: ${{ matrix.label }}
+    if: github.ref == 'refs/heads/main'
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+      - name: Configure native contract
+        run: cmake -S ci/test/tape-native-dialog-desktop -B dist/tape-native-dialog-desktop -DCMAKE_BUILD_TYPE=Release
+      - name: Build contract
+        run: cmake --build dist/tape-native-dialog-desktop --config Release --parallel 2
+      - name: Cancel the production native chooser
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ '${{ matrix.platform }}' = windows ]; then
+            python ci/test/tape-native-dialog-desktop/run-windows-cancel.py dist/tape-native-dialog-desktop/Release/wz_tape_native_dialog_desktop_contract.exe
+          else
+            dist/tape-native-dialog-desktop/wz_tape_native_dialog_desktop_contract
+          fi
+      - name: Record hosted proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import datetime, hashlib, json, os, pathlib, platform
+          driver = json.loads(pathlib.Path('test-drivers/tape-native-dialog-desktop.driver.json').read_text())
+          fixtures = []
+          for item in driver['fixtures']:
+              path = pathlib.Path(item['path'])
+              digest = hashlib.sha256(path.read_bytes()).hexdigest()
+              if digest != item['sha256']:
+                  raise SystemExit(f"fixture hash mismatch: {item['path']}")
+              fixtures.append({'path': item['path'], 'sha256': digest})
+          output = pathlib.Path('dist/tape-native-dialog-desktop/proof.json')
+          output.write_text(json.dumps({'testId': driver['testId'], 'status': 'pass', 'commit': os.environ['GITHUB_SHA'], 'runner': f"{platform.system()}/{platform.machine()}", 'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'runId': int(os.environ['GITHUB_RUN_ID']), 'fixtures': fixtures}, indent=2) + '\n')
+          PY
+      - name: Upload hosted proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: tape-native-dialog-desktop-${{ matrix.platform }}-${{ github.sha }}
+          path: dist/tape-native-dialog-desktop/proof.json
+          if-no-files-found: error

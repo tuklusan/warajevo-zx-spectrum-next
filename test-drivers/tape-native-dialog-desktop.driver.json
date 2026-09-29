@@ -1,0 +1,67 @@
+{
+  "testId": "tape-native-dialog-desktop",
+  "command": "Configure and run the production chooser cancellation contract on Windows x64, macOS x64, and macOS ARM64 hosted runners.",
+  "workflow": ".github/workflows/tape-native-dialog-desktop.yml",
+  "fixtures": [
+    {
+      "path": ".github/workflows/tape-native-dialog-desktop.yml",
+      "sha256": "7e819f52af29834d0c014452b53ab48d080a4cd8d62942fa760693c1576897d6"
+    },
+    {
+      "path": "ci/test/tape-native-dialog-desktop/CMakeLists.txt",
+      "sha256": "b6ce9ea84ef43f39ab7ab7726247a65424477600c8f8facb8b51327886a204f4"
+    },
+    {
+      "path": "ci/test/tape-native-dialog-desktop/dialog-contract.c",
+      "sha256": "d20f9f1d58e55a5c1ccd78c4aa4bf7768e39c9da31e328cf65c4e5aaa4a49a29"
+    },
+    {
+      "path": "ci/test/tape-native-dialog-desktop/macos-shim.m",
+      "sha256": "39cf5c13f9a8989ed04ce3e2a253588ef28596fe6546cfcb5323a8a919417260"
+    },
+    {
+      "path": "ci/test/tape-native-dialog-desktop/run-windows-cancel.py",
+      "sha256": "6605ffbb77f233ef2c4b8c71e9daaed6f6336e47d2a0d0ed44386123b7af8ef6"
+    },
+    {
+      "path": "ci/test/tape-native-dialog-desktop/windows-shim.c",
+      "sha256": "812189bbd3d87c68308c4af873ddcfb4d3e8a2304eaea3621d94ece69b3f2059"
+    },
+    {
+      "path": "src/app/wz_file_dialog.h",
+      "sha256": "3b86ef82087dd5c345b14d6d6549c3466ff5e99991829e7edb291d6333bf19a3"
+    },
+    {
+      "path": "src/app/wz_file_dialog_macos.m",
+      "sha256": "09edd90a01527ecf8bd5f39224a31fbc12669279f7e560547150ea00c9270b79"
+    },
+    {
+      "path": "src/app/wz_file_dialog_win32.c",
+      "sha256": "efe7f4708b5db6a5c5d708755139d4bfaa3eafdebfdf43e37dca7aa810601280"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "224d130dcd6214b12cda239a157de528a26a7e3c0b4e5bc31348d963d2e92205"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "84d9e0b84a02993917b0e74cb9ba0d71158f45223a707d801ce927029ab2b0aa"
+    },
+    {
+      "path": "src/core/wz_machine_profile.c",
+      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09"
+    },
+    {
+      "path": "src/core/wz_machine_profile.h",
+      "sha256": "099be5f41f428466e5da622452abec6e0daf6402abcf4ab2e7d8c2df47457cc4"
+    },
+    {
+      "path": "src/core/wz_tape.c",
+      "sha256": "5792fabbfc3c6956444c3532097cb0febb1d3497e988fd2a62c9e677ea8aeac3"
+    },
+    {
+      "path": "src/core/wz_tape.h",
+      "sha256": "d483f3f99bcfa26590bf259114193d2314dd2af2720316bf66021462f5c31fd6"
+    }
+  ]
+}
