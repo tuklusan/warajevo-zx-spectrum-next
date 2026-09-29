@@ -17,3 +17,7 @@ paths, names, hashes, and bytes are not emitted in logs or proof artifacts.
 This exercises tape transport playback, not ROM-driven loading or gameplay.
 The separate DIZZY4K normal-ROM contract and Fuse parser comparison remain
 distinct evidence; this is not physical hardware validation.
+
+## Review adjudication
+
+The automated review warnings about scan cleanup were non-actionable: Ubuntu glibc cleans an unsuccessful `scandir` result, the output pointer starts null, successful iteration frees each entry once, and the pointer array is freed and nulled before shared cleanup. The proof-key warning was non-actionable because a missing file count defaults below the required minimum and short-circuits before later direct indexing.

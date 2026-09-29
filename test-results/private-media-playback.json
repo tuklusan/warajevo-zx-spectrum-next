@@ -1,0 +1,57 @@
+{
+  "testId": "private-media-playback",
+  "status": "pass",
+  "commit": "977e82fc81a025a63cadf3d37b3ec95b11770583",
+  "runId": 36623457115,
+  "runner": "Linux/X64",
+  "timestamp": "2026-09-29T20:02:20+00:00",
+  "caseCount": 20,
+  "playbackSummary": {
+    "failures": 0,
+    "files": 20,
+    "tapFiles": 10,
+    "tzxFiles": 10,
+    "segments": 17027541,
+    "signalEdges": 17026746,
+    "motorStops": 74,
+    "ticks": 40296178498
+  },
+  "fixtures": [
+    {
+      "path": ".github/workflows/private-media-playback.yml",
+      "sha256": "7a13f7f033a2021f50907c54dc07b2bf4bafa6fabd07df447b78e2546c6e5838"
+    },
+    {
+      "path": "ci/test/private-media-playback/CMakeLists.txt",
+      "sha256": "b6c61c6d6b23f1c6048da5dd1314189755df7c294758198e3144274b8e0a9064"
+    },
+    {
+      "path": "ci/test/private-media-playback/private-media-playback.c",
+      "sha256": "d04f964e8a2b27c24440c1bd35cafba2dc9acbe58e461ad9608a8e3dda0ac147"
+    },
+    {
+      "path": "ci/test/private-media-playback/write-proof.py",
+      "sha256": "f4855d0b50659e0a4ad24cbfdf6e32b224425b3208bb12e446baf7648f8d3649"
+    },
+    {
+      "path": "docs/design/private-media-playback-test.md",
+      "sha256": "2110dcb727bf24011a452fba265c90b56c9e6420ff3af6489d92e54efe6bb417"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "ff2f9f8f2e9c3237accb07b0c300e0e6a2af060ca6d6628b635c5745874cbb21"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "84d9e0b84a02993917b0e74cb9ba0d71158f45223a707d801ce927029ab2b0aa"
+    },
+    {
+      "path": "src/core/wz_tape.c",
+      "sha256": "20c4523214f828d5129cbde2fb2c0d077ed15dae0daa923d019d1934b0c33d0b"
+    },
+    {
+      "path": "src/core/wz_tape.h",
+      "sha256": "d483f3f99bcfa26590bf259114193d2314dd2af2720316bf66021462f5c31fd6"
+    }
+  ]
+}
