@@ -40,7 +40,7 @@
     },
     {
       "path": "ci/test/snapshot-inspector/snapshot-inspector-contract.c",
-      "sha256": "a02302dfb9a18f4e4230be7d49dd7d3cbab81145482f6c0d9256a6d4acb74704"
+      "sha256": "23308facbf9b27a3b807c75dc9591ae822f44b1b33f9a20d9a76bdcdfaf4d5ca"
     }
   ]
 }

@@ -46,7 +46,8 @@ static bool verify_48k_inspection(void)
         strcmp(metadata->format_name, "live-machine") != 0 ||
         strcmp(metadata->format_version, "runtime") != 0 ||
         metadata->model_kind != WZ_MACHINE_48K_PAL ||
-        metadata->model_name != machine->profile->name ||
+        (metadata->model_name == NULL || machine->profile->name == NULL ||
+         strcmp(metadata->model_name, machine->profile->name) != 0) ||
         metadata->ay_selected_register != 13u ||
         metadata->ay_registers[13u] != 0x0bu ||
         metadata->memory_page_count != 3u ||
@@ -89,7 +90,8 @@ static bool verify_128k_inspection(void)
     paging = wz_snapshot_inspector_paging(&inspector);
     if (metadata == NULL || paging == NULL ||
         metadata->model_kind != WZ_MACHINE_128K_PAL ||
-        metadata->model_name != machine->profile->name ||
+        (metadata->model_name == NULL || machine->profile->name == NULL ||
+         strcmp(metadata->model_name, machine->profile->name) != 0) ||
         metadata->memory_page_count != WZ_128K_RAM_BANK_COUNT ||
         paging->paging_value != wz_machine_128k_paging_value(machine)) {
         goto cleanup;
