@@ -1,0 +1,59 @@
+name: Contention contract
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/core/**'
+      - 'ci/test/contention-contract/**'
+      - 'reference/t-state-description.md'
+      - 'test-drivers/contention-contract.driver.json'
+      - '.github/workflows/contention-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: Ubuntu x64
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+
+      - name: Configure contract
+        run: cmake -S ci/test/contention-contract -B dist/contention-contract -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build and run contract
+        run: |
+          cmake --build dist/contention-contract --config Release --target wz_contention_contract --parallel 2
+          ctest --test-dir dist/contention-contract -C Release -R '^wz_contention_contract$' --output-on-failure
+
+      - name: Record hosted proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          test_hash="$(sha256sum ci/test/contention-contract/contention-contract.c | cut -d ' ' -f 1)"
+          cmake_hash="$(sha256sum ci/test/contention-contract/CMakeLists.txt | cut -d ' ' -f 1)"
+          machine_hash="$(sha256sum src/core/wz_machine.c | cut -d ' ' -f 1)"
+          machine_header_hash="$(sha256sum src/core/wz_machine.h | cut -d ' ' -f 1)"
+          bus_hash="$(sha256sum src/core/wz_bus.c | cut -d ' ' -f 1)"
+          bus_header_hash="$(sha256sum src/core/wz_bus.h | cut -d ' ' -f 1)"
+          profile_hash="$(sha256sum src/core/wz_machine_profile.c | cut -d ' ' -f 1)"
+          profile_header_hash="$(sha256sum src/core/wz_machine_profile.h | cut -d ' ' -f 1)"
+          reference_hash="$(sha256sum reference/t-state-description.md | cut -d ' ' -f 1)"
+          workflow_hash="$(sha256sum .github/workflows/contention-contract.yml | cut -d ' ' -f 1)"
+          mkdir -p dist/contention-contract/proof
+          cat > dist/contention-contract/proof/contention-contract.json <<EOF
+          {"testId":"contention-contract","status":"pass","commit":"${GITHUB_SHA}","runner":"${RUNNER_OS}/${RUNNER_ARCH}","timestamp":"$(date -u +%Y-%m-%dT%H:%M:%SZ)","runId":${GITHUB_RUN_ID},"fixtures":[{"path":"ci/test/contention-contract/contention-contract.c","sha256":"${test_hash}"},{"path":"ci/test/contention-contract/CMakeLists.txt","sha256":"${cmake_hash}"},{"path":"src/core/wz_machine.c","sha256":"${machine_hash}"},{"path":"src/core/wz_machine.h","sha256":"${machine_header_hash}"},{"path":"src/core/wz_bus.c","sha256":"${bus_hash}"},{"path":"src/core/wz_bus.h","sha256":"${bus_header_hash}"},{"path":"src/core/wz_machine_profile.c","sha256":"${profile_hash}"},{"path":"src/core/wz_machine_profile.h","sha256":"${profile_header_hash}"},{"path":"reference/t-state-description.md","sha256":"${reference_hash}"},{"path":".github/workflows/contention-contract.yml","sha256":"${workflow_hash}"}]}
+          EOF
+
+      - name: Upload hosted proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: contention-contract-${{ github.sha }}
+          path: dist/contention-contract/proof/contention-contract.json
+          if-no-files-found: error

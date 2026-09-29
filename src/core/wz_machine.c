@@ -607,19 +607,33 @@ wz_byte_t wz_machine_contention_delay(const wz_machine_t* machine,
         return 0u;
     }
     if ((cycle != WZ_BUS_IO_READ && cycle != WZ_BUS_IO_WRITE) ||
-        (address & 1u) != 0u || t_states == 0u) {
+        t_states == 0u) {
         return 0u;
     }
     if ((address & 0xff00u) >= 0x4000u && (address & 0xff00u) <= 0x7f00u) {
-        for (wz_byte_t index = 0u; index < t_states; ++index) {
-            delay = (wz_byte_t)(delay +
-                wz_contention_delay_at_tstate(start_tstate + index));
+        if ((address & 1u) != 0u) {
+            for (wz_byte_t index = 0u; index < t_states; ++index) {
+                wz_byte_t wait = wz_contention_delay_at_tstate(start_tstate);
+                delay = (wz_byte_t)(delay + wait);
+                start_tstate += (wz_dword_t)wait + 1u;
+            }
+        } else {
+            wz_byte_t wait = wz_contention_delay_at_tstate(start_tstate);
+            delay = (wz_byte_t)(delay + wait);
+            start_tstate += (wz_dword_t)wait + 1u;
+            if (t_states > 1u) {
+                delay = (wz_byte_t)(delay +
+                    wz_contention_delay_at_tstate(start_tstate));
+            }
+        }
+    } else if ((address & 1u) == 0u) {
+        /* N:1,C:3: the 3T contention phase starts after the N:1 T-state. */
+        start_tstate += 1u;
+        if (t_states > 1u) {
+            delay = wz_contention_delay_at_tstate(start_tstate);
         }
     } else {
-        for (wz_byte_t index = 1u; index < t_states; ++index) {
-            delay = (wz_byte_t)(delay +
-                wz_contention_delay_at_tstate(start_tstate + index));
-        }
+        return 0u;
     }
     return delay;
 }

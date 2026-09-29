@@ -1,0 +1,47 @@
+{
+  "testId": "contention-contract",
+  "command": "cmake -S ci/test/contention-contract -B dist/contention-contract -DCMAKE_BUILD_TYPE=Release && cmake --build dist/contention-contract --config Release --target wz_contention_contract --parallel 2 && ctest --test-dir dist/contention-contract -C Release -R '^wz_contention_contract$' --output-on-failure",
+  "workflow": ".github/workflows/contention-contract.yml",
+  "fixtures": [
+    {
+      "path": "ci/test/contention-contract/contention-contract.c",
+      "sha256": "e44108c87e4e893fc289d207d6e2ed366d3f844644a7721db4bfe59cdf81c538"
+    },
+    {
+      "path": "ci/test/contention-contract/CMakeLists.txt",
+      "sha256": "ef78babc5a91ff041d380c5127b2fbd060f0f7895835b3352833c3f1fd133661"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "407fda295c2247c5756651fb9cdca10eda49ae54a3b5e790f7b40deb29dd5869"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "84d9e0b84a02993917b0e74cb9ba0d71158f45223a707d801ce927029ab2b0aa"
+    },
+    {
+      "path": "src/core/wz_bus.c",
+      "sha256": "cf2a35b00d1edc55fff977402391e4d685bb3b3346640205a9c41340e12df704"
+    },
+    {
+      "path": "src/core/wz_bus.h",
+      "sha256": "0a6019987ae86f7c7293e1f428d086f52684ea5353eadb758c0b2d056677abaa"
+    },
+    {
+      "path": "src/core/wz_machine_profile.c",
+      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09"
+    },
+    {
+      "path": "src/core/wz_machine_profile.h",
+      "sha256": "099be5f41f428466e5da622452abec6e0daf6402abcf4ab2e7d8c2df47457cc4"
+    },
+    {
+      "path": ".github/workflows/contention-contract.yml",
+      "sha256": "de49596de04a56817a8bb26d5a58986c065c5404c0aed44f9b2a62ae8beb6483"
+    },
+    {
+      "path": "reference/t-state-description.md",
+      "sha256": "f46ad0f983f70523b4d0f967b8554dd820697483aa8bb312f55cd51fce63173a"
+    }
+  ]
+}

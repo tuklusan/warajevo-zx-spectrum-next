@@ -219,9 +219,12 @@ The 48K profile presents a 16K ROM region followed by 48K RAM:
 ```text
 0000-3FFF  ROM
 4000-7FFF  contended display RAM
-8000-BFFF  contended/general RAM according to the profile
-C000-FFFF  uncontended RAM
+8000-FFFF  uncontended RAM
 ```
+
+For the certified 48K PAL profile, only `4000-7FFF` is contended. The classic
+128K profile requires separately validated paging and contention data before
+its additional bank-dependent contention is enabled.
 
 The ROM is supplied to the emulator, identified by a declared hash, and loaded
 before the machine is released from reset. Development/test checkouts may carry
@@ -239,6 +242,24 @@ profile-defined contended ULA access window. The model must define:
 - whether I/O operations incur the memory/I/O contention sequence;
 - the ULA fetch that owns each contested slot;
 - same-tick ordering between CPU request, ULA fetch, and visible writes.
+
+For the classic 48K PAL profile, the first contended T-state is 14335 after the
+frame interrupt. The delay sequence repeats as `6,5,4,3,2,1,0,0` while screen
+memory is being fetched and is zero outside that fetch window. I/O uses the
+four-cycle patterns below; `N:1` means one T-state proceeds without contention,
+and `C:n` means each indicated cycle is delayed by the memory contention table.
+Each `C` phase is evaluated at the current time after preceding waits have
+advanced the shared timeline; later phases must not use the original request
+timestamp.
+
+| Port high byte 40–7F | Port low bit | Four-T-state pattern |
+|---|---:|---|
+| no | reset | `N:1, C:3` |
+| no | set | `N:4` |
+| yes | reset | `C:1, C:3` |
+| yes | set | `C:1, C:1, C:1, C:1` |
+
+These 48K timings follow the [48K technical reference](https://worldofspectrum.org/faq/reference/48kreference.htm).
 
 Contention belongs in the memory/I/O bus and machine timing layer, never in
 individual opcode implementations. A delayed CPU cycle advances the shared
