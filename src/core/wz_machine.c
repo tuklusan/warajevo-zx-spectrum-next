@@ -569,11 +569,11 @@ wz_byte_t wz_machine_tape_ear_level(const wz_machine_t* machine)
     return wz_tape_state_ear_level(&machine->tape_state);
 }
 
-static wz_byte_t wz_contention_delay_at_tstate(wz_dword_t tstate)
+static wz_byte_t wz_contention_delay_at_tstate(wz_master_tick_t tstate)
 {
     static const wz_byte_t delays[8u] = {6u, 5u, 4u, 3u, 2u, 1u, 0u, 0u};
-    wz_dword_t frame_tstate = tstate % 69888u;
-    wz_dword_t screen_offset;
+    wz_master_tick_t frame_tstate = tstate % 69888u;
+    wz_master_tick_t screen_offset;
 
     if (frame_tstate < 14335u) {
         return 0u;
@@ -591,7 +591,7 @@ wz_byte_t wz_machine_contention_delay(const wz_machine_t* machine,
                                       wz_master_tick_t master_tick,
                                       wz_byte_t t_states)
 {
-    wz_dword_t start_tstate;
+    wz_master_tick_t start_tstate;
     wz_byte_t delay = 0u;
 
     if (machine == 0 || machine->profile == 0 ||

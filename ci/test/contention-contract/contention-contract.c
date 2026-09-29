@@ -7,6 +7,7 @@
  */
 
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -24,6 +25,13 @@ static bool check_delay(const wz_machine_t* machine,
     wz_master_tick_t tick = (wz_master_tick_t)tstate * 2u;
     return wz_machine_contention_delay(machine, cycle, address, tick,
                                        t_states) == expected;
+}
+
+static bool check_delay_after_long_runtime(const wz_machine_t* machine)
+{
+    wz_master_tick_t tstate = (wz_master_tick_t)UINT32_MAX + 1u + 14435u;
+    return wz_machine_contention_delay(machine, WZ_BUS_MEMORY_READ, 0x4000u,
+                                       tstate * 2u, 3u) == 0u;
 }
 
 static bool check_io_bus_advance(const wz_machine_profile_t* profile,
@@ -76,6 +84,7 @@ static bool check_48k_contract(void)
                      14335u, 3u, 0u) ||
         !check_delay(&machine, WZ_BUS_MEMORY_READ, 0x4000u,
                      14463u, 3u, 0u) ||
+        !check_delay_after_long_runtime(&machine) ||
         !check_delay(&machine, WZ_BUS_IO_READ, 0x00feu,
                      14335u, 4u, 5u) ||
         !check_delay(&machine, WZ_BUS_IO_WRITE, 0x40feu,
