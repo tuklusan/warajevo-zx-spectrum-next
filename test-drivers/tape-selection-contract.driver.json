@@ -13,19 +13,19 @@
     },
     {
       "path": "src/app/wz_tape_manager.c",
-      "sha256": "bbe18851ffea6041d0b5ca663e1a38db881e5fd9e083ed5c76456d8930df2121"
+      "sha256": "7a08c91c117233f94182465b75ea98964dab4f97a5e9560f3cdc58d67a79a076"
     },
     {
       "path": "src/app/wz_tape_manager.h",
-      "sha256": "29ce5c4a99ece5b42d402bca3c384668079897e77d8dcc89d554e6a2b3444765"
+      "sha256": "cf005620d51c51f9e219c61d8910f579dd3ec366bf172d34c01b3058c2037586"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "39c1c05559d5cebc3b8da7c98c8a001e854dc497ab174bf141b04bf07399d75c"
+      "sha256": "97b213e0472067cf16e58e8eee3d36f73ef8d2860e4d409f6c8188875dfced5c"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "5cebeb94769bbb7ef14b9db713ad68e9b0db09ffa2350888645feec9c1061acb"
+      "sha256": "5b567b5493b920f0bef2dbb55858a5d7de6436c5eaa39b19cfbe0806db0c79a5"
     },
     {
       "path": ".github/workflows/tape-selection-contract.yml",
