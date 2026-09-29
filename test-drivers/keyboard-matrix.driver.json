@@ -16,7 +16,7 @@
     },
     {
       "path": "ci/test/keyboard-matrix/keyboard-matrix-contract.c",
-      "sha256": "4255e8b8f6e779036f6a3f11ecfb3b2e69c4ff9d851b15a2af7e7eede93d6939"
+      "sha256": "dedb0d74256355d0f734ace1ce906e44985defe85ca89b068900a8b373b6024f"
     },
     {
       "path": "ci/test/keyboard-matrix/write-proof.py",

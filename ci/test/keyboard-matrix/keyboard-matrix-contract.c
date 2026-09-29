@@ -30,6 +30,7 @@ static bool set_position(wz_keyboard_matrix_t* matrix,
 static unsigned char select_rows(size_t first, size_t second)
 {
     unsigned int selected = 0xffu;
+    if (first >= WZ_KEYBOARD_MATRIX_ROW_COUNT) return 0xffu;
     selected &= ~(1u << first);
     if (second < WZ_KEYBOARD_MATRIX_ROW_COUNT)
         selected &= ~(1u << second);
