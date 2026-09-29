@@ -178,8 +178,13 @@ unless redistribution rights have been explicitly established.
 
 The acceptance target is every usable tape in `test-media/`, beginning with
 Normal authentic-ROM loading and retaining deterministic master-tick, EAR-edge,
-terminal-state, and failure-classification evidence. Unsupported or unavailable
-inputs are explicit results, never silent passes.
+terminal-state, and failure-classification evidence. The directory may contain
+private media; workflows may transfer it to hosted runners temporarily when
+authorized, but must not put media bytes in proof artifacts, logs, or release
+packages. Unsupported or unavailable inputs are explicit results, never silent
+passes. Use the pinned Fuse emulator as the software reference where applicable
+when physical Spectrum hardware is unavailable; record that evidence as an
+emulated comparison, not hardware validation.
 
 The CPU, bus, ULA, raster, ROM-loader, and tape timing contract is in
 `reference/t-state-description.md`.
@@ -212,7 +217,7 @@ tools/             general developer/repository maintenance utilities
 .githooks/         thin local hook entrypoints and validators only
 roms/              approved development/test ROMs, guidance, and identities;
                    final public releases require a separate redistribution check
-test-media/        public difficult-media fixtures
+test-media/        difficult-media fixtures (public or private)
 issues/            CR tracker and issue evidence
 ```
 
