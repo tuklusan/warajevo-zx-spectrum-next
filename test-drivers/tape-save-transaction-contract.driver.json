@@ -1,0 +1,51 @@
+{
+  "testId": "tape-save-transaction-contract",
+  "command": "cmake -S ci/test/tape-save-transaction-contract -B dist/tape-save-transaction-contract -DCMAKE_BUILD_TYPE=Release && cmake --build dist/tape-save-transaction-contract --config Release --target wz_tape_save_transaction_contract --parallel 2 && ctest --test-dir dist/tape-save-transaction-contract -C Release -R '^wz_tape_save_transaction_contract$' --output-on-failure",
+  "workflow": ".github/workflows/tape-save-transaction-contract.yml",
+  "fixtures": [
+    {
+      "path": "ci/test/tape-save-transaction-contract/tape-save-transaction-contract.c",
+      "sha256": "b8e639c354932672b2b9506b352104203641e6a5b1ff34346c15b53f05e8f8f3"
+    },
+    {
+      "path": "ci/test/tape-save-transaction-contract/CMakeLists.txt",
+      "sha256": "4e21ac30b8a928eb3f44da308360dd69991881da29d834847ab864e003e4a5dc"
+    },
+    {
+      "path": "src/app/wz_tape_save_transaction.c",
+      "sha256": "64da0047dea5ffa2a4a6668e28debca25b1938dcac39325872fcbfd167c2b5e4"
+    },
+    {
+      "path": "src/app/wz_tape_save_transaction.h",
+      "sha256": "13de5969c59caeb7319df4baf194a21196fd61e74b9f0a49f5997e684c336093"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "3c3b5930212e5d1b9197533ad64265d8d7c88c63519048fe6ae195665f2c2547"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "268274ac2da8629ce615a3337d7f326a6115043d5557d29c16e952543e3dec12"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "224d130dcd6214b12cda239a157de528a26a7e3c0b4e5bc31348d963d2e92205"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "84d9e0b84a02993917b0e74cb9ba0d71158f45223a707d801ce927029ab2b0aa"
+    },
+    {
+      "path": "src/core/wz_tape.c",
+      "sha256": "5792fabbfc3c6956444c3532097cb0febb1d3497e988fd2a62c9e677ea8aeac3"
+    },
+    {
+      "path": "src/core/wz_tape.h",
+      "sha256": "d483f3f99bcfa26590bf259114193d2314dd2af2720316bf66021462f5c31fd6"
+    },
+    {
+      "path": ".github/workflows/tape-save-transaction-contract.yml",
+      "sha256": "d5a55d4e18feef9e18e6bdb734e9826f4dfddf648f497e95dbc972b4d383144a"
+    }
+  ]
+}

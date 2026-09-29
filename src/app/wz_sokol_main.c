@@ -52,6 +52,7 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "app/wz_command_registry.h"
 #include "app/wz_file_dialog.h"
 #include "app/wz_host_output_utf8.h"
+#include "app/wz_tape_save_transaction.h"
 #include "app/wz_file_open_run.h"
 #include "app/wz_networking_commands.h"
 #include "app/wz_tape_loading_commands.h"
@@ -185,6 +186,12 @@ typedef struct {
     bool remote_settings_visible;
     bool initialized;
 } wz_host_session_t;
+
+typedef struct {
+    const char* path;
+    const wz_byte_t* data;
+    size_t length;
+} wz_host_tape_persist_context_t;
 
 static wz_host_session_t wz_host_session;
 static void wz_host_release_local_keys(void);
@@ -843,6 +850,16 @@ static bool wz_host_write_standard_tap(const char* path,
     return success;
 }
 
+static bool wz_host_persist_tape_image(void* context)
+{
+    const wz_host_tape_persist_context_t* persist =
+        (const wz_host_tape_persist_context_t*)context;
+    return persist != NULL && persist->path != NULL && persist->data != NULL &&
+        persist->length != 0u &&
+        wz_host_output_write_atomic_utf8(persist->path, persist->data,
+                                         persist->length);
+}
+
 static bool wz_host_tape_edit_save(wz_host_session_t* session)
 {
     wz_tape_manager_edit_t* edit;
@@ -855,6 +872,7 @@ static bool wz_host_tape_edit_save(wz_host_session_t* session)
     size_t segment_count = 0u;
     wz_result_t result;
     bool success = false;
+    wz_host_tape_persist_context_t persist_context;
     if (session == NULL || session->tape_edit_transaction.edit.blocks == NULL ||
         session->machine.profile == NULL ||
         session->tape_source_path[0] == '\0' ||
@@ -885,11 +903,17 @@ static bool wz_host_tape_edit_save(wz_host_session_t* session)
             segments, segment_count, &segment_count) != WZ_RESULT_OK ||
         wz_host_index_standard_tap(image, image_length, &indexed_blocks,
                                    &block_count) != WZ_RESULT_OK) goto cleanup;
-    if (!wz_host_output_write_atomic_utf8(session->tape_source_path, image,
-                                     image_length) ||
-        !wz_host_mount_tape_segments(session, segments, segment_count)) {
+    persist_context.path = session->tape_source_path;
+    persist_context.data = image;
+    persist_context.length = image_length;
+    if (!wz_tape_save_transaction_commit(&session->machine, segments,
+            segment_count, wz_host_persist_tape_image, &persist_context)) {
         goto cleanup;
     }
+    free(session->tape_segments);
+    session->tape_segments = segments;
+    session->tape_segment_count = segment_count;
+    session->ui_window.layout.tape_mounted = true;
     segments = NULL;
     wz_host_tape_edit_clear(session);
     wz_host_tape_manager_selection_clear(session);

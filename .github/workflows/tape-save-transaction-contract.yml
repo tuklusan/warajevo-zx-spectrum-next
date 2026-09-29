@@ -1,0 +1,55 @@
+name: Tape save transaction contract
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/app/wz_tape_save_transaction.*'
+      - 'src/app/wz_sokol_main.c'
+      - 'src/cmake/CMakeLists.txt'
+      - 'ci/test/tape-save-transaction-contract/**'
+      - 'test-drivers/tape-save-transaction-contract.driver.json'
+      - '.github/workflows/tape-save-transaction-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: Ubuntu x64
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+      - name: Configure contract
+        run: cmake -S ci/test/tape-save-transaction-contract -B dist/tape-save-transaction-contract -DCMAKE_BUILD_TYPE=Release
+      - name: Build and run contract
+        run: |
+          cmake --build dist/tape-save-transaction-contract --config Release --target wz_tape_save_transaction_contract --parallel 2
+          ctest --test-dir dist/tape-save-transaction-contract -C Release -R '^wz_tape_save_transaction_contract$' --output-on-failure
+      - name: Record hosted proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, platform
+          driver = json.loads(pathlib.Path('test-drivers/tape-save-transaction-contract.driver.json').read_text())
+          fixtures = []
+          for item in driver['fixtures']:
+              path = pathlib.Path(item['path'])
+              digest = hashlib.sha256(path.read_bytes()).hexdigest()
+              if digest != item['sha256']:
+                  raise SystemExit(f"fixture hash mismatch: {item['path']}")
+              fixtures.append({'path': item['path'], 'sha256': digest})
+          out = pathlib.Path('dist/tape-save-transaction-contract/proof/tape-save-transaction-contract.json')
+          out.parent.mkdir(parents=True, exist_ok=True)
+          out.write_text(json.dumps({'testId': driver['testId'], 'status': 'pass', 'commit': os.environ['GITHUB_SHA'], 'runner': f"{platform.system()}/{platform.machine()}", 'timestamp': __import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat(), 'runId': int(os.environ['GITHUB_RUN_ID']), 'fixtures': fixtures}, indent=2) + '\n')
+          PY
+      - name: Upload hosted proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: tape-save-transaction-contract-${{ github.sha }}
+          path: dist/tape-save-transaction-contract/proof/tape-save-transaction-contract.json
+          if-no-files-found: error
