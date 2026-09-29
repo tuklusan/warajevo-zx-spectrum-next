@@ -127,12 +127,61 @@ static bool check_48k_contract(void)
     return true;
 }
 
+static bool check_128k_contract(void)
+{
+    const wz_machine_profile_t* profile = wz_machine_profile_128k_pal();
+    wz_machine_t machine;
+    static const wz_byte_t contended_banks[4u] = {1u, 3u, 5u, 7u};
+
+    memset(&machine, 0, sizeof(machine));
+    if (wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        return false;
+    }
+    if (!check_delay(&machine, WZ_BUS_MEMORY_READ, 0x4000u,
+                     14361u, 3u, 6u) ||
+        !check_delay(&machine, WZ_BUS_MEMORY_READ, 0x8000u,
+                     14361u, 3u, 0u) ||
+        !check_delay(&machine, WZ_BUS_MEMORY_READ, 0xc000u,
+                     14361u, 3u, 0u) ||
+        !check_delay(&machine, WZ_BUS_IO_READ, 0x00feu,
+                     14361u, 4u, 5u) ||
+        !check_delay(&machine, WZ_BUS_MEMORY_READ, 0x4000u,
+                     14361u + 128u, 3u, 0u) ||
+        !check_delay(&machine, WZ_BUS_MEMORY_READ, 0x4000u,
+                     14361u + 228u, 3u, 6u) ||
+        !check_delay(&machine, WZ_BUS_MEMORY_READ, 0x4000u,
+                     70908u + 14361u, 3u, 6u)) {
+        wz_machine_destroy(&machine);
+        return false;
+    }
+    for (size_t index = 0u; index < sizeof(contended_banks); ++index) {
+        machine.paging_7ffd = contended_banks[index];
+        if (!check_delay(&machine, WZ_BUS_MEMORY_READ, 0xc000u,
+                         14361u, 3u, 6u)) {
+            wz_machine_destroy(&machine);
+            return false;
+        }
+    }
+    machine.paging_7ffd = 2u;
+    if (!check_delay(&machine, WZ_BUS_MEMORY_READ, 0xc000u,
+                     14361u, 3u, 0u)) {
+        wz_machine_destroy(&machine);
+        return false;
+    }
+    wz_machine_destroy(&machine);
+    return true;
+}
+
 int main(void)
 {
     if (!check_48k_contract()) {
         fputs("48K PAL contention contract failed.\n", stderr);
         return 1;
     }
-    puts("48K PAL bus and I/O contention contract passed.");
+    if (!check_128k_contract()) {
+        fputs("128K PAL bank-dependent contention contract failed.\n", stderr);
+        return 1;
+    }
+    puts("48K and 128K PAL contention contracts passed.");
     return 0;
 }

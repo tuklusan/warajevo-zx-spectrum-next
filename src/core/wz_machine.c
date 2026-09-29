@@ -569,20 +569,50 @@ wz_byte_t wz_machine_tape_ear_level(const wz_machine_t* machine)
     return wz_tape_state_ear_level(&machine->tape_state);
 }
 
-static wz_byte_t wz_contention_delay_at_tstate(wz_master_tick_t tstate)
+static wz_byte_t wz_contention_delay_at_tstate(
+    const wz_machine_profile_t* profile, wz_master_tick_t tstate)
 {
     static const wz_byte_t delays[8u] = {6u, 5u, 4u, 3u, 2u, 1u, 0u, 0u};
-    wz_master_tick_t frame_tstate = tstate % 69888u;
+    wz_master_tick_t frame_tstate;
+    wz_master_tick_t elapsed_tstate;
     wz_master_tick_t screen_offset;
 
-    if (frame_tstate < 14335u) {
+    if (profile == 0 || profile->tstates_per_frame == 0u ||
+        profile->tstates_per_line == 0u) {
         return 0u;
     }
-    screen_offset = (frame_tstate - 14335u) % 224u;
+    frame_tstate = tstate % profile->tstates_per_frame;
+    if (frame_tstate < profile->ula_fetch_start_tstate) {
+        return 0u;
+    }
+    elapsed_tstate = frame_tstate - profile->ula_fetch_start_tstate;
+    if (elapsed_tstate >= (wz_master_tick_t)profile->ula_fetch_line_count *
+                          profile->tstates_per_line) {
+        return 0u;
+    }
+    screen_offset = elapsed_tstate % profile->tstates_per_line;
     if (screen_offset >= 128u) {
         return 0u;
     }
-    return delays[(frame_tstate - 14335u) % 8u];
+    return delays[screen_offset % 8u];
+}
+
+static bool wz_machine_address_is_contended(const wz_machine_t* machine,
+                                            wz_word_t address)
+{
+    wz_byte_t bank;
+
+    if (machine->profile->kind == WZ_MACHINE_48K_PAL) {
+        return address >= 0x4000u && address <= 0x7fffu;
+    }
+    if (address >= 0x4000u && address <= 0x7fffu) {
+        bank = 5u;
+    } else if (address >= 0xc000u) {
+        bank = (wz_byte_t)(machine->paging_7ffd & 0x07u);
+    } else {
+        return false;
+    }
+    return bank == 1u || bank == 3u || bank == 5u || bank == 7u;
 }
 
 wz_byte_t wz_machine_contention_delay(const wz_machine_t* machine,
@@ -595,14 +625,15 @@ wz_byte_t wz_machine_contention_delay(const wz_machine_t* machine,
     wz_byte_t delay = 0u;
 
     if (machine == 0 || machine->profile == 0 ||
-        machine->profile->kind != WZ_MACHINE_48K_PAL) {
+        (machine->profile->kind != WZ_MACHINE_48K_PAL &&
+         machine->profile->kind != WZ_MACHINE_128K_PAL)) {
         return 0u;
     }
     start_tstate = master_tick / 2u;
     if (cycle == WZ_BUS_M1_OPCODE_FETCH || cycle == WZ_BUS_MEMORY_READ ||
         cycle == WZ_BUS_MEMORY_WRITE) {
-        if (address >= 0x4000u && address <= 0x7fffu) {
-            return wz_contention_delay_at_tstate(start_tstate);
+        if (wz_machine_address_is_contended(machine, address)) {
+            return wz_contention_delay_at_tstate(machine->profile, start_tstate);
         }
         return 0u;
     }
@@ -614,24 +645,26 @@ wz_byte_t wz_machine_contention_delay(const wz_machine_t* machine,
     if ((address & 0xff00u) >= 0x4000u && (address & 0xff00u) <= 0x7f00u) {
         if ((address & 1u) != 0u) {
             for (wz_byte_t index = 0u; index < t_states; ++index) {
-                wz_byte_t wait = wz_contention_delay_at_tstate(start_tstate);
+                wz_byte_t wait = wz_contention_delay_at_tstate(
+                    machine->profile, start_tstate);
                 delay = (wz_byte_t)(delay + wait);
                 start_tstate += (wz_master_tick_t)wait + 1u;
             }
         } else {
-            wz_byte_t wait = wz_contention_delay_at_tstate(start_tstate);
+            wz_byte_t wait = wz_contention_delay_at_tstate(
+                machine->profile, start_tstate);
             delay = (wz_byte_t)(delay + wait);
             start_tstate += (wz_master_tick_t)wait + 1u;
             if (t_states > 1u) {
                 delay = (wz_byte_t)(delay +
-                    wz_contention_delay_at_tstate(start_tstate));
+                    wz_contention_delay_at_tstate(machine->profile, start_tstate));
             }
         }
     } else if ((address & 1u) == 0u) {
         /* N:1,C:3: the 3T contention phase starts after the N:1 T-state. */
         start_tstate += 1u;
         if (t_states > 1u) {
-            delay = wz_contention_delay_at_tstate(start_tstate);
+            delay = wz_contention_delay_at_tstate(machine->profile, start_tstate);
         }
     } else {
         return 0u;

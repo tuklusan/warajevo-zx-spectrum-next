@@ -222,9 +222,16 @@ The 48K profile presents a 16K ROM region followed by 48K RAM:
 8000-FFFF  uncontended RAM
 ```
 
-For the certified 48K PAL profile, only `4000-7FFF` is contended. The classic
-128K profile requires separately validated paging and contention data before
-its additional bank-dependent contention is enabled.
+For the certified 48K PAL profile, only `4000-7FFF` is contended. For the
+classic 128K PAL profile, `4000-7FFF` maps to contended bank 5, `8000-BFFF`
+maps to uncontended bank 2, and `C000-FFFF` follows the selected 7FFD bank;
+banks 1, 3, 5, and 7 are contended. The selected profile supplies frame length,
+line length, first-fetch T-state, and active fetch-line count. The 128K table
+and bank map follow the [128K technical reference](https://worldofspectrum.org/faq/reference/128kreference.htm);
+the reference describes the same 6,5,4,3,2,1,0,0 pattern, beginning at
+T-state 14361 and repeating every 228 T-states. This implementation is covered
+by the hosted contention contract; independent hardware correlation remains
+open.
 
 The ROM is supplied to the emulator, identified by a declared hash, and loaded
 before the machine is released from reset. Development/test checkouts may carry
@@ -244,8 +251,10 @@ profile-defined contended ULA access window. The model must define:
 - same-tick ordering between CPU request, ULA fetch, and visible writes.
 
 For the classic 48K PAL profile, the first contended T-state is 14335 after the
-frame interrupt. The delay sequence repeats as `6,5,4,3,2,1,0,0` while screen
-memory is being fetched and is zero outside that fetch window. I/O uses the
+frame interrupt, the frame is 69888 T-states, and 192 lines of screen fetches
+are modeled. For the classic 128K PAL profile, these values are 14361, 70908,
+and 192 lines. The delay sequence repeats as `6,5,4,3,2,1,0,0` during each
+line's 128-T-state fetch window and is zero elsewhere. I/O uses the
 four-cycle patterns below; `N:1` means one T-state proceeds without contention,
 and `C:n` means each indicated cycle is delayed by the memory contention table.
 Each `C` phase is evaluated at the current time after preceding waits have
