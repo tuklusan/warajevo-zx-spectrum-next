@@ -1,0 +1,38 @@
+{
+  "testId": "tape-selection-contract",
+  "status": "pass",
+  "commit": "5d6c7ce1a93f9dcde384299a186faeab4810b0a2",
+  "runner": "Linux/x86_64",
+  "timestamp": "2026-09-29T07:00:42.533547+00:00",
+  "runId": 36534126433,
+  "fixtures": [
+    {
+      "path": "ci/test/tape-selection-contract/tape-selection-contract.c",
+      "sha256": "cf6239f8c47a3ab600f2cb7fce6aeb60839cc90ef945c4f9ec1e035aef7fbebf"
+    },
+    {
+      "path": "ci/test/tape-selection-contract/CMakeLists.txt",
+      "sha256": "5884e6e598ef724a8fc001f94d541bfa38f58630f1b753853fee67033e1f9c83"
+    },
+    {
+      "path": "src/app/wz_tape_manager.c",
+      "sha256": "7a08c91c117233f94182465b75ea98964dab4f97a5e9560f3cdc58d67a79a076"
+    },
+    {
+      "path": "src/app/wz_tape_manager.h",
+      "sha256": "cf005620d51c51f9e219c61d8910f579dd3ec366bf172d34c01b3058c2037586"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "97b213e0472067cf16e58e8eee3d36f73ef8d2860e4d409f6c8188875dfced5c"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "5b567b5493b920f0bef2dbb55858a5d7de6436c5eaa39b19cfbe0806db0c79a5"
+    },
+    {
+      "path": ".github/workflows/tape-selection-contract.yml",
+      "sha256": "548fee61b16e080cb211fdc97ce63376dce755768a296c1f8e9d0a3a2b323be9"
+    }
+  ]
+}
