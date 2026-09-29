@@ -97,11 +97,11 @@
     },
     {
       "path": "src/app/wz_tape_manager.c",
-      "sha256": "28867fb3cf689c41b15c0c4e6ffa09641599a1a6171892de50c3737043dd27d9"
+      "sha256": "7a08c91c117233f94182465b75ea98964dab4f97a5e9560f3cdc58d67a79a076"
     },
     {
       "path": "src/app/wz_tape_manager.h",
-      "sha256": "f41f420f87526a890a05ea14eabe5070aca3477ff214a45ec2547ea4576b7752"
+      "sha256": "cf005620d51c51f9e219c61d8910f579dd3ec366bf172d34c01b3058c2037586"
     }
   ]
 }

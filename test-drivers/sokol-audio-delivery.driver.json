@@ -46,7 +46,7 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "298943f37fe7df18bba9d16bdc5bbe64168ae4ca27f628f58ce30803735d6131"
+      "sha256": "c5d78a80f060ead6700d53e1da6fc9f8b51ecb45c919b73cfc89c833dff5caa3"
     },
     {
       "path": "src/app/wz_ui_layout.h",

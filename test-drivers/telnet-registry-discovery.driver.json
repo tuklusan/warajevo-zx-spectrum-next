@@ -99,7 +99,7 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "298943f37fe7df18bba9d16bdc5bbe64168ae4ca27f628f58ce30803735d6131"
+      "sha256": "c5d78a80f060ead6700d53e1da6fc9f8b51ecb45c919b73cfc89c833dff5caa3"
     },
     {
       "path": "src/app/wz_ui_layout.h",
@@ -127,7 +127,7 @@
     },
     {
       "path": "src/core/wz_bus.c",
-      "sha256": "cf2a35b00d1edc55fff977402391e4d685bb3b3346640205a9c41340e12df704"
+      "sha256": "02b445abd2dc00128f8c141050f50757a1ee1bcd76188d9840a40403e447d540"
     },
     {
       "path": "src/core/wz_debugger.c",
@@ -143,7 +143,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "c6893ae4fe7a4fbcc5cb287238e5a00db3723bd90c52fdcf1fec5b391ff0547e"
+      "sha256": "224d130dcd6214b12cda239a157de528a26a7e3c0b4e5bc31348d963d2e92205"
     },
     {
       "path": "src/core/wz_machine_profile.c",
@@ -167,7 +167,7 @@
     },
     {
       "path": "src/core/wz_runner.c",
-      "sha256": "698968da9e55b8e81ca0aa67a646f759253bc495cfea7f158cf9e1e0f4dca388"
+      "sha256": "ded90228d1227ef361170e1bc95d2b98365fa380136fd5269733b6119d8c7b90"
     },
     {
       "path": "src/core/wz_scheduler.c",
