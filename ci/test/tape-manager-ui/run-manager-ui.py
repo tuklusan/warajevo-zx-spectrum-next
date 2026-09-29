@@ -25,8 +25,28 @@ def run(command, environment=None):
     return result.stdout.strip()
 
 
+def focus_application(environment):
+    deadline = time.monotonic() + 30
+    while time.monotonic() < deadline:
+        result = subprocess.run(
+            ["xdotool", "search", "--onlyvisible", "--name",
+             "Warajevo ZX Spectrum Next"], check=False,
+            capture_output=True, text=True, env=environment)
+        if result.returncode == 0:
+            for window in result.stdout.splitlines():
+                focused = subprocess.run(
+                    ["xdotool", "windowfocus", "--sync", window],
+                    check=False, capture_output=True, text=True,
+                    env=environment)
+                if focused.returncode == 0:
+                    return window
+        time.sleep(0.1)
+    raise RuntimeError("application window not found or could not be focused")
+
+
 def capture_words(destination, environment):
-    run(["import", "-window", "root", str(destination)], environment)
+    run(["import", "-window", "root", "-descend", str(destination)],
+        environment)
     output = run(["tesseract", str(destination), "stdout", "tsv",
                   "--psm", "11"], environment)
     return list(csv.DictReader(output.splitlines(), delimiter="\t"))
@@ -64,6 +84,7 @@ def main():
         process = subprocess.Popen([str(binary)], env=environment,
                                    stdout=log, stderr=subprocess.STDOUT)
     try:
+        window = focus_application(environment)
         time.sleep(2.0)
         initial = output / "initial.png"
         initial_words = capture_words(initial, environment)
@@ -84,7 +105,7 @@ def main():
             raise RuntimeError("Tape Manager content missing: " + ", ".join(missing))
         result = {
             "result": "pass",
-            "window": "captured from X11 root window",
+            "window": window,
             "visibleText": visible,
             "screenshot": opened.name,
             "screenshotSha256": hashlib.sha256(opened.read_bytes()).hexdigest(),
