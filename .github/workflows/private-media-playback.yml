@@ -1,0 +1,63 @@
+# Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+# This file is governed by the SANYALnet Labs Non-Commercial License in the
+# root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
+# for AI/ML model training are prohibited unless separately authorized.
+# Attribution is required: "Based on original work by Supratim Sanyal of
+# SANYALnet Labs." See LICENSE for full terms.
+
+name: Hosted private-media playback
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/private-media-playback.yml'
+      - 'ci/test/private-media-playback/**'
+      - 'src/core/wz_machine.*'
+      - 'src/core/wz_tape.*'
+      - 'test-media/**'
+      - 'test-drivers/private-media-playback.driver.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  playback:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact main revision and authorized media
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          lfs: true
+      - name: Configure core playback contract
+        run: cmake -S ci/test/private-media-playback -B dist/private-media-playback -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build playback contract
+        run: cmake --build dist/private-media-playback --config Release --target wz_private_media_playback --parallel 2
+      - name: Play every supported tape through the mounted core transport
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist/private-media-playback/proof
+          dist/private-media-playback/wz_private_media_playback test-media \
+            | tee dist/private-media-playback/playback-summary.json
+      - name: Write aggregate-only pinned proof
+        env:
+          PROJECT_COMMIT: ${{ github.sha }}
+          PROJECT_RUN_ID: ${{ github.run_id }}
+          RUNNER_OS: ${{ runner.os }}
+          RUNNER_ARCH: ${{ runner.arch }}
+        run: |
+          python3 ci/test/private-media-playback/write-proof.py \
+            --commit "$PROJECT_COMMIT" --run-id "$PROJECT_RUN_ID" \
+            --runner "$RUNNER_OS/$RUNNER_ARCH" \
+            --summary dist/private-media-playback/playback-summary.json \
+            --proof dist/private-media-playback/proof/private-media-playback.json
+      - name: Upload aggregate-only proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: private-media-playback-${{ github.sha }}
+          path: dist/private-media-playback/proof/private-media-playback.json
+          if-no-files-found: error
