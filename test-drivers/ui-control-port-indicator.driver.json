@@ -1,0 +1,38 @@
+{
+  "testId": "ui-control-port-indicator",
+  "command": "cmake -S ci/test/ui-control-port-indicator -B dist/ui-control-port-indicator -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/ui-control-port-indicator --config Release --target wz_ui_control_port_indicator_contract --parallel 2 && dist/ui-control-port-indicator/wz_ui_control_port_indicator_contract",
+  "requiredCases": 4,
+  "runnerMatrix": [
+    "ubuntu-24.04"
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/ui-control-port-indicator.yml",
+      "sha256": "c6f4cc25a2483b375b30279443c15101ab5d94de8e245a6f3ff8274dd8147c0c"
+    },
+    {
+      "path": "ci/test/ui-control-port-indicator/CMakeLists.txt",
+      "sha256": "b4fe0033c5cc5481938d1dbd57a156b674c905b7ff777e6c28c1f8f5af27d164"
+    },
+    {
+      "path": "ci/test/ui-control-port-indicator/ui-control-port-indicator-contract.c",
+      "sha256": "955eb44c39bb82089f1e321c47626df3290b9c8da6d97b5748ef9e157681088e"
+    },
+    {
+      "path": "ci/test/ui-control-port-indicator/write-proof.py",
+      "sha256": "ecaff193747161bb6a57df1368118c3125f8ce17eb6f84fc91460601a18b2203"
+    },
+    {
+      "path": "src/app/wz_ui_layout.c",
+      "sha256": "7d78188b959e29cd031382c7f9a788f7fe837d9d24d3ebe446137cc8c4d28b38"
+    },
+    {
+      "path": "src/app/wz_ui_layout.h",
+      "sha256": "cfe6cf9135dd1ef6771a1513e9dc3f72cd42636f4f005e576017aa745915d2d9"
+    },
+    {
+      "path": "src/app/wz_control_port.h",
+      "sha256": "44a2a09d58c56dff09494d2176a43f8de0982ff719e3914fb53853fcca4ea32a"
+    }
+  ]
+}
