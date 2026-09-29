@@ -1,23 +1,35 @@
 {
   "testId": "host-machine-frame-audio-continuity",
   "status": "pass",
-  "commit": "01d51725769b372c0e90ea119952679f1e69cf69",
-  "runId": 36551674420,
+  "commit": "841b67fd1e37ebd94d1a245593d81c5c2d625225",
+  "runId": 36553621970,
   "runner": "Linux/X64",
-  "timestamp": "2026-09-29T09:51:18+00:00",
+  "timestamp": "2026-09-29T10:07:56+00:00",
   "caseCount": 56,
   "fixtures": [
     {
       "path": ".github/workflows/host-machine-frame-regression.yml",
-      "sha256": "9498d3b26ec4319473de0ea3b57e797c2f08c93c082509a003187b11da9d4816"
+      "sha256": "64f29c390ddb3526ae8da142a41bfac5de90e4fa7463b3337bfad64f93dc2788"
     },
     {
       "path": "ci/test/host-frame-audio/frame-audio-regression.c",
-      "sha256": "da573157f9406895f413f6fa588d4adb665ba671a809e03a02b6794277509861"
+      "sha256": "62474715346bd1c680e7caceb43fc8e8035f5f37add60b95e832df8794ff5bdb"
     },
     {
       "path": "ci/test/host-frame-audio/write-proof.py",
-      "sha256": "c586d36febbdddd1bc598b465378e2c1c780f29657707b20b2370ac595e4f727"
+      "sha256": "deffb77aad9ad707abdbb1b22cc8a34d801c318bca7faf2f2cff624a90448c42"
+    },
+    {
+      "path": "ci/test/audio-delivery/sokol_audio_stub/sokol_audio.h",
+      "sha256": "241b80c7c29052de62cc2400f9ed6416b9d4cbb8d1b3ef470a84c74dede75193"
+    },
+    {
+      "path": "src/app/wz_host_audio_push.c",
+      "sha256": "1a3a87bc6c19474d0f24883d6848f9de35ce460535f4a56edebb8231966e6f71"
+    },
+    {
+      "path": "src/app/wz_host_audio_push.h",
+      "sha256": "78c2932e1a8a4569f386da3627e4fabd51cc51b7532c6243d9c21638a73f629d"
     },
     {
       "path": "src/app/wz_host_machine_frame.c",
@@ -34,6 +46,22 @@
     {
       "path": "src/app/wz_host_audio_policy.h",
       "sha256": "99f86c6701dec5ccae2b932b31daafc95909143dd192bf1cfe43bc91a5991430"
+    },
+    {
+      "path": "src/app/wz_host_pacing.c",
+      "sha256": "95f8c0e83dc00296de250ec8dedc643023182aa6dfe33cea015a0d3154a30ca7"
+    },
+    {
+      "path": "src/app/wz_host_pacing.h",
+      "sha256": "cc9cf2c62618116bc982299039942b56a0e110dd8ab720fe1e4f2c262185ebc1"
+    },
+    {
+      "path": "src/app/wz_sokol_audio.c",
+      "sha256": "104b26e4f27289dc4afbc58f92be8b8bbceb2cc52c7648c075b1c33aa40cbefc"
+    },
+    {
+      "path": "src/app/wz_sokol_audio.h",
+      "sha256": "cec736aa3183a6b35db788456fa44273c4b82bd8cd13e19fa14f9e9944c61b68"
     },
     {
       "path": "src/app/wz_sokol_main.c",
@@ -65,11 +93,11 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "fb79ad9b6321a5fd5068fdb72fc8b072a82bf93db547b957e859e397b8eafead"
+      "sha256": "71baaae8ab59240cf9af91f53679a102f07229947d9241112d84ed963068e632"
     },
     {
       "path": "test-drivers/host-machine-frame.driver.json",
-      "sha256": "5e3e5908d7e8f1f533ba6847403a9d13ddb0795af445c8b21cf86ce5b443a091"
+      "sha256": "70b09ed2327e317bae8ad3edfef68502b4136703bbe4599830a888c54ea7bb9d"
     }
   ]
 }
