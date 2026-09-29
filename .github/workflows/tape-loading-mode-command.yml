@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'src/app/wz_tape_loading_commands.*'
+      - 'src/app/wz_tape_media_commands.*'
       - 'src/cmake/CMakeLists.txt'
       - 'src/app/wz_command_registry.*'
       - 'src/core/wz_machine.*'

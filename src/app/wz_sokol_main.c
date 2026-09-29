@@ -54,6 +54,7 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "app/wz_file_open_run.h"
 #include "app/wz_networking_commands.h"
 #include "app/wz_tape_loading_commands.h"
+#include "app/wz_tape_media_commands.h"
 #include "app/wz_application_lifecycle.h"
 #include "app/wz_control_port.h"
 #include "app/wz_host_socket.h"
@@ -118,6 +119,7 @@ typedef struct {
     wz_command_metadata_t command_storage[WZ_HOST_COMMAND_CAPACITY];
     wz_networking_command_context_t networking_command_context;
     wz_tape_loading_command_context_t tape_loading_command_context;
+    wz_tape_media_command_context_t tape_media_command_context;
     wz_raster_buffer_t raster;
     wz_byte_t raster_samples[WZ_HOST_RASTER_BYTES];
     wz_byte_t raster_rgba[WZ_HOST_RASTER_BYTES * 4u];
@@ -653,6 +655,65 @@ static bool wz_host_open_run_microdrive(const char* path, void* context)
     return wz_host_load_external_microdrive((wz_host_session_t*)context, path);
 }
 
+static bool wz_host_tape_media_load(const char* path, void* context)
+{
+    return wz_host_load_external_tape((wz_host_session_t*)context, path);
+}
+
+static void wz_host_tape_media_release(void* context)
+{
+    wz_host_session_t* session = (wz_host_session_t*)context;
+    if (session == NULL) return;
+    free(session->tape_segments);
+    session->tape_segments = NULL;
+    session->tape_segment_count = 0u;
+    session->ui_window.layout.tape_mounted = false;
+    (void)snprintf(session->file_notification,
+                   sizeof(session->file_notification), "Tape ejected");
+}
+
+static void wz_host_ui_insert_tape(void)
+{
+    char path[4096];
+    wz_file_dialog_result_t dialog_result;
+    wz_command_result_t result;
+    wz_qword_t sleep_nanoseconds;
+    wz_host_release_local_keys();
+    if (!wz_input_focus_dialog_enter(&wz_host_session.input_focus)) {
+        (void)snprintf(wz_host_session.file_notification,
+            sizeof(wz_host_session.file_notification), "File dialog unavailable");
+        return;
+    }
+    dialog_result = wz_file_dialog_open(path, sizeof(path));
+    (void)wz_input_focus_dialog_leave(&wz_host_session.input_focus);
+    if (wz_host_session.pacing_initialized) {
+        (void)wz_host_pacing_wait(&wz_host_session.pacing,
+            wz_host_now_nanoseconds(), wz_host_session.machine.master_tick,
+            NULL, NULL, &sleep_nanoseconds);
+    }
+    if (dialog_result == WZ_FILE_DIALOG_CANCELLED) {
+        (void)snprintf(wz_host_session.file_notification,
+            sizeof(wz_host_session.file_notification), "Tape insert cancelled");
+        return;
+    }
+    if (dialog_result != WZ_FILE_DIALOG_SELECTED) {
+        (void)snprintf(wz_host_session.file_notification,
+            sizeof(wz_host_session.file_notification), "File dialog failed");
+        return;
+    }
+    if (wz_command_registry_dispatch(&wz_host_session.command_registry,
+            WZ_TAPE_INSERT_COMMAND_ID,
+            (wz_command_arguments_t){path, strlen(path)}, &result) !=
+        WZ_RESULT_OK) {
+        (void)snprintf(wz_host_session.file_notification,
+            sizeof(wz_host_session.file_notification), "%s",
+            result.reason == NULL ? "Tape insert failed" : result.reason);
+        return;
+    }
+    (void)snprintf(wz_host_session.file_notification,
+        sizeof(wz_host_session.file_notification), "Tape inserted");
+}
+
 static wz_result_t wz_host_command_open_run(
     const void* context, wz_command_arguments_t arguments,
     wz_command_result_t* result)
@@ -977,6 +1038,18 @@ static bool wz_host_register_commands(void)
             &wz_host_session.tape_loading_command_context) != WZ_RESULT_OK) {
         return false;
     }
+    wz_host_session.tape_media_command_context.machine =
+        &wz_host_session.machine;
+    wz_host_session.tape_media_command_context.load =
+        wz_host_tape_media_load;
+    wz_host_session.tape_media_command_context.release =
+        wz_host_tape_media_release;
+    wz_host_session.tape_media_command_context.context = &wz_host_session;
+    if (wz_tape_media_commands_register(
+            &wz_host_session.command_registry,
+            &wz_host_session.tape_media_command_context) != WZ_RESULT_OK) {
+        return false;
+    }
     return wz_command_registry_finalize(&wz_host_session.command_registry) ==
         WZ_RESULT_OK;
 }
@@ -1234,7 +1307,14 @@ static void wz_host_ui_draw_menus(struct nk_context* context, float width)
             enabled = wz_command_registry_state(
                 &wz_host_session.command_registry, command->id,
                 &disabled_reason) == WZ_COMMAND_ENABLED;
-            if (strcmp(command->id, "machine.speed.set") == 0) {
+            if (strcmp(command->id, WZ_TAPE_INSERT_COMMAND_ID) == 0) {
+                if (!enabled) nk_widget_disable_begin(context);
+                if (nk_menu_item_label(context, command->label, NK_TEXT_LEFT) &&
+                    enabled) {
+                    wz_host_ui_insert_tape();
+                }
+                if (!enabled) nk_widget_disable_end(context);
+            } else if (strcmp(command->id, "machine.speed.set") == 0) {
                 if (!enabled) nk_widget_disable_begin(context);
                 if (nk_menu_begin_label(context, "Emulation Speed",
                                         NK_TEXT_LEFT,
@@ -1359,24 +1439,33 @@ static void wz_host_ui_draw_toolbar(struct nk_context* context, float width)
                         action == NULL ? NULL : wz_command_registry_find(
                             &wz_host_session.command_registry,
                             action->command_id);
+                    bool action_enabled;
                     if (action == NULL) continue;
-                    if (action_command == NULL ||
-                        action_command->parameter_schema == NULL ||
-                        strcmp(action_command->parameter_schema, "NONE") != 0 ||
+                    action_enabled = action_command != NULL &&
                         wz_command_registry_state(
                             &wz_host_session.command_registry,
-                            action_command->id, NULL) != WZ_COMMAND_ENABLED) {
+                            action_command->id, NULL) == WZ_COMMAND_ENABLED &&
+                        action_command->parameter_schema != NULL &&
+                        (strcmp(action_command->parameter_schema, "NONE") == 0 ||
+                         strcmp(action_command->id,
+                                WZ_TAPE_INSERT_COMMAND_ID) == 0);
+                    if (!action_enabled) {
                         nk_widget_disable_begin(context);
                         (void)nk_combo_item_label(context, action->label,
                                                   NK_TEXT_LEFT);
                         nk_widget_disable_end(context);
                     } else if (nk_combo_item_label(context, action->label,
                                                    NK_TEXT_LEFT)) {
-                        wz_command_result_t result;
-                        (void)wz_command_registry_dispatch(
-                            &wz_host_session.command_registry,
-                            action_command->id,
-                            (wz_command_arguments_t){NULL, 0u}, &result);
+                        if (strcmp(action_command->id,
+                                   WZ_TAPE_INSERT_COMMAND_ID) == 0) {
+                            wz_host_ui_insert_tape();
+                        } else {
+                            wz_command_result_t result;
+                            (void)wz_command_registry_dispatch(
+                                &wz_host_session.command_registry,
+                                action_command->id,
+                                (wz_command_arguments_t){NULL, 0u}, &result);
+                        }
                     }
                 }
                 nk_combo_end(context);

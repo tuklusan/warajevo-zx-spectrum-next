@@ -15,6 +15,7 @@ add_subdirectory("${WZSN_ROOT}/src/cmake" wzsn-product)
 add_executable(wz_tape_loading_mode_command
     tape-loading-mode-command.c
     "${WZSN_ROOT}/src/app/wz_tape_loading_commands.c"
+    "${WZSN_ROOT}/src/app/wz_tape_media_commands.c"
     "${WZSN_ROOT}/src/app/wz_command_registry.c"
     "${WZSN_ROOT}/src/app/wz_host_thread.c")
 set_target_properties(wz_tape_loading_mode_command PROPERTIES
