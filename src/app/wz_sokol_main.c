@@ -123,6 +123,7 @@ typedef struct {
     bool tape_manager_open;
     size_t tape_manager_selected_segment;
     size_t tape_manager_selected_block;
+    size_t tape_manager_block_page_start;
     wz_raster_buffer_t raster;
     wz_byte_t raster_samples[WZ_HOST_RASTER_BYTES];
     wz_byte_t raster_rgba[WZ_HOST_RASTER_BYTES * 4u];
@@ -643,6 +644,7 @@ static bool wz_host_load_external_tape(wz_host_session_t* session,
             wz_host_extension_is(path, ".tzx") ? "TZX" : "WAV");
         session->tape_manager_selected_segment = 0u;
         session->tape_manager_selected_block = 0u;
+        session->tape_manager_block_page_start = 0u;
         loaded = true;
     }
 cleanup:
@@ -760,6 +762,7 @@ static void wz_host_tape_media_release(void* context)
     session->tape_format[0] = '\0';
     session->tape_manager_selected_segment = 0u;
     session->tape_manager_selected_block = 0u;
+    session->tape_manager_block_page_start = 0u;
     session->ui_window.layout.tape_mounted = false;
     (void)snprintf(session->file_notification,
                    sizeof(session->file_notification), "Tape ejected");
@@ -1681,24 +1684,45 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
             wz_host_session.tzx_block_count : 0u;
     if (block_count != 0u) {
         size_t selected = wz_host_session.tape_manager_selected_block;
-        first_segment = selected > 4u ? selected - 4u : 0u;
+        first_segment = wz_host_session.tape_manager_block_page_start;
+        if (first_segment >= block_count) {
+            first_segment = ((block_count - 1u) / 9u) * 9u;
+            wz_host_session.tape_manager_block_page_start = first_segment;
+        }
         end_segment = first_segment + 9u;
         if (end_segment > block_count) end_segment = block_count;
         nk_label(context, "Tape blocks (read only)", NK_TEXT_LEFT);
         nk_layout_row_dynamic(context, 24.0f, 2);
-        if (nk_button_label(context, "Previous blocks") && selected > 0u) {
-            wz_host_session.tape_manager_selected_block = selected > 9u ?
-                selected - 9u : 0u;
+        if (nk_button_label(context, "Previous blocks") && first_segment > 0u) {
+            first_segment = first_segment >= 9u ? first_segment - 9u : 0u;
+            wz_host_session.tape_manager_block_page_start = first_segment;
+            if (selected < first_segment || selected >= first_segment + 9u) {
+                selected = first_segment;
+                wz_host_session.tape_manager_selected_block = selected;
+            }
         }
         if (nk_button_label(context, "Next blocks") && end_segment < block_count) {
-            wz_host_session.tape_manager_selected_block = end_segment;
+            first_segment = end_segment;
+            wz_host_session.tape_manager_block_page_start = first_segment;
+            selected = first_segment;
+            wz_host_session.tape_manager_selected_block = selected;
         }
+        end_segment = first_segment + 9u;
+        if (end_segment > block_count) end_segment = block_count;
         nk_layout_row_dynamic(context, 24.0f, 1);
         for (size_t index = first_segment; index < end_segment; ++index) {
             if (strcmp(wz_host_session.tape_format, "TAP") == 0) {
                 const wz_tap_block_t* block = &wz_host_session.tape_blocks[index];
                 const char* type = "Data";
                 char name[11] = {0};
+                if (block->data == NULL || block->length == 0u) {
+                    (void)snprintf(line, sizeof(line),
+                        "%sBlock %llu | invalid TAP block metadata",
+                        index == selected ? "> " : "  ",
+                        (unsigned long long)(index + 1u));
+                    nk_label(context, line, NK_TEXT_LEFT);
+                    continue;
+                }
                 bool has_header = block->length == 19u && block->data[0] == 0u;
                 if (has_header) {
                     switch (block->data[1]) {
