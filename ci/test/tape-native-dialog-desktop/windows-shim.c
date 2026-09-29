@@ -6,6 +6,7 @@
  * SANYALnet Labs." See LICENSE for full terms.
  */
 
+#include <windows.h>
 #include <sokol_app.h>
 
 void wz_native_dialog_prepare_cancel(void)

@@ -25,7 +25,7 @@
     },
     {
       "path": "ci/test/tape-native-dialog-desktop/windows-shim.c",
-      "sha256": "812189bbd3d87c68308c4af873ddcfb4d3e8a2304eaea3621d94ece69b3f2059"
+      "sha256": "5bc92dbf65efd5ece78cddb952b5166b09d714f5898eb9f2701aca85abf11a1e"
     },
     {
       "path": "src/app/wz_file_dialog.h",
