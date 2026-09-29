@@ -561,6 +561,12 @@ static wz_result_t wz_host_index_standard_tap(const wz_byte_t* data,
     return WZ_RESULT_OK;
 }
 
+static size_t wz_host_read_le24(const wz_byte_t* data)
+{
+    return (size_t)data[0] | ((size_t)data[1] << 8u) |
+        ((size_t)data[2] << 16u);
+}
+
 static bool wz_host_load_external_tape(wz_host_session_t* session,
                                        const char* path)
 {
@@ -1765,6 +1771,8 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
                     "supported" : block->disposition == WZ_TZX_IGNORED ?
                         "ignored" : "unsupported";
                 const char* type = "TZX block";
+                const char* length_kind = "body";
+                size_t logical_length = block->data_length;
                 switch (block->block_id) {
                 case 0x10u: type = "Standard data"; break;
                 case 0x11u: type = "Turbo data"; break;
@@ -1793,13 +1801,38 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
                 case 0x5au: type = "Glue"; break;
                 default: break;
                 }
-                (void)snprintf(line, sizeof(line),
-                    "%sBlock %llu | %s (%02X) | %s | payload %llu / stored %llu bytes",
-                    index == selected ? "> " : "  ",
-                    (unsigned long long)(index + 1u), type,
-                    (unsigned int)block->block_id,
-                    disposition, (unsigned long long)block->data_length,
-                    (unsigned long long)block->block_length);
+                if (block->data == NULL || block->data_length == 0u) {
+                    (void)snprintf(line, sizeof(line),
+                        "%sBlock %llu | invalid TZX block metadata",
+                        index == selected ? "> " : "  ",
+                        (unsigned long long)(index + 1u));
+                } else {
+                    if (block->block_id == 0x10u && block->data_length >= 4u) {
+                        size_t encoded_length =
+                            (size_t)wz_read_le16(block->data + 2u);
+                        if (encoded_length <= block->data_length - 4u) {
+                            logical_length = encoded_length > 2u ?
+                                encoded_length - 2u : 0u;
+                            length_kind = "logical";
+                        }
+                    } else if (block->block_id == 0x11u &&
+                               block->data_length >= 18u) {
+                        size_t encoded_length =
+                            wz_host_read_le24(block->data + 15u);
+                        if (encoded_length <= block->data_length - 18u) {
+                            logical_length = encoded_length > 2u ?
+                                encoded_length - 2u : 0u;
+                            length_kind = "logical";
+                        }
+                    }
+                    (void)snprintf(line, sizeof(line),
+                        "%sBlock %llu | %s (%02X) | %s | %s %llu / stored %llu bytes",
+                        index == selected ? "> " : "  ",
+                        (unsigned long long)(index + 1u), type,
+                        (unsigned int)block->block_id, disposition,
+                        length_kind, (unsigned long long)logical_length,
+                        (unsigned long long)block->block_length);
+                }
             }
             if (nk_button_label(context, line)) {
                 wz_host_session.tape_manager_selected_block = index;
