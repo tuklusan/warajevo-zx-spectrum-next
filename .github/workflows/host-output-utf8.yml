@@ -1,0 +1,83 @@
+name: UTF-8 atomic file output
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/app/wz_host_output_utf8.*'
+      - 'src/app/wz_sokol_main.c'
+      - 'src/app/wz_host_output.*'
+      - 'src/cmake/CMakeLists.txt'
+      - 'ci/test/host-output-utf8/**'
+      - 'test-drivers/host-output-utf8.driver.json'
+      - '.github/workflows/host-output-utf8.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: ${{ matrix.name }}
+    if: github.ref == 'refs/heads/main'
+    runs-on: ${{ matrix.label }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows Intel
+            id: windows-x64
+            label: windows-2025
+          - name: Windows ARM64
+            id: windows-arm64
+            label: windows-11-arm
+          - name: macOS Intel
+            id: macos-x64
+            label: macos-15-intel
+          - name: macOS ARM64
+            id: macos-arm64
+            label: macos-15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+      - name: Configure contract
+        run: cmake -S ci/test/host-output-utf8 -B dist/host-output-utf8 -DCMAKE_BUILD_TYPE=Release
+      - name: Build and run contract
+        shell: bash
+        run: |
+          cmake --build dist/host-output-utf8 --config Release --target wz_host_output_utf8_tests --parallel 2
+          ctest --test-dir dist/host-output-utf8 -C Release -R '^wz_host_output_utf8_tests$' --output-on-failure
+      - name: Record hosted proof
+        shell: bash
+        env:
+          RUNNER_ID: ${{ matrix.id }}
+        run: |
+          set -euo pipefail
+          if [[ "$RUNNER_OS" == "Windows" ]]; then PYTHON=python; else PYTHON=python3; fi
+          "$PYTHON" - <<'PY'
+          import hashlib, json, os, pathlib, platform, subprocess
+          driver = json.loads(pathlib.Path('test-drivers/host-output-utf8.driver.json').read_text())
+          fixtures = []
+          for item in driver['fixtures']:
+              data = subprocess.check_output(['git', 'show',
+                  f"{os.environ['GITHUB_SHA']}:{item['path']}"])
+              digest = hashlib.sha256(data).hexdigest()
+              if digest != item['sha256']:
+                  raise SystemExit(f"fixture hash mismatch: {item['path']}")
+              fixtures.append({'path': item['path'], 'sha256': digest})
+          proof = pathlib.Path('dist/host-output-utf8/proof')
+          proof.mkdir(parents=True, exist_ok=True)
+          record = {'testId': driver['testId'], 'status': 'pass',
+                    'commit': os.environ['GITHUB_SHA'],
+                    'runner': f"{platform.system()}/{platform.machine()}",
+                    'timestamp': __import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat(),
+                    'runId': int(os.environ['GITHUB_RUN_ID']), 'fixtures': fixtures}
+          (proof / f"host-output-utf8-{os.environ['RUNNER_ID']}.json").write_text(
+              json.dumps(record, indent=2) + '\n')
+          PY
+      - name: Upload hosted proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: host-output-utf8-${{ matrix.id }}-${{ github.sha }}
+          path: dist/host-output-utf8/proof/host-output-utf8-${{ matrix.id }}.json
+          if-no-files-found: error

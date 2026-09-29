@@ -51,7 +51,7 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "core/audio/wz_audio_mixer.h"
 #include "app/wz_command_registry.h"
 #include "app/wz_file_dialog.h"
-#include "app/wz_host_output.h"
+#include "app/wz_host_output_utf8.h"
 #include "app/wz_file_open_run.h"
 #include "app/wz_networking_commands.h"
 #include "app/wz_tape_loading_commands.h"
@@ -732,71 +732,22 @@ cleanup:
     return success;
 }
 
-static bool wz_host_output_path(const char* path,
-                                char output[1024])
-{
-    if (path == NULL || output == NULL || path[0] == '\0') return false;
-#if defined(_WIN32)
-    {
-        int wide_length = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS,
-                                               path, -1, NULL, 0);
-        wchar_t* wide_path;
-        int encoded_length;
-        BOOL used_default = FALSE;
-        wchar_t roundtrip[4096];
-        int roundtrip_length;
-        if (wide_length <= 0 || wide_length > (int)(sizeof(roundtrip) / sizeof(roundtrip[0]))) {
-            return false;
-        }
-        wide_path = (wchar_t*)malloc((size_t)wide_length * sizeof(*wide_path));
-        if (wide_path == NULL) return false;
-        if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, path, -1,
-                                wide_path, wide_length) != wide_length) {
-            free(wide_path);
-            return false;
-        }
-        encoded_length = WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS,
-            wide_path, -1, output, 1024, NULL, &used_default);
-        roundtrip_length = encoded_length > 0 && !used_default
-            ? MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, output, -1,
-                                  roundtrip, (int)(sizeof(roundtrip) / sizeof(roundtrip[0])))
-            : 0;
-        if (roundtrip_length != wide_length ||
-            CompareStringOrdinal(wide_path, -1, roundtrip, -1, FALSE) != CSTR_EQUAL) {
-            free(wide_path);
-            return false;
-        }
-        free(wide_path);
-        return true;
-    }
-#else
-    {
-        size_t length = strlen(path);
-        if (length >= 1024u) return false;
-        memcpy(output, path, length + 1u);
-        return true;
-    }
-#endif
-}
-
 static bool wz_host_write_standard_tap(const char* path,
                                        const wz_tap_block_t* blocks,
                                        size_t block_count)
 {
-    char output_path[1024];
     wz_byte_t* output = NULL;
     size_t length = 0u;
     wz_result_t result;
     bool success = false;
     result = wz_tape_write_standard_tap(blocks, block_count, NULL, 0u,
                                         &length);
-    if (result != WZ_RESULT_BUFFER_TOO_SMALL || length == 0u ||
-        !wz_host_output_path(path, output_path)) return false;
+    if (result != WZ_RESULT_BUFFER_TOO_SMALL || length == 0u) return false;
     output = (wz_byte_t*)malloc(length);
     if (output == NULL) return false;
     if (wz_tape_write_standard_tap(blocks, block_count, output, length,
                                    &length) == WZ_RESULT_OK) {
-        success = wz_host_output_write_atomic(output_path, output, length);
+        success = wz_host_output_write_atomic_utf8(path, output, length);
     }
     free(output);
     return success;
@@ -804,7 +755,6 @@ static bool wz_host_write_standard_tap(const char* path,
 
 static bool wz_host_tape_edit_save(wz_host_session_t* session)
 {
-    char output_path[1024];
     wz_tape_manager_edit_t* edit;
     wz_tap_block_t* committed = NULL;
     wz_byte_t* image = NULL;
@@ -818,8 +768,7 @@ static bool wz_host_tape_edit_save(wz_host_session_t* session)
     if (session == NULL || session->tape_edit_transaction.edit.blocks == NULL ||
         session->machine.profile == NULL ||
         session->tape_source_path[0] == '\0' ||
-        session->machine.tape_state.motor_on ||
-        !wz_host_output_path(session->tape_source_path, output_path)) return false;
+        session->machine.tape_state.motor_on) return false;
     edit = wz_tape_manager_transaction_edit(&session->tape_edit_transaction);
     if (edit == NULL) return false;
     block_count = edit->count;
@@ -846,7 +795,7 @@ static bool wz_host_tape_edit_save(wz_host_session_t* session)
             segments, segment_count, &segment_count) != WZ_RESULT_OK ||
         wz_host_index_standard_tap(image, image_length, &indexed_blocks,
                                    &block_count) != WZ_RESULT_OK) goto cleanup;
-    if (!wz_host_output_write_atomic(output_path, image,
+    if (!wz_host_output_write_atomic_utf8(session->tape_source_path, image,
                                      image_length) ||
         !wz_host_mount_tape_segments(session, segments, segment_count)) {
         goto cleanup;

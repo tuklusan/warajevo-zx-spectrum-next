@@ -53,7 +53,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "b79f1ca809f1968e30116d9cf19b47a3e17e5883e5372052eb3e708219f7a448"
+      "sha256": "301019cc17ad7ef737176697fd7c547d173a0e1f71278b81b55a17aa6275a81f"
     },
     {
       "path": ".github/workflows/tape-loading-mode-command.yml",
@@ -61,7 +61,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "8bd7f3b2f6d6077726d010c7867abd43c6db2f79a03cbc46bb729098f9cf96dc"
+      "sha256": "36c5ea91418a4ad493de83660f4778459159a9b655250b06e883d91fc03ff8a4"
     },
     {
       "path": "src/app/wz_ui_layout.c",
