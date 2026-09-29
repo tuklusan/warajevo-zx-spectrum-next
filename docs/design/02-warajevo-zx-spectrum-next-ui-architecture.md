@@ -1712,8 +1712,7 @@ base Control Port 30740
 probe range 30740-32787
 selected Control Port <number|unavailable>
 IPv4 listener UP/DOWN
-IPv6 listener UP/DOWN
-normal/degraded/unavailable listener state
+listener up/down/unavailable state
 active client ACTIVE/NONE
 plaintext/no-authentication warning
 initial remote permission policy summary
@@ -1800,7 +1799,7 @@ Networking
 
 Remote Control
   Control Port: 30741
-  IPv4 UP / IPv6 UP
+  IPv4 UP
   No client
 ```
 
@@ -1997,7 +1996,7 @@ END
 Its required initial prefix is:
 
 ```text
-STATUS PROTOCOL=1 CONTROL_PORT=<30740..32787> IPV4=<UP|DOWN> IPV6=<UP|DOWN> CLIENT=<ACTIVE|NONE> MODEL=<48K|128K> STATE=<RUNNING|PAUSED> SPEED=<25|50|100|200|400|800|UNLIMITED> AUDIO=<ON|MUTED|UNAVAILABLE|DEGRADED|MUTED_DEGRADED> NETWORKING=<NONE|INTERFACE1|EAR_MIC>
+STATUS PROTOCOL=1 CONTROL_PORT=<30740..32787> IPV4=<UP|DOWN> CLIENT=<ACTIVE|NONE> MODEL=<48K|128K> STATE=<RUNNING|PAUSED> SPEED=<25|50|100|200|400|800|UNLIMITED> AUDIO=<ON|MUTED|UNAVAILABLE|DEGRADED|MUTED_DEGRADED> NETWORKING=<NONE|INTERFACE1|EAR_MIC>
 ```
 
 Additional trailing `name=value` fields may be added compatibly, for example
@@ -2789,7 +2788,7 @@ occupied candidate is skipped without using a port outside 30740-32787
 simultaneous-start race cannot produce duplicate numeric Control Port ownership
 full 2048-port exhaustion reports unavailable without terminating WZSN
 selected Control Port is not persisted across launches
-IPv4/IPv6 split-family collision rejects the candidate numeric port
+IPv4 address/port collision rejects the candidate numeric port
 
 networking radio group has exactly None / Interface-1 / Ear+Mic
 networking mode is structurally mutually exclusive

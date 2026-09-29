@@ -196,9 +196,8 @@ bool wz_telnet_status_format(const wz_telnet_status_snapshot_t* snapshot,
         return false;
     }
     written = snprintf(output, output_capacity,
-        "STATUS PROTOCOL=1 CONTROL_PORT=%u IPV4=%s IPV6=%s CLIENT=%s MODEL=%s STATE=%s SPEED=%s AUDIO=%s NETWORKING=%s\r\n",
+        "STATUS PROTOCOL=1 CONTROL_PORT=%u IPV4=%s CLIENT=%s MODEL=%s STATE=%s SPEED=%s AUDIO=%s NETWORKING=%s\r\n",
         snapshot->control_port, snapshot->ipv4_up ? "UP" : "DOWN",
-        snapshot->ipv6_up ? "UP" : "DOWN",
         snapshot->client_active ? "ACTIVE" : "NONE", snapshot->model,
         snapshot->state, snapshot->speed, snapshot->audio, snapshot->networking);
     if (written < 0 || (size_t)written >= output_capacity) {

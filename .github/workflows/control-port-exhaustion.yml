@@ -1,0 +1,58 @@
+# Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+# This file is governed by the SANYALnet Labs Non-Commercial License in the
+# root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
+# for AI/ML model training are prohibited unless separately authorized.
+# Attribution is required: "Based on original work by Supratim Sanyal of
+# SANYALnet Labs." See LICENSE for full terms.
+
+name: Control Port exhaustion contract
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/control-port-exhaustion.yml'
+      - 'ci/test/control-port-exhaustion/**'
+      - 'test-drivers/control-port-exhaustion.driver.json'
+      - 'src/app/wz_control_port.c'
+      - 'src/app/wz_control_port.h'
+      - 'src/app/wz_host_socket.c'
+      - 'src/app/wz_host_socket.h'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  control-port-exhaustion:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact main revision
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+      - name: Configure exhaustion contract
+        run: cmake -S ci/test/control-port-exhaustion -B dist/control-port-exhaustion -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build exhaustion contract
+        run: cmake --build dist/control-port-exhaustion --config Release --target wz_control_port_exhaustion --parallel 2
+      - name: Run full-range exhaustion contract
+        run: ulimit -n 8192 && dist/control-port-exhaustion/wz_control_port_exhaustion
+      - name: Write pinned proof
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          RUNNER_OS: ${{ runner.os }}
+          RUNNER_ARCH: ${{ runner.arch }}
+        run: |
+          python3 ci/test/control-port-exhaustion/write-proof.py \
+            --commit "$GITHUB_SHA" \
+            --run-id "$GITHUB_RUN_ID" \
+            --runner "$RUNNER_OS/$RUNNER_ARCH" \
+            --proof dist/control-port-exhaustion/control-port-exhaustion.json
+      - name: Upload pinned proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: control-port-exhaustion-${{ github.sha }}
+          path: dist/control-port-exhaustion/control-port-exhaustion.json
+          if-no-files-found: error

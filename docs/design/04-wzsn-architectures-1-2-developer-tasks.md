@@ -481,9 +481,9 @@ Debug application startup/shutdown now attaches, freezes, and closes a per-proce
 
 381. [P15][Core §§55.15] Implement the small platform socket abstraction using Winsock on Windows and POSIX/BSD sockets on Linux/macOS, outside the deterministic core.
 382. [P15][Core §§55.2] Implement automatic Control Port probing in strict ascending order from 30740 through 32787 inclusive.
-383. [P15][Core §§55.2] Implement candidate ownership so one WZSN process owns one numeric port across supported IPv4/IPv6 families; reject split-family duplicate ownership.
-384. [P15][Core §§55.2] Make bind acquisition race-safe across simultaneous processes by treating successful socket bind/listen as the reservation.
-385. [P15][Core §§55.2] Implement degraded-family operation when one supported address family is unavailable for reasons other than numeric-port ownership, according to the frozen rules.
+383. [P15][Core §§55.2] Implement candidate ownership so one WZSN process owns one IPv4 numeric port; IPv6 is out of project scope.
+384. [P15][Core §§55.2] Make IPv4 bind acquisition race-safe across simultaneous processes by treating successful socket bind/listen as the reservation.
+385. [P15][Core §§55.2] Report IPv4 listener availability without family-degradation behavior.
 386. [P15][Core §§55.2] Implement full 2048-port exhaustion as nonfatal Control service unavailability with no probing outside the range.
 387. [P15][Core §§55.2] Keep selected Control Port as session-only state and expose it to UI/status without persistence.
 388. [P15][Core §§55.3] Implement exactly one active Telnet client per WZSN process, returning `BUSY\r\n` then closing a second client.

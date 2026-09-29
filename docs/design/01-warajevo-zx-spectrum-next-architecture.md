@@ -4042,32 +4042,23 @@ Base Control Port:  30740
 Probe count:        2048 numeric ports total
 Probe range:        30740 through 32787 inclusive
 Probe order:        strictly ascending
-Selection:          first bindable candidate under the family-ownership rule
+Selection:          first bindable IPv4 candidate
 Bind address:       all available host interfaces
 Clients:            one active client per WZSN process
 Startup:            automatic with the Warajevo application
 Persistence:        selected Control Port is session state and is not persisted
 ```
 
-For each candidate numeric port `P`, the process attempts wildcard reachability
-for every supported address family. Conceptually:
+For each candidate numeric port `P`, the process attempts an IPv4 wildcard
+listener. IPv6 is outside this project's scope:
 
 ```text
 IPv4:  0.0.0.0:P
-IPv6:  [::]:P
 ```
 
-The implementation may use one dual-stack IPv6 listener or separate IPv4 and
-IPv6 listeners according to host socket semantics, but one WZSN process owns
-one numeric Control Port across the supported families. A candidate is rejected
-and all partial listeners for it are closed if any supported family reports
-that the numeric port/address is already in use by another process or service.
-This prevents two WZSN instances from both reporting the same Control Port while
-owning different address families.
-
-An unsupported address family does not reject a candidate. If one family has a
-non-conflict failure while another family successfully binds, the candidate may
-be accepted in a visibly reported **degraded-family** state. The application
+Exactly one WZSN process owns the IPv4 Control Port. A candidate is rejected
+and its listener is closed if the numeric port/address is already in use by
+another process or service. The application
 must report which address families are active.
 
 The bind itself is the interprocess reservation. Listener socket options must
@@ -4596,8 +4587,8 @@ matrix electrical/ghosting tests as required by hardware evidence
 automatic listener startup
 first-free probing from 30740 through 32787 inclusive
 simultaneous multi-process startup cannot produce duplicate Control Port ownership
-IPv4/IPv6 wildcard-family reporting and degraded-family behavior
-candidate rejection when any supported family reports address-in-use
+IPv4 wildcard-listener reporting
+candidate rejection when the IPv4 address/port is already in use
 2048-port-range exhaustion is nonfatal and visibly reported
 selected Control Port is not persisted and no port outside the range is chosen
 second client receives BUSY then closes
@@ -4627,17 +4618,15 @@ when:
 
 1. the Telnet listener starts automatically with each Warajevo application process;
 2. each process probes candidate Control Ports in strict ascending order from
-   30740 through 32787 inclusive and selects the first candidate satisfying the
-   Section-55.2 family-ownership rule;
+   30740 through 32787 inclusive and selects the first available IPv4
+   candidate;
 3. simultaneous WZSN process startup cannot result in two processes owning or
-   reporting the same Control Port through split IPv4/IPv6 or shared-listener
-   semantics;
+   reporting the same IPv4 Control Port;
 4. exhaustion of all 2048 candidates is nonfatal, visibly reported, and never
    causes automatic selection outside the frozen range;
 5. the selected Control Port is session state and is not persisted across
    application launches;
-6. active/degraded IPv4/IPv6 family state is visibly reported for the selected
-   Control Port;
+6. IPv4 listener state is visibly reported for the selected Control Port;
 7. one active Telnet client per WZSN process is supported;
 8. a second simultaneous client receives `BUSY` and is immediately closed
    without disturbing the first;

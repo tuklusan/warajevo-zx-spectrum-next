@@ -37,21 +37,11 @@ static const char* remote_listener_state_label(
 static wz_ui_remote_listener_state_t remote_listener_state(
     const wz_control_port_owner_t* owner)
 {
-    bool ipv4;
-    bool ipv6;
-
     if (owner == 0 || owner->selected_port == 0u) {
         return WZ_UI_REMOTE_LISTENER_UNAVAILABLE;
     }
-    ipv4 = owner->ipv4_active;
-    ipv6 = owner->ipv6_active;
-    if (ipv4 && ipv6) {
-        return WZ_UI_REMOTE_LISTENER_UP;
-    }
-    if (ipv4 || ipv6) {
-        return WZ_UI_REMOTE_LISTENER_DEGRADED;
-    }
-    return WZ_UI_REMOTE_LISTENER_DOWN;
+    return owner->ipv4_active ? WZ_UI_REMOTE_LISTENER_UP
+                              : WZ_UI_REMOTE_LISTENER_DOWN;
 }
 
 static const char* ui_focus_target_label(wz_ui_focus_target_t target)

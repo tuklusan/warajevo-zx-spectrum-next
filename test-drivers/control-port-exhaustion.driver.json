@@ -1,0 +1,46 @@
+{
+  "testId": "control-port-exhaustion",
+  "command": "cmake -S ci/test/control-port-exhaustion -B dist/control-port-exhaustion -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/control-port-exhaustion --config Release --target wz_control_port_exhaustion --parallel 2 && ulimit -n 8192 && dist/control-port-exhaustion/wz_control_port_exhaustion",
+  "requiredCases": 1,
+  "runnerMatrix": [
+    "ubuntu-24.04"
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/control-port-exhaustion.yml",
+      "sha256": "ca428419a8873544582b16ee41b43ec4444e28b3820f3ffdc77c7b041bcccf84"
+    },
+    {
+      "path": "ci/test/control-port-exhaustion/CMakeLists.txt",
+      "sha256": "7c57fd15631250ad554fe87e41d460aaf2eea54478b37abe3651dd925cc34881"
+    },
+    {
+      "path": "ci/test/control-port-exhaustion/control-port-exhaustion.c",
+      "sha256": "eeb83bf9e69ab5cb03e884c862d837337fc9aa7b5a2498354d54d0a4eb3ae736"
+    },
+    {
+      "path": "ci/test/control-port-exhaustion/write-proof.py",
+      "sha256": "bda4e403ebcf83ded70330007bd2650ed5633776bb46477da5240dd8af9fc7be"
+    },
+    {
+      "path": "src/app/wz_control_port.c",
+      "sha256": "07821a10c7e1a7be357b808dd2ad729bd04d684f5782950d3131bf72edb3a18c"
+    },
+    {
+      "path": "src/app/wz_control_port.h",
+      "sha256": "44a2a09d58c56dff09494d2176a43f8de0982ff719e3914fb53853fcca4ea32a"
+    },
+    {
+      "path": "src/app/wz_host_socket.c",
+      "sha256": "f7c9c9eb5032b170a6c152064bb9556e2a5bf41805eff683bc53b02a7f5c2259"
+    },
+    {
+      "path": "src/app/wz_host_socket.h",
+      "sha256": "1c5bbe42e47fd27db8b2781c699eb51026963bfe9d3831580489dce472444230"
+    },
+    {
+      "path": "docs/design/01-warajevo-zx-spectrum-next-architecture.md",
+      "sha256": "502bca7a36ff0832fbc80c717e69c3c24a9bc6ea73c85147f2ea576256dde686"
+    }
+  ]
+}
