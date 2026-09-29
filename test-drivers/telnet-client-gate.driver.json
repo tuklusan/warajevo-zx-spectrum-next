@@ -27,7 +27,7 @@
     },
     {
       "path": "src/app/wz_control_port.c",
-      "sha256": "07821a10c7e1a7be357b808dd2ad729bd04d684f5782950d3131bf72edb3a18c"
+      "sha256": "c26016fe66e2f3932bf80070f8a00c873946c3ea893b0458e7994f06fbba1ef5"
     },
     {
       "path": "src/app/wz_host_socket.c",

@@ -1,0 +1,60 @@
+{
+  "testId": "media-corpus-ingestion",
+  "status": "pass",
+  "commit": "27b26d20e7cb3502314c1b3a765c37183b177ad4",
+  "runId": 36616258713,
+  "runner": "Linux/X64",
+  "timestamp": "2026-09-29T19:12:53+00:00",
+  "caseCount": 21,
+  "mediaSummary": {
+    "files": 20,
+    "tapFiles": 10,
+    "tzxFiles": 10,
+    "supported": 20,
+    "unsupported": 0,
+    "unsupportedTzxBlocks": 0,
+    "malformed": 0,
+    "fuseAccepted": 20,
+    "fuseRejected": 0,
+    "coreReferenceDivergences": 0,
+    "zeroPauseContractCases": 1
+  },
+  "fixtures": [
+    {
+      "path": ".github/workflows/media-corpus-ingestion.yml",
+      "sha256": "09af0a8d908eb9bb1b0455d7d674619253459f6ec582b499c5a7c3173d28b5a7"
+    },
+    {
+      "path": "ci/test/media-corpus-ingestion/CMakeLists.txt",
+      "sha256": "700f145faab8bbe4872af16cf03cc21df0a747ef46410a529be54995d6ac0b55"
+    },
+    {
+      "path": "tests/media-corpus-ingestion.c",
+      "sha256": "d222ca5e318de094c9576b44e414caf1f187e3525233768a3ca3b0e6215eaf79"
+    },
+    {
+      "path": "ci/test/media-corpus-ingestion/write-proof.py",
+      "sha256": "2f653db765372f74bc56785f558c42a866775ad4e10118a825d30dabcc42aaf0"
+    },
+    {
+      "path": "docs/design/01-warajevo-zx-spectrum-next-architecture.md",
+      "sha256": "dc5cf052d8ad6e6df51e81a5a1156fa6d7c874881bd6a7617b4115029cf0d990"
+    },
+    {
+      "path": "docs/design/media-corpus-ingestion-test.md",
+      "sha256": "09258485ef0e2795fb4e4b2ecbcff5f13407d0b1ee6342dcd429ba2705b51f8a"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "84d9e0b84a02993917b0e74cb9ba0d71158f45223a707d801ce927029ab2b0aa"
+    },
+    {
+      "path": "src/core/wz_tape.c",
+      "sha256": "20c4523214f828d5129cbde2fb2c0d077ed15dae0daa923d019d1934b0c33d0b"
+    },
+    {
+      "path": "src/core/wz_tape.h",
+      "sha256": "d483f3f99bcfa26590bf259114193d2314dd2af2720316bf66021462f5c31fd6"
+    }
+  ]
+}

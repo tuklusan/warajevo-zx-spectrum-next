@@ -16,7 +16,7 @@
     },
     {
       "path": "ci/test/control-port-exhaustion/control-port-exhaustion.c",
-      "sha256": "eeb83bf9e69ab5cb03e884c862d837337fc9aa7b5a2498354d54d0a4eb3ae736"
+      "sha256": "6698e650bcc50d93b294aab2d30a676c93de9d3ffefc596d03f767c6045c7096"
     },
     {
       "path": "ci/test/control-port-exhaustion/write-proof.py",
@@ -24,7 +24,7 @@
     },
     {
       "path": "src/app/wz_control_port.c",
-      "sha256": "07821a10c7e1a7be357b808dd2ad729bd04d684f5782950d3131bf72edb3a18c"
+      "sha256": "c26016fe66e2f3932bf80070f8a00c873946c3ea893b0458e7994f06fbba1ef5"
     },
     {
       "path": "src/app/wz_control_port.h",
@@ -40,7 +40,7 @@
     },
     {
       "path": "docs/design/01-warajevo-zx-spectrum-next-architecture.md",
-      "sha256": "502bca7a36ff0832fbc80c717e69c3c24a9bc6ea73c85147f2ea576256dde686"
+      "sha256": "dc5cf052d8ad6e6df51e81a5a1156fa6d7c874881bd6a7617b4115029cf0d990"
     }
   ]
 }

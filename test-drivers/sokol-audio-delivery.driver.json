@@ -46,7 +46,7 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "c5d78a80f060ead6700d53e1da6fc9f8b51ecb45c919b73cfc89c833dff5caa3"
+      "sha256": "7d78188b959e29cd031382c7f9a788f7fe837d9d24d3ebe446137cc8c4d28b38"
     },
     {
       "path": "src/app/wz_ui_layout.h",
@@ -62,7 +62,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "1dc15fc16d6d6d28b07c449f19e6c7d0e6bbc97c35c54cc20a5b9a9691c9a9b3"
+      "sha256": "3e67cb171009e06fda0f5e7a4c9df2c9f7c31d2ecbf5e16ea389e778aa580a27"
     },
     {
       "path": "src/app/wz_speed_policy.c",
@@ -85,7 +85,7 @@
       "path": "src/app/wz_telnet_status.h"
     },
     {
-      "sha256": "3f8aa903bf5e3628730f483200d5abdbf07a6f55c00213ff382c4a1171d7ecad",
+      "sha256": "af10f6f1947d37281711abbf3f905a168a914ef88da5ac62cc78e47638b8bbf8",
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md"
     }
   ],
