@@ -1,0 +1,66 @@
+# Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+# This file is governed by the SANYALnet Labs Non-Commercial License in the
+# root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
+# for AI/ML model training are prohibited unless separately authorized.
+# Attribution is required: "Based on original work by Supratim Sanyal of
+# SANYALnet Labs." See LICENSE for full terms.
+
+name: Hosted media corpus ingestion
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/media-corpus-ingestion.yml'
+      - 'ci/test/media-corpus-ingestion/**'
+      - 'src/core/wz_tape.*'
+      - 'src/core/wz_machine.*'
+      - 'test-media/**'
+      - 'test-drivers/media-corpus-ingestion.driver.json'
+      - 'docs/design/media-corpus-ingestion-test.md'
+      - 'docs/design/01-warajevo-zx-spectrum-next-architecture.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  media-corpus-ingestion:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact main revision and authorized test media
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          lfs: true
+      - name: Configure isolated ingestion contract
+        run: cmake -S ci/test/media-corpus-ingestion -B dist/media-corpus-ingestion -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build ingestion contract
+        run: cmake --build dist/media-corpus-ingestion --config Release --target wz_media_corpus_ingestion --parallel 2
+      - name: Parse every hosted TAP and TZX fixture
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist/media-corpus-ingestion/proof
+          dist/media-corpus-ingestion/wz_media_corpus_ingestion test-media \
+            > dist/media-corpus-ingestion/media-summary.json
+      - name: Write media-free pinned proof
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          RUNNER_OS: ${{ runner.os }}
+          RUNNER_ARCH: ${{ runner.arch }}
+        run: |
+          python3 ci/test/media-corpus-ingestion/write-proof.py \
+            --commit "$GITHUB_SHA" \
+            --run-id "$GITHUB_RUN_ID" \
+            --runner "$RUNNER_OS/$RUNNER_ARCH" \
+            --summary dist/media-corpus-ingestion/media-summary.json \
+            --proof dist/media-corpus-ingestion/proof/media-corpus-ingestion.json
+      - name: Upload aggregate proof only
+        uses: actions/upload-artifact@v4
+        with:
+          name: media-corpus-ingestion-${{ github.sha }}
+          path: dist/media-corpus-ingestion/proof/media-corpus-ingestion.json
+          if-no-files-found: error

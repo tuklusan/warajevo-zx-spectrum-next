@@ -1,0 +1,47 @@
+{
+  "testId": "media-corpus-ingestion",
+  "command": "cmake -S ci/test/media-corpus-ingestion -B dist/media-corpus-ingestion -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/media-corpus-ingestion --config Release --target wz_media_corpus_ingestion --parallel 2 && dist/media-corpus-ingestion/wz_media_corpus_ingestion test-media",
+  "requiredCases": 20,
+  "runnerMatrix": [
+    "ubuntu-24.04"
+  ],
+  "mediaPolicy": "Runner-only input; proof contains aggregate counts only and no media bytes, paths, or per-file hashes.",
+  "fixtures": [
+    {
+      "path": ".github/workflows/media-corpus-ingestion.yml",
+      "sha256": "3778f447c9e2a635f6f86350406229b364e36016034d14235fd9b173aeb81ae6"
+    },
+    {
+      "path": "ci/test/media-corpus-ingestion/CMakeLists.txt",
+      "sha256": "1dc2bb9ee7646db58a34727e8da13c5e259deca962eb1ee1474291a2b2f4837e"
+    },
+    {
+      "path": "ci/test/media-corpus-ingestion/media-corpus-ingestion.c",
+      "sha256": "3feb85d531316222efade64792cb758a2c30e0f97924d9ef6628c8d789cc682c"
+    },
+    {
+      "path": "ci/test/media-corpus-ingestion/write-proof.py",
+      "sha256": "1c666d7d51e3ecbc5b996755eb2c7e9f8c73768db39ac9d8c9b459ccf1e5c5dc"
+    },
+    {
+      "path": "docs/design/01-warajevo-zx-spectrum-next-architecture.md",
+      "sha256": "dc5cf052d8ad6e6df51e81a5a1156fa6d7c874881bd6a7617b4115029cf0d990"
+    },
+    {
+      "path": "docs/design/media-corpus-ingestion-test.md",
+      "sha256": "71c94fa54603ee52bf6f312bac27ef656fe27ae423c11f9be70f2df5586291cc"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "84d9e0b84a02993917b0e74cb9ba0d71158f45223a707d801ce927029ab2b0aa"
+    },
+    {
+      "path": "src/core/wz_tape.c",
+      "sha256": "5792fabbfc3c6956444c3532097cb0febb1d3497e988fd2a62c9e677ea8aeac3"
+    },
+    {
+      "path": "src/core/wz_tape.h",
+      "sha256": "d483f3f99bcfa26590bf259114193d2314dd2af2720316bf66021462f5c31fd6"
+    }
+  ]
+}
