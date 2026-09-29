@@ -1,0 +1,15 @@
+{
+  "testId": "cassette-speed-contract",
+  "command": "cmake -S ci/test/cassette-speed-contract -B dist/cassette-speed-contract -DCMAKE_BUILD_TYPE=Release && cmake --build dist/cassette-speed-contract --config Release --target wz_cassette_speed_contract --parallel 2 && ctest --test-dir dist/cassette-speed-contract -C Release -R '^wz_cassette_speed_contract$' --output-on-failure",
+  "workflow": ".github/workflows/cassette-speed-contract.yml",
+  "fixtures": [
+    {
+      "path": "ci/test/cassette-speed-contract/cassette-speed-contract.c",
+      "sha256": "28d215b3e04eb5637dc062a4beb6c9437d1714ed5bed137cbdb64fa4de77e372"
+    },
+    {
+      "path": "ci/test/cassette-speed-contract/CMakeLists.txt",
+      "sha256": "2748a6aa2bddbe53b8bb2fbebf1c9405a71c7f78f32bac485738943fa0180c3d"
+    }
+  ]
+}

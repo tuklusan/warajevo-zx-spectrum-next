@@ -1,0 +1,64 @@
+name: Cassette speed contract
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/core/**'
+      - 'src/app/wz_host_pacing.*'
+      - 'src/app/wz_speed_policy.*'
+      - 'ci/test/cassette-speed-contract/**'
+      - 'test-drivers/cassette-speed-contract.driver.json'
+      - '.github/workflows/cassette-speed-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: Ubuntu x64
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+      - name: Configure contract
+        run: cmake -S ci/test/cassette-speed-contract -B dist/cassette-speed-contract -DCMAKE_BUILD_TYPE=Release
+      - name: Build and run contract
+        run: |
+          cmake --build dist/cassette-speed-contract --config Release --target wz_cassette_speed_contract --parallel 2
+          ctest --test-dir dist/cassette-speed-contract -C Release -R '^wz_cassette_speed_contract$' --output-on-failure
+      - name: Record hosted proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          test_hash="$(sha256sum ci/test/cassette-speed-contract/cassette-speed-contract.c | cut -d ' ' -f 1)"
+          cmake_hash="$(sha256sum ci/test/cassette-speed-contract/CMakeLists.txt | cut -d ' ' -f 1)"
+          machine_hash="$(sha256sum src/core/wz_machine.c | cut -d ' ' -f 1)"
+          machine_header_hash="$(sha256sum src/core/wz_machine.h | cut -d ' ' -f 1)"
+          runner_hash="$(sha256sum src/core/wz_runner.c | cut -d ' ' -f 1)"
+          runner_header_hash="$(sha256sum src/core/wz_runner.h | cut -d ' ' -f 1)"
+          tape_hash="$(sha256sum src/core/wz_tape.c | cut -d ' ' -f 1)"
+          tape_header_hash="$(sha256sum src/core/wz_tape.h | cut -d ' ' -f 1)"
+          beeper_hash="$(sha256sum src/core/audio/wz_beeper.c | cut -d ' ' -f 1)"
+          beeper_header_hash="$(sha256sum src/core/audio/wz_beeper.h | cut -d ' ' -f 1)"
+          pacing_hash="$(sha256sum src/app/wz_host_pacing.c | cut -d ' ' -f 1)"
+          pacing_header_hash="$(sha256sum src/app/wz_host_pacing.h | cut -d ' ' -f 1)"
+          speed_hash="$(sha256sum src/app/wz_speed_policy.c | cut -d ' ' -f 1)"
+          speed_header_hash="$(sha256sum src/app/wz_speed_policy.h | cut -d ' ' -f 1)"
+          profile_hash="$(sha256sum src/core/wz_machine_profile.c | cut -d ' ' -f 1)"
+          profile_header_hash="$(sha256sum src/core/wz_machine_profile.h | cut -d ' ' -f 1)"
+          z80_hash="$(sha256sum src/core/wz_z80.c | cut -d ' ' -f 1)"
+          z80_header_hash="$(sha256sum src/core/wz_z80.h | cut -d ' ' -f 1)"
+          workflow_hash="$(sha256sum .github/workflows/cassette-speed-contract.yml | cut -d ' ' -f 1)"
+          mkdir -p dist/cassette-speed-contract/proof
+          cat > dist/cassette-speed-contract/proof/cassette-speed-contract.json <<EOF
+          {"testId":"cassette-speed-contract","status":"pass","commit":"${GITHUB_SHA}","runner":"${RUNNER_OS}/${RUNNER_ARCH}","timestamp":"$(date -u +%Y-%m-%dT%H:%M:%SZ)","runId":${GITHUB_RUN_ID},"fixtures":[{"path":"ci/test/cassette-speed-contract/cassette-speed-contract.c","sha256":"${test_hash}"},{"path":"ci/test/cassette-speed-contract/CMakeLists.txt","sha256":"${cmake_hash}"},{"path":"src/core/wz_machine.c","sha256":"${machine_hash}"},{"path":"src/core/wz_machine.h","sha256":"${machine_header_hash}"},{"path":"src/core/wz_runner.c","sha256":"${runner_hash}"},{"path":"src/core/wz_runner.h","sha256":"${runner_header_hash}"},{"path":"src/core/wz_tape.c","sha256":"${tape_hash}"},{"path":"src/core/wz_tape.h","sha256":"${tape_header_hash}"},{"path":"src/core/audio/wz_beeper.c","sha256":"${beeper_hash}"},{"path":"src/core/audio/wz_beeper.h","sha256":"${beeper_header_hash}"},{"path":"src/app/wz_host_pacing.c","sha256":"${pacing_hash}"},{"path":"src/app/wz_host_pacing.h","sha256":"${pacing_header_hash}"},{"path":"src/app/wz_speed_policy.c","sha256":"${speed_hash}"},{"path":"src/app/wz_speed_policy.h","sha256":"${speed_header_hash}"},{"path":"src/core/wz_machine_profile.c","sha256":"${profile_hash}"},{"path":"src/core/wz_machine_profile.h","sha256":"${profile_header_hash}"},{"path":"src/core/wz_z80.c","sha256":"${z80_hash}"},{"path":"src/core/wz_z80.h","sha256":"${z80_header_hash}"},{"path":".github/workflows/cassette-speed-contract.yml","sha256":"${workflow_hash}"}]}
+          EOF
+      - name: Upload hosted proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cassette-speed-contract-${{ github.sha }}
+          path: dist/cassette-speed-contract/proof/cassette-speed-contract.json
+          if-no-files-found: error
