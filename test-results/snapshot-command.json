@@ -1,10 +1,11 @@
 {
   "testId": "snapshot-command",
-  "command": "cmake -S ci/test/snapshot-command -B dist/snapshot-command -DCMAKE_BUILD_TYPE=Debug && cmake --build dist/snapshot-command --config Debug --target wz_snapshot_command_contract --parallel 2 && ctest --test-dir dist/snapshot-command --output-on-failure --verbose -R '^wz_snapshot_command_contract$'",
-  "requiredCases": 4,
-  "runnerMatrix": [
-    "ubuntu-24.04"
-  ],
+  "status": "pass",
+  "commit": "e8ec753bbc25d28f8cb64f634ecf5edbb4f847e6",
+  "runId": 36576303281,
+  "runner": "Linux/X64",
+  "timestamp": "2026-09-29T13:39:10+00:00",
+  "caseCount": 4,
   "fixtures": [
     {
       "path": ".github/workflows/snapshot-command-regression.yml",
@@ -61,6 +62,10 @@
     {
       "path": "src/core/wz_state.h",
       "sha256": "311dc111529c01924b0f4ed3bb1e4e1bb782461ab21b7c446473dd73b4a664c1"
+    },
+    {
+      "path": "test-drivers/snapshot-command.driver.json",
+      "sha256": "f3160635eb2931107d213bc2bd1532f55d49a13d54e47736df28637200391d67"
     }
   ]
 }
