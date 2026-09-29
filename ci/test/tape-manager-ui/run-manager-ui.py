@@ -17,8 +17,12 @@ import time
 
 
 def run(command, environment=None):
-    return subprocess.run(command, check=True, capture_output=True,
-                          text=True, env=environment).stdout.strip()
+    result = subprocess.run(command, check=False, capture_output=True,
+                            text=True, env=environment)
+    if result.returncode != 0:
+        raise RuntimeError(f"command failed ({result.returncode}): {command}: "
+                           f"{result.stderr.strip()}")
+    return result.stdout.strip()
 
 
 def find_window(title, deadline, environment):
@@ -27,7 +31,13 @@ def find_window(title, deadline, environment):
             ["xdotool", "search", "--onlyvisible", "--name", title],
             check=False, capture_output=True, text=True, env=environment)
         if result.returncode == 0 and result.stdout.strip():
-            return result.stdout.splitlines()[-1]
+            for window in result.stdout.splitlines():
+                geometry = subprocess.run(
+                    ["xdotool", "getwindowgeometry", "--shell", window],
+                    check=False, capture_output=True, text=True,
+                    env=environment)
+                if geometry.returncode == 0:
+                    return window
         time.sleep(0.1)
     raise RuntimeError(f"window not found: {title}")
 
