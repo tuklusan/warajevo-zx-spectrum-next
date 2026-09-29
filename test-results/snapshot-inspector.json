@@ -1,0 +1,51 @@
+{
+  "testId": "snapshot-inspector",
+  "status": "pass",
+  "commit": "8820a7d140ac0f7f5881418ff60c923599ba42d3",
+  "runId": 36580828701,
+  "runner": "Linux/X64",
+  "timestamp": "2026-09-29T14:12:17+00:00",
+  "caseCount": 3,
+  "fixtures": [
+    {
+      "path": ".github/workflows/snapshot-inspector-regression.yml",
+      "sha256": "f12bf5031adfb19036feb16e48d1041e8dc471ae303012927369e661f4060f09"
+    },
+    {
+      "path": "ci/test/snapshot-inspector/CMakeLists.txt",
+      "sha256": "68131523e1c1ef0da3d14dc64d966936b9394b610301c9dd70203fac3edc70f4"
+    },
+    {
+      "path": "ci/test/snapshot-inspector/write-proof.py",
+      "sha256": "3086d505a7c10016c8cc446a6f5e44def0f24ec4ed8d64e8d01b98a207545a14"
+    },
+    {
+      "path": "src/app/wz_snapshot_inspector.c",
+      "sha256": "d504f918458df469951e3d9241b00de324a9895266c17d1958bc37a3cb101863"
+    },
+    {
+      "path": "src/app/wz_snapshot_inspector.h",
+      "sha256": "8852a2602b131fe55a8702b2b28dfd6e1fb972e3f3ea1b66aba8d6b0e8f96ab7"
+    },
+    {
+      "path": "src/core/wz_debugger.c",
+      "sha256": "479b238f1aa668002aba6a4959750296cef553c2d4fe4425b0164b7f08e35eaf"
+    },
+    {
+      "path": "src/core/wz_debugger.h",
+      "sha256": "9c14eda410b6b50fdad279fc6076a385da5ff26b160c54fbf957c1e8c31041a1"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "9ecafdaf9f137684e77a3b722e7d1dd289ba9e8b3333af1244844e2d604436c0"
+    },
+    {
+      "path": "test-drivers/snapshot-inspector.driver.json",
+      "sha256": "e6bc710664b8fefe624cf2f14d3d5e5e1e1eac2cad908938097a3fd819251d2f"
+    },
+    {
+      "path": "ci/test/snapshot-inspector/snapshot-inspector-contract.c",
+      "sha256": "23308facbf9b27a3b807c75dc9591ae822f44b1b33f9a20d9a76bdcdfaf4d5ca"
+    }
+  ]
+}

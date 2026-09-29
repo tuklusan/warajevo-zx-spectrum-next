@@ -376,7 +376,7 @@ Debug application startup/shutdown now attaches, freezes, and closes a per-proce
 296. [P12][Core §28.7][UI §44.1] Make output-file creation/atomic replacement safe against concurrent WZSN processes.
 297. [P12][UI §§45] Add cancel/error tests proving file-dialog cancellation and screenshot/snapshot failures leave machine state unchanged.
 298. [P12][UI §§47] Add screenshot pixel-source equivalence tests independent of GUI chrome.
-299. [P12][UI §§47] Add snapshot inspector and snapshot workflow regression tests.
+299. [P12][UI §§47][COMPLETE] Add snapshot inspector and snapshot workflow regression tests. The hosted snapshot-inspector contract passed three cases on run `36580828701`, source `8820a7d`; snapshot route/save contract passed four cases on run `36576303281`, source `e8ec753`. Proofs: [snapshot-inspector](../../test-results/snapshot-inspector.json), [snapshot-command](../../test-results/snapshot-command.json).
 300. [P12][UI §§48] Complete File/Snapshot/Screenshot acceptance subset.
 
 ## Phase 12D — Tape UI and Tape Manager
