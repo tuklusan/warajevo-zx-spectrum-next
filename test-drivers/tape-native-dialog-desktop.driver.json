@@ -29,19 +29,19 @@
     },
     {
       "path": "src/app/wz_file_dialog.h",
-      "sha256": "3b86ef82087dd5c345b14d6d6549c3466ff5e99991829e7edb291d6333bf19a3"
+      "sha256": "6686668d4a0e92030066f7e177824169e09aeb137de4beaf2eb43958f982f41b"
     },
     {
       "path": "src/app/wz_file_dialog_macos.m",
-      "sha256": "09edd90a01527ecf8bd5f39224a31fbc12669279f7e560547150ea00c9270b79"
+      "sha256": "03046b36b1bff1a6fd5ae4e700bf042c0db66672614db6ebde86ef2c9c854ca3"
     },
     {
       "path": "src/app/wz_file_dialog_win32.c",
-      "sha256": "efe7f4708b5db6a5c5d708755139d4bfaa3eafdebfdf43e37dca7aa810601280"
+      "sha256": "bcf5a298feaad7e6c11cd378c8c18bd47eacd8e2ded89f7b664712f47d8017c1"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "224d130dcd6214b12cda239a157de528a26a7e3c0b4e5bc31348d963d2e92205"
+      "sha256": "ff2f9f8f2e9c3237accb07b0c300e0e6a2af060ca6d6628b635c5745874cbb21"
     },
     {
       "path": "src/core/wz_machine.h",
