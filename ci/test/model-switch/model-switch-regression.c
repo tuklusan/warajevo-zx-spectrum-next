@@ -7,6 +7,7 @@
  */
 
 #include "core/wz_machine.h"
+#include "core/wz_bus.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -25,11 +26,38 @@ int main(void)
     wz_machine_profile_t invalid_profile;
     wz_tape_segment_t segment = {1000u, 1u, 0u};
     wz_byte_t interface1_rom[WZ_INTERFACE1_ROM_SIZE];
+    wz_bus_request_t joystick_request;
 
     memset(&machine, 0, sizeof(machine));
     memset(interface1_rom, 0x5au, sizeof(interface1_rom));
     REQUIRE(wz_machine_init(&machine, wz_machine_profile_48k_pal()) ==
             WZ_RESULT_OK);
+    REQUIRE(wz_machine_set_hardware_io_decode(&machine, true) == WZ_RESULT_OK);
+    REQUIRE(wz_machine_set_kempston_control(
+                &machine, WZ_KEMPSTON_RIGHT, true) == WZ_RESULT_OK);
+    REQUIRE(wz_machine_kempston_read(&machine, 0xab1fu) == 0x10u);
+    REQUIRE(wz_machine_set_kempston_control(
+                &machine, WZ_KEMPSTON_LEFT, true) == WZ_RESULT_OK);
+    REQUIRE(wz_machine_kempston_read(&machine, 0xab1fu) == 0x18u);
+    REQUIRE(wz_machine_set_kempston_control(
+                &machine, WZ_KEMPSTON_DOWN, true) == WZ_RESULT_OK);
+    REQUIRE(wz_machine_kempston_read(&machine, 0xab1fu) == 0x1au);
+    REQUIRE(wz_machine_set_kempston_control(
+                &machine, WZ_KEMPSTON_UP, true) == WZ_RESULT_OK);
+    REQUIRE(wz_machine_kempston_read(&machine, 0xab1fu) == 0x1bu);
+    REQUIRE(wz_machine_set_kempston_control(
+                &machine, WZ_KEMPSTON_FIRE, true) == WZ_RESULT_OK);
+    REQUIRE(wz_machine_kempston_read(&machine, 0xab1fu) == 0x1fu);
+    REQUIRE(wz_machine_set_kempston_control(
+                &machine, WZ_KEMPSTON_DOWN, false) == WZ_RESULT_OK);
+    REQUIRE(wz_machine_kempston_read(&machine, 0xab1fu) == 0x1du);
+    REQUIRE(wz_machine_kempston_read(&machine, 0xab1eu) == 0u);
+    wz_bus_request_init(&joystick_request, WZ_BUS_IO_READ, 0u, 0xab1fu,
+                        0u, 4u);
+    REQUIRE(wz_machine_bus_request(&machine, &joystick_request) ==
+            WZ_RESULT_OK);
+    REQUIRE(joystick_request.value == 0x1du);
+    REQUIRE(joystick_request.source == WZ_BUS_SOURCE_INPUT);
     wz_machine_memory_write(&machine, 0x8000u, 0xa5u);
     REQUIRE(wz_machine_mount_tape(&machine, &segment, 1u) == WZ_RESULT_OK);
     REQUIRE(wz_machine_set_tape_motor(&machine, true) == WZ_RESULT_OK);
@@ -52,6 +80,11 @@ int main(void)
     REQUIRE(machine.tape_state.segment_elapsed == 37u);
     REQUIRE(machine.networking_mode == WZ_NETWORKING_INTERFACE1);
     REQUIRE(wz_machine_memory_read(&machine, 0x0001u) == 0x5au);
+    wz_bus_request_init(&joystick_request, WZ_BUS_IO_READ, 0u, 0xab1fu,
+                        0u, 4u);
+    REQUIRE(wz_machine_bus_request(&machine, &joystick_request) ==
+            WZ_RESULT_OK);
+    REQUIRE(joystick_request.value == 0x1du);
 
     REQUIRE(wz_machine_128k_screen_bank(&machine) == 5u);
     REQUIRE(wz_machine_128k_rom_bank(&machine) == 0u);
