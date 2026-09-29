@@ -81,8 +81,17 @@ static bool check_timed_raster_effects(void)
             ((attributes[row] & 0x40u) != 0u ? 8u : 0u));
         size_t pixel = (64u + row) * WZ_RASTER_CANONICAL_WIDTH + 96u;
         if (pixels[pixel] != expected) {
-            fprintf(stderr, "timed attribute row %zu: expected %u got %u\n",
-                    row, (unsigned)expected, (unsigned)pixels[pixel]);
+            const wz_ula_cell_capture_t* capture =
+                &machine.ula_frame_captures[machine.ula_capture_slot].cells[
+                    row * WZ_ULA_CAPTURE_CELLS_PER_LINE];
+            wz_word_t bitmap_address = (wz_word_t)(0x4000u + row * 0x100u);
+            fprintf(stderr,
+                "row %zu expected %u got %u; fetched=%u bitmap=%02x attr=%02x memory=%02x/%02x\n",
+                row, (unsigned)expected, (unsigned)pixels[pixel],
+                (unsigned)capture->fetched, (unsigned)capture->bitmap,
+                (unsigned)capture->attribute,
+                (unsigned)wz_machine_memory_read(&machine, bitmap_address),
+                (unsigned)wz_machine_memory_read(&machine, 0x5800u));
             goto cleanup;
         }
     }
