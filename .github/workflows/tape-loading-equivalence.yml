@@ -1,0 +1,63 @@
+# Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+# This file is governed by the SANYALnet Labs Non-Commercial License in the
+# root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
+# for AI/ML model training are prohibited unless separately authorized.
+# Attribution is required: "Based on original work by Supratim Sanyal of
+# SANYALnet Labs." See LICENSE for full terms.
+
+name: Tape loading equivalence and fallback regression
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/tape-loading-equivalence.yml'
+      - 'ci/test/tape-loading-equivalence/**'
+      - 'test-drivers/tape-loading-equivalence.driver.json'
+      - 'src/core/wz_machine.*'
+      - 'src/core/wz_runner.*'
+      - 'src/core/wz_state.*'
+      - 'src/core/wz_tape.*'
+      - 'src/core/wz_keyboard_matrix.*'
+      - 'roms/48.rom'
+      - 'test-media/DIZZY4K.TAP'
+      - 'docs/design/01-warajevo-zx-spectrum-next-architecture.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tape-loading-equivalence:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact main revision
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          lfs: true
+      - name: Configure tape equivalence contract
+        run: cmake -S ci/test/tape-loading-equivalence -B dist/tape-loading-equivalence -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build tape equivalence contract
+        run: cmake --build dist/tape-loading-equivalence --config Release --target wz_tape_loading_equivalence --parallel 2
+      - name: Compare Normal and Instant-selected ROM loads
+        run: dist/tape-loading-equivalence/wz_tape_loading_equivalence roms/48.rom test-media/DIZZY4K.TAP
+      - name: Write pinned hosted proof
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          RUNNER_OS: ${{ runner.os }}
+          RUNNER_ARCH: ${{ runner.arch }}
+        run: |
+          python3 ci/test/tape-loading-equivalence/write-proof.py \
+            --commit "$GITHUB_SHA" \
+            --run-id "$GITHUB_RUN_ID" \
+            --runner "$RUNNER_OS/$RUNNER_ARCH" \
+            --proof dist/tape-loading-equivalence/tape-loading-equivalence.json
+      - name: Upload pinned proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: tape-loading-equivalence-${{ github.sha }}
+          path: dist/tape-loading-equivalence/tape-loading-equivalence.json
+          if-no-files-found: error
