@@ -5,7 +5,7 @@
   "fixtures": [
     {
       "path": "ci/test/master-time/master-time-contract.c",
-      "sha256": "e046c88c90f34bf29b4a995185d787e83659691e2b23457a1d2386aa08865d9e"
+      "sha256": "669056ed31c6034ed439fe7133348d9c42a5a82c3c5b6d518580bf152f9eff2a"
     },
     {
       "path": "ci/test/master-time/CMakeLists.txt",

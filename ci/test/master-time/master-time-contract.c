@@ -25,7 +25,10 @@ static bool check_profile(const wz_machine_profile_t* profile)
     wz_master_tick_t expected_frame_ticks;
 
     if (profile == NULL || profile->master_ticks_per_cpu_tstate == 0u ||
-        profile->tstates_per_frame == 0u ||
+        profile->master_hz_num == 0u || profile->master_hz_den == 0u ||
+        profile->tstates_per_line == 0u || profile->lines_per_frame == 0u ||
+        profile->tstates_per_frame !=
+            (wz_qword_t)profile->tstates_per_line * profile->lines_per_frame ||
         profile->tstates_per_frame >
             UINT64_MAX / profile->master_ticks_per_cpu_tstate) {
         return false;
