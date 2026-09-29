@@ -1,0 +1,51 @@
+name: Snapshot inspector regression
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/snapshot-inspector-regression.yml'
+      - 'ci/test/snapshot-inspector/**'
+      - 'src/app/wz_snapshot_inspector.*'
+      - 'src/core/wz_debugger.*'
+      - 'src/cmake/CMakeLists.txt'
+      - 'test-drivers/snapshot-inspector.driver.json'
+      - 'ci/test/snapshot-inspector/snapshot-inspector-contract.c'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot-inspector:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact main revision
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+      - name: Configure inspector contract
+        run: cmake -S ci/test/snapshot-inspector -B dist/snapshot-inspector -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build inspector contract
+        run: cmake --build dist/snapshot-inspector --config Release --target wz_snapshot_inspector_contract --parallel 2
+      - name: Run inspector contract
+        run: ctest --test-dir dist/snapshot-inspector --output-on-failure --verbose -R '^wz_snapshot_inspector_contract$'
+      - name: Write pinned proof
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          RUNNER_OS: ${{ runner.os }}
+          RUNNER_ARCH: ${{ runner.arch }}
+        run: |
+          python3 ci/test/snapshot-inspector/write-proof.py \
+            --commit "$GITHUB_SHA" \
+            --run-id "$GITHUB_RUN_ID" \
+            --runner "$RUNNER_OS/$RUNNER_ARCH" \
+            --proof dist/snapshot-inspector/snapshot-inspector.json
+      - name: Upload pinned proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: snapshot-inspector-${{ github.sha }}
+          path: dist/snapshot-inspector/snapshot-inspector.json
+          if-no-files-found: error
