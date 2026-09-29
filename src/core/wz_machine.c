@@ -598,7 +598,7 @@ wz_byte_t wz_machine_contention_delay(const wz_machine_t* machine,
         machine->profile->kind != WZ_MACHINE_48K_PAL) {
         return 0u;
     }
-    start_tstate = (wz_dword_t)(master_tick / 2u);
+    start_tstate = master_tick / 2u;
     if (cycle == WZ_BUS_M1_OPCODE_FETCH || cycle == WZ_BUS_MEMORY_READ ||
         cycle == WZ_BUS_MEMORY_WRITE) {
         if (address >= 0x4000u && address <= 0x7fffu) {
@@ -615,12 +615,12 @@ wz_byte_t wz_machine_contention_delay(const wz_machine_t* machine,
             for (wz_byte_t index = 0u; index < t_states; ++index) {
                 wz_byte_t wait = wz_contention_delay_at_tstate(start_tstate);
                 delay = (wz_byte_t)(delay + wait);
-                start_tstate += (wz_dword_t)wait + 1u;
+                start_tstate += (wz_master_tick_t)wait + 1u;
             }
         } else {
             wz_byte_t wait = wz_contention_delay_at_tstate(start_tstate);
             delay = (wz_byte_t)(delay + wait);
-            start_tstate += (wz_dword_t)wait + 1u;
+            start_tstate += (wz_master_tick_t)wait + 1u;
             if (t_states > 1u) {
                 delay = (wz_byte_t)(delay +
                     wz_contention_delay_at_tstate(start_tstate));
