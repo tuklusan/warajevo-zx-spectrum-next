@@ -58,6 +58,7 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "app/wz_tape_loading_commands.h"
 #include "app/wz_tape_media_commands.h"
 #include "app/wz_snapshot_save_workflow.h"
+#include "app/wz_snapshot_inspector.h"
 #include "app/wz_tape_insert_action.h"
 #include "app/wz_tape_manager.h"
 #include "app/wz_application_lifecycle.h"
@@ -137,6 +138,7 @@ typedef struct {
     wz_tape_loading_command_context_t tape_loading_command_context;
     wz_tape_media_command_context_t tape_media_command_context;
     wz_snapshot_save_workflow_t snapshot_save_workflow;
+    wz_snapshot_inspector_t snapshot_inspector;
     bool tape_manager_open;
     size_t tape_manager_selected_segment;
     size_t tape_manager_selected_block;
@@ -1968,6 +1970,23 @@ static wz_result_t wz_host_command_snapshot_save(
     return wz_host_snapshot_write(session, path, result);
 }
 
+static wz_result_t wz_host_command_snapshot_inspector(
+    const void* context, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    wz_host_session_t* session = (wz_host_session_t*)context;
+    (void)arguments;
+    if (session == NULL || result == NULL) return WZ_RESULT_INVALID_ARGUMENT;
+    if (wz_snapshot_inspector_open(&session->snapshot_inspector,
+                                   &session->machine) !=
+        WZ_SNAPSHOT_INSPECTOR_OK) {
+        result->reason = "snapshot-inspector-unavailable";
+        return WZ_RESULT_INVALID_STATE;
+    }
+    (void)snprintf(result->message, sizeof(result->message), "opened");
+    return WZ_RESULT_OK;
+}
+
 static wz_result_t wz_host_command_model_set(
     const void* context, wz_command_arguments_t arguments,
     wz_command_result_t* result)
@@ -2239,6 +2258,13 @@ static bool wz_host_register_commands(void)
             "file", "NONE", NULL, "wz_host_command_snapshot_save_as", "native-file-dialog",
             NULL, WZ_COMMAND_LOCAL_ONLY, NULL, wz_host_command_snapshot_save_as,
             &wz_host_session, true, false, NULL
+        },
+        {
+            WZ_SNAPSHOT_INSPECTOR_COMMAND_ID, "Snapshot Inspector...",
+            "Inspect registers, paging, AY state, and memory pages",
+            "tools", "NONE", NULL, "wz_host_command_snapshot_inspector", "local",
+            NULL, WZ_COMMAND_LOCAL_ONLY, NULL,
+            wz_host_command_snapshot_inspector, &wz_host_session, true, false, NULL
         },
         {
             "machine.pause_resume", "Pause", "Pause or resume the emulated machine",
@@ -3366,6 +3392,43 @@ static void wz_host_ui_draw_status(struct nk_context* context,
     context->style.window.padding = saved_padding;
 }
 
+static void wz_host_ui_draw_snapshot_inspector(struct nk_context* context,
+                                                float width, float height)
+{
+    char details[1024];
+    wz_result_t format_result;
+    const float panel_width = width >= 560.0f ? 540.0f : width - 16.0f;
+    const float panel_height = height >= 440.0f ? 380.0f : height - 64.0f;
+    if (!wz_snapshot_inspector_is_open(&wz_host_session.snapshot_inspector) ||
+        panel_width < 200.0f || panel_height < 180.0f) {
+        return;
+    }
+    format_result = wz_snapshot_inspector_format(
+        &wz_host_session.snapshot_inspector, details, sizeof(details));
+    if (format_result != WZ_RESULT_OK) {
+        (void)snprintf(details, sizeof(details),
+                       "Snapshot inspection data is unavailable.");
+    }
+    if (!nk_begin(context, "Snapshot Inspector",
+            nk_rect((width - panel_width) * 0.5f,
+                    (height - panel_height) * 0.5f,
+                    panel_width, panel_height),
+            NK_WINDOW_BORDER | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE |
+                NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE)) {
+        nk_end(context);
+        return;
+    }
+    nk_layout_row_dynamic(context, 28.0f, 1);
+    if (nk_button_label(context, "Close Snapshot Inspector")) {
+        wz_snapshot_inspector_close(&wz_host_session.snapshot_inspector);
+        nk_end(context);
+        return;
+    }
+    nk_layout_row_dynamic(context, panel_height - 52.0f, 1);
+    nk_label_wrap(context, details);
+    nk_end(context);
+}
+
 static void wz_host_ui_draw_remote_settings(struct nk_context* context,
                                            float width, float height)
 {
@@ -3410,6 +3473,7 @@ static void wz_host_render_native_ui(struct nk_context* context,
     wz_host_ui_draw_menus(context, width);
     wz_host_ui_draw_toolbar(context, width);
     wz_host_ui_draw_tape_manager(context, width);
+    wz_host_ui_draw_snapshot_inspector(context, width, height);
     wz_host_ui_draw_remote_settings(context, width, height);
     wz_host_ui_draw_status(context, width, height);
 }
@@ -3493,6 +3557,7 @@ static void wz_host_session_init(void)
     const wz_machine_profile_t* profile;
     stm_setup();
     wz_snapshot_save_workflow_init(&wz_host_session.snapshot_save_workflow);
+    wz_snapshot_inspector_init(&wz_host_session.snapshot_inspector);
     wz_host_session.speed = WZ_SPEED_100;
     sg_setup(&(sg_desc){.environment = sglue_environment()});
     sgl_setup(&(sgl_desc_t){0});
