@@ -1,0 +1,39 @@
+{
+  "testId": "keyboard-matrix",
+  "status": "pass",
+  "commit": "c823fc2ccee4094cf44e5514f60a00bd52202ec0",
+  "runId": 36587074073,
+  "runner": "Linux/X64",
+  "timestamp": "2026-09-29T15:04:59+00:00",
+  "caseCount": 4,
+  "fixtures": [
+    {
+      "path": ".github/workflows/keyboard-matrix-contract.yml",
+      "sha256": "86ccc4dd50f48601c7918b085f23a755cf40cd8597b6630ee76f40787ec1d85f"
+    },
+    {
+      "path": "ci/test/keyboard-matrix/CMakeLists.txt",
+      "sha256": "cbc504cffe5c505d4715850ceafffc636db313dc9767e3afbc44ec4108a4efda"
+    },
+    {
+      "path": "ci/test/keyboard-matrix/keyboard-matrix-contract.c",
+      "sha256": "dedb0d74256355d0f734ace1ce906e44985defe85ca89b068900a8b373b6024f"
+    },
+    {
+      "path": "ci/test/keyboard-matrix/write-proof.py",
+      "sha256": "2c06ade729d76b5ffa0de55253b3538be1191d11fb585703e795d5917acba0b2"
+    },
+    {
+      "path": "test-drivers/keyboard-matrix.driver.json",
+      "sha256": "437a93c399d20e8af84633de3b78cc1e6263e379db867133a91095c0ef47e7aa"
+    },
+    {
+      "path": "src/core/wz_keyboard_matrix.c",
+      "sha256": "68deeb821563f28e5af3e0872765fedd5ae7e24a0491c011c24ebb9d4abbd575"
+    },
+    {
+      "path": "src/core/wz_keyboard_matrix.h",
+      "sha256": "85282af5969a6212c528cb92edafd7d3fbf71375bbb4be1bad5cd9622e1cf976"
+    }
+  ]
+}
