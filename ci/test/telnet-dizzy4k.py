@@ -78,7 +78,7 @@ def main():
             raise RuntimeError("GUI control port did not become available")
         sock.settimeout(1)
         command(sock, "HELP")
-        command(sock, "SPEED 800")
+        command(sock, "SPEED 100")
         press_key(sock, "J")
         command(sock, "KEY DOWN SYMBOL_SHIFT")
         for _ in range(2):
