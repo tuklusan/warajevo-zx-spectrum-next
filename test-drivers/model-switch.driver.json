@@ -24,7 +24,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "7864f9af1a6a602cc0ca592ff9172b2dff912b80a0e85aadfdc35847216c8c9a"
+      "sha256": "8a6368a21d6c9000cd39e8c88147b3596354f89b1ea428b14a3a109cd203292e"
     },
     {
       "path": "src/app/wz_telnet_alias_response.c",
@@ -40,7 +40,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "a075a9d4071da775a162e2830394a51c5861389ca05666d6419cbe61f07799c7"
+      "sha256": "ff2f9f8f2e9c3237accb07b0c300e0e6a2af060ca6d6628b635c5745874cbb21"
     },
     {
       "path": "src/core/wz_machine.h",
@@ -84,11 +84,11 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "ea00c363ad0ba752fdb4f124cfd180042948f2f97ab12b833a77b873132a0c5c"
+      "sha256": "71baaae8ab59240cf9af91f53679a102f07229947d9241112d84ed963068e632"
     },
     {
       "path": "test-media/DIZZY4K.TAP",
-      "sha256": "283e30c36edcb26f2914c1ef1493a650c40e2ef84955ff3c733b83e58e6e9b35"
+      "sha256": "9bd60921359b2e2e39a35501b718319c7702a6f0cfd7493570b589300f4f2a27"
     }
   ],
   "matrixWorkflow": ".github/workflows/model-switch-regression.yml"
