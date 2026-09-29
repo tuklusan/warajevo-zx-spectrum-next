@@ -154,7 +154,8 @@ static bool check_128k_contract(void)
         wz_machine_destroy(&machine);
         return false;
     }
-    for (size_t index = 0u; index < sizeof(contended_banks); ++index) {
+    for (size_t index = 0u;
+         index < sizeof(contended_banks) / sizeof(contended_banks[0]); ++index) {
         machine.paging_7ffd = contended_banks[index];
         if (!check_delay(&machine, WZ_BUS_MEMORY_READ, 0xc000u,
                          14361u, 3u, 6u)) {

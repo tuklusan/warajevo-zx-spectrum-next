@@ -5,7 +5,7 @@
   "fixtures": [
     {
       "path": "ci/test/contention-contract/contention-contract.c",
-      "sha256": "9d23fff9149ac06d627f399ce3ef51ae3e08381acf9c94774399687fac9193ab"
+      "sha256": "7672481b408862c03a41034c346fefb9e0a3c4a12c449e6352c9402cfb1ca547"
     },
     {
       "path": "ci/test/contention-contract/CMakeLists.txt",
