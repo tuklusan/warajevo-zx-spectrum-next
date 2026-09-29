@@ -5,7 +5,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/tape-native-dialog-desktop.yml",
-      "sha256": "def954224776565c415b97143b42d87339cea55d38ef46822f78c30932796eb6"
+      "sha256": "01fc9cbf6e57f0f8f3486cdb170c5aca34c31f41da3dc80fa5c206be771a4384"
     },
     {
       "path": "ci/test/tape-native-dialog-desktop/CMakeLists.txt",
