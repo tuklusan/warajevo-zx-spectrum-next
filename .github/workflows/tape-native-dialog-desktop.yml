@@ -42,7 +42,7 @@ jobs:
       - name: Configure native contract
         run: cmake -S ci/test/tape-native-dialog-desktop -B dist/tape-native-dialog-desktop -DCMAKE_BUILD_TYPE=Release
       - name: Build contract
-        run: cmake --build dist/tape-native-dialog-desktop --config Release --parallel 2
+        run: cmake --build dist/tape-native-dialog-desktop --config Release --target wz_tape_native_dialog_desktop_contract --parallel 2
       - name: Cancel the production native chooser
         shell: bash
         run: |

@@ -13,7 +13,7 @@ void wz_native_dialog_prepare_cancel(void)
 {
 }
 
-HWND sapp_win32_get_hwnd(void)
+const void* sapp_win32_get_hwnd(void)
 {
     return NULL;
 }

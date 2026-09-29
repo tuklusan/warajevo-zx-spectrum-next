@@ -5,7 +5,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/tape-native-dialog-desktop.yml",
-      "sha256": "7e819f52af29834d0c014452b53ab48d080a4cd8d62942fa760693c1576897d6"
+      "sha256": "def954224776565c415b97143b42d87339cea55d38ef46822f78c30932796eb6"
     },
     {
       "path": "ci/test/tape-native-dialog-desktop/CMakeLists.txt",
@@ -25,7 +25,7 @@
     },
     {
       "path": "ci/test/tape-native-dialog-desktop/windows-shim.c",
-      "sha256": "5bc92dbf65efd5ece78cddb952b5166b09d714f5898eb9f2701aca85abf11a1e"
+      "sha256": "134c3fffccb2150125510b722f0b29cf967114b27ffe346f6c4b65654d02f908"
     },
     {
       "path": "src/app/wz_file_dialog.h",
