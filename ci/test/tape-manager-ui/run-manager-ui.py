@@ -18,7 +18,7 @@ import time
 
 def run(command, environment=None):
     result = subprocess.run(command, check=False, capture_output=True,
-                            text=True, env=environment)
+                            text=True, env=environment, timeout=20)
     if result.returncode != 0:
         raise RuntimeError(f"command failed ({result.returncode}): {command}: "
                            f"{result.stderr.strip()}")
@@ -37,7 +37,7 @@ def focus_application(environment):
                 focused = subprocess.run(
                     ["xdotool", "windowfocus", window],
                     check=False, capture_output=True, text=True,
-                    env=environment)
+                    env=environment, timeout=3)
                 if focused.returncode == 0:
                     return window
         time.sleep(0.1)

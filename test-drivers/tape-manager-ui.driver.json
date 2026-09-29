@@ -9,7 +9,7 @@
     },
     {
       "path": "ci/test/tape-manager-ui/run-manager-ui.py",
-      "sha256": "06f92a5b738a28a9d5a3fb03e96c758382bb92fe2c313425a5ab52275b98f133"
+      "sha256": "822411abb17f5ca93b9f76c4b4d9b070b26eba5c7673b60b62c0a09f0007d445"
     },
     {
       "path": "src/app/wz_command_registry.c",
