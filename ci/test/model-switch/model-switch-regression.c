@@ -53,6 +53,39 @@ int main(void)
     REQUIRE(machine.networking_mode == WZ_NETWORKING_INTERFACE1);
     REQUIRE(wz_machine_memory_read(&machine, 0x0001u) == 0x5au);
 
+    REQUIRE(wz_machine_128k_screen_bank(&machine) == 5u);
+    REQUIRE(wz_machine_128k_rom_bank(&machine) == 0u);
+    wz_machine_memory_write(&machine, 0x4000u, 0x15u);
+    wz_machine_memory_write(&machine, 0x8000u, 0x25u);
+    wz_machine_memory_write(&machine, 0xc000u, 0x30u);
+    REQUIRE(wz_machine_memory_read(&machine, 0x4000u) == 0x15u);
+    REQUIRE(wz_machine_memory_read(&machine, 0x8000u) == 0x25u);
+    REQUIRE(wz_machine_memory_read(&machine, 0xc000u) == 0x30u);
+    REQUIRE(wz_machine_128k_paging_write(&machine, 0x7ffdu, 0x01u) ==
+            WZ_RESULT_OK);
+    REQUIRE(wz_machine_memory_read(&machine, 0xc000u) == 0u);
+    wz_machine_memory_write(&machine, 0xc000u, 0x31u);
+    REQUIRE(wz_machine_128k_paging_write(&machine, 0x7ffdu, 0x03u) ==
+            WZ_RESULT_OK);
+    REQUIRE(wz_machine_memory_read(&machine, 0xc000u) == 0u);
+    wz_machine_memory_write(&machine, 0xc000u, 0x33u);
+    REQUIRE(wz_machine_128k_paging_write(&machine, 0x7ffdu, 0x00u) ==
+            WZ_RESULT_OK);
+    REQUIRE(wz_machine_memory_read(&machine, 0xc000u) == 0x30u);
+    REQUIRE(wz_machine_128k_paging_write(&machine, 0x7ffdu, 0x1bu) ==
+            WZ_RESULT_OK);
+    REQUIRE(wz_machine_128k_screen_bank(&machine) == 7u);
+    REQUIRE(wz_machine_128k_rom_bank(&machine) == 1u);
+    REQUIRE(wz_machine_memory_read(&machine, 0xc000u) == 0x33u);
+    REQUIRE(wz_machine_memory_read(&machine, 0x4000u) == 0x15u);
+    REQUIRE(wz_machine_memory_read(&machine, 0x8000u) == 0x25u);
+    REQUIRE(wz_machine_128k_paging_write(&machine, 0x7ffdu, 0x3bu) ==
+            WZ_RESULT_OK);
+    REQUIRE(machine.paging_7ffd_locked != 0u);
+    REQUIRE(wz_machine_128k_paging_write(&machine, 0x7ffdu, 0x00u) ==
+            WZ_RESULT_OK);
+    REQUIRE(wz_machine_128k_paging_value(&machine) == 0x3bu);
+
     REQUIRE(wz_machine_reconfigure_profile(
                 &machine, wz_machine_profile_48k_pal()) == WZ_RESULT_OK);
     REQUIRE(machine.profile->kind == WZ_MACHINE_48K_PAL);
