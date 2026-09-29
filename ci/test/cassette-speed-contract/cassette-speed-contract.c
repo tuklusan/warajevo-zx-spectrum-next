@@ -67,6 +67,16 @@ static bool run_speed_transition(wz_speed_policy_t initial_speed,
         wz_machine_destroy(&machine);
         return false;
     }
+    failure_stage = 8u;
+    if (wz_machine_tape_loading_mode(&machine) != WZ_TAPE_LOADING_NORMAL ||
+        wz_machine_set_tape_loading_mode(&machine,
+            WZ_TAPE_LOADING_INSTANT_TRAP) != WZ_RESULT_OK ||
+        wz_machine_tape_loading_mode(&machine) != WZ_TAPE_LOADING_INSTANT_TRAP ||
+        wz_machine_set_tape_loading_mode(&machine,
+            WZ_TAPE_LOADING_NORMAL) != WZ_RESULT_OK ||
+        wz_machine_tape_loading_mode(&machine) != WZ_TAPE_LOADING_NORMAL) {
+        goto cleanup;
+    }
     for (size_t index = 0u; index < sizeof(segments) / sizeof(segments[0]); ++index) {
         segments[index].duration = UINT64_C(50000) +
             (wz_master_tick_t)(index % 3u) * UINT64_C(10000);
