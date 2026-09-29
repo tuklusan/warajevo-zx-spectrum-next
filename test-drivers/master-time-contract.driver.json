@@ -5,7 +5,7 @@
   "fixtures": [
     {
       "path": "ci/test/master-time/master-time-contract.c",
-      "sha256": "669056ed31c6034ed439fe7133348d9c42a5a82c3c5b6d518580bf152f9eff2a"
+      "sha256": "1b1a0080fbc3d4e1b5d5471d4a768d24e0efadd05572126be355c1ca225f20c0"
     },
     {
       "path": "ci/test/master-time/CMakeLists.txt",
@@ -22,6 +22,14 @@
     {
       "path": "src/core/wz_machine.h",
       "sha256": "84d9e0b84a02993917b0e74cb9ba0d71158f45223a707d801ce927029ab2b0aa"
+    },
+    {
+      "path": "src/core/wz_bus.c",
+      "sha256": "cf2a35b00d1edc55fff977402391e4d685bb3b3346640205a9c41340e12df704"
+    },
+    {
+      "path": "src/core/wz_bus.h",
+      "sha256": "0a6019987ae86f7c7293e1f428d086f52684ea5353eadb758c0b2d056677abaa"
     },
     {
       "path": "src/core/wz_machine_profile.c",
@@ -41,7 +49,7 @@
     },
     {
       "path": ".github/workflows/master-time-contract.yml",
-      "sha256": "f8de834bbebb0d1030e515b354d4cd5a4361cf1532e1e37efc160984f905f30c"
+      "sha256": "dd13e1f0d935f1503224ddbe22dd00f548de5fba81f7eea7dbe45e17b21892d3"
     }
   ]
 }

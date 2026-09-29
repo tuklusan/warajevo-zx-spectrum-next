@@ -40,6 +40,8 @@ jobs:
           type_hash="$(sha256sum src/core/wz_types.h | cut -d ' ' -f 1)"
           machine_hash="$(sha256sum src/core/wz_machine.c | cut -d ' ' -f 1)"
           machine_header_hash="$(sha256sum src/core/wz_machine.h | cut -d ' ' -f 1)"
+          bus_hash="$(sha256sum src/core/wz_bus.c | cut -d ' ' -f 1)"
+          bus_header_hash="$(sha256sum src/core/wz_bus.h | cut -d ' ' -f 1)"
           profile_hash="$(sha256sum src/core/wz_machine_profile.c | cut -d ' ' -f 1)"
           profile_header_hash="$(sha256sum src/core/wz_machine_profile.h | cut -d ' ' -f 1)"
           z80_hash="$(sha256sum src/core/wz_z80.c | cut -d ' ' -f 1)"
@@ -47,7 +49,7 @@ jobs:
           workflow_hash="$(sha256sum .github/workflows/master-time-contract.yml | cut -d ' ' -f 1)"
           mkdir -p dist/master-time/proof
           cat > dist/master-time/proof/master-time-contract.json <<EOF
-          {"testId":"master-time-contract","status":"pass","commit":"${GITHUB_SHA}","runner":"${RUNNER_OS}/${RUNNER_ARCH}","timestamp":"$(date -u +%Y-%m-%dT%H:%M:%SZ)","runId":${GITHUB_RUN_ID},"fixtures":[{"path":"ci/test/master-time/master-time-contract.c","sha256":"${test_hash}"},{"path":"ci/test/master-time/CMakeLists.txt","sha256":"${cmake_hash}"},{"path":"src/core/wz_types.h","sha256":"${type_hash}"},{"path":"src/core/wz_machine.c","sha256":"${machine_hash}"},{"path":"src/core/wz_machine.h","sha256":"${machine_header_hash}"},{"path":"src/core/wz_machine_profile.c","sha256":"${profile_hash}"},{"path":"src/core/wz_machine_profile.h","sha256":"${profile_header_hash}"},{"path":"src/core/wz_z80.c","sha256":"${z80_hash}"},{"path":"src/core/wz_z80.h","sha256":"${z80_header_hash}"},{"path":".github/workflows/master-time-contract.yml","sha256":"${workflow_hash}"}]}
+          {"testId":"master-time-contract","status":"pass","commit":"${GITHUB_SHA}","runner":"${RUNNER_OS}/${RUNNER_ARCH}","timestamp":"$(date -u +%Y-%m-%dT%H:%M:%SZ)","runId":${GITHUB_RUN_ID},"fixtures":[{"path":"ci/test/master-time/master-time-contract.c","sha256":"${test_hash}"},{"path":"ci/test/master-time/CMakeLists.txt","sha256":"${cmake_hash}"},{"path":"src/core/wz_types.h","sha256":"${type_hash}"},{"path":"src/core/wz_machine.c","sha256":"${machine_hash}"},{"path":"src/core/wz_machine.h","sha256":"${machine_header_hash}"},{"path":"src/core/wz_bus.c","sha256":"${bus_hash}"},{"path":"src/core/wz_bus.h","sha256":"${bus_header_hash}"},{"path":"src/core/wz_machine_profile.c","sha256":"${profile_hash}"},{"path":"src/core/wz_machine_profile.h","sha256":"${profile_header_hash}"},{"path":"src/core/wz_z80.c","sha256":"${z80_hash}"},{"path":"src/core/wz_z80.h","sha256":"${z80_header_hash}"},{"path":".github/workflows/master-time-contract.yml","sha256":"${workflow_hash}"}]}
           EOF
 
       - name: Upload hosted proof
