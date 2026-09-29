@@ -1,0 +1,71 @@
+{
+  "testId": "tape-loading-mode-command",
+  "command": "cmake -S ci/test/tape-loading-mode-command -B dist/tape-loading-mode-command -DCMAKE_BUILD_TYPE=Release && cmake --build dist/tape-loading-mode-command --config Release --target wz_tape_loading_mode_command --parallel 2 && ctest --test-dir dist/tape-loading-mode-command -C Release -R '^wz_tape_loading_mode_command$' --output-on-failure",
+  "workflow": ".github/workflows/tape-loading-mode-command.yml",
+  "fixtures": [
+    {
+      "sha256": "10e62bf4640ddf389d727c6bba6c4268dafb8e24bf64c946490991bb3692f95b",
+      "path": "ci/test/tape-loading-mode-command/tape-loading-mode-command.c"
+    },
+    {
+      "sha256": "bd39e4d8484a74e72d6e99def4fed798922343deded6ce6b7e1f5c014bd2e948",
+      "path": "ci/test/tape-loading-mode-command/CMakeLists.txt"
+    },
+    {
+      "sha256": "b24e2e22bf91780cea306db01a9bf0cf8ac21382aeefd17a90bbea66e57c63dc",
+      "path": "src/app/wz_tape_loading_commands.c"
+    },
+    {
+      "sha256": "b2d0c4a71bd33c66412344c571d0aab1a936c22a25bf785df4cca5f7b39dca26",
+      "path": "src/app/wz_tape_loading_commands.h"
+    },
+    {
+      "sha256": "707bd4c4c9d0e12db0135ef857d3c7de8a5d6e7d717d790d09f3080bb90c9607",
+      "path": "src/app/wz_command_registry.c"
+    },
+    {
+      "sha256": "089f17123ebfdc9be2ff8606aa849f72c06bc26036ac0f5710dbb978509b9d34",
+      "path": "src/app/wz_command_registry.h"
+    },
+    {
+      "sha256": "d715982e8bc5bf10e375009a4e2f2c8a185431bf544bad207d9b59b26d101761",
+      "path": "src/core/wz_machine.c"
+    },
+    {
+      "sha256": "84d9e0b84a02993917b0e74cb9ba0d71158f45223a707d801ce927029ab2b0aa",
+      "path": "src/core/wz_machine.h"
+    },
+    {
+      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09",
+      "path": "src/core/wz_machine_profile.c"
+    },
+    {
+      "sha256": "099be5f41f428466e5da622452abec6e0daf6402abcf4ab2e7d8c2df47457cc4",
+      "path": "src/core/wz_machine_profile.h"
+    },
+    {
+      "sha256": "bd46ced2af90907b222a43fcaef3bfe8943b6ca32fd4831fbaca82483ec264c5",
+      "path": "src/app/wz_host_thread.c"
+    },
+    {
+      "sha256": "2fa71a370c5b0597e25f8e4ecbc8457e7e9b2d3b62cd48af2eb6111053283805",
+      "path": "src/app/wz_host_thread.h"
+    },
+    {
+      "sha256": "fbdf217da6a71f19c8733dd0ab48da71e273f934491360f5a134fff6ded8391d",
+      "path": "src/cmake/CMakeLists.txt"
+    },
+    {
+      "sha256": "1373543186a5bab3da5c54904935eafded89b5697d168683e130a8585fb1de04",
+      "path": ".github/workflows/tape-loading-mode-command.yml"
+    },
+    {
+      "sha256": "34f48cb0c18cb556323b4b00ad91fbb5ea816af79aeb028865cf6fb77a0f67cd",
+      "path": "src/app/wz_sokol_main.c"
+    },
+    {
+      "sha256": "62b0801f97473b22f2c400ab814f569f268c080e2283fd9c4ce536398c63e5be",
+      "path": "src/app/wz_ui_layout.c"
+    }
+  ]
+}

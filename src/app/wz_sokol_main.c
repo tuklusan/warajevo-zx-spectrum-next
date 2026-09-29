@@ -53,6 +53,7 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "app/wz_file_dialog.h"
 #include "app/wz_file_open_run.h"
 #include "app/wz_networking_commands.h"
+#include "app/wz_tape_loading_commands.h"
 #include "app/wz_application_lifecycle.h"
 #include "app/wz_control_port.h"
 #include "app/wz_host_socket.h"
@@ -116,6 +117,7 @@ typedef struct {
     wz_command_registry_t command_registry;
     wz_command_metadata_t command_storage[WZ_HOST_COMMAND_CAPACITY];
     wz_networking_command_context_t networking_command_context;
+    wz_tape_loading_command_context_t tape_loading_command_context;
     wz_raster_buffer_t raster;
     wz_byte_t raster_samples[WZ_HOST_RASTER_BYTES];
     wz_byte_t raster_rgba[WZ_HOST_RASTER_BYTES * 4u];
@@ -968,6 +970,13 @@ static bool wz_host_register_commands(void)
             &wz_host_session.networking_command_context) != WZ_RESULT_OK) {
         return false;
     }
+    wz_host_session.tape_loading_command_context.machine =
+        &wz_host_session.machine;
+    if (wz_tape_loading_commands_register(
+            &wz_host_session.command_registry,
+            &wz_host_session.tape_loading_command_context) != WZ_RESULT_OK) {
+        return false;
+    }
     return wz_command_registry_finalize(&wz_host_session.command_registry) ==
         WZ_RESULT_OK;
 }
@@ -1325,6 +1334,54 @@ static void wz_host_ui_draw_toolbar(struct nk_context* context, float width)
                 nk_combo_end(context);
             }
             if (!enabled) nk_widget_disable_end(context);
+        } else if (item != NULL &&
+                   strcmp(item->command_id, "media.tape") == 0) {
+            const wz_tape_loading_mode_t mode =
+                wz_machine_tape_loading_mode(&wz_host_session.machine);
+            const char* mode_label = mode == WZ_TAPE_LOADING_INSTANT_TRAP ?
+                "Tape: Instant / Trap" : "Tape: Normal";
+            const wz_command_metadata_t* normal_command =
+                wz_command_registry_find(&wz_host_session.command_registry,
+                    WZ_TAPE_LOADING_NORMAL_COMMAND_ID);
+            const bool tape_enabled = normal_command != NULL &&
+                wz_command_registry_state(&wz_host_session.command_registry,
+                    normal_command->id, NULL) == WZ_COMMAND_ENABLED;
+            if (!tape_enabled) nk_widget_disable_begin(context);
+            if (nk_combo_begin_label(context, mode_label,
+                                     nk_vec2(180.0f, 5.0f * 25.0f))) {
+                nk_layout_row_dynamic(context, 24.0f, 1);
+                for (size_t action_index = 0u;
+                     action_index < wz_ui_layout_tape_action_count();
+                     ++action_index) {
+                    const wz_ui_toolbar_item_t* action =
+                        wz_ui_layout_tape_action_at(action_index);
+                    const wz_command_metadata_t* action_command =
+                        action == NULL ? NULL : wz_command_registry_find(
+                            &wz_host_session.command_registry,
+                            action->command_id);
+                    if (action == NULL) continue;
+                    if (action_command == NULL ||
+                        action_command->parameter_schema == NULL ||
+                        strcmp(action_command->parameter_schema, "NONE") != 0 ||
+                        wz_command_registry_state(
+                            &wz_host_session.command_registry,
+                            action_command->id, NULL) != WZ_COMMAND_ENABLED) {
+                        nk_widget_disable_begin(context);
+                        (void)nk_combo_item_label(context, action->label,
+                                                  NK_TEXT_LEFT);
+                        nk_widget_disable_end(context);
+                    } else if (nk_combo_item_label(context, action->label,
+                                                   NK_TEXT_LEFT)) {
+                        wz_command_result_t result;
+                        (void)wz_command_registry_dispatch(
+                            &wz_host_session.command_registry,
+                            action_command->id,
+                            (wz_command_arguments_t){NULL, 0u}, &result);
+                    }
+                }
+                nk_combo_end(context);
+            }
+            if (!tape_enabled) nk_widget_disable_end(context);
         } else {
             const wz_command_metadata_t* command = item == NULL ? NULL :
                 wz_command_registry_find(&wz_host_session.command_registry,

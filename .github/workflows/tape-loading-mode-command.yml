@@ -1,0 +1,55 @@
+name: Tape loading mode command
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/app/wz_tape_loading_commands.*'
+      - 'src/cmake/CMakeLists.txt'
+      - 'src/app/wz_command_registry.*'
+      - 'src/core/wz_machine.*'
+      - 'src/core/wz_machine_profile.*'
+      - 'src/app/wz_host_thread.*'
+      - 'ci/test/tape-loading-mode-command/**'
+      - 'test-drivers/tape-loading-mode-command.driver.json'
+      - '.github/workflows/tape-loading-mode-command.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: Ubuntu x64
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+      - name: Configure contract
+        run: cmake -S ci/test/tape-loading-mode-command -B dist/tape-loading-mode-command -DCMAKE_BUILD_TYPE=Release
+      - name: Build and run contract
+        run: |
+          cmake --build dist/tape-loading-mode-command --config Release --target wz_tape_loading_mode_command --parallel 2
+          ctest --test-dir dist/tape-loading-mode-command -C Release -R '^wz_tape_loading_mode_command$' --output-on-failure
+      - name: Record hosted proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, platform
+          driver = json.loads(pathlib.Path('test-drivers/tape-loading-mode-command.driver.json').read_text())
+          fixtures = []
+          for item in driver['fixtures']:
+              path = pathlib.Path(item['path'])
+              fixtures.append({'path': item['path'], 'sha256': hashlib.sha256(path.read_bytes()).hexdigest()})
+          out = pathlib.Path('dist/tape-loading-mode-command/proof/tape-loading-mode-command.json')
+          out.parent.mkdir(parents=True, exist_ok=True)
+          out.write_text(json.dumps({'testId': driver['testId'], 'status': 'pass', 'commit': os.environ['GITHUB_SHA'], 'runner': f"{platform.system()}/{platform.machine()}", 'timestamp': __import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat(), 'runId': int(os.environ['GITHUB_RUN_ID']), 'fixtures': fixtures}, indent=2) + '\n')
+          PY
+      - name: Upload hosted proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: tape-loading-mode-command-${{ github.sha }}
+          path: dist/tape-loading-mode-command/proof/tape-loading-mode-command.json
+          if-no-files-found: error

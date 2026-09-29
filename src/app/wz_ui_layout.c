@@ -82,8 +82,8 @@ static const wz_ui_toolbar_item_t toolbar[WZ_UI_TOOLBAR_COUNT] = {
 static const wz_ui_toolbar_item_t tape_actions[WZ_UI_TAPE_ACTION_COUNT] = {
     {"media.tape.insert", "Insert..."},
     {"media.tape.eject", "Eject"},
-    {"media.tape.loading.normal", "Normal"},
-    {"media.tape.loading.instant", "Instant / Trap"},
+    {"media.tape.loading_mode.normal", "Normal"},
+    {"media.tape.loading_mode.instant", "Instant / Trap"},
     {"media.tape.manager", "Open Tape Manager..."}
 };
 
