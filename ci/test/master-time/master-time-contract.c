@@ -34,13 +34,19 @@ static bool check_profile(const wz_machine_profile_t* profile)
     expected_frame_ticks =
         (wz_master_tick_t)profile->tstates_per_frame *
         profile->master_ticks_per_cpu_tstate;
-    for (wz_master_tick_t tick = 0u; tick <= expected_frame_ticks; ++tick) {
+    for (wz_master_tick_t tick = 0u; tick < expected_frame_ticks; ++tick) {
         if (wz_profile_cpu_tstate(tick, profile) !=
                 tick / profile->master_ticks_per_cpu_tstate ||
             wz_profile_cpu_phase(tick, profile) !=
                 tick % profile->master_ticks_per_cpu_tstate) {
             return false;
         }
+    }
+    if (wz_profile_cpu_tstate(expected_frame_ticks, profile) !=
+            expected_frame_ticks / profile->master_ticks_per_cpu_tstate ||
+        wz_profile_cpu_phase(expected_frame_ticks, profile) !=
+            expected_frame_ticks % profile->master_ticks_per_cpu_tstate) {
+        return false;
     }
 
     memset(&machine, 0, sizeof(machine));

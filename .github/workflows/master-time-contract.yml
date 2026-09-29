@@ -45,7 +45,7 @@ jobs:
       - name: Build and run contract
         run: |
           cmake --build dist/master-time --config Release --target wz_master_time_contract --parallel 2
-          ctest --test-dir dist/master-time -C Release --output-on-failure
+          ctest --test-dir dist/master-time -C Release -R '^wz_master_time_contract$' --output-on-failure
 
       - name: Record hosted proof
         shell: bash
