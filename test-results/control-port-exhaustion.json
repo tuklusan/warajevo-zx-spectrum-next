@@ -1,0 +1,52 @@
+{
+  "testId": "control-port-exhaustion",
+  "status": "pass",
+  "commit": "4e780f8a2eb9f0475fb7cf710b591c1ff35abc37",
+  "runId": 36589928461,
+  "runner": "Linux/X64",
+  "timestamp": "2026-09-29T15:32:38+00:00",
+  "caseCount": 1,
+  "occupiedPortCount": 2048,
+  "fixtures": [
+    {
+      "path": ".github/workflows/control-port-exhaustion.yml",
+      "sha256": "ca428419a8873544582b16ee41b43ec4444e28b3820f3ffdc77c7b041bcccf84"
+    },
+    {
+      "path": "ci/test/control-port-exhaustion/CMakeLists.txt",
+      "sha256": "7c57fd15631250ad554fe87e41d460aaf2eea54478b37abe3651dd925cc34881"
+    },
+    {
+      "path": "ci/test/control-port-exhaustion/control-port-exhaustion.c",
+      "sha256": "6698e650bcc50d93b294aab2d30a676c93de9d3ffefc596d03f767c6045c7096"
+    },
+    {
+      "path": "ci/test/control-port-exhaustion/write-proof.py",
+      "sha256": "bda4e403ebcf83ded70330007bd2650ed5633776bb46477da5240dd8af9fc7be"
+    },
+    {
+      "path": "test-drivers/control-port-exhaustion.driver.json",
+      "sha256": "6c14288eb02ca087ab3aa150f0763692229b9a74276f871eead3391e445278a8"
+    },
+    {
+      "path": "src/app/wz_control_port.c",
+      "sha256": "c26016fe66e2f3932bf80070f8a00c873946c3ea893b0458e7994f06fbba1ef5"
+    },
+    {
+      "path": "src/app/wz_control_port.h",
+      "sha256": "44a2a09d58c56dff09494d2176a43f8de0982ff719e3914fb53853fcca4ea32a"
+    },
+    {
+      "path": "src/app/wz_host_socket.c",
+      "sha256": "f7c9c9eb5032b170a6c152064bb9556e2a5bf41805eff683bc53b02a7f5c2259"
+    },
+    {
+      "path": "src/app/wz_host_socket.h",
+      "sha256": "1c5bbe42e47fd27db8b2781c699eb51026963bfe9d3831580489dce472444230"
+    },
+    {
+      "path": "docs/design/01-warajevo-zx-spectrum-next-architecture.md",
+      "sha256": "dc5cf052d8ad6e6df51e81a5a1156fa6d7c874881bd6a7617b4115029cf0d990"
+    }
+  ]
+}
