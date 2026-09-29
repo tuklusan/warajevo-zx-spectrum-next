@@ -72,6 +72,6 @@ jobs:
       - name: Upload hosted proof
         uses: actions/upload-artifact@v4
         with:
-          name: tape-native-dialog-desktop-${{ matrix.platform }}-${{ github.sha }}
+          name: tape-native-dialog-desktop-${{ matrix.runner }}-${{ github.sha }}
           path: dist/tape-native-dialog-desktop/proof.json
           if-no-files-found: error
