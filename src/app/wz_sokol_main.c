@@ -1823,9 +1823,8 @@ static wz_result_t wz_host_snapshot_write(wz_host_session_t* session,
     size_t length;
     wz_snapshot_save_workflow_t candidate;
     wz_historical_state_format_t format;
-    if (session == NULL || result == NULL || session->machine.profile == NULL) {
-        return WZ_RESULT_INVALID_STATE;
-    }
+    if (session == NULL || result == NULL) return WZ_RESULT_INVALID_ARGUMENT;
+    if (session->machine.profile == NULL) return WZ_RESULT_INVALID_STATE;
     if (!wz_host_extension_is(path, ".sna") &&
         !wz_host_extension_is(path, ".z80")) {
         result->reason = "unsupported-snapshot-format";

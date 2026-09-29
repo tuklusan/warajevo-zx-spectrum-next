@@ -135,6 +135,7 @@ static bool verify_128k_writers(void)
         return false;
     }
     if (wz_machine_init(machine, wz_machine_profile_128k_pal()) != WZ_RESULT_OK) {
+        wz_machine_destroy(machine);
         free(image);
         free(machine);
         return false;
