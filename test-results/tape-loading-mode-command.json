@@ -1,18 +1,18 @@
 {
   "testId": "tape-loading-mode-command",
   "status": "pass",
-  "commit": "7a48897d4d54b215a3da9b167d5e496e78b94c63",
+  "commit": "6160819e6fff727a859d10c28609dc6a5c265cc6",
   "runner": "Linux/x86_64",
-  "timestamp": "2026-09-29T04:18:46.503721+00:00",
-  "runId": 36521035408,
+  "timestamp": "2026-09-29T04:35:46.770256+00:00",
+  "runId": 36522311210,
   "fixtures": [
     {
       "path": "ci/test/tape-loading-mode-command/tape-loading-mode-command.c",
-      "sha256": "10e62bf4640ddf389d727c6bba6c4268dafb8e24bf64c946490991bb3692f95b"
+      "sha256": "f7d960335d2af917b94b9e03a8e8a35f76549490c0f03cf7a8e31e11d926440f"
     },
     {
       "path": "ci/test/tape-loading-mode-command/CMakeLists.txt",
-      "sha256": "bd39e4d8484a74e72d6e99def4fed798922343deded6ce6b7e1f5c014bd2e948"
+      "sha256": "65effa8a1dd8e3697b8849ed2f02ab2eca9aede8dd0ea346b57801d04222ca0c"
     },
     {
       "path": "src/app/wz_tape_loading_commands.c",
@@ -56,19 +56,27 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "e6810205e7eb869fbf7b976880cc8fcf2fefd9c3a9e9e515ea1fb87073c07f88"
+      "sha256": "b79f1ca809f1968e30116d9cf19b47a3e17e5883e5372052eb3e708219f7a448"
     },
     {
       "path": ".github/workflows/tape-loading-mode-command.yml",
-      "sha256": "44c7558a1c25ae9ca67abf79afd00e16ef503689f6ca810a5a63f6fd67472d44"
+      "sha256": "9e7933a3ee53dfe289f07110d9a8a76d4ba45d0c101cb01cfaa830835179bac5"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "c4f30252f0d52bccca4cd3827046a37ffe521138a58e634864a438cffe016796"
+      "sha256": "a50b6caa7866fbdd43fac506704beadf33e81f2f2b9e79c28920eb152eb73dd9"
     },
     {
       "path": "src/app/wz_ui_layout.c",
       "sha256": "c5d78a80f060ead6700d53e1da6fc9f8b51ecb45c919b73cfc89c833dff5caa3"
+    },
+    {
+      "path": "src/app/wz_tape_media_commands.c",
+      "sha256": "ece88e02c415e2cc559cfe1cd2f2d08a7db22d10a7e5ff13b844506d3aebc3e7"
+    },
+    {
+      "path": "src/app/wz_tape_media_commands.h",
+      "sha256": "2d0d6002bbc6dc7a327b827fdb296b033232a2168c61f26b236e9677a1b7a134"
     }
   ]
 }
