@@ -36,7 +36,8 @@ def main():
         fixtures.append({"path": fixture["path"], "sha256": digest})
     summary = json.loads(args.summary.read_text())
     required = ("files", "tapFiles", "tzxFiles", "supported", "unsupported",
-                "unsupportedTzxBlocks", "malformed")
+                "unsupportedTzxBlocks", "malformed", "fuseAccepted",
+                "fuseRejected", "coreReferenceDivergences")
     if summary.get("status") != "pass" or any(key not in summary for key in required):
         raise SystemExit("media-corpus contract did not produce a complete aggregate")
     if summary["files"] < driver["requiredCases"]:

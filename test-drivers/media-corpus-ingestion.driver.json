@@ -1,27 +1,28 @@
 {
   "testId": "media-corpus-ingestion",
-  "command": "cmake -S ci/test/media-corpus-ingestion -B dist/media-corpus-ingestion -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/media-corpus-ingestion --config Release --target wz_media_corpus_ingestion --parallel 2 && dist/media-corpus-ingestion/wz_media_corpus_ingestion test-media",
+  "command": "sudo apt-get update && sudo apt-get install --yes --no-install-recommends libspectrum-dev=1.5.0-4build2 && cmake -S ci/test/media-corpus-ingestion -B dist/media-corpus-ingestion -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/media-corpus-ingestion --config Release --target wz_media_corpus_ingestion --parallel 2 && dist/media-corpus-ingestion/wz_media_corpus_ingestion test-media",
   "requiredCases": 20,
   "runnerMatrix": [
     "ubuntu-24.04"
   ],
   "mediaPolicy": "Runner-only input; proof contains aggregate counts only and no media bytes, paths, or per-file hashes.",
+  "fuseReference": "Ubuntu 24.04 libspectrum-dev 1.5.0-4build2",
   "fixtures": [
     {
       "path": ".github/workflows/media-corpus-ingestion.yml",
-      "sha256": "86c3b822aee32f6fac5876f4ebed15c8ef2f4c241411d9aac34ff10d603d07f6"
+      "sha256": "9e467a927fe33b7437a6f7a232619a9324f7c63dd417f9b3edbb99aabf7e61b9"
     },
     {
       "path": "ci/test/media-corpus-ingestion/CMakeLists.txt",
-      "sha256": "1dc2bb9ee7646db58a34727e8da13c5e259deca962eb1ee1474291a2b2f4837e"
+      "sha256": "2e6c4720a9b1163a54ec8b2e9cfefc03af2c7e1e09d3a3711b55b27168f346c2"
     },
     {
       "path": "ci/test/media-corpus-ingestion/media-corpus-ingestion.c",
-      "sha256": "184692dee7258b35bd8e93d472d9a24c95110701117cdb20f5c08f870149d724"
+      "sha256": "42af64ce5b396fcb7f6459024b93c6a1e8cde38c65ad31723b126eb445df6f58"
     },
     {
       "path": "ci/test/media-corpus-ingestion/write-proof.py",
-      "sha256": "b258973656bde2bf10e3bc0f2990b070269231ee134cad387c379d0a48d7c2d0"
+      "sha256": "16878bf096e0737cec50cba2f32dcca38050972cfcbac1656b92c69c6e432044"
     },
     {
       "path": "docs/design/01-warajevo-zx-spectrum-next-architecture.md",
@@ -29,7 +30,7 @@
     },
     {
       "path": "docs/design/media-corpus-ingestion-test.md",
-      "sha256": "71c94fa54603ee52bf6f312bac27ef656fe27ae423c11f9be70f2df5586291cc"
+      "sha256": "0c6e00b02dc207865b3cbdfc533265a556b56c60e4d2dcbc7b0ff7151432758c"
     },
     {
       "path": "src/core/wz_machine.h",

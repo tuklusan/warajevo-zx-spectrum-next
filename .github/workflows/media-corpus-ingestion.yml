@@ -34,6 +34,10 @@ jobs:
         with:
           ref: ${{ github.sha }}
           lfs: true
+      - name: Install pinned Fuse media-reference library
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends libspectrum-dev=1.5.0-4build2
       - name: Configure isolated ingestion contract
         run: cmake -S ci/test/media-corpus-ingestion -B dist/media-corpus-ingestion -G Ninja -DCMAKE_BUILD_TYPE=Release
       - name: Build ingestion contract

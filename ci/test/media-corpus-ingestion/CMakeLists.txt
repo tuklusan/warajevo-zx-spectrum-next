@@ -8,6 +8,9 @@
 cmake_minimum_required(VERSION 3.25)
 project(WZMediaCorpusIngestion LANGUAGES C)
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LIBSPECTRUM REQUIRED IMPORTED_TARGET libspectrum)
+
 set(REPO_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../..")
 set(WZSN_ENABLE_WARNINGS ON CACHE BOOL "Enable project warnings" FORCE)
 set(WZSN_BUILD_SOKOL_HOST OFF CACHE BOOL "Disable native UI host" FORCE)
@@ -18,4 +21,5 @@ set_target_properties(wz_media_corpus_ingestion PROPERTIES
     C_STANDARD 11
     C_STANDARD_REQUIRED ON
     C_EXTENSIONS OFF)
-target_link_libraries(wz_media_corpus_ingestion PRIVATE wz_core wz_warnings)
+target_link_libraries(wz_media_corpus_ingestion PRIVATE
+    wz_core wz_warnings PkgConfig::LIBSPECTRUM)

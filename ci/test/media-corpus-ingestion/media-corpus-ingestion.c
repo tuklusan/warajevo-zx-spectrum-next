@@ -13,7 +13,9 @@
 
 #include <ctype.h>
 #include <dirent.h>
+#include <libspectrum.h>
 #include <stdint.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -32,7 +34,39 @@ typedef struct {
     size_t failure_case;
     size_t tzx_failure_phase;
     size_t tzx_failure_result;
+    size_t fuse_accepted;
+    size_t fuse_rejected;
+    size_t core_reference_divergences;
 } corpus_counts_t;
+
+static libspectrum_error ignore_reference_diagnostic(libspectrum_error error,
+                                                      const char* format,
+                                                      va_list arguments)
+{
+    (void)format;
+    (void)arguments;
+    return error;
+}
+
+static int fuse_reference_accepts(const wz_byte_t* data, size_t length,
+                                  const char* path)
+{
+    libspectrum_id_t type = LIBSPECTRUM_ID_UNKNOWN;
+    libspectrum_class_t file_class = LIBSPECTRUM_CLASS_UNKNOWN;
+    libspectrum_tape* tape;
+    libspectrum_error error = libspectrum_identify_file(&type, path, data,
+                                                         length);
+    if (error != LIBSPECTRUM_ERROR_NONE ||
+        libspectrum_identify_class(&file_class, type) != LIBSPECTRUM_ERROR_NONE ||
+        file_class != LIBSPECTRUM_CLASS_TAPE) return 0;
+    tape = libspectrum_tape_alloc();
+    if (tape == NULL) return 0;
+    error = libspectrum_tape_read(tape, data, length, type, path);
+    int accepted = error == LIBSPECTRUM_ERROR_NONE &&
+        libspectrum_tape_present(tape);
+    (void)libspectrum_tape_free(tape);
+    return accepted;
+}
 
 static wz_byte_t* read_file(const char* path, size_t* length)
 {
@@ -184,8 +218,19 @@ int main(int argc, char** argv)
     corpus_counts_t counts = {0};
     struct dirent** entries = NULL;
     int entry_count;
-    if (argc != 2 || profile == NULL ||
-        (entry_count = scandir(argv[1], &entries, NULL, alphasort)) < 0) {
+    if (argc != 2 || profile == NULL) {
+        fputs("media corpus contract: invalid input directory\n", stderr);
+        return 2;
+    }
+    if (libspectrum_init() != LIBSPECTRUM_ERROR_NONE) {
+        fputs("media corpus contract: Fuse reference initialization failed\n",
+              stderr);
+        return 2;
+    }
+    libspectrum_error_function = ignore_reference_diagnostic;
+    entry_count = scandir(argv[1], &entries, NULL, alphasort);
+    if (entry_count < 0) {
+        (void)libspectrum_end();
         fputs("media corpus contract: invalid input directory\n", stderr);
         return 2;
     }
@@ -231,6 +276,13 @@ int main(int argc, char** argv)
             profile->master_ticks_per_cpu_tstate,
             &counts.unsupported_tzx_blocks, &unsupported_media,
             &failure_phase, &failure_result);
+        if (fuse_reference_accepts(data, length, path)) {
+            ++counts.fuse_accepted;
+            if (!supported || unsupported_media)
+                ++counts.core_reference_divergences;
+        } else {
+            ++counts.fuse_rejected;
+        }
         free(data);
         if (!supported) {
             ++counts.malformed;
@@ -252,15 +304,22 @@ int main(int argc, char** argv)
            "\"unsupportedTzxBlocks\":%zu,\"malformed\":%zu,"
            "\"tapFailures\":%zu,\"tzxFailures\":%zu,\"readFailures\":%zu,"
            "\"failureCase\":%zu,\"tzxFailurePhase\":%zu,"
-           "\"tzxFailureResult\":%zu}\n",
-           counts.files != 0u && counts.malformed == 0u ? "pass" : "fail",
+           "\"tzxFailureResult\":%zu,\"fuseAccepted\":%zu,"
+           "\"fuseRejected\":%zu,\"coreReferenceDivergences\":%zu}\n",
+           counts.files != 0u && counts.read_failures == 0u &&
+               counts.fuse_rejected == 0u &&
+               counts.core_reference_divergences == 0u ?
+               "pass" : "fail",
            counts.files, counts.tap_files, counts.tzx_files, counts.supported,
            counts.unsupported, counts.unsupported_tzx_blocks, counts.malformed,
            counts.tap_failures, counts.tzx_failures, counts.read_failures,
            counts.failure_case, counts.tzx_failure_phase,
-           counts.tzx_failure_result);
-    if (counts.files == 0u || counts.malformed != 0u) {
-        fputs("media corpus contract: at least one tape was malformed or unreadable\n",
+           counts.tzx_failure_result, counts.fuse_accepted,
+           counts.fuse_rejected, counts.core_reference_divergences);
+    (void)libspectrum_end();
+    if (counts.files == 0u || counts.read_failures != 0u ||
+        counts.fuse_rejected != 0u || counts.core_reference_divergences != 0u) {
+        fputs("media corpus contract: media ingestion disagrees with the Fuse reference\n",
               stderr);
         return 1;
     }
