@@ -5,7 +5,7 @@
   "fixtures": [
     {
       "path": "ci/test/raster-effects-contract/raster-effects-contract.c",
-      "sha256": "b17a19f4196286ab35583ea8e9073b3fc8a9894c5a94424c0f8eb9acbfb71d11"
+      "sha256": "ba53bda912a118522df50cd0a3d24f66d4208a62af9049b5ce9de741f34db46e"
     },
     {
       "path": "ci/test/raster-effects-contract/CMakeLists.txt",

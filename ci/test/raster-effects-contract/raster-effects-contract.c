@@ -36,6 +36,7 @@ static bool check_timed_raster_effects(void)
     memset(&raster, 0, sizeof(raster));
     if (profile == 0 || pixels == 0 ||
         wz_machine_init(&machine, profile) != WZ_RESULT_OK) {
+        wz_machine_destroy(&machine);
         free(pixels);
         return false;
     }
