@@ -34,7 +34,8 @@ def find_window(title, deadline, environment):
 
 def capture_words(window, destination, environment):
     run(["import", "-window", window, str(destination)], environment)
-    output = run(["tesseract", str(destination), "stdout", "tsv"], environment)
+    output = run(["tesseract", str(destination), "stdout", "tsv",
+                  "--psm", "11"], environment)
     return list(csv.DictReader(output.splitlines(), delimiter="\t"))
 
 
@@ -43,7 +44,9 @@ def click_word(window, words, expected, environment):
                   if word.get("level") == "5" and
                   expected.casefold() in word.get("text", "").casefold()), None)
     if match is None:
-        raise RuntimeError(f"visible text not found: {expected}")
+        observed = " ".join(word.get("text", "") for word in words
+                            if word.get("level") == "5")
+        raise RuntimeError(f"visible text not found: {expected}; OCR: {observed}")
     geometry = run(["xdotool", "getwindowgeometry", "--shell", window],
                    environment)
     values = dict(line.split("=", 1) for line in geometry.splitlines()
@@ -74,6 +77,7 @@ def main():
     try:
         window = find_window("Warajevo ZX Spectrum Next",
                              time.monotonic() + 30, environment)
+        time.sleep(1.0)
         geometry = run(["xdotool", "getwindowgeometry", "--shell", window],
                        environment)
         values = dict(line.split("=", 1) for line in geometry.splitlines()
