@@ -2430,6 +2430,7 @@ static void wz_host_telnet_process_command(const char* command)
         wz_telnet_status_snapshot_t status = {
             .control_port = wz_host_session.control_port.selected_port,
             .ipv4_up = wz_host_session.control_port.ipv4_active,
+            .ipv6_up = false,
             .client_active = wz_telnet_client_is_active(
                 &wz_host_session.telnet_client)
         };
