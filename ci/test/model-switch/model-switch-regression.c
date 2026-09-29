@@ -98,7 +98,7 @@ int main(void)
                         0u, 4u);
     REQUIRE(wz_machine_bus_request(&machine, &joystick_request) ==
             WZ_RESULT_OK);
-    REQUIRE(joystick_request.value == 0x1bu);
+    REQUIRE(joystick_request.value == 0x1du);
 
     REQUIRE(wz_machine_128k_screen_bank(&machine) == 5u);
     REQUIRE(wz_machine_128k_rom_bank(&machine) == 0u);
