@@ -6,6 +6,8 @@
  * SANYALnet Labs." See LICENSE for full terms.
  */
 
+#define _DEFAULT_SOURCE
+
 #include "core/wz_machine.h"
 #include "core/wz_tape.h"
 
@@ -27,6 +29,7 @@ typedef struct {
     size_t tap_failures;
     size_t tzx_failures;
     size_t read_failures;
+    size_t failure_case;
 } corpus_counts_t;
 
 static wz_byte_t* read_file(const char* path, size_t* length)
@@ -154,13 +157,16 @@ int main(int argc, char** argv)
 {
     const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
     corpus_counts_t counts = {0};
-    DIR* directory;
-    struct dirent* entry;
-    if (argc != 2 || profile == NULL || (directory = opendir(argv[1])) == NULL) {
+    struct dirent** entries = NULL;
+    int entry_count;
+    if (argc != 2 || profile == NULL ||
+        (entry_count = scandir(argv[1], &entries, NULL, alphasort)) < 0) {
         fputs("media corpus contract: invalid input directory\n", stderr);
         return 2;
     }
-    while ((entry = readdir(directory)) != NULL) {
+    size_t case_index = 0u;
+    for (int entry_index = 0; entry_index < entry_count; ++entry_index) {
+        struct dirent* entry = entries[entry_index];
         char path[4096];
         size_t name_length = strlen(entry->d_name);
         int is_tap = has_extension(entry->d_name, "tap");
@@ -169,12 +175,19 @@ int main(int argc, char** argv)
         wz_byte_t* data;
         int supported;
         int unsupported_media = 0;
-        if (!is_tap && !is_tzx) continue;
+        if (!is_tap && !is_tzx) {
+            free(entry);
+            continue;
+        }
+        ++case_index;
         ++counts.files;
         if (is_tap) ++counts.tap_files;
         else ++counts.tzx_files;
         if (name_length + strlen(argv[1]) + 2u > sizeof(path)) {
             ++counts.malformed;
+            ++counts.read_failures;
+            counts.failure_case = case_index;
+            free(entry);
             continue;
         }
         (void)snprintf(path, sizeof(path), "%s/%s", argv[1], entry->d_name);
@@ -182,6 +195,8 @@ int main(int argc, char** argv)
         if (data == NULL) {
             ++counts.malformed;
             ++counts.read_failures;
+            counts.failure_case = case_index;
+            free(entry);
             continue;
         }
         supported = is_tap ? parse_tap(data, length,
@@ -193,19 +208,23 @@ int main(int argc, char** argv)
             ++counts.malformed;
             if (is_tap) ++counts.tap_failures;
             else ++counts.tzx_failures;
+            counts.failure_case = case_index;
         }
         else if (unsupported_media) ++counts.unsupported;
         else ++counts.supported;
+        free(entry);
     }
-    closedir(directory);
+    free(entries);
     printf("{\"status\":\"%s\",\"files\":%zu,\"tapFiles\":%zu,"
            "\"tzxFiles\":%zu,\"supported\":%zu,\"unsupported\":%zu,"
            "\"unsupportedTzxBlocks\":%zu,\"malformed\":%zu,"
-           "\"tapFailures\":%zu,\"tzxFailures\":%zu,\"readFailures\":%zu}\n",
+           "\"tapFailures\":%zu,\"tzxFailures\":%zu,\"readFailures\":%zu,"
+           "\"failureCase\":%zu}\n",
            counts.files != 0u && counts.malformed == 0u ? "pass" : "fail",
            counts.files, counts.tap_files, counts.tzx_files, counts.supported,
            counts.unsupported, counts.unsupported_tzx_blocks, counts.malformed,
-           counts.tap_failures, counts.tzx_failures, counts.read_failures);
+           counts.tap_failures, counts.tzx_failures, counts.read_failures,
+           counts.failure_case);
     if (counts.files == 0u || counts.malformed != 0u) {
         fputs("media corpus contract: at least one tape was malformed or unreadable\n",
               stderr);
