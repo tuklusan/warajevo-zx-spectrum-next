@@ -29,6 +29,7 @@ int main(void)
     wz_command_metadata_t storage[1];
     wz_command_result_t result;
     wz_ui_layout_state_t ui;
+    uint8_t encoded_ear_mic = (uint8_t)WZ_NETWORKING_EAR_MIC;
     const wz_command_metadata_t* command;
     const char* reason = NULL;
     unsigned cases = 0u;
@@ -62,11 +63,21 @@ int main(void)
                 &registry, WZ_NETWORKING_EAR_MIC, &result) ==
             WZ_RESULT_UNSUPPORTED_OPERATION);
     REQUIRE(result.status == WZ_COMMAND_RESULT_UNAVAILABLE &&
+            result.reason != NULL &&
             strcmp(result.reason,
                    WZ_UI_NETWORKING_EAR_MIC_DISABLED_REASON) == 0);
+    cases += 1u;
+
+    REQUIRE(wz_command_registry_dispatch(
+                &registry, WZ_NETWORKING_COMMAND_ID,
+                (wz_command_arguments_t){&encoded_ear_mic,
+                                         sizeof(encoded_ear_mic)},
+                &result) == WZ_RESULT_UNSUPPORTED_OPERATION);
+    REQUIRE(result.status == WZ_COMMAND_RESULT_FAILED &&
+            result.reason == NULL);
     REQUIRE(ui.networking_selection == WZ_NETWORKING_INTERFACE1 &&
             machine.networking_mode == WZ_NETWORKING_INTERFACE1);
-    cases += 5u;
+    cases += 8u;
 
     command = wz_command_registry_find(&registry, WZ_NETWORKING_COMMAND_ID);
     REQUIRE(command != NULL && command->handler_identity != NULL &&

@@ -1,7 +1,7 @@
 {
   "testId": "ui-networking-exclusion",
   "command": "cmake -S ci/test/ui-networking-exclusion -B dist/ui-networking-exclusion -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/ui-networking-exclusion --config Release --target wz_ui_networking_exclusion_contract --parallel 2 && dist/ui-networking-exclusion/wz_ui_networking_exclusion_contract",
-  "requiredCases": 16,
+  "requiredCases": 19,
   "runnerMatrix": [
     "ubuntu-24.04"
   ],
@@ -16,11 +16,11 @@
     },
     {
       "path": "ci/test/ui-networking-exclusion/ui-networking-exclusion-contract.c",
-      "sha256": "5edce2c916bcb9b755f4812934d3a929c02d1e221ce1ad8b941a1f04e70203e9"
+      "sha256": "b48717ddce4caf0772b9129089081ca3dcd5972e74ddb2a33f240d34220298e6"
     },
     {
       "path": "ci/test/ui-networking-exclusion/write-proof.py",
-      "sha256": "dd111bd64474fb210dee519220eefe47a6506e8f9d79dd91f0f2988744ee228d"
+      "sha256": "77c56b91a52935861a9fc791d460980b625f95fe55122dad7de8c8757cfd5538"
     },
     {
       "path": "src/app/wz_command_registry.c",
