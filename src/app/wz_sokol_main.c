@@ -122,6 +122,7 @@ typedef struct {
     wz_tape_media_command_context_t tape_media_command_context;
     bool tape_manager_open;
     size_t tape_manager_selected_segment;
+    size_t tape_manager_selected_block;
     wz_raster_buffer_t raster;
     wz_byte_t raster_samples[WZ_HOST_RASTER_BYTES];
     wz_byte_t raster_rgba[WZ_HOST_RASTER_BYTES * 4u];
@@ -135,6 +136,12 @@ typedef struct {
     uint8_t telnet_command[WZ_TELNET_COMMAND_CAPACITY];
     wz_tape_segment_t* tape_segments;
     size_t tape_segment_count;
+    wz_byte_t* tape_image_data;
+    size_t tape_image_length;
+    wz_tap_block_t* tape_blocks;
+    size_t tape_block_count;
+    wz_tzx_block_t* tzx_blocks;
+    size_t tzx_block_count;
     char tape_source_path[4096];
     char tape_format[8];
     wz_byte_t* microdrive_data;
@@ -510,6 +517,49 @@ static bool wz_host_mount_tape_segments(wz_host_session_t* session,
     return true;
 }
 
+static wz_result_t wz_host_index_standard_tap(const wz_byte_t* data,
+                                               size_t length,
+                                               wz_tap_block_t** blocks_out,
+                                               size_t* count_out)
+{
+    size_t offset = 0u;
+    size_t block_count = 0u;
+    size_t block_index = 0u;
+    wz_tap_block_t* blocks;
+
+    if (data == NULL || length == 0u || blocks_out == NULL ||
+        count_out == NULL) return WZ_RESULT_INVALID_ARGUMENT;
+    *blocks_out = NULL;
+    *count_out = 0u;
+    while (offset < length) {
+        size_t block_length;
+        if (length - offset < 2u) return WZ_RESULT_PARSE_ERROR;
+        block_length = (size_t)wz_read_le16(data + offset);
+        offset += 2u;
+        if (block_length == 0u || block_length > length - offset ||
+            block_count == SIZE_MAX) return WZ_RESULT_PARSE_ERROR;
+        ++block_count;
+        offset += block_length;
+    }
+    if (block_count > SIZE_MAX / sizeof(*blocks)) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    blocks = (wz_tap_block_t*)malloc(block_count * sizeof(*blocks));
+    if (blocks == NULL) return WZ_RESULT_INVALID_STATE;
+    offset = 0u;
+    while (offset < length && block_index < block_count) {
+        size_t block_length = (size_t)wz_read_le16(data + offset);
+        offset += 2u;
+        blocks[block_index].data = data + offset;
+        blocks[block_index].length = block_length;
+        offset += block_length;
+        ++block_index;
+    }
+    *blocks_out = blocks;
+    *count_out = block_count;
+    return WZ_RESULT_OK;
+}
+
 static bool wz_host_load_external_tape(wz_host_session_t* session,
                                        const char* path)
 {
@@ -517,8 +567,10 @@ static bool wz_host_load_external_tape(wz_host_session_t* session,
     size_t length = 0u;
     size_t segment_count = 0u;
     wz_tape_segment_t* segments = NULL;
+    wz_tap_block_t* tap_blocks = NULL;
     wz_tzx_block_t* blocks = NULL;
     size_t block_count = 0u;
+    size_t tap_block_count = 0u;
     const wz_machine_profile_t* profile;
     wz_result_t parsed = WZ_RESULT_INVALID_STATE;
     bool loaded = false;
@@ -534,6 +586,10 @@ static bool wz_host_load_external_tape(wz_host_session_t* session,
             if (segments != NULL) parsed = wz_tape_parse_standard_tap(
                 data, length, profile->master_ticks_per_cpu_tstate, segments,
                 segment_count, &segment_count);
+        }
+        if (parsed == WZ_RESULT_OK) {
+            parsed = wz_host_index_standard_tap(data, length, &tap_blocks,
+                                                &tap_block_count);
         }
     } else if (wz_host_extension_is(path, ".tzx")) {
         parsed = wz_tape_parse_tzx(data, length, NULL, 0u, &block_count);
@@ -568,16 +624,30 @@ static bool wz_host_load_external_tape(wz_host_session_t* session,
     if (parsed == WZ_RESULT_OK && segments != NULL && segment_count != 0u &&
         wz_host_mount_tape_segments(session, segments, segment_count)) {
         segments = NULL;
+        free(session->tape_image_data);
+        free(session->tape_blocks);
+        free(session->tzx_blocks);
+        session->tape_image_data = data;
+        session->tape_image_length = length;
+        session->tape_blocks = tap_blocks;
+        session->tape_block_count = tap_block_count;
+        session->tzx_blocks = blocks;
+        session->tzx_block_count = block_count;
+        data = NULL;
+        tap_blocks = NULL;
+        blocks = NULL;
         (void)snprintf(session->tape_source_path,
                        sizeof(session->tape_source_path), "%s", path);
         (void)snprintf(session->tape_format, sizeof(session->tape_format),
             "%s", wz_host_extension_is(path, ".tap") ? "TAP" :
             wz_host_extension_is(path, ".tzx") ? "TZX" : "WAV");
         session->tape_manager_selected_segment = 0u;
+        session->tape_manager_selected_block = 0u;
         loaded = true;
     }
 cleanup:
     free(blocks);
+    free(tap_blocks);
     free(segments);
     free(data);
     return loaded;
@@ -677,9 +747,19 @@ static void wz_host_tape_media_release(void* context)
     free(session->tape_segments);
     session->tape_segments = NULL;
     session->tape_segment_count = 0u;
+    free(session->tape_image_data);
+    session->tape_image_data = NULL;
+    session->tape_image_length = 0u;
+    free(session->tape_blocks);
+    session->tape_blocks = NULL;
+    session->tape_block_count = 0u;
+    free(session->tzx_blocks);
+    session->tzx_blocks = NULL;
+    session->tzx_block_count = 0u;
     session->tape_source_path[0] = '\0';
     session->tape_format[0] = '\0';
     session->tape_manager_selected_segment = 0u;
+    session->tape_manager_selected_block = 0u;
     session->ui_window.layout.tape_mounted = false;
     (void)snprintf(session->file_notification,
                    sizeof(session->file_notification), "Tape ejected");
@@ -1542,6 +1622,7 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
     size_t first_segment;
     size_t end_segment;
     size_t current_segment;
+    size_t block_count;
     float panel_width;
     if (!wz_host_session.tape_manager_open) return;
     panel_width = width >= 480.0f ? 460.0f : width - 16.0f;
@@ -1594,35 +1675,143 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
         (unsigned long long)(current_segment + 1u),
         (unsigned long long)wz_host_session.tape_segment_count);
     nk_label(context, line, NK_TEXT_LEFT);
-    nk_label(context, "Transport signal segments (read only)", NK_TEXT_LEFT);
-    first_segment = wz_host_session.tape_manager_selected_segment > 4u ?
-        wz_host_session.tape_manager_selected_segment - 4u : 0u;
-    end_segment = first_segment + 9u;
-    if (end_segment > wz_host_session.tape_segment_count) {
-        end_segment = wz_host_session.tape_segment_count;
-    }
-    nk_layout_row_dynamic(context, 24.0f, 2);
-    if (nk_button_label(context, "Previous segments") &&
-        wz_host_session.tape_manager_selected_segment > 0u) {
-        wz_host_session.tape_manager_selected_segment =
-            wz_host_session.tape_manager_selected_segment > 9u ?
-                wz_host_session.tape_manager_selected_segment - 9u : 0u;
-    }
-    if (nk_button_label(context, "Next segments") &&
-        end_segment < wz_host_session.tape_segment_count) {
-        wz_host_session.tape_manager_selected_segment = end_segment;
-    }
-    nk_layout_row_dynamic(context, 24.0f, 1);
-    for (size_t index = first_segment; index < end_segment; ++index) {
-        const wz_tape_segment_t* segment =
-            &wz_host_session.tape_segments[index];
-        (void)snprintf(line, sizeof(line), "%sSegment %llu | EAR %s | %llu master ticks",
-            index == wz_host_session.tape_manager_selected_segment ? "> " : "  ",
-            (unsigned long long)(index + 1u),
-            segment->ear_level != 0u ? "high" : "low",
-            (unsigned long long)segment->duration);
-        if (nk_button_label(context, line)) {
-            wz_host_session.tape_manager_selected_segment = index;
+    block_count = strcmp(wz_host_session.tape_format, "TAP") == 0 ?
+        wz_host_session.tape_block_count :
+        strcmp(wz_host_session.tape_format, "TZX") == 0 ?
+            wz_host_session.tzx_block_count : 0u;
+    if (block_count != 0u) {
+        size_t selected = wz_host_session.tape_manager_selected_block;
+        first_segment = selected > 4u ? selected - 4u : 0u;
+        end_segment = first_segment + 9u;
+        if (end_segment > block_count) end_segment = block_count;
+        nk_label(context, "Tape blocks (read only)", NK_TEXT_LEFT);
+        nk_layout_row_dynamic(context, 24.0f, 2);
+        if (nk_button_label(context, "Previous blocks") && selected > 0u) {
+            wz_host_session.tape_manager_selected_block = selected > 9u ?
+                selected - 9u : 0u;
+        }
+        if (nk_button_label(context, "Next blocks") && end_segment < block_count) {
+            wz_host_session.tape_manager_selected_block = end_segment;
+        }
+        nk_layout_row_dynamic(context, 24.0f, 1);
+        for (size_t index = first_segment; index < end_segment; ++index) {
+            if (strcmp(wz_host_session.tape_format, "TAP") == 0) {
+                const wz_tap_block_t* block = &wz_host_session.tape_blocks[index];
+                const char* type = "Data";
+                char name[11] = {0};
+                bool has_header = block->length == 19u && block->data[0] == 0u;
+                if (has_header) {
+                    switch (block->data[1]) {
+                    case 0u: type = "Program header"; break;
+                    case 1u: type = "Number array header"; break;
+                    case 2u: type = "Character array header"; break;
+                    case 3u: type = "Code header"; break;
+                    default: type = "Unknown header"; break;
+                    }
+                    for (size_t character = 0u; character < 10u; ++character) {
+                        unsigned char value = block->data[2u + character];
+                        name[character] = value >= 0x20u && value <= 0x7eu ?
+                            (char)value : '.';
+                    }
+                    for (size_t character = 10u; character > 0u; --character) {
+                        if (name[character - 1u] != ' ') break;
+                        name[character - 1u] = '\0';
+                    }
+                }
+                if (has_header) {
+                    (void)snprintf(line, sizeof(line),
+                        "%sBlock %llu | %s \"%.10s\" | flag %02X | data %u bytes",
+                        index == selected ? "> " : "  ",
+                        (unsigned long long)(index + 1u), type, name,
+                        (unsigned int)block->data[0],
+                        (unsigned int)wz_read_le16(block->data + 12u));
+                } else {
+                    (void)snprintf(line, sizeof(line),
+                        "%sBlock %llu | %s | flag %02X | logical %llu / stored %llu bytes",
+                        index == selected ? "> " : "  ",
+                        (unsigned long long)(index + 1u), type,
+                        (unsigned int)block->data[0],
+                        (unsigned long long)(block->length > 2u ?
+                            block->length - 2u : 0u),
+                        (unsigned long long)(block->length + 2u));
+                }
+            } else {
+                const wz_tzx_block_t* block = &wz_host_session.tzx_blocks[index];
+                const char* disposition = block->disposition == WZ_TZX_SUPPORTED ?
+                    "supported" : block->disposition == WZ_TZX_IGNORED ?
+                        "ignored" : "unsupported";
+                const char* type = "TZX block";
+                switch (block->block_id) {
+                case 0x10u: type = "Standard data"; break;
+                case 0x11u: type = "Turbo data"; break;
+                case 0x12u: type = "Pure tone"; break;
+                case 0x13u: type = "Pulse sequence"; break;
+                case 0x14u: type = "Pure data"; break;
+                case 0x15u: type = "Direct recording"; break;
+                case 0x18u: type = "CSW recording"; break;
+                case 0x19u: type = "Generalized data"; break;
+                case 0x20u: type = "Pause / stop"; break;
+                case 0x21u: type = "Group start"; break;
+                case 0x22u: type = "Group end"; break;
+                case 0x23u: type = "Jump"; break;
+                case 0x24u: type = "Loop start"; break;
+                case 0x25u: type = "Loop end"; break;
+                case 0x26u: type = "Call sequence"; break;
+                case 0x27u: type = "Return"; break;
+                case 0x28u: type = "Select"; break;
+                case 0x2au: type = "Stop if 48K"; break;
+                case 0x2bu: type = "Signal level"; break;
+                case 0x30u: type = "Text"; break;
+                case 0x31u: type = "Message"; break;
+                case 0x32u: type = "Archive info"; break;
+                case 0x33u: type = "Hardware type"; break;
+                case 0x35u: type = "Custom info"; break;
+                case 0x5au: type = "Glue"; break;
+                default: break;
+                }
+                (void)snprintf(line, sizeof(line),
+                    "%sBlock %llu | %s (%02X) | %s | payload %llu / stored %llu bytes",
+                    index == selected ? "> " : "  ",
+                    (unsigned long long)(index + 1u), type,
+                    (unsigned int)block->block_id,
+                    disposition, (unsigned long long)block->data_length,
+                    (unsigned long long)block->block_length);
+            }
+            if (nk_button_label(context, line)) {
+                wz_host_session.tape_manager_selected_block = index;
+            }
+        }
+    } else {
+        nk_label(context, "Transport signal segments (read only)", NK_TEXT_LEFT);
+        first_segment = wz_host_session.tape_manager_selected_segment > 4u ?
+            wz_host_session.tape_manager_selected_segment - 4u : 0u;
+        end_segment = first_segment + 9u;
+        if (end_segment > wz_host_session.tape_segment_count) {
+            end_segment = wz_host_session.tape_segment_count;
+        }
+        nk_layout_row_dynamic(context, 24.0f, 2);
+        if (nk_button_label(context, "Previous segments") &&
+            wz_host_session.tape_manager_selected_segment > 0u) {
+            wz_host_session.tape_manager_selected_segment =
+                wz_host_session.tape_manager_selected_segment > 9u ?
+                    wz_host_session.tape_manager_selected_segment - 9u : 0u;
+        }
+        if (nk_button_label(context, "Next segments") &&
+            end_segment < wz_host_session.tape_segment_count) {
+            wz_host_session.tape_manager_selected_segment = end_segment;
+        }
+        nk_layout_row_dynamic(context, 24.0f, 1);
+        for (size_t index = first_segment; index < end_segment; ++index) {
+            const wz_tape_segment_t* segment =
+                &wz_host_session.tape_segments[index];
+            (void)snprintf(line, sizeof(line), "%sSegment %llu | EAR %s | %llu master ticks",
+                index == wz_host_session.tape_manager_selected_segment ? "> " : "  ",
+                (unsigned long long)(index + 1u),
+                segment->ear_level != 0u ? "high" : "low",
+                (unsigned long long)segment->duration);
+            if (nk_button_label(context, line)) {
+                wz_host_session.tape_manager_selected_segment = index;
+            }
         }
     }
     nk_end(context);
@@ -1937,6 +2126,13 @@ static void wz_host_session_shutdown(void)
     free(wz_host_session.tape_segments);
     wz_host_session.tape_segments = NULL;
     wz_host_session.tape_segment_count = 0u;
+    free(wz_host_session.tape_image_data);
+    wz_host_session.tape_image_data = NULL;
+    wz_host_session.tape_image_length = 0u;
+    free(wz_host_session.tape_blocks);
+    wz_host_session.tape_blocks = NULL;
+    free(wz_host_session.tzx_blocks);
+    wz_host_session.tzx_blocks = NULL;
     free(wz_host_session.microdrive_data);
     wz_host_session.microdrive_data = NULL;
     wz_host_session.microdrive_image.data = NULL;
