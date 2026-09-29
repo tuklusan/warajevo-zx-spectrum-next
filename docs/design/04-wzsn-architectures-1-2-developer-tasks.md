@@ -266,7 +266,7 @@ Debug application startup/shutdown now attaches, freezes, and closes a per-proce
 ## Phase 10 — Networking-mode arbitration, Interface 1, Microdrive, original ZX Net
 
 200. [P10][Core §§24.6,49.2] Complete/freeze `design/interface1-microdrive-zxnet.md` with I/O decode, ROM paging, registers/latches, MDR interpretation/timing, ROM variants, ZX Net state transitions, serialization fields, and regression authorities.
-201. [P10][Core §§51] Resolve Interface 1 ROM test/redistribution handling before Interface-1 implementation code depends on ROM bytes.
+201. [P10][Core §§29,51][POLICY FROZEN] Interface 1 ROM handling is governed by [interface1-rom-test-policy.md](interface1-rom-test-policy.md): no firmware bytes in tracked/public artifacts, user-supplied runtime firmware, synthetic fixtures for ordinary tests, and out-of-tree operator-provided images with revision/hash metadata for authentic-ROM tests. No distribution rights are assumed. Real-ROM compatibility proof remains open until authorized images are supplied.
 202. [P10][Core §§24.1] Implement the single deterministic networking-mode enum/state `NONE`, `INTERFACE1`, `EAR_MIC` with no independent booleans.
 203. [P10][Core §§24.1] Implement validation rules that prohibit simultaneous Interface-1 and Ear+Mic state structurally.
 204. [P10][Core §§24.1] Implement upstream `EAR_MIC` as a reserved/unavailable mode until Architecture #3 certifies the active 48K Issue-2 profile; do not implement router behavior.

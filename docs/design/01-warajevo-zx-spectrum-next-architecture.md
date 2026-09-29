@@ -2588,6 +2588,11 @@ Therefore:
 The build system must keep ROM licensing status separate from emulator source
 licensing.
 
+Interface 1 ROM test and distribution handling is frozen by
+[`interface1-rom-test-policy.md`](interface1-rom-test-policy.md). Test fixtures
+are synthetic unless an operator supplies an authentic image outside the
+repository; test proofs may retain its revision and digest but never its bytes.
+
 ---
 
 ## 30. UI and application-command authority boundary
@@ -3735,7 +3740,6 @@ canonical internal audio sample rate                 Phase 6 implementation
 fixed-point mixer representation                     Phase 6 implementation
 AY analog mixing model                               Phase 6 implementation
 host resampling algorithm for 0.5x..2.0x audio       Phase 6 exit
-Interface 1 ROM test/redistribution handling          Phase 10 implementation
 exact UI toolkit                                     Phase 12 implementation
 Linux package formats                                Phase 13 implementation
 keyboard ghosting/electrical conclusion beyond       Phase 5 exit
@@ -3747,6 +3751,7 @@ Already frozen by this architecture:
 - ISO C11 is the core/application C language baseline;
 - CMake is the project build generator;
 - initial certified machine profiles are 48K PAL and 128K PAL;
+- Interface 1 ROM bytes are user-supplied and excluded from public artifacts;
 - native Wayland is not an initial requirement;
 - Windows ARM64 is not an initial target;
 - macOS x86-64 is secondary and may be dropped without changing initial
