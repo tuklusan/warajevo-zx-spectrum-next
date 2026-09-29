@@ -16,7 +16,7 @@ set(WZSN_ENABLE_WARNINGS ON CACHE BOOL "Enable project warnings" FORCE)
 set(WZSN_BUILD_SOKOL_HOST OFF CACHE BOOL "Disable native UI host" FORCE)
 add_subdirectory("${REPO_ROOT}/src/cmake" "${CMAKE_BINARY_DIR}/product" EXCLUDE_FROM_ALL)
 
-add_executable(wz_media_corpus_ingestion media-corpus-ingestion.c)
+add_executable(wz_media_corpus_ingestion "${REPO_ROOT}/tests/media-corpus-ingestion.c")
 set_target_properties(wz_media_corpus_ingestion PROPERTIES
     C_STANDARD 11
     C_STANDARD_REQUIRED ON
