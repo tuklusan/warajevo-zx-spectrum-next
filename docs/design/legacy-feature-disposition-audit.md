@@ -7,7 +7,7 @@ SANYALnet Labs." See LICENSE for full terms. -->
 
 # Legacy feature disposition audit
 
-Task 452 audit is complete. Section 2.5 contains 32 explicit dispositions: 20 REQUIRED and 12 deferred/replaced/non-initial. Every REQUIRED row is mapped to its phase implementation area or source and current proof gap. 10 have limited runner evidence; 10 lack criterion-level pinned proof. Source presence alone is not acceptance evidence. The model-switch regression now verifies 128K fixed and paged RAM behavior on all four hosted runner families (run `36560521477`).
+Task 452 audit is complete. Section 2.5 contains 32 explicit dispositions: 20 REQUIRED and 12 deferred/replaced/non-initial. Every REQUIRED row is mapped to its phase implementation area or source and current proof gap. 11 have limited runner evidence; 9 lack criterion-level pinned proof. Source presence alone is not acceptance evidence. The four-runner model-switch regression verifies 128K fixed and paged RAM behavior plus normalized Kempston input and direct port reads (run `36563713245`; [proof](../../test-results/model-switch.json)).
 
 All deferred/replaced/non-initial rows remain scoped as stated in Section 2.5 and are not promoted into initial release blockers. Historical UI replacements are reconciled separately under task 453. Architecture-#3 implementation remains out of scope.
 
@@ -21,7 +21,7 @@ All deferred/replaced/non-initial rows remain scoped as stated in Section 2.5 an
 | Z80 CPU incl. documented/undocumented | REQUIRED | PARTIAL | src/core/wz_z80.c | CPU canonical fingerprint is cross-runner stable; full pinned Fuse coverage and every documented/undocumented opcode remain unproven (runs `35895696032`, `35894160451`). |
 | ULA/border/contention/floating bus | REQUIRED | PARTIAL | src/core/wz_bus.c; src/core/wz_raster.c | Canonical raster fingerprint and GUI output pass; timing-smoke, border/contention/floating-bus acceptance is unproven (runs `35895696032`, `35890238325`). |
 | 48K keyboard matrix | REQUIRED | PARTIAL | src/core/wz_keyboard_matrix.c | Runner demo uses physical-key commands to start the tape; matrix electrical/equivalence regressions are missing (run `35890238325`). |
-| Kempston joystick | REQUIRED initial joystick interface | OPEN | src/core/wz_kempston.c; src/app/wz_kempston_mapping.c | Implementation files are present; normalized input and direct port-read tests are missing. |
+| Kempston joystick | REQUIRED initial joystick interface | PARTIAL | src/core/wz_kempston.c; src/app/wz_kempston_mapping.c | Four-runner regression verifies normalized controls, reset on profile change, and direct bus port reads (run `36563713245`; [proof](../../test-results/model-switch.json)); GUI input-mapping behavior remains open. |
 | Beeper | REQUIRED | PARTIAL | src/core/audio/wz_beeper.c; src/core/audio/wz_audio_mixer.c | Canonical mixer fingerprint passes; timestamp transitions and hardware-derived beeper behavior are not separately validated (run `35895696032`). |
 | AY-3-8912 on 128K | REQUIRED | PARTIAL | src/core/audio/wz_ay.c; src/core/audio/wz_audio_mixer.c | Canonical mixer fingerprint passes; 128K AY register/tone/noise/envelope timing regressions are missing (run `35895696032`). |
 | Tape: standard TAP | REQUIRED | PARTIAL | src/core/wz_tape.c | DIZZY4K standard TAP runs through the GUI; the complete TAP loader corpus and timing proof are missing (run `35890238325`). |

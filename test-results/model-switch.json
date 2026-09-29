@@ -1,10 +1,10 @@
 {
   "testId": "model-switch",
   "status": "pass",
-  "commit": "2c3e83f5508ef0b57be5f161495a884782a7c133",
+  "commit": "7e3a1dc16c00b70669ea7587632847b04698a9c6",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-09-29T11:24:07+00:00",
-  "runId": 36560521477,
+  "timestamp": "2026-09-29T12:03:41+00:00",
+  "runId": 36563713245,
   "runners": [
     {
       "id": "windows-x64",
@@ -46,7 +46,7 @@
     },
     {
       "path": "ci/test/model-switch/model-switch-regression.c",
-      "sha256": "0239c8d44ea0a89779f066c5b6ad09b7efb9e7c68f890630ea5122f0491099d3"
+      "sha256": "3a880b93b24d15ae0bb530ff8b94aad76b0e6f5e3b56ba5b7c4e1f4169beccc6"
     },
     {
       "path": "ci/test/model-switch/telnet-model-alias-regression.c",
@@ -123,6 +123,14 @@
     {
       "path": "test-media/DIZZY4K.TAP",
       "sha256": "9bd60921359b2e2e39a35501b718319c7702a6f0cfd7493570b589300f4f2a27"
+    },
+    {
+      "path": "src/core/wz_kempston.c",
+      "sha256": "3a5a7d442da3debf4d114b660ae6b606f95ab963244fc5987e190689cd40b35a"
+    },
+    {
+      "path": "src/core/wz_kempston.h",
+      "sha256": "21ddeac1344f770e29180b8b015c5b8ebad3deffa2031beaad2ad09db2b947bd"
     }
   ]
 }
