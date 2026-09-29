@@ -476,10 +476,15 @@ add_executable(
     wz_host_machine_frame_tests
     ${WZSN_REPO_ROOT}/ci/test/host-frame-audio/frame-audio-regression.c
     ${WZSN_SOURCE_ROOT}/app/wz_host_machine_frame.c
+    ${WZSN_SOURCE_ROOT}/app/wz_host_audio_push.c
     ${WZSN_SOURCE_ROOT}/app/wz_host_audio_policy.c
+    ${WZSN_SOURCE_ROOT}/app/wz_host_pacing.c
+    ${WZSN_SOURCE_ROOT}/app/wz_sokol_audio.c
     ${WZSN_SOURCE_ROOT}/app/wz_speed_policy.c)
 target_link_libraries(wz_host_machine_frame_tests PRIVATE wz_core wz_warnings)
-target_include_directories(wz_host_machine_frame_tests PRIVATE "${WZSN_SOURCE_ROOT}")
+target_include_directories(wz_host_machine_frame_tests PRIVATE
+    "${WZSN_REPO_ROOT}/ci/test/audio-delivery/sokol_audio_stub"
+    "${WZSN_SOURCE_ROOT}")
 add_test(NAME wz_host_machine_frame_tests COMMAND wz_host_machine_frame_tests)
 add_executable(
     wz_sokol_audio_delivery_tests
