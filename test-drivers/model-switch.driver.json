@@ -12,7 +12,7 @@
     },
     {
       "path": "ci/test/model-switch/model-switch-regression.c",
-      "sha256": "7dde8d1e75968e5c047bb8ad8f1d41609773bb58ce947e3c3b73b6eabe04023e"
+      "sha256": "3a880b93b24d15ae0bb530ff8b94aad76b0e6f5e3b56ba5b7c4e1f4169beccc6"
     },
     {
       "path": "ci/test/model-switch/telnet-model-alias-regression.c",

@@ -80,6 +80,20 @@ int main(void)
     REQUIRE(machine.tape_state.segment_elapsed == 37u);
     REQUIRE(machine.networking_mode == WZ_NETWORKING_INTERFACE1);
     REQUIRE(wz_machine_memory_read(&machine, 0x0001u) == 0x5au);
+    REQUIRE(wz_machine_kempston_read(&machine, 0xab1fu) == 0u);
+    wz_bus_request_init(&joystick_request, WZ_BUS_IO_READ, 0u, 0xab1fu,
+                        0u, 4u);
+    REQUIRE(wz_machine_bus_request(&machine, &joystick_request) ==
+            WZ_RESULT_OK);
+    REQUIRE(joystick_request.value == 0u);
+    REQUIRE(wz_machine_set_kempston_control(
+                &machine, WZ_KEMPSTON_RIGHT, true) == WZ_RESULT_OK);
+    REQUIRE(wz_machine_set_kempston_control(
+                &machine, WZ_KEMPSTON_LEFT, true) == WZ_RESULT_OK);
+    REQUIRE(wz_machine_set_kempston_control(
+                &machine, WZ_KEMPSTON_UP, true) == WZ_RESULT_OK);
+    REQUIRE(wz_machine_set_kempston_control(
+                &machine, WZ_KEMPSTON_FIRE, true) == WZ_RESULT_OK);
     wz_bus_request_init(&joystick_request, WZ_BUS_IO_READ, 0u, 0xab1fu,
                         0u, 4u);
     REQUIRE(wz_machine_bus_request(&machine, &joystick_request) ==
