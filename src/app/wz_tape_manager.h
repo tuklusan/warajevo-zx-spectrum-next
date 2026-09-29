@@ -1,10 +1,9 @@
-/*
-Warajevo ZX Spectrum Next
-Copyright (c) 2026 Supratim Sanyal, SANYALnet Labs, for new original project material.
-New original material is licensed under GNU GPL v2 or later (GPL-2.0-or-later), as stated in LICENSE.txt.
-Upstream Warajevo and third-party material retain their applicable copyrights and licenses.
-See LICENSE.txt and NOTICE.md for complete terms and provenance.
-*/
+/* Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+This file is governed by the SANYALnet Labs Non-Commercial License in the
+root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
+for AI/ML model training are prohibited unless separately authorized.
+Attribution is required: "Based on original work by Supratim Sanyal of
+SANYALnet Labs." See LICENSE for full terms. */
 
 #ifndef WZ_APP_WZ_TAPE_MANAGER_H
 #define WZ_APP_WZ_TAPE_MANAGER_H
@@ -102,16 +101,27 @@ wz_result_t wz_tape_manager_reorder(wz_tape_manager_edit_t* edit,
                                     size_t from, size_t to);
 wz_result_t wz_tape_manager_change_position(wz_tape_manager_edit_t* edit,
                                             size_t from, size_t to);
+wz_result_t wz_tape_manager_reorder_selected(wz_tape_manager_edit_t* edit,
+                                             bool* selected,
+                                             size_t selected_count,
+                                             int direction);
 wz_result_t wz_tape_manager_add_block(wz_tape_manager_edit_t* edit,
                                       wz_tap_block_t block, size_t position);
 wz_result_t wz_tape_manager_delete_block(wz_tape_manager_edit_t* edit,
                                          size_t position);
+wz_result_t wz_tape_manager_delete_selected(wz_tape_manager_edit_t* edit,
+                                            bool* selected,
+                                            size_t selected_count);
 wz_result_t wz_tape_manager_edit_block(wz_tape_manager_edit_t* edit,
                                        size_t position, wz_tap_block_t block);
 wz_result_t wz_tape_manager_extract_block(const wz_tape_manager_edit_t* edit,
                                           size_t position, wz_tap_block_t* output);
 wz_result_t wz_tape_manager_copy_block_to_new(const wz_tape_manager_edit_t* edit,
                                               size_t position, wz_tap_block_t* output);
+wz_result_t wz_tape_manager_copy_selected_to_new(
+    const wz_tape_manager_edit_t* edit, const bool* selected,
+    size_t selected_count, wz_tap_block_t* output, size_t output_capacity,
+    size_t* output_count);
 wz_result_t wz_tape_manager_transaction_init(
     wz_tape_manager_transaction_t* transaction,
     const wz_tap_block_t* source,

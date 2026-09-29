@@ -1,10 +1,9 @@
-/*
-Warajevo ZX Spectrum Next
-Copyright (c) 2026 Supratim Sanyal, SANYALnet Labs, for new original project material.
-New original material is licensed under GNU GPL v2 or later (GPL-2.0-or-later), as stated in LICENSE.txt.
-Upstream Warajevo and third-party material retain their applicable copyrights and licenses.
-See LICENSE.txt and NOTICE.md for complete terms and provenance.
-*/
+/* Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+This file is governed by the SANYALnet Labs Non-Commercial License in the
+root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
+for AI/ML model training are prohibited unless separately authorized.
+Attribution is required: "Based on original work by Supratim Sanyal of
+SANYALnet Labs." See LICENSE for full terms. */
 
 #include "app/wz_tape_manager.h"
 
@@ -180,6 +179,41 @@ wz_result_t wz_tape_manager_change_position(wz_tape_manager_edit_t* edit,
     return wz_tape_manager_reorder(edit, from, to);
 }
 
+wz_result_t wz_tape_manager_reorder_selected(wz_tape_manager_edit_t* edit,
+                                             bool* selected,
+                                             size_t selected_count,
+                                             int direction)
+{
+    if (edit == 0 || edit->blocks == 0 || selected == 0 ||
+        selected_count != edit->count ||
+        (direction != -1 && direction != 1)) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (direction < 0) {
+        for (size_t index = 1u; index < edit->count; ++index) {
+            if (selected[index] && !selected[index - 1u]) {
+                wz_tap_block_t block = edit->blocks[index - 1u];
+                edit->blocks[index - 1u] = edit->blocks[index];
+                edit->blocks[index] = block;
+                selected[index] = false;
+                selected[index - 1u] = true;
+            }
+        }
+    } else if (edit->count > 1u) {
+        for (size_t index = edit->count - 1u; index > 0u; --index) {
+            size_t previous = index - 1u;
+            if (selected[previous] && !selected[index]) {
+                wz_tap_block_t block = edit->blocks[previous];
+                edit->blocks[previous] = edit->blocks[index];
+                edit->blocks[index] = block;
+                selected[previous] = false;
+                selected[index] = true;
+            }
+        }
+    }
+    return WZ_RESULT_OK;
+}
+
 wz_result_t wz_tape_manager_add_block(wz_tape_manager_edit_t* edit,
                                       wz_tap_block_t block, size_t position)
 {
@@ -205,6 +239,33 @@ wz_result_t wz_tape_manager_delete_block(wz_tape_manager_edit_t* edit,
     return WZ_RESULT_OK;
 }
 
+wz_result_t wz_tape_manager_delete_selected(wz_tape_manager_edit_t* edit,
+                                            bool* selected,
+                                            size_t selected_count)
+{
+    size_t remove_count = 0u;
+    size_t write_index = 0u;
+    if (edit == 0 || edit->blocks == 0 || selected == 0 ||
+        selected_count != edit->count) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    for (size_t index = 0u; index < edit->count; ++index) {
+        if (selected[index]) ++remove_count;
+    }
+    if (remove_count == 0u || remove_count >= edit->count) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    for (size_t index = 0u; index < edit->count; ++index) {
+        if (!selected[index]) {
+            if (write_index != index) edit->blocks[write_index] = edit->blocks[index];
+            selected[write_index] = false;
+            ++write_index;
+        }
+    }
+    edit->count = write_index;
+    return WZ_RESULT_OK;
+}
+
 wz_result_t wz_tape_manager_edit_block(wz_tape_manager_edit_t* edit,
                                        size_t position, wz_tap_block_t block)
 {
@@ -227,6 +288,34 @@ wz_result_t wz_tape_manager_copy_block_to_new(const wz_tape_manager_edit_t* edit
                                               size_t position, wz_tap_block_t* output)
 {
     return wz_tape_manager_extract_block(edit, position, output);
+}
+
+wz_result_t wz_tape_manager_copy_selected_to_new(
+    const wz_tape_manager_edit_t* edit, const bool* selected,
+    size_t selected_count, wz_tap_block_t* output, size_t output_capacity,
+    size_t* output_count)
+{
+    size_t count = 0u;
+    if (output_count != 0) *output_count = 0u;
+    if (edit == 0 || edit->blocks == 0 || selected == 0 ||
+        selected_count != edit->count || output_count == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    for (size_t index = 0u; index < edit->count; ++index) {
+        if (selected[index]) ++count;
+    }
+    if (count == 0u || count > output_capacity || output == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    count = 0u;
+    for (size_t index = 0u; index < edit->count; ++index) {
+        if (selected[index]) {
+            if (!valid_block(&edit->blocks[index])) return WZ_RESULT_INVALID_ARGUMENT;
+            output[count++] = edit->blocks[index];
+        }
+    }
+    *output_count = count;
+    return WZ_RESULT_OK;
 }
 
 wz_result_t wz_tape_manager_transaction_init(
