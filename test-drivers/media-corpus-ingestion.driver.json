@@ -9,7 +9,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/media-corpus-ingestion.yml",
-      "sha256": "3778f447c9e2a635f6f86350406229b364e36016034d14235fd9b173aeb81ae6"
+      "sha256": "86c3b822aee32f6fac5876f4ebed15c8ef2f4c241411d9aac34ff10d603d07f6"
     },
     {
       "path": "ci/test/media-corpus-ingestion/CMakeLists.txt",
@@ -17,7 +17,7 @@
     },
     {
       "path": "ci/test/media-corpus-ingestion/media-corpus-ingestion.c",
-      "sha256": "0d9335a65afeb91d34077fa670886481b87c5f1fff69c8088bd67bae89a39d63"
+      "sha256": "089b88f031e2776c99b6f51791290005a3c1a7cf87e5b583d6aa5f94076bb9fb"
     },
     {
       "path": "ci/test/media-corpus-ingestion/write-proof.py",

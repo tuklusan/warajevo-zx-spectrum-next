@@ -44,7 +44,7 @@ jobs:
           set -euo pipefail
           mkdir -p dist/media-corpus-ingestion/proof
           dist/media-corpus-ingestion/wz_media_corpus_ingestion test-media \
-            > dist/media-corpus-ingestion/media-summary.json
+            | tee dist/media-corpus-ingestion/media-summary.json
       - name: Write media-free pinned proof
         env:
           GITHUB_SHA: ${{ github.sha }}

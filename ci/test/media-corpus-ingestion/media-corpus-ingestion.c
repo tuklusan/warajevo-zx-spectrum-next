@@ -24,6 +24,9 @@ typedef struct {
     size_t tap_files;
     size_t tzx_files;
     size_t unsupported_tzx_blocks;
+    size_t tap_failures;
+    size_t tzx_failures;
+    size_t read_failures;
 } corpus_counts_t;
 
 static wz_byte_t* read_file(const char* path, size_t* length)
@@ -178,6 +181,7 @@ int main(int argc, char** argv)
         data = read_file(path, &length);
         if (data == NULL) {
             ++counts.malformed;
+            ++counts.read_failures;
             continue;
         }
         supported = is_tap ? parse_tap(data, length,
@@ -185,20 +189,27 @@ int main(int argc, char** argv)
             profile->master_ticks_per_cpu_tstate,
             &counts.unsupported_tzx_blocks, &unsupported_media);
         free(data);
-        if (!supported) ++counts.malformed;
+        if (!supported) {
+            ++counts.malformed;
+            if (is_tap) ++counts.tap_failures;
+            else ++counts.tzx_failures;
+        }
         else if (unsupported_media) ++counts.unsupported;
         else ++counts.supported;
     }
     closedir(directory);
+    printf("{\"status\":\"%s\",\"files\":%zu,\"tapFiles\":%zu,"
+           "\"tzxFiles\":%zu,\"supported\":%zu,\"unsupported\":%zu,"
+           "\"unsupportedTzxBlocks\":%zu,\"malformed\":%zu,"
+           "\"tapFailures\":%zu,\"tzxFailures\":%zu,\"readFailures\":%zu}\n",
+           counts.files != 0u && counts.malformed == 0u ? "pass" : "fail",
+           counts.files, counts.tap_files, counts.tzx_files, counts.supported,
+           counts.unsupported, counts.unsupported_tzx_blocks, counts.malformed,
+           counts.tap_failures, counts.tzx_failures, counts.read_failures);
     if (counts.files == 0u || counts.malformed != 0u) {
         fputs("media corpus contract: at least one tape was malformed or unreadable\n",
               stderr);
         return 1;
     }
-    printf("{\"status\":\"pass\",\"files\":%zu,\"tapFiles\":%zu,"
-           "\"tzxFiles\":%zu,\"supported\":%zu,\"unsupported\":%zu,"
-           "\"unsupportedTzxBlocks\":%zu,\"malformed\":0}\n",
-           counts.files, counts.tap_files, counts.tzx_files, counts.supported,
-           counts.unsupported, counts.unsupported_tzx_blocks);
     return 0;
 }
