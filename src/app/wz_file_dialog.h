@@ -21,4 +21,8 @@ typedef enum {
 wz_file_dialog_result_t wz_file_dialog_open(char* utf8_path,
                                             size_t path_capacity);
 
+/* Select a standard TAP destination and return its absolute UTF-8 path. */
+wz_file_dialog_result_t wz_file_dialog_save_tap(char* utf8_path,
+                                                size_t path_capacity);
+
 #endif

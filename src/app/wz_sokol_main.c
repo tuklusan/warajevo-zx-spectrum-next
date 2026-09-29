@@ -51,12 +51,23 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "core/audio/wz_audio_mixer.h"
 #include "app/wz_command_registry.h"
 #include "app/wz_file_dialog.h"
+#include "app/wz_host_output.h"
 #include "app/wz_file_open_run.h"
 #include "app/wz_networking_commands.h"
 #include "app/wz_tape_loading_commands.h"
 #include "app/wz_tape_media_commands.h"
+#include "app/wz_tape_manager.h"
 #include "app/wz_application_lifecycle.h"
 #include "app/wz_control_port.h"
+
+#define WZ_TAPE_MANAGER_MOVE_UP_COMMAND_ID "media.tape.manager.block.move_up"
+#define WZ_TAPE_MANAGER_MOVE_DOWN_COMMAND_ID "media.tape.manager.block.move_down"
+#define WZ_TAPE_MANAGER_DELETE_COMMAND_ID "media.tape.manager.block.delete"
+#define WZ_TAPE_MANAGER_IMPORT_COMMAND_ID "media.tape.manager.block.import"
+#define WZ_TAPE_MANAGER_COPY_COMMAND_ID "media.tape.manager.block.copy"
+#define WZ_TAPE_MANAGER_SAVE_COMMAND_ID "media.tape.manager.block.save"
+#define WZ_TAPE_MANAGER_DISCARD_COMMAND_ID "media.tape.manager.block.discard"
+#define WZ_TAPE_MANAGER_BYTE_COMMAND_ID "media.tape.manager.block.byte.set"
 #include "app/wz_host_socket.h"
 #include "app/wz_input_arbiter.h"
 #include "app/wz_input_focus.h"
@@ -143,6 +154,15 @@ typedef struct {
     size_t tape_block_count;
     wz_tzx_block_t* tzx_blocks;
     size_t tzx_block_count;
+    wz_tape_manager_transaction_t tape_edit_transaction;
+    wz_byte_t** tape_edit_owned_data;
+    size_t tape_edit_owned_count;
+    size_t tape_edit_owned_capacity;
+    char tape_edit_offset_text[5];
+    int tape_edit_offset_length;
+    char tape_edit_byte_text[3];
+    int tape_edit_byte_length;
+    size_t tape_edit_data_block;
     char tape_source_path[4096];
     char tape_format[8];
     wz_byte_t* microdrive_data;
@@ -162,6 +182,7 @@ typedef struct {
 
 static wz_host_session_t wz_host_session;
 static void wz_host_release_local_keys(void);
+static bool wz_host_extension_is(const char* path, const char* expected);
 
 static wz_qword_t wz_host_now_nanoseconds(void)
 {
@@ -537,7 +558,7 @@ static wz_result_t wz_host_index_standard_tap(const wz_byte_t* data,
         if (length - offset < 2u) return WZ_RESULT_PARSE_ERROR;
         block_length = (size_t)wz_read_le16(data + offset);
         offset += 2u;
-        if (block_length == 0u || block_length > length - offset ||
+        if (block_length < 2u || block_length > length - offset ||
             block_count == SIZE_MAX) return WZ_RESULT_PARSE_ERROR;
         ++block_count;
         offset += block_length;
@@ -552,7 +573,7 @@ static wz_result_t wz_host_index_standard_tap(const wz_byte_t* data,
         size_t block_length = (size_t)wz_read_le16(data + offset);
         offset += 2u;
         blocks[block_index].data = data + offset;
-        blocks[block_index].length = block_length;
+        blocks[block_index].length = block_length - 1u;
         offset += block_length;
         ++block_index;
     }
@@ -565,6 +586,299 @@ static size_t wz_host_read_le24(const wz_byte_t* data)
 {
     return (size_t)data[0] | ((size_t)data[1] << 8u) |
         ((size_t)data[2] << 16u);
+}
+
+static void wz_host_tape_edit_clear(wz_host_session_t* session)
+{
+    if (session == NULL) return;
+    free(session->tape_edit_transaction.edit.blocks);
+    for (size_t index = 0u; index < session->tape_edit_owned_count; ++index) {
+        free(session->tape_edit_owned_data[index]);
+    }
+    free(session->tape_edit_owned_data);
+    session->tape_edit_owned_data = NULL;
+    session->tape_edit_owned_count = 0u;
+    session->tape_edit_owned_capacity = 0u;
+    memset(&session->tape_edit_transaction, 0,
+           sizeof(session->tape_edit_transaction));
+    session->tape_edit_offset_text[0] = '\0';
+    session->tape_edit_offset_length = 0;
+    session->tape_edit_byte_text[0] = '\0';
+    session->tape_edit_byte_length = 0;
+    session->tape_edit_data_block = SIZE_MAX;
+}
+
+static bool wz_host_tape_edit_begin(wz_host_session_t* session)
+{
+    wz_tap_block_t* working;
+    if (session == NULL || strcmp(session->tape_format, "TAP") != 0 ||
+        session->tape_blocks == NULL || session->tape_block_count == 0u) {
+        return false;
+    }
+    if (session->tape_edit_transaction.edit.blocks != NULL) return true;
+    if (session->tape_block_count > SIZE_MAX / sizeof(*working)) return false;
+    working = (wz_tap_block_t*)malloc(
+        session->tape_block_count * sizeof(*working));
+    if (working == NULL) return false;
+    if (wz_tape_manager_transaction_init(&session->tape_edit_transaction,
+            session->tape_blocks, session->tape_block_count, working,
+            session->tape_block_count) != WZ_RESULT_OK) {
+        free(working);
+        return false;
+    }
+    return true;
+}
+
+static bool wz_host_tape_edit_reserve(wz_tape_manager_edit_t* edit,
+                                      size_t required)
+{
+    size_t capacity;
+    wz_tap_block_t* blocks;
+    if (edit == NULL || required == 0u) return false;
+    if (required <= edit->capacity) return true;
+    capacity = edit->capacity == 0u ? 4u : edit->capacity;
+    while (capacity < required) {
+        if (capacity > SIZE_MAX / 2u) {
+            capacity = required;
+            break;
+        }
+        capacity *= 2u;
+    }
+    if (capacity > SIZE_MAX / sizeof(*blocks)) return false;
+    blocks = (wz_tap_block_t*)realloc(edit->blocks,
+                                     capacity * sizeof(*blocks));
+    if (blocks == NULL) return false;
+    edit->blocks = blocks;
+    edit->capacity = capacity;
+    return true;
+}
+
+static bool wz_host_tape_edit_reserve_owned(wz_host_session_t* session,
+                                            size_t required)
+{
+    size_t capacity;
+    wz_byte_t** data;
+    if (session == NULL) return false;
+    if (required <= session->tape_edit_owned_capacity) return true;
+    capacity = session->tape_edit_owned_capacity == 0u ? 4u :
+        session->tape_edit_owned_capacity;
+    while (capacity < required) {
+        if (capacity > SIZE_MAX / 2u) {
+            capacity = required;
+            break;
+        }
+        capacity *= 2u;
+    }
+    if (capacity > SIZE_MAX / sizeof(*data)) return false;
+    data = (wz_byte_t**)realloc(session->tape_edit_owned_data,
+                                capacity * sizeof(*data));
+    if (data == NULL) return false;
+    session->tape_edit_owned_data = data;
+    session->tape_edit_owned_capacity = capacity;
+    return true;
+}
+
+static bool wz_host_tape_edit_add_import(wz_host_session_t* session,
+                                         const char* path)
+{
+    wz_byte_t* data = NULL;
+    size_t length = 0u;
+    size_t block_count = 0u;
+    wz_tap_block_t* imported = NULL;
+    wz_tape_manager_edit_t* edit;
+    size_t original_count;
+    bool had_transaction = false;
+    bool success = false;
+    if (session == NULL || path == NULL || session->machine.profile == NULL ||
+        !wz_host_extension_is(path, ".tap") ||
+        !wz_host_read_file(path, &data, &length)) return false;
+    had_transaction = session->tape_edit_transaction.edit.blocks != NULL;
+    if (wz_tape_parse_standard_tap(data, length,
+            session->machine.profile->master_ticks_per_cpu_tstate,
+            NULL, 0u, &block_count) != WZ_RESULT_BUFFER_TOO_SMALL ||
+        block_count == 0u || block_count > SIZE_MAX / sizeof(*imported)) {
+        goto cleanup;
+    }
+    if (wz_host_index_standard_tap(data, length, &imported, &block_count) !=
+        WZ_RESULT_OK) goto cleanup;
+    if (!wz_host_tape_edit_begin(session)) goto cleanup;
+    edit = wz_tape_manager_transaction_edit(&session->tape_edit_transaction);
+    if (edit == NULL || block_count > SIZE_MAX - edit->count ||
+        session->tape_edit_owned_count == SIZE_MAX ||
+        !wz_host_tape_edit_reserve(edit, edit->count + block_count) ||
+        !wz_host_tape_edit_reserve_owned(session,
+            session->tape_edit_owned_count + 1u)) goto cleanup;
+    original_count = edit->count;
+    for (size_t index = 0u; index < block_count; ++index) {
+        if (wz_tape_manager_add_block(edit, imported[index], edit->count) !=
+            WZ_RESULT_OK) {
+            edit->count = original_count;
+            goto cleanup;
+        }
+    }
+    session->tape_edit_owned_data[session->tape_edit_owned_count++] = data;
+    data = NULL;
+    session->tape_manager_selected_block = original_count;
+    session->tape_manager_block_page_start =
+        (original_count / 9u) * 9u;
+    success = true;
+cleanup:
+    if (!success && !had_transaction && session != NULL &&
+        session->tape_edit_transaction.edit.blocks != NULL) {
+        wz_host_tape_edit_clear(session);
+    }
+    free(imported);
+    free(data);
+    return success;
+}
+
+static bool wz_host_output_path(const char* path,
+                                char output[1024])
+{
+    if (path == NULL || output == NULL || path[0] == '\0') return false;
+#if defined(_WIN32)
+    {
+        int wide_length = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS,
+                                               path, -1, NULL, 0);
+        wchar_t* wide_path;
+        int encoded_length;
+        BOOL used_default = FALSE;
+        wchar_t roundtrip[4096];
+        int roundtrip_length;
+        if (wide_length <= 0 || wide_length > (int)(sizeof(roundtrip) / sizeof(roundtrip[0]))) {
+            return false;
+        }
+        wide_path = (wchar_t*)malloc((size_t)wide_length * sizeof(*wide_path));
+        if (wide_path == NULL) return false;
+        if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, path, -1,
+                                wide_path, wide_length) != wide_length) {
+            free(wide_path);
+            return false;
+        }
+        encoded_length = WideCharToMultiByte(CP_ACP, WC_NO_BEST_FIT_CHARS,
+            wide_path, -1, output, 1024, NULL, &used_default);
+        roundtrip_length = encoded_length > 0 && !used_default
+            ? MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, output, -1,
+                                  roundtrip, (int)(sizeof(roundtrip) / sizeof(roundtrip[0])))
+            : 0;
+        if (roundtrip_length != wide_length ||
+            CompareStringOrdinal(wide_path, -1, roundtrip, -1, FALSE) != CSTR_EQUAL) {
+            free(wide_path);
+            return false;
+        }
+        free(wide_path);
+        return true;
+    }
+#else
+    {
+        size_t length = strlen(path);
+        if (length >= 1024u) return false;
+        memcpy(output, path, length + 1u);
+        return true;
+    }
+#endif
+}
+
+static bool wz_host_write_standard_tap(const char* path,
+                                       const wz_tap_block_t* blocks,
+                                       size_t block_count)
+{
+    char output_path[1024];
+    wz_byte_t* output = NULL;
+    size_t length = 0u;
+    wz_result_t result;
+    bool success = false;
+    result = wz_tape_write_standard_tap(blocks, block_count, NULL, 0u,
+                                        &length);
+    if (result != WZ_RESULT_BUFFER_TOO_SMALL || length == 0u ||
+        !wz_host_output_path(path, output_path)) return false;
+    output = (wz_byte_t*)malloc(length);
+    if (output == NULL) return false;
+    if (wz_tape_write_standard_tap(blocks, block_count, output, length,
+                                   &length) == WZ_RESULT_OK) {
+        success = wz_host_output_write_atomic(output_path, output, length);
+    }
+    free(output);
+    return success;
+}
+
+static bool wz_host_tape_edit_save(wz_host_session_t* session)
+{
+    char output_path[1024];
+    wz_tape_manager_edit_t* edit;
+    wz_tap_block_t* committed = NULL;
+    wz_byte_t* image = NULL;
+    wz_tap_block_t* indexed_blocks = NULL;
+    wz_tape_segment_t* segments = NULL;
+    size_t block_count;
+    size_t image_length = 0u;
+    size_t segment_count = 0u;
+    wz_result_t result;
+    bool success = false;
+    if (session == NULL || session->tape_edit_transaction.edit.blocks == NULL ||
+        session->machine.profile == NULL ||
+        session->tape_source_path[0] == '\0' ||
+        session->machine.tape_state.motor_on ||
+        !wz_host_output_path(session->tape_source_path, output_path)) return false;
+    edit = wz_tape_manager_transaction_edit(&session->tape_edit_transaction);
+    if (edit == NULL) return false;
+    block_count = edit->count;
+    if (block_count == 0u || block_count > SIZE_MAX / sizeof(*committed)) {
+        return false;
+    }
+    committed = (wz_tap_block_t*)malloc(block_count * sizeof(*committed));
+    if (committed == NULL) goto cleanup;
+    memcpy(committed, edit->blocks, block_count * sizeof(*committed));
+    result = wz_tape_write_standard_tap(committed, block_count, NULL, 0u,
+                                        &image_length);
+    if (result != WZ_RESULT_BUFFER_TOO_SMALL || image_length == 0u) goto cleanup;
+    image = (wz_byte_t*)malloc(image_length);
+    if (image == NULL || wz_tape_write_standard_tap(committed, block_count,
+            image, image_length, &image_length) != WZ_RESULT_OK) goto cleanup;
+    result = wz_tape_parse_standard_tap(image, image_length,
+        session->machine.profile->master_ticks_per_cpu_tstate,
+        NULL, 0u, &segment_count);
+    if (result != WZ_RESULT_BUFFER_TOO_SMALL || segment_count == 0u ||
+        segment_count > SIZE_MAX / sizeof(*segments)) goto cleanup;
+    segments = (wz_tape_segment_t*)malloc(segment_count * sizeof(*segments));
+    if (segments == NULL || wz_tape_parse_standard_tap(image, image_length,
+            session->machine.profile->master_ticks_per_cpu_tstate,
+            segments, segment_count, &segment_count) != WZ_RESULT_OK ||
+        wz_host_index_standard_tap(image, image_length, &indexed_blocks,
+                                   &block_count) != WZ_RESULT_OK) goto cleanup;
+    if (!wz_host_output_write_atomic(output_path, image,
+                                     image_length) ||
+        !wz_host_mount_tape_segments(session, segments, segment_count)) {
+        goto cleanup;
+    }
+    segments = NULL;
+    wz_host_tape_edit_clear(session);
+    free(session->tape_image_data);
+    free(session->tape_blocks);
+    session->tape_image_data = image;
+    session->tape_image_length = image_length;
+    session->tape_blocks = indexed_blocks;
+    session->tape_block_count = block_count;
+    session->tape_manager_selected_block = 0u;
+    session->tape_manager_block_page_start = 0u;
+    image = NULL;
+    indexed_blocks = NULL;
+    (void)snprintf(session->file_notification,
+                   sizeof(session->file_notification), "Tape edits saved");
+    success = true;
+cleanup:
+    free(committed);
+    free(indexed_blocks);
+    free(segments);
+    free(image);
+    return success;
+}
+
+static bool wz_host_tape_export_block(const char* path,
+                                      const wz_tap_block_t* block)
+{
+    if (block == NULL) return false;
+    return wz_host_write_standard_tap(path, block, 1u);
 }
 
 static bool wz_host_load_external_tape(wz_host_session_t* session,
@@ -631,6 +945,7 @@ static bool wz_host_load_external_tape(wz_host_session_t* session,
     if (parsed == WZ_RESULT_OK && segments != NULL && segment_count != 0u &&
         wz_host_mount_tape_segments(session, segments, segment_count)) {
         segments = NULL;
+        wz_host_tape_edit_clear(session);
         free(session->tape_image_data);
         free(session->tape_blocks);
         free(session->tzx_blocks);
@@ -752,6 +1067,7 @@ static void wz_host_tape_media_release(void* context)
 {
     wz_host_session_t* session = (wz_host_session_t*)context;
     if (session == NULL) return;
+    wz_host_tape_edit_clear(session);
     free(session->tape_segments);
     session->tape_segments = NULL;
     session->tape_segment_count = 0u;
@@ -820,6 +1136,340 @@ static void wz_host_ui_insert_tape(void)
     }
     (void)snprintf(wz_host_session.file_notification,
         sizeof(wz_host_session.file_notification), "Tape inserted");
+}
+
+static wz_file_dialog_result_t wz_host_ui_choose_tape_path(bool save_tap,
+                                                            char* path,
+                                                            size_t capacity)
+{
+    wz_file_dialog_result_t result;
+    wz_qword_t sleep_nanoseconds;
+    wz_host_release_local_keys();
+    if (!wz_input_focus_dialog_enter(&wz_host_session.input_focus)) {
+        (void)snprintf(wz_host_session.file_notification,
+            sizeof(wz_host_session.file_notification),
+            "File dialog unavailable");
+        return WZ_FILE_DIALOG_FAILED;
+    }
+    result = save_tap ? wz_file_dialog_save_tap(path, capacity) :
+        wz_file_dialog_open(path, capacity);
+    (void)wz_input_focus_dialog_leave(&wz_host_session.input_focus);
+    if (wz_host_session.pacing_initialized) {
+        (void)wz_host_pacing_wait(&wz_host_session.pacing,
+            wz_host_now_nanoseconds(), wz_host_session.machine.master_tick,
+            NULL, NULL, &sleep_nanoseconds);
+    }
+    return result;
+}
+
+static bool wz_host_ui_import_tap_blocks(void)
+{
+    char path[4096];
+    wz_file_dialog_result_t result;
+    if (wz_host_session.machine.tape_state.motor_on) {
+        (void)snprintf(wz_host_session.file_notification,
+            sizeof(wz_host_session.file_notification), "Stop tape before editing");
+        return false;
+    }
+    result = wz_host_ui_choose_tape_path(false, path, sizeof(path));
+    if (result == WZ_FILE_DIALOG_CANCELLED) return true;
+    if (result != WZ_FILE_DIALOG_SELECTED ||
+        !wz_host_tape_edit_add_import(&wz_host_session, path)) {
+        (void)snprintf(wz_host_session.file_notification,
+            sizeof(wz_host_session.file_notification), "TAP import failed");
+        return false;
+    }
+    (void)snprintf(wz_host_session.file_notification,
+        sizeof(wz_host_session.file_notification), "TAP blocks added; save edits");
+    return true;
+}
+
+static bool wz_host_ui_export_tape_block(void)
+{
+    wz_tap_block_t block;
+    wz_tape_manager_edit_t* edit =
+        wz_tape_manager_transaction_edit(&wz_host_session.tape_edit_transaction);
+    const wz_tap_block_t* blocks = edit != NULL ? edit->blocks :
+        wz_host_session.tape_blocks;
+    size_t count = edit != NULL ? edit->count :
+        wz_host_session.tape_block_count;
+    char path[4096];
+    wz_file_dialog_result_t result;
+    if (wz_host_session.tape_manager_selected_block >= count ||
+        wz_tape_manager_copy_block_to_new(
+            &(wz_tape_manager_edit_t){(wz_tap_block_t*)blocks, count, count},
+            wz_host_session.tape_manager_selected_block, &block) != WZ_RESULT_OK) {
+        return false;
+    }
+    result = wz_host_ui_choose_tape_path(true, path, sizeof(path));
+    if (result == WZ_FILE_DIALOG_CANCELLED) return true;
+    if (result != WZ_FILE_DIALOG_SELECTED ||
+        !wz_host_extension_is(path, ".tap") ||
+        !wz_host_tape_export_block(path, &block)) {
+        (void)snprintf(wz_host_session.file_notification,
+            sizeof(wz_host_session.file_notification), "TAP block export failed");
+        return false;
+    }
+    (void)snprintf(wz_host_session.file_notification,
+        sizeof(wz_host_session.file_notification), "TAP block exported");
+    return true;
+}
+
+static bool wz_host_parse_hex_value(const char* text, size_t max_digits,
+                                    size_t* value)
+{
+    size_t parsed = 0u;
+    size_t length;
+    if (text == NULL || value == NULL) return false;
+    length = strlen(text);
+    if (length == 0u || length > max_digits) return false;
+    for (size_t index = 0u; index < length; ++index) {
+        unsigned char character = (unsigned char)text[index];
+        size_t digit;
+        if (character >= '0' && character <= '9') digit = character - '0';
+        else if (character >= 'a' && character <= 'f') digit = character - 'a' + 10u;
+        else if (character >= 'A' && character <= 'F') digit = character - 'A' + 10u;
+        else return false;
+        parsed = (parsed << 4u) | digit;
+    }
+    *value = parsed;
+    return true;
+}
+
+static bool wz_host_tape_edit_data_byte(wz_host_session_t* session,
+                                        size_t block_index)
+{
+    wz_tape_manager_edit_t* edit;
+    wz_tap_block_t replacement;
+    size_t offset;
+    size_t value;
+    wz_byte_t* data;
+    if (session == NULL ||
+        !wz_host_parse_hex_value(session->tape_edit_offset_text, 4u, &offset) ||
+        !wz_host_parse_hex_value(session->tape_edit_byte_text, 2u, &value) ||
+        value > 0xffu ||
+        !wz_host_tape_edit_begin(session)) return false;
+    edit = wz_tape_manager_transaction_edit(&session->tape_edit_transaction);
+    if (edit == NULL || block_index >= edit->count ||
+        edit->blocks[block_index].data == NULL ||
+        edit->blocks[block_index].length == 0u ||
+        offset >= edit->blocks[block_index].length ||
+        session->tape_edit_owned_count == SIZE_MAX) return false;
+    data = (wz_byte_t*)malloc(edit->blocks[block_index].length);
+    if (data == NULL) return false;
+    memcpy(data, edit->blocks[block_index].data,
+           edit->blocks[block_index].length);
+    data[offset] = (wz_byte_t)value;
+    replacement.data = data;
+    replacement.length = edit->blocks[block_index].length;
+    if (!wz_host_tape_edit_reserve_owned(session,
+            session->tape_edit_owned_count + 1u) ||
+        wz_tape_manager_edit_block(edit, block_index, replacement) !=
+            WZ_RESULT_OK) {
+        free(data);
+        return false;
+    }
+    session->tape_edit_owned_data[session->tape_edit_owned_count++] = data;
+    return true;
+}
+
+static void wz_host_ui_move_tape_block(int direction)
+{
+    wz_tape_manager_edit_t* edit;
+    size_t selected = wz_host_session.tape_manager_selected_block;
+    size_t destination;
+    if (wz_host_session.machine.tape_state.motor_on ||
+        !wz_host_tape_edit_begin(&wz_host_session)) return;
+    edit = wz_tape_manager_transaction_edit(
+        &wz_host_session.tape_edit_transaction);
+    if (edit == NULL || selected >= edit->count) return;
+    if (direction < 0) {
+        if (selected == 0u) return;
+        destination = selected - 1u;
+    } else {
+        if (selected + 1u >= edit->count) return;
+        destination = selected + 1u;
+    }
+    if (wz_tape_manager_change_position(edit, selected, destination) ==
+        WZ_RESULT_OK) {
+        wz_host_session.tape_manager_selected_block = destination;
+        wz_host_session.tape_manager_block_page_start = (destination / 9u) * 9u;
+        (void)snprintf(wz_host_session.file_notification,
+            sizeof(wz_host_session.file_notification),
+            "Block moved; save edits to replace the tape");
+    }
+}
+
+static void wz_host_ui_delete_tape_block(void)
+{
+    wz_tape_manager_edit_t* edit;
+    size_t selected = wz_host_session.tape_manager_selected_block;
+    if (wz_host_session.machine.tape_state.motor_on ||
+        !wz_host_tape_edit_begin(&wz_host_session)) return;
+    edit = wz_tape_manager_transaction_edit(
+        &wz_host_session.tape_edit_transaction);
+    if (edit == NULL || edit->count <= 1u || selected >= edit->count ||
+        wz_tape_manager_delete_block(edit, selected) != WZ_RESULT_OK) return;
+    if (selected >= edit->count) selected = edit->count - 1u;
+    wz_host_session.tape_manager_selected_block = selected;
+    wz_host_session.tape_manager_block_page_start = (selected / 9u) * 9u;
+    (void)snprintf(wz_host_session.file_notification,
+        sizeof(wz_host_session.file_notification),
+        "Block deleted; save edits to replace the tape");
+}
+
+static bool wz_host_ui_apply_tape_edits(void)
+{
+    if (!wz_host_tape_edit_save(&wz_host_session)) {
+        (void)snprintf(wz_host_session.file_notification,
+            sizeof(wz_host_session.file_notification), "Could not save tape edits");
+        return false;
+    }
+    return true;
+}
+
+static void wz_host_ui_discard_tape_edits(void)
+{
+    wz_host_tape_edit_clear(&wz_host_session);
+    wz_host_session.tape_manager_selected_block = 0u;
+    wz_host_session.tape_manager_block_page_start = 0u;
+    (void)snprintf(wz_host_session.file_notification,
+        sizeof(wz_host_session.file_notification), "Tape edits discarded");
+}
+
+static bool wz_host_tape_manager_command_available(const void* context,
+                                                  const char** reason)
+{
+    const char* command_id = (const char*)context;
+    wz_tape_manager_edit_t* edit = wz_tape_manager_transaction_edit(
+        &wz_host_session.tape_edit_transaction);
+    size_t count = edit == NULL ? wz_host_session.tape_block_count : edit->count;
+    size_t selected = wz_host_session.tape_manager_selected_block;
+    if (reason != NULL) *reason = NULL;
+    if (wz_host_session.machine.tape_mounted == 0u ||
+        strcmp(wz_host_session.tape_format, "TAP") != 0) {
+        if (reason != NULL) *reason = "standard-tap-required";
+        return false;
+    }
+    if (command_id == NULL) {
+        if (reason != NULL) *reason = "command-unavailable";
+        return false;
+    }
+    if (wz_host_session.machine.tape_state.motor_on &&
+        strcmp(command_id, WZ_TAPE_MANAGER_COPY_COMMAND_ID) != 0) {
+        if (reason != NULL) *reason = "stop-tape-first";
+        return false;
+    }
+    if (strcmp(command_id, WZ_TAPE_MANAGER_SAVE_COMMAND_ID) == 0 ||
+        strcmp(command_id, WZ_TAPE_MANAGER_DISCARD_COMMAND_ID) == 0) {
+        if (edit == NULL) {
+            if (reason != NULL) *reason = "no-pending-changes";
+            return false;
+        }
+    }
+    if (selected >= count) {
+        if (reason != NULL) *reason = "no-block-selected";
+        return false;
+    }
+    if (strcmp(command_id, WZ_TAPE_MANAGER_MOVE_UP_COMMAND_ID) == 0 &&
+        selected == 0u) {
+        if (reason != NULL) *reason = "first-block";
+        return false;
+    }
+    if (strcmp(command_id, WZ_TAPE_MANAGER_MOVE_DOWN_COMMAND_ID) == 0 &&
+        selected + 1u >= count) {
+        if (reason != NULL) *reason = "last-block";
+        return false;
+    }
+    if (strcmp(command_id, WZ_TAPE_MANAGER_DELETE_COMMAND_ID) == 0 &&
+        count <= 1u) {
+        if (reason != NULL) *reason = "tape-must-retain-one-block";
+        return false;
+    }
+    return true;
+}
+
+static wz_result_t wz_host_command_tape_manager_edit(
+    const void* context, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    const char* command_id = (const char*)context;
+    if (command_id == NULL || result == NULL || arguments.size != 0u) {
+        if (result != NULL) {
+            result->status = WZ_COMMAND_RESULT_REJECTED;
+            result->reason = "invalid-tape-manager-command";
+        }
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (strcmp(command_id, WZ_TAPE_MANAGER_MOVE_UP_COMMAND_ID) == 0) {
+        wz_host_ui_move_tape_block(-1);
+    } else if (strcmp(command_id, WZ_TAPE_MANAGER_MOVE_DOWN_COMMAND_ID) == 0) {
+        wz_host_ui_move_tape_block(1);
+    } else if (strcmp(command_id, WZ_TAPE_MANAGER_DELETE_COMMAND_ID) == 0) {
+        wz_host_ui_delete_tape_block();
+    } else if (strcmp(command_id, WZ_TAPE_MANAGER_IMPORT_COMMAND_ID) == 0) {
+        if (!wz_host_ui_import_tap_blocks()) {
+            result->status = WZ_COMMAND_RESULT_FAILED;
+            result->reason = "tape-import-failed";
+            return WZ_RESULT_PARSE_ERROR;
+        }
+    } else if (strcmp(command_id, WZ_TAPE_MANAGER_COPY_COMMAND_ID) == 0) {
+        if (!wz_host_ui_export_tape_block()) {
+            result->status = WZ_COMMAND_RESULT_FAILED;
+            result->reason = "tape-block-export-failed";
+            return WZ_RESULT_INVALID_STATE;
+        }
+    } else if (strcmp(command_id, WZ_TAPE_MANAGER_SAVE_COMMAND_ID) == 0) {
+        if (!wz_host_ui_apply_tape_edits()) {
+            result->status = WZ_COMMAND_RESULT_FAILED;
+            result->reason = "tape-edit-save-failed";
+            return WZ_RESULT_INVALID_STATE;
+        }
+    } else if (strcmp(command_id, WZ_TAPE_MANAGER_DISCARD_COMMAND_ID) == 0) {
+        wz_host_ui_discard_tape_edits();
+    } else if (strcmp(command_id, WZ_TAPE_MANAGER_BYTE_COMMAND_ID) == 0) {
+        if (!wz_host_tape_edit_data_byte(&wz_host_session,
+                wz_host_session.tape_manager_selected_block)) {
+            result->status = WZ_COMMAND_RESULT_FAILED;
+            result->reason = "invalid-tape-block-byte-edit";
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        (void)snprintf(wz_host_session.file_notification,
+            sizeof(wz_host_session.file_notification),
+            "Block byte changed; save edits to replace the tape");
+    } else {
+        result->status = WZ_COMMAND_RESULT_REJECTED;
+        result->reason = "unknown-tape-manager-command";
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    result->status = WZ_COMMAND_RESULT_SUCCESS;
+    (void)snprintf(result->message, sizeof(result->message), "%s",
+        wz_host_session.file_notification[0] == '\0' ?
+            "Tape manager operation complete" :
+            wz_host_session.file_notification);
+    return WZ_RESULT_OK;
+}
+
+static void wz_host_ui_dispatch_tape_manager_command(const char* command_id)
+{
+    wz_command_result_t result = {0};
+    if (wz_command_registry_dispatch(&wz_host_session.command_registry,
+            command_id, (wz_command_arguments_t){NULL, 0u}, &result) !=
+            WZ_RESULT_OK) {
+        (void)snprintf(wz_host_session.file_notification,
+            sizeof(wz_host_session.file_notification), "%s",
+            result.reason == NULL ? "Tape manager command failed" :
+                result.reason);
+    }
+}
+
+static bool wz_host_tape_manager_command_enabled(const char* command_id)
+{
+    const wz_command_metadata_t* command = wz_command_registry_find(
+        &wz_host_session.command_registry, command_id);
+    return command != NULL && wz_command_registry_state(
+        &wz_host_session.command_registry, command->id, NULL) ==
+            WZ_COMMAND_ENABLED;
 }
 
 static wz_result_t wz_host_command_open_run(
@@ -1066,6 +1716,60 @@ static wz_result_t wz_host_command_speed(
 
 static bool wz_host_register_commands(void)
 {
+    static const wz_command_metadata_t tape_manager_commands[] = {
+        {WZ_TAPE_MANAGER_MOVE_UP_COMMAND_ID, "Move tape block up",
+         "Move the selected standard TAP block up one position", "media",
+         "NONE", "wz-command-result", "wz_host_command_tape_manager_edit",
+         "local", NULL, WZ_COMMAND_LOCAL_ONLY,
+         wz_host_tape_manager_command_available,
+         wz_host_command_tape_manager_edit,
+         WZ_TAPE_MANAGER_MOVE_UP_COMMAND_ID, true, false, NULL},
+        {WZ_TAPE_MANAGER_MOVE_DOWN_COMMAND_ID, "Move tape block down",
+         "Move the selected standard TAP block down one position", "media",
+         "NONE", "wz-command-result", "wz_host_command_tape_manager_edit",
+         "local", NULL, WZ_COMMAND_LOCAL_ONLY,
+         wz_host_tape_manager_command_available,
+         wz_host_command_tape_manager_edit,
+         WZ_TAPE_MANAGER_MOVE_DOWN_COMMAND_ID, true, false, NULL},
+        {WZ_TAPE_MANAGER_DELETE_COMMAND_ID, "Delete tape block",
+         "Delete the selected standard TAP block", "media", "NONE",
+         "wz-command-result", "wz_host_command_tape_manager_edit", "local",
+         NULL, WZ_COMMAND_LOCAL_ONLY, wz_host_tape_manager_command_available,
+         wz_host_command_tape_manager_edit,
+         WZ_TAPE_MANAGER_DELETE_COMMAND_ID, true, false, NULL},
+        {WZ_TAPE_MANAGER_IMPORT_COMMAND_ID, "Import TAP blocks",
+         "Append blocks from another standard TAP image", "media", "NONE",
+         "wz-command-result", "wz_host_command_tape_manager_edit", "local",
+         NULL, WZ_COMMAND_LOCAL_ONLY, wz_host_tape_manager_command_available,
+         wz_host_command_tape_manager_edit,
+         WZ_TAPE_MANAGER_IMPORT_COMMAND_ID, true, false, NULL},
+        {WZ_TAPE_MANAGER_COPY_COMMAND_ID, "Copy tape block to new TAP",
+         "Write the selected standard TAP block to a new tape image", "media",
+         "NONE", "wz-command-result", "wz_host_command_tape_manager_edit",
+         "local", NULL, WZ_COMMAND_LOCAL_ONLY,
+         wz_host_tape_manager_command_available,
+         wz_host_command_tape_manager_edit,
+         WZ_TAPE_MANAGER_COPY_COMMAND_ID, false, false, NULL},
+        {WZ_TAPE_MANAGER_SAVE_COMMAND_ID, "Save tape block edits",
+         "Atomically replace the mounted standard TAP with staged edits",
+         "media", "NONE", "wz-command-result",
+         "wz_host_command_tape_manager_edit", "local", NULL,
+         WZ_COMMAND_LOCAL_ONLY, wz_host_tape_manager_command_available,
+         wz_host_command_tape_manager_edit,
+         WZ_TAPE_MANAGER_SAVE_COMMAND_ID, true, false, NULL},
+        {WZ_TAPE_MANAGER_DISCARD_COMMAND_ID, "Discard tape block edits",
+         "Discard all staged standard TAP block edits", "media", "NONE",
+         "wz-command-result", "wz_host_command_tape_manager_edit", "local",
+         NULL, WZ_COMMAND_LOCAL_ONLY, wz_host_tape_manager_command_available,
+         wz_host_command_tape_manager_edit,
+         WZ_TAPE_MANAGER_DISCARD_COMMAND_ID, false, false, NULL},
+        {WZ_TAPE_MANAGER_BYTE_COMMAND_ID, "Set TAP block byte",
+         "Edit a standard TAP block byte; its checksum is regenerated", "media", "NONE",
+         "wz-command-result", "wz_host_command_tape_manager_edit", "local",
+         NULL, WZ_COMMAND_LOCAL_ONLY, wz_host_tape_manager_command_available,
+         wz_host_command_tape_manager_edit,
+         WZ_TAPE_MANAGER_BYTE_COMMAND_ID, true, false, NULL}
+    };
     static const wz_command_metadata_t commands[] = {
         {
             "file.open_run", "Open / Run...",
@@ -1128,6 +1832,11 @@ static bool wz_host_register_commands(void)
                                          commands[index]) != WZ_RESULT_OK) {
             return false;
         }
+    }
+    for (index = 0u; index < sizeof(tape_manager_commands) /
+            sizeof(tape_manager_commands[0]); ++index) {
+        if (wz_command_registry_register(&wz_host_session.command_registry,
+                tape_manager_commands[index]) != WZ_RESULT_OK) return false;
     }
     wz_host_session.networking_command_context.machine =
         &wz_host_session.machine;
@@ -1628,6 +2337,8 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
 {
     char line[192];
     const wz_machine_t* machine = &wz_host_session.machine;
+    wz_tape_manager_edit_t* tap_edit = NULL;
+    const wz_tap_block_t* tap_blocks = NULL;
     size_t first_segment;
     size_t end_segment;
     size_t current_segment;
@@ -1639,7 +2350,7 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
     if (!nk_begin(context, "Tape Manager",
             nk_rect(width - panel_width - 8.0f,
                     WZ_UI_MENU_BAR_HEIGHT + WZ_UI_TOOLBAR_HEIGHT + 8.0f,
-                    panel_width, 380.0f),
+                    panel_width, 600.0f),
             NK_WINDOW_BORDER | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE |
                 NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE)) {
         nk_end(context);
@@ -1684,10 +2395,18 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
         (unsigned long long)(current_segment + 1u),
         (unsigned long long)wz_host_session.tape_segment_count);
     nk_label(context, line, NK_TEXT_LEFT);
-    block_count = strcmp(wz_host_session.tape_format, "TAP") == 0 ?
-        wz_host_session.tape_block_count :
-        strcmp(wz_host_session.tape_format, "TZX") == 0 ?
-            wz_host_session.tzx_block_count : 0u;
+    if (strcmp(wz_host_session.tape_format, "TAP") == 0) {
+        tap_edit = wz_tape_manager_transaction_edit(
+            &wz_host_session.tape_edit_transaction);
+        tap_blocks = tap_edit != NULL ? tap_edit->blocks :
+            wz_host_session.tape_blocks;
+        block_count = tap_edit != NULL ? tap_edit->count :
+            wz_host_session.tape_block_count;
+    } else if (strcmp(wz_host_session.tape_format, "TZX") == 0) {
+        block_count = wz_host_session.tzx_block_count;
+    } else {
+        block_count = 0u;
+    }
     if (block_count != 0u) {
         size_t selected = wz_host_session.tape_manager_selected_block;
         first_segment = wz_host_session.tape_manager_block_page_start;
@@ -1697,7 +2416,8 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
         }
         end_segment = first_segment + 9u;
         if (end_segment > block_count) end_segment = block_count;
-        nk_label(context, "Tape blocks (read only)", NK_TEXT_LEFT);
+        nk_label(context, tap_edit == NULL ? "Tape blocks" :
+                 "Tape blocks (changes pending)", NK_TEXT_LEFT);
         nk_layout_row_dynamic(context, 24.0f, 2);
         if (nk_button_label(context, "Previous blocks") && first_segment > 0u) {
             first_segment = first_segment >= 9u ? first_segment - 9u : 0u;
@@ -1718,7 +2438,7 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
         nk_layout_row_dynamic(context, 24.0f, 1);
         for (size_t index = first_segment; index < end_segment; ++index) {
             if (strcmp(wz_host_session.tape_format, "TAP") == 0) {
-                const wz_tap_block_t* block = &wz_host_session.tape_blocks[index];
+                const wz_tap_block_t* block = &tap_blocks[index];
                 const char* type = "Data";
                 char name[11] = {0};
                 if (block->data == NULL || block->length == 0u) {
@@ -1729,7 +2449,7 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
                     nk_label(context, line, NK_TEXT_LEFT);
                     continue;
                 }
-                bool has_header = block->length == 19u && block->data[0] == 0u;
+                bool has_header = block->length == 18u && block->data[0] == 0u;
                 if (has_header) {
                     switch (block->data[1]) {
                     case 0u: type = "Program header"; break;
@@ -1750,20 +2470,21 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
                 }
                 if (has_header) {
                     (void)snprintf(line, sizeof(line),
-                        "%sBlock %llu | %s \"%.10s\" | flag %02X | data %u bytes",
+                        "%sBlock %llu | %s \"%.10s\" | flag %02X | data %u / stored %llu bytes",
                         index == selected ? "> " : "  ",
                         (unsigned long long)(index + 1u), type, name,
                         (unsigned int)block->data[0],
-                        (unsigned int)wz_read_le16(block->data + 12u));
+                        (unsigned int)wz_read_le16(block->data + 12u),
+                        (unsigned long long)(block->length + 3u));
                 } else {
                     (void)snprintf(line, sizeof(line),
                         "%sBlock %llu | %s | flag %02X | logical %llu / stored %llu bytes",
                         index == selected ? "> " : "  ",
                         (unsigned long long)(index + 1u), type,
                         (unsigned int)block->data[0],
-                        (unsigned long long)(block->length > 2u ?
-                            block->length - 2u : 0u),
-                        (unsigned long long)(block->length + 2u));
+                        (unsigned long long)(block->length > 1u ?
+                            block->length - 1u : 0u),
+                        (unsigned long long)(block->length + 3u));
                 }
             } else {
                 const wz_tzx_block_t* block = &wz_host_session.tzx_blocks[index];
@@ -1836,6 +2557,179 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
             }
             if (nk_button_label(context, line)) {
                 wz_host_session.tape_manager_selected_block = index;
+                wz_host_session.tape_edit_data_block = SIZE_MAX;
+            }
+        }
+        if (strcmp(wz_host_session.tape_format, "TAP") == 0) {
+            bool can_edit = !machine->tape_state.motor_on;
+            bool has_edits = tap_edit != NULL;
+            nk_layout_row_dynamic(context, 20.0f, 1);
+            if (can_edit) nk_label(context,
+                "Standard TAP edits are staged until saved", NK_TEXT_LEFT);
+            else nk_label(context, "Stop playback to edit tape blocks",
+                          NK_TEXT_LEFT);
+            nk_layout_row_dynamic(context, 24.0f, 2);
+            if (!wz_host_tape_manager_command_enabled(
+                    WZ_TAPE_MANAGER_MOVE_UP_COMMAND_ID))
+                nk_widget_disable_begin(context);
+            if (nk_button_label(context, "Move Up")) {
+                wz_host_ui_dispatch_tape_manager_command(
+                    WZ_TAPE_MANAGER_MOVE_UP_COMMAND_ID);
+            }
+            if (!wz_host_tape_manager_command_enabled(
+                    WZ_TAPE_MANAGER_MOVE_UP_COMMAND_ID))
+                nk_widget_disable_end(context);
+            if (!wz_host_tape_manager_command_enabled(
+                    WZ_TAPE_MANAGER_MOVE_DOWN_COMMAND_ID))
+                nk_widget_disable_begin(context);
+            if (nk_button_label(context, "Move Down")) {
+                wz_host_ui_dispatch_tape_manager_command(
+                    WZ_TAPE_MANAGER_MOVE_DOWN_COMMAND_ID);
+            }
+            if (!wz_host_tape_manager_command_enabled(
+                    WZ_TAPE_MANAGER_MOVE_DOWN_COMMAND_ID))
+                nk_widget_disable_end(context);
+            nk_layout_row_dynamic(context, 24.0f, 2);
+            if (!wz_host_tape_manager_command_enabled(
+                    WZ_TAPE_MANAGER_DELETE_COMMAND_ID))
+                nk_widget_disable_begin(context);
+            if (nk_button_label(context, "Delete Block")) {
+                wz_host_ui_dispatch_tape_manager_command(
+                    WZ_TAPE_MANAGER_DELETE_COMMAND_ID);
+            }
+            if (!wz_host_tape_manager_command_enabled(
+                    WZ_TAPE_MANAGER_DELETE_COMMAND_ID))
+                nk_widget_disable_end(context);
+            if (!wz_host_tape_manager_command_enabled(
+                    WZ_TAPE_MANAGER_IMPORT_COMMAND_ID))
+                nk_widget_disable_begin(context);
+            if (nk_button_label(context, "Import TAP Blocks...")) {
+                wz_host_ui_dispatch_tape_manager_command(
+                    WZ_TAPE_MANAGER_IMPORT_COMMAND_ID);
+            }
+            if (!wz_host_tape_manager_command_enabled(
+                    WZ_TAPE_MANAGER_IMPORT_COMMAND_ID))
+                nk_widget_disable_end(context);
+            nk_layout_row_dynamic(context, 24.0f, 2);
+            if (!wz_host_tape_manager_command_enabled(
+                    WZ_TAPE_MANAGER_COPY_COMMAND_ID))
+                nk_widget_disable_begin(context);
+            if (nk_button_label(context, "Copy Selected to TAP...")) {
+                wz_host_ui_dispatch_tape_manager_command(
+                    WZ_TAPE_MANAGER_COPY_COMMAND_ID);
+            }
+            if (!wz_host_tape_manager_command_enabled(
+                    WZ_TAPE_MANAGER_COPY_COMMAND_ID))
+                nk_widget_disable_end(context);
+            if (!wz_host_tape_manager_command_enabled(
+                    WZ_TAPE_MANAGER_SAVE_COMMAND_ID))
+                nk_widget_disable_begin(context);
+            if (nk_button_label(context, "Apply & Save")) {
+                wz_host_ui_dispatch_tape_manager_command(
+                    WZ_TAPE_MANAGER_SAVE_COMMAND_ID);
+                if (wz_host_session.tape_edit_transaction.edit.blocks == NULL) {
+                    has_edits = false;
+                    tap_edit = NULL;
+                    tap_blocks = wz_host_session.tape_blocks;
+                    block_count = wz_host_session.tape_block_count;
+                }
+            }
+            if (!wz_host_tape_manager_command_enabled(
+                    WZ_TAPE_MANAGER_SAVE_COMMAND_ID))
+                nk_widget_disable_end(context);
+            nk_layout_row_dynamic(context, 24.0f, 1);
+            if (!wz_host_tape_manager_command_enabled(
+                    WZ_TAPE_MANAGER_DISCARD_COMMAND_ID))
+                nk_widget_disable_begin(context);
+            if (nk_button_label(context, "Discard Changes")) {
+                wz_host_ui_dispatch_tape_manager_command(
+                    WZ_TAPE_MANAGER_DISCARD_COMMAND_ID);
+                has_edits = false;
+                tap_edit = NULL;
+                tap_blocks = wz_host_session.tape_blocks;
+                block_count = wz_host_session.tape_block_count;
+            }
+            if (!wz_host_tape_manager_command_enabled(
+                    WZ_TAPE_MANAGER_DISCARD_COMMAND_ID))
+                nk_widget_disable_end(context);
+            tap_edit = wz_tape_manager_transaction_edit(
+                &wz_host_session.tape_edit_transaction);
+            if (tap_edit != NULL) {
+                tap_blocks = tap_edit->blocks;
+                block_count = tap_edit->count;
+                has_edits = true;
+            }
+            if (wz_host_session.tape_manager_selected_block < block_count) {
+                wz_tap_block_t* selected_block =
+                    (wz_tap_block_t*)&tap_blocks[
+                        wz_host_session.tape_manager_selected_block];
+                nk_layout_row_dynamic(context, 20.0f, 2);
+                if (!wz_host_tape_manager_command_enabled(
+                        WZ_TAPE_MANAGER_BYTE_COMMAND_ID))
+                    nk_widget_disable_begin(context);
+                nk_label(context, "Byte offset (hex)", NK_TEXT_LEFT);
+                if (wz_host_session.tape_edit_data_block !=
+                    wz_host_session.tape_manager_selected_block) {
+                    (void)snprintf(wz_host_session.tape_edit_offset_text,
+                        sizeof(wz_host_session.tape_edit_offset_text), "00");
+                    wz_host_session.tape_edit_offset_length = 2;
+                    (void)snprintf(wz_host_session.tape_edit_byte_text,
+                        sizeof(wz_host_session.tape_edit_byte_text), "%02X",
+                        (unsigned int)selected_block->data[0]);
+                    wz_host_session.tape_edit_byte_length = 2;
+                    wz_host_session.tape_edit_data_block =
+                        wz_host_session.tape_manager_selected_block;
+                }
+                (void)nk_edit_string(context, NK_EDIT_FIELD,
+                    wz_host_session.tape_edit_offset_text,
+                    &wz_host_session.tape_edit_offset_length,
+                    (int)sizeof(wz_host_session.tape_edit_offset_text) - 1,
+                    nk_filter_hex);
+                if (wz_host_session.tape_edit_offset_length >= 0 &&
+                    wz_host_session.tape_edit_offset_length <
+                        (int)sizeof(wz_host_session.tape_edit_offset_text)) {
+                    wz_host_session.tape_edit_offset_text[
+                        wz_host_session.tape_edit_offset_length] = '\0';
+                }
+                nk_layout_row_dynamic(context, 20.0f, 2);
+                nk_label(context, "Byte value (hex)", NK_TEXT_LEFT);
+                (void)nk_edit_string(context, NK_EDIT_FIELD,
+                    wz_host_session.tape_edit_byte_text,
+                    &wz_host_session.tape_edit_byte_length,
+                    (int)sizeof(wz_host_session.tape_edit_byte_text) - 1,
+                    nk_filter_hex);
+                if (wz_host_session.tape_edit_byte_length >= 0 &&
+                    wz_host_session.tape_edit_byte_length <
+                        (int)sizeof(wz_host_session.tape_edit_byte_text)) {
+                    wz_host_session.tape_edit_byte_text[
+                        wz_host_session.tape_edit_byte_length] = '\0';
+                }
+                if (!wz_host_tape_manager_command_enabled(
+                        WZ_TAPE_MANAGER_BYTE_COMMAND_ID))
+                    nk_widget_disable_end(context);
+                nk_layout_row_dynamic(context, 20.0f, 1);
+                nk_label(context,
+                    "Offsets start at the flag; checksum is regenerated",
+                    NK_TEXT_LEFT);
+                nk_layout_row_dynamic(context, 24.0f, 1);
+                if (!wz_host_tape_manager_command_enabled(
+                        WZ_TAPE_MANAGER_BYTE_COMMAND_ID))
+                    nk_widget_disable_begin(context);
+                if (nk_button_label(context, "Set Selected Block Byte") &&
+                    wz_host_tape_manager_command_enabled(
+                        WZ_TAPE_MANAGER_BYTE_COMMAND_ID)) {
+                    wz_host_ui_dispatch_tape_manager_command(
+                        WZ_TAPE_MANAGER_BYTE_COMMAND_ID);
+                    tap_edit = wz_tape_manager_transaction_edit(
+                        &wz_host_session.tape_edit_transaction);
+                    if (tap_edit != NULL) {
+                        tap_blocks = tap_edit->blocks;
+                        block_count = tap_edit->count;
+                    }
+                }
+                if (!wz_host_tape_manager_command_enabled(
+                        WZ_TAPE_MANAGER_BYTE_COMMAND_ID))
+                    nk_widget_disable_end(context);
             }
         }
     } else {
@@ -2168,6 +3062,7 @@ static void wz_host_session_init(void)
 
 static void wz_host_session_shutdown(void)
 {
+    wz_host_tape_edit_clear(&wz_host_session);
     if (wz_host_session.initialized) {
         wz_telnet_client_disconnect(&wz_host_session.telnet_client);
 #ifndef NDEBUG
