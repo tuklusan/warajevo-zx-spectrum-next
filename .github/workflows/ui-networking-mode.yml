@@ -1,0 +1,62 @@
+# Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+# This file is governed by the SANYALnet Labs Non-Commercial License in the
+# root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
+# for AI/ML model training are prohibited unless separately authorized.
+# Attribution is required: "Based on original work by Supratim Sanyal of
+# SANYALnet Labs." See LICENSE for full terms.
+
+name: UI networking mode contract
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/ui-networking-mode.yml'
+      - 'ci/test/ui-networking-mode/**'
+      - 'test-drivers/ui-networking-mode.driver.json'
+      - 'src/app/wz_command_registry.*'
+      - 'src/app/wz_host_audio_policy.*'
+      - 'src/app/wz_host_thread.*'
+      - 'src/app/wz_networking_commands.*'
+      - 'src/app/wz_speed_policy.*'
+      - 'src/app/wz_ui_layout.*'
+      - 'src/core/wz_machine.*'
+      - 'docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ui-networking-mode:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact main revision
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+      - name: Configure networking mode contract
+        run: cmake -S ci/test/ui-networking-mode -B dist/ui-networking-mode -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build networking mode contract
+        run: cmake --build dist/ui-networking-mode --config Release --target wz_ui_networking_mode_contract --parallel 2
+      - name: Run networking mode contract
+        run: dist/ui-networking-mode/wz_ui_networking_mode_contract
+      - name: Write pinned proof
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          RUNNER_OS: ${{ runner.os }}
+          RUNNER_ARCH: ${{ runner.arch }}
+        run: |
+          python3 ci/test/ui-networking-mode/write-proof.py \
+            --commit "$GITHUB_SHA" \
+            --run-id "$GITHUB_RUN_ID" \
+            --runner "$RUNNER_OS/$RUNNER_ARCH" \
+            --proof dist/ui-networking-mode/ui-networking-mode.json
+      - name: Upload pinned proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-networking-mode-${{ github.sha }}
+          path: dist/ui-networking-mode/ui-networking-mode.json
+          if-no-files-found: error
