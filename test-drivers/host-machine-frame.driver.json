@@ -1,22 +1,22 @@
 {
   "testId": "host-machine-frame-audio-continuity",
   "command": "cmake -S src/cmake -B dist/host-machine-frame -DCMAKE_BUILD_TYPE=Debug && cmake --build dist/host-machine-frame --config Debug --target wz_host_machine_frame_tests --parallel 2 && ctest --test-dir dist/host-machine-frame --output-on-failure --verbose -R '^wz_host_machine_frame_tests$'",
-  "requiredCases": 8,
+  "requiredCases": 56,
   "runnerMatrix": [
     "ubuntu-24.04"
   ],
   "fixtures": [
     {
       "path": ".github/workflows/host-machine-frame-regression.yml",
-      "sha256": "8e7608809387f2223f9de22e790a69ec51ce5dd53ebc33af5f0eaae9a3c5c007"
+      "sha256": "9498d3b26ec4319473de0ea3b57e797c2f08c93c082509a003187b11da9d4816"
     },
     {
       "path": "ci/test/host-frame-audio/frame-audio-regression.c",
-      "sha256": "3c3061c749148a8d48c1629597762da2140f100eec37c16a9eef1ea9157405a5"
+      "sha256": "c67dddc62d8738db9c12bcf40338d6aea382882c9e4db8220fa1fe0738e6fd42"
     },
     {
       "path": "ci/test/host-frame-audio/write-proof.py",
-      "sha256": "2336ee724a44cf905d981644f49240b67e83aab535d3b1e1deff821ed3316cda"
+      "sha256": "c586d36febbdddd1bc598b465378e2c1c780f29657707b20b2370ac595e4f727"
     },
     {
       "path": "src/app/wz_host_machine_frame.c",
@@ -27,8 +27,32 @@
       "sha256": "9d950b087a4269c82f8224b9a26869bc24460ca83a5b5c02db40256d6f69d664"
     },
     {
+      "path": "src/app/wz_host_audio_policy.c",
+      "sha256": "7248245e6f4ff506a436ab09a1121e0fefe68cb729be28267d25e4f54ca0cc68"
+    },
+    {
+      "path": "src/app/wz_host_audio_policy.h",
+      "sha256": "99f86c6701dec5ccae2b932b31daafc95909143dd192bf1cfe43bc91a5991430"
+    },
+    {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "514b70e7163d77857b738ea12557254945dc32b150a97e82c7c111995100253e"
+      "sha256": "8a6368a21d6c9000cd39e8c88147b3596354f89b1ea428b14a3a109cd203292e"
+    },
+    {
+      "path": "src/app/wz_speed_policy.c",
+      "sha256": "cb9d2d0befc0becaa81558d794a257f399c4a46e1c1a0bdb19c4893d8f547183"
+    },
+    {
+      "path": "src/app/wz_speed_policy.h",
+      "sha256": "0895e0cac0254cb95d4b2347d911f0fdddfd0bab414d37e5dd4052cfc9eaa2df"
+    },
+    {
+      "path": "src/core/audio/wz_ay.c",
+      "sha256": "ddb27e2d878c5e9a0ca803e5198e04468c97f9c95a4dd9ac33d7324033c5ae39"
+    },
+    {
+      "path": "src/core/audio/wz_ay.h",
+      "sha256": "5cff8be704c4f33e8cbb54ea09c9b5ed4ac2f2b39fc4f9fc92f4dedf6b920da3"
     },
     {
       "path": "src/core/wz_machine.h",
@@ -40,7 +64,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "fc81b599fc91b87423b348f51b60a5710fcad281fbb62dc5ed0425859f2dec75"
+      "sha256": "fb79ad9b6321a5fd5068fdb72fc8b072a82bf93db547b957e859e397b8eafead"
     }
   ]
 }

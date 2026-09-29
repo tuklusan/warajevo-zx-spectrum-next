@@ -2816,9 +2816,12 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
                 }
             }
             if (strcmp(wz_host_session.tape_format, "TAP") == 0) {
+                nk_bool selected = wz_host_session
+                    .tape_manager_block_selection[index] ? 1 : 0;
                 nk_layout_row_dynamic(context, 24.0f, 2);
-                (void)nk_checkbox_label(context, "Select",
-                    &wz_host_session.tape_manager_block_selection[index]);
+                (void)nk_checkbox_label(context, "Select", &selected);
+                wz_host_session.tape_manager_block_selection[index] =
+                    selected != 0;
                 if (nk_button_label(context, line)) {
                     if (wz_host_tape_manager_selected_count(
                             &wz_host_session, block_count) <= 1u) {

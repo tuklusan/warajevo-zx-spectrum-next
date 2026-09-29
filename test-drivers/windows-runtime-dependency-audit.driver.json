@@ -16,7 +16,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "fc81b599fc91b87423b348f51b60a5710fcad281fbb62dc5ed0425859f2dec75"
+      "sha256": "fb79ad9b6321a5fd5068fdb72fc8b072a82bf93db547b957e859e397b8eafead"
     },
     {
       "path": "ci/test/windows-runtime-dependencies/README.md",

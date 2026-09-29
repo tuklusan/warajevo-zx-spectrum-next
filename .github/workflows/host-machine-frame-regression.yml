@@ -6,8 +6,11 @@ on:
     paths:
       - 'src/app/wz_host_machine_frame.*'
       - 'src/app/wz_sokol_main.c'
+      - 'src/app/wz_host_audio_policy.*'
+      - 'src/app/wz_speed_policy.*'
       - 'src/core/wz_machine.h'
       - 'src/core/wz_runner.c'
+      - 'src/core/audio/wz_ay.*'
       - 'src/cmake/CMakeLists.txt'
       - 'ci/test/host-frame-audio/**'
       - 'test-drivers/host-machine-frame.driver.json'

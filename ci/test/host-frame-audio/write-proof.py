@@ -21,7 +21,13 @@ FIXTURES = (
     "ci/test/host-frame-audio/write-proof.py",
     "src/app/wz_host_machine_frame.c",
     "src/app/wz_host_machine_frame.h",
+    "src/app/wz_host_audio_policy.c",
+    "src/app/wz_host_audio_policy.h",
     "src/app/wz_sokol_main.c",
+    "src/app/wz_speed_policy.c",
+    "src/app/wz_speed_policy.h",
+    "src/core/audio/wz_ay.c",
+    "src/core/audio/wz_ay.h",
     "src/core/wz_machine.h",
     "src/core/wz_runner.c",
     "src/cmake/CMakeLists.txt",
@@ -49,7 +55,7 @@ def main():
         "runId": args.run_id,
         "runner": args.runner,
         "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "caseCount": 8,
+        "caseCount": 56,
         "fixtures": fixtures,
     }
     args.proof.parent.mkdir(parents=True, exist_ok=True)
