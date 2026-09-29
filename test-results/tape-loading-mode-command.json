@@ -1,14 +1,14 @@
 {
   "testId": "tape-loading-mode-command",
   "status": "pass",
-  "commit": "6160819e6fff727a859d10c28609dc6a5c265cc6",
+  "commit": "efd902a36d123db2bd180163c9c542c55ffdc2ea",
   "runner": "Linux/x86_64",
-  "timestamp": "2026-09-29T04:35:46.770256+00:00",
-  "runId": 36522311210,
+  "timestamp": "2026-09-29T04:53:36.133639+00:00",
+  "runId": 36523606464,
   "fixtures": [
     {
       "path": "ci/test/tape-loading-mode-command/tape-loading-mode-command.c",
-      "sha256": "f7d960335d2af917b94b9e03a8e8a35f76549490c0f03cf7a8e31e11d926440f"
+      "sha256": "e6cacc29b9477d40ff163d3e130965f3e8656794d4e8063167d3a6df02afe465"
     },
     {
       "path": "ci/test/tape-loading-mode-command/CMakeLists.txt",
@@ -64,7 +64,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "a50b6caa7866fbdd43fac506704beadf33e81f2f2b9e79c28920eb152eb73dd9"
+      "sha256": "c6552dc36a58139f081e954bdc2b91e453e63a1e0b73e930a4183a0b16726e6d"
     },
     {
       "path": "src/app/wz_ui_layout.c",
@@ -72,11 +72,11 @@
     },
     {
       "path": "src/app/wz_tape_media_commands.c",
-      "sha256": "ece88e02c415e2cc559cfe1cd2f2d08a7db22d10a7e5ff13b844506d3aebc3e7"
+      "sha256": "f92f691c68a8ab55d7c4472e6860160935fe0c6c78593f1ff28393d03294f67c"
     },
     {
       "path": "src/app/wz_tape_media_commands.h",
-      "sha256": "2d0d6002bbc6dc7a327b827fdb296b033232a2168c61f26b236e9677a1b7a134"
+      "sha256": "81fd3289f37b5a4d6c0f8848f7b891543a23e9816a7125b92ccccdfb4e56a4f8"
     }
   ]
 }
