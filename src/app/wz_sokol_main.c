@@ -1565,6 +1565,13 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
         nk_end(context);
         return;
     }
+    if (wz_host_session.tape_segments == NULL ||
+        wz_host_session.tape_segment_count == 0u) {
+        nk_label(context, "Mounted tape has no readable signal segments",
+                 NK_TEXT_LEFT);
+        nk_end(context);
+        return;
+    }
     nk_label(context, "Source:", NK_TEXT_LEFT);
     nk_label_wrap(context,
         wz_host_session.tape_source_path[0] == '\0' ? "unknown" :

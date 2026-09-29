@@ -137,14 +137,13 @@ wz_result_t wz_tape_media_commands_register(
         WZ_COMMAND_LOCAL_ONLY, NULL, tape_manager_handler, context,
         false, false, NULL
     };
+    wz_result_t result;
     if (registry == NULL || context == NULL || context->machine == NULL) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
-    if (wz_command_registry_register(registry, insert_command) != WZ_RESULT_OK) {
-        return WZ_RESULT_INVALID_ARGUMENT;
-    }
-    if (wz_command_registry_register(registry, eject_command) != WZ_RESULT_OK) {
-        return WZ_RESULT_INVALID_ARGUMENT;
-    }
+    result = wz_command_registry_register(registry, insert_command);
+    if (result != WZ_RESULT_OK) return result;
+    result = wz_command_registry_register(registry, eject_command);
+    if (result != WZ_RESULT_OK) return result;
     return wz_command_registry_register(registry, manager_command);
 }
