@@ -21,11 +21,11 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "3c3b5930212e5d1b9197533ad64265d8d7c88c63519048fe6ae195665f2c2547"
+      "sha256": "23df8d4b430d2e1ec889f1fc6650c435242d032218dfbf2efbd665c2eb1ec9c0"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "268274ac2da8629ce615a3337d7f326a6115043d5557d29c16e952543e3dec12"
+      "sha256": "61ff8a8c4c265d995a3f3897da6eacd53a7ffe0743c409ee19ddd2dcaead7f7c"
     },
     {
       "path": "src/core/wz_machine.c",

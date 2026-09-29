@@ -21,11 +21,11 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "97b213e0472067cf16e58e8eee3d36f73ef8d2860e4d409f6c8188875dfced5c"
+      "sha256": "23df8d4b430d2e1ec889f1fc6650c435242d032218dfbf2efbd665c2eb1ec9c0"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "5b567b5493b920f0bef2dbb55858a5d7de6436c5eaa39b19cfbe0806db0c79a5"
+      "sha256": "61ff8a8c4c265d995a3f3897da6eacd53a7ffe0743c409ee19ddd2dcaead7f7c"
     },
     {
       "path": ".github/workflows/tape-selection-contract.yml",
