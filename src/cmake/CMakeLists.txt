@@ -568,6 +568,7 @@ if(WZSN_BUILD_SOKOL_HOST)
     endif()
     target_sources(wz_sokol_host PRIVATE
         ${WZSN_SOURCE_ROOT}/app/wz_host_output_utf8.c
+        ${WZSN_SOURCE_ROOT}/app/wz_snapshot_save_workflow.c
         ${WZSN_SOURCE_ROOT}/app/wz_tape_insert_action.c
         ${WZSN_SOURCE_ROOT}/app/wz_tape_save_transaction.c
         ${WZSN_SOURCE_ROOT}/app/wz_tape_manager.c)
