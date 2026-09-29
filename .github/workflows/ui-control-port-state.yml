@@ -1,0 +1,57 @@
+# Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+# This file is governed by the SANYALnet Labs Non-Commercial License in the
+# root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
+# for AI/ML model training are prohibited unless separately authorized.
+# Attribution is required: "Based on original work by Supratim Sanyal of
+# SANYALnet Labs." See LICENSE for full terms.
+
+name: UI Control Port state contract
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/ui-control-port-state.yml'
+      - 'ci/test/ui-control-port-state/**'
+      - 'test-drivers/ui-control-port-state.driver.json'
+      - 'src/app/wz_host_config.*'
+      - 'src/app/wz_control_port.h'
+      - 'src/app/wz_ui_layout.*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ui-control-port-state:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact main revision
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+      - name: Configure Control Port state contract
+        run: cmake -S ci/test/ui-control-port-state -B dist/ui-control-port-state -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build Control Port state contract
+        run: cmake --build dist/ui-control-port-state --config Release --target wz_ui_control_port_state_contract --parallel 2
+      - name: Run Control Port state contract
+        run: dist/ui-control-port-state/wz_ui_control_port_state_contract
+      - name: Write pinned proof
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          RUNNER_OS: ${{ runner.os }}
+          RUNNER_ARCH: ${{ runner.arch }}
+        run: |
+          python3 ci/test/ui-control-port-state/write-proof.py \
+            --commit "$GITHUB_SHA" \
+            --run-id "$GITHUB_RUN_ID" \
+            --runner "$RUNNER_OS/$RUNNER_ARCH" \
+            --proof dist/ui-control-port-state/ui-control-port-state.json
+      - name: Upload pinned proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-control-port-state-${{ github.sha }}
+          path: dist/ui-control-port-state/ui-control-port-state.json
+          if-no-files-found: error
