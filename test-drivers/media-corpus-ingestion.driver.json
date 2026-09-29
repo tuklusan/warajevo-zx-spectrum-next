@@ -18,11 +18,11 @@
     },
     {
       "path": "ci/test/media-corpus-ingestion/media-corpus-ingestion.c",
-      "sha256": "42af64ce5b396fcb7f6459024b93c6a1e8cde38c65ad31723b126eb445df6f58"
+      "sha256": "d222ca5e318de094c9576b44e414caf1f187e3525233768a3ca3b0e6215eaf79"
     },
     {
       "path": "ci/test/media-corpus-ingestion/write-proof.py",
-      "sha256": "16878bf096e0737cec50cba2f32dcca38050972cfcbac1656b92c69c6e432044"
+      "sha256": "2f653db765372f74bc56785f558c42a866775ad4e10118a825d30dabcc42aaf0"
     },
     {
       "path": "docs/design/01-warajevo-zx-spectrum-next-architecture.md",
@@ -30,7 +30,7 @@
     },
     {
       "path": "docs/design/media-corpus-ingestion-test.md",
-      "sha256": "0c6e00b02dc207865b3cbdfc533265a556b56c60e4d2dcbc7b0ff7151432758c"
+      "sha256": "09258485ef0e2795fb4e4b2ecbcff5f13407d0b1ee6342dcd429ba2705b51f8a"
     },
     {
       "path": "src/core/wz_machine.h",
@@ -38,7 +38,7 @@
     },
     {
       "path": "src/core/wz_tape.c",
-      "sha256": "5792fabbfc3c6956444c3532097cb0febb1d3497e988fd2a62c9e677ea8aeac3"
+      "sha256": "20c4523214f828d5129cbde2fb2c0d077ed15dae0daa923d019d1934b0c33d0b"
     },
     {
       "path": "src/core/wz_tape.h",

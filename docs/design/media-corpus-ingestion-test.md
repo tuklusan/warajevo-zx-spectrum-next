@@ -10,7 +10,8 @@ SANYALnet Labs." See LICENSE for full terms. -->
 The isolated hosted contract parses each TAP and TZX in `test-media/` through
 the production core parser and the tape reader used by Fuse's media stack.
 It compares ingestion results and includes timed-segment expansion and TZX
-block classification. It reports only aggregate counts; media contents and
+block classification. It also contracts zero-duration TZX pause stop behavior.
+It reports only aggregate counts; media contents and
 per-media paths are never written to proofs or uploaded artifacts. Unsupported
 TZX timing is counted explicitly. Malformed, unreadable, or parser-divergent
 files fail the run.

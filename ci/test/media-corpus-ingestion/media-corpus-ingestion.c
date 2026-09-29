@@ -154,6 +154,10 @@ static int parse_tzx(const wz_byte_t* data, size_t length,
     size_t segment_count = 0u;
     wz_tape_segment_t* segments = NULL;
     if (result != WZ_RESULT_BUFFER_TOO_SMALL) {
+        if (result == WZ_RESULT_UNSUPPORTED_OPERATION) {
+            *unsupported_media = 1;
+            return 1;
+        }
         *failure_phase = 1u;
         *failure_result = (size_t)result;
         return 0;
@@ -212,6 +216,51 @@ static int parse_tzx(const wz_byte_t* data, size_t length,
     return result == WZ_RESULT_OK;
 }
 
+static int test_zero_pause_stop(void)
+{
+    static const wz_byte_t tzx[] = {
+        'Z', 'X', 'T', 'a', 'p', 'e', '!', 0x1au, 1u, 20u,
+        0x10u, 100u, 0u, 2u, 0u, 0u, 0u,
+        0x20u, 0u, 0u,
+        0x10u, 100u, 0u, 2u, 0u, 0u, 0u
+    };
+    size_t block_count = 0u;
+    size_t segment_count = 0u;
+    size_t stop_markers = 0u;
+    size_t stop_index = 0u;
+    wz_tzx_block_t* blocks = NULL;
+    wz_tape_segment_t* segments = NULL;
+    wz_result_t result = wz_tape_parse_tzx(tzx, sizeof(tzx), NULL, 0u,
+                                           &block_count);
+    int passed = 0;
+    if (result != WZ_RESULT_BUFFER_TOO_SMALL || block_count != 3u ||
+        block_count > SIZE_MAX / sizeof(*blocks)) goto cleanup;
+    blocks = (wz_tzx_block_t*)malloc(block_count * sizeof(*blocks));
+    if (blocks == NULL || wz_tape_parse_tzx(tzx, sizeof(tzx), blocks,
+            block_count, &block_count) != WZ_RESULT_OK) goto cleanup;
+    result = wz_tape_expand_tzx_timing(blocks, block_count, 8u, NULL, 0u,
+                                       &segment_count);
+    if (result != WZ_RESULT_BUFFER_TOO_SMALL || segment_count == 0u ||
+        segment_count > SIZE_MAX / sizeof(*segments)) goto cleanup;
+    segments = (wz_tape_segment_t*)malloc(segment_count * sizeof(*segments));
+    if (segments == NULL || wz_tape_expand_tzx_timing(blocks, block_count,
+            8u, segments, segment_count, &segment_count) != WZ_RESULT_OK)
+        goto cleanup;
+    for (size_t index = 0u; index < segment_count; ++index) {
+        if (segments[index].duration == 0u) goto cleanup;
+        if (segments[index].motor_stop_after != 0u) {
+            ++stop_markers;
+            stop_index = index;
+        }
+    }
+    passed = stop_markers == 1u && stop_index + 1u < segment_count;
+
+cleanup:
+    free(segments);
+    free(blocks);
+    return passed;
+}
+
 int main(int argc, char** argv)
 {
     const wz_machine_profile_t* profile = wz_machine_profile_48k_pal();
@@ -228,6 +277,11 @@ int main(int argc, char** argv)
         return 2;
     }
     libspectrum_error_function = ignore_reference_diagnostic;
+    if (!test_zero_pause_stop()) {
+        (void)libspectrum_end();
+        fputs("media corpus contract: zero-pause stop semantics failed\n", stderr);
+        return 1;
+    }
     entry_count = scandir(argv[1], &entries, NULL, alphasort);
     if (entry_count < 0) {
         (void)libspectrum_end();
@@ -305,7 +359,8 @@ int main(int argc, char** argv)
            "\"tapFailures\":%zu,\"tzxFailures\":%zu,\"readFailures\":%zu,"
            "\"failureCase\":%zu,\"tzxFailurePhase\":%zu,"
            "\"tzxFailureResult\":%zu,\"fuseAccepted\":%zu,"
-           "\"fuseRejected\":%zu,\"coreReferenceDivergences\":%zu}\n",
+           "\"fuseRejected\":%zu,\"coreReferenceDivergences\":%zu,"
+           "\"zeroPauseContractCases\":1}\n",
            counts.files != 0u && counts.read_failures == 0u &&
                counts.fuse_rejected == 0u &&
                counts.core_reference_divergences == 0u ?

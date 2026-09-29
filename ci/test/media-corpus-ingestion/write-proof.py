@@ -37,7 +37,8 @@ def main():
     summary = json.loads(args.summary.read_text())
     required = ("files", "tapFiles", "tzxFiles", "supported", "unsupported",
                 "unsupportedTzxBlocks", "malformed", "fuseAccepted",
-                "fuseRejected", "coreReferenceDivergences")
+                "fuseRejected", "coreReferenceDivergences",
+                "zeroPauseContractCases")
     if summary.get("status") != "pass" or any(key not in summary for key in required):
         raise SystemExit("media-corpus contract did not produce a complete aggregate")
     if summary["files"] < driver["requiredCases"]:
@@ -49,7 +50,7 @@ def main():
         "runId": args.run_id,
         "runner": args.runner,
         "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
-        "caseCount": summary["files"],
+        "caseCount": summary["files"] + summary["zeroPauseContractCases"],
         "mediaSummary": {key: summary[key] for key in required},
         "fixtures": fixtures,
     }

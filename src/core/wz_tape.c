@@ -1467,7 +1467,12 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
             break;
         case 0x20u:
             if (block->data_length < 2u) return WZ_RESULT_PARSE_ERROR;
-            amount = wz_read_le16(block->data) == 0u ? 0u : 1u;
+            if (wz_read_le16(block->data) == 0u) {
+                /* A zero pause stops the transport at this boundary. */
+                if (required == 0u) return WZ_RESULT_UNSUPPORTED_OPERATION;
+            } else {
+                amount = 1u;
+            }
             break;
         case 0x23u:
             if (wz_tzx_jump_target(block_index, block, block_count, &target) !=
@@ -1706,12 +1711,18 @@ wz_result_t wz_tape_expand_tzx_timing(const wz_tzx_block_t* blocks,
                 --call_depth;
             }
         } else if (block->block_id == 0x20u) {
-            wz_dword_t tstates = (wz_dword_t)wz_read_le16(block->data) * 3500u;
-            if (wz_tzx_append_segment(segments, capacity, &index, tstates,
-                                      master_ticks_per_tstate, 0u) != WZ_RESULT_OK) {
-                return WZ_RESULT_PARSE_ERROR;
+            wz_word_t pause_ms = wz_read_le16(block->data);
+            if (pause_ms == 0u) {
+                if (index == 0u) return WZ_RESULT_UNSUPPORTED_OPERATION;
+                segments[index - 1u].motor_stop_after = 1u;
+            } else {
+                wz_dword_t tstates = (wz_dword_t)pause_ms * 3500u;
+                if (wz_tzx_append_segment(segments, capacity, &index, tstates,
+                                          master_ticks_per_tstate, 0u) != WZ_RESULT_OK) {
+                    return WZ_RESULT_PARSE_ERROR;
+                }
+                level = 0u;
             }
-            level = 0u;
         } else if (block->block_id == 0x2au) {
             break;
         } else if (!wz_tzx_is_ignored_metadata(block->block_id)) {
