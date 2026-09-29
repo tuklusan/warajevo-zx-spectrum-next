@@ -5,7 +5,7 @@
   "fixtures": [
     {
       "path": "ci/test/tape-loading-mode-command/tape-loading-mode-command.c",
-      "sha256": "f7d960335d2af917b94b9e03a8e8a35f76549490c0f03cf7a8e31e11d926440f"
+      "sha256": "e6cacc29b9477d40ff163d3e130965f3e8656794d4e8063167d3a6df02afe465"
     },
     {
       "path": "ci/test/tape-loading-mode-command/CMakeLists.txt",
@@ -61,7 +61,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "a50b6caa7866fbdd43fac506704beadf33e81f2f2b9e79c28920eb152eb73dd9"
+      "sha256": "2a369da4b97b83e8baa183b7cbfd868278fafcf11cf35552dd26d4473d32fd49"
     },
     {
       "path": "src/app/wz_ui_layout.c",
@@ -69,11 +69,11 @@
     },
     {
       "path": "src/app/wz_tape_media_commands.c",
-      "sha256": "ece88e02c415e2cc559cfe1cd2f2d08a7db22d10a7e5ff13b844506d3aebc3e7"
+      "sha256": "650a1c5f2624c26fea80ec70efe07ea0017510922ecb3da67e0ddfcc973d1655"
     },
     {
       "path": "src/app/wz_tape_media_commands.h",
-      "sha256": "2d0d6002bbc6dc7a327b827fdb296b033232a2168c61f26b236e9677a1b7a134"
+      "sha256": "81fd3289f37b5a4d6c0f8848f7b891543a23e9816a7125b92ccccdfb4e56a4f8"
     }
   ]
 }

@@ -14,14 +14,17 @@
 
 #define WZ_TAPE_INSERT_COMMAND_ID "media.tape.insert"
 #define WZ_TAPE_EJECT_COMMAND_ID "media.tape.eject"
+#define WZ_TAPE_MANAGER_COMMAND_ID "media.tape.manager"
 
 typedef bool (*wz_tape_media_load_fn)(const char* path, void* context);
 typedef void (*wz_tape_media_release_fn)(void* context);
+typedef void (*wz_tape_manager_open_fn)(void* context);
 
 typedef struct {
     wz_machine_t* machine;
     wz_tape_media_load_fn load;
     wz_tape_media_release_fn release;
+    wz_tape_manager_open_fn open_manager;
     void* context;
 } wz_tape_media_command_context_t;
 

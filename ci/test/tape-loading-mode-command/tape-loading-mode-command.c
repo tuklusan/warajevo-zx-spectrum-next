@@ -27,6 +27,7 @@ typedef struct {
     wz_machine_t* machine;
     wz_tape_segment_t segment;
     size_t release_count;
+    size_t manager_open_count;
     char loaded_path[64];
 } tape_fixture_t;
 
@@ -46,6 +47,12 @@ static void release_tape(void* opaque)
 {
     tape_fixture_t* fixture = (tape_fixture_t*)opaque;
     ++fixture->release_count;
+}
+
+static void open_tape_manager(void* opaque)
+{
+    tape_fixture_t* fixture = (tape_fixture_t*)opaque;
+    ++fixture->manager_open_count;
 }
 
 int main(void)
@@ -80,6 +87,7 @@ int main(void)
     media_context.machine = &machine;
     media_context.load = load_tape;
     media_context.release = release_tape;
+    media_context.open_manager = open_tape_manager;
     media_context.context = &fixture;
     REQUIRE(wz_tape_media_commands_register(&registry, &media_context) ==
             WZ_RESULT_OK);
@@ -103,6 +111,10 @@ int main(void)
     REQUIRE(strcmp(fixture.loaded_path, tape_path) == 0);
     REQUIRE(wz_command_registry_state(&registry, WZ_TAPE_EJECT_COMMAND_ID,
             &reason) == WZ_COMMAND_ENABLED);
+    REQUIRE(wz_command_registry_dispatch(&registry,
+            WZ_TAPE_MANAGER_COMMAND_ID,
+            (wz_command_arguments_t){NULL, 0u}, &result) == WZ_RESULT_OK);
+    REQUIRE(fixture.manager_open_count == 1u);
     REQUIRE(wz_command_registry_dispatch(&registry, WZ_TAPE_EJECT_COMMAND_ID,
             (wz_command_arguments_t){NULL, 0u}, &result) == WZ_RESULT_OK);
     REQUIRE(machine.tape_mounted == 0u);

@@ -96,6 +96,23 @@ static wz_result_t tape_eject_handler(
     return WZ_RESULT_OK;
 }
 
+static wz_result_t tape_manager_handler(
+    const void* opaque,
+    const wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    const wz_tape_media_command_context_t* context =
+        (const wz_tape_media_command_context_t*)opaque;
+    (void)arguments;
+    if (context == NULL || context->machine == NULL ||
+        context->open_manager == NULL || result == NULL) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    context->open_manager(context->context);
+    (void)snprintf(result->message, sizeof(result->message), "tape manager opened");
+    return WZ_RESULT_OK;
+}
+
 wz_result_t wz_tape_media_commands_register(
     wz_command_registry_t* registry,
     wz_tape_media_command_context_t* context)
@@ -113,11 +130,21 @@ wz_result_t wz_tape_media_commands_register(
         "wz_tape_media_commands", "local", NULL, WZ_COMMAND_MEDIA_DESTRUCTIVE,
         tape_eject_available, tape_eject_handler, context, true, true, NULL
     };
+    wz_command_metadata_t manager_command = {
+        WZ_TAPE_MANAGER_COMMAND_ID, "Open Tape Manager...",
+        "Inspect mounted tape transport data", "media", "NONE",
+        "wz-command-result", "wz_tape_media_commands", "local", NULL,
+        WZ_COMMAND_LOCAL_ONLY, NULL, tape_manager_handler, context,
+        false, false, NULL
+    };
     if (registry == NULL || context == NULL || context->machine == NULL) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
     if (wz_command_registry_register(registry, insert_command) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
-    return wz_command_registry_register(registry, eject_command);
+    if (wz_command_registry_register(registry, eject_command) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    return wz_command_registry_register(registry, manager_command);
 }

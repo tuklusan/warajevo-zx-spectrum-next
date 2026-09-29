@@ -120,6 +120,8 @@ typedef struct {
     wz_networking_command_context_t networking_command_context;
     wz_tape_loading_command_context_t tape_loading_command_context;
     wz_tape_media_command_context_t tape_media_command_context;
+    bool tape_manager_open;
+    size_t tape_manager_selected_segment;
     wz_raster_buffer_t raster;
     wz_byte_t raster_samples[WZ_HOST_RASTER_BYTES];
     wz_byte_t raster_rgba[WZ_HOST_RASTER_BYTES * 4u];
@@ -133,6 +135,8 @@ typedef struct {
     uint8_t telnet_command[WZ_TELNET_COMMAND_CAPACITY];
     wz_tape_segment_t* tape_segments;
     size_t tape_segment_count;
+    char tape_source_path[4096];
+    char tape_format[8];
     wz_byte_t* microdrive_data;
     wz_mdr_image_t microdrive_image;
     char file_notification[WZ_COMMAND_MESSAGE_CAPACITY];
@@ -564,6 +568,12 @@ static bool wz_host_load_external_tape(wz_host_session_t* session,
     if (parsed == WZ_RESULT_OK && segments != NULL && segment_count != 0u &&
         wz_host_mount_tape_segments(session, segments, segment_count)) {
         segments = NULL;
+        (void)snprintf(session->tape_source_path,
+                       sizeof(session->tape_source_path), "%s", path);
+        (void)snprintf(session->tape_format, sizeof(session->tape_format),
+            "%s", wz_host_extension_is(path, ".tap") ? "TAP" :
+            wz_host_extension_is(path, ".tzx") ? "TZX" : "WAV");
+        session->tape_manager_selected_segment = 0u;
         loaded = true;
     }
 cleanup:
@@ -667,9 +677,18 @@ static void wz_host_tape_media_release(void* context)
     free(session->tape_segments);
     session->tape_segments = NULL;
     session->tape_segment_count = 0u;
+    session->tape_source_path[0] = '\0';
+    session->tape_format[0] = '\0';
+    session->tape_manager_selected_segment = 0u;
     session->ui_window.layout.tape_mounted = false;
     (void)snprintf(session->file_notification,
                    sizeof(session->file_notification), "Tape ejected");
+}
+
+static void wz_host_tape_manager_open(void* context)
+{
+    wz_host_session_t* session = (wz_host_session_t*)context;
+    if (session != NULL) session->tape_manager_open = true;
 }
 
 static void wz_host_ui_insert_tape(void)
@@ -1044,6 +1063,8 @@ static bool wz_host_register_commands(void)
         wz_host_tape_media_load;
     wz_host_session.tape_media_command_context.release =
         wz_host_tape_media_release;
+    wz_host_session.tape_media_command_context.open_manager =
+        wz_host_tape_manager_open;
     wz_host_session.tape_media_command_context.context = &wz_host_session;
     if (wz_tape_media_commands_register(
             &wz_host_session.command_registry,
@@ -1513,6 +1534,88 @@ static void wz_host_ui_draw_toolbar(struct nk_context* context, float width)
     context->style.window.padding = saved_padding;
 }
 
+static void wz_host_ui_draw_tape_manager(struct nk_context* context,
+                                         float width)
+{
+    char line[192];
+    const wz_machine_t* machine = &wz_host_session.machine;
+    size_t first_segment;
+    size_t end_segment;
+    float panel_width;
+    if (!wz_host_session.tape_manager_open) return;
+    panel_width = width >= 480.0f ? 460.0f : width - 16.0f;
+    if (panel_width < 180.0f) return;
+    if (!nk_begin(context, "Tape Manager",
+            nk_rect(width - panel_width - 8.0f,
+                    WZ_UI_MENU_BAR_HEIGHT + WZ_UI_TOOLBAR_HEIGHT + 8.0f,
+                    panel_width, 380.0f),
+            NK_WINDOW_BORDER | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE |
+                NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE)) {
+        nk_end(context);
+        return;
+    }
+    nk_layout_row_dynamic(context, 24.0f, 1);
+    if (nk_button_label(context, "Close Tape Manager")) {
+        wz_host_session.tape_manager_open = false;
+        nk_end(context);
+        return;
+    }
+    if (machine->tape_mounted == 0u) {
+        nk_label(context, "Transport: Empty", NK_TEXT_LEFT);
+        nk_end(context);
+        return;
+    }
+    nk_label(context, "Source:", NK_TEXT_LEFT);
+    nk_label_wrap(context,
+        wz_host_session.tape_source_path[0] == '\0' ? "unknown" :
+            wz_host_session.tape_source_path);
+    (void)snprintf(line, sizeof(line), "Format: %s | Loading mode: %s",
+        wz_host_session.tape_format[0] == '\0' ? "unknown" :
+            wz_host_session.tape_format,
+        wz_machine_tape_loading_mode(machine) == WZ_TAPE_LOADING_NORMAL ?
+            "Normal" : "Instant / Trap");
+    nk_label(context, line, NK_TEXT_LEFT);
+    (void)snprintf(line, sizeof(line),
+        "Transport: %s | Signal segment %llu / %llu",
+        machine->tape_state.motor_on ? "Playing" :
+            machine->tape_state.at_end ? "At end" : "Stopped",
+        (unsigned long long)(machine->tape_state.segment_index + 1u),
+        (unsigned long long)wz_host_session.tape_segment_count);
+    nk_label(context, line, NK_TEXT_LEFT);
+    nk_label(context, "Transport signal segments (read only)", NK_TEXT_LEFT);
+    first_segment = wz_host_session.tape_manager_selected_segment > 4u ?
+        wz_host_session.tape_manager_selected_segment - 4u : 0u;
+    end_segment = first_segment + 9u;
+    if (end_segment > wz_host_session.tape_segment_count) {
+        end_segment = wz_host_session.tape_segment_count;
+    }
+    nk_layout_row_dynamic(context, 24.0f, 2);
+    if (nk_button_label(context, "Previous segments") &&
+        wz_host_session.tape_manager_selected_segment > 0u) {
+        wz_host_session.tape_manager_selected_segment =
+            wz_host_session.tape_manager_selected_segment > 9u ?
+                wz_host_session.tape_manager_selected_segment - 9u : 0u;
+    }
+    if (nk_button_label(context, "Next segments") &&
+        end_segment < wz_host_session.tape_segment_count) {
+        wz_host_session.tape_manager_selected_segment = end_segment;
+    }
+    nk_layout_row_dynamic(context, 24.0f, 1);
+    for (size_t index = first_segment; index < end_segment; ++index) {
+        const wz_tape_segment_t* segment =
+            &wz_host_session.tape_segments[index];
+        (void)snprintf(line, sizeof(line), "%sSegment %llu | EAR %s | %llu master ticks",
+            index == wz_host_session.tape_manager_selected_segment ? "> " : "  ",
+            (unsigned long long)(index + 1u),
+            segment->ear_level != 0u ? "high" : "low",
+            (unsigned long long)segment->duration);
+        if (nk_button_label(context, line)) {
+            wz_host_session.tape_manager_selected_segment = index;
+        }
+    }
+    nk_end(context);
+}
+
 static void wz_host_ui_draw_status(struct nk_context* context,
                                   float width, float height)
 {
@@ -1606,6 +1709,7 @@ static void wz_host_render_native_ui(struct nk_context* context,
     if (context == NULL) return;
     wz_host_ui_draw_menus(context, width);
     wz_host_ui_draw_toolbar(context, width);
+    wz_host_ui_draw_tape_manager(context, width);
     wz_host_ui_draw_remote_settings(context, width, height);
     wz_host_ui_draw_status(context, width, height);
 }
