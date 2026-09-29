@@ -1,0 +1,46 @@
+{
+  "testId": "host-output-utf8",
+  "status": "pass",
+  "commit": "b35950fc83aea23ba4d7baf871f7852dc45fa7e9",
+  "runner": "Windows/AMD64",
+  "timestamp": "2026-09-29T06:36:57.300121+00:00",
+  "runId": 36531941036,
+  "fixtures": [
+    {
+      "path": ".github/workflows/host-output-utf8.yml",
+      "sha256": "60450f2a778897404f065ded6d9c829aecd1b2334ec82588b14f966ec8a79d40"
+    },
+    {
+      "path": "ci/test/host-output-utf8/CMakeLists.txt",
+      "sha256": "89cd52fc86f159bd37af5c92aca32709c1f4a0b5aa2612d2bc980b9d09ae002b"
+    },
+    {
+      "path": "ci/test/host-output-utf8/host-output-utf8.c",
+      "sha256": "a66efd920c5d4a9b7adcb831e9c9cd906c2f8f1d2677500c55b0beb30f9db57f"
+    },
+    {
+      "path": "src/app/wz_host_output_utf8.c",
+      "sha256": "9e9ddf5f8bf6d6983a6efa6954bc6263397777f96ddebb953db85952fcc6ac15"
+    },
+    {
+      "path": "src/app/wz_host_output_utf8.h",
+      "sha256": "6cb9224603f1d13f3f2fb064f5266bfa14d8c52896c328bf8c36c8d5eb912b2a"
+    },
+    {
+      "path": "src/app/wz_host_output.c",
+      "sha256": "504322b9d5c80d2c865f6e8362557af61bce90240df83ccd25ca7065441191e6"
+    },
+    {
+      "path": "src/app/wz_host_output.h",
+      "sha256": "0c415f0029214f54d2a92dd9aa46bfc53d1801dee71c7eeb9acd8bd65a104895"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "36c5ea91418a4ad493de83660f4778459159a9b655250b06e883d91fc03ff8a4"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "5b567b5493b920f0bef2dbb55858a5d7de6436c5eaa39b19cfbe0806db0c79a5"
+    }
+  ]
+}
