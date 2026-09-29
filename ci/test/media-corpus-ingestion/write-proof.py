@@ -26,7 +26,11 @@ def main():
     fixtures = []
     for fixture in driver["fixtures"]:
         path = Path(fixture["path"])
-        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        digest_state = hashlib.sha256()
+        with path.open("rb") as source:
+            for chunk in iter(lambda: source.read(65536), b""):
+                digest_state.update(chunk)
+        digest = digest_state.hexdigest()
         if digest != fixture["sha256"]:
             raise SystemExit("media-corpus contract fixture hash mismatch")
         fixtures.append({"path": fixture["path"], "sha256": digest})

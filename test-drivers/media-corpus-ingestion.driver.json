@@ -17,11 +17,11 @@
     },
     {
       "path": "ci/test/media-corpus-ingestion/media-corpus-ingestion.c",
-      "sha256": "3feb85d531316222efade64792cb758a2c30e0f97924d9ef6628c8d789cc682c"
+      "sha256": "0d9335a65afeb91d34077fa670886481b87c5f1fff69c8088bd67bae89a39d63"
     },
     {
       "path": "ci/test/media-corpus-ingestion/write-proof.py",
-      "sha256": "1c666d7d51e3ecbc5b996755eb2c7e9f8c73768db39ac9d8c9b459ccf1e5c5dc"
+      "sha256": "b258973656bde2bf10e3bc0f2990b070269231ee134cad387c379d0a48d7c2d0"
     },
     {
       "path": "docs/design/01-warajevo-zx-spectrum-next-architecture.md",

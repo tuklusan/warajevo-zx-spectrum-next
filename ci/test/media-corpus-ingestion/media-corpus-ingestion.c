@@ -59,7 +59,7 @@ static int has_extension(const char* name, const char* extension)
     if (name == NULL || extension == NULL) return 0;
     name_length = strlen(name);
     extension_length = strlen(extension);
-    if (name_length <= extension_length ||
+    if (name_length <= extension_length + 1u ||
         name[name_length - extension_length - 1u] != '.') return 0;
     for (size_t index = 0u; index < extension_length; ++index) {
         if (tolower((unsigned char)name[name_length - extension_length + index]) !=
