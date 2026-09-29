@@ -1,0 +1,46 @@
+{
+  "testId": "host-machine-frame-audio-continuity",
+  "command": "cmake -S src/cmake -B dist/host-machine-frame -DCMAKE_BUILD_TYPE=Debug && cmake --build dist/host-machine-frame --config Debug --target wz_host_machine_frame_tests --parallel 2 && ctest --test-dir dist/host-machine-frame --output-on-failure --verbose -R '^wz_host_machine_frame_tests$'",
+  "requiredCases": 8,
+  "runnerMatrix": [
+    "ubuntu-24.04"
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/host-machine-frame-regression.yml",
+      "sha256": "8e7608809387f2223f9de22e790a69ec51ce5dd53ebc33af5f0eaae9a3c5c007"
+    },
+    {
+      "path": "ci/test/host-frame-audio/frame-audio-regression.c",
+      "sha256": "3c3061c749148a8d48c1629597762da2140f100eec37c16a9eef1ea9157405a5"
+    },
+    {
+      "path": "ci/test/host-frame-audio/write-proof.py",
+      "sha256": "2336ee724a44cf905d981644f49240b67e83aab535d3b1e1deff821ed3316cda"
+    },
+    {
+      "path": "src/app/wz_host_machine_frame.c",
+      "sha256": "9b5416c50e3f2310c3eb523f8fae203c0e0c7a9204aae7f881737b18dfd8cda3"
+    },
+    {
+      "path": "src/app/wz_host_machine_frame.h",
+      "sha256": "9d950b087a4269c82f8224b9a26869bc24460ca83a5b5c02db40256d6f69d664"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "23df8d4b430d2e1ec889f1fc6650c435242d032218dfbf2efbd665c2eb1ec9c0"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "84d9e0b84a02993917b0e74cb9ba0d71158f45223a707d801ce927029ab2b0aa"
+    },
+    {
+      "path": "src/core/wz_runner.c",
+      "sha256": "ded90228d1227ef361170e1bc95d2b98365fa380136fd5269733b6119d8c7b90"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "61ff8a8c4c265d995a3f3897da6eacd53a7ffe0743c409ee19ddd2dcaead7f7c"
+    }
+  ]
+}

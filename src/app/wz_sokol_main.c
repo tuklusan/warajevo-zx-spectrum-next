@@ -76,6 +76,7 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "app/wz_input_focus.h"
 #include "app/wz_sokol_audio.h"
 #include "app/wz_host_pacing.h"
+#include "app/wz_host_machine_frame.h"
 #include "app/wz_host_audio_policy.h"
 #include "app/wz_speed_policy.h"
 #include "app/wz_telnet_client.h"
@@ -460,6 +461,17 @@ static void wz_host_audio_render_frame(wz_host_session_t* session,
     session->ui_window.layout.audio_degraded =
         wz_sokol_audio_degraded(&session->audio);
     wz_host_audio_clear_frame_events(machine);
+}
+
+static bool wz_host_audio_frame_output(
+    void* context, wz_master_tick_t start_tick,
+    wz_byte_t initial_beeper_level, const wz_ay_t* initial_ay)
+{
+    wz_host_session_t* session = (wz_host_session_t*)context;
+    if (session == NULL) return false;
+    wz_host_audio_render_frame(session, start_tick, initial_beeper_level,
+                               initial_ay);
+    return !wz_sokol_audio_degraded(&session->audio);
 }
 
 static bool wz_host_read_file(const char* path, wz_byte_t** data, size_t* length)
@@ -3608,21 +3620,15 @@ static void wz_host_frame(void)
                     wz_host_session.machine.master_tick);
                 wz_host_apply_keyboard_input();
             }
-            wz_master_tick_t frame_start_tick = wz_host_session.machine.master_tick;
-            wz_byte_t initial_beeper_level = wz_host_session.machine.beeper.level;
-            wz_ay_t initial_ay;
-            const wz_ay_t* initial_ay_state = &wz_host_session.machine.ay;
-            if (wz_host_audio_enabled(wz_host_session.speed) &&
-                wz_sokol_audio_valid(&wz_host_session.audio)) {
-                initial_ay = wz_host_session.machine.ay;
-                initial_ay_state = &initial_ay;
-            }
-            if (wz_headless_runner_execute(&wz_host_session.runner, frame_ticks) !=
+            bool capture_audio =
+                wz_host_audio_enabled(wz_host_session.speed) &&
+                wz_sokol_audio_valid(&wz_host_session.audio);
+            if (wz_host_machine_frame_execute(
+                    &wz_host_session.runner, frame_ticks, capture_audio,
+                    wz_host_audio_frame_output, &wz_host_session) !=
                 WZ_RESULT_OK) {
                 return;
             }
-            wz_host_audio_render_frame(&wz_host_session, frame_start_tick,
-                                       initial_beeper_level, initial_ay_state);
         }
         (void)wz_telnet_key_press_drain(
             &wz_host_session.telnet_key_presses,

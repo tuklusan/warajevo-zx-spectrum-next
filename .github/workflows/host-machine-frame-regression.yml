@@ -1,0 +1,58 @@
+name: Host machine frame audio independence
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/app/wz_host_machine_frame.*'
+      - 'src/app/wz_sokol_main.c'
+      - 'src/core/wz_machine.h'
+      - 'src/core/wz_runner.c'
+      - 'src/cmake/CMakeLists.txt'
+      - 'ci/test/host-frame-audio/**'
+      - 'test-drivers/host-machine-frame.driver.json'
+      - '.github/workflows/host-machine-frame-regression.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  host-machine-frame:
+    name: Host machine frame audio continuity
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact main revision
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Configure product and regression target
+        run: cmake -S src/cmake -B dist/host-machine-frame -DCMAKE_BUILD_TYPE=Debug
+
+      - name: Build host machine frame regression
+        run: cmake --build dist/host-machine-frame --config Debug --target wz_host_machine_frame_tests --parallel 2
+
+      - name: Execute host machine frame regression
+        run: ctest --test-dir dist/host-machine-frame --output-on-failure --verbose -R '^wz_host_machine_frame_tests$'
+
+      - name: Write pinned proof
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          RUNNER_OS: ${{ runner.os }}
+          RUNNER_ARCH: ${{ runner.arch }}
+        run: |
+          python3 ci/test/host-frame-audio/write-proof.py \
+            --commit "$GITHUB_SHA" \
+            --run-id "$GITHUB_RUN_ID" \
+            --runner "$RUNNER_OS/$RUNNER_ARCH" \
+            --proof dist/host-machine-frame/host-machine-frame.json
+
+      - name: Upload pinned proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: host-machine-frame-${{ github.sha }}
+          path: dist/host-machine-frame/host-machine-frame.json
+          if-no-files-found: error
