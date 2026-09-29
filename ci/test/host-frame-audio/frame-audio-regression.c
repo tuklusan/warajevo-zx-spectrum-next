@@ -16,6 +16,7 @@
 #include "app/wz_host_pacing.h"
 #include "app/wz_sokol_audio.h"
 #include "core/wz_state.h"
+#include "core/wz_machine_profile.h"
 #include "sokol_audio.h"
 
 static bool test_audio_backend_valid;
@@ -120,9 +121,10 @@ int main(void)
     wz_host_pacing_t pacing;
     output_probe_t probe;
     pacing_probe_t sleep_probe;
+    const wz_machine_profile_t* profile = wz_machine_profile_128k_pal();
     const wz_master_tick_t frame_ticks = 128u;
     const wz_dword_t frames_per_speed = 8u;
-    const wz_qword_t fake_ticks_per_second = UINT64_C(1000000);
+    wz_qword_t master_ticks_per_second;
     wz_qword_t fake_host_nanoseconds = 0u;
     size_t expected_pending_samples = 0u;
     wz_dword_t initial_noise_lfsr;
@@ -136,17 +138,21 @@ int main(void)
     memset(&pacing, 0, sizeof(pacing));
     memset(&probe, 0, sizeof(probe));
     memset(&sleep_probe, 0, sizeof(sleep_probe));
-    if (wz_machine_init(&machine, wz_machine_profile_128k_pal()) !=
+    if (profile == NULL || profile->master_hz_den == 0u ||
+        wz_machine_init(&machine, profile) !=
             WZ_RESULT_OK ||
-        wz_machine_init(&reference, wz_machine_profile_128k_pal()) !=
+        wz_machine_init(&reference, profile) !=
             WZ_RESULT_OK ||
         wz_headless_runner_init(&runner, &machine, NULL) != WZ_RESULT_OK ||
         wz_headless_runner_init(&reference_runner, &reference, NULL) !=
             WZ_RESULT_OK || !wz_sokol_audio_init(&audio) ||
-        !wz_host_pacing_init(&pacing, fake_ticks_per_second, WZ_SPEED_25,
+        !wz_host_pacing_init(&pacing,
+                             profile->master_hz_num / profile->master_hz_den,
+                             WZ_SPEED_25,
                              fake_host_nanoseconds, machine.master_tick)) {
         goto cleanup;
     }
+    master_ticks_per_second = profile->master_hz_num / profile->master_hz_den;
     probe.machine = &machine;
     probe.audio = &audio;
     probe.prior_tick = machine.master_tick;
@@ -230,7 +236,7 @@ int main(void)
                         pacing.anchor_machine_tick;
                     wz_qword_t target_nanoseconds =
                         expected_elapsed_nanoseconds(elapsed_ticks,
-                                                     fake_ticks_per_second);
+                                                     master_ticks_per_second);
                     wz_qword_t host_elapsed = fake_host_nanoseconds -
                         pacing.anchor_host_nanoseconds;
                     target_nanoseconds = target_nanoseconds * 100u /
