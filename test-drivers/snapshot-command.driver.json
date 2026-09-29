@@ -1,0 +1,66 @@
+{
+  "testId": "snapshot-command",
+  "command": "cmake -S ci/test/snapshot-command -B dist/snapshot-command -DCMAKE_BUILD_TYPE=Debug && cmake --build dist/snapshot-command --config Debug --target wz_snapshot_command_contract --parallel 2 && ctest --test-dir dist/snapshot-command --output-on-failure --verbose -R '^wz_snapshot_command_contract$'",
+  "requiredCases": 4,
+  "runnerMatrix": [
+    "ubuntu-24.04"
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/snapshot-command-regression.yml",
+      "sha256": "8e285b27491ae88ca7affe62f80dca571ae08f55ccf8223530ecf1becd647fa8"
+    },
+    {
+      "path": "ci/test/snapshot-command/CMakeLists.txt",
+      "sha256": "0157eef5fe9730bed7f26b7c8040d921eb2be5a1cb1bbdbbdedbd72cc6b2085e"
+    },
+    {
+      "path": "ci/test/snapshot-command/snapshot-command-contract.c",
+      "sha256": "e60e8b4dfdab8a381715c6be04d846fdf0685586e0082c86235c74900233959a"
+    },
+    {
+      "path": "ci/test/snapshot-command/write-proof.py",
+      "sha256": "d6c4847a35ee51840f2e13345868b9077042ad7d344d9a617af61efdbf5f1957"
+    },
+    {
+      "path": "src/app/wz_file_dialog.h",
+      "sha256": "6686668d4a0e92030066f7e177824169e09aeb137de4beaf2eb43958f982f41b"
+    },
+    {
+      "path": "src/app/wz_file_dialog_linux.c",
+      "sha256": "d4c8d61d56da6efa47636f12fff0a68474b5e682490e9704c39d725146f86408"
+    },
+    {
+      "path": "src/app/wz_file_dialog_macos.m",
+      "sha256": "03046b36b1bff1a6fd5ae4e700bf042c0db66672614db6ebde86ef2c9c854ca3"
+    },
+    {
+      "path": "src/app/wz_file_dialog_win32.c",
+      "sha256": "bcf5a298feaad7e6c11cd378c8c18bd47eacd8e2ded89f7b664712f47d8017c1"
+    },
+    {
+      "path": "src/app/wz_file_open_run.c",
+      "sha256": "67883bb4e03fbb1563d983766763ee34d2b8e14863f9e099d1093a143dc2e38d"
+    },
+    {
+      "path": "src/app/wz_snapshot_save_workflow.c",
+      "sha256": "48325582e5c51eed363a19c95fbdc3e1446d5c24314e311dd67a85e6ead158c1"
+    },
+    {
+      "path": "src/app/wz_snapshot_save_workflow.h",
+      "sha256": "e4f486ce5fe4d7192b2ba1f06937885b951d3dcd26fa37cc8962d0cbad7d46dd"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "b7200e35148781033ef32fa2afcca6989c25ed1865dca96a26b6ffb44c738cad"
+    },
+    {
+      "path": "src/core/wz_state.c",
+      "sha256": "32aa7ddaebe10ffc0a4d933162103c59d40280cd4392593d4136f41fba9338a7"
+    },
+    {
+      "path": "src/core/wz_state.h",
+      "sha256": "311dc111529c01924b0f4ed3bb1e4e1bb782461ab21b7c446473dd73b4a664c1"
+    }
+  ]
+}

@@ -31,7 +31,7 @@ static void wz_file_dialog_on_response(GtkNativeDialog* dialog,
 wz_file_dialog_result_t wz_file_dialog_open(char* utf8_path,
                                             size_t path_capacity)
 {
-    static const char* const patterns[] = {
+static const char* const patterns[] = {
         "*.tap", "*.TAP", "*.tzx", "*.TZX", "*.wav", "*.WAV",
         "*.sna", "*.SNA", "*.z80", "*.Z80", "*.mdr", "*.MDR"
     };
@@ -126,6 +126,61 @@ wz_file_dialog_result_t wz_file_dialog_save_tap(char* utf8_path,
     gtk_file_filter_set_name(filter, "Standard TAP tape (*.tap)");
     gtk_file_filter_add_pattern(filter, "*.tap");
     gtk_file_filter_add_pattern(filter, "*.TAP");
+    gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
+    wait.loop = g_main_loop_new(NULL, FALSE);
+    if (wait.loop == NULL) goto cleanup;
+    g_signal_connect(dialog, "response",
+                     G_CALLBACK(wz_file_dialog_on_response), &wait);
+    gtk_native_dialog_show(GTK_NATIVE_DIALOG(dialog));
+    g_main_loop_run(wait.loop);
+    if (wait.response != GTK_RESPONSE_ACCEPT) {
+        result = WZ_FILE_DIALOG_CANCELLED;
+    } else {
+        filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+        if (filename != NULL) utf8_filename = g_filename_to_utf8(
+            filename, -1, NULL, &utf8_length, &error);
+        if (utf8_filename != NULL && utf8_length < path_capacity) {
+            memcpy(utf8_path, utf8_filename, utf8_length);
+            utf8_path[utf8_length] = '\0';
+            result = WZ_FILE_DIALOG_SELECTED;
+        }
+    }
+cleanup:
+    if (wait.loop != NULL) g_main_loop_unref(wait.loop);
+    if (error != NULL) g_error_free(error);
+    g_free(utf8_filename);
+    g_free(filename);
+    if (filter != NULL) g_object_unref(filter);
+    if (dialog != NULL) g_object_unref(dialog);
+    return result;
+}
+
+wz_file_dialog_result_t wz_file_dialog_save_snapshot(char* utf8_path,
+                                                      size_t path_capacity)
+{
+    GtkFileChooserNative* dialog = NULL;
+    GtkFileFilter* filter = NULL;
+    wz_file_dialog_wait_t wait = {NULL, GTK_RESPONSE_NONE};
+    char* filename = NULL;
+    char* utf8_filename = NULL;
+    GError* error = NULL;
+    gsize utf8_length = 0u;
+    wz_file_dialog_result_t result = WZ_FILE_DIALOG_FAILED;
+    if (utf8_path == NULL || path_capacity == 0u) return WZ_FILE_DIALOG_FAILED;
+    utf8_path[0] = '\0';
+    if (!gtk_init_check(NULL, NULL)) return WZ_FILE_DIALOG_FAILED;
+    dialog = gtk_file_chooser_native_new("Save Snapshot", NULL,
+        GTK_FILE_CHOOSER_ACTION_SAVE, "Save", "Cancel");
+    if (dialog == NULL) goto cleanup;
+    gtk_native_dialog_set_modal(GTK_NATIVE_DIALOG(dialog), TRUE);
+    gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), TRUE);
+    gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(dialog), "machine.z80");
+    filter = gtk_file_filter_new();
+    gtk_file_filter_set_name(filter, "Spectrum snapshots (*.sna, *.z80)");
+    gtk_file_filter_add_pattern(filter, "*.sna");
+    gtk_file_filter_add_pattern(filter, "*.SNA");
+    gtk_file_filter_add_pattern(filter, "*.z80");
+    gtk_file_filter_add_pattern(filter, "*.Z80");
     gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
     wait.loop = g_main_loop_new(NULL, FALSE);
     if (wait.loop == NULL) goto cleanup;

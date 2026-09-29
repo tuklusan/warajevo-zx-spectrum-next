@@ -1,0 +1,58 @@
+name: Snapshot command regression
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/app/wz_file_dialog.*'
+      - 'src/app/wz_snapshot_save_workflow.*'
+      - 'src/app/wz_file_open_run.*'
+      - 'src/app/wz_sokol_main.c'
+      - 'src/core/wz_state.*'
+      - 'ci/test/snapshot-command/**'
+      - 'test-drivers/snapshot-command.driver.json'
+      - '.github/workflows/snapshot-command-regression.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot-command:
+    name: Snapshot command regression
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact main revision
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Configure product and regression target
+        run: cmake -S ci/test/snapshot-command -B dist/snapshot-command -DCMAKE_BUILD_TYPE=Debug
+
+      - name: Build snapshot command regression
+        run: cmake --build dist/snapshot-command --config Debug --target wz_snapshot_command_contract --parallel 2
+
+      - name: Execute snapshot command regression
+        run: ctest --test-dir dist/snapshot-command --output-on-failure --verbose -R '^wz_snapshot_command_contract$'
+
+      - name: Write pinned proof
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          RUNNER_OS: ${{ runner.os }}
+          RUNNER_ARCH: ${{ runner.arch }}
+        run: |
+          python3 ci/test/snapshot-command/write-proof.py \
+            --commit "$GITHUB_SHA" \
+            --run-id "$GITHUB_RUN_ID" \
+            --runner "$RUNNER_OS/$RUNNER_ARCH" \
+            --proof dist/snapshot-command/snapshot-command.json
+
+      - name: Upload pinned proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: snapshot-command-${{ github.sha }}
+          path: dist/snapshot-command/snapshot-command.json
+          if-no-files-found: error

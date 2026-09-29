@@ -25,4 +25,8 @@ wz_file_dialog_result_t wz_file_dialog_open(char* utf8_path,
 wz_file_dialog_result_t wz_file_dialog_save_tap(char* utf8_path,
                                                 size_t path_capacity);
 
+/* Select an absolute UTF-8 destination for a SNA or Z80 snapshot. */
+wz_file_dialog_result_t wz_file_dialog_save_snapshot(char* utf8_path,
+                                                      size_t path_capacity);
+
 #endif

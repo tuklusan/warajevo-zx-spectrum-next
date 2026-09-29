@@ -57,6 +57,7 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "app/wz_networking_commands.h"
 #include "app/wz_tape_loading_commands.h"
 #include "app/wz_tape_media_commands.h"
+#include "app/wz_snapshot_save_workflow.h"
 #include "app/wz_tape_insert_action.h"
 #include "app/wz_tape_manager.h"
 #include "app/wz_application_lifecycle.h"
@@ -135,6 +136,7 @@ typedef struct {
     wz_networking_command_context_t networking_command_context;
     wz_tape_loading_command_context_t tape_loading_command_context;
     wz_tape_media_command_context_t tape_media_command_context;
+    wz_snapshot_save_workflow_t snapshot_save_workflow;
     bool tape_manager_open;
     size_t tape_manager_selected_segment;
     size_t tape_manager_selected_block;
@@ -538,7 +540,9 @@ static bool wz_host_load_external_rom(wz_host_session_t* session, const char* pa
 
 static bool wz_host_extension_is(const char* path, const char* expected)
 {
-    const char* extension = strrchr(path, '.');
+    const char* extension;
+    if (path == NULL || expected == NULL) return false;
+    extension = strrchr(path, '.');
     if (extension == NULL) return false;
     while (*extension != '\0' && *expected != '\0') {
         char left = *extension >= 'A' && *extension <= 'Z'
@@ -1754,6 +1758,214 @@ static wz_result_t wz_host_command_open_run(
     return WZ_RESULT_OK;
 }
 
+static wz_result_t wz_host_command_snapshot_load(
+    const void* context, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    wz_host_session_t* session = (wz_host_session_t*)context;
+    char path[4096];
+    wz_file_dialog_result_t dialog_result;
+    wz_qword_t sleep_nanoseconds;
+    (void)arguments;
+    if (session == NULL || result == NULL) return WZ_RESULT_INVALID_ARGUMENT;
+    wz_host_release_local_keys();
+    if (!wz_input_focus_dialog_enter(&session->input_focus)) {
+        result->reason = "file-dialog-focus-unavailable";
+        return WZ_RESULT_INVALID_STATE;
+    }
+    dialog_result = wz_file_dialog_open(path, sizeof(path));
+    (void)wz_input_focus_dialog_leave(&session->input_focus);
+    if (session->pacing_initialized &&
+        wz_host_pacing_set_speed(&session->pacing, session->speed)) {
+        (void)wz_host_pacing_wait(&session->pacing, wz_host_now_nanoseconds(),
+            session->machine.master_tick, NULL, NULL, &sleep_nanoseconds);
+    }
+    if (dialog_result == WZ_FILE_DIALOG_CANCELLED) {
+        (void)snprintf(result->message, sizeof(result->message), "cancelled");
+        return WZ_RESULT_OK;
+    }
+    if (dialog_result != WZ_FILE_DIALOG_SELECTED) {
+        result->reason = "file-dialog-failed";
+        return WZ_RESULT_INVALID_STATE;
+    }
+    if (!wz_host_extension_is(path, ".sna") &&
+        !wz_host_extension_is(path, ".z80")) {
+        result->reason = "unsupported-snapshot-format";
+        return WZ_RESULT_UNSUPPORTED_OPERATION;
+    }
+    if (!wz_host_load_external_snapshot(session, path)) {
+        result->reason = "snapshot-load-failed";
+        (void)snprintf(session->file_notification,
+                       sizeof(session->file_notification),
+                       "Snapshot load failed");
+        return WZ_RESULT_INVALID_STATE;
+    }
+    session->ui_window.layout.model_k =
+        session->machine.profile != NULL &&
+        session->machine.profile->kind == WZ_MACHINE_128K_PAL ? 128u : 48u;
+    session->audio_sample_remainder = 0u;
+    session->audio_sample_speed_initialized = false;
+    wz_snapshot_save_workflow_init(&session->snapshot_save_workflow);
+    (void)wz_snapshot_save_set_destination(
+        &session->snapshot_save_workflow, path);
+    (void)snprintf(session->file_notification,
+                   sizeof(session->file_notification), "Snapshot loaded");
+    (void)snprintf(result->message, sizeof(result->message), "loaded");
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_host_snapshot_write(wz_host_session_t* session,
+                                          const char* path,
+                                          wz_command_result_t* result)
+{
+    wz_byte_t* data;
+    size_t capacity;
+    size_t length;
+    wz_snapshot_save_workflow_t candidate;
+    wz_historical_state_format_t format;
+    if (!wz_host_extension_is(path, ".sna") &&
+        !wz_host_extension_is(path, ".z80")) {
+        result->reason = "unsupported-snapshot-format";
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    candidate = session->snapshot_save_workflow;
+    if (wz_snapshot_save_set_destination(&candidate, path) !=
+        WZ_SNAPSHOT_SAVE_OK) {
+        result->reason = "snapshot-destination-invalid";
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    format = wz_host_extension_is(path, ".sna") ?
+        WZ_HISTORICAL_FORMAT_SNA : WZ_HISTORICAL_FORMAT_Z80;
+    if (wz_state_validate_historical_representability(
+            &session->machine, format) != WZ_RESULT_OK) {
+        result->reason = "snapshot-state-not-representable";
+        return WZ_RESULT_UNSUPPORTED_OPERATION;
+    }
+    capacity = WZ_SNA_128K_LENGTH > WZ_Z80_128K_V2_LENGTH ?
+        WZ_SNA_128K_LENGTH : WZ_Z80_128K_V2_LENGTH;
+    data = (wz_byte_t*)malloc(capacity);
+    if (data == NULL) {
+        result->reason = "snapshot-allocation-failed";
+        return WZ_RESULT_OUT_OF_MEMORY;
+    }
+    if (format == WZ_HISTORICAL_FORMAT_SNA) {
+        length = session->machine.profile->kind == WZ_MACHINE_128K_PAL ?
+            WZ_SNA_128K_LENGTH : WZ_SNA_48K_LENGTH;
+        if ((session->machine.profile->kind == WZ_MACHINE_128K_PAL ?
+                wz_state_save_sna_128k(&session->machine, data, length) :
+                wz_state_save_sna_48k(&session->machine, data, length)) !=
+            WZ_RESULT_OK) {
+            free(data);
+            result->reason = "snapshot-serialization-failed";
+            return WZ_RESULT_INVALID_STATE;
+        }
+    } else if (session->machine.profile->kind == WZ_MACHINE_128K_PAL) {
+        length = WZ_Z80_128K_V2_LENGTH;
+        if (wz_state_save_z80_v2_128k(&session->machine, data, length) !=
+            WZ_RESULT_OK) {
+            free(data);
+            result->reason = "snapshot-serialization-failed";
+            return WZ_RESULT_INVALID_STATE;
+        }
+    } else {
+        length = WZ_Z80_V2_LENGTH;
+        if (wz_state_save_z80_v2_48k(&session->machine, data, length) !=
+            WZ_RESULT_OK) {
+            free(data);
+            result->reason = "snapshot-serialization-failed";
+            return WZ_RESULT_INVALID_STATE;
+        }
+    }
+    if (!wz_host_output_write_atomic_utf8(path, data, length)) {
+        free(data);
+        result->reason = "snapshot-save-failed";
+        (void)snprintf(session->file_notification,
+                       sizeof(session->file_notification),
+                       "Snapshot save failed");
+        return WZ_RESULT_INVALID_STATE;
+    }
+    free(data);
+    session->snapshot_save_workflow = candidate;
+    (void)snprintf(session->file_notification,
+                   sizeof(session->file_notification), "Snapshot saved");
+    (void)snprintf(result->message, sizeof(result->message), "saved");
+    return WZ_RESULT_OK;
+}
+
+static bool wz_host_snapshot_normalize_path(char* path, size_t capacity)
+{
+    const char* base;
+    const char* extension;
+    size_t length;
+    if (path == NULL || capacity < sizeof(".z80") || path[0] == '\0') {
+        return false;
+    }
+    if (wz_host_extension_is(path, ".sna") ||
+        wz_host_extension_is(path, ".z80")) return true;
+    base = path;
+    for (const char* cursor = path; *cursor != '\0'; ++cursor) {
+        if (*cursor == '/' || *cursor == '\\') base = cursor + 1;
+    }
+    extension = strrchr(base, '.');
+    if (extension != NULL) return false;
+    length = strlen(path);
+    if (length > capacity - 5u) return false;
+    memcpy(path + length, ".z80", sizeof(".z80"));
+    return true;
+}
+
+static wz_result_t wz_host_command_snapshot_save_as(
+    const void* context, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    wz_host_session_t* session = (wz_host_session_t*)context;
+    char path[4096];
+    wz_file_dialog_result_t dialog_result;
+    wz_qword_t sleep_nanoseconds;
+    (void)arguments;
+    if (session == NULL || result == NULL) return WZ_RESULT_INVALID_ARGUMENT;
+    wz_host_release_local_keys();
+    if (!wz_input_focus_dialog_enter(&session->input_focus)) {
+        result->reason = "file-dialog-focus-unavailable";
+        return WZ_RESULT_INVALID_STATE;
+    }
+    dialog_result = wz_file_dialog_save_snapshot(path, sizeof(path));
+    (void)wz_input_focus_dialog_leave(&session->input_focus);
+    if (session->pacing_initialized &&
+        wz_host_pacing_set_speed(&session->pacing, session->speed)) {
+        (void)wz_host_pacing_wait(&session->pacing, wz_host_now_nanoseconds(),
+            session->machine.master_tick, NULL, NULL, &sleep_nanoseconds);
+    }
+    if (dialog_result == WZ_FILE_DIALOG_CANCELLED) {
+        (void)snprintf(result->message, sizeof(result->message), "cancelled");
+        return WZ_RESULT_OK;
+    }
+    if (dialog_result != WZ_FILE_DIALOG_SELECTED) {
+        result->reason = "file-dialog-failed";
+        return WZ_RESULT_INVALID_STATE;
+    }
+    if (!wz_host_snapshot_normalize_path(path, sizeof(path))) {
+        result->reason = "unsupported-snapshot-format";
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    return wz_host_snapshot_write(session, path, result);
+}
+
+static wz_result_t wz_host_command_snapshot_save(
+    const void* context, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    wz_host_session_t* session = (wz_host_session_t*)context;
+    const char* path;
+    (void)arguments;
+    if (session == NULL || result == NULL) return WZ_RESULT_INVALID_ARGUMENT;
+    path = wz_snapshot_save_current_destination(
+        &session->snapshot_save_workflow);
+    if (path == NULL) return wz_host_command_snapshot_save_as(
+        context, arguments, result);
+    return wz_host_snapshot_write(session, path, result);
+}
+
 static wz_result_t wz_host_command_model_set(
     const void* context, wz_command_arguments_t arguments,
     wz_command_result_t* result)
@@ -2003,6 +2215,27 @@ static bool wz_host_register_commands(void)
             "file", "NONE", "wz-command-result",
             "wz_host_command_open_run", "native-file-dialog", NULL,
             WZ_COMMAND_LOCAL_ONLY, NULL, wz_host_command_open_run,
+            &wz_host_session, true, false, NULL
+        },
+        {
+            "snapshot.load", "Load Snapshot...",
+            "Load a SNA or Z80 snapshot",
+            "file", "NONE", NULL, "wz_host_command_snapshot_load", "native-file-dialog",
+            NULL, WZ_COMMAND_LOCAL_ONLY, NULL, wz_host_command_snapshot_load,
+            &wz_host_session, true, false, NULL
+        },
+        {
+            "snapshot.save", "Save Snapshot...",
+            "Save the current machine state to its snapshot destination",
+            "file", "NONE", NULL, "wz_host_command_snapshot_save", "local",
+            NULL, WZ_COMMAND_LOCAL_ONLY, NULL, wz_host_command_snapshot_save,
+            &wz_host_session, true, false, NULL
+        },
+        {
+            "snapshot.save_as", "Save Snapshot As...",
+            "Choose a destination and save the current machine state",
+            "file", "NONE", NULL, "wz_host_command_snapshot_save_as", "native-file-dialog",
+            NULL, WZ_COMMAND_LOCAL_ONLY, NULL, wz_host_command_snapshot_save_as,
             &wz_host_session, true, false, NULL
         },
         {
@@ -3257,6 +3490,7 @@ static void wz_host_session_init(void)
 {
     const wz_machine_profile_t* profile;
     stm_setup();
+    wz_snapshot_save_workflow_init(&wz_host_session.snapshot_save_workflow);
     wz_host_session.speed = WZ_SPEED_100;
     sg_setup(&(sg_desc){.environment = sglue_environment()});
     sgl_setup(&(sgl_desc_t){0});
