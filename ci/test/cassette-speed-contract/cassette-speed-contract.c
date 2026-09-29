@@ -67,7 +67,7 @@ static bool run_speed_transition(wz_speed_policy_t initial_speed,
         wz_machine_destroy(&machine);
         return false;
     }
-    failure_stage = 8u;
+    failure_stage = 2u;
     if (wz_machine_tape_loading_mode(&machine) != WZ_TAPE_LOADING_NORMAL ||
         wz_machine_set_tape_loading_mode(&machine,
             WZ_TAPE_LOADING_INSTANT_TRAP) != WZ_RESULT_OK ||
@@ -103,7 +103,7 @@ static bool run_speed_transition(wz_speed_policy_t initial_speed,
     wz_machine_memory_write(&machine, 0x8005u, 0xd3u);
     wz_machine_memory_write(&machine, 0x8006u, 0xfeu);
     machine.cpu.program_counter = 0x8000u;
-    failure_stage = 2u;
+    failure_stage = 3u;
     if (wz_headless_runner_execute(&runner, 66u) != WZ_RESULT_OK) {
         goto cleanup;
     }
@@ -111,13 +111,13 @@ static bool run_speed_transition(wz_speed_policy_t initial_speed,
     frame_ticks = (wz_master_tick_t)profile->tstates_per_frame *
         profile->master_ticks_per_cpu_tstate;
     first_boundary = frame_ticks + 2u;
-    failure_stage = 3u;
+    failure_stage = 4u;
     if (wz_headless_runner_execute(&runner,
             first_boundary - machine.master_tick) != WZ_RESULT_OK) {
         goto cleanup;
     }
     first_frame_tick = machine.master_tick;
-    failure_stage = 4u;
+    failure_stage = 5u;
     if (!wz_host_pacing_wait(&pacing, 0u, machine.master_tick, NULL, NULL,
                              &requested_wait) ||
         requested_wait != expected_wait(machine.master_tick,
@@ -137,7 +137,7 @@ static bool run_speed_transition(wz_speed_policy_t initial_speed,
         goto cleanup;
     }
 
-    failure_stage = 5u;
+    failure_stage = 6u;
     second_boundary = first_boundary + frame_ticks + 2u;
     machine.cpu.program_counter = 0x8000u;
     if (wz_headless_runner_execute(&runner, 66u) != WZ_RESULT_OK ||
@@ -155,7 +155,7 @@ static bool run_speed_transition(wz_speed_policy_t initial_speed,
     output->tape_segment = machine.tape_state.segment_index;
     output->tape_elapsed = machine.tape_state.segment_elapsed;
     output->ear_level = wz_machine_tape_ear_level(&machine);
-    failure_stage = 6u;
+    failure_stage = 7u;
     event_count = wz_machine_mic_events(&machine, events, 4u);
     if (event_count != 4u) {
         goto cleanup;
@@ -165,7 +165,7 @@ static bool run_speed_transition(wz_speed_policy_t initial_speed,
         output->mic_ticks[index] = events[index].master_tick;
         output->mic_levels[index] = events[index].level;
     }
-    failure_stage = 7u;
+    failure_stage = 8u;
     if (output->mic_ticks[0] != 28u || output->mic_ticks[1] != 58u ||
         output->mic_ticks[2] != first_frame_tick + 28u ||
         output->mic_ticks[3] != first_frame_tick + 58u) {
