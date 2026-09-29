@@ -1,23 +1,23 @@
 {
   "testId": "host-machine-frame-audio-continuity",
   "status": "pass",
-  "commit": "df95298fcf5b2ec998c83adfde7bb5488de3680f",
-  "runId": 36549083761,
+  "commit": "01d51725769b372c0e90ea119952679f1e69cf69",
+  "runId": 36551674420,
   "runner": "Linux/X64",
-  "timestamp": "2026-09-29T09:25:43+00:00",
-  "caseCount": 8,
+  "timestamp": "2026-09-29T09:51:18+00:00",
+  "caseCount": 56,
   "fixtures": [
     {
       "path": ".github/workflows/host-machine-frame-regression.yml",
-      "sha256": "8e7608809387f2223f9de22e790a69ec51ce5dd53ebc33af5f0eaae9a3c5c007"
+      "sha256": "9498d3b26ec4319473de0ea3b57e797c2f08c93c082509a003187b11da9d4816"
     },
     {
       "path": "ci/test/host-frame-audio/frame-audio-regression.c",
-      "sha256": "3c3061c749148a8d48c1629597762da2140f100eec37c16a9eef1ea9157405a5"
+      "sha256": "da573157f9406895f413f6fa588d4adb665ba671a809e03a02b6794277509861"
     },
     {
       "path": "ci/test/host-frame-audio/write-proof.py",
-      "sha256": "2336ee724a44cf905d981644f49240b67e83aab535d3b1e1deff821ed3316cda"
+      "sha256": "c586d36febbdddd1bc598b465378e2c1c780f29657707b20b2370ac595e4f727"
     },
     {
       "path": "src/app/wz_host_machine_frame.c",
@@ -28,8 +28,32 @@
       "sha256": "9d950b087a4269c82f8224b9a26869bc24460ca83a5b5c02db40256d6f69d664"
     },
     {
+      "path": "src/app/wz_host_audio_policy.c",
+      "sha256": "7248245e6f4ff506a436ab09a1121e0fefe68cb729be28267d25e4f54ca0cc68"
+    },
+    {
+      "path": "src/app/wz_host_audio_policy.h",
+      "sha256": "99f86c6701dec5ccae2b932b31daafc95909143dd192bf1cfe43bc91a5991430"
+    },
+    {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "514b70e7163d77857b738ea12557254945dc32b150a97e82c7c111995100253e"
+      "sha256": "8a6368a21d6c9000cd39e8c88147b3596354f89b1ea428b14a3a109cd203292e"
+    },
+    {
+      "path": "src/app/wz_speed_policy.c",
+      "sha256": "cb9d2d0befc0becaa81558d794a257f399c4a46e1c1a0bdb19c4893d8f547183"
+    },
+    {
+      "path": "src/app/wz_speed_policy.h",
+      "sha256": "0895e0cac0254cb95d4b2347d911f0fdddfd0bab414d37e5dd4052cfc9eaa2df"
+    },
+    {
+      "path": "src/core/audio/wz_ay.c",
+      "sha256": "ddb27e2d878c5e9a0ca803e5198e04468c97f9c95a4dd9ac33d7324033c5ae39"
+    },
+    {
+      "path": "src/core/audio/wz_ay.h",
+      "sha256": "5cff8be704c4f33e8cbb54ea09c9b5ed4ac2f2b39fc4f9fc92f4dedf6b920da3"
     },
     {
       "path": "src/core/wz_machine.h",
@@ -41,11 +65,11 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "fc81b599fc91b87423b348f51b60a5710fcad281fbb62dc5ed0425859f2dec75"
+      "sha256": "fb79ad9b6321a5fd5068fdb72fc8b072a82bf93db547b957e859e397b8eafead"
     },
     {
       "path": "test-drivers/host-machine-frame.driver.json",
-      "sha256": "a3a531e44c66a88cb0a1acd86fc0cfe66184641eda12c826d72c01d5fec226b9"
+      "sha256": "5e3e5908d7e8f1f533ba6847403a9d13ddb0795af445c8b21cf86ce5b443a091"
     }
   ]
 }
