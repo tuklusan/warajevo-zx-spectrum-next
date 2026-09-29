@@ -21,16 +21,18 @@
 
 int main(void)
 {
+    wz_ui_layout_state_t layout;
     wz_ui_remote_control_status_t status;
     wz_control_port_owner_t owner;
     char indicator[WZ_UI_STATUS_CAPACITY];
     const char expected_prefix[] = "Control Port: 32787";
 
     (void)memset(&owner, 0, sizeof(owner));
+    wz_ui_layout_state_init(&layout);
     wz_ui_remote_control_status_init(&status);
     owner.selected_port = 32787u;
     owner.ipv4_active = true;
-    wz_ui_layout_sync_remote_control(NULL, &status, &owner, false);
+    wz_ui_layout_sync_remote_control(&layout, &status, &owner, false);
     wz_ui_remote_control_indicator(&status, indicator, sizeof(indicator));
     REQUIRE(status.selected_control_port_available);
     REQUIRE(status.selected_control_port == 32787u);

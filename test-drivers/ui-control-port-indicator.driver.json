@@ -16,7 +16,7 @@
     },
     {
       "path": "ci/test/ui-control-port-indicator/ui-control-port-indicator-contract.c",
-      "sha256": "955eb44c39bb82089f1e321c47626df3290b9c8da6d97b5748ef9e157681088e"
+      "sha256": "43cb273cc2cf36ae4eac534e80d4d19fb980bafc9eca581c782e1ed376426320"
     },
     {
       "path": "ci/test/ui-control-port-indicator/write-proof.py",
