@@ -28,7 +28,6 @@ static bool reject_output(void* context, wz_master_tick_t start_tick,
                           const wz_ay_t* initial_ay)
 {
     output_probe_t* probe = (output_probe_t*)context;
-    (void)initial_beeper_level;
     if (probe == NULL || probe->machine == NULL) return false;
     probe->ordering_ok = probe->machine->master_tick > start_tick &&
         start_tick == probe->prior_tick &&
