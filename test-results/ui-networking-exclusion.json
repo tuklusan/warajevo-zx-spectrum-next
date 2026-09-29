@@ -1,0 +1,63 @@
+{
+  "testId": "ui-networking-exclusion",
+  "status": "pass",
+  "commit": "88cbd9e62eaa54b46db8ad7e828dba9e4a8829e4",
+  "runId": 36604424135,
+  "runner": "Linux/X64",
+  "timestamp": "2026-09-29T17:22:28+00:00",
+  "caseCount": 19,
+  "fixtures": [
+    {
+      "path": ".github/workflows/ui-networking-exclusion.yml",
+      "sha256": "da80a657512d70d0a38c2a8820e55b7274a9fb23800a99e7beb219f3ebd11ffb"
+    },
+    {
+      "path": "ci/test/ui-networking-exclusion/CMakeLists.txt",
+      "sha256": "1b6563f4dbf302f12f2b299fb699e873c3db879e7564a8a0c57853a232022641"
+    },
+    {
+      "path": "ci/test/ui-networking-exclusion/ui-networking-exclusion-contract.c",
+      "sha256": "b48717ddce4caf0772b9129089081ca3dcd5972e74ddb2a33f240d34220298e6"
+    },
+    {
+      "path": "ci/test/ui-networking-exclusion/write-proof.py",
+      "sha256": "77c56b91a52935861a9fc791d460980b625f95fe55122dad7de8c8757cfd5538"
+    },
+    {
+      "path": "test-drivers/ui-networking-exclusion.driver.json",
+      "sha256": "5500347538863852611a777bab8f347ba9355d8fd4e6e6cd974cb5366be52530"
+    },
+    {
+      "path": "src/app/wz_command_registry.c",
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
+    },
+    {
+      "path": "src/app/wz_command_registry.h",
+      "sha256": "80110080861a05baae47cd6d294315055bb6b1a636c79891b55c56717cb53c94"
+    },
+    {
+      "path": "src/app/wz_networking_commands.c",
+      "sha256": "72168c59016deaab5c110a8040902b5ba5b0f7d89c2c39bb432b6cba7f558638"
+    },
+    {
+      "path": "src/app/wz_networking_commands.h",
+      "sha256": "4ed126aa9388bee42619642f70bb0f28b54afabeac4e955ece9413e6f9772049"
+    },
+    {
+      "path": "src/app/wz_ui_layout.c",
+      "sha256": "7d78188b959e29cd031382c7f9a788f7fe837d9d24d3ebe446137cc8c4d28b38"
+    },
+    {
+      "path": "src/app/wz_ui_layout.h",
+      "sha256": "cfe6cf9135dd1ef6771a1513e9dc3f72cd42636f4f005e576017aa745915d2d9"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "ff2f9f8f2e9c3237accb07b0c300e0e6a2af060ca6d6628b635c5745874cbb21"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "84d9e0b84a02993917b0e74cb9ba0d71158f45223a707d801ce927029ab2b0aa"
+    }
+  ]
+}
