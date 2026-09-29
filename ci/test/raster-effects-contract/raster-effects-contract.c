@@ -25,7 +25,7 @@ static bool check_timed_raster_effects(void)
     wz_byte_t* pixels = (wz_byte_t*)malloc(raster_size);
     wz_master_tick_t ticks_per_tstate;
     wz_master_tick_t line_ticks;
-    wz_master_tick_t first_attribute_tick;
+    wz_master_tick_t first_bitmap_tick;
     wz_master_tick_t frame_ticks;
     static const wz_byte_t attributes[8] = {
         0x01u, 0x02u, 0x03u, 0x04u, 0x05u, 0x06u, 0x07u, 0x41u
@@ -44,15 +44,14 @@ static bool check_timed_raster_effects(void)
     ticks_per_tstate = profile->master_ticks_per_cpu_tstate;
     line_ticks = (wz_master_tick_t)profile->tstates_per_line * ticks_per_tstate;
     frame_ticks = (wz_master_tick_t)profile->tstates_per_frame * ticks_per_tstate;
-    first_attribute_tick =
-        ((wz_master_tick_t)profile->ula_fetch_start_tstate +
-         profile->ula_attribute_offset_tstates) * ticks_per_tstate;
+    first_bitmap_tick =
+        (wz_master_tick_t)profile->ula_fetch_start_tstate * ticks_per_tstate;
 
-    /* Change one ordinary Spectrum attribute at each timed ULA attribute fetch.
-     * This creates scanline-level multicolor from bus timing and memory alone. */
+    /* Change one ordinary Spectrum attribute at each scanline's bitmap fetch,
+     * before the following attribute fetch. */
     for (wz_dword_t row = 0u; row < 8u; ++row) {
         wz_word_t bitmap_address = (wz_word_t)(0x4000u + row * 0x100u);
-        wz_master_tick_t attribute_tick = first_attribute_tick +
+        wz_master_tick_t attribute_tick = first_bitmap_tick +
             (wz_master_tick_t)row * line_ticks;
         wz_machine_memory_write(&machine, bitmap_address, 0xffu);
         if (wz_machine_memory_write_at_tick(&machine, 0x5800u,
