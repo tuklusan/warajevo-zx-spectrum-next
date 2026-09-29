@@ -1,0 +1,66 @@
+{
+  "testId": "ui-networking-reconfiguration",
+  "command": "cmake -S ci/test/ui-networking-reconfiguration -B dist/ui-networking-reconfiguration -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/ui-networking-reconfiguration --config Release --target wz_ui_networking_reconfiguration_contract --parallel 2 && dist/ui-networking-reconfiguration/wz_ui_networking_reconfiguration_contract",
+  "requiredCases": 41,
+  "runnerMatrix": [
+    "ubuntu-24.04"
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/ui-networking-reconfiguration.yml",
+      "sha256": "c56b1e2b64abcfc14ac280bbb82b69b3b7cd09d071ab6e333df26ec86767ab8a"
+    },
+    {
+      "path": "ci/test/ui-networking-reconfiguration/CMakeLists.txt",
+      "sha256": "208660b509c4a11f4e4753de0d03e8b46eab9872d6915e04f5cf6da5201b28ce"
+    },
+    {
+      "path": "ci/test/ui-networking-reconfiguration/ui-networking-reconfiguration-contract.c",
+      "sha256": "ce4f8c309288ef0024d8be8a8a42cf28aa32f0c19872bfa3bf041737167140e2"
+    },
+    {
+      "path": "ci/test/ui-networking-reconfiguration/write-proof.py",
+      "sha256": "970aff6a17771d5c5cdc4add773d404b67ddd898b4b67c9e3c4b7b783b661117"
+    },
+    {
+      "path": "src/app/wz_command_registry.c",
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
+    },
+    {
+      "path": "src/app/wz_command_registry.h",
+      "sha256": "80110080861a05baae47cd6d294315055bb6b1a636c79891b55c56717cb53c94"
+    },
+    {
+      "path": "src/app/wz_networking_commands.c",
+      "sha256": "72168c59016deaab5c110a8040902b5ba5b0f7d89c2c39bb432b6cba7f558638"
+    },
+    {
+      "path": "src/app/wz_networking_commands.h",
+      "sha256": "4ed126aa9388bee42619642f70bb0f28b54afabeac4e955ece9413e6f9772049"
+    },
+    {
+      "path": "src/app/wz_ui_layout.c",
+      "sha256": "7d78188b959e29cd031382c7f9a788f7fe837d9d24d3ebe446137cc8c4d28b38"
+    },
+    {
+      "path": "src/app/wz_ui_layout.h",
+      "sha256": "cfe6cf9135dd1ef6771a1513e9dc3f72cd42636f4f005e576017aa745915d2d9"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "ff2f9f8f2e9c3237accb07b0c300e0e6a2af060ca6d6628b635c5745874cbb21"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "84d9e0b84a02993917b0e74cb9ba0d71158f45223a707d801ce927029ab2b0aa"
+    },
+    {
+      "path": "src/core/wz_kempston.h",
+      "sha256": "21ddeac1344f770e29180b8b015c5b8ebad3deffa2031beaad2ad09db2b947bd"
+    },
+    {
+      "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
+      "sha256": "af10f6f1947d37281711abbf3f905a168a914ef88da5ac62cc78e47638b8bbf8"
+    }
+  ]
+}
