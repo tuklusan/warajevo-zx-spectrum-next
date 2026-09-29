@@ -553,7 +553,8 @@ if(WZSN_BUILD_SOKOL_HOST)
         add_executable(wz_sokol_host ${WZSN_SOURCE_ROOT}/app/wz_sokol_main.c ${WZSN_SOURCE_ROOT}/app/wz_ui_window.c ${WZSN_SOURCE_ROOT}/app/wz_ui_layout.c ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c ${WZSN_SOURCE_ROOT}/app/wz_host_thread.c ${WZSN_SOURCE_ROOT}/app/wz_sokol_raster.c ${WZSN_SOURCE_ROOT}/app/wz_application_lifecycle.c ${WZSN_SOURCE_ROOT}/app/wz_host_presentation.c ${WZSN_SOURCE_ROOT}/app/wz_host_scaling.c ${WZSN_SOURCE_ROOT}/app/wz_host_effects.c ${WZSN_SOURCE_ROOT}/app/wz_input_arbiter.c ${WZSN_SOURCE_ROOT}/app/wz_input_timing.c ${WZSN_SOURCE_ROOT}/app/wz_input_focus.c ${WZSN_SOURCE_ROOT}/app/wz_kempston_mapping.c ${WZSN_SOURCE_ROOT}/app/wz_speed_policy.c ${WZSN_SOURCE_ROOT}/app/wz_host_pacing.c ${WZSN_SOURCE_ROOT}/app/wz_host_config.c ${WZSN_SOURCE_ROOT}/app/wz_host_media_ownership.c ${WZSN_SOURCE_ROOT}/app/wz_host_audio_push.c ${WZSN_SOURCE_ROOT}/app/wz_host_audio_policy.c ${WZSN_SOURCE_ROOT}/app/wz_sokol_audio.c ${WZSN_SOURCE_ROOT}/app/wz_host_socket.c ${WZSN_SOURCE_ROOT}/app/wz_control_port.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_client.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_negotiation.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_security.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_input.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_key_press.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_keymap.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_keyboard_command.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_status.c ${WZSN_SOURCE_ROOT}/app/wz_telnet_alias_response.c ${WZSN_SOURCE_ROOT}/app/wz_screenshot_service.c ${WZSN_SOURCE_ROOT}/app/wz_host_output.c)
     endif()
     target_sources(wz_sokol_host PRIVATE
-        ${WZSN_SOURCE_ROOT}/app/wz_host_output_utf8.c)
+        ${WZSN_SOURCE_ROOT}/app/wz_host_output_utf8.c
+        ${WZSN_SOURCE_ROOT}/app/wz_tape_manager.c)
     target_sources(wz_sokol_host PRIVATE
         ${WZSN_SOURCE_ROOT}/app/wz_networking_commands.c
         ${WZSN_SOURCE_ROOT}/app/wz_tape_loading_commands.c
