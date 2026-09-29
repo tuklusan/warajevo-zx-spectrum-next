@@ -13,7 +13,7 @@
     },
     {
       "path": "ci/test/host-output-utf8/host-output-utf8.c",
-      "sha256": "7e7e00bfdcf334be680b630553668a0378485656742b9e8f2e849ba93823c5ae"
+      "sha256": "a66efd920c5d4a9b7adcb831e9c9cd906c2f8f1d2677500c55b0beb30f9db57f"
     },
     {
       "path": "src/app/wz_host_output_utf8.c",

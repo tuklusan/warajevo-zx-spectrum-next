@@ -28,25 +28,43 @@ static int verify_output(const char* path
     static const unsigned char expected[] = {0x00u, 0x80u, 0xffu, 0x42u};
     static const unsigned char first[] = {0x31u};
     unsigned char actual[sizeof(expected)];
+#if defined(_WIN32)
+    unsigned char trailing_byte;
+    DWORD read_count = 0u;
+    DWORD trailing_count = 0u;
+    BOOL close_result;
+    HANDLE file;
+#else
     size_t read_count;
     int trailing;
     int close_result;
     FILE* file;
+#endif
     if (!wz_host_output_write_atomic_utf8(path, first, sizeof(first)) ||
         !wz_host_output_write_atomic_utf8(path, expected, sizeof(expected))) {
         return 0;
     }
 #if defined(_WIN32)
-    file = _wfopen(wide_path, L"rb");
+    file = CreateFileW(wide_path, GENERIC_READ, FILE_SHARE_READ, NULL,
+                       OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (file == INVALID_HANDLE_VALUE) return 0;
+    if (!ReadFile(file, actual, (DWORD)sizeof(actual), &read_count, NULL) ||
+        !ReadFile(file, &trailing_byte, 1u, &trailing_count, NULL)) {
+        CloseHandle(file);
+        return 0;
+    }
+    close_result = CloseHandle(file);
+    if (read_count != (DWORD)sizeof(actual) || trailing_count != 0u || !close_result ||
+        memcmp(actual, expected, sizeof(expected)) != 0) return 0;
 #else
     file = fopen(path, "rb");
-#endif
     if (file == NULL) return 0;
     read_count = fread(actual, 1u, sizeof(actual), file);
     trailing = fgetc(file);
     close_result = fclose(file);
     if (read_count != sizeof(actual) || trailing != EOF || close_result != 0 ||
         memcmp(actual, expected, sizeof(expected)) != 0) return 0;
+#endif
 #if defined(_WIN32)
     if (!DeleteFileW(wide_path)) return 0;
 #else
