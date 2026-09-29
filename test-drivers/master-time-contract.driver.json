@@ -17,7 +17,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "b3e996c07884598dad0ca877fb264f9827ba204f1aaf6909f501f521301d9225"
+      "sha256": "c6893ae4fe7a4fbcc5cb287238e5a00db3723bd90c52fdcf1fec5b391ff0547e"
     },
     {
       "path": "src/core/wz_machine.h",
@@ -33,7 +33,7 @@
     },
     {
       "path": "src/core/wz_z80.c",
-      "sha256": "c7cf9761cc3448474ccce3e88a20a4bc619ae35ee2b8357545debf901a50ba16"
+      "sha256": "4414a17180681cc18c03a3a84c960196c1fa0d7bdfe09f59d0b664919a369195"
     },
     {
       "path": "src/core/wz_z80.h",
