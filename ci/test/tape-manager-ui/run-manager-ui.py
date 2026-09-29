@@ -35,7 +35,7 @@ def focus_application(environment):
         if result.returncode == 0:
             for window in result.stdout.splitlines():
                 focused = subprocess.run(
-                    ["xdotool", "windowfocus", "--sync", window],
+                    ["xdotool", "windowfocus", window],
                     check=False, capture_output=True, text=True,
                     env=environment)
                 if focused.returncode == 0:
