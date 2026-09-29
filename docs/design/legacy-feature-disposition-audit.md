@@ -7,14 +7,14 @@ SANYALnet Labs." See LICENSE for full terms. -->
 
 # Legacy feature disposition audit
 
-Task 452 is in progress. Section 2.5 contains 32 explicit dispositions: 20 REQUIRED and 12 deferred/replaced/non-initial. Every REQUIRED row is mapped to its phase implementation area or source and current proof gap. 9 have limited runner evidence; 11 lack criterion-level pinned proof. Source presence alone is not acceptance evidence. The tracked test ledger currently has only canonical-core-regression; the DIZZY4K runner smoke (run 35890238325) covers only the narrow flows identified below.
+Task 452 audit is complete. Section 2.5 contains 32 explicit dispositions: 20 REQUIRED and 12 deferred/replaced/non-initial. Every REQUIRED row is mapped to its phase implementation area or source and current proof gap. 10 have limited runner evidence; 10 lack criterion-level pinned proof. Source presence alone is not acceptance evidence. The model-switch regression now verifies 128K fixed and paged RAM behavior on all four hosted runner families (run `36560521477`).
 
 All deferred/replaced/non-initial rows remain scoped as stated in Section 2.5 and are not promoted into initial release blockers. Historical UI replacements are reconciled separately under task 453. Architecture-#3 implementation remains out of scope.
 
 | Feature | Section 2.5 disposition | Audit | Implementation reference | Evidence or remaining work |
 |---|---|---|---|---|
 | ZX Spectrum 48K PAL | REQUIRED - initial certified machine | PARTIAL | src/core/wz_machine_profile.c | Four-runner build and DIZZY4K launch/screenshot cover a 48K path, not the complete certified timing suite (runs `35896075757`, `35890238325`). |
-| ZX Spectrum 128K PAL | REQUIRED - initial certified machine | OPEN | src/core/wz_machine_profile.c | 128K profile/build exists; no dedicated runtime paging/interrupt/raster proof is pinned. |
+| ZX Spectrum 128K PAL | REQUIRED - initial certified machine | PARTIAL | src/core/wz_machine_profile.c; src/core/wz_machine.c | Hosted model-switch contract verifies fixed RAM banks, bank selection, independent paged-bank contents, screen/ROM bank bits, and paging lock on all four runner families (run `36560521477`; [proof](../../test-results/model-switch.json)). Dedicated 128K interrupt/raster behavior and hardware correlation remain open. |
 | ZX Spectrum +2 | LATER compatibility target; not an initial blocker | SCOPED | — | §2.5 disposition is explicit; keep outside initial implementation/test closure. |
 | Timex Sinclair 2068 | LATER compatibility target; preserved source retained | SCOPED | — | §2.5 disposition is explicit; keep outside initial implementation/test closure. |
 | DCK/Timex memory expansions | LATER with Timex support | SCOPED | — | §2.5 disposition is explicit; keep outside initial implementation/test closure. |
