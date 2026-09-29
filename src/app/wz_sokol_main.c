@@ -1418,8 +1418,12 @@ static void wz_host_ui_draw_toolbar(struct nk_context* context, float width)
                    strcmp(item->command_id, "media.tape") == 0) {
             const wz_tape_loading_mode_t mode =
                 wz_machine_tape_loading_mode(&wz_host_session.machine);
-            const char* mode_label = mode == WZ_TAPE_LOADING_INSTANT_TRAP ?
-                "Tape: Instant / Trap" : "Tape: Normal";
+            char mode_label[48];
+            const char* mode_name = mode == WZ_TAPE_LOADING_INSTANT_TRAP ?
+                "Instant" : "Normal";
+            (void)snprintf(mode_label, sizeof(mode_label), "%s / %s",
+                wz_host_session.machine.tape_mounted != 0u ? "Tape" : "Empty",
+                mode_name);
             const wz_command_metadata_t* normal_command =
                 wz_command_registry_find(&wz_host_session.command_registry,
                     WZ_TAPE_LOADING_NORMAL_COMMAND_ID);
@@ -1439,8 +1443,21 @@ static void wz_host_ui_draw_toolbar(struct nk_context* context, float width)
                         action == NULL ? NULL : wz_command_registry_find(
                             &wz_host_session.command_registry,
                             action->command_id);
+                    const char* action_label;
+                    char selected_label[48];
                     bool action_enabled;
                     if (action == NULL) continue;
+                    action_label = action->label;
+                    if ((strcmp(action->command_id,
+                                WZ_TAPE_LOADING_NORMAL_COMMAND_ID) == 0 &&
+                         mode == WZ_TAPE_LOADING_NORMAL) ||
+                        (strcmp(action->command_id,
+                                WZ_TAPE_LOADING_INSTANT_COMMAND_ID) == 0 &&
+                         mode == WZ_TAPE_LOADING_INSTANT_TRAP)) {
+                        (void)snprintf(selected_label, sizeof(selected_label),
+                                       "%s [selected]", action->label);
+                        action_label = selected_label;
+                    }
                     action_enabled = action_command != NULL &&
                         wz_command_registry_state(
                             &wz_host_session.command_registry,
@@ -1451,10 +1468,10 @@ static void wz_host_ui_draw_toolbar(struct nk_context* context, float width)
                                 WZ_TAPE_INSERT_COMMAND_ID) == 0);
                     if (!action_enabled) {
                         nk_widget_disable_begin(context);
-                        (void)nk_combo_item_label(context, action->label,
+                        (void)nk_combo_item_label(context, action_label,
                                                   NK_TEXT_LEFT);
                         nk_widget_disable_end(context);
-                    } else if (nk_combo_item_label(context, action->label,
+                    } else if (nk_combo_item_label(context, action_label,
                                                    NK_TEXT_LEFT)) {
                         if (strcmp(action_command->id,
                                    WZ_TAPE_INSERT_COMMAND_ID) == 0) {
