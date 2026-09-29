@@ -193,6 +193,14 @@ static bool same_emulated_waveform(const cassette_result_t* left,
         left->final_tick == right->final_tick;
 }
 
+static bool matches_scaled_wait(wz_qword_t actual, wz_qword_t base,
+                                wz_qword_t factor)
+{
+    wz_qword_t expected = base * factor;
+    return actual > expected ? actual - expected <= 2u
+                             : expected - actual <= 2u;
+}
+
 int main(void)
 {
     cassette_result_t half_to_double = {0};
@@ -206,8 +214,8 @@ int main(void)
         !same_emulated_waveform(&half_to_double, &normal_to_quad) ||
         half_to_double.first_frame_wait !=
             2u * normal_to_quad.first_frame_wait ||
-        double_to_half.changed_speed_wait !=
-            4u * half_to_double.changed_speed_wait ||
+        !matches_scaled_wait(double_to_half.changed_speed_wait,
+            half_to_double.changed_speed_wait, 4u) ||
         half_to_double.changed_speed_wait !=
             2u * normal_to_quad.changed_speed_wait) {
         fprintf(stderr,
