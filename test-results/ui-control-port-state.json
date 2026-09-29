@@ -1,0 +1,51 @@
+{
+  "testId": "ui-control-port-state",
+  "status": "pass",
+  "commit": "458cfaceb892ec7973208836b450d166b2480122",
+  "runId": 36598938370,
+  "runner": "Linux/X64",
+  "timestamp": "2026-09-29T16:37:45+00:00",
+  "caseCount": 8,
+  "fixtures": [
+    {
+      "path": ".github/workflows/ui-control-port-state.yml",
+      "sha256": "8c4de42b00c747dec602b4dee1d33758eb34fadaeece9d2132870df768fa5d6d"
+    },
+    {
+      "path": "ci/test/ui-control-port-state/CMakeLists.txt",
+      "sha256": "9447cfc8e0be664466fc4d57f2f33148d760fb4db9df46670b04b428f4db31b4"
+    },
+    {
+      "path": "ci/test/ui-control-port-state/ui-control-port-state-contract.c",
+      "sha256": "3485d8a157884bb33824d10522cfe8f27ff4c4d2f1bf4ab318847fd1717601e6"
+    },
+    {
+      "path": "ci/test/ui-control-port-state/write-proof.py",
+      "sha256": "6c25f1ee695cd2cec6a1a7eba643fb16548bc9ae1f275017c5e1b1f4d869b177"
+    },
+    {
+      "path": "test-drivers/ui-control-port-state.driver.json",
+      "sha256": "bbfe8458c9c8e3e6cf67b7fe0139ddbaec49751ee8140ade6b333e04992aab36"
+    },
+    {
+      "path": "src/app/wz_host_config.c",
+      "sha256": "5fdecc8d1f9abe5e9f6a4297c83fc7e0fe0590a2d4022dce15c3e49c5a76edaa"
+    },
+    {
+      "path": "src/app/wz_host_config.h",
+      "sha256": "dc7886087ef96ae7f98d7dbfdfff69df2e2c48aa39c3a8f52ef33d0664f44e14"
+    },
+    {
+      "path": "src/app/wz_ui_layout.c",
+      "sha256": "7d78188b959e29cd031382c7f9a788f7fe837d9d24d3ebe446137cc8c4d28b38"
+    },
+    {
+      "path": "src/app/wz_ui_layout.h",
+      "sha256": "cfe6cf9135dd1ef6771a1513e9dc3f72cd42636f4f005e576017aa745915d2d9"
+    },
+    {
+      "path": "src/app/wz_control_port.h",
+      "sha256": "44a2a09d58c56dff09494d2176a43f8de0982ff719e3914fb53853fcca4ea32a"
+    }
+  ]
+}
