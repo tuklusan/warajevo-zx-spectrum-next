@@ -10,7 +10,6 @@ check_banned_content() {
     [ "$oldrev" = "0000000000000000000000000000000000000000" ] && oldrev=$(git rev-parse "$newrev^" 2>/dev/null || true)
     [ -n "$oldrev" ] || return 0
 
-    failed=0
     git diff --diff-filter=ACMR --name-only "$oldrev" "$newrev" | while IFS= read -r file; do
         contents=$(git show "$newrev:$file" 2>/dev/null || true)
         if matches=$(printf '%s\n' "$contents" | grep -n -i -E "$BANNED"); then
