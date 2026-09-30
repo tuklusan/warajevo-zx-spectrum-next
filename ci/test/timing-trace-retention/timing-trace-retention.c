@@ -124,7 +124,8 @@ int main(int argc, char** argv)
         (unsigned long long)REQUIRED_FRAMES,
         (unsigned long long)frame_ticks,
         (unsigned long long)machine.master_tick,
-        (unsigned long long)((span.last_tick - span.first_tick) / frame_ticks),
+        (unsigned long long)(span.last_tick >= span.first_tick ?
+            (span.last_tick - span.first_tick) / frame_ticks : 0u),
         (unsigned long long)span.count,
         (unsigned long long)trace_file.generation, file_size);
     if (result != 0) {

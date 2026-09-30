@@ -17,7 +17,7 @@
     },
     {
       "path": "ci/test/timing-trace-retention/timing-trace-retention.c",
-      "sha256": "5b3bf9bef97aa36476ac7b707a779c03379a09179b3d2b3c248e0e77346e7a47"
+      "sha256": "fa07dcf771aae19fc5e961ee4f0a0186d4542b959fca81988c63b94a54ed921e"
     },
     {
       "path": "ci/test/timing-trace-retention/write-proof.py",
