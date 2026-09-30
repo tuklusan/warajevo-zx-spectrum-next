@@ -103,7 +103,8 @@ int main(int argc, char** argv)
     wz_trace_sink_init(&trace_sink, wz_trace_file_emit, &trace_file);
     wz_machine_set_timing_trace(&machine, &trace_sink);
 
-    while (machine.master_tick < required_ticks) {
+    while (machine.master_tick < required_ticks ||
+           trace_file.last_master_tick < required_ticks) {
         REQUIRE(wz_z80_step(&machine) == WZ_RESULT_OK);
         REQUIRE(!trace_file.failed);
     }
