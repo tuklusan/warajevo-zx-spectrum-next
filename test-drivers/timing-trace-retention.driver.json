@@ -5,7 +5,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/timing-trace-retention.yml",
-      "sha256": "cb17d7c652e31baf2bd1d7cb9b0dc7269647d5159d01ead3ec30d15f58982bd5"
+      "sha256": "86ea7879b0562ec2537f003c6306b21717dc34172c925424ca032246b03ede0c"
     },
     {
       "path": "ci/test/timing-trace-retention/CMakeLists.txt",
@@ -17,15 +17,11 @@
     },
     {
       "path": "ci/test/timing-trace-retention/timing-trace-retention.c",
-      "sha256": "fd8c065347f4f4ff9844915a6e7008bc74e64deb1773499f3767edd6f5ee46cd"
+      "sha256": "5b3bf9bef97aa36476ac7b707a779c03379a09179b3d2b3c248e0e77346e7a47"
     },
     {
       "path": "ci/test/timing-trace-retention/write-proof.py",
       "sha256": "40da9511f2497835bbbe3b9e3bf181b7c5b00f4a8d642793acd8a99841b1b1d6"
-    },
-    {
-      "path": "tests/timing-trace-retention.md",
-      "sha256": "19ab5ce9083156cbce7f98e350ee8c6d5350d676598cf5a1a391a1081097d4df"
     },
     {
       "path": "roms/48.rom",

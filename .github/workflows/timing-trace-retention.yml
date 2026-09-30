@@ -44,7 +44,10 @@ jobs:
         run: cmake --build dist/timing-trace-retention --target wz_timing_trace_retention --parallel 2
 
       - name: Measure retained 48K PAL frames
-        run: dist/timing-trace-retention/wz_timing_trace_retention roms/48.rom dist/timing-trace-retention/retention.wztrace | tee dist/timing-trace-retention/measurement.json
+        run: |
+          set -euo pipefail
+          dist/timing-trace-retention/wz_timing_trace_retention roms/48.rom dist/timing-trace-retention/retention.wztrace \
+            | tee dist/timing-trace-retention/measurement.json
 
       - name: Write pinned aggregate proof
         env:

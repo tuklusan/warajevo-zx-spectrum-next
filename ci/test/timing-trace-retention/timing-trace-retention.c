@@ -111,24 +111,33 @@ int main(int argc, char** argv)
     REQUIRE(wz_trace_file_freeze(&trace_file) == WZ_RESULT_OK);
     REQUIRE(fseek(trace_file.file, 0L, SEEK_END) == 0);
     REQUIRE((file_size = ftell(trace_file.file)) == (long)WZ_TRACE_FILE_SIZE);
-    wz_trace_file_close(&trace_file);
     REQUIRE(wz_trace_file_recover(argv[2], record_span, &span,
                                   &recovered_count) == WZ_RESULT_OK);
     REQUIRE(span.has_tick && recovered_count == span.count && span.count > 0u);
-    REQUIRE(span.last_tick >= span.first_tick &&
-        span.last_tick - span.first_tick >= required_ticks);
-
-    (void)printf("{\"status\":\"pass\",\"requestedFrames\":%llu,"
+    result = span.last_tick >= span.first_tick &&
+        span.last_tick - span.first_tick >= required_ticks ? 0 : 1;
+    (void)printf("{\"status\":\"%s\",\"requestedFrames\":%llu,"
         "\"frameTicks\":%llu,\"machineTicks\":%llu,"
         "\"retainedFrameSpan\":%llu,\"retainedRecords\":%llu,"
         "\"ringGenerations\":%llu,\"fileBytes\":%ld}\n",
+        result == 0 ? "pass" : "fail",
         (unsigned long long)REQUIRED_FRAMES,
         (unsigned long long)frame_ticks,
         (unsigned long long)machine.master_tick,
         (unsigned long long)((span.last_tick - span.first_tick) / frame_ticks),
         (unsigned long long)span.count,
         (unsigned long long)trace_file.generation, file_size);
-    result = 0;
+    if (result != 0) {
+        (void)fprintf(stderr,
+            "retention shortfall: first=%llu last=%llu required=%llu "
+            "records=%llu slots=%llu generations=%llu\n",
+            (unsigned long long)span.first_tick,
+            (unsigned long long)span.last_tick,
+            (unsigned long long)required_ticks,
+            (unsigned long long)span.count,
+            (unsigned long long)trace_file.record_count,
+            (unsigned long long)trace_file.generation);
+    }
 
 cleanup:
     wz_trace_file_close(&trace_file);
