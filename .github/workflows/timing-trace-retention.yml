@@ -1,0 +1,65 @@
+# Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+# This file is governed by the SANYALnet Labs Non-Commercial License in the
+# root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
+# for AI/ML model training are prohibited unless separately authorized.
+# Attribution is required: "Based on original work by Supratim Sanyal of
+# SANYALnet Labs." See LICENSE for full terms.
+
+name: Full TIMING_FULL trace retention measurement
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/timing-trace-retention.yml'
+      - 'ci/test/timing-trace-retention/**'
+      - 'roms/48.rom'
+      - 'src/core/wz_machine.*'
+      - 'src/core/wz_machine_profile.*'
+      - 'src/core/wz_trace.*'
+      - 'src/core/wz_z80.*'
+      - 'src/diagnostics/wz_trace_file.*'
+      - 'test-drivers/timing-trace-retention.driver.json'
+      - 'tests/timing-trace-retention.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  retention:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact main revision and ROM
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          lfs: true
+
+      - name: Configure retention measurement
+        run: cmake -S ci/test/timing-trace-retention -B dist/timing-trace-retention -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build retention measurement
+        run: cmake --build dist/timing-trace-retention --target wz_timing_trace_retention --parallel 2
+
+      - name: Measure retained 48K PAL frames
+        run: dist/timing-trace-retention/wz_timing_trace_retention roms/48.rom dist/timing-trace-retention/retention.wztrace | tee dist/timing-trace-retention/measurement.json
+
+      - name: Write pinned aggregate proof
+        env:
+          PROJECT_COMMIT: ${{ github.sha }}
+          PROJECT_RUN_ID: ${{ github.run_id }}
+        run: |
+          python3 ci/test/timing-trace-retention/write-proof.py \
+            --commit "$PROJECT_COMMIT" \
+            --run-id "$PROJECT_RUN_ID" \
+            --measurement dist/timing-trace-retention/measurement.json \
+            --proof dist/timing-trace-retention/retention-proof.json
+
+      - name: Upload aggregate proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: timing-trace-retention-${{ github.sha }}
+          path: dist/timing-trace-retention/retention-proof.json
+          if-no-files-found: error

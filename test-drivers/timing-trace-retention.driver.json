@@ -1,0 +1,71 @@
+{
+  "testId": "timing-trace-retention",
+  "command": "cmake -S ci/test/timing-trace-retention -B dist/timing-trace-retention -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/timing-trace-retention --target wz_timing_trace_retention --parallel 2 && dist/timing-trace-retention/wz_timing_trace_retention roms/48.rom dist/timing-trace-retention/retention.wztrace",
+  "requiredFrames": 8,
+  "fixtures": [
+    {
+      "path": ".github/workflows/timing-trace-retention.yml",
+      "sha256": "cb17d7c652e31baf2bd1d7cb9b0dc7269647d5159d01ead3ec30d15f58982bd5"
+    },
+    {
+      "path": "ci/test/timing-trace-retention/CMakeLists.txt",
+      "sha256": "cf974d34703fef2fa895dcf474a24309d2da75719643aa5dcf13310b5674113f"
+    },
+    {
+      "path": "ci/test/timing-trace-retention/README.md",
+      "sha256": "e82564412d87372c221e79cc5c29108f9056455621db178b0619b3b5e649e1e9"
+    },
+    {
+      "path": "ci/test/timing-trace-retention/timing-trace-retention.c",
+      "sha256": "fd8c065347f4f4ff9844915a6e7008bc74e64deb1773499f3767edd6f5ee46cd"
+    },
+    {
+      "path": "ci/test/timing-trace-retention/write-proof.py",
+      "sha256": "40da9511f2497835bbbe3b9e3bf181b7c5b00f4a8d642793acd8a99841b1b1d6"
+    },
+    {
+      "path": "tests/timing-trace-retention.md",
+      "sha256": "19ab5ce9083156cbce7f98e350ee8c6d5350d676598cf5a1a391a1081097d4df"
+    },
+    {
+      "path": "roms/48.rom",
+      "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "a075a9d4071da775a162e2830394a51c5861389ca05666d6419cbe61f07799c7"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "84d9e0b84a02993917b0e74cb9ba0d71158f45223a707d801ce927029ab2b0aa"
+    },
+    {
+      "path": "src/core/wz_machine_profile.c",
+      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09"
+    },
+    {
+      "path": "src/core/wz_z80.c",
+      "sha256": "c7cf9761cc3448474ccce3e88a20a4bc619ae35ee2b8357545debf901a50ba16"
+    },
+    {
+      "path": "src/core/wz_z80.h",
+      "sha256": "c32d23b4a650ae13031f8f61dd41f66cd8ac19136f058cb47502a2e54df5f8cd"
+    },
+    {
+      "path": "src/core/wz_trace.h",
+      "sha256": "9730762f41380dc9ef42b8cd1d6ed454dc4d091fa83dd81c9578925f4bbd8466"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.c",
+      "sha256": "0ea566d026b25c8b2590fd2ee80f1299a75b92c33616e424fef1987185f4535f"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.h",
+      "sha256": "e39f47ab133980a1da378aecc1a0fd87f2c77289b3e29e7dd2c7423250f2119e"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "635d000b382fa68b0364f035443fd13a260e3b3dfe3b09844b2d129fb586803f"
+    }
+  ]
+}
