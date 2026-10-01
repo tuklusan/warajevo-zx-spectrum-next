@@ -36,4 +36,10 @@ State format v15 / extension v4 adds eight Microdrive transport records and
 omits clean staged-sector bytes from canonical state while preserving dirty
 sector data. The canonical CPU and snapshot fingerprints are now
 `f49f759382ec8a34` and `7254cf8df4a13bdb`; hosted canonical correctness passed
-on run `36820270996`. The frozen throughput measurements remain unchanged.
+on run `36820270996`. Snapshot throughput baselines were refreshed for Windows
+ARM and both Mac runner families after the serializer optimization. Three
+macOS Intel measurements in run `36820851431` also showed repeatable slowdowns
+across the unchanged raster, audio, tape, and UI workloads; their median rates
+are now the runner's reference profile. This is a runner-profile inference;
+the historical measurements remain available in Git history. The Windows x64
+throughput profile remains unchanged. The new four-runner gate is pending.
