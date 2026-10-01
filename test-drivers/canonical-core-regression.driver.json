@@ -15,7 +15,7 @@
   "fixtures": [
     {
       "path": "ci/test/core-regression/canonical-fingerprints.h",
-      "sha256": "c5ee27c44afe44b4905304df6edd378964cb15f58b39254b54214881228fadf5"
+      "sha256": "f684eba7ca62373bf96808865ad00c10ccc59f2c698f3f5176d4b694da9e1822"
     },
     {
       "path": "ci/test/core-regression/reset-retention-regression.c",
