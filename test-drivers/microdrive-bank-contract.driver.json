@@ -1,0 +1,47 @@
+{
+  "testId": "microdrive-bank-contract",
+  "command": "cmake -S ci/test/microdrive-bank -B dist/microdrive-bank -DCMAKE_BUILD_TYPE=Release && cmake --build dist/microdrive-bank --config Release --target wz_microdrive_bank_contract --parallel 2 && ctest --test-dir dist/microdrive-bank -C Release -R '^wz_microdrive_bank_contract$' --output-on-failure",
+  "workflow": ".github/workflows/microdrive-bank-contract.yml",
+  "fixtures": [
+    {
+      "path": "ci/test/microdrive-bank/microdrive-bank-contract.c",
+      "sha256": "f3d4e4e1582e55fb2c34c0f17dccba949334db9e3c60647c2933350c0003eed8"
+    },
+    {
+      "path": "ci/test/microdrive-bank/CMakeLists.txt",
+      "sha256": "3e742a67ec3f8fd105040da8886c4fe93340c961e4594b6fe889f751201b5cbe"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "1dc71a255b61187261ef1b97a3694f780c8c2cb9be08d98e942e98768bec2b29"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
+    },
+    {
+      "path": "src/core/wz_microdrive.c",
+      "sha256": "0d80d9a9144cdc39f5df0b8a9abb8e5e21bc71cfeb92f13ee2f7f34e532bc522"
+    },
+    {
+      "path": "src/core/wz_state.c",
+      "sha256": "9852bf4bf5b676da529cc7ab3ff74f6526bdd47f30065d87ca66819cf64af4c6"
+    },
+    {
+      "path": "src/core/wz_state.h",
+      "sha256": "d1981cbe18c53870804ff78ffe5dc9e27b02a8fe08b60a0fdb478d8f2130ea94"
+    },
+    {
+      "path": "src/core/wz_bus.c",
+      "sha256": "a84850869148d8f70a2ee5b31570d9d221d7159cbff832982ddbc8dd1f69c47e"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "635d000b382fa68b0364f035443fd13a260e3b3dfe3b09844b2d129fb586803f"
+    },
+    {
+      "path": ".github/workflows/microdrive-bank-contract.yml",
+      "sha256": "b4a4b36b837201d30fb4e129641da402ceafe9fc21657105c40029af0e34e8d7"
+    }
+  ]
+}
