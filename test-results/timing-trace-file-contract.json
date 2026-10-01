@@ -1,36 +1,36 @@
 {
   "testId": "timing-trace-file-contract",
   "status": "pass",
-  "commit": "1cc9b774924eee72dea90d43b5172e8297542384",
-  "runId": 36498703560,
+  "commit": "c824f48d8b8d56b4aaa4bb86a0b79418474b63da",
+  "runId": 36807193567,
   "runner": "Windows x64, Windows ARM64, macOS x64, and macOS ARM64 hosted runners",
-  "timestamp": "2026-09-28T23:35:17+00:00",
+  "timestamp": "2026-10-01T02:46:18+00:00",
   "caseCount": 28,
   "observedOutput": "PASS timing trace isolation, fixed size, sparse wrap, freeze, and crash-tail recovery",
   "runnerResults": [
     {
-      "runner": "GitHub Actions 1000072997/macOS/ARM64",
+      "runner": "GitHub Actions 1000085468/macOS/X64",
       "status": "pass",
       "caseCount": 7,
-      "timestamp": "2026-09-28T23:34:33+00:00"
+      "timestamp": "2026-10-01T02:44:22+00:00"
     },
     {
-      "runner": "GitHub Actions 1000073003/macOS/X64",
+      "runner": "GitHub Actions 1000085473/Windows/ARM64",
       "status": "pass",
       "caseCount": 7,
-      "timestamp": "2026-09-28T23:34:46+00:00"
+      "timestamp": "2026-10-01T02:45:35+00:00"
     },
     {
-      "runner": "GitHub Actions 1000072994/Windows/ARM64",
+      "runner": "GitHub Actions 1000085475/macOS/ARM64",
       "status": "pass",
       "caseCount": 7,
-      "timestamp": "2026-09-28T23:35:17+00:00"
+      "timestamp": "2026-10-01T02:45:23+00:00"
     },
     {
-      "runner": "GitHub Actions 1000073000/Windows/X64",
+      "runner": "GitHub Actions 1000085480/Windows/X64",
       "status": "pass",
       "caseCount": 7,
-      "timestamp": "2026-09-28T23:35:04+00:00"
+      "timestamp": "2026-10-01T02:46:18+00:00"
     }
   ],
   "fixtures": [
@@ -72,7 +72,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "4317571e64b373bd509c57127bfbe2ebd27489844f422646904be670d13ced08"
+      "sha256": "9ecafdaf9f137684e77a3b722e7d1dd289ba9e8b3333af1244844e2d604436c0"
     }
   ]
 }

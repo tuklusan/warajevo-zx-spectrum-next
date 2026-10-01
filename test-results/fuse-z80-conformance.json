@@ -1,10 +1,10 @@
 {
   "testId": "fuse-z80-conformance",
   "status": "pass",
-  "commit": "6202c6040d45080a0848eccae97064c9633a7b2e",
+  "commit": "c824f48d8b8d56b4aaa4bb86a0b79418474b63da",
   "runner": "Linux/X64",
-  "timestamp": "2026-09-30T04:06:59+00:00",
-  "runId": "36667321892",
+  "timestamp": "2026-10-01T02:46:34+00:00",
+  "runId": "36807191510",
   "upstreamRevision": "c94a5e611bb0b795d62e904a0f5af4f59f2a4eee",
   "caseCount": 1356,
   "eventComparison": "Compare every MR/MW/PR/PW transfer and timestamp. MC/PC markers are excluded because upstream coretest emits synthetic contention-helper traces whose memory map differs from the 48K PAL profile; this suite does not claim profile contention conformance.",

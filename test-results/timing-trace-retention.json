@@ -1,10 +1,10 @@
 {
   "testId": "timing-trace-retention",
   "status": "pass",
-  "commit": "d712be02a7222c289f74f2cf0386be5c182c6e10",
-  "runId": 36669360409,
+  "commit": "ad3f35b6a3074b8fe04febb0d753a1f119cb596e",
+  "runId": 36669725114,
   "runner": "GitHub Actions Ubuntu 24.04 x86-64",
-  "timestamp": "2026-09-30T04:33:45+00:00",
+  "timestamp": "2026-09-30T04:38:32+00:00",
   "requestedFrames": 8,
   "frameTicks": 139776,
   "machineTicks": 1118232,
