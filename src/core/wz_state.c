@@ -635,6 +635,10 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
             microdrive->dirty = data[offset++];
             microdrive->phase = (wz_mdr_phase_t)data[offset++];
             if (extension_version == 3u || microdrive->dirty != 0u) {
+                if (offset > length ||
+                    sizeof(microdrive->buffer) > length - offset) {
+                    return WZ_RESULT_INVALID_STATE;
+                }
                 memcpy(microdrive->buffer, data + offset,
                        sizeof(microdrive->buffer));
                 offset += sizeof(microdrive->buffer);

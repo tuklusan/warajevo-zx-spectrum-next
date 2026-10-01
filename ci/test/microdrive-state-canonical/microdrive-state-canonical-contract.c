@@ -29,6 +29,7 @@ int main(void)
     static wz_byte_t dirty_sector[WZ_MDR_SECTOR_SIZE];
     wz_mdr_image_t image;
     wz_state_writer_t writer;
+    const size_t dirty_slot = WZ_MACHINE_MICRODRIVE_COUNT / 2u;
 
     memset(image_data, 0x5au, sizeof(image_data));
     memset(dirty_sector, 0xa5u, sizeof(dirty_sector));
@@ -47,7 +48,8 @@ int main(void)
                sizeof(transport->buffer));
     }
     {
-        wz_mdr_transport_t* dirty = wz_machine_microdrive_at(&machine, 3u);
+        wz_mdr_transport_t* dirty = wz_machine_microdrive_at(&machine,
+                                                             dirty_slot);
         dirty->dirty = 1u;
         memcpy(dirty->buffer, dirty_sector, sizeof(dirty_sector));
     }
@@ -62,12 +64,13 @@ int main(void)
         const wz_mdr_transport_t* transport =
             wz_machine_microdrive_at_const(&restored, slot);
         REQUIRE(transport != NULL);
-        if (slot == 3u) {
+        if (slot == dirty_slot) {
             REQUIRE(transport->dirty == 1u);
             REQUIRE(memcmp(transport->buffer, dirty_sector,
                            sizeof(dirty_sector)) == 0);
         } else {
             REQUIRE(transport->dirty == 0u);
+            /* Clean staging bytes are canonicalized away by extension v4. */
             for (size_t index = 0u; index < sizeof(transport->buffer); ++index) {
                 REQUIRE(transport->buffer[index] == 0u);
             }

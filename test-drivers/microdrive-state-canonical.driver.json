@@ -9,7 +9,7 @@
   "fixtures": [
     {
       "path": "ci/test/microdrive-state-canonical/microdrive-state-canonical-contract.c",
-      "sha256": "716225d598484ed7e572eddf5267021e8dbfaa77aa1417925efd07d5c7c815af"
+      "sha256": "b9cf8ccabcd90be1374cfc9e344c74bf81ca6212050f960f6071c442cb03f8d7"
     },
     {
       "path": "ci/test/microdrive-state-canonical/CMakeLists.txt",
@@ -21,7 +21,7 @@
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "0d261d67b44765fab66b53d12f82945ff05125b3a3c290772023514a03303973"
+      "sha256": "f8873b9fad5a9e59887dbe4d471611608e4b494cd3933cc6bcc70cee10c03475"
     },
     {
       "path": "src/core/wz_state.h",
