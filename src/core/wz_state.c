@@ -20,7 +20,7 @@ patent, trademark, and governing-law provisions.
 #define WZ_STATE_VERSION 15u
 #define WZ_STATE_HEADER_LENGTH WZ_STATE_MACHINE_MEMORY_OFFSET
 #define WZ_STATE_EXTENSION_MAGIC UINT32_C(0x4e535a57)
-#define WZ_STATE_EXTENSION_VERSION 3u
+#define WZ_STATE_EXTENSION_VERSION 4u
 #define WZ_STATE_EXTENSION_OFFSET (WZ_STATE_HEADER_LENGTH + 65536u)
 
 static wz_result_t wz_state_write(wz_state_writer_t* writer,
@@ -130,7 +130,9 @@ static wz_result_t wz_state_write_mdr(wz_state_writer_t* writer,
         wz_state_write_u8(writer, transport->erase_enabled) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, transport->dirty) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, (wz_byte_t)transport->phase) != WZ_RESULT_OK ||
-        wz_state_write(writer, transport->buffer, sizeof(transport->buffer)) != WZ_RESULT_OK) {
+        (transport->dirty != 0u &&
+         wz_state_write(writer, transport->buffer,
+                        sizeof(transport->buffer)) != WZ_RESULT_OK)) {
         return WZ_RESULT_SERIALIZATION_FAILURE;
     }
     return WZ_RESULT_OK;
@@ -580,12 +582,15 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
         wz_zxnet_t zxnet;
         wz_byte_t image_present;
         wz_byte_t read_ready;
+        wz_word_t extension_version;
 
         if (wz_state_read_u32(data + offset) != WZ_STATE_EXTENSION_MAGIC) {
             return WZ_RESULT_INVALID_STATE;
         }
         offset += 4u;
-        if (wz_read_le16(data + offset) != WZ_STATE_EXTENSION_VERSION) {
+        extension_version = wz_read_le16(data + offset);
+        if (extension_version != 3u &&
+            extension_version != WZ_STATE_EXTENSION_VERSION) {
             return WZ_RESULT_INVALID_STATE;
         }
         offset += 2u;
@@ -629,8 +634,13 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
             microdrive->erase_enabled = data[offset++];
             microdrive->dirty = data[offset++];
             microdrive->phase = (wz_mdr_phase_t)data[offset++];
-            memcpy(microdrive->buffer, data + offset, sizeof(microdrive->buffer));
-            offset += sizeof(microdrive->buffer);
+            if (extension_version == 3u || microdrive->dirty != 0u) {
+                memcpy(microdrive->buffer, data + offset,
+                       sizeof(microdrive->buffer));
+                offset += sizeof(microdrive->buffer);
+            } else {
+                memset(microdrive->buffer, 0, sizeof(microdrive->buffer));
+            }
             if (image_present > 1u ||
                 (microdrive->image_identity == 0u && image_present != 0u) ||
                 microdrive->image_length > UINT32_MAX ||

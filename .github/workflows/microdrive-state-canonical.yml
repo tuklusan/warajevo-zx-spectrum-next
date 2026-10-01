@@ -1,0 +1,61 @@
+name: Microdrive canonical state contract
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/microdrive-state-canonical.yml'
+      - 'ci/test/microdrive-state-canonical/**'
+      - 'src/core/wz_state.*'
+      - 'src/core/wz_machine.*'
+      - 'src/core/wz_microdrive.*'
+      - 'src/cmake/CMakeLists.txt'
+      - 'test-drivers/microdrive-state-canonical.driver.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+      - name: Configure contract
+        run: cmake -S ci/test/microdrive-state-canonical -B dist/microdrive-state-canonical -DCMAKE_BUILD_TYPE=Release
+      - name: Build and run contract
+        run: |
+          cmake --build dist/microdrive-state-canonical --config Release --target wz_microdrive_state_canonical_contract --parallel 2
+          ctest --test-dir dist/microdrive-state-canonical -C Release -R '^wz_microdrive_state_canonical_contract$' --output-on-failure
+      - name: Record hosted proof
+        env:
+          PROJECT_COMMIT: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          python3 - <<'PY'
+          import datetime, hashlib, json, os, pathlib, platform
+          driver = json.loads(pathlib.Path('test-drivers/microdrive-state-canonical.driver.json').read_text())
+          fixtures = []
+          for item in driver['fixtures']:
+              digest = hashlib.sha256(pathlib.Path(item['path']).read_bytes()).hexdigest()
+              if digest != item['sha256']:
+                  raise SystemExit(f"fixture hash mismatch: {item['path']}")
+              fixtures.append({'path': item['path'], 'sha256': digest})
+          proof = {
+              'testId': driver['testId'], 'status': 'pass',
+              'commit': os.environ['PROJECT_COMMIT'],
+              'runner': f"{platform.system()}/{platform.machine()}",
+              'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              'runId': int(os.environ['RUN_ID']), 'fixtures': fixtures,
+          }
+          path = pathlib.Path('dist/microdrive-state-canonical/microdrive-state-canonical.json')
+          path.write_text(json.dumps(proof, indent=2) + '\n', encoding='utf-8')
+          PY
+      - name: Upload hosted proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: microdrive-state-canonical-${{ github.sha }}
+          path: dist/microdrive-state-canonical/microdrive-state-canonical.json
+          if-no-files-found: error
