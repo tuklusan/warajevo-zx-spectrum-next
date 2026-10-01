@@ -396,8 +396,8 @@ Debug application startup/shutdown now attaches, freezes, and closes a per-proce
 
 ## Phase 12E — Microdrive, Printer, debugger, compatibility tools
 
-313. [P12][UI §§14] Implement eight Microdrive slot controls using `media.microdrive.mount/eject/set_default` semantics.
-314. [P12][UI §§14] Implement toolbar `MDV 1` compact control without creating a one-drive-only backend.
+313. [P12][UI §§14][PARTIAL] Add eight-slot mount/eject/default controls to the compact Microdrive menu and an eight-transport core backend. Hosted contract `36817929595` verifies independent slot identities, reset preservation, snapshot round-trip, invalid drive bounds, and dirty-media resolution; proof: [microdrive-bank-contract.json](../../test-results/microdrive-bank-contract.json). Direct registry command semantics, dirty-media save/discard confirmation, and GUI equivalence coverage remain open.
+314. [P12][UI §§14][PARTIAL] The `MDV 1` toolbar control exposes all eight slots and uses the eight-slot core backend; the hosted bank contract is pinned in [microdrive-bank-contract.json](../../test-results/microdrive-bank-contract.json). Native toolbar interaction and command-registry equivalence evidence remain open.
 315. [P12][UI §§15.1] Implement Microdrive Manager overview showing image identity, logical name, sector count, write protection, default/current state, and validation status.
 316. [P12][UI §§15.2] Implement mount/eject/default/catalog/format/optimize/allocation/rename/write-protect workflows.
 317. [P12][UI §§15.3] Implement logical MDR file delete/rename/hide/unhide/copy operations.
@@ -412,7 +412,7 @@ Debug application startup/shutdown now attaches, freezes, and closes a per-proce
 326. [P12][UI §§22.3] Require clear loss disclosure before lossy conversions.
 327. [P12][UI §§20.9–20.18] Map all snapshot/MDR/Dock/database legacy conversion entries to the frozen dispositions; do not implement LATER tools merely for menu completeness.
 328. [P12][UI §§17] Keep Dock Cartridge UI absent until Timex/DCK support exists.
-329. [P12][UI §§47] Add Microdrive Manager, destructive-confirmation, printer, debugger, and tool-availability regression tests.
+329. [P12][UI §§47][PARTIAL] Hosted Microdrive bank contract `36817929595` verifies eight independent mounted slots, preservation through reset and snapshot restore, boundary rejection, and all-slot dirty resolution; proof: [microdrive-bank-contract.json](../../test-results/microdrive-bank-contract.json). The source-review warning about array bounds was non-actionable: both array dimensions are compile-time constants. Microdrive Manager UI, destructive confirmation, printer, debugger, and tool-availability regression coverage remain open.
 330. [P12][UI §§48] Complete media-manager/tools acceptance subset.
 
 ## Phase 12F — Settings, networking radio group, focus, accessibility, persistence
