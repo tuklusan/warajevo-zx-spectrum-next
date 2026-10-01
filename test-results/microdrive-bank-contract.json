@@ -1,14 +1,14 @@
 {
   "testId": "microdrive-bank-contract",
   "status": "pass",
-  "commit": "39b6f77df3b4c4d66dce14b6beab65747cb0349b",
+  "commit": "b0dce8fa11118bebb1c42353506a3abc5011a4fd",
   "runner": "Linux/x86_64",
-  "timestamp": "2026-10-01T05:02:59.783470+00:00",
-  "runId": 36817929595,
+  "timestamp": "2026-10-01T05:29:47.994073+00:00",
+  "runId": 36819838274,
   "fixtures": [
     {
       "path": "ci/test/microdrive-bank/microdrive-bank-contract.c",
-      "sha256": "f3d4e4e1582e55fb2c34c0f17dccba949334db9e3c60647c2933350c0003eed8"
+      "sha256": "7e6f181782d154a0febede59cdfbf81753ca2ab7343b616636407fd23174e90e"
     },
     {
       "path": "ci/test/microdrive-bank/CMakeLists.txt",
@@ -28,7 +28,7 @@
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "9caddec0632f8cad2940b5e8ea43797b3ac9f3b17d7d3bac1d0c5f1b645eb1f3"
+      "sha256": "d57cd0aaab0ae29e6e056593b9ca574d958523b89ee810335aec88b714338b61"
     },
     {
       "path": "src/core/wz_state.h",

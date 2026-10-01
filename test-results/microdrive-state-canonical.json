@@ -1,0 +1,50 @@
+{
+  "testId": "microdrive-state-canonical",
+  "status": "pass",
+  "commit": "b0dce8fa11118bebb1c42353506a3abc5011a4fd",
+  "runner": "Linux/x86_64",
+  "timestamp": "2026-10-01T05:30:54.702584+00:00",
+  "runId": 36819838268,
+  "fixtures": [
+    {
+      "path": "ci/test/microdrive-state-canonical/microdrive-state-canonical-contract.c",
+      "sha256": "b9cf8ccabcd90be1374cfc9e344c74bf81ca6212050f960f6071c442cb03f8d7"
+    },
+    {
+      "path": "ci/test/microdrive-state-canonical/CMakeLists.txt",
+      "sha256": "9c182b34d8cc315f3a0b579b91730751a07306906d960fdee4f1372232311b8c"
+    },
+    {
+      "path": ".github/workflows/microdrive-state-canonical.yml",
+      "sha256": "f9796a710719f9bc08ddceac70c8eb0ccc2ad5a8546bee143f062f1cdebdcd84"
+    },
+    {
+      "path": "src/core/wz_state.c",
+      "sha256": "d57cd0aaab0ae29e6e056593b9ca574d958523b89ee810335aec88b714338b61"
+    },
+    {
+      "path": "src/core/wz_state.h",
+      "sha256": "d1981cbe18c53870804ff78ffe5dc9e27b02a8fe08b60a0fdb478d8f2130ea94"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
+    },
+    {
+      "path": "src/core/wz_microdrive.c",
+      "sha256": "0d80d9a9144cdc39f5df0b8a9abb8e5e21bc71cfeb92f13ee2f7f34e532bc522"
+    },
+    {
+      "path": "src/core/wz_microdrive.h",
+      "sha256": "fa4e47c5efc658d533e14b6bf571712447771951202b66eb8575c6869f60a90c"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "9ecafdaf9f137684e77a3b722e7d1dd289ba9e8b3333af1244844e2d604436c0"
+    }
+  ]
+}
