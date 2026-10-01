@@ -71,7 +71,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "40a2c65c2a289f7a4118d23e1b759c29b9afffa946fb88811600ae30e4e859e3"
+      "sha256": "f1bff2432d6be3c891c79e11ef0b7862c4c473ede2de90f8b9d742e36db72e0f"
     },
     {
       "path": "src/app/wz_telnet_alias_response.c",
@@ -143,7 +143,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "1dc71a255b61187261ef1b97a3694f780c8c2cb9be08d98e942e98768bec2b29"
+      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
     },
     {
       "path": "src/core/wz_machine_profile.c",
@@ -175,7 +175,7 @@
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "9852bf4bf5b676da529cc7ab3ff74f6526bdd47f30065d87ca66819cf64af4c6"
+      "sha256": "9caddec0632f8cad2940b5e8ea43797b3ac9f3b17d7d3bac1d0c5f1b645eb1f3"
     },
     {
       "path": "src/core/wz_tape.c",
