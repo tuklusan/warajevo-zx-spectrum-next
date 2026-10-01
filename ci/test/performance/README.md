@@ -31,3 +31,9 @@ canonical correctness evidence and the before/after measurements have been
 reviewed. Keep the old records in the change history.
 
 The CPU execution and snapshot serialization fingerprint expectations were refreshed for state format v14 after AY divider phases became serialized. All four hosted runner artifacts on run `35952794245` agreed on the updated fingerprints; the pinned throughput measurements remain from the original baseline records. The state-format update passed the four-runner comparison on run `35953015461` against the unchanged throughput measurements.
+
+State format v15 / extension v4 adds eight Microdrive transport records and
+omits clean staged-sector bytes from canonical state while preserving dirty
+sector data. The canonical CPU and snapshot fingerprints are now
+`f49f759382ec8a34` and `7254cf8df4a13bdb`; hosted canonical correctness passed
+on run `36820270996`. The frozen throughput measurements remain unchanged.
