@@ -35,8 +35,8 @@ static wz_result_t wz_state_write(wz_state_writer_t* writer,
         return WZ_RESULT_SERIALIZATION_FAILURE;
     }
 
-    for (size_t index = 0u; index < length; ++index) {
-        writer->data[writer->length + index] = data[index];
+    if (length != 0u) {
+        memmove(writer->data + writer->length, data, length);
     }
     writer->length += length;
     return WZ_RESULT_OK;
@@ -205,8 +205,11 @@ static wz_result_t wz_state_write_extension(wz_state_writer_t* writer,
     if (wz_state_write_zxnet(writer, &machine->zxnet) != WZ_RESULT_OK) {
         return WZ_RESULT_SERIALIZATION_FAILURE;
     }
-    while (writer->length - start < WZ_STATE_EXTENSION_CAPACITY) {
-        if (wz_state_write_u8(writer, 0u) != WZ_RESULT_OK) {
+    if (writer->length - start < WZ_STATE_EXTENSION_CAPACITY) {
+        static const wz_byte_t zero_padding[WZ_STATE_EXTENSION_CAPACITY] = {0u};
+        const size_t padding = WZ_STATE_EXTENSION_CAPACITY -
+            (writer->length - start);
+        if (wz_state_write(writer, zero_padding, padding) != WZ_RESULT_OK) {
             return WZ_RESULT_SERIALIZATION_FAILURE;
         }
     }
