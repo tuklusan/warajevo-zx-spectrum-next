@@ -5,7 +5,7 @@
   "fixtures": [
     {
       "path": "ci/test/microdrive-bank/microdrive-bank-contract.c",
-      "sha256": "f3d4e4e1582e55fb2c34c0f17dccba949334db9e3c60647c2933350c0003eed8"
+      "sha256": "7e6f181782d154a0febede59cdfbf81753ca2ab7343b616636407fd23174e90e"
     },
     {
       "path": "ci/test/microdrive-bank/CMakeLists.txt",

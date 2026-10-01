@@ -42,6 +42,19 @@ static wz_result_t record_flush(size_t slot, size_t sector,
     return slot == log->fail_slot ? WZ_RESULT_INVALID_STATE : WZ_RESULT_OK;
 }
 
+static void select_motor(wz_machine_t* machine, size_t slot,
+                         wz_master_tick_t* tick)
+{
+    for (size_t step = 0u; step < WZ_MACHINE_MICRODRIVE_COUNT; ++step) {
+        const wz_byte_t data = step == WZ_MACHINE_MICRODRIVE_COUNT - 1u - slot
+            ? 0u : 1u;
+        (void)wz_machine_interface1_control_write(
+            machine, (wz_byte_t)(0x06u | data), (*tick)++);
+        (void)wz_machine_interface1_control_write(
+            machine, (wz_byte_t)(0x04u | data), (*tick)++);
+    }
+}
+
 int main(void)
 {
     wz_machine_t machine = {0};
@@ -53,6 +66,7 @@ int main(void)
     wz_state_writer_t writer;
     flush_log_t flush_log = {0};
     size_t slot;
+    wz_master_tick_t tick = 0u;
     int exit_code = 1;
 
     REQUIRE(wz_machine_init(&machine, wz_machine_profile_48k_pal()) ==
@@ -111,6 +125,17 @@ int main(void)
     }
 
     machine.networking_mode = WZ_NETWORKING_INTERFACE1;
+    for (slot = 0u; slot < WZ_MACHINE_MICRODRIVE_COUNT; ++slot) {
+        wz_bus_request_t request;
+        select_motor(&machine, slot, &tick);
+        REQUIRE(wz_machine_interface1_active_motor(&machine) == slot);
+        wz_bus_request_init(&request, WZ_BUS_IO_READ, tick++, 0x12e7u,
+                            0xffu, 4u);
+        REQUIRE(wz_machine_bus_request(&machine, &request) == WZ_RESULT_OK);
+        REQUIRE(request.source == WZ_BUS_SOURCE_INPUT);
+        REQUIRE(request.value == (wz_byte_t)(0x30u + slot));
+    }
+
     flush_log.fail_slot = 3u;
     REQUIRE(wz_machine_reconfigure_networking_mode_with_mdr_bank_resolution(
                 &machine, WZ_NETWORKING_NONE, record_flush, &flush_log,
