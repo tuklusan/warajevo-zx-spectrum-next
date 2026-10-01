@@ -178,8 +178,9 @@ typedef struct {
     size_t tape_edit_position_block;
     char tape_source_path[4096];
     char tape_format[8];
-    wz_byte_t* microdrive_data;
-    wz_mdr_image_t microdrive_image;
+    wz_byte_t* microdrive_data[WZ_UI_MICRODRIVE_COUNT];
+    wz_mdr_image_t microdrive_image[WZ_UI_MICRODRIVE_COUNT];
+    size_t microdrive_default_slot;
     char file_notification[WZ_COMMAND_MESSAGE_CAPACITY];
     sg_image raster_image;
     sg_view raster_view;
@@ -1097,27 +1098,100 @@ static bool wz_host_load_external_snapshot(wz_host_session_t* session,
     return result == WZ_RESULT_OK;
 }
 
-static bool wz_host_load_external_microdrive(wz_host_session_t* session,
-                                             const char* path)
+static bool wz_host_load_external_microdrive_slot(wz_host_session_t* session,
+                                                  size_t slot,
+                                                  const char* path)
 {
     wz_byte_t* data = NULL;
     size_t length = 0u;
     wz_mdr_image_t image;
-    if (session == NULL || wz_mdr_transport_is_dirty(&session->machine.microdrive) ||
+    if (session == NULL || slot >= WZ_UI_MICRODRIVE_COUNT ||
         !wz_host_read_file(path, &data, &length)) return false;
-    if (wz_mdr_image_init(&image, data, length) != WZ_RESULT_OK ||
-        wz_mdr_transport_mount(&session->machine.microdrive, &image) !=
-            WZ_RESULT_OK) {
+    if (wz_mdr_image_init(&image, data, length) != WZ_RESULT_OK) {
         free(data);
         return false;
     }
-    free(session->microdrive_data);
-    session->microdrive_data = data;
-    session->microdrive_image = image;
-    session->machine.microdrive.image = &session->microdrive_image;
-    session->ui_window.layout.microdrive1_mounted = true;
-    session->ui_window.layout.microdrive_mounted[0] = true;
+    if (wz_machine_mount_microdrive(&session->machine, slot + 1u, &image) !=
+        WZ_RESULT_OK) {
+        free(data);
+        return false;
+    }
+    free(session->microdrive_data[slot]);
+    session->microdrive_data[slot] = data;
+    session->microdrive_image[slot] = image;
+    wz_machine_microdrive_at(&session->machine, slot)->image =
+        &session->microdrive_image[slot];
+    session->ui_window.layout.microdrive_mounted[slot] = true;
+    if (slot == 0u) session->ui_window.layout.microdrive1_mounted = true;
     return true;
+}
+
+static bool wz_host_load_external_microdrive(wz_host_session_t* session,
+                                             const char* path)
+{
+    if (session == NULL ||
+        session->microdrive_default_slot >= WZ_UI_MICRODRIVE_COUNT) {
+        return false;
+    }
+    return wz_host_load_external_microdrive_slot(
+        session, session->microdrive_default_slot, path);
+}
+
+static void wz_host_ui_mount_microdrive(size_t slot)
+{
+    char path[4096];
+    wz_file_dialog_result_t dialog_result;
+    wz_qword_t sleep_nanoseconds;
+    wz_host_session_t* session = &wz_host_session;
+    wz_host_release_local_keys();
+    if (slot >= WZ_UI_MICRODRIVE_COUNT ||
+        !wz_input_focus_dialog_enter(&session->input_focus)) {
+        (void)snprintf(session->file_notification,
+            sizeof(session->file_notification), "Microdrive dialog unavailable");
+        return;
+    }
+    dialog_result = wz_file_dialog_open(path, sizeof(path));
+    (void)wz_input_focus_dialog_leave(&session->input_focus);
+    if (session->pacing_initialized) {
+        (void)wz_host_pacing_wait(&session->pacing,
+            wz_host_now_nanoseconds(), session->machine.master_tick,
+            NULL, NULL, &sleep_nanoseconds);
+    }
+    if (dialog_result == WZ_FILE_DIALOG_SELECTED &&
+        wz_host_load_external_microdrive_slot(session, slot, path)) {
+        (void)snprintf(session->file_notification,
+            sizeof(session->file_notification), "MDV %u mounted",
+            (unsigned)(slot + 1u));
+    } else if (dialog_result == WZ_FILE_DIALOG_CANCELLED) {
+        (void)snprintf(session->file_notification,
+            sizeof(session->file_notification), "MDV %u mount cancelled",
+            (unsigned)(slot + 1u));
+    } else {
+        (void)snprintf(session->file_notification,
+            sizeof(session->file_notification), "MDV %u mount failed",
+            (unsigned)(slot + 1u));
+    }
+}
+
+static void wz_host_ui_eject_microdrive(size_t slot)
+{
+    if (slot >= WZ_UI_MICRODRIVE_COUNT) return;
+    if (wz_machine_eject_microdrive(&wz_host_session.machine, slot + 1u,
+                                    false) != WZ_RESULT_OK) {
+        (void)snprintf(wz_host_session.file_notification,
+            sizeof(wz_host_session.file_notification),
+            "MDV %u has dirty data; save or discard it first",
+            (unsigned)(slot + 1u));
+        return;
+    }
+    free(wz_host_session.microdrive_data[slot]);
+    wz_host_session.microdrive_data[slot] = NULL;
+    wz_host_session.microdrive_image[slot].data = NULL;
+    wz_host_session.ui_window.layout.microdrive_mounted[slot] = false;
+    if (slot == 0u) wz_host_session.ui_window.layout.microdrive1_mounted = false;
+    (void)snprintf(wz_host_session.file_notification,
+        sizeof(wz_host_session.file_notification), "MDV %u ejected",
+        (unsigned)(slot + 1u));
 }
 
 static bool wz_host_open_run_tape(const char* path, void* context)
@@ -2794,6 +2868,44 @@ static void wz_host_ui_draw_toolbar(struct nk_context* context, float width)
                 nk_combo_end(context);
             }
             if (!tape_enabled) nk_widget_disable_end(context);
+        } else if (item != NULL &&
+                   strcmp(item->command_id, "media.microdrive.drive1") == 0) {
+            const char* label = wz_host_session.ui_window.layout.microdrive_mounted[0]
+                ? "MDV 1 Mounted" : "MDV 1 Empty";
+            if (nk_combo_begin_label(context, label,
+                                     nk_vec2(220.0f, 8.0f * 25.0f))) {
+                for (size_t slot = 0u; slot < WZ_UI_MICRODRIVE_COUNT; ++slot) {
+                    const bool mounted =
+                        wz_host_session.ui_window.layout.microdrive_mounted[slot];
+                    char drive_label[48];
+                    (void)snprintf(drive_label, sizeof(drive_label),
+                        "MDV %u %s%s", (unsigned)(slot + 1u),
+                        mounted ? "Mounted" : "Empty",
+                        wz_host_session.microdrive_default_slot == slot
+                            ? " [default]" : "");
+                    nk_layout_row_dynamic(context, 24.0f, 1);
+                    if (nk_combo_item_label(context, drive_label, NK_TEXT_LEFT)) {
+                        wz_host_session.microdrive_default_slot = slot;
+                    }
+                    nk_layout_row_dynamic(context, 24.0f, 3);
+                    if (nk_button_label(context, "Mount")) {
+                        wz_host_ui_mount_microdrive(slot);
+                    }
+                    if (mounted) {
+                        if (nk_button_label(context, "Eject")) {
+                            wz_host_ui_eject_microdrive(slot);
+                        }
+                    } else {
+                        nk_widget_disable_begin(context);
+                        (void)nk_button_label(context, "Eject");
+                        nk_widget_disable_end(context);
+                    }
+                    if (nk_button_label(context, "Default")) {
+                        wz_host_session.microdrive_default_slot = slot;
+                    }
+                }
+                nk_combo_end(context);
+            }
         } else {
             const wz_command_metadata_t* command = item == NULL ? NULL :
                 wz_command_registry_find(&wz_host_session.command_registry,
@@ -3700,9 +3812,11 @@ static void wz_host_session_shutdown(void)
     wz_host_session.tape_blocks = NULL;
     free(wz_host_session.tzx_blocks);
     wz_host_session.tzx_blocks = NULL;
-    free(wz_host_session.microdrive_data);
-    wz_host_session.microdrive_data = NULL;
-    wz_host_session.microdrive_image.data = NULL;
+    for (size_t slot = 0u; slot < WZ_UI_MICRODRIVE_COUNT; ++slot) {
+        free(wz_host_session.microdrive_data[slot]);
+        wz_host_session.microdrive_data[slot] = NULL;
+        wz_host_session.microdrive_image[slot].data = NULL;
+    }
     wz_control_port_owner_close(&wz_host_session.control_port);
     if (wz_host_session.socket_system_initialized) {
         wz_host_socket_system_shutdown();

@@ -135,7 +135,9 @@ typedef struct wz_machine {
     wz_byte_t tape_mounted;
     wz_tape_loading_mode_t tape_loading_mode;
     wz_networking_mode_t networking_mode;
+    /* `microdrive` is slot one to preserve established caller APIs. */
     wz_mdr_transport_t microdrive;
+    wz_mdr_transport_t microdrive_additional[7];
     wz_printer_t printer;
     wz_zxnet_t zxnet;
     wz_byte_t ula_output;
@@ -159,6 +161,25 @@ typedef struct wz_machine {
     wz_byte_t im0_injected_opcode;
     wz_byte_t im0_injected_opcode_pending;
 } wz_machine_t;
+
+#define WZ_MACHINE_MICRODRIVE_COUNT 8u
+wz_mdr_transport_t* wz_machine_microdrive_at(wz_machine_t* machine,
+                                              size_t slot);
+const wz_mdr_transport_t* wz_machine_microdrive_at_const(
+    const wz_machine_t* machine, size_t slot);
+bool wz_machine_microdrives_are_dirty(const wz_machine_t* machine);
+wz_result_t wz_machine_mount_microdrive(wz_machine_t* machine,
+                                        size_t drive_number,
+                                        const wz_mdr_image_t* image);
+wz_result_t wz_machine_eject_microdrive(wz_machine_t* machine,
+                                        size_t drive_number,
+                                        bool discard_dirty);
+wz_result_t wz_machine_interface1_data_read(wz_machine_t* machine,
+                                             wz_byte_t* value);
+wz_result_t wz_machine_interface1_data_write(wz_machine_t* machine,
+                                              wz_byte_t value);
+typedef wz_result_t (*wz_mdr_slot_flush_callback_t)(size_t slot,
+    size_t sector, const wz_byte_t* data, size_t length, void* context);
 
 wz_result_t wz_machine_init(wz_machine_t* machine,
                             const wz_machine_profile_t* profile);
@@ -197,6 +218,10 @@ wz_result_t wz_machine_reconfigure_networking_mode(wz_machine_t* machine,
 wz_result_t wz_machine_reconfigure_networking_mode_with_mdr_resolution(
     wz_machine_t* machine, wz_networking_mode_t mode,
     wz_mdr_flush_callback_t flush_callback, void* flush_context,
+    bool discard_dirty_media);
+wz_result_t wz_machine_reconfigure_networking_mode_with_mdr_bank_resolution(
+    wz_machine_t* machine, wz_networking_mode_t mode,
+    wz_mdr_slot_flush_callback_t flush_callback, void* flush_context,
     bool discard_dirty_media);
 wz_networking_mode_t wz_machine_networking_mode(const wz_machine_t* machine);
 wz_result_t wz_machine_set_printer_mode(wz_machine_t* machine,

@@ -18,6 +18,97 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include <stdlib.h>
 #include <string.h>
 
+wz_mdr_transport_t* wz_machine_microdrive_at(wz_machine_t* machine,
+                                              size_t slot)
+{
+    if (machine == 0 || slot >= WZ_MACHINE_MICRODRIVE_COUNT) return 0;
+    return slot == 0u ? &machine->microdrive :
+        &machine->microdrive_additional[slot - 1u];
+}
+
+const wz_mdr_transport_t* wz_machine_microdrive_at_const(
+    const wz_machine_t* machine, size_t slot)
+{
+    if (machine == 0 || slot >= WZ_MACHINE_MICRODRIVE_COUNT) return 0;
+    return slot == 0u ? &machine->microdrive :
+        &machine->microdrive_additional[slot - 1u];
+}
+
+bool wz_machine_microdrives_are_dirty(const wz_machine_t* machine)
+{
+    size_t slot;
+    if (machine == 0) return false;
+    for (slot = 0u; slot < WZ_MACHINE_MICRODRIVE_COUNT; ++slot) {
+        const wz_mdr_transport_t* transport =
+            wz_machine_microdrive_at_const(machine, slot);
+        if (wz_mdr_transport_is_dirty(transport) != 0u) return true;
+    }
+    return false;
+}
+
+wz_result_t wz_machine_mount_microdrive(wz_machine_t* machine,
+                                        size_t drive_number,
+                                        const wz_mdr_image_t* image)
+{
+    wz_mdr_transport_t* transport = drive_number == 0u ? 0 :
+        wz_machine_microdrive_at(machine, drive_number - 1u);
+    if (transport == 0 || image == 0) return WZ_RESULT_INVALID_ARGUMENT;
+    if (wz_mdr_transport_is_dirty(transport) != 0u) return WZ_RESULT_INVALID_STATE;
+    if (wz_mdr_transport_mount(transport, image) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (machine->interface1_active_motor == drive_number - 1u) {
+        transport->active_motor = (wz_byte_t)(drive_number - 1u);
+        transport->write_enabled =
+            (machine->interface1_control_latch & 0x04u) == 0u ? 1u : 0u;
+        transport->erase_enabled =
+            (machine->interface1_control_latch & 0x08u) == 0u ? 1u : 0u;
+    }
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_machine_eject_microdrive(wz_machine_t* machine,
+                                        size_t drive_number,
+                                        bool discard_dirty)
+{
+    wz_mdr_transport_t* transport = drive_number == 0u ? 0 :
+        wz_machine_microdrive_at(machine, drive_number - 1u);
+    if (transport == 0) return WZ_RESULT_INVALID_ARGUMENT;
+    if (wz_mdr_transport_is_dirty(transport) != 0u && !discard_dirty) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    wz_mdr_transport_init(transport);
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_machine_interface1_data_read(wz_machine_t* machine,
+                                             wz_byte_t* value)
+{
+    wz_mdr_transport_t* transport;
+    if (machine == 0 || value == 0) return WZ_RESULT_INVALID_ARGUMENT;
+    if (machine->interface1_active_motor >= WZ_MACHINE_MICRODRIVE_COUNT ||
+        (machine->interface1_control_latch & 0x04u) == 0u) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    transport = wz_machine_microdrive_at(machine,
+        machine->interface1_active_motor);
+    return wz_mdr_transport_read(transport, value);
+}
+
+wz_result_t wz_machine_interface1_data_write(wz_machine_t* machine,
+                                              wz_byte_t value)
+{
+    wz_mdr_transport_t* transport;
+    if (machine == 0) return WZ_RESULT_INVALID_ARGUMENT;
+    if (machine->interface1_active_motor >= WZ_MACHINE_MICRODRIVE_COUNT ||
+        (machine->interface1_control_latch & 0x04u) != 0u) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    transport = wz_machine_microdrive_at(machine,
+        machine->interface1_active_motor);
+    return wz_mdr_transport_write(transport, value);
+}
+
 static wz_result_t wz_machine_ula_capture_until(
     wz_machine_t* machine, wz_master_tick_t master_tick, bool inclusive);
 
@@ -105,6 +196,11 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     machine->tape_loading_mode = WZ_TAPE_LOADING_NORMAL;
     machine->networking_mode = WZ_NETWORKING_NONE;
     wz_mdr_transport_init(&machine->microdrive);
+    for (size_t index = 0u;
+         index < sizeof(machine->microdrive_additional) /
+             sizeof(machine->microdrive_additional[0]); ++index) {
+        wz_mdr_transport_init(&machine->microdrive_additional[index]);
+    }
     wz_printer_init(&machine->printer);
     wz_zxnet_init(&machine->zxnet);
     machine->maskable_interrupt_line_low = 0u;
@@ -169,6 +265,9 @@ wz_result_t wz_machine_reset(wz_machine_t* machine)
     replacement.tape_mounted = machine->tape_mounted;
     replacement.tape_loading_mode = machine->tape_loading_mode;
     replacement.microdrive = machine->microdrive;
+    memcpy(replacement.microdrive_additional,
+           machine->microdrive_additional,
+           sizeof(replacement.microdrive_additional));
     replacement.printer = machine->printer;
     replacement.networking_mode = machine->networking_mode;
 
@@ -216,6 +315,9 @@ wz_result_t wz_machine_reconfigure_profile(
     replacement->tape_mounted = machine->tape_mounted;
     replacement->tape_loading_mode = machine->tape_loading_mode;
     replacement->microdrive = machine->microdrive;
+    memcpy(replacement->microdrive_additional,
+           machine->microdrive_additional,
+           sizeof(replacement->microdrive_additional));
     replacement->printer = machine->printer;
     replacement->networking_mode = machine->networking_mode;
     replacement->zxnet = machine->zxnet;
@@ -290,6 +392,11 @@ void wz_machine_destroy(wz_machine_t* machine)
         machine->tape_loading_mode = WZ_TAPE_LOADING_NORMAL;
         machine->networking_mode = WZ_NETWORKING_NONE;
         wz_mdr_transport_init(&machine->microdrive);
+        for (size_t index = 0u;
+             index < sizeof(machine->microdrive_additional) /
+                 sizeof(machine->microdrive_additional[0]); ++index) {
+            wz_mdr_transport_init(&machine->microdrive_additional[index]);
+        }
         wz_printer_init(&machine->printer);
         wz_zxnet_init(&machine->zxnet);
         machine->ula_output = 0u;
@@ -420,9 +527,9 @@ wz_result_t wz_machine_reconfigure_networking_mode(wz_machine_t* machine,
         machine, mode, 0, 0, false);
 }
 
-wz_result_t wz_machine_reconfigure_networking_mode_with_mdr_resolution(
+wz_result_t wz_machine_reconfigure_networking_mode_with_mdr_bank_resolution(
     wz_machine_t* machine, wz_networking_mode_t mode,
-    wz_mdr_flush_callback_t flush_callback, void* flush_context,
+    wz_mdr_slot_flush_callback_t flush_callback, void* flush_context,
     bool discard_dirty_media)
 {
     wz_machine_t* replacement;
@@ -467,21 +574,40 @@ wz_result_t wz_machine_reconfigure_networking_mode_with_mdr_resolution(
     }
     if (machine->networking_mode == WZ_NETWORKING_INTERFACE1 &&
         mode != WZ_NETWORKING_INTERFACE1 &&
-        wz_mdr_transport_is_dirty(&machine->microdrive) != 0u) {
+        wz_machine_microdrives_are_dirty(machine)) {
         if (discard_dirty_media) {
-            wz_mdr_transport_discard(&machine->microdrive);
+            for (size_t slot = 0u; slot < WZ_MACHINE_MICRODRIVE_COUNT; ++slot) {
+                wz_mdr_transport_t* transport =
+                    wz_machine_microdrive_at(machine, slot);
+                if (wz_mdr_transport_is_dirty(transport) != 0u) {
+                    wz_mdr_transport_discard(transport);
+                }
+            }
         } else {
             if (flush_callback == 0) {
                 wz_machine_destroy(replacement);
                 free(replacement);
                 return WZ_RESULT_INVALID_STATE;
             }
-            resolution_result = wz_mdr_transport_flush(
-                &machine->microdrive, flush_callback, flush_context);
-            if (resolution_result != WZ_RESULT_OK) {
-                wz_machine_destroy(replacement);
-                free(replacement);
-                return resolution_result;
+            for (size_t slot = 0u; slot < WZ_MACHINE_MICRODRIVE_COUNT; ++slot) {
+                wz_mdr_transport_t* transport =
+                    wz_machine_microdrive_at(machine, slot);
+                if (wz_mdr_transport_is_dirty(transport) != 0u) {
+                    resolution_result = flush_callback(slot, transport->sector,
+                        transport->buffer, WZ_MDR_SECTOR_SIZE, flush_context);
+                    if (resolution_result != WZ_RESULT_OK) {
+                        wz_machine_destroy(replacement);
+                        free(replacement);
+                        return resolution_result;
+                    }
+                }
+            }
+            for (size_t slot = 0u; slot < WZ_MACHINE_MICRODRIVE_COUNT; ++slot) {
+                wz_mdr_transport_t* transport =
+                    wz_machine_microdrive_at(machine, slot);
+                if (wz_mdr_transport_is_dirty(transport) != 0u) {
+                    transport->dirty = 0u;
+                }
             }
         }
     }
@@ -502,6 +628,33 @@ wz_result_t wz_machine_reconfigure_networking_mode_with_mdr_resolution(
     *machine = *replacement;
     free(replacement);
     return WZ_RESULT_OK;
+}
+
+typedef struct {
+    wz_mdr_flush_callback_t callback;
+    void* context;
+} wz_mdr_legacy_flush_context_t;
+
+static wz_result_t wz_machine_legacy_mdr_flush(size_t slot, size_t sector,
+    const wz_byte_t* data, size_t length, void* opaque)
+{
+    wz_mdr_legacy_flush_context_t* context =
+        (wz_mdr_legacy_flush_context_t*)opaque;
+    if (context == 0 || context->callback == 0 || slot != 0u) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    return context->callback(sector, data, length, context->context);
+}
+
+wz_result_t wz_machine_reconfigure_networking_mode_with_mdr_resolution(
+    wz_machine_t* machine, wz_networking_mode_t mode,
+    wz_mdr_flush_callback_t flush_callback, void* flush_context,
+    bool discard_dirty_media)
+{
+    wz_mdr_legacy_flush_context_t context = {flush_callback, flush_context};
+    return wz_machine_reconfigure_networking_mode_with_mdr_bank_resolution(
+        machine, mode, flush_callback == 0 ? 0 : wz_machine_legacy_mdr_flush,
+        &context, discard_dirty_media);
 }
 
 wz_networking_mode_t wz_machine_networking_mode(const wz_machine_t* machine)
@@ -847,6 +1000,19 @@ wz_result_t wz_machine_interface1_control_write(wz_machine_t* machine,
                 machine->interface1_active_motor = motor;
             }
         }
+        for (size_t slot = 0u; slot < WZ_MACHINE_MICRODRIVE_COUNT; ++slot) {
+            wz_mdr_transport_t* transport =
+                wz_machine_microdrive_at(machine, slot);
+            transport->active_motor =
+                machine->interface1_active_motor == slot
+                    ? (wz_byte_t)slot : 0xffu;
+        }
+    }
+    if (machine->interface1_active_motor < WZ_MACHINE_MICRODRIVE_COUNT) {
+        wz_mdr_transport_t* transport = wz_machine_microdrive_at(
+            machine, machine->interface1_active_motor);
+        transport->write_enabled = (value & 0x04u) == 0u ? 1u : 0u;
+        transport->erase_enabled = (value & 0x08u) == 0u ? 1u : 0u;
     }
     return WZ_RESULT_OK;
 }

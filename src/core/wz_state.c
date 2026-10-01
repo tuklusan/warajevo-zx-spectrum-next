@@ -17,10 +17,10 @@ patent, trademark, and governing-law provisions.
 #include <stdlib.h>
 #include <string.h>
 
-#define WZ_STATE_VERSION 14u
+#define WZ_STATE_VERSION 15u
 #define WZ_STATE_HEADER_LENGTH WZ_STATE_MACHINE_MEMORY_OFFSET
 #define WZ_STATE_EXTENSION_MAGIC UINT32_C(0x4e535a57)
-#define WZ_STATE_EXTENSION_VERSION 2u
+#define WZ_STATE_EXTENSION_VERSION 3u
 #define WZ_STATE_EXTENSION_OFFSET (WZ_STATE_HEADER_LENGTH + 65536u)
 
 static wz_result_t wz_state_write(wz_state_writer_t* writer,
@@ -191,8 +191,16 @@ static wz_result_t wz_state_write_extension(wz_state_writer_t* writer,
         wz_state_write_u8(writer, (wz_byte_t)machine->interface1_rom_variant) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, machine->interface1_rom_page) != WZ_RESULT_OK ||
         wz_state_write_u64(writer, machine->interface1_rom_identity) != WZ_RESULT_OK ||
-        wz_state_write_mdr(writer, &machine->microdrive) != WZ_RESULT_OK ||
-        wz_state_write_zxnet(writer, &machine->zxnet) != WZ_RESULT_OK) {
+        wz_state_write_mdr(writer, &machine->microdrive) != WZ_RESULT_OK) {
+        return WZ_RESULT_SERIALIZATION_FAILURE;
+    }
+    for (size_t slot = 1u; slot < WZ_MACHINE_MICRODRIVE_COUNT; ++slot) {
+        if (wz_state_write_mdr(writer,
+                wz_machine_microdrive_at_const(machine, slot)) != WZ_RESULT_OK) {
+            return WZ_RESULT_SERIALIZATION_FAILURE;
+        }
+    }
+    if (wz_state_write_zxnet(writer, &machine->zxnet) != WZ_RESULT_OK) {
         return WZ_RESULT_SERIALIZATION_FAILURE;
     }
     while (writer->length - start < WZ_STATE_EXTENSION_CAPACITY) {
@@ -568,7 +576,7 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
     }
     {
         size_t offset = WZ_STATE_EXTENSION_OFFSET;
-        wz_mdr_transport_t microdrive;
+        wz_mdr_transport_t microdrives[WZ_MACHINE_MICRODRIVE_COUNT];
         wz_zxnet_t zxnet;
         wz_byte_t image_present;
         wz_byte_t read_ready;
@@ -601,40 +609,43 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
             return WZ_RESULT_INVALID_STATE;
         }
 
-        wz_mdr_transport_init(&microdrive);
-        image_present = data[offset++];
-        microdrive.image_present = image_present;
-        microdrive.image_identity = wz_state_read_u64(data + offset);
-        offset += 8u;
-        microdrive.image_length = (size_t)wz_state_read_u32(data + offset);
-        offset += 4u;
-        microdrive.image_sector_count = (size_t)wz_state_read_u32(data + offset);
-        offset += 4u;
-        microdrive.sector = (size_t)wz_state_read_u32(data + offset);
-        offset += 4u;
-        microdrive.offset = (size_t)wz_state_read_u32(data + offset);
-        offset += 4u;
-        microdrive.active_motor = data[offset++];
-        microdrive.write_enabled = data[offset++];
-        microdrive.erase_enabled = data[offset++];
-        microdrive.dirty = data[offset++];
-        microdrive.phase = (wz_mdr_phase_t)data[offset++];
-        memcpy(microdrive.buffer, data + offset, sizeof(microdrive.buffer));
-        offset += sizeof(microdrive.buffer);
-        if (image_present > 1u ||
-            (microdrive.image_identity == 0u && image_present != 0u) ||
-            microdrive.image_length > UINT32_MAX ||
-            (image_present != 0u &&
-             (microdrive.image_sector_count < WZ_MDR_MIN_SECTORS ||
-              microdrive.image_sector_count > WZ_MDR_MAX_SECTORS ||
-              microdrive.image_length != microdrive.image_sector_count * WZ_MDR_SECTOR_SIZE ||
-              microdrive.sector >= microdrive.image_sector_count)) ||
-            microdrive.offset > WZ_MDR_SECTOR_SIZE ||
-            (microdrive.active_motor > 7u && microdrive.active_motor != 0xfeu &&
-             microdrive.active_motor != 0xffu) ||
-            microdrive.write_enabled > 1u || microdrive.erase_enabled > 1u ||
-            microdrive.dirty > 1u || microdrive.phase > WZ_MDR_PHASE_DATA) {
-            return WZ_RESULT_INVALID_STATE;
+        for (size_t slot = 0u; slot < WZ_MACHINE_MICRODRIVE_COUNT; ++slot) {
+            wz_mdr_transport_t* microdrive = &microdrives[slot];
+            wz_mdr_transport_init(microdrive);
+            image_present = data[offset++];
+            microdrive->image_present = image_present;
+            microdrive->image_identity = wz_state_read_u64(data + offset);
+            offset += 8u;
+            microdrive->image_length = (size_t)wz_state_read_u32(data + offset);
+            offset += 4u;
+            microdrive->image_sector_count = (size_t)wz_state_read_u32(data + offset);
+            offset += 4u;
+            microdrive->sector = (size_t)wz_state_read_u32(data + offset);
+            offset += 4u;
+            microdrive->offset = (size_t)wz_state_read_u32(data + offset);
+            offset += 4u;
+            microdrive->active_motor = data[offset++];
+            microdrive->write_enabled = data[offset++];
+            microdrive->erase_enabled = data[offset++];
+            microdrive->dirty = data[offset++];
+            microdrive->phase = (wz_mdr_phase_t)data[offset++];
+            memcpy(microdrive->buffer, data + offset, sizeof(microdrive->buffer));
+            offset += sizeof(microdrive->buffer);
+            if (image_present > 1u ||
+                (microdrive->image_identity == 0u && image_present != 0u) ||
+                microdrive->image_length > UINT32_MAX ||
+                (image_present != 0u &&
+                 (microdrive->image_sector_count < WZ_MDR_MIN_SECTORS ||
+                  microdrive->image_sector_count > WZ_MDR_MAX_SECTORS ||
+                  microdrive->image_length != microdrive->image_sector_count * WZ_MDR_SECTOR_SIZE ||
+                  microdrive->sector >= microdrive->image_sector_count)) ||
+                microdrive->offset > WZ_MDR_SECTOR_SIZE ||
+                (microdrive->active_motor > 7u && microdrive->active_motor != 0xfeu &&
+                 microdrive->active_motor != 0xffu) ||
+                microdrive->write_enabled > 1u || microdrive->erase_enabled > 1u ||
+                microdrive->dirty > 1u || microdrive->phase > WZ_MDR_PHASE_DATA) {
+                return WZ_RESULT_INVALID_STATE;
+            }
         }
 
         wz_zxnet_init(&zxnet);
@@ -670,7 +681,10 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
             read_ready > 1u) {
             return WZ_RESULT_INVALID_STATE;
         }
-        machine->microdrive = microdrive;
+        machine->microdrive = microdrives[0];
+        for (size_t slot = 1u; slot < WZ_MACHINE_MICRODRIVE_COUNT; ++slot) {
+            *wz_machine_microdrive_at(machine, slot) = microdrives[slot];
+        }
         machine->zxnet = zxnet;
     }
     return wz_machine_reset_ula_capture(machine);

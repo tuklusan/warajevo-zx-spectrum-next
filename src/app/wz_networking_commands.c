@@ -24,7 +24,7 @@ static bool networking_available(const void* opaque, const char** reason)
         return false;
     }
     if (context->machine->networking_mode == WZ_NETWORKING_INTERFACE1 &&
-        wz_mdr_transport_is_dirty(&context->machine->microdrive) != 0u &&
+        wz_machine_microdrives_are_dirty(context->machine) &&
         context->flush_callback == 0 && !context->discard_dirty_media) {
         if (reason != 0) *reason = WZ_NETWORKING_DIRTY_MEDIA_REASON;
         return false;
@@ -67,7 +67,7 @@ static wz_command_permission_t networking_remote_permission(
         return WZ_COMMAND_REMOTE_SAFE;
     }
     if (context->machine->networking_mode == WZ_NETWORKING_INTERFACE1 &&
-        wz_mdr_transport_is_dirty(&context->machine->microdrive) != 0u) {
+        wz_machine_microdrives_are_dirty(context->machine)) {
         return WZ_COMMAND_HOST_WRITE;
     }
     return WZ_COMMAND_REMOTE_SAFE;

@@ -170,6 +170,20 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
         break;
     case WZ_BUS_IO_READ:
         if (machine->hardware_io_decode_enabled &&
+            machine->networking_mode == WZ_NETWORKING_INTERFACE1 &&
+            wz_machine_interface1_port_selected(request->address, 0xe7u)) {
+            if (wz_machine_interface1_data_read(machine, &request->value) !=
+                WZ_RESULT_OK) {
+                request->value = 0xffu;
+            }
+            request->source = WZ_BUS_SOURCE_INPUT;
+        } else if (machine->hardware_io_decode_enabled &&
+            machine->networking_mode == WZ_NETWORKING_INTERFACE1 &&
+            (wz_machine_interface1_port_selected(request->address, 0xefu) ||
+             wz_machine_interface1_port_selected(request->address, 0xf7u))) {
+            request->value = 0xffu;
+            request->source = WZ_BUS_SOURCE_INPUT;
+        } else if (machine->hardware_io_decode_enabled &&
             wz_kempston_port_selected(request->address)) {
             request->value = wz_machine_kempston_read(machine, request->address);
             request->source = WZ_BUS_SOURCE_INPUT;
@@ -199,6 +213,14 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
                                       request->master_tick) != WZ_RESULT_OK) {
                 return WZ_RESULT_INVALID_STATE;
             }
+        } else if (machine->hardware_io_decode_enabled &&
+            machine->networking_mode == WZ_NETWORKING_INTERFACE1 &&
+            wz_machine_interface1_port_selected(request->address, 0xe7u)) {
+            if (wz_machine_interface1_data_write(machine, request->value) !=
+                WZ_RESULT_OK) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+            request->source = WZ_BUS_SOURCE_INPUT;
         } else if (machine->hardware_io_decode_enabled &&
             machine->profile != 0 && machine->profile->kind == WZ_MACHINE_128K_PAL &&
             (request->address & 0xc002u) == 0x8000u) {
@@ -231,6 +253,10 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
                     machine, request->value, request->master_tick) != WZ_RESULT_OK) {
                 return WZ_RESULT_INVALID_STATE;
             }
+            request->source = WZ_BUS_SOURCE_INPUT;
+        } else if (machine->hardware_io_decode_enabled &&
+                   machine->networking_mode == WZ_NETWORKING_INTERFACE1 &&
+                   wz_machine_interface1_port_selected(request->address, 0xf7u)) {
             request->source = WZ_BUS_SOURCE_INPUT;
         } else {
             request->source = WZ_BUS_SOURCE_FALLBACK;
