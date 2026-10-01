@@ -52,15 +52,15 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "3e67cb171009e06fda0f5e7a4c9df2c9f7c31d2ecbf5e16ea389e778aa580a27"
+      "sha256": "40a2c65c2a289f7a4118d23e1b759c29b9afffa946fb88811600ae30e4e859e3"
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "32aa7ddaebe10ffc0a4d933162103c59d40280cd4392593d4136f41fba9338a7"
+      "sha256": "9852bf4bf5b676da529cc7ab3ff74f6526bdd47f30065d87ca66819cf64af4c6"
     },
     {
       "path": "src/core/wz_state.h",
-      "sha256": "311dc111529c01924b0f4ed3bb1e4e1bb782461ab21b7c446473dd73b4a664c1"
+      "sha256": "d1981cbe18c53870804ff78ffe5dc9e27b02a8fe08b60a0fdb478d8f2130ea94"
     }
   ]
 }
