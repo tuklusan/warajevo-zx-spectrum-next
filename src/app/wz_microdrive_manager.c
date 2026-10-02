@@ -180,11 +180,11 @@ static void write_length(wz_byte_t* descriptor, size_t length)
 
 static wz_microdrive_manager_file_t* find_file(
     wz_microdrive_manager_file_t* files, size_t count,
-    const wz_byte_t* name)
+    const wz_byte_t* descriptor)
 {
     size_t index;
     for (index = 0u; index < count; ++index) {
-        if (same_name(files[index].name, name)) return &files[index];
+        if (file_name_equal(descriptor, files[index].name)) return &files[index];
     }
     return NULL;
 }
@@ -342,7 +342,7 @@ wz_result_t wz_microdrive_manager_catalog(
         }
         ++summary.allocated_sectors;
         if (blank_logical_name(descriptor)) continue;
-        entry = find_file(files, count, name);
+        entry = find_file(files, count, descriptor);
         if (entry == NULL) {
             size_t copy_length;
             if (count == file_capacity) return WZ_RESULT_INVALID_STATE;

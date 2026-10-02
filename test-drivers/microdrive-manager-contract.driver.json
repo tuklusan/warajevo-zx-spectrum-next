@@ -17,7 +17,7 @@
     },
     {
       "path": "src/app/wz_microdrive_manager.c",
-      "sha256": "7b153f4e39db87aacbbb88cac6c2073f72d08cfcefa816d7789ed59efdcf0768"
+      "sha256": "37e39acb8ba2418a27b496506a863421b3354300e282750e835ab5f11b42fc7f"
     },
     {
       "path": "src/app/wz_microdrive_manager.h",
@@ -25,7 +25,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "85e1c7b076acfd71ca5c0b6dc949b4fa5d30e04c910812285715605be12d9df3"
+      "sha256": "fa01735c26988aeca7a468376c8f09ce2e86f2b22c524e88da3f4d0cef264e57"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
