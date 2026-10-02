@@ -12,27 +12,27 @@
       "path": "ci/test/microdrive-ui/CMakeLists.txt"
     },
     {
-      "sha256": "bae2aef76a709f89189fe64ef5709120db3017eb8527a852effe67f27860932f",
+      "sha256": "d5ebcd9407e6635cf58c85a9ac58730fb7f68dd4fad724112f939968d81fa957",
       "path": "ci/test/microdrive-ui/microdrive-ui-contract.c"
     },
     {
-      "sha256": "b7a1d71a9a835d725832cf69cfb160e835db081fba17f16f4ac8b44f6666de03",
+      "sha256": "1a42c5a7f8a892e874018eea878bd7c9e04884ac92bcf85007202c6e6093e539",
       "path": "src/app/wz_sokol_main.c"
     },
     {
-      "sha256": "707bd4c4c9d0e12db0135ef857d3c7de8a5d6e7d717d790d09f3080bb90c9607",
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5",
       "path": "src/app/wz_command_registry.c"
     },
     {
-      "sha256": "089f17123ebfdc9be2ff8606aa849f72c06bc26036ac0f5710dbb978509b9d34",
+      "sha256": "80110080861a05baae47cd6d294315055bb6b1a636c79891b55c56717cb53c94",
       "path": "src/app/wz_command_registry.h"
     },
     {
-      "sha256": "bd46ced2af90907b222a43fcaef3bfe8943b6ca32fd4831fbaca82483ec264c5",
+      "sha256": "6f8cbe0e171adfe7b9f42d9517e31d72f7917048339ff8941d5bccadfa305151",
       "path": "src/app/wz_host_thread.c"
     },
     {
-      "sha256": "2fa71a370c5b0597e25f8e4ecbc8457e7e9b2d3b62cd48af2eb6111053283805",
+      "sha256": "bd4e189a40c8f9ad31f014dc12afc3c67b7a4bd5580df262b0cf92db8fbe8471",
       "path": "src/app/wz_host_thread.h"
     },
     {
@@ -52,11 +52,11 @@
       "path": "src/app/wz_speed_policy.h"
     },
     {
-      "sha256": "d4007980081eb3506bfea8159315d8ee6e69f2664ec8a750dd7d6e25e571b9d4",
+      "sha256": "ec222a2c51adb0914aae8a929d1f080c3d66354baec2068614a724216c84110b",
       "path": "src/app/wz_ui_layout.c"
     },
     {
-      "sha256": "5530637c6f99087edffd5f570e2cb98ab85ba9e42913b46f0e506bc3f3fb3498",
+      "sha256": "33260080b489f02274ad91fb7b6e739839293dafe107798b1e3a5b684940b4d8",
       "path": "src/app/wz_ui_layout.h"
     },
     {
@@ -68,7 +68,7 @@
       "path": "src/app/wz_microdrive_eject_workflow.h"
     },
     {
-      "sha256": "1dc71a255b61187261ef1b97a3694f780c8c2cb9be08d98e942e98768bec2b29",
+      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329",
       "path": "src/core/wz_machine.c"
     },
     {
@@ -92,7 +92,7 @@
       "path": "src/core/wz_machine_profile.h"
     },
     {
-      "sha256": "1d171101ea4c3a0896a62454a467d80dfa8c1b2baa3c336354d4f90ac9892257",
+      "sha256": "6b4c172b153a194236369fc94c4ffe73c2403a8ca9b38f792d5275e8520e1621",
       "path": "src/cmake/CMakeLists.txt"
     }
   ]
