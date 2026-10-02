@@ -62,7 +62,54 @@ bool wz_compatibility_tools_loss_disclosure(size_t index, const char** warning)
 
 const char* wz_compatibility_tools_command_id(void)
 {
-    return "tools.compatibility";
+    return WZ_COMPATIBILITY_TOOLS_COMMAND_ID;
+}
+
+void wz_compatibility_tools_window_init(wz_compatibility_tools_window_t* window)
+{
+    if (window != 0) memset(window, 0, sizeof(*window));
+}
+
+void wz_compatibility_tools_window_open(wz_compatibility_tools_window_t* window)
+{
+    if (window != 0) window->open = true;
+}
+
+void wz_compatibility_tools_window_close(wz_compatibility_tools_window_t* window)
+{
+    if (window != 0) window->open = false;
+}
+
+bool wz_compatibility_tools_window_is_open(
+    const wz_compatibility_tools_window_t* window)
+{
+    return window != 0 && window->open;
+}
+
+wz_result_t wz_compatibility_tools_register_commands(
+    wz_command_registry_t* registry,
+    wz_command_availability_fn availability,
+    wz_command_handler_fn handler,
+    const void* context)
+{
+    wz_command_metadata_t command;
+    if (registry == 0 || handler == 0) return WZ_RESULT_INVALID_ARGUMENT;
+    memset(&command, 0, sizeof(command));
+    command.id = WZ_COMPATIBILITY_TOOLS_COMMAND_ID;
+    command.label = "Compatibility Tools";
+    command.description = "Show legacy conversion tool availability";
+    command.menu_group = "tools";
+    command.parameter_schema = "NONE";
+    command.result_schema = "window";
+    command.handler_identity = "ui.compatibility-tools.window";
+    command.parameter_acquisition = "none";
+    command.permission = WZ_COMMAND_LOCAL_ONLY;
+    command.availability = availability;
+    command.handler = handler;
+    command.handler_context = context;
+    command.affects_machine_state = false;
+    command.recordable = false;
+    return wz_command_registry_register(registry, command);
 }
 
 static bool matches(const char* format, const char* value)

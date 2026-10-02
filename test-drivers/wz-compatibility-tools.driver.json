@@ -1,0 +1,35 @@
+{
+  "testId": "wz-compatibility-tools",
+  "command": "cmake -S ci/test/compatibility-tools -B dist/compatibility-tools -DCMAKE_BUILD_TYPE=Release && cmake --build dist/compatibility-tools --config Release --target wz_compatibility_tools_contract --parallel 2 && ctest --test-dir dist/compatibility-tools -C Release -R '^wz_compatibility_tools_contract$' --output-on-failure",
+  "workflow": ".github/workflows/compatibility-tools-contract.yml",
+  "fixtures": [
+    {
+      "path": ".github/workflows/compatibility-tools-contract.yml",
+      "sha256": "1a0fed0c3fe731dcb230245f22f44a6d1dc5d14395c1f734a7a05d61f22b20dd"
+    },
+    {
+      "path": "ci/test/compatibility-tools/CMakeLists.txt",
+      "sha256": "a8a1d3b7da3965f708f9c1a3d22913e4c75de821dba6c9aae595636adfcc4555"
+    },
+    {
+      "path": "ci/test/compatibility-tools/contract.c",
+      "sha256": "fb0895c760c4d3be3d76ca618075452e3bd2e91d86939f2a11710b0d0a6c3dd1"
+    },
+    {
+      "path": "src/app/wz_compatibility_tools.c",
+      "sha256": "2da94d1853b63d7b86eceb8c1360c394d7b665c54c101e94cc9f4197ffbac1c8"
+    },
+    {
+      "path": "src/app/wz_compatibility_tools.h",
+      "sha256": "6840392ee4e975843a97e1447d970cd2d40441929d77efb71b989f16bd2528c5"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "c7724d8bae1829ed9bfde55bf93e4fff907de93bbb4c8f5b1e47c3fbbce537f7"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "62cff0542737372c6d3415eca6af3aa6a0f7e59dfd504398c59acab254bb9689"
+    }
+  ]
+}

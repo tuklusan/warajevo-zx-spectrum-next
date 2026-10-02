@@ -12,7 +12,14 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include <stdbool.h>
 #include <stddef.h>
 
+#include "app/wz_command_registry.h"
+
 #define WZ_COMPATIBILITY_TOOL_COUNT 6u
+#define WZ_COMPATIBILITY_TOOLS_COMMAND_ID "tools.compatibility"
+
+typedef struct {
+    bool open;
+} wz_compatibility_tools_window_t;
 
 typedef enum {
     WZ_COMPATIBILITY_AVAILABLE = 0,
@@ -49,5 +56,15 @@ wz_file_route_t wz_compatibility_tools_route_for_format(
     const char* format,
     const char** reason);
 const char* wz_compatibility_tools_route_name(wz_file_route_t route);
+void wz_compatibility_tools_window_init(wz_compatibility_tools_window_t* window);
+void wz_compatibility_tools_window_open(wz_compatibility_tools_window_t* window);
+void wz_compatibility_tools_window_close(wz_compatibility_tools_window_t* window);
+bool wz_compatibility_tools_window_is_open(
+    const wz_compatibility_tools_window_t* window);
+wz_result_t wz_compatibility_tools_register_commands(
+    wz_command_registry_t* registry,
+    wz_command_availability_fn availability,
+    wz_command_handler_fn handler,
+    const void* context);
 
 #endif

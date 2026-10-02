@@ -51,6 +51,7 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "core/wz_state.h"
 #include "core/audio/wz_audio_mixer.h"
 #include "app/wz_command_registry.h"
+#include "app/wz_compatibility_tools.h"
 #include "app/wz_file_dialog.h"
 #include "app/wz_host_output.h"
 #include "app/wz_host_media_ownership.h"
@@ -206,6 +207,7 @@ typedef struct {
     int debugger_memory_value_length;
     wz_diagnostics_router_t diagnostics_router;
     wz_diagnostics_window_t diagnostics_window;
+    wz_compatibility_tools_window_t compatibility_tools_window;
     char microdrive_path[WZ_UI_MICRODRIVE_COUNT][4096];
     size_t microdrive_default_slot;
     wz_ui_microdrive_overview_entry_t microdrive_overview[
@@ -258,6 +260,8 @@ static void wz_host_ui_draw_debugger_window(struct nk_context* context,
                                             float width, float height);
 static void wz_host_ui_draw_diagnostics_window(struct nk_context* context,
                                                float width, float height);
+static void wz_host_ui_draw_compatibility_tools_window(
+    struct nk_context* context, float width, float height);
 
 static int wz_host_hex_digit(char value)
 {
@@ -2720,6 +2724,33 @@ static wz_result_t wz_host_diagnostics_open_command(const void* context,
     return WZ_RESULT_OK;
 }
 
+static bool wz_host_compatibility_tools_available(const void* context,
+                                                  const char** reason)
+{
+    if (context == NULL || !wz_host_session.initialized) {
+        if (reason != NULL) *reason = "application-unavailable";
+        return false;
+    }
+    if (reason != NULL) *reason = NULL;
+    return true;
+}
+
+static wz_result_t wz_host_compatibility_tools_open_command(
+    const void* context, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    wz_host_session_t* session = (wz_host_session_t*)context;
+    if (session == NULL || arguments.size != 0u) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    wz_compatibility_tools_window_open(&session->compatibility_tools_window);
+    if (result != NULL) {
+        (void)snprintf(result->message, sizeof(result->message),
+                       "Compatibility Tools opened");
+    }
+    return WZ_RESULT_OK;
+}
+
 static bool wz_host_register_commands(void)
 {
     static const wz_command_metadata_t tape_manager_commands[] = {
@@ -2919,6 +2950,13 @@ static bool wz_host_register_commands(void)
             &wz_host_session.command_registry,
             wz_host_diagnostics_open_available,
             wz_host_diagnostics_open_command,
+            &wz_host_session) != WZ_RESULT_OK) {
+        return false;
+    }
+    if (wz_compatibility_tools_register_commands(
+            &wz_host_session.command_registry,
+            wz_host_compatibility_tools_available,
+            wz_host_compatibility_tools_open_command,
             &wz_host_session) != WZ_RESULT_OK) {
         return false;
     }
@@ -4596,6 +4634,54 @@ static void wz_host_ui_draw_diagnostics_window(struct nk_context* context,
     nk_end(context);
 }
 
+static void wz_host_ui_draw_compatibility_tools_window(
+    struct nk_context* context, float width, float height)
+{
+    wz_compatibility_tools_window_t* window =
+        &wz_host_session.compatibility_tools_window;
+    size_t index;
+    if (!wz_compatibility_tools_window_is_open(window)) return;
+    if (!nk_begin(context, "Compatibility Tools",
+            nk_rect((width - 600.0f) * 0.5f, 110.0f, 600.0f, 390.0f),
+            NK_WINDOW_BORDER | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE |
+                NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE)) {
+        nk_end(context);
+        return;
+    }
+    nk_layout_row_dynamic(context, 24.0f, 1);
+    nk_label_wrap(context,
+        "Historical conversion utilities are listed with their current availability. "
+        "Unavailable tools cannot be started as conversions.");
+    nk_layout_row_dynamic(context, 28.0f, 2);
+    nk_label(context, "Tool", NK_TEXT_LEFT);
+    nk_label(context, "Availability", NK_TEXT_LEFT);
+    for (index = 1u; index < wz_compatibility_tools_count(); ++index) {
+        const wz_compatibility_tool_t* tool =
+            wz_compatibility_tools_at(index);
+        const char* reason = NULL;
+        bool available;
+        char status[96];
+        if (tool == NULL) continue;
+        available = wz_compatibility_tools_is_available(index, &reason);
+        nk_layout_row_dynamic(context, 24.0f, 2);
+        nk_label(context, tool->label, NK_TEXT_LEFT);
+        if (available) {
+            (void)snprintf(status, sizeof(status), "Available");
+        } else {
+            (void)snprintf(status, sizeof(status), "%s: %s",
+                tool->availability == WZ_COMPATIBILITY_LATER ? "Later" :
+                    "Unavailable",
+                reason == NULL ? "availability-unknown" : reason);
+        }
+        nk_label(context, status, NK_TEXT_LEFT);
+    }
+    nk_layout_row_dynamic(context, 24.0f, 1);
+    if (nk_button_label(context, "Close Compatibility Tools")) {
+        wz_compatibility_tools_window_close(window);
+    }
+    nk_end(context);
+}
+
 static void wz_host_ui_draw_tape_manager(struct nk_context* context,
                                          float width)
 {
@@ -5253,6 +5339,7 @@ static void wz_host_render_native_ui(struct nk_context* context,
     wz_host_ui_draw_printer_manager(context, width, height);
     wz_host_ui_draw_debugger_window(context, width, height);
     wz_host_ui_draw_diagnostics_window(context, width, height);
+    wz_host_ui_draw_compatibility_tools_window(context, width, height);
     wz_host_ui_draw_microdrive_eject_confirmation(context, width);
     wz_host_ui_draw_tape_manager(context, width);
     wz_host_ui_draw_snapshot_inspector(context, width, height);
@@ -5343,6 +5430,8 @@ static void wz_host_session_init(void)
     wz_printer_manager_init(&wz_host_session.printer_manager);
     wz_debugger_window_init(&wz_host_session.debugger_window);
     wz_diagnostics_window_init(&wz_host_session.diagnostics_window);
+    wz_compatibility_tools_window_init(
+        &wz_host_session.compatibility_tools_window);
     wz_diagnostics_router_init(&wz_host_session.diagnostics_router,
         NULL, NULL, NULL, false);
     wz_host_session.speed = WZ_SPEED_100;
@@ -5468,6 +5557,8 @@ static void wz_host_session_shutdown(void)
     if (wz_host_session.initialized) {
         wz_telnet_client_disconnect(&wz_host_session.telnet_client);
         wz_diagnostics_window_close(&wz_host_session.diagnostics_window);
+        wz_compatibility_tools_window_close(
+            &wz_host_session.compatibility_tools_window);
 #ifndef NDEBUG
         wz_host_timing_trace_stop(&wz_host_session);
 #endif

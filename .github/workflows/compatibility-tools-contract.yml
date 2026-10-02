@@ -1,0 +1,59 @@
+name: Compatibility Tools contract
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/app/wz_compatibility_tools.*'
+      - 'src/app/wz_sokol_main.c'
+      - 'src/cmake/CMakeLists.txt'
+      - 'ci/test/compatibility-tools/**'
+      - 'test-drivers/wz-compatibility-tools.driver.json'
+      - '.github/workflows/compatibility-tools-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: Ubuntu x64
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+      - name: Configure contract
+        run: cmake -S ci/test/compatibility-tools -B dist/compatibility-tools -DCMAKE_BUILD_TYPE=Release
+      - name: Build and run contract
+        run: |
+          cmake --build dist/compatibility-tools --config Release --target wz_compatibility_tools_contract --parallel 2
+          ctest --test-dir dist/compatibility-tools -C Release -R '^wz_compatibility_tools_contract$' --output-on-failure
+      - name: Record hosted proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import datetime, hashlib, json, os, pathlib, platform
+          driver = json.loads(pathlib.Path('test-drivers/wz-compatibility-tools.driver.json').read_text())
+          fixtures = []
+          for item in driver['fixtures']:
+              digest = hashlib.sha256(pathlib.Path(item['path']).read_bytes()).hexdigest()
+              if digest != item['sha256']:
+                  raise SystemExit(f"fixture hash mismatch: {item['path']}")
+              fixtures.append({'path': item['path'], 'sha256': digest})
+          proof = {'testId': driver['testId'], 'status': 'pass',
+                   'commit': os.environ['GITHUB_SHA'],
+                   'runner': f"{platform.system()}/{platform.machine()}",
+                   'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                   'runId': int(os.environ['GITHUB_RUN_ID']), 'fixtures': fixtures}
+          out = pathlib.Path('dist/compatibility-tools/proof/wz-compatibility-tools.json')
+          out.parent.mkdir(parents=True, exist_ok=True)
+          out.write_text(json.dumps(proof, indent=2) + '\n')
+          PY
+      - name: Upload hosted proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: compatibility-tools-contract-${{ github.sha }}
+          path: dist/compatibility-tools/proof/wz-compatibility-tools.json
+          if-no-files-found: error
