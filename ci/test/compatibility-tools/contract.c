@@ -80,9 +80,15 @@ int main(void)
         const wz_compatibility_tool_t* tool =
             wz_compatibility_tools_at(index);
         const char* reason = NULL;
+        const char* warning = NULL;
         if (tool == NULL || wz_compatibility_tools_is_available(index, &reason) ||
             tool->availability == WZ_COMPATIBILITY_AVAILABLE ||
-            reason == NULL || reason[0] == '\0') {
+            reason == NULL || reason[0] == '\0' ||
+            !wz_compatibility_tools_loss_disclosure(index, &warning) ||
+            warning == NULL || warning[0] == '\0' ||
+            strcmp(warning, tool->warning) != 0) {
+            fputs("unavailable conversion lacks a visible loss disclosure\n",
+                  stderr);
             return 3;
         }
     }

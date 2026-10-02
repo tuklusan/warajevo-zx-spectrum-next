@@ -13,7 +13,7 @@
     },
     {
       "path": "ci/test/compatibility-tools/contract.c",
-      "sha256": "1b71b3d89d029c98ab01f652bf27ff4d3d0d37eaaa55bade35b0a37db593145d"
+      "sha256": "7479bb79bb5b3e7903896a407b505b50e158ba9e24b94656f839190dba939856"
     },
     {
       "path": "src/app/wz_compatibility_tools.c",
@@ -25,7 +25,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "14fbeb3b3a81b13d6dc4778ba0e63767e0de275280ae9eb4026676c2e6f27b0d"
+      "sha256": "94a9943ccf7bbcc70e38b706c6307e8dc0a464a2072c88efdcb0f254c8f4016b"
     },
     {
       "path": "src/cmake/CMakeLists.txt",

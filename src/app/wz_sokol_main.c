@@ -4671,8 +4671,8 @@ static void wz_host_ui_draw_compatibility_tools_window(
     size_t index;
     if (!wz_compatibility_tools_window_is_open(window)) return;
     if (!nk_begin(context, "Compatibility Tools",
-            nk_rect((width - 600.0f) * 0.5f,
-                    (height - 390.0f) * 0.5f, 600.0f, 390.0f),
+            nk_rect((width - 640.0f) * 0.5f,
+                    (height - 560.0f) * 0.5f, 640.0f, 560.0f),
             NK_WINDOW_BORDER | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE |
                 NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE)) {
         nk_end(context);
@@ -4681,7 +4681,8 @@ static void wz_host_ui_draw_compatibility_tools_window(
     nk_layout_row_dynamic(context, 24.0f, 1);
     nk_label_wrap(context,
         "Historical conversion utilities are listed with their current availability. "
-        "Unavailable tools cannot be started as conversions.");
+        "Unavailable tools cannot be started as conversions. Review each loss "
+        "disclosure before starting a conversion or writing output.");
     if (wz_host_session.compatibility_requested_format[0] != '\0') {
         char request[128];
         (void)snprintf(request, sizeof(request),
@@ -4712,6 +4713,10 @@ static void wz_host_ui_draw_compatibility_tools_window(
                 reason == NULL ? "availability-unknown" : reason);
         }
         nk_label(context, status, NK_TEXT_LEFT);
+        if (wz_compatibility_tools_loss_disclosure(index, NULL)) {
+            nk_layout_row_dynamic(context, 38.0f, 1);
+            nk_label_wrap(context, tool->warning);
+        }
     }
     nk_layout_row_dynamic(context, 24.0f, 1);
     if (nk_button_label(context, "Close Compatibility Tools")) {
