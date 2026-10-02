@@ -4642,7 +4642,8 @@ static void wz_host_ui_draw_compatibility_tools_window(
     size_t index;
     if (!wz_compatibility_tools_window_is_open(window)) return;
     if (!nk_begin(context, "Compatibility Tools",
-            nk_rect((width - 600.0f) * 0.5f, 110.0f, 600.0f, 390.0f),
+            nk_rect((width - 600.0f) * 0.5f,
+                    (height - 390.0f) * 0.5f, 600.0f, 390.0f),
             NK_WINDOW_BORDER | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE |
                 NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE)) {
         nk_end(context);

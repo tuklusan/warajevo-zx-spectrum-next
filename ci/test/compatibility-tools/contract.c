@@ -53,6 +53,7 @@ int main(void)
     }
     if (strcmp(wz_compatibility_tools_command_id(),
                WZ_COMPATIBILITY_TOOLS_COMMAND_ID) != 0 ||
+        wz_compatibility_tools_count() != WZ_COMPATIBILITY_TOOL_COUNT ||
         wz_command_registry_state(&registry,
             WZ_COMPATIBILITY_TOOLS_COMMAND_ID, NULL) != WZ_COMMAND_ENABLED ||
         wz_command_registry_dispatch(&registry,
