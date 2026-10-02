@@ -13,7 +13,7 @@
     },
     {
       "path": "ci/test/compatibility-tools/contract.c",
-      "sha256": "4f5fc494a95a09f961764b35ebf57b21444fc03a4e5fe10b37b2fa3375825163"
+      "sha256": "538e4045fae8e8f6b4614fe018a82fed9b2007d3f1b333c1089156a6a9d005ec"
     },
     {
       "path": "src/app/wz_compatibility_tools.c",

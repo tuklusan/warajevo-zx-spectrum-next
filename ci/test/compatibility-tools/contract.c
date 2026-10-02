@@ -46,6 +46,7 @@ int main(void)
     wz_compatibility_tools_window_init(&window);
     if (wz_compatibility_tools_window_is_open(&window) ||
         wz_command_registry_init(&registry, storage, 1u) != WZ_RESULT_OK ||
+        wz_command_registry_bind_owner_thread(&registry) != WZ_RESULT_OK ||
         wz_compatibility_tools_register_commands(&registry, available,
             open_tools, &window) != WZ_RESULT_OK ||
         wz_command_registry_finalize(&registry) != WZ_RESULT_OK) {
