@@ -56,7 +56,7 @@
     },
     {
       "path": "src/app/wz_host_media_ownership.c",
-      "sha256": "6e51b7117349bd8f5f6f06e7fd2b66df04de929d612fdd0ef2d654338f66bed6"
+      "sha256": "38f175366815fbb90ab2da610f61be3e7862ae0b0d3a63a2003849cca9401466"
     },
     {
       "path": "src/app/wz_host_media_ownership.h",

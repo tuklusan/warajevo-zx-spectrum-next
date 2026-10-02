@@ -105,14 +105,16 @@ bool wz_host_media_claim_acquire(const char* path,
                                  bool writable,
                                  wz_host_media_claim_t* claim)
 {
-    if (path == 0 || claim == 0) {
-        return false;
-    }
+    if (claim == 0) return false;
     claim->held = false;
     claim->writable = writable;
     claim->native_handle = (intptr_t)-1;
     claim->identity_handle = (intptr_t)-1;
     claim->reason = 0;
+    if (path == 0) {
+        claim->reason = "invalid-argument";
+        return false;
+    }
     if (!writable) {
         return true;
     }
