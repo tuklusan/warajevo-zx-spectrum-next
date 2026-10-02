@@ -56,6 +56,7 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "app/wz_host_media_ownership.h"
 #include "app/wz_printer_manager.h"
 #include "app/wz_printer_commands.h"
+#include "app/wz_debugger_window.h"
 #include "app/wz_host_output_utf8.h"
 #include "app/wz_tape_save_transaction.h"
 #include "app/wz_file_open_run.h"
@@ -197,6 +198,11 @@ typedef struct {
     bool printer_manager_open;
     char printer_export_path[4096];
     int printer_export_path_length;
+    wz_debugger_window_t debugger_window;
+    char debugger_memory_address_text[5];
+    int debugger_memory_address_length;
+    char debugger_memory_value_text[3];
+    int debugger_memory_value_length;
     char microdrive_path[WZ_UI_MICRODRIVE_COUNT][4096];
     size_t microdrive_default_slot;
     wz_ui_microdrive_overview_entry_t microdrive_overview[
@@ -244,6 +250,8 @@ static void wz_host_release_local_keys(void);
 static bool wz_host_extension_is(const char* path, const char* expected);
 static bool wz_host_microdrive_path_read_only(size_t slot);
 static void wz_host_ui_draw_printer_manager(struct nk_context* context,
+                                            float width, float height);
+static void wz_host_ui_draw_debugger_window(struct nk_context* context,
                                             float width, float height);
 
 static int wz_host_hex_digit(char value)
@@ -2644,6 +2652,39 @@ static wz_result_t wz_host_printer_command(const void* context,
     return WZ_RESULT_INVALID_ARGUMENT;
 }
 
+static bool wz_host_debugger_open_available(const void* context,
+                                            const char** reason)
+{
+    if (context == NULL || !wz_host_session.initialized) {
+        if (reason != NULL) *reason = "machine-unavailable";
+        return false;
+    }
+    if (reason != NULL) *reason = NULL;
+    return true;
+}
+
+static wz_result_t wz_host_debugger_open_command(const void* context,
+    wz_command_arguments_t arguments, wz_command_result_t* result)
+{
+    wz_host_session_t* session = (wz_host_session_t*)context;
+    wz_debugger_window_result_t opened;
+    if (session == NULL || arguments.size != 0u) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    opened = wz_debugger_window_open(&session->debugger_window,
+        &session->machine, session->ui_window.layout.paused);
+    if (opened != WZ_DEBUGGER_WINDOW_OK) return WZ_RESULT_INVALID_STATE;
+    (void)snprintf(session->debugger_memory_address_text,
+        sizeof(session->debugger_memory_address_text), "%04X",
+        session->machine.cpu.program_counter);
+    session->debugger_memory_address_length = 4;
+    session->debugger_memory_value_text[0] = '\0';
+    session->debugger_memory_value_length = 0;
+    if (result != NULL) (void)snprintf(result->message,
+        sizeof(result->message), "Debugger opened");
+    return WZ_RESULT_OK;
+}
+
 static bool wz_host_register_commands(void)
 {
     static const wz_command_metadata_t tape_manager_commands[] = {
@@ -2743,6 +2784,14 @@ static bool wz_host_register_commands(void)
             "tools", "NONE", NULL, "wz_host_command_snapshot_inspector", "local",
             NULL, WZ_COMMAND_LOCAL_ONLY, NULL,
             wz_host_command_snapshot_inspector, &wz_host_session, true, false, NULL
+        },
+        {
+            WZ_DEBUGGER_WINDOW_COMMAND_ID, "Debugger / Monitor...",
+            "Inspect and edit the live machine through debugger APIs",
+            "tools", "NONE", "wz-command-result",
+            "wz_host_debugger_open_command", "local", "F12",
+            WZ_COMMAND_LOCAL_ONLY, wz_host_debugger_open_available,
+            wz_host_debugger_open_command, &wz_host_session, false, false, NULL
         },
         {
             "machine.pause_resume", "Pause", "Pause or resume the emulated machine",
@@ -4301,6 +4350,161 @@ static void wz_host_ui_draw_printer_manager(struct nk_context* context,
     nk_end(context);
 }
 
+static void wz_host_ui_draw_debugger_window(struct nk_context* context,
+                                            float width, float height)
+{
+    wz_host_session_t* session = &wz_host_session;
+    wz_debugger_window_t* window = &session->debugger_window;
+    const wz_debugger_snapshot_t* snapshot;
+    const wz_debugger_page_info_t* paging;
+    const wz_z80_state_t* cpu;
+    char line[128];
+    if (!wz_debugger_window_is_open(window)) return;
+    if (window->paused != session->ui_window.layout.paused) {
+        (void)wz_debugger_window_set_paused(window,
+            session->ui_window.layout.paused);
+    }
+    if (!window->paused) (void)wz_debugger_window_refresh(window);
+    snapshot = wz_debugger_window_snapshot(window);
+    paging = wz_debugger_window_paging(window);
+    if (snapshot == NULL || paging == NULL) return;
+    cpu = &snapshot->cpu;
+    if (!nk_begin(context, "Debugger / Monitor",
+            nk_rect((width - 760.0f) * 0.5f, (height - 650.0f) * 0.5f,
+                    760.0f, 650.0f),
+            NK_WINDOW_BORDER | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE |
+                NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE)) {
+        nk_end(context);
+        return;
+    }
+    nk_layout_row_dynamic(context, 24.0f, 3);
+    if (nk_button_label(context, window->paused ? "Resume" : "Pause")) {
+        bool paused = !window->paused;
+        if (wz_debugger_window_set_paused(window, paused) ==
+                WZ_DEBUGGER_WINDOW_OK) {
+            session->ui_window.layout.paused = paused;
+            (void)wz_debugger_window_refresh(window);
+        }
+    }
+    if (nk_button_label(context, "Step (F10)") && window->paused) {
+        (void)wz_debugger_window_step(window);
+    }
+    if (nk_button_label(context, "Run 1000 instructions") && window->paused) {
+        (void)wz_debugger_window_continue(window, 1000u);
+    }
+    nk_layout_row_dynamic(context, 23.0f, 2);
+    (void)snprintf(line, sizeof(line),
+        "PC %04X  SP %04X  IX %04X  IY %04X",
+        cpu->program_counter, cpu->stack_pointer, cpu->ix, cpu->iy);
+    nk_label(context, line, NK_TEXT_LEFT);
+    (void)snprintf(line, sizeof(line), "Master tick %llu | %s",
+        (unsigned long long)snapshot->master_tick,
+        window->paused ? "paused" : "running / read-only");
+    nk_label(context, line, NK_TEXT_LEFT);
+    (void)snprintf(line, sizeof(line),
+        "Last debugger action: %zu instruction(s) | Border %u | Network mode %u",
+        window->executed, (unsigned)snapshot->border_color,
+        (unsigned)snapshot->networking_mode);
+    nk_label(context, line, NK_TEXT_LEFT);
+    (void)snprintf(line, sizeof(line),
+        "AF %02X%02X  BC %02X%02X  DE %02X%02X  HL %02X%02X",
+        cpu->main.a, cpu->main.f, cpu->main.b, cpu->main.c,
+        cpu->main.d, cpu->main.e, cpu->main.h, cpu->main.l);
+    nk_label(context, line, NK_TEXT_LEFT);
+    (void)snprintf(line, sizeof(line),
+        "AF' %02X%02X  BC' %02X%02X  DE' %02X%02X  HL' %02X%02X",
+        cpu->alternate.a, cpu->alternate.f, cpu->alternate.b,
+        cpu->alternate.c, cpu->alternate.d, cpu->alternate.e,
+        cpu->alternate.h, cpu->alternate.l);
+    nk_label(context, line, NK_TEXT_LEFT);
+    (void)snprintf(line, sizeof(line),
+        "IFF1 %u  IFF2 %u  IM %u  I %02X  R %02X  HALT %u",
+        (unsigned)cpu->iff1, (unsigned)cpu->iff2,
+        (unsigned)cpu->interrupt_mode, (unsigned)cpu->i,
+        (unsigned)cpu->r, (unsigned)cpu->halted);
+    nk_label(context, line, NK_TEXT_LEFT);
+    (void)snprintf(line, sizeof(line),
+        "Flags: S%u Z%u Y%u H%u X%u PV%u N%u C%u",
+        (cpu->main.f >> 7u) & 1u, (cpu->main.f >> 6u) & 1u,
+        (cpu->main.f >> 5u) & 1u, (cpu->main.f >> 4u) & 1u,
+        (cpu->main.f >> 3u) & 1u, (cpu->main.f >> 2u) & 1u,
+        (cpu->main.f >> 1u) & 1u, cpu->main.f & 1u);
+    nk_label(context, line, NK_TEXT_LEFT);
+    (void)snprintf(line, sizeof(line),
+        "Paging %02X | Screen bank %u | ROM bank %u | Locked %u",
+        (unsigned)paging->paging_value, (unsigned)paging->screen_bank,
+        (unsigned)paging->rom_bank, (unsigned)paging->paging_locked);
+    nk_label(context, line, NK_TEXT_LEFT);
+    (void)snprintf(line, sizeof(line), "Disassembly at %04X:",
+        window->memory_address);
+    nk_label(context, line, NK_TEXT_LEFT);
+    nk_label_wrap(context, wz_debugger_window_disassembly(window));
+    nk_layout_row_dynamic(context, 23.0f, 1);
+    nk_label(context, "Memory address (hex):", NK_TEXT_LEFT);
+    nk_layout_row_dynamic(context, 24.0f, 2);
+    (void)nk_edit_string(context, NK_EDIT_FIELD,
+        session->debugger_memory_address_text,
+        &session->debugger_memory_address_length,
+        (int)sizeof(session->debugger_memory_address_text) - 1,
+        nk_filter_hex);
+    if (nk_button_label(context, "Read memory")) {
+        size_t address;
+        if (wz_host_parse_hex_value(session->debugger_memory_address_text,
+                4u, &address) && address <= 0xffffu) {
+            (void)wz_debugger_window_select_memory(window,
+                (wz_word_t)address);
+        }
+    }
+    (void)snprintf(line, sizeof(line), "%04X:", window->memory_address);
+    for (size_t index = 0u; index < window->memory_length; ++index) {
+        size_t length = strlen(line);
+        (void)snprintf(line + length, sizeof(line) - length, " %02X",
+            (unsigned)window->memory[index]);
+    }
+    nk_layout_row_dynamic(context, 22.0f, 1);
+    nk_label(context, line, NK_TEXT_LEFT);
+    nk_layout_row_dynamic(context, 22.0f, 1);
+    nk_label(context, window->paused
+        ? "Memory editor (paused machine only):" :
+          "Memory editor disabled while the machine runs.", NK_TEXT_LEFT);
+    nk_layout_row_dynamic(context, 24.0f, 2);
+    if (session->debugger_memory_value_length < 0)
+        session->debugger_memory_value_length = 0;
+    if (session->debugger_memory_value_length >=
+        (int)sizeof(session->debugger_memory_value_text)) {
+        session->debugger_memory_value_length =
+            (int)sizeof(session->debugger_memory_value_text) - 1;
+    }
+    session->debugger_memory_value_text[
+        session->debugger_memory_value_length] = '\0';
+    (void)nk_edit_string(context, NK_EDIT_FIELD,
+        session->debugger_memory_value_text,
+        &session->debugger_memory_value_length,
+        (int)sizeof(session->debugger_memory_value_text) - 1, nk_filter_hex);
+    if (!window->paused) nk_widget_disable_begin(context);
+    if (nk_button_label(context, "Write byte")) {
+        size_t address;
+        size_t value;
+        if (wz_host_parse_hex_value(session->debugger_memory_address_text,
+                4u, &address) && address <= 0xffffu &&
+            wz_host_parse_hex_value(session->debugger_memory_value_text,
+                2u, &value) && value <= 0xffu &&
+            wz_debugger_window_write_memory(window, (wz_word_t)address,
+                (wz_byte_t)value) == WZ_DEBUGGER_WINDOW_OK) {
+            (void)snprintf(session->file_notification,
+                sizeof(session->file_notification), "Debugger memory updated");
+        }
+    }
+    if (!window->paused) nk_widget_disable_end(context);
+    nk_layout_row_dynamic(context, 24.0f, 1);
+    if (nk_button_label(context, "Close Debugger")) {
+        (void)wz_debugger_set_access_mode(&session->machine,
+            WZ_DEBUGGER_READ_ONLY);
+        wz_debugger_window_close(window);
+    }
+    nk_end(context);
+}
+
 static void wz_host_ui_draw_tape_manager(struct nk_context* context,
                                          float width)
 {
@@ -4956,6 +5160,7 @@ static void wz_host_render_native_ui(struct nk_context* context,
     wz_host_ui_draw_toolbar(context, width);
     wz_host_ui_draw_microdrive_manager(context, width, height);
     wz_host_ui_draw_printer_manager(context, width, height);
+    wz_host_ui_draw_debugger_window(context, width, height);
     wz_host_ui_draw_microdrive_eject_confirmation(context, width);
     wz_host_ui_draw_tape_manager(context, width);
     wz_host_ui_draw_snapshot_inspector(context, width, height);
@@ -5044,6 +5249,7 @@ static void wz_host_session_init(void)
     wz_snapshot_save_workflow_init(&wz_host_session.snapshot_save_workflow);
     wz_snapshot_inspector_init(&wz_host_session.snapshot_inspector);
     wz_printer_manager_init(&wz_host_session.printer_manager);
+    wz_debugger_window_init(&wz_host_session.debugger_window);
     wz_host_session.speed = WZ_SPEED_100;
     sg_setup(&(sg_desc){.environment = sglue_environment()});
     sgl_setup(&(sgl_desc_t){0});
@@ -5169,6 +5375,11 @@ static void wz_host_session_shutdown(void)
 #ifndef NDEBUG
         wz_host_timing_trace_stop(&wz_host_session);
 #endif
+        if (wz_debugger_window_is_open(&wz_host_session.debugger_window)) {
+            (void)wz_debugger_set_access_mode(&wz_host_session.machine,
+                WZ_DEBUGGER_READ_ONLY);
+            wz_debugger_window_close(&wz_host_session.debugger_window);
+        }
         wz_machine_destroy(&wz_host_session.machine);
         wz_ui_window_destroy(&wz_host_session.ui_window);
         wz_sokol_audio_shutdown(&wz_host_session.audio);

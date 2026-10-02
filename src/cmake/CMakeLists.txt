@@ -571,6 +571,7 @@ if(WZSN_BUILD_SOKOL_HOST)
         ${WZSN_SOURCE_ROOT}/app/wz_printer_manager.c
         ${WZSN_SOURCE_ROOT}/app/wz_printer_export.c
         ${WZSN_SOURCE_ROOT}/app/wz_printer_commands.c
+        ${WZSN_SOURCE_ROOT}/app/wz_debugger_window.c
         ${WZSN_SOURCE_ROOT}/app/wz_snapshot_save_workflow.c
         ${WZSN_SOURCE_ROOT}/app/wz_snapshot_inspector.c
         ${WZSN_SOURCE_ROOT}/app/wz_tape_insert_action.c
