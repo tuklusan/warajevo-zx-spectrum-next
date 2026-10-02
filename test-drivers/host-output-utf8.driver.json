@@ -33,7 +33,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "1b5b1359b24d0494f497ce58861980fc28cc2584f5f01892e9eef95941d9f6de"
+      "sha256": "85e1c7b076acfd71ca5c0b6dc949b4fa5d30e04c910812285715605be12d9df3"
     },
     {
       "path": "src/cmake/CMakeLists.txt",

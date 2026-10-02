@@ -1,0 +1,35 @@
+{
+  "testId": "microdrive-files-contract",
+  "command": "cmake -S ci/test/microdrive-files -B dist/microdrive-files -DCMAKE_BUILD_TYPE=Release && cmake --build dist/microdrive-files --config Release --target wz_microdrive_files_contract --parallel 2 && ctest --test-dir dist/microdrive-files -C Release -R '^wz_microdrive_files_contract$' --output-on-failure",
+  "workflow": ".github/workflows/microdrive-files-contract.yml",
+  "fixtures": [
+    {
+      "path": ".github/workflows/microdrive-files-contract.yml",
+      "sha256": "0b9eab35196a4cb5c72218a570dfe630bb74a424069c8409c6725ec607c210c3"
+    },
+    {
+      "path": "ci/test/microdrive-files/CMakeLists.txt",
+      "sha256": "abc52f1892f1d7a62c2e72a8396e62e77af13ac7bd3bdfa67d6fdf4e1d26c830"
+    },
+    {
+      "path": "ci/test/microdrive-files/microdrive-files-contract.c",
+      "sha256": "b878d8ff29a0fa3a11fc07d0165a4ace74183256c10447801064bdf8e8e17929"
+    },
+    {
+      "path": "src/app/wz_microdrive_manager.c",
+      "sha256": "7b153f4e39db87aacbbb88cac6c2073f72d08cfcefa816d7789ed59efdcf0768"
+    },
+    {
+      "path": "src/app/wz_microdrive_manager.h",
+      "sha256": "4ab4cf70ec489f27ed972ab003d9f7572a6657b68f7772fa9b972786903c0745"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "85e1c7b076acfd71ca5c0b6dc949b4fa5d30e04c910812285715605be12d9df3"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "03a9ef014f43cb1447439c1094898b374d84d30d16938b3b1cb6103a0f7d397f"
+    }
+  ]
+}

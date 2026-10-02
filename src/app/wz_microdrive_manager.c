@@ -25,7 +25,8 @@ static bool valid_sector(const wz_byte_t* sector)
     const wz_byte_t* descriptor = sector + WZ_MDR_IMAGE_DATA_OFFSET;
     return (header[0] & 1u) != 0u &&
         header[WZ_MDR_HEADER_SIZE - 1u] == checksum(header, 14u) &&
-        (descriptor[0] & 1u) == 0u &&
+        (descriptor[0] & 0xf9u) == 0u &&
+        ((size_t)descriptor[2] | ((size_t)descriptor[3] << 8u)) <= 512u &&
         descriptor[14] == checksum(descriptor, 14u) &&
         sector[WZ_MDR_SECTOR_SIZE - 1u] ==
             checksum(descriptor + 15u, 512u);
@@ -38,6 +39,66 @@ static bool blank_name(const wz_byte_t* name)
         if (name[index] != ' ' && name[index] != 0u) return false;
     }
     return true;
+}
+
+static size_t read_length(const wz_byte_t* descriptor);
+
+static bool same_name(const char* left, const wz_byte_t* right);
+
+static bool manager_name(const char* name);
+
+static bool same_text_name(const char* left, const char* right)
+{
+    wz_byte_t padded[10];
+    size_t length;
+    if (!manager_name(left) || !manager_name(right)) return false;
+    length = strlen(right);
+    memset(padded, ' ', sizeof(padded));
+    memcpy(padded, right, length);
+    return same_name(left, padded);
+}
+
+static bool descriptor_hidden(const wz_byte_t* descriptor)
+{
+    size_t index;
+    if (descriptor[4] != 0u) return false;
+    for (index = 0u; index < 9u; ++index) {
+        if (descriptor[5u + index] != ' ' && descriptor[5u + index] != 0u)
+            return true;
+    }
+    return false;
+}
+
+static const wz_byte_t* logical_name(const wz_byte_t* descriptor)
+{
+    return descriptor + (descriptor_hidden(descriptor) ? 5u : 4u);
+}
+
+static bool blank_logical_name(const wz_byte_t* descriptor)
+{
+    size_t index;
+    const size_t start = descriptor_hidden(descriptor) ? 5u : 4u;
+    const size_t length = descriptor_hidden(descriptor) ? 9u : 10u;
+    for (index = 0u; index < length; ++index) {
+        if (descriptor[start + index] != ' ' &&
+            descriptor[start + index] != 0u) return false;
+    }
+    return true;
+}
+
+static bool blank_record(const wz_byte_t* descriptor)
+{
+    return read_length(descriptor) == 0u && blank_name(descriptor + 4u);
+}
+
+static bool file_name_equal(const wz_byte_t* descriptor, const char* name)
+{
+    wz_byte_t normalized[10];
+    const size_t length = descriptor_hidden(descriptor) ? 9u : 10u;
+    if (blank_logical_name(descriptor)) return false;
+    memset(normalized, ' ', sizeof(normalized));
+    memcpy(normalized, logical_name(descriptor), length);
+    return same_name(name, normalized);
 }
 
 static bool manager_name(const char* name)
@@ -268,31 +329,34 @@ wz_result_t wz_microdrive_manager_catalog(
         const wz_byte_t* sector = image->data +
             sector_index * WZ_MDR_SECTOR_SIZE;
         const wz_byte_t* descriptor = sector + WZ_MDR_IMAGE_DATA_OFFSET;
-        const wz_byte_t* name = descriptor + 4u;
+        const wz_byte_t* name = logical_name(descriptor);
         size_t length = read_length(descriptor);
         wz_microdrive_manager_file_t* entry;
         if (!valid_sector(sector)) {
             ++summary.damaged_sectors;
             continue;
         }
-        if (length == 0u && blank_name(name)) {
+        if (blank_record(descriptor)) {
             ++summary.free_sectors;
             continue;
         }
         ++summary.allocated_sectors;
-        if (blank_name(name)) continue;
+        if (blank_logical_name(descriptor)) continue;
         entry = find_file(files, count, name);
         if (entry == NULL) {
             size_t copy_length;
             if (count == file_capacity) return WZ_RESULT_INVALID_STATE;
             entry = &files[count++];
             memset(entry, 0, sizeof(*entry));
-            copy_length = 10u;
+            copy_length = descriptor_hidden(descriptor) ? 9u : 10u;
             while (copy_length != 0u && name[copy_length - 1u] == ' ') {
                 --copy_length;
             }
             memcpy(entry->name, name, copy_length);
             entry->name[copy_length] = '\0';
+            entry->hidden = descriptor_hidden(descriptor);
+        } else if (entry->hidden != descriptor_hidden(descriptor)) {
+            return WZ_RESULT_INVALID_STATE;
         }
         ++entry->sector_count;
         if (length > 512u || entry->byte_count > SIZE_MAX - length) {
@@ -368,5 +432,184 @@ wz_result_t wz_microdrive_manager_optimize(wz_byte_t* data, size_t length)
             memcpy(best_sector, temporary, sizeof(temporary));
         }
     }
+    return WZ_RESULT_OK;
+}
+
+static size_t matching_sector_count(const wz_byte_t* data, size_t count,
+                                    const char* name)
+{
+    size_t index, matches = 0u;
+    for (index = 0u; index < count; ++index) {
+        const wz_byte_t* descriptor = data +
+            index * WZ_MDR_SECTOR_SIZE + WZ_MDR_IMAGE_DATA_OFFSET;
+        if (file_name_equal(descriptor, name)) ++matches;
+    }
+    return matches;
+}
+
+static bool has_named_file(const wz_byte_t* data, size_t count,
+                           const char* name)
+{
+    return matching_sector_count(data, count, name) != 0u;
+}
+
+wz_result_t wz_microdrive_manager_file_delete(
+    wz_byte_t* data, size_t length, const char* name)
+{
+    size_t index, count;
+    bool found = false;
+    if (!validate_all(data, length) || !manager_name(name))
+        return WZ_RESULT_INVALID_ARGUMENT;
+    count = length / WZ_MDR_SECTOR_SIZE;
+    if (!has_named_file(data, count, name)) return WZ_RESULT_INVALID_STATE;
+    for (index = 0u; index < count; ++index) {
+        wz_byte_t* sector = data + index * WZ_MDR_SECTOR_SIZE;
+        wz_byte_t* descriptor = sector + WZ_MDR_IMAGE_DATA_OFFSET;
+        if (!file_name_equal(descriptor, name)) continue;
+        found = true;
+        descriptor[0] = 2u;
+        descriptor[1] = 0u;
+        write_length(descriptor, 0u);
+        store_name(descriptor + 4u, "");
+        memset(descriptor + 15u, 0, 512u);
+        update_checksums(sector);
+    }
+    return found ? WZ_RESULT_OK : WZ_RESULT_INVALID_STATE;
+}
+
+wz_result_t wz_microdrive_manager_file_rename(
+    wz_byte_t* data, size_t length, const char* old_name,
+    const char* new_name)
+{
+    size_t index, count, matches;
+    if (!validate_all(data, length) || !manager_name(old_name) ||
+        !manager_name(new_name)) return WZ_RESULT_INVALID_ARGUMENT;
+    count = length / WZ_MDR_SECTOR_SIZE;
+    matches = matching_sector_count(data, count, old_name);
+    if (matches == 0u) return WZ_RESULT_INVALID_STATE;
+    if (!same_text_name(old_name, new_name) &&
+        has_named_file(data, count, new_name)) return WZ_RESULT_INVALID_STATE;
+    if (strlen(new_name) > 9u) {
+        for (index = 0u; index < count; ++index) {
+            const wz_byte_t* descriptor = data +
+                index * WZ_MDR_SECTOR_SIZE + WZ_MDR_IMAGE_DATA_OFFSET;
+            if (descriptor_hidden(descriptor) &&
+                file_name_equal(descriptor, old_name))
+                return WZ_RESULT_INVALID_ARGUMENT;
+        }
+    }
+    for (index = 0u; index < count; ++index) {
+        wz_byte_t* sector = data + index * WZ_MDR_SECTOR_SIZE;
+        wz_byte_t* descriptor = sector + WZ_MDR_IMAGE_DATA_OFFSET;
+        const bool hidden = descriptor_hidden(descriptor);
+        if (!file_name_equal(descriptor, old_name)) continue;
+        if (hidden) {
+            descriptor[4] = 0u;
+            memset(descriptor + 5u, ' ', 9u);
+            memcpy(descriptor + 5u, new_name, strlen(new_name));
+        } else {
+            store_name(descriptor + 4u, new_name);
+        }
+        update_checksums(sector);
+    }
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_microdrive_manager_file_set_hidden(
+    wz_byte_t* data, size_t length, const char* name, bool hidden)
+{
+    size_t index, count;
+    bool found = false;
+    if (!validate_all(data, length) || !manager_name(name))
+        return WZ_RESULT_INVALID_ARGUMENT;
+    if (hidden && strlen(name) > 9u) return WZ_RESULT_INVALID_ARGUMENT;
+    count = length / WZ_MDR_SECTOR_SIZE;
+    if (!has_named_file(data, count, name)) return WZ_RESULT_INVALID_STATE;
+    for (index = 0u; index < count; ++index) {
+        wz_byte_t* sector = data + index * WZ_MDR_SECTOR_SIZE;
+        wz_byte_t* descriptor = sector + WZ_MDR_IMAGE_DATA_OFFSET;
+        const bool was_hidden = descriptor_hidden(descriptor);
+        if (!file_name_equal(descriptor, name)) continue;
+        found = true;
+        if (was_hidden == hidden) continue;
+        if (hidden) {
+            memmove(descriptor + 5u, descriptor + 4u, 9u);
+            descriptor[4] = 0u;
+        } else {
+            memmove(descriptor + 4u, descriptor + 5u, 9u);
+            descriptor[13] = ' ';
+        }
+        update_checksums(sector);
+    }
+    return found ? WZ_RESULT_OK : WZ_RESULT_INVALID_STATE;
+}
+
+wz_result_t wz_microdrive_manager_file_copy(
+    const wz_byte_t* source, size_t source_length, const char* name,
+    wz_byte_t* destination, size_t destination_length)
+{
+    size_t source_count, destination_count, index, matches = 0u, target_count = 0u;
+    size_t ordered[WZ_MDR_MAX_SECTORS];
+    size_t targets[WZ_MDR_MAX_SECTORS];
+    wz_byte_t* records;
+    if (source == destination) return WZ_RESULT_INVALID_ARGUMENT;
+    if (!validate_all(source, source_length) ||
+        !validate_all(destination, destination_length) || !manager_name(name))
+        return WZ_RESULT_INVALID_ARGUMENT;
+    source_count = source_length / WZ_MDR_SECTOR_SIZE;
+    destination_count = destination_length / WZ_MDR_SECTOR_SIZE;
+    memset(ordered, 0, sizeof(ordered));
+    if (!has_named_file(source, source_count, name) ||
+        has_named_file(destination, destination_count, name))
+        return WZ_RESULT_INVALID_STATE;
+    for (index = 0u; index < source_count; ++index) {
+        const wz_byte_t* descriptor = source +
+            index * WZ_MDR_SECTOR_SIZE + WZ_MDR_IMAGE_DATA_OFFSET;
+        if (file_name_equal(descriptor, name)) {
+            const size_t sequence = descriptor[1];
+            if (sequence >= WZ_MDR_MAX_SECTORS || ordered[sequence] != 0u)
+                return WZ_RESULT_INVALID_STATE;
+            ordered[sequence] = index + 1u;
+            ++matches;
+        }
+    }
+    if (matches == 0u) return WZ_RESULT_INVALID_STATE;
+    for (index = 0u; index < matches; ++index) {
+        const size_t source_index = ordered[index] == 0u
+            ? SIZE_MAX : ordered[index] - 1u;
+        const wz_byte_t* descriptor;
+        if (source_index == SIZE_MAX) return WZ_RESULT_INVALID_STATE;
+        descriptor = source + source_index * WZ_MDR_SECTOR_SIZE +
+            WZ_MDR_IMAGE_DATA_OFFSET;
+        if (((descriptor[0] & 2u) != 0u) != (index + 1u == matches))
+            return WZ_RESULT_INVALID_STATE;
+    }
+    for (index = 0u; index < destination_count && target_count < matches; ++index) {
+        const wz_byte_t* descriptor = destination +
+            index * WZ_MDR_SECTOR_SIZE + WZ_MDR_IMAGE_DATA_OFFSET;
+        if (blank_record(descriptor)) targets[target_count++] = index;
+    }
+    if (target_count != matches) return WZ_RESULT_INVALID_STATE;
+    records = (wz_byte_t*)malloc(matches * WZ_MDR_SECTOR_SIZE);
+    if (records == NULL) return WZ_RESULT_INVALID_STATE;
+    for (index = 0u; index < matches; ++index) {
+        const size_t source_index = ordered[index] - 1u;
+        memcpy(records + index * WZ_MDR_SECTOR_SIZE,
+            source + source_index * WZ_MDR_SECTOR_SIZE,
+            WZ_MDR_SECTOR_SIZE);
+    }
+    for (index = 0u; index < matches; ++index) {
+        wz_byte_t* target = destination + targets[index] * WZ_MDR_SECTOR_SIZE;
+        const wz_byte_t* record = records + index * WZ_MDR_SECTOR_SIZE;
+        memcpy(target + WZ_MDR_IMAGE_DATA_OFFSET,
+            record + WZ_MDR_IMAGE_DATA_OFFSET,
+            WZ_MDR_SECTOR_SIZE - WZ_MDR_IMAGE_DATA_OFFSET);
+        target[WZ_MDR_IMAGE_DATA_OFFSET + 1u] = (wz_byte_t)index;
+        target[WZ_MDR_IMAGE_DATA_OFFSET] &= (wz_byte_t)~2u;
+        if (index + 1u == matches)
+            target[WZ_MDR_IMAGE_DATA_OFFSET] |= 2u;
+        update_checksums(target);
+    }
+    free(records);
     return WZ_RESULT_OK;
 }

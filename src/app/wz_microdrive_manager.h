@@ -91,5 +91,15 @@ wz_result_t wz_microdrive_manager_format(wz_byte_t* data, size_t length,
 wz_result_t wz_microdrive_manager_rename(wz_byte_t* data, size_t length,
                                          const char* name);
 wz_result_t wz_microdrive_manager_optimize(wz_byte_t* data, size_t length);
+wz_result_t wz_microdrive_manager_file_delete(
+    wz_byte_t* data, size_t length, const char* name);
+wz_result_t wz_microdrive_manager_file_rename(
+    wz_byte_t* data, size_t length, const char* old_name,
+    const char* new_name);
+wz_result_t wz_microdrive_manager_file_set_hidden(
+    wz_byte_t* data, size_t length, const char* name, bool hidden);
+wz_result_t wz_microdrive_manager_file_copy(
+    const wz_byte_t* source, size_t source_length, const char* name,
+    wz_byte_t* destination, size_t destination_length);
 
 #endif

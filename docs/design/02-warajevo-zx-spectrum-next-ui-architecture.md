@@ -1074,6 +1074,13 @@ unhide
 copy to another mounted cartridge
 ```
 
+Hide and unhide use the Interface 1 catalogue convention: a zero byte at the
+start of the ten-byte file-name field hides the file from Spectrum catalogue
+output. The manager keeps the remaining name bytes intact and exposes the
+logical name in its own file list. Hidden names are limited to nine visible
+characters because the zero byte occupies one field byte. Do not encode this
+state in reserved record-flag bits.
+
 ### 15.4 Advanced sectors
 
 An Advanced/Sectors view owns:
