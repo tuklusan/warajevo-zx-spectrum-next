@@ -86,6 +86,7 @@ int main(void)
             reason == NULL || reason[0] == '\0' ||
             !wz_compatibility_tools_loss_disclosure(index, &warning) ||
             warning == NULL || warning[0] == '\0' ||
+            tool->warning == NULL ||
             strcmp(warning, tool->warning) != 0) {
             fputs("unavailable conversion lacks a visible loss disclosure\n",
                   stderr);
