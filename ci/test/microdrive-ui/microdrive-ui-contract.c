@@ -123,6 +123,41 @@ static int check_eject_resolution(void)
     return 0;
 }
 
+static int check_overview_model(void)
+{
+    wz_ui_microdrive_overview_entry_t entries[WZ_UI_MICRODRIVE_COUNT];
+    wz_ui_layout_microdrive_overview_init(entries);
+    REQUIRE(wz_ui_layout_microdrive_overview_count() ==
+            WZ_UI_MICRODRIVE_COUNT);
+    for (size_t slot = 0u; slot < WZ_UI_MICRODRIVE_COUNT; ++slot) {
+        const wz_ui_microdrive_overview_entry_t* entry =
+            wz_ui_layout_microdrive_overview_at(entries, slot);
+        REQUIRE(entry != NULL && !entry->mounted &&
+                entry->validation == WZ_UI_MICRODRIVE_VALIDATION_UNMOUNTED);
+        REQUIRE(wz_ui_layout_microdrive_overview_set(entries, slot,
+                    UINT64_C(0x1020304050607000) + slot, "CARTRIDGE",
+                    WZ_MDR_MIN_SECTORS + slot, (slot & 1u) != 0u,
+                    slot == 3u, slot == 5u,
+                    WZ_UI_MICRODRIVE_VALIDATION_VALID));
+        entry = wz_ui_layout_microdrive_overview_at(entries, slot);
+        REQUIRE(entry != NULL && entry->mounted &&
+                entry->host_image_identity ==
+                    UINT64_C(0x1020304050607000) + slot &&
+                strcmp(entry->logical_name, "CARTRIDGE") == 0 &&
+                entry->sector_count == WZ_MDR_MIN_SECTORS + slot &&
+                entry->write_protected == ((slot & 1u) != 0u) &&
+                entry->current_drive == (slot == 3u) &&
+                entry->default_drive == (slot == 5u) &&
+                entry->validation == WZ_UI_MICRODRIVE_VALIDATION_VALID);
+    }
+    REQUIRE(wz_ui_layout_microdrive_overview_at(entries,
+                WZ_UI_MICRODRIVE_COUNT) == NULL);
+    REQUIRE(!wz_ui_layout_microdrive_overview_set(entries,
+                WZ_UI_MICRODRIVE_COUNT, 0u, "", 0u, false, false, false,
+                WZ_UI_MICRODRIVE_VALIDATION_VALID));
+    return 0;
+}
+
 static bool action_available(const void* opaque, size_t slot,
                              wz_ui_microdrive_action_t action,
                              const char** reason)
@@ -183,6 +218,7 @@ int main(void)
     size_t initial_count;
 
     REQUIRE(check_eject_resolution() == 0);
+    REQUIRE(check_overview_model() == 0);
 
     REQUIRE(wz_command_registry_init(&registry, storage,
         sizeof(storage) / sizeof(storage[0])) == WZ_RESULT_OK);
@@ -243,6 +279,6 @@ int main(void)
     }
     REQUIRE(initial_count == WZ_UI_MICRODRIVE_COUNT *
             WZ_UI_MICRODRIVE_OPERATION_COUNT);
-    puts("microdrive-ui-actions=24 registry=pass confirmation=required");
+    puts("microdrive-ui-actions=24 registry=pass confirmation=required overview=8");
     return 0;
 }
