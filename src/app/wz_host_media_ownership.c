@@ -6,7 +6,9 @@ Upstream Warajevo and third-party material retain their applicable copyrights an
 See LICENSE.txt and NOTICE.md for complete terms and provenance.
 */
 
-#if !defined(_WIN32)
+#if defined(__APPLE__)
+#define _DARWIN_C_SOURCE
+#elif !defined(_WIN32)
 #define _POSIX_C_SOURCE 200809L
 #endif
 #include "app/wz_host_media_ownership.h"
