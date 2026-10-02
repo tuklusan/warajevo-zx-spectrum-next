@@ -8,6 +8,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "app/wz_compatibility_tools.h"
 
+#include <ctype.h>
 #include <string.h>
 
 static const wz_compatibility_tool_t tools[WZ_COMPATIBILITY_TOOL_COUNT] = {
@@ -114,15 +115,28 @@ wz_result_t wz_compatibility_tools_register_commands(
 
 static bool matches(const char* format, const char* value)
 {
-    return format != 0 && value != 0 && strcmp(format, value) == 0;
+    if (format == 0 || value == 0) return false;
+    if (*format == '.') ++format;
+    while (*format != '\0' && *value != '\0') {
+        if (tolower((unsigned char)*format) !=
+            tolower((unsigned char)*value)) return false;
+        ++format;
+        ++value;
+    }
+    return *format == '\0' && *value == '\0';
 }
 
 wz_file_route_t wz_compatibility_tools_route_for_format(
     const char* format,
     const char** reason)
 {
-    static const char* native_formats[] = {"tap", "tzx", "wav", "sna", "z80", "mdr"};
-    static const char* conversion_formats[] = {"trd", "dck", "snp", "spc", "ltp", "blk"};
+    static const char* native_formats[] = {
+        "tap", "tzx", "wav", "sna", "z80", "mdr"
+    };
+    static const char* conversion_formats[] = {
+        "voc", "blk", "spc", "ltp", "zxs", "zxt", "slt", "sem",
+        "sit", "snp", "scr", "dck", "trd"
+    };
     size_t index;
 
     if (reason != 0) {

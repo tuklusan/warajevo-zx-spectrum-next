@@ -18,6 +18,7 @@ set(SOURCE_ROOT "${REPO_ROOT}/src")
 add_executable(wz_compatibility_tools_contract
     "${CMAKE_CURRENT_SOURCE_DIR}/contract.c"
     "${SOURCE_ROOT}/app/wz_compatibility_tools.c"
+    "${SOURCE_ROOT}/app/wz_file_open_run.c"
     "${SOURCE_ROOT}/app/wz_command_registry.c"
     "${SOURCE_ROOT}/app/wz_host_thread.c")
 target_include_directories(wz_compatibility_tools_contract PRIVATE

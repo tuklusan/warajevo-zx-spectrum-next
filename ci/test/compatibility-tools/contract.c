@@ -8,6 +8,7 @@ SANYALnet Labs." See LICENSE for full terms.
 */
 
 #include "app/wz_compatibility_tools.h"
+#include "app/wz_file_open_run.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -37,6 +38,18 @@ static wz_result_t open_tools(const void* context,
 
 int main(void)
 {
+    static const struct {
+        const char* extension;
+        wz_open_run_route_t open_run_route;
+    } native_formats[] = {
+        {"tap", WZ_OPEN_RUN_TAPE}, {"TZX", WZ_OPEN_RUN_TAPE},
+        {"wav", WZ_OPEN_RUN_TAPE}, {"sna", WZ_OPEN_RUN_SNAPSHOT},
+        {"Z80", WZ_OPEN_RUN_SNAPSHOT}, {"mdr", WZ_OPEN_RUN_MICRODRIVE}
+    };
+    static const char* conversion_formats[] = {
+        "voc", "blk", "spc", "ltp", "zxs", "zxt", "slt", "sem",
+        "sit", "snp", "scr", "dck", "trd"
+    };
     wz_compatibility_tools_window_t window;
     wz_command_registry_t registry;
     wz_command_metadata_t storage[1];
@@ -72,6 +85,47 @@ int main(void)
             reason == NULL || reason[0] == '\0') {
             return 3;
         }
+    }
+    for (index = 0u; index < sizeof(native_formats) /
+            sizeof(native_formats[0]); ++index) {
+        char path[48];
+        wz_open_run_route_t route = WZ_OPEN_RUN_UNSUPPORTED;
+        (void)snprintf(path, sizeof(path), "media/input.%s",
+                       native_formats[index].extension);
+        if (wz_compatibility_tools_route_for_format(
+                native_formats[index].extension, NULL) !=
+                WZ_FILE_ROUTE_NATIVE_LOAD ||
+            wz_file_open_run_route(path, &route) != WZ_OPEN_RUN_OK ||
+            route != native_formats[index].open_run_route) {
+            fprintf(stderr, "native format was not routed for %s\n",
+                    native_formats[index].extension);
+            return 5;
+        }
+    }
+    for (index = 0u; index < sizeof(conversion_formats) /
+            sizeof(conversion_formats[0]); ++index) {
+        char path[48];
+        wz_open_run_route_t route = WZ_OPEN_RUN_UNSUPPORTED;
+        (void)snprintf(path, sizeof(path), "media/input.%s",
+                       conversion_formats[index]);
+        if (wz_compatibility_tools_route_for_format(
+                conversion_formats[index], NULL) !=
+                WZ_FILE_ROUTE_EXPLICIT_CONVERSION ||
+            wz_file_open_run_route(path, &route) != WZ_OPEN_RUN_OK ||
+            route != WZ_OPEN_RUN_CONVERSION) {
+            fprintf(stderr, "conversion format was not kept explicit for %s\n",
+                    conversion_formats[index]);
+            return 6;
+        }
+    }
+    if (wz_compatibility_tools_route_for_format("BIN", NULL) !=
+            WZ_FILE_ROUTE_UNSUPPORTED ||
+        wz_file_open_run_route("media/input.bin",
+            &(wz_open_run_route_t){WZ_OPEN_RUN_UNSUPPORTED}) !=
+            WZ_OPEN_RUN_UNSUPPORTED_FORMAT) {
+        fputs("unsupported formats were routed as native or conversion\n",
+              stderr);
+        return 7;
     }
     wz_compatibility_tools_window_close(&window);
     if (wz_compatibility_tools_window_is_open(&window)) return 4;

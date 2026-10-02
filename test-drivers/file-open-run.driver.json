@@ -20,7 +20,7 @@
     },
     {
       "path": "src/app/wz_file_open_run.c",
-      "sha256": "67883bb4e03fbb1563d983766763ee34d2b8e14863f9e099d1093a143dc2e38d"
+      "sha256": "7a091a34e3e861d8a40324c633563d94025f9b8f78787b7a968d7148d3c892a8"
     },
     {
       "path": "src/app/wz_file_open_run.h",
@@ -28,7 +28,31 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "bf5dd8ea02d7eade351bbcd2cfbd15107a42be3bf719897b4a5ea96383bb8477"
+      "sha256": "8352cdeb96ecbc452b090c169a3caadf997b68009a1c139a69f570fc802c1af4"
+    },
+    {
+      "path": "src/app/wz_compatibility_tools.c",
+      "sha256": "e6584f62e816df11645f195563172388edbb19b8e050ac8bd753a1848e6531e0"
+    },
+    {
+      "path": "src/app/wz_compatibility_tools.h",
+      "sha256": "6840392ee4e975843a97e1447d970cd2d40441929d77efb71b989f16bd2528c5"
+    },
+    {
+      "path": "src/app/wz_command_registry.c",
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
+    },
+    {
+      "path": "src/app/wz_command_registry.h",
+      "sha256": "80110080861a05baae47cd6d294315055bb6b1a636c79891b55c56717cb53c94"
+    },
+    {
+      "path": "src/app/wz_host_thread.c",
+      "sha256": "6f8cbe0e171adfe7b9f42d9517e31d72f7917048339ff8941d5bccadfa305151"
+    },
+    {
+      "path": "src/app/wz_host_thread.h",
+      "sha256": "bd4e189a40c8f9ad31f014dc12afc3c67b7a4bd5580df262b0cf92db8fbe8471"
     }
   ]
 }

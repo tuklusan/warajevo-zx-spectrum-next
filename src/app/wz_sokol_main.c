@@ -208,6 +208,8 @@ typedef struct {
     wz_diagnostics_router_t diagnostics_router;
     wz_diagnostics_window_t diagnostics_window;
     wz_compatibility_tools_window_t compatibility_tools_window;
+    char compatibility_requested_format[24];
+    bool compatibility_conversion_requested;
     char microdrive_path[WZ_UI_MICRODRIVE_COUNT][4096];
     size_t microdrive_default_slot;
     wz_ui_microdrive_overview_entry_t microdrive_overview[
@@ -1519,6 +1521,20 @@ static bool wz_host_open_run_microdrive(const char* path, void* context)
     return wz_host_load_external_microdrive((wz_host_session_t*)context, path);
 }
 
+static bool wz_host_open_run_conversion(const char* path, void* context)
+{
+    wz_host_session_t* session = (wz_host_session_t*)context;
+    const char* extension;
+    if (session == NULL || path == NULL) return false;
+    extension = strrchr(path, '.');
+    if (extension == NULL || extension[1] == '\0') return false;
+    (void)snprintf(session->compatibility_requested_format,
+        sizeof(session->compatibility_requested_format), "%s", extension);
+    session->compatibility_conversion_requested = true;
+    wz_compatibility_tools_window_open(&session->compatibility_tools_window);
+    return true;
+}
+
 static bool wz_host_tape_media_load(const char* path, void* context)
 {
     return wz_host_load_external_tape((wz_host_session_t*)context, path);
@@ -2120,8 +2136,10 @@ static wz_result_t wz_host_command_open_run(
     handlers.tape = wz_host_open_run_tape;
     handlers.snapshot = wz_host_open_run_snapshot;
     handlers.microdrive = wz_host_open_run_microdrive;
-    handlers.conversion = NULL;
+    handlers.conversion = wz_host_open_run_conversion;
     handlers.context = session;
+    session->compatibility_conversion_requested = false;
+    session->compatibility_requested_format[0] = '\0';
     open_result = wz_file_open_run_dispatch(path, &handlers);
     if (open_result != WZ_OPEN_RUN_OK) {
         result->reason = open_result == WZ_OPEN_RUN_UNSUPPORTED_FORMAT
@@ -2134,6 +2152,15 @@ static wz_result_t wz_host_command_open_run(
                     ? "Unsupported file format"
                     : "The selected file could not be loaded");
         return WZ_RESULT_INVALID_STATE;
+    }
+    if (session->compatibility_conversion_requested) {
+        session->compatibility_conversion_requested = false;
+        (void)snprintf(session->file_notification,
+            sizeof(session->file_notification),
+            "Explicit conversion required; no conversion was started");
+        (void)snprintf(result->message, sizeof(result->message),
+                       "conversion-required");
+        return WZ_RESULT_OK;
     }
     session->ui_window.layout.model_k =
         session->machine.profile != NULL &&
@@ -2744,6 +2771,8 @@ static wz_result_t wz_host_compatibility_tools_open_command(
         return WZ_RESULT_INVALID_ARGUMENT;
     }
     wz_compatibility_tools_window_open(&session->compatibility_tools_window);
+    session->compatibility_requested_format[0] = '\0';
+    session->compatibility_conversion_requested = false;
     if (result != NULL) {
         (void)snprintf(result->message, sizeof(result->message),
                        "Compatibility Tools opened");
@@ -4653,6 +4682,14 @@ static void wz_host_ui_draw_compatibility_tools_window(
     nk_label_wrap(context,
         "Historical conversion utilities are listed with their current availability. "
         "Unavailable tools cannot be started as conversions.");
+    if (wz_host_session.compatibility_requested_format[0] != '\0') {
+        char request[128];
+        (void)snprintf(request, sizeof(request),
+            "Format %s requires an explicit conversion. No conversion was started.",
+            wz_host_session.compatibility_requested_format);
+        nk_layout_row_dynamic(context, 28.0f, 1);
+        nk_label_wrap(context, request);
+    }
     nk_layout_row_dynamic(context, 28.0f, 2);
     nk_label(context, "Tool", NK_TEXT_LEFT);
     nk_label(context, "Availability", NK_TEXT_LEFT);

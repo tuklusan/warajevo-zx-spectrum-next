@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'src/app/wz_compatibility_tools.*'
+      - 'src/app/wz_file_open_run.*'
       - 'src/app/wz_sokol_main.c'
       - 'src/cmake/CMakeLists.txt'
       - 'ci/test/compatibility-tools/**'
