@@ -409,7 +409,7 @@ Debug application startup/shutdown now attaches, freezes, and closes a per-proce
 320. [P12][UI §§45.2] Require explicit local confirmation for destructive MDR operations.
 321. [P12][UI §§16] Implement ZX Printer Manager presentation/export over the shared printer subsystem.
 322. [P12][UI §§21] Implement Debugger/Monitor window over the shared Phase-11 debugger APIs.
-323. [P12][UI §§19] Implement Diagnostics entry point for project-owned diagnostic surfaces without duplicating hardware behavior.
+323. [P12][UI §§19][COMPLETE] Diagnostics entry point routes through the shared diagnostics window and router, reports machine/trace state without duplicating hardware behavior, and keeps forwarding disabled. Four-platform debug host compile `36976965732`, clean Release build `36976965625`, runner bootstrap `36976965637`, Phase-16 performance `36976965665`, release package/dependency audits, test ledger `36976965763`, and pathname gate `36976965568` passed on source `6e8cf10aef08f7deb9e75c173fc6b1196ec3ea6f`. The unrelated UI remote-status regression `36976965587` continues to fail its pre-existing listener-state assertion; no networking behavior was changed.
 324. [P12][UI §§22] Implement Compatibility Tools container and availability rules.
 325. [P12][UI §§22.2] Distinguish native load/run from explicit conversion workflows.
 326. [P12][UI §§22.3] Require clear loss disclosure before lossy conversions.
