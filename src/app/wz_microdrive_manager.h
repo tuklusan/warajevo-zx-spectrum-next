@@ -16,6 +16,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "core/wz_microdrive.h"
 
 #define WZ_MICRODRIVE_MANAGER_MAX_FILES WZ_MDR_MAX_SECTORS
+#define WZ_MDR_IMAGE_HEADER_OFFSET 0u
+#define WZ_MDR_IMAGE_DATA_OFFSET WZ_MDR_HEADER_SIZE
 
 typedef struct {
     char name[11];
@@ -83,6 +85,7 @@ wz_result_t wz_microdrive_manager_catalog(
     const wz_mdr_image_t* image, wz_microdrive_manager_file_t* files,
     size_t file_capacity, size_t* file_count,
     wz_microdrive_manager_allocation_t* allocation);
+bool wz_microdrive_manager_validate(const wz_mdr_image_t* image);
 wz_result_t wz_microdrive_manager_format(wz_byte_t* data, size_t length,
                                          const char* name);
 wz_result_t wz_microdrive_manager_rename(wz_byte_t* data, size_t length,

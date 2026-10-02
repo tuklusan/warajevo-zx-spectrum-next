@@ -3405,26 +3405,9 @@ static bool wz_host_microdrive_apply_image_edit(
 static wz_ui_microdrive_validation_t wz_host_microdrive_validate_image(
     const wz_mdr_image_t* image)
 {
-    if (image == NULL || image->data == NULL ||
-        image->sector_count < WZ_MDR_MIN_SECTORS ||
-        image->sector_count > WZ_MDR_MAX_SECTORS ||
-        image->length != image->sector_count * WZ_MDR_SECTOR_SIZE) {
-        return WZ_UI_MICRODRIVE_VALIDATION_INVALID;
-    }
-    for (size_t sector = 0u; sector < image->sector_count; ++sector) {
-        const wz_byte_t* header = image->data +
-            sector * WZ_MDR_SECTOR_SIZE + WZ_MDR_HEADER_OFFSET;
-        unsigned checksum = 0u;
-        for (size_t index = 0u; index < WZ_MDR_HEADER_SIZE - 1u; ++index) {
-            checksum += header[index];
-            if (checksum >= 255u) checksum -= 255u;
-        }
-        if ((header[0] & 0x01u) == 0u ||
-            header[WZ_MDR_HEADER_SIZE - 1u] != (wz_byte_t)checksum) {
-            return WZ_UI_MICRODRIVE_VALIDATION_INVALID;
-        }
-    }
-    return WZ_UI_MICRODRIVE_VALIDATION_VALID;
+    return wz_microdrive_manager_validate(image)
+        ? WZ_UI_MICRODRIVE_VALIDATION_VALID
+        : WZ_UI_MICRODRIVE_VALIDATION_INVALID;
 }
 
 static void wz_host_microdrive_overview_refresh(void)
@@ -3446,7 +3429,7 @@ static void wz_host_microdrive_overview_refresh(void)
             write_protected = wz_host_microdrive_path_read_only(slot);
             if (validation != WZ_UI_MICRODRIVE_VALIDATION_INVALID) {
                 const wz_byte_t* header = image->data +
-                    WZ_MDR_HEADER_OFFSET + 4u;
+                    WZ_MDR_IMAGE_HEADER_OFFSET + 4u;
                 size_t length = 0u;
                 while (length < 10u && header[length] != 0u) {
                     const wz_byte_t value = header[length];
@@ -3581,6 +3564,16 @@ static void wz_host_ui_draw_microdrive_manager(
         &session->microdrive_manager_name_length,
         (int)sizeof(session->microdrive_manager_name) - 1,
         nk_filter_ascii);
+    if (session->microdrive_manager_name_length < 0) {
+        session->microdrive_manager_name_length = 0;
+    }
+    if (session->microdrive_manager_name_length >=
+        (int)sizeof(session->microdrive_manager_name)) {
+        session->microdrive_manager_name_length =
+            (int)sizeof(session->microdrive_manager_name) - 1;
+    }
+    session->microdrive_manager_name[
+        session->microdrive_manager_name_length] = '\0';
     nk_layout_row_dynamic(context, 26.0f, 4);
     if (nk_button_label(context, "Format...")) {
         session->microdrive_manager_pending = WZ_MICRODRIVE_MANAGER_FORMAT;

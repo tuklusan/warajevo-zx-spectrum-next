@@ -29,7 +29,8 @@ static wz_byte_t checksum(const wz_byte_t* bytes, size_t length)
 static void add_record(wz_byte_t* sector, wz_byte_t sequence,
                        const char* name, const char* content, size_t length)
 {
-    wz_byte_t* descriptor = sector + WZ_MDR_DATA_OFFSET;
+    wz_byte_t* descriptor = sector + WZ_MDR_IMAGE_DATA_OFFSET;
+    if (strlen(name) > 10u || length > 512u) return;
     descriptor[0] = sequence == 1u ? 2u : 0u;
     descriptor[1] = sequence;
     descriptor[2] = (wz_byte_t)length;
@@ -54,7 +55,9 @@ int main(void)
 
     REQUIRE(wz_microdrive_manager_format(bytes, sizeof(bytes), "TEST") ==
             WZ_RESULT_OK);
+    REQUIRE(memcmp(bytes + WZ_MDR_IMAGE_HEADER_OFFSET + 4u, "TEST    ", 8u) == 0);
     REQUIRE(wz_mdr_image_init(&image, bytes, sizeof(bytes)) == WZ_RESULT_OK);
+    REQUIRE(wz_microdrive_manager_validate(&image));
     REQUIRE(wz_microdrive_manager_catalog(&image, files,
         WZ_MICRODRIVE_MANAGER_MAX_FILES, &file_count, &allocation) ==
         WZ_RESULT_OK);
@@ -82,18 +85,25 @@ int main(void)
 
     REQUIRE(wz_microdrive_manager_optimize(bytes, sizeof(bytes)) ==
             WZ_RESULT_OK);
-    REQUIRE(bytes[WZ_MDR_HEADER_OFFSET + 1u] == 1u && bytes[(WZ_MDR_MIN_SECTORS - 1u) *
-        WZ_MDR_SECTOR_SIZE + WZ_MDR_HEADER_OFFSET + 1u] == WZ_MDR_MIN_SECTORS);
+    REQUIRE(bytes[WZ_MDR_IMAGE_HEADER_OFFSET + 1u] == 1u && bytes[(WZ_MDR_MIN_SECTORS - 1u) *
+        WZ_MDR_SECTOR_SIZE + WZ_MDR_IMAGE_HEADER_OFFSET + 1u] == WZ_MDR_MIN_SECTORS);
     REQUIRE(wz_microdrive_manager_format(bytes, sizeof(bytes),
         "NAME-IS-TOO-LONG") == WZ_RESULT_INVALID_ARGUMENT);
-    bytes[WZ_MDR_HEADER_OFFSET + WZ_MDR_HEADER_SIZE - 1u] ^= 1u;
+    bytes[WZ_MDR_IMAGE_HEADER_OFFSET + WZ_MDR_HEADER_SIZE - 1u] ^= 1u;
     REQUIRE(wz_mdr_image_init(&image, bytes, sizeof(bytes)) == WZ_RESULT_OK);
     REQUIRE(wz_microdrive_manager_catalog(&image, files,
         WZ_MICRODRIVE_MANAGER_MAX_FILES, &file_count, &allocation) ==
         WZ_RESULT_OK);
     REQUIRE(allocation.damaged_sectors == 1u);
+    bytes[WZ_MDR_SECTOR_SIZE + WZ_MDR_SECTOR_SIZE - 1u] ^= 1u;
+    REQUIRE(wz_mdr_image_init(&image, bytes, sizeof(bytes)) == WZ_RESULT_OK);
+    REQUIRE(wz_microdrive_manager_catalog(&image, files,
+        WZ_MICRODRIVE_MANAGER_MAX_FILES, &file_count, &allocation) ==
+        WZ_RESULT_OK);
+    REQUIRE(allocation.damaged_sectors == 2u);
     REQUIRE(wz_microdrive_manager_optimize(bytes, sizeof(bytes)) ==
         WZ_RESULT_INVALID_ARGUMENT);
+    REQUIRE(!wz_microdrive_manager_validate(&image));
     puts("Microdrive manager contract passed");
     return 0;
 }

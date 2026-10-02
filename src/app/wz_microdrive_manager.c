@@ -21,14 +21,14 @@ static wz_byte_t checksum(const wz_byte_t* data, size_t length)
 
 static bool valid_sector(const wz_byte_t* sector)
 {
-    const wz_byte_t* header = sector + WZ_MDR_HEADER_OFFSET;
+    const wz_byte_t* header = sector + WZ_MDR_IMAGE_HEADER_OFFSET;
+    const wz_byte_t* descriptor = sector + WZ_MDR_IMAGE_DATA_OFFSET;
     return (header[0] & 1u) != 0u &&
         header[WZ_MDR_HEADER_SIZE - 1u] == checksum(header, 14u) &&
-        (sector[WZ_MDR_DATA_OFFSET] & 1u) == 0u &&
-        sector[WZ_MDR_DATA_OFFSET + 14u] ==
-            checksum(sector + WZ_MDR_DATA_OFFSET, 14u) &&
+        (descriptor[0] & 1u) == 0u &&
+        descriptor[14] == checksum(descriptor, 14u) &&
         sector[WZ_MDR_SECTOR_SIZE - 1u] ==
-            checksum(sector + WZ_MDR_DATA_OFFSET + 15u, 512u);
+            checksum(descriptor + 15u, 512u);
 }
 
 static bool blank_name(const wz_byte_t* name)
@@ -62,9 +62,10 @@ static void store_name(wz_byte_t* target, const char* name)
 
 static bool same_name(const char* left, const wz_byte_t* right)
 {
-    size_t index;
+    size_t index, left_length = strlen(left);
     for (index = 0u; index < 10u; ++index) {
-        unsigned char a = (unsigned char)left[index];
+        unsigned char a = index < left_length
+            ? (unsigned char)left[index] : ' ';
         unsigned char b = right[index];
         if (a == 0u) a = ' ';
         if (b == 0u) b = ' ';
@@ -77,12 +78,12 @@ static bool same_name(const char* left, const wz_byte_t* right)
 
 static void update_checksums(wz_byte_t* sector)
 {
-    wz_byte_t* header = sector + WZ_MDR_HEADER_OFFSET;
+    wz_byte_t* header = sector + WZ_MDR_IMAGE_HEADER_OFFSET;
+    wz_byte_t* descriptor = sector + WZ_MDR_IMAGE_DATA_OFFSET;
     header[WZ_MDR_HEADER_SIZE - 1u] = checksum(header, 14u);
-    sector[WZ_MDR_DATA_OFFSET + 14u] =
-        checksum(sector + WZ_MDR_DATA_OFFSET, 14u);
+    descriptor[14] = checksum(descriptor, 14u);
     sector[WZ_MDR_SECTOR_SIZE - 1u] =
-        checksum(sector + WZ_MDR_DATA_OFFSET + 15u, 512u);
+        checksum(descriptor + 15u, 512u);
 }
 
 static bool image_shape(const wz_byte_t* data, size_t length)
@@ -124,6 +125,14 @@ static wz_microdrive_manager_file_t* find_file(
         if (same_name(files[index].name, name)) return &files[index];
     }
     return NULL;
+}
+
+bool wz_microdrive_manager_validate(const wz_mdr_image_t* image)
+{
+    return image != NULL && image->data != NULL &&
+        image_shape(image->data, image->length) &&
+        image->sector_count == image->length / WZ_MDR_SECTOR_SIZE &&
+        validate_all(image->data, image->length);
 }
 
 static const wz_microdrive_manager_operation_t operations[] = {
@@ -229,7 +238,8 @@ wz_result_t wz_microdrive_manager_register_commands(
             handler,
             context,
             operation->affects_machine_state,
-            operation->recordable
+            operation->recordable,
+            NULL
         };
         if (wz_command_registry_register(registry, metadata) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
@@ -256,7 +266,7 @@ wz_result_t wz_microdrive_manager_catalog(
          ++sector_index) {
         const wz_byte_t* sector = image->data +
             sector_index * WZ_MDR_SECTOR_SIZE;
-        const wz_byte_t* descriptor = sector + WZ_MDR_DATA_OFFSET;
+        const wz_byte_t* descriptor = sector + WZ_MDR_IMAGE_DATA_OFFSET;
         const wz_byte_t* name = descriptor + 4u;
         size_t length = read_length(descriptor);
         wz_microdrive_manager_file_t* entry;
@@ -304,8 +314,8 @@ wz_result_t wz_microdrive_manager_format(wz_byte_t* data, size_t length,
     count = length / WZ_MDR_SECTOR_SIZE;
     for (index = 0u; index < count; ++index) {
         wz_byte_t* sector = data + index * WZ_MDR_SECTOR_SIZE;
-        wz_byte_t* header = sector + WZ_MDR_HEADER_OFFSET;
-        wz_byte_t* descriptor = sector + WZ_MDR_DATA_OFFSET;
+        wz_byte_t* header = sector + WZ_MDR_IMAGE_HEADER_OFFSET;
+        wz_byte_t* descriptor = sector + WZ_MDR_IMAGE_DATA_OFFSET;
         memset(sector, 0, WZ_MDR_SECTOR_SIZE);
         header[0] = 1u;
         header[1] = (wz_byte_t)(count - index);
@@ -329,7 +339,7 @@ wz_result_t wz_microdrive_manager_rename(wz_byte_t* data, size_t length,
     count = length / WZ_MDR_SECTOR_SIZE;
     for (index = 0u; index < count; ++index) {
         wz_byte_t* sector = data + index * WZ_MDR_SECTOR_SIZE;
-        wz_byte_t* header = sector + WZ_MDR_HEADER_OFFSET;
+        wz_byte_t* header = sector + WZ_MDR_IMAGE_HEADER_OFFSET;
         store_name(header + 4u, name);
         header[WZ_MDR_HEADER_SIZE - 1u] = checksum(header, 14u);
     }
@@ -345,7 +355,7 @@ wz_result_t wz_microdrive_manager_optimize(wz_byte_t* data, size_t length)
     for (left = 0u; left < count; ++left) {
         size_t best = left, right;
         for (right = left + 1u; right < count; ++right) {
-            const size_t number_offset = WZ_MDR_HEADER_OFFSET + 1u;
+            const size_t number_offset = WZ_MDR_IMAGE_HEADER_OFFSET + 1u;
             if (data[right * WZ_MDR_SECTOR_SIZE + number_offset] <
                 data[best * WZ_MDR_SECTOR_SIZE + number_offset]) best = right;
         }
