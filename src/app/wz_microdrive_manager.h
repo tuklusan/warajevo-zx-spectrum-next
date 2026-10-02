@@ -13,6 +13,23 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include <stddef.h>
 
 #include "app/wz_command_registry.h"
+#include "core/wz_microdrive.h"
+
+#define WZ_MICRODRIVE_MANAGER_MAX_FILES WZ_MDR_MAX_SECTORS
+
+typedef struct {
+    char name[11];
+    size_t sector_count;
+    size_t byte_count;
+    bool hidden;
+} wz_microdrive_manager_file_t;
+
+typedef struct {
+    size_t total_sectors;
+    size_t allocated_sectors;
+    size_t free_sectors;
+    size_t damaged_sectors;
+} wz_microdrive_manager_allocation_t;
 
 typedef enum {
     WZ_MICRODRIVE_MANAGER_MOUNT = 0,
@@ -60,5 +77,16 @@ wz_result_t wz_microdrive_manager_register_commands(
     wz_command_availability_fn availability,
     wz_command_handler_fn handler,
     const void* context);
+
+/* Cartridge-image operations stage into caller-owned, mutable image storage. */
+wz_result_t wz_microdrive_manager_catalog(
+    const wz_mdr_image_t* image, wz_microdrive_manager_file_t* files,
+    size_t file_capacity, size_t* file_count,
+    wz_microdrive_manager_allocation_t* allocation);
+wz_result_t wz_microdrive_manager_format(wz_byte_t* data, size_t length,
+                                         const char* name);
+wz_result_t wz_microdrive_manager_rename(wz_byte_t* data, size_t length,
+                                         const char* name);
+wz_result_t wz_microdrive_manager_optimize(wz_byte_t* data, size_t length);
 
 #endif

@@ -64,6 +64,7 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "app/wz_snapshot_inspector.h"
 #include "app/wz_tape_insert_action.h"
 #include "app/wz_tape_manager.h"
+#include "app/wz_microdrive_manager.h"
 #include "app/wz_application_lifecycle.h"
 #include "app/wz_control_port.h"
 
@@ -191,6 +192,12 @@ typedef struct {
     wz_ui_microdrive_overview_entry_t microdrive_overview[
         WZ_UI_MICRODRIVE_COUNT];
     bool microdrive_manager_open;
+    size_t microdrive_manager_selected_slot;
+    unsigned microdrive_manager_view;
+    wz_microdrive_manager_operation_kind_t microdrive_manager_pending;
+    bool microdrive_manager_confirmation_open;
+    char microdrive_manager_name[11];
+    int microdrive_manager_name_length;
     wz_ui_microdrive_command_context_t microdrive_command_contexts[
         WZ_HOST_MICRODRIVE_COMMAND_COUNT];
     bool microdrive_eject_confirmation_open;
@@ -217,6 +224,7 @@ typedef struct {
 static wz_host_session_t wz_host_session;
 static void wz_host_release_local_keys(void);
 static bool wz_host_extension_is(const char* path, const char* expected);
+static bool wz_host_microdrive_path_read_only(size_t slot);
 
 static wz_qword_t wz_host_now_nanoseconds(void)
 {
@@ -1222,6 +1230,7 @@ static wz_result_t wz_host_microdrive_persist_sector(
     session = save->session;
     if (session->microdrive_data[save->slot] == NULL ||
         session->microdrive_path[save->slot][0] == '\0' ||
+        wz_host_microdrive_path_read_only(save->slot) ||
         sector >= session->microdrive_image[save->slot].sector_count ||
         sector > SIZE_MAX / WZ_MDR_SECTOR_SIZE) {
         return WZ_RESULT_INVALID_STATE;
@@ -3308,8 +3317,89 @@ static bool wz_host_microdrive_path_read_only(size_t slot)
             (attributes & FILE_ATTRIBUTE_READONLY) != 0u;
     }
 #else
-    return access(path, W_OK) != 0;
+    {
+        struct stat status;
+        if (stat(path, &status) != 0) return true;
+        return (status.st_mode & (S_IWUSR | S_IWGRP | S_IWOTH)) == 0 ||
+            access(path, W_OK) != 0;
+    }
 #endif
+}
+
+static bool wz_host_microdrive_set_read_only(size_t slot, bool read_only)
+{
+    const char* path;
+    if (slot >= WZ_UI_MICRODRIVE_COUNT) return false;
+    path = wz_host_session.microdrive_path[slot];
+    if (path[0] == '\0') return false;
+#if defined(_WIN32)
+    {
+        const DWORD attributes = GetFileAttributesA(path);
+        DWORD updated;
+        if (attributes == INVALID_FILE_ATTRIBUTES) return false;
+        updated = read_only ? (attributes | FILE_ATTRIBUTE_READONLY) :
+            (attributes & ~FILE_ATTRIBUTE_READONLY);
+        return SetFileAttributesA(path, updated) != 0;
+    }
+#else
+    {
+        struct stat status;
+        mode_t mode;
+        if (stat(path, &status) != 0) return false;
+        mode = status.st_mode;
+        if (read_only) mode &= (mode_t)~(S_IWUSR | S_IWGRP | S_IWOTH);
+        else mode |= S_IWUSR;
+        return chmod(path, mode) == 0;
+    }
+#endif
+}
+
+static bool wz_host_microdrive_apply_image_edit(
+    size_t slot, wz_microdrive_manager_operation_kind_t operation,
+    const char* name)
+{
+    wz_host_session_t* session = &wz_host_session;
+    wz_byte_t* staged;
+    size_t length;
+    wz_result_t result;
+    wz_mdr_transport_t* transport;
+    if (slot >= WZ_UI_MICRODRIVE_COUNT ||
+        session->microdrive_data[slot] == NULL ||
+        session->microdrive_path[slot][0] == '\0' ||
+        wz_host_microdrive_path_read_only(slot)) return false;
+    transport = wz_machine_microdrive_at(&session->machine, slot);
+    if (transport == NULL || transport->dirty != 0u) return false;
+    length = session->microdrive_image[slot].length;
+    staged = (wz_byte_t*)malloc(length);
+    if (staged == NULL) return false;
+    memcpy(staged, session->microdrive_data[slot], length);
+    switch (operation) {
+    case WZ_MICRODRIVE_MANAGER_FORMAT:
+        result = wz_microdrive_manager_format(staged, length, name);
+        break;
+    case WZ_MICRODRIVE_MANAGER_RENAME:
+        result = wz_microdrive_manager_rename(staged, length, name);
+        break;
+    case WZ_MICRODRIVE_MANAGER_OPTIMIZE:
+        result = wz_microdrive_manager_optimize(staged, length);
+        break;
+    default:
+        free(staged);
+        return false;
+    }
+    if (result != WZ_RESULT_OK || !wz_host_output_write_atomic(
+            session->microdrive_path[slot], staged, length)) {
+        free(staged);
+        return false;
+    }
+    memcpy(session->microdrive_data[slot], staged, length);
+    free(staged);
+    if (wz_mdr_image_init(&session->microdrive_image[slot],
+            session->microdrive_data[slot], length) != WZ_RESULT_OK) return false;
+    transport->image_identity = session->microdrive_image[slot].identity;
+    transport->image_length = length;
+    transport->image_sector_count = session->microdrive_image[slot].sector_count;
+    return true;
 }
 
 static wz_ui_microdrive_validation_t wz_host_microdrive_validate_image(
@@ -3378,50 +3468,210 @@ static void wz_host_microdrive_overview_refresh(void)
     }
 }
 
+static wz_result_t wz_host_microdrive_manager_dispatch(
+    size_t slot, wz_ui_microdrive_action_t action)
+{
+    const size_t index = slot * (size_t)WZ_UI_MICRODRIVE_OPERATION_COUNT +
+        (size_t)action;
+    return wz_host_ui_dispatch_microdrive_action(index);
+}
+
+static void wz_host_microdrive_manager_confirm(void)
+{
+    wz_host_session_t* session = &wz_host_session;
+    const size_t slot = session->microdrive_manager_selected_slot;
+    bool success = false;
+    if (!session->microdrive_manager_confirmation_open ||
+        slot >= WZ_UI_MICRODRIVE_COUNT) return;
+    switch (session->microdrive_manager_pending) {
+    case WZ_MICRODRIVE_MANAGER_FORMAT:
+    case WZ_MICRODRIVE_MANAGER_RENAME:
+    case WZ_MICRODRIVE_MANAGER_OPTIMIZE:
+        success = wz_host_microdrive_apply_image_edit(slot,
+            session->microdrive_manager_pending,
+            session->microdrive_manager_name);
+        break;
+    case WZ_MICRODRIVE_MANAGER_WRITE_PROTECT:
+        success = wz_host_microdrive_set_read_only(slot, true);
+        break;
+    case WZ_MICRODRIVE_MANAGER_WRITE_UNPROTECT:
+        success = wz_host_microdrive_set_read_only(slot, false);
+        break;
+    default:
+        break;
+    }
+    (void)snprintf(session->file_notification,
+        sizeof(session->file_notification), success
+            ? "MDV %u operation complete" : "MDV %u operation failed",
+        (unsigned)(slot + 1u));
+    session->microdrive_manager_confirmation_open = false;
+}
+
 static void wz_host_ui_draw_microdrive_manager(
     struct nk_context* context, float width, float height)
 {
+    wz_host_session_t* session = &wz_host_session;
+    char line[256];
     if (!wz_host_session.microdrive_manager_open) return;
     wz_host_microdrive_overview_refresh();
     if (!nk_begin(context, "Microdrive Manager",
-            nk_rect((width - 820.0f) * 0.5f, (height - 460.0f) * 0.5f,
-                    820.0f, 460.0f),
+            nk_rect((width - 980.0f) * 0.5f, (height - 700.0f) * 0.5f,
+                    980.0f, 700.0f),
             NK_WINDOW_BORDER | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE)) {
         nk_end(context);
         return;
     }
     nk_layout_row_dynamic(context, 24.0f, 1);
     nk_label(context,
-        "Eight-drive cartridge overview: identity, logical name, capacity, write protection, selection, and validation.",
+        "Drive controls, cartridge catalog, allocation, and confirmed maintenance operations.",
         NK_TEXT_LEFT);
     for (size_t slot = 0u; slot < WZ_UI_MICRODRIVE_COUNT; ++slot) {
         const wz_ui_microdrive_overview_entry_t* entry =
-            wz_ui_layout_microdrive_overview_at(
-                wz_host_session.microdrive_overview, slot);
-        char line[256];
+            wz_ui_layout_microdrive_overview_at(session->microdrive_overview,
+                                                slot);
         if (entry == NULL) continue;
-        nk_layout_row_dynamic(context, 21.0f, 1);
+        nk_layout_row_dynamic(context, 22.0f, 4);
+        (void)snprintf(line, sizeof(line), "MDV %u%s",
+            (unsigned)(slot + 1u), entry->mounted ? " *" : "");
+        if (nk_button_label(context, line)) {
+            session->microdrive_manager_selected_slot = slot;
+        }
+        if (nk_button_label(context, "Mount...")) {
+            (void)wz_host_microdrive_manager_dispatch(
+                slot, WZ_UI_MICRODRIVE_ACTION_MOUNT);
+        }
+        if (nk_button_label(context, "Eject")) {
+            (void)wz_host_microdrive_manager_dispatch(
+                slot, WZ_UI_MICRODRIVE_ACTION_EJECT);
+        }
+        if (nk_button_label(context, "Set Default")) {
+            (void)wz_host_microdrive_manager_dispatch(
+                slot, WZ_UI_MICRODRIVE_ACTION_SET_DEFAULT);
+        }
+        nk_layout_row_dynamic(context, 19.0f, 1);
         if (!entry->mounted) {
             (void)snprintf(line, sizeof(line), "MDV %u: Empty",
                            (unsigned)(slot + 1u));
-            nk_label(context, line, NK_TEXT_LEFT);
-            continue;
+        } else {
+            (void)snprintf(line, sizeof(line),
+                "MDV %u: %s | %s | %zu sectors | %s | image %016llX%s%s",
+                (unsigned)(slot + 1u),
+                entry->logical_name[0] == '\0' ? "(unnamed)" : entry->logical_name,
+                entry->write_protected ? "Write protected" : "Writable",
+                entry->sector_count,
+                wz_ui_layout_microdrive_validation_label(entry->validation),
+                (unsigned long long)entry->host_image_identity,
+                entry->current_drive ? " | Current" : "",
+                entry->default_drive ? " | Default" : "");
         }
-        (void)snprintf(line, sizeof(line),
-            "MDV %u: %s | %s | %zu sectors | %s",
-            (unsigned)(slot + 1u),
-            entry->logical_name[0] == '\0' ? "(unnamed)" : entry->logical_name,
-            entry->write_protected ? "Write protected" : "Writable",
-            entry->sector_count,
-            wz_ui_layout_microdrive_validation_label(entry->validation));
         nk_label(context, line, NK_TEXT_LEFT);
-        nk_layout_row_dynamic(context, 19.0f, 1);
-        (void)snprintf(line, sizeof(line),
-            "    Host image ID: %016llX%s%s",
-            (unsigned long long)entry->host_image_identity,
-            entry->current_drive ? " | Current" : "",
-            entry->default_drive ? " | Default" : "");
-        nk_label(context, line, NK_TEXT_LEFT);
+    }
+    nk_layout_row_dynamic(context, 23.0f, 1);
+    (void)snprintf(line, sizeof(line), "Selected drive: MDV %u",
+        (unsigned)(session->microdrive_manager_selected_slot + 1u));
+    nk_label(context, line, NK_TEXT_LEFT);
+    nk_layout_row_dynamic(context, 24.0f, 4);
+    if (nk_button_label(context, "Catalog")) session->microdrive_manager_view = 1u;
+    if (nk_button_label(context, "Allocation")) session->microdrive_manager_view = 2u;
+    if (nk_button_label(context, "Overview")) session->microdrive_manager_view = 0u;
+    nk_label(context, "New logical cartridge name:", NK_TEXT_LEFT);
+    nk_layout_row_dynamic(context, 25.0f, 1);
+    (void)nk_edit_string(context, NK_EDIT_FIELD,
+        session->microdrive_manager_name,
+        &session->microdrive_manager_name_length,
+        (int)sizeof(session->microdrive_manager_name) - 1,
+        nk_filter_ascii);
+    nk_layout_row_dynamic(context, 26.0f, 4);
+    if (nk_button_label(context, "Format...")) {
+        session->microdrive_manager_pending = WZ_MICRODRIVE_MANAGER_FORMAT;
+        session->microdrive_manager_confirmation_open = true;
+    }
+    if (nk_button_label(context, "Rename...")) {
+        session->microdrive_manager_pending = WZ_MICRODRIVE_MANAGER_RENAME;
+        session->microdrive_manager_confirmation_open = true;
+    }
+    if (nk_button_label(context, "Optimize...")) {
+        session->microdrive_manager_pending = WZ_MICRODRIVE_MANAGER_OPTIMIZE;
+        session->microdrive_manager_confirmation_open = true;
+    }
+    if (session->microdrive_manager_selected_slot < WZ_UI_MICRODRIVE_COUNT &&
+        session->microdrive_data[session->microdrive_manager_selected_slot] != NULL &&
+        nk_button_label(context, wz_host_microdrive_path_read_only(
+                session->microdrive_manager_selected_slot)
+                    ? "Write Unprotect..." : "Write Protect...")) {
+        session->microdrive_manager_pending = wz_host_microdrive_path_read_only(
+            session->microdrive_manager_selected_slot)
+                ? WZ_MICRODRIVE_MANAGER_WRITE_UNPROTECT
+                : WZ_MICRODRIVE_MANAGER_WRITE_PROTECT;
+        session->microdrive_manager_confirmation_open = true;
+    }
+    nk_layout_row_dynamic(context, 24.0f, 1);
+    if (session->microdrive_manager_view == 1u &&
+        session->microdrive_manager_selected_slot < WZ_UI_MICRODRIVE_COUNT &&
+        session->microdrive_data[session->microdrive_manager_selected_slot] != NULL) {
+        wz_microdrive_manager_file_t files[WZ_MICRODRIVE_MANAGER_MAX_FILES];
+        wz_microdrive_manager_allocation_t allocation;
+        size_t file_count = 0u;
+        wz_result_t catalog_result = wz_microdrive_manager_catalog(
+            &session->microdrive_image[session->microdrive_manager_selected_slot],
+            files, WZ_MICRODRIVE_MANAGER_MAX_FILES, &file_count, &allocation);
+        if (catalog_result == WZ_RESULT_OK) {
+            (void)snprintf(line, sizeof(line),
+                "Catalog: %zu logical files, %zu allocated, %zu free, %zu damaged sectors",
+                file_count, allocation.allocated_sectors, allocation.free_sectors,
+                allocation.damaged_sectors);
+            nk_label(context, line, NK_TEXT_LEFT);
+            nk_layout_row_dynamic(context, 100.0f, 1);
+            if (nk_group_begin(context, "Logical files", NK_WINDOW_BORDER)) {
+                for (size_t index = 0u; index < file_count; ++index) {
+                    (void)snprintf(line, sizeof(line),
+                        "%s | %zu sectors | %zu bytes",
+                        files[index].name, files[index].sector_count,
+                        files[index].byte_count);
+                    nk_layout_row_dynamic(context, 20.0f, 1);
+                    nk_label(context, line, NK_TEXT_LEFT);
+                }
+                nk_group_end(context);
+            }
+        } else {
+            nk_label(context, "Catalog unavailable: malformed cartridge image.",
+                     NK_TEXT_LEFT);
+        }
+    } else if (session->microdrive_manager_view == 2u &&
+        session->microdrive_manager_selected_slot < WZ_UI_MICRODRIVE_COUNT &&
+        session->microdrive_data[session->microdrive_manager_selected_slot] != NULL) {
+        wz_microdrive_manager_file_t files[WZ_MICRODRIVE_MANAGER_MAX_FILES];
+        wz_microdrive_manager_allocation_t allocation;
+        size_t file_count = 0u;
+        if (wz_microdrive_manager_catalog(
+                &session->microdrive_image[session->microdrive_manager_selected_slot],
+                files, WZ_MICRODRIVE_MANAGER_MAX_FILES, &file_count,
+                &allocation) == WZ_RESULT_OK) {
+            (void)snprintf(line, sizeof(line),
+                "Sector allocation: %zu total | %zu allocated | %zu free | %zu damaged",
+                allocation.total_sectors, allocation.allocated_sectors,
+                allocation.free_sectors, allocation.damaged_sectors);
+            nk_label(context, line, NK_TEXT_LEFT);
+        }
+    }
+    if (session->microdrive_manager_confirmation_open) {
+        const char* warning = session->microdrive_manager_pending ==
+                WZ_MICRODRIVE_MANAGER_FORMAT
+            ? "Formatting replaces all cartridge contents."
+            : session->microdrive_manager_pending == WZ_MICRODRIVE_MANAGER_RENAME
+                ? "Renaming updates every sector header."
+                : session->microdrive_manager_pending == WZ_MICRODRIVE_MANAGER_OPTIMIZE
+                    ? "Optimization reorders sectors in the image."
+                    : "This changes the host file write-protection attribute.";
+        nk_layout_row_dynamic(context, 23.0f, 1);
+        nk_label(context, warning, NK_TEXT_LEFT);
+        nk_layout_row_dynamic(context, 26.0f, 2);
+        if (nk_button_label(context, "Confirm operation")) {
+            wz_host_microdrive_manager_confirm();
+        }
+        if (nk_button_label(context, "Cancel")) {
+            session->microdrive_manager_confirmation_open = false;
+        }
     }
     nk_layout_row_dynamic(context, 28.0f, 1);
     if (nk_button_label(context, "Close")) {

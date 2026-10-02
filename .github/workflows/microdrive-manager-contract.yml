@@ -1,0 +1,59 @@
+name: Microdrive Manager contract
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/app/wz_microdrive_manager.*'
+      - 'src/app/wz_sokol_main.c'
+      - 'src/cmake/CMakeLists.txt'
+      - 'ci/test/microdrive-manager/**'
+      - 'test-drivers/microdrive-manager-contract.driver.json'
+      - '.github/workflows/microdrive-manager-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: Ubuntu x64
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v5
+      - name: Configure contract
+        run: cmake -S ci/test/microdrive-manager -B dist/microdrive-manager -DCMAKE_BUILD_TYPE=Release
+      - name: Build and run contract
+        run: |
+          cmake --build dist/microdrive-manager --config Release --target wz_microdrive_manager_contract --parallel 2
+          ctest --test-dir dist/microdrive-manager -C Release -R '^wz_microdrive_manager_contract$' --output-on-failure
+      - name: Record hosted proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import datetime, hashlib, json, os, pathlib, platform
+          driver = json.loads(pathlib.Path('test-drivers/microdrive-manager-contract.driver.json').read_text())
+          fixtures = []
+          for item in driver['fixtures']:
+              digest = hashlib.sha256(pathlib.Path(item['path']).read_bytes()).hexdigest()
+              if digest != item['sha256']:
+                  raise SystemExit(f"fixture hash mismatch: {item['path']}")
+              fixtures.append({'path': item['path'], 'sha256': digest})
+          proof = {'testId': driver['testId'], 'status': 'pass',
+                   'commit': os.environ['GITHUB_SHA'],
+                   'runner': f"{platform.system()}/{platform.machine()}",
+                   'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                   'runId': int(os.environ['GITHUB_RUN_ID']), 'fixtures': fixtures}
+          out = pathlib.Path('dist/microdrive-manager/proof/microdrive-manager-contract.json')
+          out.parent.mkdir(parents=True, exist_ok=True)
+          out.write_text(json.dumps(proof, indent=2) + '\n')
+          PY
+      - name: Upload hosted proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: microdrive-manager-contract-${{ github.sha }}
+          path: dist/microdrive-manager/proof/microdrive-manager-contract.json
+          if-no-files-found: error

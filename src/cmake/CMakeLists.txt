@@ -572,7 +572,8 @@ if(WZSN_BUILD_SOKOL_HOST)
         ${WZSN_SOURCE_ROOT}/app/wz_snapshot_inspector.c
         ${WZSN_SOURCE_ROOT}/app/wz_tape_insert_action.c
         ${WZSN_SOURCE_ROOT}/app/wz_tape_save_transaction.c
-        ${WZSN_SOURCE_ROOT}/app/wz_tape_manager.c)
+        ${WZSN_SOURCE_ROOT}/app/wz_tape_manager.c
+        ${WZSN_SOURCE_ROOT}/app/wz_microdrive_manager.c)
     target_sources(wz_sokol_host PRIVATE
         ${WZSN_SOURCE_ROOT}/app/wz_networking_commands.c
         ${WZSN_SOURCE_ROOT}/app/wz_tape_loading_commands.c
