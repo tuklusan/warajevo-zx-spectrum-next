@@ -104,8 +104,8 @@ wz_result_t wz_diagnostics_window_register_commands(
     command.id = WZ_DIAGNOSTICS_WINDOW_COMMAND_ID;
     command.label = "Diagnostics";
     command.description = "Open project diagnostics";
-    command.menu_group = "Tools";
-    command.parameter_schema = "none";
+    command.menu_group = "tools";
+    command.parameter_schema = "NONE";
     command.result_schema = "window";
     command.handler_identity = "ui.diagnostics.window";
     command.parameter_acquisition = "none";

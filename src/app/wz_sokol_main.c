@@ -57,6 +57,7 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "app/wz_printer_manager.h"
 #include "app/wz_printer_commands.h"
 #include "app/wz_debugger_window.h"
+#include "app/wz_diagnostics_window.h"
 #include "app/wz_host_output_utf8.h"
 #include "app/wz_tape_save_transaction.h"
 #include "app/wz_file_open_run.h"
@@ -203,6 +204,8 @@ typedef struct {
     int debugger_memory_address_length;
     char debugger_memory_value_text[3];
     int debugger_memory_value_length;
+    wz_diagnostics_router_t diagnostics_router;
+    wz_diagnostics_window_t diagnostics_window;
     char microdrive_path[WZ_UI_MICRODRIVE_COUNT][4096];
     size_t microdrive_default_slot;
     wz_ui_microdrive_overview_entry_t microdrive_overview[
@@ -253,6 +256,8 @@ static void wz_host_ui_draw_printer_manager(struct nk_context* context,
                                             float width, float height);
 static void wz_host_ui_draw_debugger_window(struct nk_context* context,
                                             float width, float height);
+static void wz_host_ui_draw_diagnostics_window(struct nk_context* context,
+                                               float width, float height);
 
 static int wz_host_hex_digit(char value)
 {
@@ -2685,6 +2690,36 @@ static wz_result_t wz_host_debugger_open_command(const void* context,
     return WZ_RESULT_OK;
 }
 
+static bool wz_host_diagnostics_open_available(const void* context,
+                                               const char** reason)
+{
+    if (context == NULL || !wz_host_session.initialized) {
+        if (reason != NULL) *reason = "machine-unavailable";
+        return false;
+    }
+    if (reason != NULL) *reason = NULL;
+    return true;
+}
+
+static wz_result_t wz_host_diagnostics_open_command(const void* context,
+    wz_command_arguments_t arguments, wz_command_result_t* result)
+{
+    wz_host_session_t* session = (wz_host_session_t*)context;
+    const wz_trace_file_t* trace = NULL;
+    if (session == NULL || arguments.size != 0u) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+#ifndef NDEBUG
+    if (session->timing_trace_initialized) trace = &session->timing_trace_file;
+#endif
+    if (wz_diagnostics_window_open(&session->diagnostics_window,
+            &session->machine, trace, &session->diagnostics_router) !=
+        WZ_DIAGNOSTICS_WINDOW_OK) return WZ_RESULT_INVALID_STATE;
+    if (result != NULL) (void)snprintf(result->message,
+        sizeof(result->message), "Diagnostics opened");
+    return WZ_RESULT_OK;
+}
+
 static bool wz_host_register_commands(void)
 {
     static const wz_command_metadata_t tape_manager_commands[] = {
@@ -2878,6 +2913,13 @@ static bool wz_host_register_commands(void)
         &wz_host_session.machine;
     if (wz_printer_commands_register(&wz_host_session.command_registry,
             &wz_host_session.printer_command_context) != WZ_RESULT_OK) {
+        return false;
+    }
+    if (wz_diagnostics_window_register_commands(
+            &wz_host_session.command_registry,
+            wz_host_diagnostics_open_available,
+            wz_host_diagnostics_open_command,
+            &wz_host_session) != WZ_RESULT_OK) {
         return false;
     }
     wz_host_session.networking_command_context.machine =
@@ -4505,6 +4547,55 @@ static void wz_host_ui_draw_debugger_window(struct nk_context* context,
     nk_end(context);
 }
 
+static void wz_host_ui_draw_diagnostics_window(struct nk_context* context,
+                                               float width, float height)
+{
+    wz_host_session_t* session = &wz_host_session;
+    wz_diagnostics_window_t* window = &session->diagnostics_window;
+    char line[160];
+    if (!wz_diagnostics_window_is_open(window)) return;
+    (void)wz_diagnostics_window_refresh(window);
+    if (!nk_begin(context, "Diagnostics",
+            nk_rect((width - 560.0f) * 0.5f, 90.0f, 560.0f, 360.0f),
+            NK_WINDOW_BORDER | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE |
+                NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE)) {
+        nk_end(context);
+        return;
+    }
+    nk_layout_row_dynamic(context, 24.0f, 1);
+    if (window->diagnostic_block_available) {
+        (void)snprintf(line, sizeof(line),
+            "Machine profile %u | master tick %llu | CPU PC %04X",
+            (unsigned)session->machine.profile->kind,
+            (unsigned long long)session->machine.master_tick,
+            session->machine.cpu.program_counter);
+        nk_label(context, line, NK_TEXT_LEFT);
+    } else {
+        nk_label(context, "Machine diagnostics unavailable", NK_TEXT_LEFT);
+    }
+    nk_label(context, wz_diagnostics_window_trace_reason(window), NK_TEXT_LEFT);
+    if (window->trace_available) {
+        (void)snprintf(line, sizeof(line),
+            "Trace generation %llu | sequences %llu - %llu | %s%s",
+            (unsigned long long)window->generation,
+            (unsigned long long)window->first_sequence,
+            (unsigned long long)window->last_sequence,
+            window->trace_frozen ? "frozen" : "active",
+            window->trace_failed ? " | failed" : "");
+        nk_label(context, line, NK_TEXT_LEFT);
+    }
+    nk_label(context, wz_diagnostics_window_forwarding_reason(window),
+             NK_TEXT_LEFT);
+    nk_label(context,
+        "This surface reports project-owned state; hardware behavior remains in the core.",
+        NK_TEXT_LEFT);
+    nk_layout_row_dynamic(context, 24.0f, 1);
+    if (nk_button_label(context, "Close Diagnostics")) {
+        wz_diagnostics_window_close(window);
+    }
+    nk_end(context);
+}
+
 static void wz_host_ui_draw_tape_manager(struct nk_context* context,
                                          float width)
 {
@@ -5161,6 +5252,7 @@ static void wz_host_render_native_ui(struct nk_context* context,
     wz_host_ui_draw_microdrive_manager(context, width, height);
     wz_host_ui_draw_printer_manager(context, width, height);
     wz_host_ui_draw_debugger_window(context, width, height);
+    wz_host_ui_draw_diagnostics_window(context, width, height);
     wz_host_ui_draw_microdrive_eject_confirmation(context, width);
     wz_host_ui_draw_tape_manager(context, width);
     wz_host_ui_draw_snapshot_inspector(context, width, height);
@@ -5250,6 +5342,9 @@ static void wz_host_session_init(void)
     wz_snapshot_inspector_init(&wz_host_session.snapshot_inspector);
     wz_printer_manager_init(&wz_host_session.printer_manager);
     wz_debugger_window_init(&wz_host_session.debugger_window);
+    wz_diagnostics_window_init(&wz_host_session.diagnostics_window);
+    wz_diagnostics_router_init(&wz_host_session.diagnostics_router,
+        NULL, NULL, NULL, false);
     wz_host_session.speed = WZ_SPEED_100;
     sg_setup(&(sg_desc){.environment = sglue_environment()});
     sgl_setup(&(sgl_desc_t){0});
@@ -5372,6 +5467,7 @@ static void wz_host_session_shutdown(void)
     wz_host_tape_manager_selection_clear(&wz_host_session);
     if (wz_host_session.initialized) {
         wz_telnet_client_disconnect(&wz_host_session.telnet_client);
+        wz_diagnostics_window_close(&wz_host_session.diagnostics_window);
 #ifndef NDEBUG
         wz_host_timing_trace_stop(&wz_host_session);
 #endif

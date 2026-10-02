@@ -1199,6 +1199,12 @@ Tools
    └─ Legacy Database Converter...
 ```
 
+Diagnostics is a read-only inventory of project-owned machine and trace state,
+including profile/tick, trace availability and sequence range, and forwarding
+status. It consumes shared diagnostic APIs and never reimplements peripheral
+or network behavior. Forwarding remains disabled until a separately approved
+transport policy enables it.
+
 Compatibility entries may remain hidden or marked later/unimplemented until the
 underlying retained utility is implemented. Required emulation features may not
 be hidden behind Compatibility Tools merely to avoid implementing them.
