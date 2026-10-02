@@ -1,0 +1,38 @@
+{
+  "testId": "wz-compatibility-tools",
+  "status": "pass",
+  "commit": "d614f0aef475deafa3f3fab95983b01b7e4aab36",
+  "runner": "Linux/x86_64",
+  "timestamp": "2026-10-02T07:27:32.224898+00:00",
+  "runId": 36978644534,
+  "fixtures": [
+    {
+      "path": ".github/workflows/compatibility-tools-contract.yml",
+      "sha256": "1a0fed0c3fe731dcb230245f22f44a6d1dc5d14395c1f734a7a05d61f22b20dd"
+    },
+    {
+      "path": "ci/test/compatibility-tools/CMakeLists.txt",
+      "sha256": "0403e46c65a9e658c80f89c72e206a100c5e4a9964c2a33abfc5d8771fa63d88"
+    },
+    {
+      "path": "ci/test/compatibility-tools/contract.c",
+      "sha256": "538e4045fae8e8f6b4614fe018a82fed9b2007d3f1b333c1089156a6a9d005ec"
+    },
+    {
+      "path": "src/app/wz_compatibility_tools.c",
+      "sha256": "2da94d1853b63d7b86eceb8c1360c394d7b665c54c101e94cc9f4197ffbac1c8"
+    },
+    {
+      "path": "src/app/wz_compatibility_tools.h",
+      "sha256": "6840392ee4e975843a97e1447d970cd2d40441929d77efb71b989f16bd2528c5"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "6f8d4b34ff7062bf2f29c8caa5c61dca4ca05c74e1f3bb2941de8c49d185aa89"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "bf5dd8ea02d7eade351bbcd2cfbd15107a42be3bf719897b4a5ea96383bb8477"
+    }
+  ]
+}

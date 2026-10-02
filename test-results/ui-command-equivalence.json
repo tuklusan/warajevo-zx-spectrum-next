@@ -1,10 +1,10 @@
 {
   "testId": "ui-command-equivalence",
   "status": "pass",
-  "commit": "89f0f82a3b49e83b35e86daf87ad40b2b6226747",
+  "commit": "b0dec08756dc3538aa5447313c66f7edb85e6cf4",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-09-28T14:28:42+00:00",
-  "runId": 36434335653,
+  "timestamp": "2026-10-02T07:38:13+00:00",
+  "runId": 36979390179,
   "runners": [
     {
       "id": "windows-x64",
@@ -16,7 +16,7 @@
       "id": "windows-arm64",
       "os": "Windows",
       "architecture": "ARM64",
-      "runnerName": "win11-arm64"
+      "runnerName": "win11-vs2026-arm64"
     },
     {
       "id": "macos-x64",
@@ -114,11 +114,11 @@
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.c",
-      "sha256": "cd94bf55c10f62bb706cbdeacd04f76edb649a6d677416dfdd2960316e4500d8"
+      "sha256": "240c70171a4ea43836a83198f7935560e03391f60bc3528ba95d16e323e08f3b"
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.h",
-      "sha256": "d6e7553f89c46a15706508e474beacf8b3cce6ea9ed6be95599ec84bb446eed1"
+      "sha256": "1704f552714cf2f0183672bf8486dd5ac001f2c2223b371a704e71fc723e0656"
     },
     {
       "path": "src/app/wz_telnet_keymap.c",
@@ -130,15 +130,15 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "298943f37fe7df18bba9d16bdc5bbe64168ae4ca27f628f58ce30803735d6131"
+      "sha256": "ec222a2c51adb0914aae8a929d1f080c3d66354baec2068614a724216c84110b"
     },
     {
       "path": "src/app/wz_ui_layout.h",
-      "sha256": "cfe6cf9135dd1ef6771a1513e9dc3f72cd42636f4f005e576017aa745915d2d9"
+      "sha256": "33260080b489f02274ad91fb7b6e739839293dafe107798b1e3a5b684940b4d8"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "cfc90743b387ad47e4032b16ab2cb575a6ca5521a88fc78e25d9c5f59b9800e8"
+      "sha256": "6f8d4b34ff7062bf2f29c8caa5c61dca4ca05c74e1f3bb2941de8c49d185aa89"
     },
     {
       "path": "src/core/wz_keyboard_matrix.c",
