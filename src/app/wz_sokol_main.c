@@ -53,6 +53,7 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "app/wz_command_registry.h"
 #include "app/wz_file_dialog.h"
 #include "app/wz_host_output.h"
+#include "app/wz_host_media_ownership.h"
 #include "app/wz_host_output_utf8.h"
 #include "app/wz_tape_save_transaction.h"
 #include "app/wz_file_open_run.h"
@@ -187,6 +188,8 @@ typedef struct {
     char tape_format[8];
     wz_byte_t* microdrive_data[WZ_UI_MICRODRIVE_COUNT];
     wz_mdr_image_t microdrive_image[WZ_UI_MICRODRIVE_COUNT];
+    wz_host_media_claim_t microdrive_claim[WZ_UI_MICRODRIVE_COUNT];
+    bool microdrive_claim_conflict;
     char microdrive_path[WZ_UI_MICRODRIVE_COUNT][4096];
     size_t microdrive_default_slot;
     wz_ui_microdrive_overview_entry_t microdrive_overview[
@@ -1162,17 +1165,37 @@ static bool wz_host_load_external_microdrive_slot(wz_host_session_t* session,
     wz_byte_t* data = NULL;
     size_t length = 0u;
     wz_mdr_image_t image;
-    if (session == NULL || slot >= WZ_UI_MICRODRIVE_COUNT ||
-        !wz_host_read_file(path, &data, &length)) return false;
+    wz_host_media_claim_t claim;
+    if (session == NULL || slot >= WZ_UI_MICRODRIVE_COUNT) return false;
+    session->microdrive_claim_conflict = false;
+    if (!wz_host_media_claim_acquire(path, true, &claim)) {
+        if (claim.reason != NULL &&
+            strcmp(claim.reason, "media-writer-unavailable") == 0) {
+            session->microdrive_claim_conflict = true;
+            (void)snprintf(session->file_notification,
+                sizeof(session->file_notification),
+                "MDV %u image already writable in another process",
+                (unsigned)(slot + 1u));
+        }
+        return false;
+    }
+    if (!wz_host_read_file(path, &data, &length)) {
+        wz_host_media_claim_release(&claim);
+        return false;
+    }
     if (wz_mdr_image_init(&image, data, length) != WZ_RESULT_OK) {
         free(data);
+        wz_host_media_claim_release(&claim);
         return false;
     }
     if (wz_machine_mount_microdrive(&session->machine, slot + 1u, &image) !=
         WZ_RESULT_OK) {
         free(data);
+        wz_host_media_claim_release(&claim);
         return false;
     }
+    wz_host_media_claim_release(&session->microdrive_claim[slot]);
+    session->microdrive_claim[slot] = claim;
     free(session->microdrive_data[slot]);
     session->microdrive_data[slot] = data;
     session->microdrive_image[slot] = image;
@@ -1227,9 +1250,11 @@ static wz_result_t wz_host_ui_mount_microdrive(size_t slot)
             sizeof(session->file_notification), "MDV %u mount cancelled",
             (unsigned)(slot + 1u));
     } else {
-        (void)snprintf(session->file_notification,
-            sizeof(session->file_notification), "MDV %u mount failed",
-            (unsigned)(slot + 1u));
+        if (!session->microdrive_claim_conflict) {
+            (void)snprintf(session->file_notification,
+                sizeof(session->file_notification), "MDV %u mount failed",
+                (unsigned)(slot + 1u));
+        }
     }
     return dialog_result == WZ_FILE_DIALOG_CANCELLED ? WZ_RESULT_OK :
         WZ_RESULT_INVALID_STATE;
@@ -1328,6 +1353,7 @@ static bool wz_host_microdrive_finish_eject(size_t slot, bool discard_dirty)
     }
     free(session->microdrive_data[slot]);
     session->microdrive_data[slot] = NULL;
+    wz_host_media_claim_release(&session->microdrive_claim[slot]);
     session->microdrive_image[slot].data = NULL;
     session->microdrive_path[slot][0] = '\0';
     session->ui_window.layout.microdrive_mounted[slot] = false;
@@ -4898,6 +4924,7 @@ static void wz_host_session_shutdown(void)
     for (size_t slot = 0u; slot < WZ_UI_MICRODRIVE_COUNT; ++slot) {
         free(wz_host_session.microdrive_data[slot]);
         wz_host_session.microdrive_data[slot] = NULL;
+        wz_host_media_claim_release(&wz_host_session.microdrive_claim[slot]);
         wz_host_session.microdrive_image[slot].data = NULL;
     }
     wz_control_port_owner_close(&wz_host_session.control_port);

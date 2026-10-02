@@ -1022,6 +1022,13 @@ exclusive-writer rule applies across concurrently running WZSN processes: a
 second process may not mount an image writable unless it obtains the required
 interprocess write claim.
 
+The host acquires that claim before reading a writable image and retains it
+until successful eject or application shutdown. Claim identity covers the
+canonical path and the underlying file identity, so path aliases and atomic
+replacement of the image do not release the writer reservation. A conflicting
+mount is refused with a clear user-visible error; read-only fallback is not
+enabled unless a future frozen-media policy explicitly requests it.
+
 ---
 
 ## 15. Microdrive Manager

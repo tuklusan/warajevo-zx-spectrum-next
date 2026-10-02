@@ -56,11 +56,11 @@
     },
     {
       "path": "src/app/wz_host_media_ownership.c",
-      "sha256": "0dab620b874f77e5c30dd1c08ea67c319aa00050ae771f36865f16eff6e6db06"
+      "sha256": "6e51b7117349bd8f5f6f06e7fd2b66df04de929d612fdd0ef2d654338f66bed6"
     },
     {
       "path": "src/app/wz_host_media_ownership.h",
-      "sha256": "127c649dd96795e8efd802a3b625db8d703c0166cdf205ae63f9fac88f305f5f"
+      "sha256": "0d8095dbd690d9c8b3241f26e34eac5e64b45963ce9c166ae43c2aa46f0b744d"
     },
     {
       "path": "src/app/wz_host_output.c",

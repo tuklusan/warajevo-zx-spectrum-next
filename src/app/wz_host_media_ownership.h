@@ -16,6 +16,7 @@ typedef struct {
     bool held;
     bool writable;
     intptr_t native_handle;
+    intptr_t identity_handle;
     const char* reason;
 } wz_host_media_claim_t;
 
