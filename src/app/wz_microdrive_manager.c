@@ -56,6 +56,7 @@ static bool manager_name(const char* name)
 static void store_name(wz_byte_t* target, const char* name)
 {
     size_t length = strlen(name);
+    if (length > 10u) length = 10u;
     memset(target, ' ', 10u);
     memcpy(target, name, length);
 }

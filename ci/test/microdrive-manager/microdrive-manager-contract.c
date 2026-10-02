@@ -77,11 +77,13 @@ int main(void)
 
     REQUIRE(wz_microdrive_manager_rename(bytes, sizeof(bytes), "ARCHIVE") ==
             WZ_RESULT_OK);
+    REQUIRE(memcmp(bytes + WZ_MDR_IMAGE_HEADER_OFFSET + 4u,
+        "ARCHIVE ", 8u) == 0);
     REQUIRE(wz_mdr_image_init(&image, bytes, sizeof(bytes)) == WZ_RESULT_OK);
     REQUIRE(wz_microdrive_manager_catalog(&image, files,
         WZ_MICRODRIVE_MANAGER_MAX_FILES, &file_count, &allocation) ==
         WZ_RESULT_OK);
-    REQUIRE(file_count == 1u && strcmp(files[0].name, "ARCHIVE") == 0);
+    REQUIRE(file_count == 1u && strcmp(files[0].name, "GAME") == 0);
 
     REQUIRE(wz_microdrive_manager_optimize(bytes, sizeof(bytes)) ==
             WZ_RESULT_OK);
