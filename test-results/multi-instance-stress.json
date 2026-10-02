@@ -1,9 +1,9 @@
 {
   "testId": "multi-instance-stress",
   "status": "pass",
-  "commit": "4e780f8a2eb9f0475fb7cf710b591c1ff35abc37",
+  "commit": "6d7694aa23ecd70f7a59e5e40b57d56ee1ad1398",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-09-29T16:05:21+00:00",
+  "timestamp": "2026-10-02T06:22:21+00:00",
   "caseCount": 5,
   "runners": [
     {
@@ -18,7 +18,7 @@
       "label": "windows-arm64",
       "os": "Windows",
       "architecture": "ARM64",
-      "runnerName": "win11-arm64"
+      "runnerName": "win11-vs2026-arm64"
     },
     {
       "id": "macos-intel",
@@ -58,11 +58,11 @@
     },
     {
       "path": "src/app/wz_host_media_ownership.c",
-      "sha256": "0dab620b874f77e5c30dd1c08ea67c319aa00050ae771f36865f16eff6e6db06"
+      "sha256": "f2e74a877d0019ea18d8bfd0e552d66a161990489a63dc4058520b1f46bd3dc6"
     },
     {
       "path": "src/app/wz_host_media_ownership.h",
-      "sha256": "127c649dd96795e8efd802a3b625db8d703c0166cdf205ae63f9fac88f305f5f"
+      "sha256": "0d8095dbd690d9c8b3241f26e34eac5e64b45963ce9c166ae43c2aa46f0b744d"
     },
     {
       "path": "src/app/wz_host_output.c",
@@ -150,7 +150,7 @@
     },
     {
       "path": "test-drivers/multi-instance-stress.driver.json",
-      "sha256": "7e90656b754550f6991fa43e4bced3bd6acf9c306d10ec8c73380460176afe2e"
+      "sha256": "8758a2a77ec081ce25bd3bb4e29eab5cdb6114e7a33c0aa633f3995c164f767f"
     },
     {
       "path": ".github/workflows/multi-instance-stress.yml",
