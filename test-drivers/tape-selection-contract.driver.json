@@ -25,7 +25,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "9ecafdaf9f137684e77a3b722e7d1dd289ba9e8b3333af1244844e2d604436c0"
+      "sha256": "1d171101ea4c3a0896a62454a467d80dfa8c1b2baa3c336354d4f90ac9892257"
     },
     {
       "path": ".github/workflows/tape-selection-contract.yml",
