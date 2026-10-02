@@ -1,10 +1,10 @@
 {
   "testId": "wz-compatibility-tools",
   "status": "pass",
-  "commit": "1505917b8842851cf4d84844c8514294c323164c",
+  "commit": "4bae3a69b03fce64d55ce49a8543fdd5a1297ec8",
   "runner": "Linux/x86_64",
-  "timestamp": "2026-10-02T07:58:07.751142+00:00",
-  "runId": 36981225989,
+  "timestamp": "2026-10-02T08:14:18.463918+00:00",
+  "runId": 36982789256,
   "fixtures": [
     {
       "path": ".github/workflows/compatibility-tools-contract.yml",
@@ -16,7 +16,7 @@
     },
     {
       "path": "ci/test/compatibility-tools/contract.c",
-      "sha256": "1b71b3d89d029c98ab01f652bf27ff4d3d0d37eaaa55bade35b0a37db593145d"
+      "sha256": "27d66aa838c40abe2af61af82552964e93d3d4415b91cff17423aa14758bb2f9"
     },
     {
       "path": "src/app/wz_compatibility_tools.c",
@@ -28,7 +28,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "14fbeb3b3a81b13d6dc4778ba0e63767e0de275280ae9eb4026676c2e6f27b0d"
+      "sha256": "166723329340fc3ace9709be3a765af00d6d35a91879ed6228612f35db50ea2a"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
