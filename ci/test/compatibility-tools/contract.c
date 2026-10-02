@@ -50,6 +50,20 @@ int main(void)
         "voc", "blk", "spc", "ltp", "zxs", "zxt", "slt", "sem",
         "sit", "snp", "scr", "dck", "trd"
     };
+    static const struct {
+        size_t index;
+        const char* reason;
+        const char* source;
+        const char* destination;
+    } deferred_tools[] = {
+        {2u, "later-legacy-snapshot-converters-not-implemented",
+         "legacy SP/VGASPEC/PRG/SNA/SEM/SNP/SLT/SIT/ZXS formats",
+         "Z80/SNA/TAP"},
+        {4u, "later-mdr-enlargement-not-implemented", "MDR",
+         "254-sector MDR"},
+        {5u, "low-priority-legacy-database-converters-not-implemented",
+         "Warajevo/SpecPic/SGD/ZX Rainbow/SpecBase", "portable-data"}
+    };
     wz_compatibility_tools_window_t window;
     wz_command_registry_t registry;
     wz_command_metadata_t storage[1];
@@ -91,6 +105,38 @@ int main(void)
             fputs("unavailable conversion lacks a visible loss disclosure\n",
                   stderr);
             return 3;
+        }
+    }
+    for (index = 0u; index < sizeof(deferred_tools) /
+            sizeof(deferred_tools[0]); ++index) {
+        const wz_compatibility_tool_t* tool =
+            wz_compatibility_tools_at(deferred_tools[index].index);
+        const char* reason = NULL;
+        if (tool == NULL ||
+            tool->availability != WZ_COMPATIBILITY_LATER ||
+            wz_compatibility_tools_is_available(
+                deferred_tools[index].index, &reason) ||
+            reason == NULL ||
+            strcmp(reason, deferred_tools[index].reason) != 0 ||
+            tool->source_format == NULL ||
+            tool->destination_format == NULL ||
+            tool->id == NULL || tool->label == NULL ||
+            strcmp(tool->source_format, deferred_tools[index].source) != 0 ||
+            strcmp(tool->destination_format,
+                   deferred_tools[index].destination) != 0) {
+            fputs("legacy conversion disposition changed unexpectedly\n",
+                  stderr);
+            return 8;
+        }
+    }
+    for (index = 1u; index < wz_compatibility_tools_count(); ++index) {
+        const wz_compatibility_tool_t* tool =
+            wz_compatibility_tools_at(index);
+        if (tool != NULL &&
+            ((tool->id != NULL && strstr(tool->id, "dock") != NULL) ||
+             (tool->label != NULL && strstr(tool->label, "Dock") != NULL))) {
+            fputs("Dock conversion exposed before Timex/DCK support\n", stderr);
+            return 9;
         }
     }
     for (index = 0u; index < sizeof(native_formats) /

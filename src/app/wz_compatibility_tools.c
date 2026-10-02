@@ -17,18 +17,25 @@ static const wz_compatibility_tool_t tools[WZ_COMPATIBILITY_TOOL_COUNT] = {
     {"tools.compatibility.tape", "Tape Converter", "tape", "tape",
      "Conversion may discard or normalize source-format information.",
      "conversion-not-yet-implemented", WZ_COMPATIBILITY_LATER, true},
-    {"tools.compatibility.snapshot", "Snapshot Converter", "snapshot", "snapshot",
+    {"tools.compatibility.snapshot", "Snapshot Converter",
+     "legacy SP/VGASPEC/PRG/SNA/SEM/SNP/SLT/SIT/ZXS formats",
+     "Z80/SNA/TAP",
      "Conversion may discard machine-state information that the destination cannot represent.",
-     "conversion-not-yet-implemented", WZ_COMPATIBILITY_LATER, true},
+     "later-legacy-snapshot-converters-not-implemented",
+     WZ_COMPATIBILITY_LATER, true},
     {"tools.compatibility.spectrum_data", "Spectrum Data Converter", "spectrum-data", "text-or-spectrum-data",
      "Conversion may discard source-format metadata or machine-visible information.",
      "conversion-not-yet-implemented", WZ_COMPATIBILITY_LATER, true},
-    {"tools.compatibility.microdrive", "Microdrive Tools", "MDR", "MDR",
+    {"tools.compatibility.microdrive", "Microdrive Tools", "MDR",
+     "254-sector MDR",
      "Conversion may discard or normalize cartridge data and metadata.",
-     "conversion-not-yet-implemented", WZ_COMPATIBILITY_LATER, true},
-    {"tools.compatibility.database", "Legacy Database Converter", "legacy-database", "portable-data",
+     "later-mdr-enlargement-not-implemented",
+     WZ_COMPATIBILITY_LATER, true},
+    {"tools.compatibility.database", "Legacy Database Converter",
+     "Warajevo/SpecPic/SGD/ZX Rainbow/SpecBase", "portable-data",
      "Conversion may discard legacy database fields that the destination cannot represent.",
-     "conversion-not-yet-implemented", WZ_COMPATIBILITY_LATER, true}
+     "low-priority-legacy-database-converters-not-implemented",
+     WZ_COMPATIBILITY_LATER, true}
 };
 
 size_t wz_compatibility_tools_count(void)

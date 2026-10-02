@@ -38,6 +38,68 @@ behavior is implemented or promoted by this reconciliation.
 | 20.20 | DOS | About and Exit map to Help and File; directory changes use native file dialogs; shell launch is dropped. | Verify native dialog and quit paths through the supported front ends. |
 | 20.21 | Start/status/window controls | Start/run, help, quit, fullscreen/window behavior, and status map to modern application surfaces; DOS process/heap/child-command details are explicitly dropped. | Verify the required keyboard workflows, status, window behavior, and canonical-state invariance. |
 
+## Task 327 conversion inventory and frozen availability
+
+Each retained conversion below remains a Compatibility utility and is
+`LATER`/unavailable until its converter and format-specific evidence exist.
+This mapping does not authorize implementing the converter. Native loading of
+SNA and Z80 snapshots remains available independently.
+
+### §20.11 snapshot conversions — 23 entries, all LATER
+
+| Legacy conversion | Frozen disposition |
+|---|---|
+| Spanish SPECTRUM SP -> Z80 | Compatibility Tools; LATER |
+| Z80 -> Spanish SPECTRUM SP | Compatibility Tools; LATER |
+| old VGASPEC SP -> Z80 | Compatibility Tools; LATER |
+| Z80 -> old VGASPEC SP | Compatibility Tools; LATER |
+| Irish SpecEm PRG -> Z80 | Compatibility Tools; LATER |
+| Z80 -> Irish SpecEm PRG | Compatibility Tools; LATER |
+| JPP SNA -> Z80 | Compatibility Tools; LATER |
+| Z80 -> JPP SNA | Compatibility Tools; LATER |
+| SpecEmu-G SEM -> Z80 | Compatibility Tools; LATER |
+| Z80 -> SpecEmu-G SEM | Compatibility Tools; LATER |
+| SP_UKV SNA 128 -> Z80 | Compatibility Tools; LATER |
+| Z80 -> SNA 128 | Compatibility Tools; LATER |
+| Nuclear ZX SNP -> Z80 | Compatibility Tools; LATER |
+| Z80 -> Nuclear ZX SNP | Compatibility Tools; LATER |
+| X128 SLT -> Z80 + TAP | Compatibility Tools; LATER |
+| Z80 + TAP -> X128 SLT | Compatibility Tools; LATER |
+| Spectrum 2.00 SIT -> Z80 | Compatibility Tools; LATER |
+| Z80 -> Spectrum 2.00 SIT | Compatibility Tools; LATER |
+| ZX32 ZXS RIFF -> Z80 | Compatibility Tools; LATER |
+| Z80 -> ZX32 ZXS RIFF | Compatibility Tools; LATER |
+| Any Z80 -> 48K without Interface 1 | Compatibility Tools; LATER |
+| Any Z80 -> 128K without Interface 1 | Compatibility Tools; LATER |
+| Z80 snapshot -> TAP | Compatibility Tools; LATER |
+
+### §20.15 Microdrive conversion — 1 entry, LATER
+
+| Legacy conversion | Frozen disposition |
+|---|---|
+| Enlarge MDR to 254 sectors | Compatibility Tools; LATER until the enlargement converter and media fixtures exist |
+
+### §20.16 Dock conversions — 3 entries, deferred with the Dock branch
+
+| Legacy conversion | Frozen disposition |
+|---|---|
+| ROM -> DCK | Deferred until Timex/DCK support; no initial Dock UI or converter |
+| Binary -> LROS | Deferred until Timex/DCK support; no initial Dock UI or converter |
+| Binary -> AROS | Deferred until Timex/DCK support; no initial Dock UI or converter |
+
+### §20.18 database conversions — 8 low-priority entries, all LATER
+
+| Legacy conversion | Frozen disposition |
+|---|---|
+| Warajevo -> SpecPic | Low-priority Compatibility utility; LATER |
+| SpecPic -> Warajevo | Low-priority Compatibility utility; LATER |
+| Warajevo -> SGD | Low-priority Compatibility utility; LATER |
+| SGD -> Warajevo | Low-priority Compatibility utility; LATER |
+| Warajevo -> ZX Rainbow | Low-priority Compatibility utility; LATER |
+| ZX Rainbow -> Warajevo | Low-priority Compatibility utility; LATER |
+| Warajevo -> SpecBase | Low-priority Compatibility utility; LATER |
+| SpecBase -> Warajevo | Low-priority Compatibility utility; LATER |
+
 ## Disposition boundary
 
 The categories marked retained, mapped, or assigned above follow the exact
