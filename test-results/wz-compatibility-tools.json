@@ -1,26 +1,26 @@
 {
   "testId": "wz-compatibility-tools",
   "status": "pass",
-  "commit": "d614f0aef475deafa3f3fab95983b01b7e4aab36",
+  "commit": "1505917b8842851cf4d84844c8514294c323164c",
   "runner": "Linux/x86_64",
-  "timestamp": "2026-10-02T07:27:32.224898+00:00",
-  "runId": 36978644534,
+  "timestamp": "2026-10-02T07:58:07.751142+00:00",
+  "runId": 36981225989,
   "fixtures": [
     {
       "path": ".github/workflows/compatibility-tools-contract.yml",
-      "sha256": "1a0fed0c3fe731dcb230245f22f44a6d1dc5d14395c1f734a7a05d61f22b20dd"
+      "sha256": "77b3e1352de9b8e3cc831bb473216fadfbadf44a9e17144f236f6ea03021fc89"
     },
     {
       "path": "ci/test/compatibility-tools/CMakeLists.txt",
-      "sha256": "0403e46c65a9e658c80f89c72e206a100c5e4a9964c2a33abfc5d8771fa63d88"
+      "sha256": "be5a96d5925713538292660a0b086ebad64e6ded1596d10f6c6273d6f1bb99bb"
     },
     {
       "path": "ci/test/compatibility-tools/contract.c",
-      "sha256": "538e4045fae8e8f6b4614fe018a82fed9b2007d3f1b333c1089156a6a9d005ec"
+      "sha256": "1b71b3d89d029c98ab01f652bf27ff4d3d0d37eaaa55bade35b0a37db593145d"
     },
     {
       "path": "src/app/wz_compatibility_tools.c",
-      "sha256": "2da94d1853b63d7b86eceb8c1360c394d7b665c54c101e94cc9f4197ffbac1c8"
+      "sha256": "e6584f62e816df11645f195563172388edbb19b8e050ac8bd753a1848e6531e0"
     },
     {
       "path": "src/app/wz_compatibility_tools.h",
@@ -28,11 +28,35 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "6f8d4b34ff7062bf2f29c8caa5c61dca4ca05c74e1f3bb2941de8c49d185aa89"
+      "sha256": "14fbeb3b3a81b13d6dc4778ba0e63767e0de275280ae9eb4026676c2e6f27b0d"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
       "sha256": "bf5dd8ea02d7eade351bbcd2cfbd15107a42be3bf719897b4a5ea96383bb8477"
+    },
+    {
+      "path": "src/app/wz_file_open_run.c",
+      "sha256": "9343f4f16880011075e96b0e903f5ea808d559ec160cf26bb0a140a41c41cb5e"
+    },
+    {
+      "path": "src/app/wz_file_open_run.h",
+      "sha256": "6147d0501cab7ede9919fca4198fb3621f7c35d8825b9c4fd17a02a199e3512d"
+    },
+    {
+      "path": "src/app/wz_command_registry.c",
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
+    },
+    {
+      "path": "src/app/wz_command_registry.h",
+      "sha256": "80110080861a05baae47cd6d294315055bb6b1a636c79891b55c56717cb53c94"
+    },
+    {
+      "path": "src/app/wz_host_thread.c",
+      "sha256": "6f8cbe0e171adfe7b9f42d9517e31d72f7917048339ff8941d5bccadfa305151"
+    },
+    {
+      "path": "src/app/wz_host_thread.h",
+      "sha256": "bd4e189a40c8f9ad31f014dc12afc3c67b7a4bd5580df262b0cf92db8fbe8471"
     }
   ]
 }
