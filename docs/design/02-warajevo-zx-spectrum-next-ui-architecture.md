@@ -1124,10 +1124,12 @@ Media > ZX Printer > Printer Manager...
 Settings > Peripherals > ZX Printer
 ```
 
-The manager may expose captured virtual printer output and export functions.
-Those functions consume the shared printer event stream and host-side bitmap
-projection; they must not access BIOS/LPT devices or duplicate core printer
-semantics.
+The manager displays the latest captured virtual-printer flush, including mode,
+row count, master tick, and a monochrome preview. It exports the shared
+host-side bitmap projection as BMP to a user-entered destination, refusing to
+replace an existing file. The mode selector uses the shared printer peripheral
+command. These functions consume the shared printer event stream; they must not
+access BIOS/LPT devices or duplicate core printer semantics.
 Historical LPT/printer-port routing is not reproduced as a host requirement.
 
 ---

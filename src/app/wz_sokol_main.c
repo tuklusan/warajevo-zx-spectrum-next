@@ -54,6 +54,8 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "app/wz_file_dialog.h"
 #include "app/wz_host_output.h"
 #include "app/wz_host_media_ownership.h"
+#include "app/wz_printer_manager.h"
+#include "app/wz_printer_commands.h"
 #include "app/wz_host_output_utf8.h"
 #include "app/wz_tape_save_transaction.h"
 #include "app/wz_file_open_run.h"
@@ -190,6 +192,11 @@ typedef struct {
     wz_mdr_image_t microdrive_image[WZ_UI_MICRODRIVE_COUNT];
     wz_host_media_claim_t microdrive_claim[WZ_UI_MICRODRIVE_COUNT];
     bool microdrive_claim_conflict;
+    wz_printer_manager_t printer_manager;
+    wz_printer_command_context_t printer_command_context;
+    bool printer_manager_open;
+    char printer_export_path[4096];
+    int printer_export_path_length;
     char microdrive_path[WZ_UI_MICRODRIVE_COUNT][4096];
     size_t microdrive_default_slot;
     wz_ui_microdrive_overview_entry_t microdrive_overview[
@@ -236,6 +243,8 @@ static wz_host_session_t wz_host_session;
 static void wz_host_release_local_keys(void);
 static bool wz_host_extension_is(const char* path, const char* expected);
 static bool wz_host_microdrive_path_read_only(size_t slot);
+static void wz_host_ui_draw_printer_manager(struct nk_context* context,
+                                            float width, float height);
 
 static int wz_host_hex_digit(char value)
 {
@@ -2524,6 +2533,117 @@ static wz_result_t wz_host_command_speed(
     return WZ_RESULT_OK;
 }
 
+static int wz_host_printer_open_token = 1;
+static int wz_host_printer_export_token = 2;
+
+static bool wz_host_printer_command_available(const void* context,
+                                              const char** reason)
+{
+    if (context == &wz_host_printer_export_token &&
+        !wz_host_session.printer_manager.available) {
+        if (reason != NULL) *reason = "no-captured-printer-output";
+        return false;
+    }
+    if (reason != NULL) *reason = NULL;
+    return true;
+}
+
+static void wz_host_printer_put_u16(wz_byte_t* output, size_t offset,
+                                    unsigned value)
+{
+    output[offset] = (wz_byte_t)value;
+    output[offset + 1u] = (wz_byte_t)(value >> 8u);
+}
+
+static void wz_host_printer_put_u32(wz_byte_t* output, size_t offset,
+                                    unsigned value)
+{
+    output[offset] = (wz_byte_t)value;
+    output[offset + 1u] = (wz_byte_t)(value >> 8u);
+    output[offset + 2u] = (wz_byte_t)(value >> 16u);
+    output[offset + 3u] = (wz_byte_t)(value >> 24u);
+}
+
+static wz_result_t wz_host_printer_export_path(const char* path)
+{
+    wz_byte_t pixels[WZ_PRINTER_OUTPUT_CAPACITY * 8u];
+    wz_byte_t bitmap_file[54u + WZ_PRINTER_OUTPUT_CAPACITY * 8u * 3u + 24u];
+    wz_printer_bitmap_t bitmap;
+    size_t row_bytes;
+    size_t padded_row_bytes;
+    size_t image_bytes;
+    size_t file_bytes;
+    if (path == NULL || path[0] == '\0') return WZ_RESULT_INVALID_ARGUMENT;
+    if (wz_printer_manager_render(&wz_host_session.printer_manager, pixels,
+            sizeof(pixels), &bitmap) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    if (bitmap.width > (SIZE_MAX - 3u) / 3u ||
+        bitmap.height > SIZE_MAX / ((bitmap.width * 3u + 3u) & ~(size_t)3u)) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    row_bytes = bitmap.width * 3u;
+    padded_row_bytes = (row_bytes + 3u) & ~(size_t)3u;
+    image_bytes = padded_row_bytes * bitmap.height;
+    file_bytes = 54u + image_bytes;
+    if (image_bytes > sizeof(bitmap_file) - 54u ||
+        file_bytes > (size_t)UINT32_MAX ||
+        bitmap.width > (size_t)INT32_MAX ||
+        bitmap.height > (size_t)INT32_MAX) {
+        return WZ_RESULT_BUFFER_TOO_SMALL;
+    }
+    memset(bitmap_file, 0, file_bytes);
+    bitmap_file[0] = 'B';
+    bitmap_file[1] = 'M';
+    wz_host_printer_put_u32(bitmap_file, 2u, (unsigned)file_bytes);
+    wz_host_printer_put_u32(bitmap_file, 10u, 54u);
+    wz_host_printer_put_u32(bitmap_file, 14u, 40u);
+    wz_host_printer_put_u32(bitmap_file, 18u, (unsigned)bitmap.width);
+    wz_host_printer_put_u32(bitmap_file, 22u, (unsigned)bitmap.height);
+    wz_host_printer_put_u16(bitmap_file, 26u, 1u);
+    wz_host_printer_put_u16(bitmap_file, 28u, 24u);
+    wz_host_printer_put_u32(bitmap_file, 34u, (unsigned)image_bytes);
+    for (size_t y = 0u; y < bitmap.height; ++y) {
+        const size_t source_y = bitmap.height - 1u - y;
+        wz_byte_t* row = bitmap_file + 54u + y * padded_row_bytes;
+        for (size_t x = 0u; x < bitmap.width; ++x) {
+            wz_byte_t gray = pixels[source_y * bitmap.stride + x] == 0u
+                ? 0xffu : 0u;
+            row[x * 3u] = gray;
+            row[x * 3u + 1u] = gray;
+            row[x * 3u + 2u] = gray;
+        }
+    }
+    return wz_host_output_write_exclusive(path, bitmap_file, file_bytes)
+        ? WZ_RESULT_OK : WZ_RESULT_INVALID_STATE;
+}
+
+static wz_result_t wz_host_printer_command(const void* context,
+    wz_command_arguments_t arguments, wz_command_result_t* result)
+{
+    if (context == &wz_host_printer_open_token) {
+        if (arguments.size != 0u) return WZ_RESULT_INVALID_ARGUMENT;
+        wz_host_session.printer_manager_open = true;
+        if (result != NULL) (void)snprintf(result->message,
+            sizeof(result->message), "Printer Manager opened");
+        return WZ_RESULT_OK;
+    }
+    if (context == &wz_host_printer_export_token) {
+        char path[4096];
+        wz_result_t exported;
+        if (arguments.data == NULL || arguments.size == 0u ||
+            arguments.size >= sizeof(path)) return WZ_RESULT_INVALID_ARGUMENT;
+        memcpy(path, arguments.data, arguments.size);
+        path[arguments.size] = '\0';
+        exported = wz_host_printer_export_path(path);
+        if (result != NULL) (void)snprintf(result->message,
+            sizeof(result->message), exported == WZ_RESULT_OK
+                ? "Printer bitmap exported" : "Printer bitmap export failed");
+        return exported;
+    }
+    return WZ_RESULT_INVALID_ARGUMENT;
+}
+
 static bool wz_host_register_commands(void)
 {
     static const wz_command_metadata_t tape_manager_commands[] = {
@@ -2678,10 +2798,38 @@ static bool wz_host_register_commands(void)
             return false;
         }
     }
+    {
+        const wz_command_metadata_t printer_commands[] = {
+            {"media.zx_printer.manager", "Printer Manager...",
+             "View captured virtual ZX Printer output", "media.zx_printer",
+             "NONE", "wz-command-result", "wz_host_printer_manager_open",
+             "local", NULL, WZ_COMMAND_LOCAL_ONLY,
+             wz_host_printer_command_available, wz_host_printer_command,
+             (void*)&wz_host_printer_open_token, false, false, NULL},
+            {"media.zx_printer.export", "Export Printer Output",
+             "Export captured output as a bitmap without replacing a file",
+             "media.zx_printer", "PATH", "wz-command-result",
+             "wz_host_printer_export", "path-text-entry", NULL,
+             WZ_COMMAND_HOST_WRITE, wz_host_printer_command_available,
+             wz_host_printer_command,
+             (void*)&wz_host_printer_export_token, false, false, NULL}
+        };
+        for (index = 0u; index < sizeof(printer_commands) /
+                sizeof(printer_commands[0]); ++index) {
+            if (wz_command_registry_register(&wz_host_session.command_registry,
+                    printer_commands[index]) != WZ_RESULT_OK) return false;
+        }
+    }
     for (index = 0u; index < sizeof(tape_manager_commands) /
             sizeof(tape_manager_commands[0]); ++index) {
         if (wz_command_registry_register(&wz_host_session.command_registry,
                 tape_manager_commands[index]) != WZ_RESULT_OK) return false;
+    }
+    wz_host_session.printer_command_context.machine =
+        &wz_host_session.machine;
+    if (wz_printer_commands_register(&wz_host_session.command_registry,
+            &wz_host_session.printer_command_context) != WZ_RESULT_OK) {
+        return false;
     }
     wz_host_session.networking_command_context.machine =
         &wz_host_session.machine;
@@ -3032,6 +3180,34 @@ static void wz_host_ui_draw_menus(struct nk_context* context, float width)
                     }
                     if (nk_menu_item_label(context, "128K", NK_TEXT_LEFT)) {
                         (void)wz_host_ui_set_model("128k");
+                    }
+                    nk_menu_end(context);
+                }
+                if (!enabled) nk_widget_disable_end(context);
+            } else if (strcmp(command->id,
+                       WZ_PRINTER_MODE_COMMAND_ID) == 0) {
+                static const char* printer_modes[] = {
+                    "Disabled", "Epson", "Epson enlarged", "HP", "HP enlarged"
+                };
+                if (!enabled) nk_widget_disable_begin(context);
+                if (nk_menu_begin_label(context, "ZX Printer Mode",
+                        NK_TEXT_LEFT, nk_vec2(190.0f, 5.0f * 25.0f))) {
+                    nk_layout_row_dynamic(context, 24.0f, 1);
+                    for (uint8_t mode = 0u;
+                         mode <= (uint8_t)WZ_PRINTER_MODE_HP_ENLARGED; ++mode) {
+                        char mode_label[64];
+                        (void)snprintf(mode_label, sizeof(mode_label), "%s%s",
+                            printer_modes[mode],
+                            wz_machine_printer_mode(&wz_host_session.machine) ==
+                                (wz_printer_mode_t)mode ? " *" : "");
+                        if (nk_menu_item_label(context, mode_label,
+                                NK_TEXT_LEFT)) {
+                            wz_command_result_t result;
+                            (void)wz_command_registry_dispatch(
+                                &wz_host_session.command_registry, command->id,
+                                (wz_command_arguments_t){&mode, sizeof(mode)},
+                                &result);
+                        }
                     }
                     nk_menu_end(context);
                 }
@@ -4038,6 +4214,93 @@ static void wz_host_ui_draw_microdrive_manager(
     nk_end(context);
 }
 
+static void wz_host_ui_draw_printer_manager(struct nk_context* context,
+                                            float width, float height)
+{
+    wz_host_session_t* session = &wz_host_session;
+    wz_printer_manager_view_t view;
+    wz_printer_bitmap_t bitmap;
+    wz_byte_t pixels[WZ_PRINTER_OUTPUT_CAPACITY * 8u];
+    char row[WZ_PRINTER_OUTPUT_CAPACITY + 1u];
+    if (!session->printer_manager_open) return;
+    if (!nk_begin(context, "ZX Printer Manager",
+            nk_rect((width - 620.0f) * 0.5f, (height - 480.0f) * 0.5f,
+                    620.0f, 480.0f),
+            NK_WINDOW_BORDER | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE |
+                NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE)) {
+        nk_end(context);
+        return;
+    }
+    nk_layout_row_dynamic(context, 24.0f, 2);
+    if (nk_button_label(context, "Close Printer Manager")) {
+        session->printer_manager_open = false;
+        nk_end(context);
+        return;
+    }
+    if (wz_printer_manager_view(&session->printer_manager, &view) !=
+        WZ_RESULT_OK) {
+        nk_label(context, "No printer output captured yet", NK_TEXT_LEFT);
+        nk_end(context);
+        return;
+    }
+    {
+        static const char* mode_names[] = {
+            "Disabled", "Epson", "Epson enlarged", "HP", "HP enlarged"
+        };
+        const unsigned mode = (unsigned)view.mode;
+        (void)snprintf(row, sizeof(row), "Printer mode: %s | Rows: %u | Tick: %llu",
+            mode < sizeof(mode_names) / sizeof(mode_names[0])
+                ? mode_names[mode] : "Unknown",
+            (unsigned)view.rows, (unsigned long long)view.master_tick);
+    }
+    nk_label(context, row, NK_TEXT_LEFT);
+    (void)snprintf(row, sizeof(row), "Bitmap: %zu x %zu",
+        view.bitmap.width, view.bitmap.height);
+    nk_label(context, row, NK_TEXT_LEFT);
+    if (wz_printer_manager_render(&session->printer_manager, pixels,
+            sizeof(pixels), &bitmap) == WZ_RESULT_OK) {
+        const size_t display_width = bitmap.width > 72u ? 72u : bitmap.width;
+        nk_layout_row_dynamic(context, 20.0f, 1);
+        for (size_t y = 0u; y < bitmap.height; ++y) {
+            for (size_t x = 0u; x < display_width; ++x) {
+                const size_t source_x = x * bitmap.width / display_width;
+                row[x] = pixels[y * bitmap.stride + source_x] == 0u
+                    ? ' ' : '#';
+            }
+            row[display_width] = '\0';
+            nk_label(context, row, NK_TEXT_LEFT);
+        }
+    }
+    nk_layout_row_dynamic(context, 22.0f, 1);
+    nk_label(context, "New BMP destination path (existing files are kept):",
+             NK_TEXT_LEFT);
+    nk_layout_row_dynamic(context, 24.0f, 1);
+    if (session->printer_export_path_length < 0)
+        session->printer_export_path_length = 0;
+    if (session->printer_export_path_length >=
+        (int)sizeof(session->printer_export_path)) {
+        session->printer_export_path_length =
+            (int)sizeof(session->printer_export_path) - 1;
+    }
+    session->printer_export_path[session->printer_export_path_length] = '\0';
+    (void)nk_edit_string(context, NK_EDIT_FIELD,
+        session->printer_export_path, &session->printer_export_path_length,
+        (int)sizeof(session->printer_export_path) - 1, nk_filter_default);
+    nk_layout_row_dynamic(context, 24.0f, 1);
+    if (nk_button_label(context, "Export BMP...")) {
+        wz_command_result_t result;
+        wz_command_arguments_t arguments = {
+            session->printer_export_path,
+            strlen(session->printer_export_path)
+        };
+        (void)wz_command_registry_dispatch(&session->command_registry,
+            "media.zx_printer.export", arguments, &result);
+        (void)snprintf(session->file_notification,
+            sizeof(session->file_notification), "%s", result.message);
+    }
+    nk_end(context);
+}
+
 static void wz_host_ui_draw_tape_manager(struct nk_context* context,
                                          float width)
 {
@@ -4692,6 +4955,7 @@ static void wz_host_render_native_ui(struct nk_context* context,
     wz_host_ui_draw_menus(context, width);
     wz_host_ui_draw_toolbar(context, width);
     wz_host_ui_draw_microdrive_manager(context, width, height);
+    wz_host_ui_draw_printer_manager(context, width, height);
     wz_host_ui_draw_microdrive_eject_confirmation(context, width);
     wz_host_ui_draw_tape_manager(context, width);
     wz_host_ui_draw_snapshot_inspector(context, width, height);
@@ -4779,6 +5043,7 @@ static void wz_host_session_init(void)
     stm_setup();
     wz_snapshot_save_workflow_init(&wz_host_session.snapshot_save_workflow);
     wz_snapshot_inspector_init(&wz_host_session.snapshot_inspector);
+    wz_printer_manager_init(&wz_host_session.printer_manager);
     wz_host_session.speed = WZ_SPEED_100;
     sg_setup(&(sg_desc){.environment = sglue_environment()});
     sgl_setup(&(sgl_desc_t){0});
@@ -5151,6 +5416,14 @@ static void wz_host_frame(void)
                     wz_host_audio_frame_output, &wz_host_session) !=
                 WZ_RESULT_OK) {
                 return;
+            }
+            {
+                wz_printer_flush_event_t event;
+                while (wz_machine_printer_take_flush(
+                        &wz_host_session.machine, &event) == WZ_RESULT_OK) {
+                    (void)wz_printer_manager_accept_flush(
+                        &wz_host_session.printer_manager, &event);
+                }
             }
         }
         (void)wz_telnet_key_press_drain(
