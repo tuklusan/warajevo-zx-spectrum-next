@@ -9,7 +9,7 @@
     },
     {
       "path": "ci/test/compatibility-tools/CMakeLists.txt",
-      "sha256": "a8a1d3b7da3965f708f9c1a3d22913e4c75de821dba6c9aae595636adfcc4555"
+      "sha256": "0403e46c65a9e658c80f89c72e206a100c5e4a9964c2a33abfc5d8771fa63d88"
     },
     {
       "path": "ci/test/compatibility-tools/contract.c",
