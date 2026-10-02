@@ -195,11 +195,17 @@ typedef struct {
     size_t microdrive_manager_selected_slot;
     unsigned microdrive_manager_view;
     size_t microdrive_manager_copy_destination;
+    int microdrive_manager_sector_index;
+    int microdrive_manager_data_offset;
     wz_microdrive_manager_operation_kind_t microdrive_manager_pending;
     bool microdrive_manager_confirmation_open;
     char microdrive_manager_name[11];
     int microdrive_manager_name_length;
     char microdrive_manager_file[11];
+    char microdrive_manager_data_hex[129];
+    int microdrive_manager_data_hex_length;
+    char microdrive_manager_raw_hex[WZ_MDR_SECTOR_SIZE * 2u + 1u];
+    int microdrive_manager_raw_hex_length;
     wz_ui_microdrive_command_context_t microdrive_command_contexts[
         WZ_HOST_MICRODRIVE_COMMAND_COUNT];
     bool microdrive_eject_confirmation_open;
@@ -227,6 +233,33 @@ static wz_host_session_t wz_host_session;
 static void wz_host_release_local_keys(void);
 static bool wz_host_extension_is(const char* path, const char* expected);
 static bool wz_host_microdrive_path_read_only(size_t slot);
+
+static int wz_host_hex_digit(char value)
+{
+    if (value >= '0' && value <= '9') return value - '0';
+    if (value >= 'a' && value <= 'f') return value - 'a' + 10;
+    if (value >= 'A' && value <= 'F') return value - 'A' + 10;
+    return -1;
+}
+
+static bool wz_host_decode_hex(const char* text, size_t text_length,
+                               wz_byte_t* bytes, size_t capacity,
+                               size_t* byte_count)
+{
+    size_t index, count;
+    if (text == NULL || bytes == NULL || byte_count == NULL ||
+        text_length == 0u || (text_length & 1u) != 0u) return false;
+    count = text_length / 2u;
+    if (count > capacity) return false;
+    for (index = 0u; index < count; ++index) {
+        const int high = wz_host_hex_digit(text[index * 2u]);
+        const int low = wz_host_hex_digit(text[index * 2u + 1u]);
+        if (high < 0 || low < 0) return false;
+        bytes[index] = (wz_byte_t)((high << 4) | low);
+    }
+    *byte_count = count;
+    return true;
+}
 
 static wz_qword_t wz_host_now_nanoseconds(void)
 {
@@ -3365,6 +3398,8 @@ static bool wz_host_microdrive_apply_image_edit(
     size_t length;
     wz_result_t result;
     wz_mdr_transport_t* transport;
+    wz_byte_t edit_bytes[WZ_MDR_SECTOR_SIZE];
+    size_t edit_byte_count = 0u;
     if (slot >= WZ_UI_MICRODRIVE_COUNT ||
         session->microdrive_data[slot] == NULL ||
         session->microdrive_path[slot][0] == '\0' ||
@@ -3384,6 +3419,34 @@ static bool wz_host_microdrive_apply_image_edit(
         break;
     case WZ_MICRODRIVE_MANAGER_OPTIMIZE:
         result = wz_microdrive_manager_optimize(staged, length);
+        break;
+    case WZ_MICRODRIVE_MANAGER_SECTOR_REPAIR:
+        result = wz_microdrive_manager_sector_repair(staged, length,
+            (size_t)session->microdrive_manager_sector_index);
+        break;
+    case WZ_MICRODRIVE_MANAGER_SECTOR_EDIT_DATA:
+        if (!wz_host_decode_hex(session->microdrive_manager_data_hex,
+                (size_t)session->microdrive_manager_data_hex_length,
+                edit_bytes, 64u, &edit_byte_count) ||
+            session->microdrive_manager_data_offset < 0) {
+            free(staged);
+            return false;
+        }
+        result = wz_microdrive_manager_sector_edit_data(staged, length,
+            (size_t)session->microdrive_manager_sector_index,
+            (size_t)session->microdrive_manager_data_offset,
+            edit_bytes, edit_byte_count);
+        break;
+    case WZ_MICRODRIVE_MANAGER_SECTOR_EDIT_RAW:
+        if (!wz_host_decode_hex(session->microdrive_manager_raw_hex,
+                (size_t)session->microdrive_manager_raw_hex_length,
+                edit_bytes, sizeof(edit_bytes), &edit_byte_count)) {
+            free(staged);
+            return false;
+        }
+        result = wz_microdrive_manager_sector_edit_raw(staged, length,
+            (size_t)session->microdrive_manager_sector_index,
+            edit_bytes, edit_byte_count);
         break;
     default:
         free(staged);
@@ -3549,6 +3612,9 @@ static void wz_host_microdrive_manager_confirm(void)
     case WZ_MICRODRIVE_MANAGER_FORMAT:
     case WZ_MICRODRIVE_MANAGER_RENAME:
     case WZ_MICRODRIVE_MANAGER_OPTIMIZE:
+    case WZ_MICRODRIVE_MANAGER_SECTOR_REPAIR:
+    case WZ_MICRODRIVE_MANAGER_SECTOR_EDIT_DATA:
+    case WZ_MICRODRIVE_MANAGER_SECTOR_EDIT_RAW:
         success = wz_host_microdrive_apply_image_edit(slot,
             session->microdrive_manager_pending,
             session->microdrive_manager_name);
@@ -3641,11 +3707,12 @@ static void wz_host_ui_draw_microdrive_manager(
     (void)snprintf(line, sizeof(line), "Selected drive: MDV %u",
         (unsigned)(session->microdrive_manager_selected_slot + 1u));
     nk_label(context, line, NK_TEXT_LEFT);
-    nk_layout_row_dynamic(context, 24.0f, 5);
+    nk_layout_row_dynamic(context, 24.0f, 6);
     if (nk_button_label(context, "Catalog")) session->microdrive_manager_view = 1u;
     if (nk_button_label(context, "Allocation")) session->microdrive_manager_view = 2u;
     if (nk_button_label(context, "Overview")) session->microdrive_manager_view = 0u;
     if (nk_button_label(context, "Files")) session->microdrive_manager_view = 3u;
+    if (nk_button_label(context, "Sectors")) session->microdrive_manager_view = 4u;
     nk_label(context, "New cartridge/file name:", NK_TEXT_LEFT);
     nk_layout_row_dynamic(context, 25.0f, 1);
     (void)nk_edit_string(context, NK_EDIT_FIELD,
@@ -3781,6 +3848,103 @@ static void wz_host_ui_draw_microdrive_manager(
             nk_label(context, "Catalog unavailable: malformed cartridge image.",
                      NK_TEXT_LEFT);
         }
+    } else if (session->microdrive_manager_view == 4u &&
+        session->microdrive_manager_selected_slot < WZ_UI_MICRODRIVE_COUNT &&
+        session->microdrive_data[session->microdrive_manager_selected_slot] != NULL) {
+        const wz_mdr_image_t* image = &session->microdrive_image[
+            session->microdrive_manager_selected_slot];
+        if (session->microdrive_manager_sector_index < 0)
+            session->microdrive_manager_sector_index = 0;
+        if ((size_t)session->microdrive_manager_sector_index >= image->sector_count)
+            session->microdrive_manager_sector_index = image->sector_count == 0u
+                ? 0 : (int)(image->sector_count - 1u);
+        nk_layout_row_dynamic(context, 25.0f, 1);
+        nk_property_int(context, "Sector index", 0,
+            &session->microdrive_manager_sector_index,
+            image->sector_count == 0u ? 0 : (int)image->sector_count - 1,
+            1, 1.0f);
+        {
+            const bool valid = wz_microdrive_manager_sector_verify(image,
+                (size_t)session->microdrive_manager_sector_index);
+            nk_layout_row_dynamic(context, 22.0f, 1);
+            nk_label(context, valid
+                ? "Sector structure and checksums: valid"
+                : "Sector damaged: verify or repair the checksums.", NK_TEXT_LEFT);
+            nk_layout_row_dynamic(context, 24.0f, 2);
+            if (nk_button_label(context, "Verify sector")) {
+                (void)snprintf(session->file_notification,
+                    sizeof(session->file_notification), valid
+                        ? "Selected sector is valid" : "Selected sector is damaged");
+            }
+            if (nk_button_label(context, "Repair checksums...")) {
+                session->microdrive_manager_pending =
+                    WZ_MICRODRIVE_MANAGER_SECTOR_REPAIR;
+                session->microdrive_manager_confirmation_open = true;
+            }
+        }
+        nk_layout_row_dynamic(context, 24.0f, 1);
+        nk_property_int(context, "Data offset", 0,
+            &session->microdrive_manager_data_offset, 511, 1, 1.0f);
+        nk_layout_row_dynamic(context, 22.0f, 1);
+        nk_label(context, "Data bytes (hex, up to 64 bytes):", NK_TEXT_LEFT);
+        nk_layout_row_dynamic(context, 24.0f, 1);
+        (void)nk_edit_string(context, NK_EDIT_FIELD,
+            session->microdrive_manager_data_hex,
+            &session->microdrive_manager_data_hex_length,
+            (int)sizeof(session->microdrive_manager_data_hex) - 1,
+            nk_filter_hex);
+        if (session->microdrive_manager_data_hex_length < 0)
+            session->microdrive_manager_data_hex_length = 0;
+        if (session->microdrive_manager_data_hex_length >=
+            (int)sizeof(session->microdrive_manager_data_hex))
+            session->microdrive_manager_data_hex_length =
+                (int)sizeof(session->microdrive_manager_data_hex) - 1;
+        session->microdrive_manager_data_hex[
+            session->microdrive_manager_data_hex_length] = '\0';
+        nk_layout_row_dynamic(context, 24.0f, 2);
+        if (nk_button_label(context, "Apply data edit...")) {
+            session->microdrive_manager_pending =
+                WZ_MICRODRIVE_MANAGER_SECTOR_EDIT_DATA;
+            session->microdrive_manager_confirmation_open = true;
+        }
+        if (nk_button_label(context, "Load sector into raw editor")) {
+            const wz_byte_t* sector = image->data +
+                (size_t)session->microdrive_manager_sector_index *
+                    WZ_MDR_SECTOR_SIZE;
+            for (size_t byte = 0u; byte < WZ_MDR_SECTOR_SIZE; ++byte) {
+                (void)snprintf(session->microdrive_manager_raw_hex + byte * 2u,
+                    3u, "%02X", sector[byte]);
+            }
+            session->microdrive_manager_raw_hex_length =
+                (int)(WZ_MDR_SECTOR_SIZE * 2u);
+        }
+        nk_layout_row_dynamic(context, 22.0f, 1);
+        nk_label(context,
+            "DANGEROUS RAW-SECTOR EDIT: metadata and checksums are included.",
+            NK_TEXT_LEFT);
+        nk_layout_row_dynamic(context, 75.0f, 1);
+        if (nk_group_begin(context, "Whole sector bytes (543 bytes / 1086 hex digits)",
+                NK_WINDOW_BORDER)) {
+            (void)nk_edit_string(context, NK_EDIT_BOX,
+                session->microdrive_manager_raw_hex,
+                &session->microdrive_manager_raw_hex_length,
+                (int)sizeof(session->microdrive_manager_raw_hex) - 1,
+                nk_filter_hex);
+            nk_group_end(context);
+        }
+        if (session->microdrive_manager_raw_hex_length < 0)
+            session->microdrive_manager_raw_hex_length = 0;
+        if (session->microdrive_manager_raw_hex_length >=
+            (int)sizeof(session->microdrive_manager_raw_hex))
+            session->microdrive_manager_raw_hex_length =
+                (int)sizeof(session->microdrive_manager_raw_hex) - 1;
+        session->microdrive_manager_raw_hex[
+            session->microdrive_manager_raw_hex_length] = '\0';
+        if (nk_button_label(context, "Apply dangerous raw-sector edit...")) {
+            session->microdrive_manager_pending =
+                WZ_MICRODRIVE_MANAGER_SECTOR_EDIT_RAW;
+            session->microdrive_manager_confirmation_open = true;
+        }
     } else if (session->microdrive_manager_view == 2u &&
         session->microdrive_manager_selected_slot < WZ_UI_MICRODRIVE_COUNT &&
         session->microdrive_data[session->microdrive_manager_selected_slot] != NULL) {
@@ -3821,6 +3985,15 @@ static void wz_host_ui_draw_microdrive_manager(
                     : session->microdrive_manager_pending ==
                         WZ_MICRODRIVE_MANAGER_FILE_COPY
                         ? "Copy the complete file chain to the selected drive."
+                    : session->microdrive_manager_pending ==
+                        WZ_MICRODRIVE_MANAGER_SECTOR_REPAIR
+                        ? "Recalculate checksums for a structurally valid sector."
+                    : session->microdrive_manager_pending ==
+                        WZ_MICRODRIVE_MANAGER_SECTOR_EDIT_DATA
+                        ? "Change payload bytes and update the payload checksum."
+                    : session->microdrive_manager_pending ==
+                        WZ_MICRODRIVE_MANAGER_SECTOR_EDIT_RAW
+                        ? "DANGEROUS: replace all 543 sector bytes including metadata."
                         : "This changes the host file write-protection attribute.";
         nk_layout_row_dynamic(context, 23.0f, 1);
         nk_label(context, warning, NK_TEXT_LEFT);

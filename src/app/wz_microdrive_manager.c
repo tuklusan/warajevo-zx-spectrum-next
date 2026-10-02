@@ -32,6 +32,15 @@ static bool valid_sector(const wz_byte_t* sector)
             checksum(descriptor + 15u, 512u);
 }
 
+static bool valid_sector_structure(const wz_byte_t* sector, size_t count)
+{
+    const wz_byte_t* header = sector + WZ_MDR_IMAGE_HEADER_OFFSET;
+    const wz_byte_t* descriptor = sector + WZ_MDR_IMAGE_DATA_OFFSET;
+    return (header[0] & 1u) != 0u && header[1] != 0u && header[1] <= count &&
+        (descriptor[0] & 0xf9u) == 0u &&
+        ((size_t)descriptor[2] | ((size_t)descriptor[3] << 8u)) <= 512u;
+}
+
 static bool blank_name(const wz_byte_t* name)
 {
     size_t index;
@@ -611,5 +620,71 @@ wz_result_t wz_microdrive_manager_file_copy(
         update_checksums(target);
     }
     free(records);
+    return WZ_RESULT_OK;
+}
+
+bool wz_microdrive_manager_sector_verify(const wz_mdr_image_t* image,
+                                         size_t sector_index)
+{
+    const wz_byte_t* sector;
+    if (image == NULL || image->data == NULL ||
+        !image_shape(image->data, image->length) ||
+        image->sector_count != image->length / WZ_MDR_SECTOR_SIZE ||
+        sector_index >= image->sector_count) return false;
+    sector = image->data + sector_index * WZ_MDR_SECTOR_SIZE;
+    return valid_sector_structure(sector, image->sector_count) &&
+        valid_sector(sector);
+}
+
+wz_result_t wz_microdrive_manager_sector_repair(
+    wz_byte_t* data, size_t length, size_t sector_index)
+{
+    const size_t count = image_shape(data, length)
+        ? length / WZ_MDR_SECTOR_SIZE : 0u;
+    wz_byte_t* sector;
+    if (count == 0u || sector_index >= count) return WZ_RESULT_INVALID_ARGUMENT;
+    sector = data + sector_index * WZ_MDR_SECTOR_SIZE;
+    if (!valid_sector_structure(sector, count)) return WZ_RESULT_INVALID_STATE;
+    update_checksums(sector);
+    return valid_sector(sector) ? WZ_RESULT_OK : WZ_RESULT_INVALID_STATE;
+}
+
+wz_result_t wz_microdrive_manager_sector_edit_data(
+    wz_byte_t* data, size_t length, size_t sector_index, size_t offset,
+    const wz_byte_t* bytes, size_t byte_count)
+{
+    size_t count;
+    wz_byte_t* sector;
+    wz_byte_t* descriptor;
+    if (!image_shape(data, length) ||
+        (byte_count != 0u && bytes == NULL)) return WZ_RESULT_INVALID_ARGUMENT;
+    count = length / WZ_MDR_SECTOR_SIZE;
+    if (sector_index >= count || offset > 512u ||
+        byte_count > 512u - offset) return WZ_RESULT_INVALID_ARGUMENT;
+    sector = data + sector_index * WZ_MDR_SECTOR_SIZE;
+    if (!valid_sector_structure(sector, count) || !valid_sector(sector))
+        return WZ_RESULT_INVALID_STATE;
+    descriptor = sector + WZ_MDR_IMAGE_DATA_OFFSET;
+    if (byte_count != 0u) memcpy(descriptor + 15u + offset, bytes, byte_count);
+    sector[WZ_MDR_SECTOR_SIZE - 1u] = checksum(descriptor + 15u, 512u);
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_microdrive_manager_sector_edit_raw(
+    wz_byte_t* data, size_t length, size_t sector_index,
+    const wz_byte_t* replacement, size_t replacement_length)
+{
+    size_t count;
+    wz_byte_t staged[WZ_MDR_SECTOR_SIZE];
+    if (!image_shape(data, length) || replacement == NULL ||
+        replacement_length != WZ_MDR_SECTOR_SIZE) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    count = length / WZ_MDR_SECTOR_SIZE;
+    if (sector_index >= count) return WZ_RESULT_INVALID_ARGUMENT;
+    memcpy(staged, replacement, sizeof(staged));
+    if (!valid_sector_structure(staged, count) || !valid_sector(staged))
+        return WZ_RESULT_INVALID_STATE;
+    memcpy(data + sector_index * WZ_MDR_SECTOR_SIZE, staged, sizeof(staged));
     return WZ_RESULT_OK;
 }

@@ -1092,6 +1092,11 @@ edit whole sector including metadata/checksums where explicitly permitted
 ```
 
 The UI must distinguish ordinary data editing from dangerous raw-sector editing.
+Ordinary edits address only the 512-byte payload and refresh its checksum.
+Repair may recalculate checksums only when the header and descriptor structure
+remain plausible. Raw editing replaces exactly one complete 543-byte sector;
+the UI requires explicit confirmation and the resulting sector must pass all
+structural and checksum validation before the image is saved.
 
 ### 15.5 Legacy MDR conversion
 
