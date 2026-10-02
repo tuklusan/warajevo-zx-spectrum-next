@@ -601,6 +601,97 @@ const wz_ui_toolbar_item_t* wz_ui_layout_microdrive_action_at(size_t index)
     return index < WZ_UI_MICRODRIVE_ACTION_COUNT ? &microdrive_actions[index] : 0;
 }
 
+static bool wz_ui_layout_microdrive_command_available(
+    const void* opaque, const char** reason)
+{
+    const wz_ui_microdrive_command_context_t* command =
+        (const wz_ui_microdrive_command_context_t*)opaque;
+    if (command == NULL || command->availability == NULL) {
+        if (reason != NULL) *reason = "microdrive-command-unavailable";
+        return false;
+    }
+    return command->availability(command->application_context,
+        command->slot, command->action, reason);
+}
+
+static wz_result_t wz_ui_layout_microdrive_command(
+    const void* opaque, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    const wz_ui_microdrive_command_context_t* command =
+        (const wz_ui_microdrive_command_context_t*)opaque;
+    if (command == NULL || command->handler == NULL) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    return command->handler(command->application_context, command->slot,
+                            command->action, arguments, result);
+}
+
+wz_result_t wz_ui_layout_register_microdrive_commands(
+    wz_command_registry_t* registry,
+    wz_ui_microdrive_command_context_t* contexts,
+    size_t context_capacity,
+    const void* application_context,
+    wz_ui_microdrive_action_available_fn availability,
+    wz_ui_microdrive_action_handler_fn handler)
+{
+    const size_t required = WZ_UI_MICRODRIVE_COUNT *
+        (size_t)WZ_UI_MICRODRIVE_OPERATION_COUNT;
+    if (registry == NULL || contexts == NULL ||
+        context_capacity < required || availability == NULL || handler == NULL) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    for (size_t slot = 0u; slot < WZ_UI_MICRODRIVE_COUNT; ++slot) {
+        for (size_t action_index = 0u;
+             action_index < (size_t)WZ_UI_MICRODRIVE_OPERATION_COUNT;
+             ++action_index) {
+            const size_t index = slot *
+                (size_t)WZ_UI_MICRODRIVE_OPERATION_COUNT + action_index;
+            const wz_ui_toolbar_item_t* item =
+                wz_ui_layout_microdrive_action_at(index);
+            const wz_ui_microdrive_action_t action =
+                (wz_ui_microdrive_action_t)action_index;
+            wz_command_metadata_t metadata;
+            if (item == NULL) return WZ_RESULT_INVALID_STATE;
+            contexts[index].application_context = application_context;
+            contexts[index].slot = slot;
+            contexts[index].action = action;
+            contexts[index].availability = availability;
+            contexts[index].handler = handler;
+            metadata = (wz_command_metadata_t){
+                item->command_id,
+                item->label,
+                action == WZ_UI_MICRODRIVE_ACTION_MOUNT
+                    ? "Mount a cartridge in this drive"
+                    : action == WZ_UI_MICRODRIVE_ACTION_EJECT
+                        ? "Eject this cartridge with local confirmation"
+                        : "Set this drive as the default Microdrive",
+                "media.microdrive",
+                "NONE",
+                "wz-command-result",
+                "wz_ui_layout_microdrive_command",
+                action == WZ_UI_MICRODRIVE_ACTION_MOUNT ? "file-dialog" :
+                    action == WZ_UI_MICRODRIVE_ACTION_EJECT ? "confirmation" : "none",
+                NULL,
+                action == WZ_UI_MICRODRIVE_ACTION_MOUNT ? WZ_COMMAND_HOST_READ :
+                    action == WZ_UI_MICRODRIVE_ACTION_EJECT
+                        ? WZ_COMMAND_MEDIA_DESTRUCTIVE : WZ_COMMAND_REMOTE_SAFE,
+                wz_ui_layout_microdrive_command_available,
+                wz_ui_layout_microdrive_command,
+                &contexts[index],
+                action != WZ_UI_MICRODRIVE_ACTION_SET_DEFAULT,
+                action == WZ_UI_MICRODRIVE_ACTION_SET_DEFAULT,
+                NULL
+            };
+            if (wz_command_registry_register(registry, metadata) !=
+                WZ_RESULT_OK) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+        }
+    }
+    return WZ_RESULT_OK;
+}
+
 size_t wz_ui_layout_networking_option_count(void)
 {
     return WZ_UI_NETWORKING_OPTION_COUNT;

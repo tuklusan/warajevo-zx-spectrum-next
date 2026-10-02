@@ -1,0 +1,99 @@
+{
+  "testId": "microdrive-ui-contract",
+  "command": "cmake -S ci/test/microdrive-ui -B dist/microdrive-ui -DCMAKE_BUILD_TYPE=Release && cmake --build dist/microdrive-ui --config Release --target wz_microdrive_ui_contract --parallel 2 && ctest --test-dir dist/microdrive-ui -C Release -R '^wz_microdrive_ui_contract$' --output-on-failure",
+  "workflow": ".github/workflows/microdrive-ui-contract.yml",
+  "fixtures": [
+    {
+      "sha256": "bbbe8c6a700c32030c58dfbe30d8d2139dec345ea069a6b6a38493b045f061a1",
+      "path": ".github/workflows/microdrive-ui-contract.yml"
+    },
+    {
+      "sha256": "a0cdcd930519a350a7e3017a8990b67d5d94e45ef55bfc8e27330a87bf5d4a1a",
+      "path": "ci/test/microdrive-ui/CMakeLists.txt"
+    },
+    {
+      "sha256": "bae2aef76a709f89189fe64ef5709120db3017eb8527a852effe67f27860932f",
+      "path": "ci/test/microdrive-ui/microdrive-ui-contract.c"
+    },
+    {
+      "sha256": "b7a1d71a9a835d725832cf69cfb160e835db081fba17f16f4ac8b44f6666de03",
+      "path": "src/app/wz_sokol_main.c"
+    },
+    {
+      "sha256": "707bd4c4c9d0e12db0135ef857d3c7de8a5d6e7d717d790d09f3080bb90c9607",
+      "path": "src/app/wz_command_registry.c"
+    },
+    {
+      "sha256": "089f17123ebfdc9be2ff8606aa849f72c06bc26036ac0f5710dbb978509b9d34",
+      "path": "src/app/wz_command_registry.h"
+    },
+    {
+      "sha256": "bd46ced2af90907b222a43fcaef3bfe8943b6ca32fd4831fbaca82483ec264c5",
+      "path": "src/app/wz_host_thread.c"
+    },
+    {
+      "sha256": "2fa71a370c5b0597e25f8e4ecbc8457e7e9b2d3b62cd48af2eb6111053283805",
+      "path": "src/app/wz_host_thread.h"
+    },
+    {
+      "sha256": "7248245e6f4ff506a436ab09a1121e0fefe68cb729be28267d25e4f54ca0cc68",
+      "path": "src/app/wz_host_audio_policy.c"
+    },
+    {
+      "sha256": "99f86c6701dec5ccae2b932b31daafc95909143dd192bf1cfe43bc91a5991430",
+      "path": "src/app/wz_host_audio_policy.h"
+    },
+    {
+      "sha256": "cb9d2d0befc0becaa81558d794a257f399c4a46e1c1a0bdb19c4893d8f547183",
+      "path": "src/app/wz_speed_policy.c"
+    },
+    {
+      "sha256": "0895e0cac0254cb95d4b2347d911f0fdddfd0bab414d37e5dd4052cfc9eaa2df",
+      "path": "src/app/wz_speed_policy.h"
+    },
+    {
+      "sha256": "d4007980081eb3506bfea8159315d8ee6e69f2664ec8a750dd7d6e25e571b9d4",
+      "path": "src/app/wz_ui_layout.c"
+    },
+    {
+      "sha256": "5530637c6f99087edffd5f570e2cb98ab85ba9e42913b46f0e506bc3f3fb3498",
+      "path": "src/app/wz_ui_layout.h"
+    },
+    {
+      "sha256": "c1db9feadf120808bc6c6ec5793b40f129d3972035d10a19085a966fa5b7b005",
+      "path": "src/app/wz_microdrive_eject_workflow.c"
+    },
+    {
+      "sha256": "224c0b0abe528070566e61833a43897daaabc242039ebb8e967b329edd2f743d",
+      "path": "src/app/wz_microdrive_eject_workflow.h"
+    },
+    {
+      "sha256": "1dc71a255b61187261ef1b97a3694f780c8c2cb9be08d98e942e98768bec2b29",
+      "path": "src/core/wz_machine.c"
+    },
+    {
+      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe",
+      "path": "src/core/wz_machine.h"
+    },
+    {
+      "sha256": "0d80d9a9144cdc39f5df0b8a9abb8e5e21bc71cfeb92f13ee2f7f34e532bc522",
+      "path": "src/core/wz_microdrive.c"
+    },
+    {
+      "sha256": "fa4e47c5efc658d533e14b6bf571712447771951202b66eb8575c6869f60a90c",
+      "path": "src/core/wz_microdrive.h"
+    },
+    {
+      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09",
+      "path": "src/core/wz_machine_profile.c"
+    },
+    {
+      "sha256": "099be5f41f428466e5da622452abec6e0daf6402abcf4ab2e7d8c2df47457cc4",
+      "path": "src/core/wz_machine_profile.h"
+    },
+    {
+      "sha256": "1d171101ea4c3a0896a62454a467d80dfa8c1b2baa3c336354d4f90ac9892257",
+      "path": "src/cmake/CMakeLists.txt"
+    }
+  ]
+}

@@ -113,6 +113,28 @@ typedef struct {
     wz_ui_microdrive_validation_t validation;
 } wz_ui_microdrive_overview_entry_t;
 
+typedef enum {
+    WZ_UI_MICRODRIVE_ACTION_MOUNT = 0,
+    WZ_UI_MICRODRIVE_ACTION_EJECT,
+    WZ_UI_MICRODRIVE_ACTION_SET_DEFAULT,
+    WZ_UI_MICRODRIVE_OPERATION_COUNT
+} wz_ui_microdrive_action_t;
+
+typedef bool (*wz_ui_microdrive_action_available_fn)(
+    const void* context, size_t slot, wz_ui_microdrive_action_t action,
+    const char** reason);
+typedef wz_result_t (*wz_ui_microdrive_action_handler_fn)(
+    const void* context, size_t slot, wz_ui_microdrive_action_t action,
+    wz_command_arguments_t arguments, wz_command_result_t* result);
+
+typedef struct {
+    const void* application_context;
+    size_t slot;
+    wz_ui_microdrive_action_t action;
+    wz_ui_microdrive_action_available_fn availability;
+    wz_ui_microdrive_action_handler_fn handler;
+} wz_ui_microdrive_command_context_t;
+
 typedef struct {
     unsigned model_k;
     unsigned speed_percent;
@@ -160,6 +182,13 @@ size_t wz_ui_layout_tape_action_count(void);
 const wz_ui_toolbar_item_t* wz_ui_layout_tape_action_at(size_t index);
 size_t wz_ui_layout_microdrive_action_count(void);
 const wz_ui_toolbar_item_t* wz_ui_layout_microdrive_action_at(size_t index);
+wz_result_t wz_ui_layout_register_microdrive_commands(
+    wz_command_registry_t* registry,
+    wz_ui_microdrive_command_context_t* contexts,
+    size_t context_capacity,
+    const void* application_context,
+    wz_ui_microdrive_action_available_fn availability,
+    wz_ui_microdrive_action_handler_fn handler);
 size_t wz_ui_layout_networking_option_count(void);
 const wz_ui_networking_option_t* wz_ui_layout_networking_option_at(
     size_t index);

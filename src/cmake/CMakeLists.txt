@@ -577,6 +577,7 @@ if(WZSN_BUILD_SOKOL_HOST)
         ${WZSN_SOURCE_ROOT}/app/wz_networking_commands.c
         ${WZSN_SOURCE_ROOT}/app/wz_tape_loading_commands.c
         ${WZSN_SOURCE_ROOT}/app/wz_tape_media_commands.c
+        ${WZSN_SOURCE_ROOT}/app/wz_microdrive_eject_workflow.c
         ${WZSN_SOURCE_ROOT}/app/wz_file_open_run.c)
     set_target_properties(wz_sokol_host PROPERTIES OUTPUT_NAME "Warajevo-ZX-Spectrum-Next")
     target_include_directories(wz_sokol_host PRIVATE ${sokol_SOURCE_DIR} ${sokol_SOURCE_DIR}/util ${nuklear_SOURCE_DIR} "${WZSN_SOURCE_ROOT}")

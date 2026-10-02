@@ -51,9 +51,11 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "core/audio/wz_audio_mixer.h"
 #include "app/wz_command_registry.h"
 #include "app/wz_file_dialog.h"
+#include "app/wz_host_output.h"
 #include "app/wz_host_output_utf8.h"
 #include "app/wz_tape_save_transaction.h"
 #include "app/wz_file_open_run.h"
+#include "app/wz_microdrive_eject_workflow.h"
 #include "app/wz_networking_commands.h"
 #include "app/wz_tape_loading_commands.h"
 #include "app/wz_tape_media_commands.h"
@@ -91,6 +93,8 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "app/wz_ui_window.h"
 
 #define WZ_HOST_COMMAND_CAPACITY 128u
+#define WZ_HOST_MICRODRIVE_COMMAND_COUNT \
+    (WZ_UI_MICRODRIVE_COUNT * WZ_UI_MICRODRIVE_OPERATION_COUNT)
 #define WZ_HOST_RASTER_BYTES (WZ_RASTER_CANONICAL_WIDTH * WZ_RASTER_CANONICAL_HEIGHT)
 #define WZ_HOST_TELNET_IO_CAPACITY 2048u
 #define WZ_HOST_AUDIO_FRAME_SAMPLE_CAPACITY 2048u
@@ -180,7 +184,12 @@ typedef struct {
     char tape_format[8];
     wz_byte_t* microdrive_data[WZ_UI_MICRODRIVE_COUNT];
     wz_mdr_image_t microdrive_image[WZ_UI_MICRODRIVE_COUNT];
+    char microdrive_path[WZ_UI_MICRODRIVE_COUNT][4096];
     size_t microdrive_default_slot;
+    wz_ui_microdrive_command_context_t microdrive_command_contexts[
+        WZ_HOST_MICRODRIVE_COMMAND_COUNT];
+    bool microdrive_eject_confirmation_open;
+    size_t microdrive_eject_confirmation_slot;
     char file_notification[WZ_COMMAND_MESSAGE_CAPACITY];
     sg_image raster_image;
     sg_view raster_view;
@@ -1121,6 +1130,8 @@ static bool wz_host_load_external_microdrive_slot(wz_host_session_t* session,
     session->microdrive_image[slot] = image;
     wz_machine_microdrive_at(&session->machine, slot)->image =
         &session->microdrive_image[slot];
+    (void)snprintf(session->microdrive_path[slot],
+                   sizeof(session->microdrive_path[slot]), "%s", path);
     session->ui_window.layout.microdrive_mounted[slot] = true;
     if (slot == 0u) session->ui_window.layout.microdrive1_mounted = true;
     return true;
@@ -1137,7 +1148,7 @@ static bool wz_host_load_external_microdrive(wz_host_session_t* session,
         session, session->microdrive_default_slot, path);
 }
 
-static void wz_host_ui_mount_microdrive(size_t slot)
+static wz_result_t wz_host_ui_mount_microdrive(size_t slot)
 {
     char path[4096];
     wz_file_dialog_result_t dialog_result;
@@ -1148,7 +1159,7 @@ static void wz_host_ui_mount_microdrive(size_t slot)
         !wz_input_focus_dialog_enter(&session->input_focus)) {
         (void)snprintf(session->file_notification,
             sizeof(session->file_notification), "Microdrive dialog unavailable");
-        return;
+        return WZ_RESULT_INVALID_STATE;
     }
     dialog_result = wz_file_dialog_open(path, sizeof(path));
     (void)wz_input_focus_dialog_leave(&session->input_focus);
@@ -1162,6 +1173,7 @@ static void wz_host_ui_mount_microdrive(size_t slot)
         (void)snprintf(session->file_notification,
             sizeof(session->file_notification), "MDV %u mounted",
             (unsigned)(slot + 1u));
+        return WZ_RESULT_OK;
     } else if (dialog_result == WZ_FILE_DIALOG_CANCELLED) {
         (void)snprintf(session->file_notification,
             sizeof(session->file_notification), "MDV %u mount cancelled",
@@ -1171,27 +1183,198 @@ static void wz_host_ui_mount_microdrive(size_t slot)
             sizeof(session->file_notification), "MDV %u mount failed",
             (unsigned)(slot + 1u));
     }
+    return dialog_result == WZ_FILE_DIALOG_CANCELLED ? WZ_RESULT_OK :
+        WZ_RESULT_INVALID_STATE;
 }
 
 static void wz_host_ui_eject_microdrive(size_t slot)
 {
-    if (slot >= WZ_UI_MICRODRIVE_COUNT) return;
-    if (wz_machine_eject_microdrive(&wz_host_session.machine, slot + 1u,
-                                    false) != WZ_RESULT_OK) {
-        (void)snprintf(wz_host_session.file_notification,
-            sizeof(wz_host_session.file_notification),
-            "MDV %u has dirty data; save or discard it first",
-            (unsigned)(slot + 1u));
-        return;
+    if (slot >= WZ_UI_MICRODRIVE_COUNT ||
+        wz_host_session.microdrive_eject_confirmation_open) return;
+    wz_host_session.microdrive_eject_confirmation_slot = slot;
+    wz_host_session.microdrive_eject_confirmation_open = true;
+}
+
+typedef struct {
+    wz_host_session_t* session;
+    size_t slot;
+} wz_host_microdrive_save_context_t;
+
+static wz_result_t wz_host_microdrive_persist_sector(
+    size_t sector, const wz_byte_t* data, size_t length, void* opaque)
+{
+    wz_host_microdrive_save_context_t* save =
+        (wz_host_microdrive_save_context_t*)opaque;
+    wz_host_session_t* session;
+    wz_byte_t* staged;
+    size_t offset;
+    bool written;
+
+    if (save == NULL || data == NULL || length != WZ_MDR_SECTOR_SIZE ||
+        save->session == NULL || save->slot >= WZ_UI_MICRODRIVE_COUNT) {
+        return WZ_RESULT_INVALID_ARGUMENT;
     }
-    free(wz_host_session.microdrive_data[slot]);
-    wz_host_session.microdrive_data[slot] = NULL;
-    wz_host_session.microdrive_image[slot].data = NULL;
-    wz_host_session.ui_window.layout.microdrive_mounted[slot] = false;
-    if (slot == 0u) wz_host_session.ui_window.layout.microdrive1_mounted = false;
-    (void)snprintf(wz_host_session.file_notification,
-        sizeof(wz_host_session.file_notification), "MDV %u ejected",
+    session = save->session;
+    if (session->microdrive_data[save->slot] == NULL ||
+        session->microdrive_path[save->slot][0] == '\0' ||
+        sector >= session->microdrive_image[save->slot].sector_count ||
+        sector > SIZE_MAX / WZ_MDR_SECTOR_SIZE) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    offset = sector * WZ_MDR_SECTOR_SIZE;
+    if (offset > session->microdrive_image[save->slot].length ||
+        length > session->microdrive_image[save->slot].length - offset) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    staged = (wz_byte_t*)malloc(session->microdrive_image[save->slot].length);
+    if (staged == NULL) return WZ_RESULT_OUT_OF_MEMORY;
+    memcpy(staged, session->microdrive_data[save->slot],
+           session->microdrive_image[save->slot].length);
+    memcpy(staged + offset, data, length);
+    written = wz_host_output_write_atomic(
+        session->microdrive_path[save->slot], staged,
+        session->microdrive_image[save->slot].length);
+    if (written) {
+        wz_mdr_image_t refreshed_image;
+        wz_mdr_transport_t* transport;
+        memcpy(session->microdrive_data[save->slot], staged,
+               session->microdrive_image[save->slot].length);
+        if (wz_mdr_image_init(&refreshed_image,
+                session->microdrive_data[save->slot],
+                session->microdrive_image[save->slot].length) != WZ_RESULT_OK) {
+            free(staged);
+            return WZ_RESULT_INVALID_STATE;
+        }
+        session->microdrive_image[save->slot] = refreshed_image;
+        transport = wz_machine_microdrive_at(&session->machine, save->slot);
+        if (transport == NULL) {
+            free(staged);
+            return WZ_RESULT_INVALID_STATE;
+        }
+        transport->image_identity = refreshed_image.identity;
+    }
+    free(staged);
+    return written ? WZ_RESULT_OK : WZ_RESULT_INVALID_STATE;
+}
+
+static bool wz_host_microdrive_finish_eject(size_t slot, bool discard_dirty)
+{
+    wz_host_session_t* session = &wz_host_session;
+    wz_microdrive_eject_decision_t decision = discard_dirty
+        ? WZ_MICRODRIVE_EJECT_DISCARD : WZ_MICRODRIVE_EJECT_SAVE;
+    wz_host_microdrive_save_context_t save = {session, slot};
+    bool ejected = false;
+    wz_result_t result;
+
+    if (slot >= WZ_UI_MICRODRIVE_COUNT) return false;
+    result = wz_microdrive_eject_resolve(&session->machine, slot, decision,
+        wz_host_microdrive_persist_sector, &save, &ejected);
+    if (result != WZ_RESULT_OK || !ejected) {
+        (void)snprintf(session->file_notification,
+            sizeof(session->file_notification),
+            discard_dirty ? "MDV %u discard/eject failed" :
+                "MDV %u save/eject failed",
+            (unsigned)(slot + 1u));
+        return false;
+    }
+    free(session->microdrive_data[slot]);
+    session->microdrive_data[slot] = NULL;
+    session->microdrive_image[slot].data = NULL;
+    session->microdrive_path[slot][0] = '\0';
+    session->ui_window.layout.microdrive_mounted[slot] = false;
+    if (slot == 0u) session->ui_window.layout.microdrive1_mounted = false;
+    (void)snprintf(session->file_notification,
+        sizeof(session->file_notification), "MDV %u ejected",
         (unsigned)(slot + 1u));
+    return true;
+}
+
+static void wz_host_ui_resolve_microdrive_eject(size_t slot, bool discard_dirty)
+{
+    if (slot >= WZ_UI_MICRODRIVE_COUNT) return;
+    if (wz_host_microdrive_finish_eject(slot, discard_dirty)) {
+        wz_host_session.microdrive_eject_confirmation_open = false;
+    }
+}
+
+static bool wz_host_microdrive_command_available(
+    const void* opaque, size_t slot, wz_ui_microdrive_action_t action,
+    const char** reason)
+{
+    const wz_host_session_t* session;
+    const wz_mdr_transport_t* transport;
+
+    if (reason != NULL) *reason = NULL;
+    if (opaque == NULL || slot >= WZ_UI_MICRODRIVE_COUNT) {
+        if (reason != NULL) *reason = "microdrive-command-unavailable";
+        return false;
+    }
+    session = (const wz_host_session_t*)opaque;
+    transport = wz_machine_microdrive_at_const(&session->machine, slot);
+    if (transport == NULL) {
+        if (reason != NULL) *reason = "microdrive-drive-unavailable";
+        return false;
+    }
+    if (session->microdrive_eject_confirmation_open) {
+        if (reason != NULL) *reason = "microdrive-eject-confirmation-open";
+        return false;
+    }
+    if (action == WZ_UI_MICRODRIVE_ACTION_MOUNT &&
+        (transport->image_present != 0u ||
+         wz_mdr_transport_is_dirty(transport) != 0u)) {
+        if (reason != NULL) *reason = "microdrive-slot-must-be-empty";
+        return false;
+    }
+    if (action == WZ_UI_MICRODRIVE_ACTION_EJECT &&
+        transport->image_present == 0u) {
+        if (reason != NULL) *reason = "microdrive-slot-empty";
+        return false;
+    }
+    return true;
+}
+
+static wz_result_t wz_host_microdrive_command(
+    const void* opaque, size_t slot, wz_ui_microdrive_action_t action,
+    wz_command_arguments_t arguments, wz_command_result_t* result)
+{
+    wz_host_session_t* session;
+    if (opaque == NULL || result == NULL || arguments.size != 0u ||
+        slot >= WZ_UI_MICRODRIVE_COUNT) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    session = (wz_host_session_t*)opaque;
+    switch (action) {
+    case WZ_UI_MICRODRIVE_ACTION_MOUNT:
+        return wz_host_ui_mount_microdrive(slot);
+    case WZ_UI_MICRODRIVE_ACTION_EJECT:
+        wz_host_ui_eject_microdrive(slot);
+        (void)snprintf(result->message, sizeof(result->message),
+                       "confirmation-required");
+        return WZ_RESULT_OK;
+    case WZ_UI_MICRODRIVE_ACTION_SET_DEFAULT:
+        session->microdrive_default_slot = slot;
+        (void)snprintf(result->message, sizeof(result->message),
+                       "MDV %u is the default drive",
+                       (unsigned)(slot + 1u));
+        return WZ_RESULT_OK;
+    default:
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+}
+
+static wz_result_t wz_host_ui_dispatch_microdrive_action(size_t action_index)
+{
+    const wz_ui_toolbar_item_t* item =
+        wz_ui_layout_microdrive_action_at(action_index);
+    wz_command_result_t result;
+    if (item == NULL || wz_command_registry_state(
+            &wz_host_session.command_registry, item->command_id, NULL) !=
+            WZ_COMMAND_ENABLED) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    return wz_ui_layout_activate_microdrive_action(
+        &wz_host_session.command_registry, action_index,
+        (wz_command_arguments_t){NULL, 0u}, &result);
 }
 
 static bool wz_host_open_run_tape(const char* path, void* context)
@@ -2430,6 +2613,16 @@ static bool wz_host_register_commands(void)
             &wz_host_session.tape_media_command_context) != WZ_RESULT_OK) {
         return false;
     }
+    if (wz_ui_layout_register_microdrive_commands(
+            &wz_host_session.command_registry,
+            wz_host_session.microdrive_command_contexts,
+            WZ_HOST_MICRODRIVE_COMMAND_COUNT,
+            &wz_host_session,
+            wz_host_microdrive_command_available,
+            wz_host_microdrive_command) !=
+        WZ_RESULT_OK) {
+        return false;
+    }
     return wz_command_registry_finalize(&wz_host_session.command_registry) ==
         WZ_RESULT_OK;
 }
@@ -2884,24 +3077,67 @@ static void wz_host_ui_draw_toolbar(struct nk_context* context, float width)
                         wz_host_session.microdrive_default_slot == slot
                             ? " [default]" : "");
                     nk_layout_row_dynamic(context, 24.0f, 1);
-                    if (nk_combo_item_label(context, drive_label, NK_TEXT_LEFT)) {
-                        wz_host_session.microdrive_default_slot = slot;
+                    {
+                        const wz_ui_toolbar_item_t* action =
+                            wz_ui_layout_microdrive_action_at(
+                                slot * WZ_UI_MICRODRIVE_OPERATION_COUNT + 2u);
+                        const bool enabled = action != NULL &&
+                            wz_command_registry_state(
+                                &wz_host_session.command_registry,
+                                action->command_id, NULL) == WZ_COMMAND_ENABLED;
+                        if (!enabled) nk_widget_disable_begin(context);
+                        if (nk_combo_item_label(context, drive_label,
+                                                NK_TEXT_LEFT) && enabled) {
+                            (void)wz_host_ui_dispatch_microdrive_action(
+                                slot * WZ_UI_MICRODRIVE_OPERATION_COUNT + 2u);
+                        }
+                        if (!enabled) nk_widget_disable_end(context);
                     }
                     nk_layout_row_dynamic(context, 24.0f, 3);
-                    if (nk_button_label(context, "Mount")) {
-                        wz_host_ui_mount_microdrive(slot);
-                    }
-                    if (mounted) {
-                        if (nk_button_label(context, "Eject")) {
-                            wz_host_ui_eject_microdrive(slot);
+                    {
+                        const wz_ui_toolbar_item_t* action =
+                            wz_ui_layout_microdrive_action_at(
+                                slot * WZ_UI_MICRODRIVE_OPERATION_COUNT);
+                        const bool enabled = action != NULL &&
+                            wz_command_registry_state(
+                                &wz_host_session.command_registry,
+                                action->command_id, NULL) == WZ_COMMAND_ENABLED;
+                        if (!enabled) nk_widget_disable_begin(context);
+                        if (nk_button_label(context, "Mount") && enabled) {
+                            (void)wz_host_ui_dispatch_microdrive_action(
+                                slot * WZ_UI_MICRODRIVE_OPERATION_COUNT);
                         }
-                    } else {
-                        nk_widget_disable_begin(context);
-                        (void)nk_button_label(context, "Eject");
-                        nk_widget_disable_end(context);
+                        if (!enabled) nk_widget_disable_end(context);
                     }
-                    if (nk_button_label(context, "Default")) {
-                        wz_host_session.microdrive_default_slot = slot;
+                    {
+                        const wz_ui_toolbar_item_t* action =
+                            wz_ui_layout_microdrive_action_at(
+                                slot * WZ_UI_MICRODRIVE_OPERATION_COUNT + 1u);
+                        const bool enabled = action != NULL &&
+                            wz_command_registry_state(
+                                &wz_host_session.command_registry,
+                                action->command_id, NULL) == WZ_COMMAND_ENABLED;
+                        if (!enabled) nk_widget_disable_begin(context);
+                        if (nk_button_label(context, "Eject") && enabled) {
+                            (void)wz_host_ui_dispatch_microdrive_action(
+                                slot * WZ_UI_MICRODRIVE_OPERATION_COUNT + 1u);
+                        }
+                        if (!enabled) nk_widget_disable_end(context);
+                    }
+                    {
+                        const wz_ui_toolbar_item_t* action =
+                            wz_ui_layout_microdrive_action_at(
+                                slot * WZ_UI_MICRODRIVE_OPERATION_COUNT + 2u);
+                        const bool enabled = action != NULL &&
+                            wz_command_registry_state(
+                                &wz_host_session.command_registry,
+                                action->command_id, NULL) == WZ_COMMAND_ENABLED;
+                        if (!enabled) nk_widget_disable_begin(context);
+                        if (nk_button_label(context, "Default") && enabled) {
+                            (void)wz_host_ui_dispatch_microdrive_action(
+                                slot * WZ_UI_MICRODRIVE_OPERATION_COUNT + 2u);
+                        }
+                        if (!enabled) nk_widget_disable_end(context);
                     }
                 }
                 nk_combo_end(context);
@@ -2929,6 +3165,61 @@ static void wz_host_ui_draw_toolbar(struct nk_context* context, float width)
     }
     nk_end(context);
     context->style.window.padding = saved_padding;
+}
+
+static void wz_host_ui_draw_microdrive_eject_confirmation(
+    struct nk_context* context, float width)
+{
+    size_t slot;
+    const wz_mdr_transport_t* transport;
+    bool dirty;
+    char title[64];
+
+    if (!wz_host_session.microdrive_eject_confirmation_open) return;
+    slot = wz_host_session.microdrive_eject_confirmation_slot;
+    if (slot >= WZ_UI_MICRODRIVE_COUNT) {
+        wz_host_session.microdrive_eject_confirmation_open = false;
+        return;
+    }
+    transport = wz_machine_microdrive_at_const(&wz_host_session.machine, slot);
+    if (transport == NULL || transport->image_present == 0u) {
+        wz_host_session.microdrive_eject_confirmation_open = false;
+        return;
+    }
+    dirty = wz_mdr_transport_is_dirty(transport) != 0u;
+    (void)snprintf(title, sizeof(title), "Confirm MDV %u Eject",
+                   (unsigned)(slot + 1u));
+    if (!nk_begin(context, title,
+            nk_rect((width - 420.0f) * 0.5f, 100.0f, 420.0f, 184.0f),
+            NK_WINDOW_BORDER | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE)) {
+        nk_end(context);
+        return;
+    }
+    nk_layout_row_dynamic(context, 42.0f, 1);
+    nk_label_wrap(context, dirty
+        ? "This cartridge has unsaved Microdrive data. Save it before ejecting, discard the changes, or cancel."
+        : "Eject this mounted Microdrive cartridge?");
+    if (dirty) {
+        nk_layout_row_dynamic(context, 30.0f, 3);
+        if (nk_button_label(context, "Save and Eject")) {
+            wz_host_ui_resolve_microdrive_eject(slot, false);
+        }
+        if (nk_button_label(context, "Discard and Eject")) {
+            wz_host_ui_resolve_microdrive_eject(slot, true);
+        }
+        if (nk_button_label(context, "Cancel")) {
+            wz_host_session.microdrive_eject_confirmation_open = false;
+        }
+    } else {
+        nk_layout_row_dynamic(context, 30.0f, 2);
+        if (nk_button_label(context, "Eject")) {
+            wz_host_ui_resolve_microdrive_eject(slot, false);
+        }
+        if (nk_button_label(context, "Cancel")) {
+            wz_host_session.microdrive_eject_confirmation_open = false;
+        }
+    }
+    nk_end(context);
 }
 
 static void wz_host_ui_draw_tape_manager(struct nk_context* context,
@@ -3584,6 +3875,7 @@ static void wz_host_render_native_ui(struct nk_context* context,
     if (context == NULL) return;
     wz_host_ui_draw_menus(context, width);
     wz_host_ui_draw_toolbar(context, width);
+    wz_host_ui_draw_microdrive_eject_confirmation(context, width);
     wz_host_ui_draw_tape_manager(context, width);
     wz_host_ui_draw_snapshot_inspector(context, width, height);
     wz_host_ui_draw_remote_settings(context, width, height);
