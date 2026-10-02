@@ -71,7 +71,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "14fbeb3b3a81b13d6dc4778ba0e63767e0de275280ae9eb4026676c2e6f27b0d"
+      "sha256": "166723329340fc3ace9709be3a765af00d6d35a91879ed6228612f35db50ea2a"
     },
     {
       "path": "src/app/wz_telnet_alias_response.c",
