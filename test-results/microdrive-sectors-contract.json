@@ -1,0 +1,38 @@
+{
+  "testId": "microdrive-sectors-contract",
+  "status": "pass",
+  "commit": "e6924bcd79c6c444fbea9bee0de7ffa5a856c501",
+  "runner": "Linux/x86_64",
+  "timestamp": "2026-10-02T05:56:55.155827+00:00",
+  "runId": 36971203398,
+  "fixtures": [
+    {
+      "path": ".github/workflows/microdrive-sectors-contract.yml",
+      "sha256": "4c8ea61f428328b7eaa67875233d0b8b57778b685e1fbaa11ea1c28b41816f11"
+    },
+    {
+      "path": "ci/test/microdrive-sectors/CMakeLists.txt",
+      "sha256": "eeeef9e9b14feab298b3ca0d678a3da4e669141c0bf4152c534dfb3cfad3a21d"
+    },
+    {
+      "path": "ci/test/microdrive-sectors/microdrive-sectors-contract.c",
+      "sha256": "8aed46840ca41e09ad8ad838c8574aedd040fdd81a22df453cadb14065303aca"
+    },
+    {
+      "path": "src/app/wz_microdrive_manager.c",
+      "sha256": "4caf4844a3369191c4b0679e33ebca107b024990d64c44c813fdb57133828b31"
+    },
+    {
+      "path": "src/app/wz_microdrive_manager.h",
+      "sha256": "794b88473fbf2ca239cbeafdaa46ea2d583394d389d51a30420471c596f18c67"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "cd6bf80679d0111ecafd0c364d90a571cd3ff2471b2de11bb591e82c41f040ce"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "a312be8c83bd96c0b18d0fabc28557f4d5d784cb12e527e28f0ffddffb0ebca9"
+    }
+  ]
+}
