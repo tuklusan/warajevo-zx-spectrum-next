@@ -40,7 +40,7 @@
     },
     {
       "path": "src/app/wz_file_open_run.c",
-      "sha256": "7a091a34e3e861d8a40324c633563d94025f9b8f78787b7a968d7148d3c892a8"
+      "sha256": "9343f4f16880011075e96b0e903f5ea808d559ec160cf26bb0a140a41c41cb5e"
     },
     {
       "path": "src/app/wz_snapshot_save_workflow.c",

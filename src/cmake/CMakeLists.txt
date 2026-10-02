@@ -460,10 +460,7 @@ enable_testing()
 add_executable(
     wz_file_open_run_tests
     ${WZSN_REPO_ROOT}/ci/test/file-open-run/wz_file_open_run_tests.c
-    ${WZSN_SOURCE_ROOT}/app/wz_file_open_run.c
-    ${WZSN_SOURCE_ROOT}/app/wz_compatibility_tools.c
-    ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c
-    ${WZSN_SOURCE_ROOT}/app/wz_host_thread.c)
+    ${WZSN_SOURCE_ROOT}/app/wz_file_open_run.c)
 target_link_libraries(wz_file_open_run_tests PRIVATE wz_warnings)
 target_include_directories(wz_file_open_run_tests PRIVATE "${WZSN_SOURCE_ROOT}")
 add_test(NAME wz_file_open_run_tests COMMAND wz_file_open_run_tests)

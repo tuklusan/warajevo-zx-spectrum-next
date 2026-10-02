@@ -7,7 +7,6 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 */
 
 #include "app/wz_file_open_run.h"
-#include "app/wz_compatibility_tools.h"
 
 #include <ctype.h>
 #include <stdbool.h>
@@ -28,8 +27,17 @@ static bool wz_extension_equals(const char* extension, const char* expected)
 
 static bool wz_conversion_extension(const char* extension)
 {
-    return wz_compatibility_tools_route_for_format(extension,
-        NULL) == WZ_FILE_ROUTE_EXPLICIT_CONVERSION;
+    static const char* const extensions[] = {
+        ".voc", ".blk", ".spc", ".ltp", ".zxs", ".zxt", ".slt",
+        ".sem", ".sit", ".snp", ".scr", ".dck", ".trd"
+    };
+    size_t index;
+    for (index = 0u; index < sizeof(extensions) / sizeof(extensions[0]); ++index) {
+        if (wz_extension_equals(extension, extensions[index])) {
+            return true;
+        }
+    }
+    return false;
 }
 
 wz_open_run_result_t wz_file_open_run_route(const char* path,
