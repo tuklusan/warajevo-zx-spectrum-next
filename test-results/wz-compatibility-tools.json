@@ -1,10 +1,10 @@
 {
   "testId": "wz-compatibility-tools",
   "status": "pass",
-  "commit": "4bae3a69b03fce64d55ce49a8543fdd5a1297ec8",
+  "commit": "5d664a9213948c9b50979b606214da23c55e213a",
   "runner": "Linux/x86_64",
-  "timestamp": "2026-10-02T08:14:18.463918+00:00",
-  "runId": 36982789256,
+  "timestamp": "2026-10-12T13:28:53.336347+00:00",
+  "runId": 38255960356,
   "fixtures": [
     {
       "path": ".github/workflows/compatibility-tools-contract.yml",
@@ -16,11 +16,11 @@
     },
     {
       "path": "ci/test/compatibility-tools/contract.c",
-      "sha256": "27d66aa838c40abe2af61af82552964e93d3d4415b91cff17423aa14758bb2f9"
+      "sha256": "6f3b995280ef8a760022ea400b812f7ae35322078c5238b948337ba5fb4f0f46"
     },
     {
       "path": "src/app/wz_compatibility_tools.c",
-      "sha256": "e6584f62e816df11645f195563172388edbb19b8e050ac8bd753a1848e6531e0"
+      "sha256": "90be5ded11d3858955ce83084b6e493255ccb0e9a24a6133f22e717ade56ede0"
     },
     {
       "path": "src/app/wz_compatibility_tools.h",
@@ -57,6 +57,10 @@
     {
       "path": "src/app/wz_host_thread.h",
       "sha256": "bd4e189a40c8f9ad31f014dc12afc3c67b7a4bd5580df262b0cf92db8fbe8471"
+    },
+    {
+      "path": "docs/design/ui-legacy-disposition-audit.md",
+      "sha256": "fd9c71768753bf6b557ce66c77bc149011f3469a564471a766720099717e198e"
     }
   ]
 }
