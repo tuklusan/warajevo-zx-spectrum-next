@@ -29,6 +29,7 @@ FIXTURES = (
     "src/app/wz_speed_policy.c",
     "src/app/wz_ui_layout.c",
     "src/app/wz_ui_layout.h",
+    "src/app/wz_sokol_main.c",
     "src/core/wz_machine.c",
     "src/core/wz_machine.h",
     "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",

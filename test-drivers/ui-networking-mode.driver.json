@@ -8,7 +8,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/ui-networking-mode.yml",
-      "sha256": "7df1bcaf351bb945c2ef0f89dcb83e69afb9c4f4c8e6a2f46d0f776d927e57d6"
+      "sha256": "d35bd2e589c74cbf9765911d82e5a2ed9ecedd06af4fca05c50e2182b0cf58a8"
     },
     {
       "path": "ci/test/ui-networking-mode/CMakeLists.txt",
@@ -20,7 +20,7 @@
     },
     {
       "path": "ci/test/ui-networking-mode/write-proof.py",
-      "sha256": "5c85a1d1a672e443fc6652538854236c8c099986a8091a8f26b781c71e60670a"
+      "sha256": "25d9cc414db3a1626211d39c7d1654e264374bd01fe58e7b1772a8b4550bc46b"
     },
     {
       "path": "src/app/wz_command_registry.c",
@@ -69,6 +69,10 @@
     {
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
       "sha256": "70ecabb37fe68f5460c0596ef62f3564637e5f824e1917a9c9a56693aeda1038"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "e0dc6fc11b195bdcb3ee6385c34ce83145515d400c405b84e679413dfd4923cb"
     }
   ]
 }

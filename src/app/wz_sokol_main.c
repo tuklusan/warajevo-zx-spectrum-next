@@ -257,6 +257,7 @@ typedef struct {
     bool audio_settings_visible;
     bool input_settings_visible;
     bool rom_settings_visible;
+    bool networking_settings_visible;
     bool rom_license_approved;
     bool initialized;
 } wz_host_session_t;
@@ -2868,6 +2869,7 @@ static wz_result_t wz_host_rom_settings_open(
     session->audio_settings_visible = false;
     session->input_settings_visible = false;
     session->rom_settings_visible = true;
+    session->networking_settings_visible = false;
     session->rom_settings_message[0] = '\0';
     if (result != NULL) {
         (void)snprintf(result->message, sizeof(result->message),
@@ -2981,6 +2983,7 @@ static wz_result_t wz_host_display_settings_open(
     session->audio_settings_visible = false;
     session->input_settings_visible = false;
     session->rom_settings_visible = false;
+    session->networking_settings_visible = false;
     if (result != NULL) {
         (void)snprintf(result->message, sizeof(result->message),
                        "Display settings opened");
@@ -3000,6 +3003,7 @@ static wz_result_t wz_host_audio_settings_open(
     session->audio_settings_visible = true;
     session->input_settings_visible = false;
     session->rom_settings_visible = false;
+    session->networking_settings_visible = false;
     if (result != NULL) {
         (void)snprintf(result->message, sizeof(result->message),
                        "Audio settings opened");
@@ -3019,10 +3023,31 @@ static wz_result_t wz_host_input_settings_open(
     session->audio_settings_visible = false;
     session->input_settings_visible = true;
     session->rom_settings_visible = false;
+    session->networking_settings_visible = false;
     session->input_capture_kind = 0u;
     if (result != NULL) {
         (void)snprintf(result->message, sizeof(result->message),
                        "Input settings opened");
+    }
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_host_networking_settings_open(
+    const void* context, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    wz_host_session_t* session = (wz_host_session_t*)context;
+    if (session == NULL || arguments.size != 0u) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    session->display_settings_visible = false;
+    session->audio_settings_visible = false;
+    session->input_settings_visible = false;
+    session->rom_settings_visible = false;
+    session->networking_settings_visible = true;
+    if (result != NULL) {
+        (void)snprintf(result->message, sizeof(result->message),
+                       "Networking settings opened");
     }
     return WZ_RESULT_OK;
 }
@@ -3199,6 +3224,15 @@ static bool wz_host_register_commands(void)
             "wz_host_rom_settings_open", "local", NULL,
             WZ_COMMAND_LOCAL_ONLY, wz_host_settings_available,
             wz_host_rom_settings_open, &wz_host_session, false, false, NULL
+        },
+        {
+            "settings.networking.open", "Networking...",
+            "Select the exclusive machine networking mode",
+            "settings", "NONE", "wz-command-result",
+            "wz_host_networking_settings_open", "local", NULL,
+            WZ_COMMAND_LOCAL_ONLY, wz_host_settings_available,
+            wz_host_networking_settings_open, &wz_host_session,
+            false, false, NULL
         },
         {
             "settings.rom.choose", "Choose ROM...",
@@ -6064,6 +6098,68 @@ static void wz_host_ui_draw_rom_settings(struct nk_context* context,
     nk_end(context);
 }
 
+static void wz_host_ui_draw_networking_settings(
+    struct nk_context* context, float width, float height)
+{
+    const float panel_width = width >= 440.0f ? 420.0f : width - 16.0f;
+    const float panel_height = height >= 300.0f ? 268.0f : height - 32.0f;
+    size_t index;
+
+    if (!wz_host_session.networking_settings_visible ||
+        panel_width < 220.0f || panel_height < 200.0f) {
+        return;
+    }
+    if (!nk_begin(context, "Networking Settings",
+            nk_rect((width - panel_width) * 0.5f,
+                    (height - panel_height) * 0.5f,
+                    panel_width, panel_height),
+            NK_WINDOW_BORDER | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE)) {
+        nk_end(context);
+        return;
+    }
+    nk_layout_row_dynamic(context, 24.0f, 1);
+    nk_label(context, "Networking mode", NK_TEXT_LEFT);
+    for (index = 0u; index < WZ_UI_NETWORKING_OPTION_COUNT; ++index) {
+        const wz_ui_networking_option_t* option =
+            wz_ui_layout_networking_option_at(index);
+        const bool selected = option != NULL &&
+            option->mode == wz_host_session.machine.networking_mode;
+        if (option == NULL) {
+            continue;
+        }
+        if (!option->available) {
+            nk_widget_disable_begin(context);
+        }
+        if (nk_option_label(context, option->label,
+                            selected ? nk_true : nk_false) &&
+            option->available) {
+            wz_command_result_t command_result;
+            const wz_result_t activate_result = wz_ui_layout_activate_networking(
+                &wz_host_session.command_registry, option->mode,
+                &command_result);
+            if (activate_result == WZ_RESULT_OK) {
+                (void)wz_ui_layout_select_networking(
+                    &wz_host_session.ui_window.layout, option->mode);
+            } else if (command_result.message[0] != '\0') {
+                (void)snprintf(wz_host_session.file_notification,
+                    sizeof(wz_host_session.file_notification), "%s",
+                    command_result.message);
+            }
+        }
+        if (!option->available) {
+            nk_widget_disable_end(context);
+        }
+    }
+    nk_layout_row_dynamic(context, 40.0f, 1);
+    nk_label_wrap(context,
+        "Changing networking mode rebuilds the Spectrum machine state. The selected mode is exclusive.");
+    nk_layout_row_dynamic(context, 28.0f, 1);
+    if (nk_button_label(context, "Close")) {
+        wz_host_session.networking_settings_visible = false;
+    }
+    nk_end(context);
+}
+
 static void wz_host_render_native_ui(struct nk_context* context,
                                      float width, float height)
 {
@@ -6082,6 +6178,7 @@ static void wz_host_render_native_ui(struct nk_context* context,
     wz_host_ui_draw_audio_settings(context, width, height);
     wz_host_ui_draw_input_settings(context, width, height);
     wz_host_ui_draw_rom_settings(context, width, height);
+    wz_host_ui_draw_networking_settings(context, width, height);
     wz_host_ui_draw_remote_settings(context, width, height);
     wz_host_ui_draw_status(context, width, height);
 }
