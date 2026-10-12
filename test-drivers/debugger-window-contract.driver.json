@@ -20,7 +20,7 @@
     },
     {
       "path": "ci/test/debugger-window-contract/debugger-window-contract.c",
-      "sha256": "4f8a4069cfc6111de13113457b956a9384e540eead37fda3034ac070086409de"
+      "sha256": "114d4a9bfd6554d2d193918a9e3ad754aee2c664bcebc90a50872e431cd69063"
     },
     {
       "path": "src/app/wz_debugger_window.c",
