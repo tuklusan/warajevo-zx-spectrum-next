@@ -11,6 +11,8 @@
 
 #include <stdio.h>
 
+static unsigned cases;
+
 #define REQUIRE(condition) do { \
     if (!(condition)) { \
         (void)fprintf(stderr, "Keyboard menu contract failed at line %d: %s\n", \
@@ -26,8 +28,6 @@ int main(void)
     wz_input_focus_controller_t focus;
     wz_ui_keyboard_menu_t menu;
     const size_t action_count = 38u;
-    size_t cases = 0u;
-
     wz_input_arbiter_init(&arbiter);
     wz_input_focus_init(&focus, &arbiter);
     wz_ui_keyboard_menu_init(&menu);
@@ -70,10 +70,14 @@ int main(void)
     REQUIRE(wz_input_focus_lost(&focus));
     REQUIRE(wz_input_arbiter_source_key_down(&arbiter, WZ_INPUT_SOURCE_TELNET, 17u));
     REQUIRE(!wz_ui_keyboard_menu_close(&menu, &focus));
-    if (cases != 36u) {
-        (void)fprintf(stderr, "Expected 36 assertions, ran %zu\n", cases);
+    REQUIRE(wz_input_focus_gained(&focus));
+    REQUIRE(wz_ui_keyboard_menu_open(&menu, &focus));
+    wz_ui_keyboard_menu_focus_lost(&menu, NULL);
+    REQUIRE(!wz_ui_keyboard_menu_is_active(&menu));
+    if (cases != 39u) {
+        (void)fprintf(stderr, "Expected 39 assertions, ran %u\n", cases);
         return 1;
     }
-    (void)puts("Keyboard menu focus and navigation contract passed (36 cases)");
+    (void)puts("Keyboard menu focus and navigation contract passed (39 cases)");
     return 0;
 }

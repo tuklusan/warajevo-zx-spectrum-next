@@ -49,9 +49,12 @@ void wz_ui_keyboard_menu_focus_lost(
     wz_ui_keyboard_menu_t* menu,
     wz_input_focus_controller_t* focus)
 {
-    if (menu != NULL && menu->active) {
-        (void)wz_ui_keyboard_menu_close(menu, focus);
+    if (menu == NULL || !menu->active) return;
+    if (focus == NULL) {
+        menu->active = false;
+        return;
     }
+    (void)wz_ui_keyboard_menu_close(menu, focus);
 }
 
 bool wz_ui_keyboard_menu_move(wz_ui_keyboard_menu_t* menu,

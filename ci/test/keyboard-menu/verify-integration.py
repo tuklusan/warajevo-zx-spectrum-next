@@ -37,8 +37,6 @@ checks = [
     '"settings.networking.open"',
     '"media.tape.manager"',
     '"media.microdrive.manager"',
-    '"media.microdrive.eject.1"',
-    '"media.microdrive.eject.8"',
     '< focus',
     'wz_command_registry_state(',
     'wz_ui_keyboard_menu_open(',

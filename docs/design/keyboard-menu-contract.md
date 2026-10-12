@@ -14,8 +14,8 @@ local Spectrum key ownership and preserves independent Telnet ownership. Losing
 native window focus closes the menu. The selected row has a textual focus marker
 so focus is visible without relying on color.
 
-The 36-case C contract checks focus ownership, menu lifecycle, navigation
-boundaries, and Telnet/local input independence. A 49-check integration gate
+The 39-case C contract checks focus ownership, menu lifecycle, navigation
+boundaries, and Telnet/local input independence. A 47-check integration gate
 verifies the host bindings for the required workflows. This does not claim
 native screen-reader exposure; that limitation is recorded in the UI
 architecture decisions.

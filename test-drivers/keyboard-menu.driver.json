@@ -3,7 +3,7 @@
     "ubuntu-24.04"
   ],
   "testId": "keyboard-menu",
-  "requiredCases": 85,
+  "requiredCases": 86,
   "fixtures": [
     {
       "sha256": "97bb714fe812ebc43ff2f6442bdc57f3d28851dc87bdc64fe972114f98a7c8ff",
@@ -14,11 +14,11 @@
       "path": "ci/test/keyboard-menu/CMakeLists.txt"
     },
     {
-      "sha256": "b28d5f3db04df657f75aeda0a3b829712f7b781af6bb21b65879c569b2d90fbc",
+      "sha256": "ccf11cb8397f24de073dff5a7a2b8f5d3276eb8a0184bc6a3e9e2471bc6fc9ec",
       "path": "ci/test/keyboard-menu/keyboard-menu.c"
     },
     {
-      "sha256": "1405866475b846c38bc9e1bedd8d986ab9aec568b7901cfe1ec7e18a08d116b5",
+      "sha256": "b35c62fa4f2aef5507d63768f428990ae1e53377cca653e8671326d05c704471",
       "path": "ci/test/keyboard-menu/verify-integration.py"
     },
     {
@@ -34,11 +34,11 @@
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md"
     },
     {
-      "sha256": "2e363f0e653a1408841d5cc662a0ed7f39ba6d169ad8a06c5745a037fdda5b9e",
+      "sha256": "c4bb4ddbee2724bf988e3ef0f33f090b5d24ffb9dc5c851db14f01fe1ca955b8",
       "path": "docs/design/04-wzsn-architectures-1-2-developer-tasks.md"
     },
     {
-      "sha256": "861909b1bab54c95594d9f657b3a7a59587bfc1dfc06600951b62a30229e0e1c",
+      "sha256": "32e9177d371f12ec167a40884c758c59a4f85ff4e8c44457ae5ed592ffcd81f0",
       "path": "docs/design/keyboard-menu-contract.md"
     },
     {
@@ -62,7 +62,7 @@
       "path": "src/app/wz_sokol_main.c"
     },
     {
-      "sha256": "c13327cd674be81ac48d27ab9f98f3cf527a5693230b7f2c82de4ed394f6e866",
+      "sha256": "c6dc2525263bd213c19aff65b78c2c14d3d35c80a40ffd3daa4fe380fc9bf45e",
       "path": "src/app/wz_ui_keyboard_menu.c"
     },
     {
@@ -70,7 +70,7 @@
       "path": "src/app/wz_ui_keyboard_menu.h"
     },
     {
-      "sha256": "11b9c154fe6b4bd19a22ae31b707575635c20a77485aa9b6b98286220830860c",
+      "sha256": "af1a055ba24a42e870645a1b7389cffcf449028e8dd2f3344881282db94f51f4",
       "path": "src/cmake/CMakeLists.txt"
     }
   ],
