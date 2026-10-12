@@ -1,10 +1,10 @@
 {
   "testId": "wz-compatibility-tools",
   "status": "pass",
-  "commit": "5d664a9213948c9b50979b606214da23c55e213a",
+  "commit": "54d02cd647e0038498f4e3216c29315d3d8b1775",
   "runner": "Linux/x86_64",
-  "timestamp": "2026-10-12T13:28:53.336347+00:00",
-  "runId": 38255960356,
+  "timestamp": "2026-10-12T13:35:55.342171+00:00",
+  "runId": 38256773128,
   "fixtures": [
     {
       "path": ".github/workflows/compatibility-tools-contract.yml",
@@ -16,7 +16,7 @@
     },
     {
       "path": "ci/test/compatibility-tools/contract.c",
-      "sha256": "6f3b995280ef8a760022ea400b812f7ae35322078c5238b948337ba5fb4f0f46"
+      "sha256": "2d088cbdc6824f9026b06a38f9008a79cad1b2387b826536f8171b6d3151bf10"
     },
     {
       "path": "src/app/wz_compatibility_tools.c",
