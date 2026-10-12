@@ -1,10 +1,10 @@
 {
   "testId": "host-display-settings",
   "status": "pass",
-  "commit": "738753ec51f18a187446c7f0fa338ea548b048b8",
+  "commit": "4ab1954d60c406ca570262b5649acd0219309600",
   "runner": "Linux/x86_64",
-  "timestamp": "2026-10-12T14:04:03.831803+00:00",
-  "runId": 38260145894,
+  "timestamp": "2026-10-12T15:28:06.501384+00:00",
+  "runId": 38270425279,
   "fixtures": [
     {
       "path": ".github/workflows/host-display-settings-contract.yml",
@@ -44,7 +44,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "51a66c63a58f7737edc31d21324d48010ca6d00e348f6783b4ab0c0a89b7f36a"
+      "sha256": "9a24f2546c7f3d7100b50344b19545712b2c5273283b29abccfd38d98146ceba"
     },
     {
       "path": "src/core/wz_raster.h",
