@@ -15,6 +15,9 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "app/wz_host_presentation.h"
 #include "core/wz_types.h"
 
+#define WZ_HOST_DISPLAY_SCALE_FIT 0u
+#define WZ_HOST_DISPLAY_SCALE_MAX 4u
+
 typedef struct {
     size_t width;
     size_t height;
@@ -26,6 +29,7 @@ typedef struct {
     bool crop_to_display;
 } wz_host_display_settings_t;
 
+/* Scale 0 fits the source to the available host viewport; 1-4 are exact. */
 void wz_host_display_settings_init(wz_host_display_settings_t* settings);
 wz_result_t wz_host_display_settings_set_scale(
     wz_host_display_settings_t* settings, size_t integer_scale);

@@ -18,14 +18,14 @@ void wz_host_display_settings_init(wz_host_display_settings_t* settings)
     if (settings == 0) {
         return;
     }
-    settings->integer_scale = 1u;
+    settings->integer_scale = WZ_HOST_DISPLAY_SCALE_FIT;
     settings->crop_to_display = false;
 }
 
 wz_result_t wz_host_display_settings_set_scale(
     wz_host_display_settings_t* settings, size_t integer_scale)
 {
-    if (settings == 0 || integer_scale == 0u) {
+    if (settings == 0 || integer_scale > WZ_HOST_DISPLAY_SCALE_MAX) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
     settings->integer_scale = integer_scale;

@@ -29,7 +29,7 @@ void wz_host_preferences_init(wz_host_preferences_t* preferences)
         .window_width = 0,
         .window_height = 0,
         .fullscreen = false,
-        .display_scale = 1u,
+        .display_scale = 0u,
         .crop_to_display = false,
         .audio_enabled = true,
         .status_panel_visible = true,

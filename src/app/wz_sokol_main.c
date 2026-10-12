@@ -73,6 +73,7 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "app/wz_microdrive_manager.h"
 #include "app/wz_application_lifecycle.h"
 #include "app/wz_control_port.h"
+#include "app/wz_host_scaling.h"
 
 #define WZ_TAPE_MANAGER_MOVE_UP_COMMAND_ID "media.tape.manager.block.move_up"
 #define WZ_TAPE_MANAGER_MOVE_DOWN_COMMAND_ID "media.tape.manager.block.move_down"
@@ -145,6 +146,7 @@ typedef struct {
     bool tape_enter_down;
     wz_control_port_owner_t control_port;
     wz_telnet_client_gate_t telnet_client;
+    wz_host_display_settings_t display_settings;
     wz_command_registry_t command_registry;
     wz_command_metadata_t command_storage[WZ_HOST_COMMAND_CAPACITY];
     wz_networking_command_context_t networking_command_context;
@@ -243,6 +245,7 @@ typedef struct {
     bool audio_sample_speed_initialized;
     bool socket_system_initialized;
     bool remote_settings_visible;
+    bool display_settings_visible;
     bool initialized;
 } wz_host_session_t;
 
@@ -2762,6 +2765,48 @@ static bool wz_host_compatibility_tools_available(const void* context,
     return true;
 }
 
+static bool wz_host_display_settings_available(const void* context,
+                                               const char** reason)
+{
+    if (context == NULL || !wz_host_session.initialized) {
+        if (reason != NULL) *reason = "application-unavailable";
+        return false;
+    }
+    if (reason != NULL) *reason = NULL;
+    return true;
+}
+
+static wz_result_t wz_host_display_settings_open(
+    const void* context, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    wz_host_session_t* session = (wz_host_session_t*)context;
+    if (session == NULL || arguments.size != 0u) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    session->display_settings_visible = true;
+    if (result != NULL) {
+        (void)snprintf(result->message, sizeof(result->message),
+                       "Display settings opened");
+    }
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_host_toggle_fullscreen(
+    const void* context, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    if (context == NULL || arguments.size != 0u) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    sapp_toggle_fullscreen();
+    if (result != NULL) {
+        (void)snprintf(result->message, sizeof(result->message),
+                       "Fullscreen toggled");
+    }
+    return WZ_RESULT_OK;
+}
+
 static wz_result_t wz_host_compatibility_tools_open_command(
     const void* context, wz_command_arguments_t arguments,
     wz_command_result_t* result)
@@ -2887,6 +2932,22 @@ static bool wz_host_register_commands(void)
             "wz_host_debugger_open_command", "local", "F12",
             WZ_COMMAND_LOCAL_ONLY, wz_host_debugger_open_available,
             wz_host_debugger_open_command, &wz_host_session, false, false, NULL
+        },
+        {
+            "settings.display.open", "Display...",
+            "Adjust host-only scaling, border crop, and fullscreen presentation",
+            "settings", "NONE", "wz-command-result",
+            "wz_host_display_settings_open", "local", NULL,
+            WZ_COMMAND_LOCAL_ONLY, wz_host_display_settings_available,
+            wz_host_display_settings_open, &wz_host_session, false, false, NULL
+        },
+        {
+            "view.fullscreen", "Fullscreen",
+            "Toggle host window fullscreen presentation",
+            "view", "NONE", "wz-command-result",
+            "wz_host_toggle_fullscreen", "local", NULL,
+            WZ_COMMAND_LOCAL_ONLY, wz_host_display_settings_available,
+            wz_host_toggle_fullscreen, &wz_host_session, false, false, NULL
         },
         {
             "machine.pause_resume", "Pause", "Pause or resume the emulated machine",
@@ -5372,6 +5433,67 @@ static void wz_host_ui_draw_remote_settings(struct nk_context* context,
     nk_end(context);
 }
 
+static void wz_host_ui_draw_display_settings(struct nk_context* context,
+                                             float width, float height)
+{
+    const float panel_width = width >= 440.0f ? 420.0f : width - 16.0f;
+    const float panel_height = height >= 264.0f ? 232.0f : height - 32.0f;
+    size_t scale = wz_host_display_settings_scale(
+        &wz_host_session.display_settings);
+    int crop;
+
+    if (!wz_host_session.display_settings_visible || panel_width < 220.0f ||
+        panel_height < 160.0f) {
+        return;
+    }
+    if (!nk_begin(context, "Display Settings",
+            nk_rect((width - panel_width) * 0.5f,
+                    (height - panel_height) * 0.5f,
+                    panel_width, panel_height),
+            NK_WINDOW_BORDER | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE)) {
+        nk_end(context);
+        return;
+    }
+    nk_layout_row_dynamic(context, 22.0f, 1);
+    nk_label(context, "Presentation scale", NK_TEXT_LEFT);
+    nk_layout_row_dynamic(context, 28.0f, 5);
+    for (size_t option = WZ_HOST_DISPLAY_SCALE_FIT;
+         option <= WZ_HOST_DISPLAY_SCALE_MAX; ++option) {
+        char label[12];
+        if (option == WZ_HOST_DISPLAY_SCALE_FIT) {
+            (void)snprintf(label, sizeof(label), "Fit%s",
+                           scale == option ? " *" : "");
+        } else {
+            (void)snprintf(label, sizeof(label), "%zux%s", option,
+                           scale == option ? " *" : "");
+        }
+        if (nk_button_label(context, label)) {
+            (void)wz_host_display_settings_set_scale(
+                &wz_host_session.display_settings, option);
+        }
+    }
+    crop = wz_host_display_settings_crop(
+        &wz_host_session.display_settings) ? nk_true : nk_false;
+    nk_layout_row_dynamic(context, 30.0f, 1);
+    if (nk_checkbox_label(context, "Crop border (active display only)",
+                          &crop)) {
+        (void)wz_host_display_settings_set_crop(
+            &wz_host_session.display_settings, crop != nk_false);
+    }
+    nk_layout_row_dynamic(context, 24.0f, 1);
+    nk_label_wrap(context,
+        "Display changes affect host presentation only; emulation timing and the canonical raster are unchanged.");
+    nk_layout_row_dynamic(context, 28.0f, 2);
+    if (nk_button_label(context, sapp_is_fullscreen()
+            ? "Leave Fullscreen" : "Enter Fullscreen")) {
+        sapp_toggle_fullscreen();
+    }
+    if (nk_button_label(context, "Close")) {
+        wz_host_session.display_settings_visible = false;
+    }
+    nk_end(context);
+}
+
 static void wz_host_render_native_ui(struct nk_context* context,
                                      float width, float height)
 {
@@ -5386,6 +5508,7 @@ static void wz_host_render_native_ui(struct nk_context* context,
     wz_host_ui_draw_microdrive_eject_confirmation(context, width);
     wz_host_ui_draw_tape_manager(context, width);
     wz_host_ui_draw_snapshot_inspector(context, width, height);
+    wz_host_ui_draw_display_settings(context, width, height);
     wz_host_ui_draw_remote_settings(context, width, height);
     wz_host_ui_draw_status(context, width, height);
 }
@@ -5397,13 +5520,43 @@ static void wz_host_render_raster(void)
     const float window_height = (float)sapp_height();
     const float viewport_top = 56.0f;
     const float viewport_bottom = window_height - 48.0f;
-    const float viewport_height = viewport_bottom - viewport_top;
-    const float viewport_width = viewport_height *
-        (float)WZ_RASTER_CANONICAL_WIDTH / (float)WZ_RASTER_CANONICAL_HEIGHT;
+    const float viewport_height = viewport_bottom > viewport_top
+        ? viewport_bottom - viewport_top : 1.0f;
+    const bool crop = wz_host_display_settings_crop(
+        &wz_host_session.display_settings);
+    const size_t source_x = crop ?
+        (WZ_RASTER_CANONICAL_WIDTH - 256u) / 2u : 0u;
+    const size_t source_y = crop ?
+        (wz_host_session.machine.profile != NULL &&
+         wz_host_session.machine.profile->kind == WZ_MACHINE_48K_PAL
+            ? 64u : (WZ_RASTER_CANONICAL_HEIGHT - 192u) / 2u) : 0u;
+    const size_t source_width = crop ? 256u : WZ_RASTER_CANONICAL_WIDTH;
+    const size_t source_height = crop ? 192u : WZ_RASTER_CANONICAL_HEIGHT;
+    const size_t integer_scale = wz_host_display_settings_scale(
+        &wz_host_session.display_settings);
+    const float fit_scale_x = window_width / (float)source_width;
+    const float fit_scale_y = viewport_height / (float)source_height;
+    const float draw_scale = integer_scale == WZ_HOST_DISPLAY_SCALE_FIT
+        ? (fit_scale_x < fit_scale_y ? fit_scale_x : fit_scale_y)
+        : (float)integer_scale;
+    const float viewport_width = (float)source_width * draw_scale;
+    const float display_height = (float)source_height * draw_scale;
     const float viewport_left = (window_width - viewport_width) * 0.5f;
     const float viewport_right = viewport_left + viewport_width;
+    const float display_top = viewport_top +
+        (viewport_height - display_height) * 0.5f;
+    const float display_bottom = display_top + display_height;
+    const float texture_left =
+        (float)source_x / (float)WZ_RASTER_CANONICAL_WIDTH;
+    const float texture_right = (float)(source_x + source_width) /
+        (float)WZ_RASTER_CANONICAL_WIDTH;
+    const float texture_top =
+        (float)source_y / (float)WZ_RASTER_CANONICAL_HEIGHT;
+    const float texture_bottom = (float)(source_y + source_height) /
+        (float)WZ_RASTER_CANONICAL_HEIGHT;
     struct nk_context* ui_context = wz_host_session.ui_toolkit_initialized ?
         snk_new_frame() : NULL;
+    wz_host_session.ui_window.layout.fullscreen = sapp_is_fullscreen();
     {
         float scale = sapp_dpi_scale();
         if (scale <= 0.0f) scale = 1.0f;
@@ -5443,17 +5596,23 @@ static void wz_host_render_raster(void)
     });
     sgl_defaults();
     sgl_viewport(0, 0, sapp_width(), sapp_height(), true);
+    sgl_scissor_rect(0, (int)viewport_top, sapp_width(),
+                     (int)viewport_height, true);
     sgl_enable_texture();
     sgl_texture(wz_host_session.raster_view, wz_host_session.raster_sampler);
     sgl_begin_quads();
-    sgl_t2f(0.0f, 0.0f); sgl_v2f(viewport_left / window_width * 2.0f - 1.0f,
-                                  1.0f - viewport_bottom / window_height * 2.0f);
-    sgl_t2f(1.0f, 0.0f); sgl_v2f(viewport_right / window_width * 2.0f - 1.0f,
-                                  1.0f - viewport_bottom / window_height * 2.0f);
-    sgl_t2f(1.0f, 1.0f); sgl_v2f(viewport_right / window_width * 2.0f - 1.0f,
-                                  1.0f - viewport_top / window_height * 2.0f);
-    sgl_t2f(0.0f, 1.0f); sgl_v2f(viewport_left / window_width * 2.0f - 1.0f,
-                                  1.0f - viewport_top / window_height * 2.0f);
+    sgl_t2f(texture_left, texture_top);
+    sgl_v2f(viewport_left / window_width * 2.0f - 1.0f,
+            1.0f - display_bottom / window_height * 2.0f);
+    sgl_t2f(texture_right, texture_top);
+    sgl_v2f(viewport_right / window_width * 2.0f - 1.0f,
+            1.0f - display_bottom / window_height * 2.0f);
+    sgl_t2f(texture_right, texture_bottom);
+    sgl_v2f(viewport_right / window_width * 2.0f - 1.0f,
+            1.0f - display_top / window_height * 2.0f);
+    sgl_t2f(texture_left, texture_bottom);
+    sgl_v2f(viewport_left / window_width * 2.0f - 1.0f,
+            1.0f - display_top / window_height * 2.0f);
     sgl_end();
     sgl_draw();
     sgl_disable_texture();
@@ -5468,6 +5627,7 @@ static void wz_host_session_init(void)
 {
     const wz_machine_profile_t* profile;
     stm_setup();
+    wz_host_display_settings_init(&wz_host_session.display_settings);
     wz_snapshot_save_workflow_init(&wz_host_session.snapshot_save_workflow);
     wz_snapshot_inspector_init(&wz_host_session.snapshot_inspector);
     wz_printer_manager_init(&wz_host_session.printer_manager);
@@ -5768,6 +5928,18 @@ static void wz_host_input_focus_from_mouse(const sapp_event* event)
         panel_height = height >= 238.0f ? 190.0f : height - 48.0f;
         panel_x = width - panel_width - 8.0f;
         panel_y = height - panel_height - 56.0f;
+        if (event->mouse_x >= panel_x &&
+            event->mouse_x <= panel_x + panel_width &&
+            event->mouse_y >= panel_y &&
+            event->mouse_y <= panel_y + panel_height) {
+            ui_target = true;
+        }
+    }
+    if (wz_host_session.display_settings_visible) {
+        panel_width = width >= 440.0f ? 420.0f : width - 16.0f;
+        panel_height = height >= 264.0f ? 232.0f : height - 32.0f;
+        panel_x = (width - panel_width) * 0.5f;
+        panel_y = (height - panel_height) * 0.5f;
         if (event->mouse_x >= panel_x &&
             event->mouse_x <= panel_x + panel_width &&
             event->mouse_y >= panel_y &&

@@ -16,7 +16,7 @@ typedef struct wz_host_preferences {
     int window_width;
     int window_height;
     bool fullscreen;
-    unsigned display_scale;
+    unsigned display_scale; /* 0 = Fit; 1-4 = integer scale factor. */
     bool crop_to_display;
     bool audio_enabled;
     bool status_panel_visible;
