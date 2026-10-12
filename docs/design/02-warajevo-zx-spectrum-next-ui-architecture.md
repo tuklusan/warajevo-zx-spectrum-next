@@ -2622,8 +2622,12 @@ When a modal text/input control owns focus, host typing is consumed by that
 control rather than silently reaching the Spectrum unless the control is
 explicitly designed for pass-through.
 
-Any focus transition releases or preserves host-source key ownership according
-to one documented policy; it may not leave stale matrix presses.
+The project policy is that entering a modal text/input control releases all
+locally owned Spectrum matrix keys. While the text control owns focus, host key
+events are consumed by the UI and are not forwarded to the Spectrum. Returning
+to the viewport resumes local key forwarding only while the application itself
+has native focus. Losing native focus releases local keys; the independent
+Telnet input source remains active until its own release event.
 
 ### 42.3 Telnet independence
 
