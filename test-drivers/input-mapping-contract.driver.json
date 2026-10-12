@@ -1,0 +1,51 @@
+{
+  "testId": "input-mapping-contract",
+  "command": "cmake -S ci/test/input-mapping -B dist/input-mapping -DCMAKE_BUILD_TYPE=Release && cmake --build dist/input-mapping --config Release --target input_mapping_contract --parallel 2 && ctest --test-dir dist/input-mapping -C Release -R '^input_mapping_contract$' --output-on-failure",
+  "workflow": ".github/workflows/input-mapping-contract.yml",
+  "fixtures": [
+    {
+      "path": ".github/workflows/input-mapping-contract.yml",
+      "sha256": "d2f94eef17ac2eb27977477df0ed1734dd427c4eab2bfbc4adea1e563688e293"
+    },
+    {
+      "path": "ci/test/input-mapping/CMakeLists.txt",
+      "sha256": "7a3028bdb60d4baca0e714d1c8194efa8efbff85b1c0b84fcc1eaaef294a8e5a"
+    },
+    {
+      "path": "ci/test/input-mapping/contract.c",
+      "sha256": "5efb9c4f4b515488f53ebc15d2861384ae31de8d9424145216ccd0812a2598ed"
+    },
+    {
+      "path": "src/app/wz_keyboard_mapping.c",
+      "sha256": "f8137fe99b0b22aff830782f0c4d3d5eb7e6511f55626f37cd68cc11cf32d5d0"
+    },
+    {
+      "path": "src/app/wz_keyboard_mapping.h",
+      "sha256": "75faab2a9ca0f93004b8667848c6de8f6cc5d46e2f8fb6e2ff685fd7c46498bd"
+    },
+    {
+      "path": "src/app/wz_kempston_mapping.c",
+      "sha256": "0ca55ab8f3670ec756b1788969f3ccde9b93a46393a5661ff9c033e2e08107af"
+    },
+    {
+      "path": "src/app/wz_kempston_mapping.h",
+      "sha256": "158836614d6dad89c52fb7c56ea4825d28a5715cf63214e50d090de12605a5a9"
+    },
+    {
+      "path": "src/core/wz_kempston.c",
+      "sha256": "3a5a7d442da3debf4d114b660ae6b606f95ab963244fc5987e190689cd40b35a"
+    },
+    {
+      "path": "src/core/wz_kempston.h",
+      "sha256": "21ddeac1344f770e29180b8b015c5b8ebad3deffa2031beaad2ad09db2b947bd"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "1e19f3dd6f81a77e10214510fb18a2b57fb914dbbe067649375924b146373a64"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "adcc1c8f16d783e7ffcabcbc4ff0307d422ec47052e9301475dcfa139a859e13"
+    }
+  ]
+}

@@ -88,6 +88,8 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "app/wz_host_socket.h"
 #include "app/wz_input_arbiter.h"
 #include "app/wz_input_focus.h"
+#include "app/wz_keyboard_mapping.h"
+#include "app/wz_kempston_mapping.h"
 #include "app/wz_sokol_audio.h"
 #include "app/wz_host_pacing.h"
 #include "app/wz_host_machine_frame.h"
@@ -137,12 +139,15 @@ typedef struct {
     wz_ui_window_t ui_window;
     wz_headless_runner_t runner;
     wz_input_arbiter_t input_arbiter;
+    wz_keyboard_mapping_t keyboard_mapping;
+    wz_kempston_mapping_t kempston_mapping;
+    unsigned char local_host_key_down[WZ_KEYBOARD_MAPPING_HOST_KEY_LIMIT];
+    uint16_t local_spectrum_key_refcount[WZ_KEYBOARD_MATRIX_KEY_COUNT];
     wz_telnet_key_press_state_t telnet_key_presses;
     wz_input_focus_controller_t input_focus;
-    bool local_left_shift_down;
-    bool local_right_shift_down;
-    bool local_left_control_down;
-    bool local_right_control_down;
+    size_t input_keyboard_target;
+    size_t input_kempston_target;
+    unsigned input_capture_kind;
     bool tape_enter_down;
     wz_control_port_owner_t control_port;
     wz_telnet_client_gate_t telnet_client;
@@ -247,6 +252,7 @@ typedef struct {
     bool remote_settings_visible;
     bool display_settings_visible;
     bool audio_settings_visible;
+    bool input_settings_visible;
     bool initialized;
 } wz_host_session_t;
 
@@ -2789,6 +2795,7 @@ static wz_result_t wz_host_display_settings_open(
     }
     session->display_settings_visible = true;
     session->audio_settings_visible = false;
+    session->input_settings_visible = false;
     if (result != NULL) {
         (void)snprintf(result->message, sizeof(result->message),
                        "Display settings opened");
@@ -2806,9 +2813,29 @@ static wz_result_t wz_host_audio_settings_open(
     }
     session->display_settings_visible = false;
     session->audio_settings_visible = true;
+    session->input_settings_visible = false;
     if (result != NULL) {
         (void)snprintf(result->message, sizeof(result->message),
                        "Audio settings opened");
+    }
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_host_input_settings_open(
+    const void* context, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    wz_host_session_t* session = (wz_host_session_t*)context;
+    if (session == NULL || arguments.size != 0u) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    session->display_settings_visible = false;
+    session->audio_settings_visible = false;
+    session->input_settings_visible = true;
+    session->input_capture_kind = 0u;
+    if (result != NULL) {
+        (void)snprintf(result->message, sizeof(result->message),
+                       "Input settings opened");
     }
     return WZ_RESULT_OK;
 }
@@ -2969,6 +2996,14 @@ static bool wz_host_register_commands(void)
             "wz_host_audio_settings_open", "local", NULL,
             WZ_COMMAND_LOCAL_ONLY, wz_host_settings_available,
             wz_host_audio_settings_open, &wz_host_session, false, false, NULL
+        },
+        {
+            "settings.input", "Input...",
+            "Remap host keys to Spectrum keyboard and Kempston controls",
+            "settings", "NONE", "wz-command-result",
+            "wz_host_input_settings_open", "local", NULL,
+            WZ_COMMAND_LOCAL_ONLY, wz_host_settings_available,
+            wz_host_input_settings_open, &wz_host_session, false, false, NULL
         },
         {
             "view.fullscreen", "Fullscreen",
@@ -5560,6 +5595,162 @@ static void wz_host_ui_draw_audio_settings(struct nk_context* context,
     nk_end(context);
 }
 
+static const char* wz_host_spectrum_key_label(size_t key)
+{
+    static const char* const labels[WZ_KEYBOARD_MATRIX_KEY_COUNT] = {
+        "Shift", "Z", "X", "C", "V", "A", "S", "D", "F", "G",
+        "Q", "W", "E", "R", "T", "1", "2", "3", "4", "5",
+        "0", "9", "8", "7", "6", "P", "O", "I", "U", "Y",
+        "Enter", "L", "K", "J", "H", "Space", "Symbol Shift",
+        "M", "N", "B"
+    };
+    return key < WZ_KEYBOARD_MATRIX_KEY_COUNT ? labels[key] : "Unknown";
+}
+
+static const char* wz_host_kempston_control_label(size_t control)
+{
+    static const char* const labels[WZ_KEMPSTON_MAPPING_CONTROL_COUNT] = {
+        "Right", "Left", "Down", "Up", "Fire"
+    };
+    return control < WZ_KEMPSTON_MAPPING_CONTROL_COUNT
+        ? labels[control] : "Unknown";
+}
+
+static const char* wz_host_key_name(unsigned key, char output[16])
+{
+    if (key >= (unsigned)SAPP_KEYCODE_A &&
+        key <= (unsigned)SAPP_KEYCODE_Z) {
+        (void)snprintf(output, 16u, "%c", (char)('A' +
+            (int)(key - (unsigned)SAPP_KEYCODE_A)));
+    } else if (key >= (unsigned)SAPP_KEYCODE_0 &&
+               key <= (unsigned)SAPP_KEYCODE_9) {
+        (void)snprintf(output, 16u, "%c", (char)('0' +
+            (int)(key - (unsigned)SAPP_KEYCODE_0)));
+    } else {
+        switch ((sapp_keycode)key) {
+        case SAPP_KEYCODE_ENTER: return "Enter";
+        case SAPP_KEYCODE_SPACE: return "Space";
+        case SAPP_KEYCODE_LEFT_SHIFT: return "Left Shift";
+        case SAPP_KEYCODE_RIGHT_SHIFT: return "Right Shift";
+        case SAPP_KEYCODE_LEFT_CONTROL: return "Left Control";
+        case SAPP_KEYCODE_RIGHT_CONTROL: return "Right Control";
+        case SAPP_KEYCODE_RIGHT: return "Right Arrow";
+        case SAPP_KEYCODE_LEFT: return "Left Arrow";
+        case SAPP_KEYCODE_DOWN: return "Down Arrow";
+        case SAPP_KEYCODE_UP: return "Up Arrow";
+        default:
+            (void)snprintf(output, 16u, "Key %u", key);
+            break;
+        }
+    }
+    return output;
+}
+
+static void wz_host_ui_draw_input_settings(struct nk_context* context,
+                                           float width, float height)
+{
+    const float panel_width = width >= 440.0f ? 420.0f : width - 16.0f;
+    const float panel_height = height >= 392.0f ? 360.0f : height - 32.0f;
+    unsigned host_key;
+    char key_buffer[16];
+    char label[64];
+    const wz_kempston_binding_t* joystick_binding;
+
+    if (!wz_host_session.input_settings_visible || panel_width < 220.0f ||
+        panel_height < 220.0f) {
+        return;
+    }
+    if (!nk_begin(context, "Input Settings",
+            nk_rect((width - panel_width) * 0.5f,
+                    (height - panel_height) * 0.5f,
+                    panel_width, panel_height),
+            NK_WINDOW_BORDER | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE)) {
+        nk_end(context);
+        return;
+    }
+    nk_layout_row_dynamic(context, 20.0f, 1);
+    nk_label(context, "Spectrum keyboard", NK_TEXT_LEFT);
+    nk_layout_row_dynamic(context, 26.0f, 1);
+    if (nk_combo_begin_label(context,
+            wz_host_spectrum_key_label(wz_host_session.input_keyboard_target),
+            nk_vec2(panel_width - 24.0f, 150.0f))) {
+        nk_layout_row_dynamic(context, 20.0f, 1);
+        for (size_t index = 0u; index < WZ_KEYBOARD_MATRIX_KEY_COUNT; ++index) {
+            if (nk_combo_item_label(context,
+                    wz_host_spectrum_key_label(index), NK_TEXT_LEFT)) {
+                wz_host_session.input_keyboard_target = index;
+            }
+        }
+        nk_combo_end(context);
+    }
+    if (wz_keyboard_mapping_host_for(&wz_host_session.keyboard_mapping,
+            (wz_keyboard_key_t)wz_host_session.input_keyboard_target,
+            &host_key)) {
+        (void)snprintf(label, sizeof(label), "Host key: %s",
+                       wz_host_key_name(host_key, key_buffer));
+    } else {
+        (void)snprintf(label, sizeof(label), "Host key: unbound");
+    }
+    nk_layout_row_dynamic(context, 20.0f, 1);
+    nk_label(context, label, NK_TEXT_LEFT);
+    nk_layout_row_dynamic(context, 28.0f, 2);
+    if (nk_button_label(context, "Capture host key")) {
+        wz_host_session.input_capture_kind = 1u;
+    }
+    if (nk_button_label(context, "Unbind keyboard key")) {
+        (void)wz_keyboard_mapping_unbind(
+            &wz_host_session.keyboard_mapping,
+            (wz_keyboard_key_t)wz_host_session.input_keyboard_target);
+    }
+
+    nk_layout_row_dynamic(context, 20.0f, 1);
+    nk_label(context, "Kempston joystick", NK_TEXT_LEFT);
+    nk_layout_row_dynamic(context, 26.0f, 1);
+    if (nk_combo_begin_label(context,
+            wz_host_kempston_control_label(
+                wz_host_session.input_kempston_target),
+            nk_vec2(panel_width - 24.0f, 100.0f))) {
+        nk_layout_row_dynamic(context, 20.0f, 1);
+        for (size_t index = 0u;
+             index < WZ_KEMPSTON_MAPPING_CONTROL_COUNT; ++index) {
+            if (nk_combo_item_label(context,
+                    wz_host_kempston_control_label(index), NK_TEXT_LEFT)) {
+                wz_host_session.input_kempston_target = index;
+            }
+        }
+        nk_combo_end(context);
+    }
+    joystick_binding = &wz_host_session.kempston_mapping.bindings[
+        wz_host_session.input_kempston_target];
+    if (joystick_binding->bound) {
+        (void)snprintf(label, sizeof(label), "Host key: %s",
+            wz_host_key_name(joystick_binding->host_control, key_buffer));
+    } else {
+        (void)snprintf(label, sizeof(label), "Host key: unbound");
+    }
+    nk_layout_row_dynamic(context, 20.0f, 1);
+    nk_label(context, label, NK_TEXT_LEFT);
+    nk_layout_row_dynamic(context, 28.0f, 2);
+    if (nk_button_label(context, "Capture joystick key")) {
+        wz_host_session.input_capture_kind = 2u;
+    }
+    if (nk_button_label(context, "Unbind joystick key")) {
+        (void)wz_kempston_mapping_unbind(
+            &wz_host_session.kempston_mapping,
+            (wz_kempston_control_t)wz_host_session.input_kempston_target);
+    }
+    nk_layout_row_dynamic(context, 22.0f, 1);
+    nk_label_wrap(context, wz_host_session.input_capture_kind != 0u
+        ? "Press a host key to bind it. Host key identities stay in the application layer."
+        : "Host bindings are translated to Spectrum matrix or Kempston controls before core input.");
+    nk_layout_row_dynamic(context, 28.0f, 1);
+    if (nk_button_label(context, "Close")) {
+        wz_host_session.input_capture_kind = 0u;
+        wz_host_session.input_settings_visible = false;
+    }
+    nk_end(context);
+}
+
 static void wz_host_render_native_ui(struct nk_context* context,
                                      float width, float height)
 {
@@ -5576,6 +5767,7 @@ static void wz_host_render_native_ui(struct nk_context* context,
     wz_host_ui_draw_snapshot_inspector(context, width, height);
     wz_host_ui_draw_display_settings(context, width, height);
     wz_host_ui_draw_audio_settings(context, width, height);
+    wz_host_ui_draw_input_settings(context, width, height);
     wz_host_ui_draw_remote_settings(context, width, height);
     wz_host_ui_draw_status(context, width, height);
 }
@@ -5690,6 +5882,51 @@ static void wz_host_render_raster(void)
     sg_commit();
 }
 
+static void wz_host_input_mappings_init(wz_host_session_t* session)
+{
+    static const wz_keyboard_key_t letters[26] = {
+        WZ_KEY_A, WZ_KEY_B, WZ_KEY_C, WZ_KEY_D, WZ_KEY_E, WZ_KEY_F,
+        WZ_KEY_G, WZ_KEY_H, WZ_KEY_I, WZ_KEY_J, WZ_KEY_K, WZ_KEY_L,
+        WZ_KEY_M, WZ_KEY_N, WZ_KEY_O, WZ_KEY_P, WZ_KEY_Q, WZ_KEY_R,
+        WZ_KEY_S, WZ_KEY_T, WZ_KEY_U, WZ_KEY_V, WZ_KEY_W, WZ_KEY_X,
+        WZ_KEY_Y, WZ_KEY_Z
+    };
+    static const wz_keyboard_key_t digits[10] = {
+        WZ_KEY_0, WZ_KEY_1, WZ_KEY_2, WZ_KEY_3, WZ_KEY_4,
+        WZ_KEY_5, WZ_KEY_6, WZ_KEY_7, WZ_KEY_8, WZ_KEY_9
+    };
+    static const unsigned joystick_defaults[WZ_KEMPSTON_MAPPING_CONTROL_COUNT] = {
+        SAPP_KEYCODE_RIGHT, SAPP_KEYCODE_LEFT, SAPP_KEYCODE_DOWN,
+        SAPP_KEYCODE_UP, SAPP_KEYCODE_SPACE
+    };
+
+    wz_keyboard_mapping_init(&session->keyboard_mapping);
+    for (size_t index = 0u; index < 26u; ++index) {
+        (void)wz_keyboard_mapping_bind(&session->keyboard_mapping,
+            (unsigned)(SAPP_KEYCODE_A + index), letters[index]);
+    }
+    for (size_t index = 0u; index < 10u; ++index) {
+        (void)wz_keyboard_mapping_bind(&session->keyboard_mapping,
+            (unsigned)(SAPP_KEYCODE_0 + index), digits[index]);
+    }
+    (void)wz_keyboard_mapping_bind(&session->keyboard_mapping,
+        SAPP_KEYCODE_ENTER, WZ_KEY_ENTER);
+    (void)wz_keyboard_mapping_bind(&session->keyboard_mapping,
+        SAPP_KEYCODE_SPACE, WZ_KEY_SPACE);
+    (void)wz_keyboard_mapping_bind(&session->keyboard_mapping,
+        SAPP_KEYCODE_LEFT_SHIFT, WZ_KEY_SHIFT);
+    (void)wz_keyboard_mapping_bind(&session->keyboard_mapping,
+        SAPP_KEYCODE_RIGHT_SHIFT, WZ_KEY_SHIFT);
+    (void)wz_keyboard_mapping_bind(&session->keyboard_mapping,
+        SAPP_KEYCODE_LEFT_CONTROL, WZ_KEY_SYMBOL_SHIFT);
+    (void)wz_keyboard_mapping_bind(&session->keyboard_mapping,
+        SAPP_KEYCODE_RIGHT_CONTROL, WZ_KEY_SYMBOL_SHIFT);
+    wz_kempston_mapping_init(&session->kempston_mapping, joystick_defaults);
+    session->input_keyboard_target = 0u;
+    session->input_kempston_target = 0u;
+    session->input_capture_kind = 0u;
+}
+
 static void wz_host_session_init(void)
 {
     const wz_machine_profile_t* profile;
@@ -5704,6 +5941,7 @@ static void wz_host_session_init(void)
         &wz_host_session.compatibility_tools_window);
     wz_diagnostics_router_init(&wz_host_session.diagnostics_router,
         NULL, NULL, NULL, false);
+    wz_host_input_mappings_init(&wz_host_session);
     wz_host_session.speed = WZ_SPEED_100;
     sg_setup(&(sg_desc){.environment = sglue_environment()});
     sgl_setup(&(sgl_desc_t){0});
@@ -5892,83 +6130,66 @@ static void wz_host_cleanup(void)
 static bool wz_host_keycode_to_spectrum_key(sapp_keycode key_code,
                                              size_t* physical_key)
 {
-    static const wz_keyboard_key_t letters[26] = {
-        WZ_KEY_A, WZ_KEY_B, WZ_KEY_C, WZ_KEY_D, WZ_KEY_E, WZ_KEY_F,
-        WZ_KEY_G, WZ_KEY_H, WZ_KEY_I, WZ_KEY_J, WZ_KEY_K, WZ_KEY_L,
-        WZ_KEY_M, WZ_KEY_N, WZ_KEY_O, WZ_KEY_P, WZ_KEY_Q, WZ_KEY_R,
-        WZ_KEY_S, WZ_KEY_T, WZ_KEY_U, WZ_KEY_V, WZ_KEY_W, WZ_KEY_X,
-        WZ_KEY_Y, WZ_KEY_Z
-    };
-    static const wz_keyboard_key_t digits[10] = {
-        WZ_KEY_0, WZ_KEY_1, WZ_KEY_2, WZ_KEY_3, WZ_KEY_4,
-        WZ_KEY_5, WZ_KEY_6, WZ_KEY_7, WZ_KEY_8, WZ_KEY_9
-    };
-    if (physical_key == NULL) return false;
-    if (key_code >= SAPP_KEYCODE_A && key_code <= SAPP_KEYCODE_Z) {
-        size_t index = (size_t)(key_code - SAPP_KEYCODE_A);
-        if (index < sizeof(letters) / sizeof(letters[0])) {
-            *physical_key = (size_t)letters[index];
-            return true;
-        }
+    wz_keyboard_key_t key;
+    if (physical_key == NULL || key_code <= 0 ||
+        !wz_keyboard_mapping_resolve(&wz_host_session.keyboard_mapping,
+                                    (unsigned)key_code, &key)) {
         return false;
     }
-    if (key_code >= SAPP_KEYCODE_0 && key_code <= SAPP_KEYCODE_9) {
-        size_t index = (size_t)(key_code - SAPP_KEYCODE_0);
-        if (index < sizeof(digits) / sizeof(digits[0])) {
-            *physical_key = (size_t)digits[index];
-            return true;
-        }
-        return false;
-    }
-    switch (key_code) {
-    case SAPP_KEYCODE_ENTER:
-        *physical_key = WZ_KEY_ENTER;
-        return true;
-    case SAPP_KEYCODE_SPACE:
-        *physical_key = WZ_KEY_SPACE;
-        return true;
-    default:
-        return false;
-    }
+    *physical_key = (size_t)key;
+    return true;
 }
 
 static bool wz_host_set_local_key(sapp_keycode key_code, bool pressed)
 {
-    size_t physical_key;
-    if (key_code == SAPP_KEYCODE_LEFT_SHIFT) {
-        wz_host_session.local_left_shift_down = pressed;
-        physical_key = WZ_KEY_SHIFT;
-        pressed = wz_host_session.local_left_shift_down ||
-                  wz_host_session.local_right_shift_down;
-    } else if (key_code == SAPP_KEYCODE_RIGHT_SHIFT) {
-        wz_host_session.local_right_shift_down = pressed;
-        physical_key = WZ_KEY_SHIFT;
-        pressed = wz_host_session.local_left_shift_down ||
-                  wz_host_session.local_right_shift_down;
-    } else if (key_code == SAPP_KEYCODE_LEFT_CONTROL) {
-        wz_host_session.local_left_control_down = pressed;
-        physical_key = WZ_KEY_SYMBOL_SHIFT;
-        pressed = wz_host_session.local_left_control_down ||
-                  wz_host_session.local_right_control_down;
-    } else if (key_code == SAPP_KEYCODE_RIGHT_CONTROL) {
-        wz_host_session.local_right_control_down = pressed;
-        physical_key = WZ_KEY_SYMBOL_SHIFT;
-        pressed = wz_host_session.local_left_control_down ||
-                  wz_host_session.local_right_control_down;
-    } else if (!wz_host_keycode_to_spectrum_key(key_code, &physical_key)) {
+    size_t physical_key = 0u;
+    unsigned host_key;
+    bool keyboard_mapped;
+    bool joystick_mapped;
+    if (key_code <= 0 ||
+        (unsigned)key_code >= WZ_KEYBOARD_MAPPING_HOST_KEY_LIMIT) {
         return false;
     }
-    (void)wz_input_arbiter_set(&wz_host_session.input_arbiter,
-        WZ_INPUT_SOURCE_LOCAL, physical_key, pressed);
-    return true;
+    host_key = (unsigned)key_code;
+    keyboard_mapped = wz_host_keycode_to_spectrum_key(key_code,
+                                                       &physical_key);
+    if (wz_host_session.local_host_key_down[host_key] ==
+        (unsigned char)(pressed ? 1u : 0u)) {
+        return keyboard_mapped ||
+            wz_kempston_mapping_apply(&wz_host_session.kempston_mapping,
+                &wz_host_session.machine.kempston, host_key, pressed);
+    }
+    if (keyboard_mapped) {
+        if (pressed) {
+            ++wz_host_session.local_spectrum_key_refcount[physical_key];
+        } else if (wz_host_session.local_spectrum_key_refcount[physical_key] >
+                   0u) {
+            --wz_host_session.local_spectrum_key_refcount[physical_key];
+        }
+        (void)wz_input_arbiter_set(&wz_host_session.input_arbiter,
+            WZ_INPUT_SOURCE_LOCAL, physical_key,
+            wz_host_session.local_spectrum_key_refcount[physical_key] > 0u);
+    }
+    wz_host_session.local_host_key_down[host_key] = pressed ? 1u : 0u;
+    joystick_mapped = wz_kempston_mapping_apply(
+        &wz_host_session.kempston_mapping,
+        &wz_host_session.machine.kempston, host_key, pressed);
+    return keyboard_mapped || joystick_mapped;
 }
 
 static void wz_host_release_local_keys(void)
 {
-    wz_host_session.local_left_shift_down = false;
-    wz_host_session.local_right_shift_down = false;
-    wz_host_session.local_left_control_down = false;
-    wz_host_session.local_right_control_down = false;
+    for (unsigned host_key = 0u;
+         host_key < WZ_KEYBOARD_MAPPING_HOST_KEY_LIMIT; ++host_key) {
+        if (wz_host_session.local_host_key_down[host_key] != 0u) {
+            (void)wz_kempston_mapping_apply(
+                &wz_host_session.kempston_mapping,
+                &wz_host_session.machine.kempston, host_key, false);
+        }
+        wz_host_session.local_host_key_down[host_key] = 0u;
+    }
+    memset(wz_host_session.local_spectrum_key_refcount, 0,
+        sizeof(wz_host_session.local_spectrum_key_refcount));
     (void)wz_input_arbiter_release_source(&wz_host_session.input_arbiter,
                                          WZ_INPUT_SOURCE_LOCAL);
 }
@@ -6005,6 +6226,18 @@ static void wz_host_input_focus_from_mouse(const sapp_event* event)
     if (wz_host_session.audio_settings_visible) {
         panel_width = width >= 440.0f ? 420.0f : width - 16.0f;
         panel_height = height >= 232.0f ? 200.0f : height - 32.0f;
+        panel_x = (width - panel_width) * 0.5f;
+        panel_y = (height - panel_height) * 0.5f;
+        if (event->mouse_x >= panel_x &&
+            event->mouse_x <= panel_x + panel_width &&
+            event->mouse_y >= panel_y &&
+            event->mouse_y <= panel_y + panel_height) {
+            ui_target = true;
+        }
+    }
+    if (wz_host_session.input_settings_visible) {
+        panel_width = width >= 440.0f ? 420.0f : width - 16.0f;
+        panel_height = height >= 392.0f ? 360.0f : height - 32.0f;
         panel_x = (width - panel_width) * 0.5f;
         panel_y = (height - panel_height) * 0.5f;
         if (event->mouse_x >= panel_x &&
@@ -6142,6 +6375,32 @@ static void wz_host_frame(void)
 static void wz_host_event(const sapp_event* event)
 {
     if (event == NULL) return;
+    if ((event->type == SAPP_EVENTTYPE_KEY_DOWN ||
+         event->type == SAPP_EVENTTYPE_KEY_UP) &&
+        wz_host_session.input_capture_kind != 0u) {
+        if (event->type == SAPP_EVENTTYPE_KEY_DOWN) {
+            if (event->key_code <= 0 ||
+                (unsigned)event->key_code >=
+                    WZ_KEYBOARD_MAPPING_HOST_KEY_LIMIT) {
+                return;
+            }
+            if (wz_host_session.input_capture_kind == 1u) {
+                (void)wz_keyboard_mapping_bind(
+                    &wz_host_session.keyboard_mapping,
+                    (unsigned)event->key_code,
+                    (wz_keyboard_key_t)
+                        wz_host_session.input_keyboard_target);
+            } else if (wz_host_session.input_capture_kind == 2u) {
+                (void)wz_kempston_mapping_bind(
+                    &wz_host_session.kempston_mapping,
+                    (wz_kempston_control_t)
+                        wz_host_session.input_kempston_target,
+                    (unsigned)event->key_code);
+            }
+            wz_host_session.input_capture_kind = 0u;
+        }
+        return;
+    }
     if (wz_host_session.ui_toolkit_initialized) {
         (void)snk_handle_event(event);
     }
@@ -6151,6 +6410,7 @@ static void wz_host_event(const sapp_event* event)
     }
     if (event->type == SAPP_EVENTTYPE_UNFOCUSED) {
         wz_host_release_local_keys();
+        wz_host_session.input_capture_kind = 0u;
         (void)wz_input_focus_lost(&wz_host_session.input_focus);
         return;
     }
