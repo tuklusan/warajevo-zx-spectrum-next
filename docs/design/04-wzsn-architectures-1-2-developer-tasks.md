@@ -445,7 +445,7 @@ Debug application startup/shutdown now attaches, freezes, and closes a per-proce
 
 ## Phase 12G — Complete legacy disposition and Phase-12 exit
 
-353. [P12][UI §20] Create a backlog trace row for every legacy menu/facility listed in UI §20, pointing to its implemented task or explicit LATER/REPLACE/DROP disposition.
+353. [P12][UI §20][COMPLETE] Added 174 item-level trace rows covering every listed operation, conversion, and facility in §§20.1–20.21, including entries presented as one-column inventories. Each row records destination, explicit RETAIN/LATER/REPLACE/DROP disposition, and linked implementation/backlog task in [ui-legacy-disposition-audit.md](ui-legacy-disposition-audit.md); links preserve the referenced task status and do not imply completion.
 354. [P12][UI §§20.19] Verify legacy Setup mappings resolve to modern Machine/Settings controls and no DOS-era hardware compensation control is accidentally reproduced.
 355. [P12][UI §§20.20–20.21] Verify DOS shell/directory/heap/child-emulator UI is absent and Start/Names/status behavior is represented by modern surfaces.
 356. [P12][UI §§45] Run cancellation, non-destructive failure, destructive confirmation, and state-preservation tests across all initial UI workflows.
