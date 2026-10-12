@@ -13,7 +13,7 @@
     },
     {
       "path": "ci/test/rom-settings/contract.c",
-      "sha256": "3f08afe509444d5083e6c5ce40c945ad83bc7e232f0d0dc01d00525acb03f525"
+      "sha256": "fd85f526d595254a9ecb94d5c9a4227932db43707e516cdb3adfaf85dc6c360b"
     },
     {
       "path": "src/app/wz_rom_settings.c",
