@@ -1,0 +1,79 @@
+{
+  "testId": "keyboard-menu",
+  "status": "pass",
+  "commit": "28b12b95ec668a254fee52f63dbb665d3d4e3b32",
+  "runId": 38309798285,
+  "runner": "Linux/X64",
+  "timestamp": "2026-10-12T21:19:57+00:00",
+  "caseCount": 86,
+  "fixtures": [
+    {
+      "path": ".github/workflows/keyboard-menu.yml",
+      "sha256": "97bb714fe812ebc43ff2f6442bdc57f3d28851dc87bdc64fe972114f98a7c8ff"
+    },
+    {
+      "path": "ci/test/keyboard-menu/CMakeLists.txt",
+      "sha256": "d761b87e6378e307d6581a7189066a825b5ec8949f4dce42e016386c33b10fb3"
+    },
+    {
+      "path": "ci/test/keyboard-menu/keyboard-menu.c",
+      "sha256": "ccf11cb8397f24de073dff5a7a2b8f5d3276eb8a0184bc6a3e9e2471bc6fc9ec"
+    },
+    {
+      "path": "ci/test/keyboard-menu/verify-integration.py",
+      "sha256": "b35c62fa4f2aef5507d63768f428990ae1e53377cca653e8671326d05c704471"
+    },
+    {
+      "path": "ci/test/keyboard-menu/write-proof.py",
+      "sha256": "a26d424c0743f9105f23c8ef86bd9ffa1a13aeff6d309466e01fe5c17e90072f"
+    },
+    {
+      "path": "design/ui-phase-12-decisions.md",
+      "sha256": "6aa932820c60e16befb57b1a8a65a947c0927ca2ed3f7a849ab363cb4746ede1"
+    },
+    {
+      "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
+      "sha256": "dc47afb96f2c0566788d59ef74a691c33a8943e1c4e199c96c74d07739e68b31"
+    },
+    {
+      "path": "docs/design/04-wzsn-architectures-1-2-developer-tasks.md",
+      "sha256": "c4bb4ddbee2724bf988e3ef0f33f090b5d24ffb9dc5c851db14f01fe1ca955b8"
+    },
+    {
+      "path": "docs/design/keyboard-menu-contract.md",
+      "sha256": "32e9177d371f12ec167a40884c758c59a4f85ff4e8c44457ae5ed592ffcd81f0"
+    },
+    {
+      "path": "src/app/wz_input_arbiter.c",
+      "sha256": "52bc39d6c9d5326e76d695f4f4a725f410e02cb9852a48a5f13b266ce2523bcb"
+    },
+    {
+      "path": "src/app/wz_input_arbiter.h",
+      "sha256": "d16b682056e7bf3864c46083407eaca716956ae137e23ab83d51190afc1dffcd"
+    },
+    {
+      "path": "src/app/wz_input_focus.c",
+      "sha256": "4ce12b4b7f4045319753bf324d425a2f209e01583b710939a6e9f3e03671bfdb"
+    },
+    {
+      "path": "src/app/wz_input_focus.h",
+      "sha256": "ef2d8f3e72d10d7d7a3c221714cce84b43bdd6e9a87c7b20ae8e39cdcfb2cbdb"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "8ba29e1fc209f98750da493cb8e992fe22f62583be75fc1801843a6b174ee651"
+    },
+    {
+      "path": "src/app/wz_ui_keyboard_menu.c",
+      "sha256": "c6dc2525263bd213c19aff65b78c2c14d3d35c80a40ffd3daa4fe380fc9bf45e"
+    },
+    {
+      "path": "src/app/wz_ui_keyboard_menu.h",
+      "sha256": "6caf7d57fa89bd2e9fee6669240bb0550effab9a703915885995b56fde3b4b48"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "af1a055ba24a42e870645a1b7389cffcf449028e8dd2f3344881282db94f51f4"
+    }
+  ]
+}

@@ -34,10 +34,6 @@
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md"
     },
     {
-      "sha256": "c4bb4ddbee2724bf988e3ef0f33f090b5d24ffb9dc5c851db14f01fe1ca955b8",
-      "path": "docs/design/04-wzsn-architectures-1-2-developer-tasks.md"
-    },
-    {
       "sha256": "32e9177d371f12ec167a40884c758c59a4f85ff4e8c44457ae5ed592ffcd81f0",
       "path": "docs/design/keyboard-menu-contract.md"
     },
