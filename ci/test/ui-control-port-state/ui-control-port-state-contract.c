@@ -43,6 +43,14 @@ int main(void)
     REQUIRE(status.listener_state == WZ_UI_REMOTE_LISTENER_UNAVAILABLE);
     cases += 4u;
 
+    owner.selected_port = 32787u;
+    wz_ui_layout_sync_remote_control(&layout, &status, &owner, true);
+    wz_ui_remote_control_indicator(&status, indicator, sizeof(indicator));
+    REQUIRE(layout.control_port_available);
+    REQUIRE(status.selected_control_port_available);
+    REQUIRE(strstr(indicator, "32787") != NULL);
+    cases += 3u;
+
     wz_host_preferences_init(&preferences);
     REQUIRE(wz_host_preferences_serialize(&preferences, serialized,
                                            sizeof(serialized), &written));
@@ -50,7 +58,8 @@ int main(void)
     REQUIRE(strstr(serialized, "control_port") == NULL);
     REQUIRE(strstr(serialized, "selected_port") == NULL);
     REQUIRE(strstr(serialized, "30740") == NULL);
-    cases += 4u;
+    REQUIRE(strstr(serialized, "32787") == NULL);
+    cases += 5u;
 
     (void)printf("ui-control-port-state cases=%u status=pass\n", cases);
     return 0;
