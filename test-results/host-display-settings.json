@@ -1,0 +1,54 @@
+{
+  "testId": "host-display-settings",
+  "status": "pass",
+  "commit": "738753ec51f18a187446c7f0fa338ea548b048b8",
+  "runner": "Linux/x86_64",
+  "timestamp": "2026-10-12T14:04:03.831803+00:00",
+  "runId": 38260145894,
+  "fixtures": [
+    {
+      "path": ".github/workflows/host-display-settings-contract.yml",
+      "sha256": "ac97cd7997d4a6420b5b21cf19e9a5fc9580ed7f007ae13edb4f47f87c4b943c"
+    },
+    {
+      "path": "ci/test/host-display-settings/CMakeLists.txt",
+      "sha256": "0c3f7fb5d22e16406ae2e760fcb019ef5433b16eecd58922ebfd7e8810b0ea29"
+    },
+    {
+      "path": "ci/test/host-display-settings/contract.c",
+      "sha256": "91371fa01de8ec98a6bc8ed1f2028ff8f54f1e828826ceb99029751089f72161"
+    },
+    {
+      "path": "src/app/wz_host_config.c",
+      "sha256": "5cd5b1c698a5493f79a8210aaa3caf14b2998b4d7581abf4b718cfda4b8a66d2"
+    },
+    {
+      "path": "src/app/wz_host_config.h",
+      "sha256": "783558070f5b5d2faac7198592a7e7b07bb2f765014dbae4a039d9f2dd4e256b"
+    },
+    {
+      "path": "src/app/wz_host_presentation.c",
+      "sha256": "abfbb1f4b290e0da544218da1b32ec99dd19c6cbee0247204a063fe4668c2b21"
+    },
+    {
+      "path": "src/app/wz_host_presentation.h",
+      "sha256": "049a4220f4f49e54d1efb99630ae9381c93cb6a1348e23fbf007c72537c6e705"
+    },
+    {
+      "path": "src/app/wz_host_scaling.c",
+      "sha256": "24170dbcad638e0bfdea70049020c191afbeadbdea9a6d599fce69f8896a8200"
+    },
+    {
+      "path": "src/app/wz_host_scaling.h",
+      "sha256": "12b8e8c91b33029a4c7dd69b07fbc91c42a81b3cee76cde2957bd440abf65d46"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "51a66c63a58f7737edc31d21324d48010ca6d00e348f6783b4ab0c0a89b7f36a"
+    },
+    {
+      "path": "src/core/wz_raster.h",
+      "sha256": "c231c401076b312c4b8ae6ef55492fd7e4068742c59a3583b4efaefee0ec5396"
+    }
+  ]
+}
