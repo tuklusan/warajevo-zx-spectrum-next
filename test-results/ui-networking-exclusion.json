@@ -1,10 +1,10 @@
 {
   "testId": "ui-networking-exclusion",
   "status": "pass",
-  "commit": "8024ee1dfd033b9d05117f8b7084daf0f2afc627",
-  "runId": 38282656494,
+  "commit": "3c360c9c69be38b5ab0434d6bd93bec2c737f3b4",
+  "runId": 38319836286,
   "runner": "Linux/X64",
-  "timestamp": "2026-10-12T17:12:46+00:00",
+  "timestamp": "2026-10-12T23:00:47+00:00",
   "caseCount": 19,
   "fixtures": [
     {

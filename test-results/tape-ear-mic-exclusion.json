@@ -1,10 +1,10 @@
 {
   "testId": "tape-ear-mic-exclusion",
   "status": "pass",
-  "commit": "3ebb90bb34775cb23fbebea14150e4aa08c4a781",
-  "runId": 38301946321,
+  "commit": "3c360c9c69be38b5ab0434d6bd93bec2c737f3b4",
+  "runId": 38319833330,
   "runner": "Linux/X64",
-  "timestamp": "2026-10-12T20:06:01+00:00",
+  "timestamp": "2026-10-12T23:00:43+00:00",
   "caseCount": 11,
   "fixtures": [
     {

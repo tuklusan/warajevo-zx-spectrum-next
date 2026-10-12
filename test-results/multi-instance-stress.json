@@ -1,9 +1,9 @@
 {
   "testId": "multi-instance-stress",
   "status": "pass",
-  "commit": "69d903967bc30ecc5d44a8075f0a91ec9dbef585",
+  "commit": "3c360c9c69be38b5ab0434d6bd93bec2c737f3b4",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-10-12T22:21:24+00:00",
+  "timestamp": "2026-10-12T23:04:04+00:00",
   "caseCount": 5,
   "runners": [
     {

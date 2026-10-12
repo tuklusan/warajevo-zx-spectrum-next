@@ -1,10 +1,10 @@
 {
   "testId": "microdrive-state-canonical",
   "status": "pass",
-  "commit": "b0dce8fa11118bebb1c42353506a3abc5011a4fd",
+  "commit": "3c360c9c69be38b5ab0434d6bd93bec2c737f3b4",
   "runner": "Linux/x86_64",
-  "timestamp": "2026-10-01T05:30:54.702584+00:00",
-  "runId": 36819838268,
+  "timestamp": "2026-10-12T23:00:47.599559+00:00",
+  "runId": 38319818535,
   "fixtures": [
     {
       "path": "ci/test/microdrive-state-canonical/microdrive-state-canonical-contract.c",
@@ -44,7 +44,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "9ecafdaf9f137684e77a3b722e7d1dd289ba9e8b3333af1244844e2d604436c0"
+      "sha256": "af1a055ba24a42e870645a1b7389cffcf449028e8dd2f3344881282db94f51f4"
     }
   ]
 }

@@ -1,10 +1,10 @@
 {
   "testId": "host-machine-frame-audio-continuity",
   "status": "pass",
-  "commit": "046b89d82afa14946954d5c83072c6489306b74f",
-  "runId": 36617973635,
+  "commit": "3c360c9c69be38b5ab0434d6bd93bec2c737f3b4",
+  "runId": 38319844725,
   "runner": "Linux/X64",
-  "timestamp": "2026-09-29T19:15:56+00:00",
+  "timestamp": "2026-10-12T23:00:49+00:00",
   "caseCount": 56,
   "fixtures": [
     {
@@ -41,11 +41,11 @@
     },
     {
       "path": "src/app/wz_host_audio_policy.c",
-      "sha256": "7248245e6f4ff506a436ab09a1121e0fefe68cb729be28267d25e4f54ca0cc68"
+      "sha256": "24ed4f2318ba10bb2cb9ec48b5ae9bf854ecdef71687f2bd6908bb9bb9b17bce"
     },
     {
       "path": "src/app/wz_host_audio_policy.h",
-      "sha256": "99f86c6701dec5ccae2b932b31daafc95909143dd192bf1cfe43bc91a5991430"
+      "sha256": "630b754c18a3f0b3c36088d587be1f9264343cad7418b7c2caa44d36eb5d669d"
     },
     {
       "path": "src/app/wz_host_pacing.c",
@@ -65,7 +65,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "3e67cb171009e06fda0f5e7a4c9df2c9f7c31d2ecbf5e16ea389e778aa580a27"
+      "sha256": "b171289db934e9bc02d943b3e77a06f0af43a32fae3a073f025c707dac6d56b3"
     },
     {
       "path": "src/app/wz_speed_policy.c",
@@ -85,7 +85,7 @@
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "84d9e0b84a02993917b0e74cb9ba0d71158f45223a707d801ce927029ab2b0aa"
+      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
     },
     {
       "path": "src/core/wz_runner.c",
@@ -93,11 +93,11 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "9ecafdaf9f137684e77a3b722e7d1dd289ba9e8b3333af1244844e2d604436c0"
+      "sha256": "af1a055ba24a42e870645a1b7389cffcf449028e8dd2f3344881282db94f51f4"
     },
     {
       "path": "test-drivers/host-machine-frame.driver.json",
-      "sha256": "352811ab705ed055334cd7778a2458ab8903499e0480efcf81cd71ed8c14391e"
+      "sha256": "881e6e42d05b73e0774e4ec662b86d2842e4fa688f566c5e634486d7100a0be8"
     }
   ]
 }
