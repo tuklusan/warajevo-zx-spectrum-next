@@ -1,10 +1,10 @@
 {
   "testId": "keyboard-menu",
   "status": "pass",
-  "commit": "28b12b95ec668a254fee52f63dbb665d3d4e3b32",
-  "runId": 38309798285,
+  "commit": "69cf2f2adeef3cf769ea516a61bf17b6aa68f278",
+  "runId": 38311297025,
   "runner": "Linux/X64",
-  "timestamp": "2026-10-12T21:19:57+00:00",
+  "timestamp": "2026-10-12T21:32:56+00:00",
   "caseCount": 86,
   "fixtures": [
     {
@@ -34,10 +34,6 @@
     {
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
       "sha256": "dc47afb96f2c0566788d59ef74a691c33a8943e1c4e199c96c74d07739e68b31"
-    },
-    {
-      "path": "docs/design/04-wzsn-architectures-1-2-developer-tasks.md",
-      "sha256": "c4bb4ddbee2724bf988e3ef0f33f090b5d24ffb9dc5c851db14f01fe1ca955b8"
     },
     {
       "path": "docs/design/keyboard-menu-contract.md",
