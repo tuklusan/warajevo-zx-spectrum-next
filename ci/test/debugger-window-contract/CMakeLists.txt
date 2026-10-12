@@ -11,16 +11,20 @@ project(WZDebuggerWindowContract LANGUAGES C)
 set(WZSN_BUILD_SOKOL_HOST OFF CACHE BOOL "Build the opt-in Sokol host shell." FORCE)
 get_filename_component(WZSN_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE)
 add_subdirectory("${WZSN_ROOT}/src/cmake" wzsn-product)
+find_package(Threads REQUIRED)
 
 add_executable(wz_debugger_window_contract
     "${WZSN_ROOT}/ci/test/debugger-window-contract/debugger-window-contract.c"
-    "${WZSN_ROOT}/src/app/wz_debugger_window.c")
+    "${WZSN_ROOT}/src/app/wz_debugger_window.c"
+    "${WZSN_ROOT}/src/app/wz_command_registry.c"
+    "${WZSN_ROOT}/src/app/wz_host_thread.c")
 set_target_properties(wz_debugger_window_contract PROPERTIES
     C_STANDARD 11
     C_STANDARD_REQUIRED ON
     C_EXTENSIONS OFF)
 target_include_directories(wz_debugger_window_contract PRIVATE "${WZSN_ROOT}/src")
-target_link_libraries(wz_debugger_window_contract PRIVATE wz_core wz_warnings)
+target_link_libraries(wz_debugger_window_contract PRIVATE
+    wz_core wz_warnings Threads::Threads)
 
 enable_testing()
 add_test(NAME wz_debugger_window_contract COMMAND wz_debugger_window_contract)

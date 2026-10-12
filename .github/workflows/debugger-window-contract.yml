@@ -7,6 +7,8 @@ on:
       - '.github/workflows/debugger-window-contract.yml'
       - 'ci/test/debugger-window-contract/**'
       - 'src/app/wz_debugger_window.*'
+      - 'src/app/wz_command_registry.*'
+      - 'src/app/wz_host_thread.*'
       - 'src/core/wz_debugger.*'
       - 'src/cmake/CMakeLists.txt'
       - 'test-drivers/debugger-window-contract.driver.json'
