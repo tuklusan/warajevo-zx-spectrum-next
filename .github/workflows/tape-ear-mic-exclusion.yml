@@ -1,0 +1,55 @@
+# Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+# This file is governed by the SANYALnet Labs Non-Commercial License in the
+# root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
+# for AI/ML model training are prohibited unless separately authorized.
+# Attribution is required: "Based on original work by Supratim Sanyal of
+# SANYALnet Labs." See LICENSE for full terms.
+
+name: Tape Ear+Mic signal exclusion
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/tape-ear-mic-exclusion.yml'
+      - 'ci/test/tape-ear-mic-exclusion/**'
+      - 'test-drivers/tape-ear-mic-exclusion.driver.json'
+      - 'src/core/wz_machine.*'
+      - 'src/core/wz_tape.*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tape-ear-mic-exclusion:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact main revision
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+      - name: Configure contract
+        run: cmake -S ci/test/tape-ear-mic-exclusion -B dist/tape-ear-mic-exclusion -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build contract
+        run: cmake --build dist/tape-ear-mic-exclusion --config Release --target wz_tape_ear_mic_exclusion --parallel 2
+      - name: Run contract
+        run: dist/tape-ear-mic-exclusion/wz_tape_ear_mic_exclusion
+      - name: Write pinned proof
+        env:
+          PROJECT_COMMIT: ${{ github.sha }}
+          PROJECT_RUN_ID: ${{ github.run_id }}
+          RUNNER_OS: ${{ runner.os }}
+          RUNNER_ARCH: ${{ runner.arch }}
+        run: |
+          python3 ci/test/tape-ear-mic-exclusion/write-proof.py \
+            --commit "$PROJECT_COMMIT" --run-id "$PROJECT_RUN_ID" \
+            --runner "$RUNNER_OS/$RUNNER_ARCH" \
+            --proof dist/tape-ear-mic-exclusion/tape-ear-mic-exclusion.json
+      - name: Upload pinned proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: tape-ear-mic-exclusion-${{ github.sha }}
+          path: dist/tape-ear-mic-exclusion/tape-ear-mic-exclusion.json
+          if-no-files-found: error
