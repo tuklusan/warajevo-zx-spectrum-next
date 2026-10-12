@@ -58,9 +58,18 @@ accessibility exposure remain acceptance gaps; none is waived by this review.
   order. The project owns keyboard traversal, menu labels, action state/reasons,
   and visible focus. The app-owned F1 keyboard command menu supplies keyboard
   access to core commands; settings and manager control traversal remains an
-  acceptance gap until implemented and tested. No native accessibility bridge
-  is currently implemented; platform screen-reader exposure remains an
-  acceptance gap and is not waived by this choice.
+  acceptance gap until implemented and tested.
+- Accessibility API assessment at the pinned revisions: the public
+  [Nuklear v4.13.3 header](https://github.com/Immediate-Mode-UI/Nuklear/blob/a53ad2c658151071501372a5e0e5e978153835aa/nuklear.h)
+  exposes immediate-mode widgets, draw commands, and input state, with no
+  semantic accessibility tree or native provider hook. The pinned
+  [Sokol-Nuklear adapter](https://github.com/floooh/sokol/blob/1847290135f95e57e6d220b0a41208306aafc0dd/util/sokol_nuklear.h)
+  adapts rendering and input and exposes no platform accessibility objects.
+  There is therefore no selected-toolkit accessibility API to connect. Native
+  screen-reader names, roles, and states are unavailable for the in-window UI;
+  supplying them requires a separate project-owned bridge to each platform's
+  accessibility system. No such bridge is in this phase. The OS-native file
+  dialogs retain the accessibility support supplied by their platform.
 - Persist only host preferences, never canonical machine/session state. Use a
   versioned `host-settings.v1` key/value file in the platform's user config
   directory: `%LOCALAPPDATA%` on Windows, Application Support on macOS, and
