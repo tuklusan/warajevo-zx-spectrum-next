@@ -658,6 +658,9 @@ static wz_result_t wz_host_load_rom_bytes(wz_host_session_t* session,
     if (result != WZ_RESULT_OK) {
         return result;
     }
+    if (length != WZ_48K_ROM_SIZE) {
+        return WZ_RESULT_ROM_IDENTITY_MISMATCH;
+    }
     memcpy(session->model_48k_rom, data, WZ_48K_ROM_SIZE);
     session->model_48k_rom_identity = session->rom_settings.identity;
     session->has_model_48k_rom = true;

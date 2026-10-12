@@ -26,9 +26,9 @@ int main(void)
     wz_machine_t machine;
     wz_machine_t unsupported_machine;
     wz_rom_settings_t settings;
-    wz_byte_t image[WZ_48K_ROM_SIZE];
-    wz_byte_t mismatch[WZ_48K_ROM_SIZE];
-    wz_byte_t original_memory[WZ_48K_ROM_SIZE];
+    static wz_byte_t image[WZ_48K_ROM_SIZE];
+    static wz_byte_t mismatch[WZ_48K_ROM_SIZE];
+    static wz_byte_t original_memory[WZ_48K_ROM_SIZE];
     wz_qword_t identity;
 
     REQUIRE(wz_machine_profile_48k_pal()->expected_rom_identity ==

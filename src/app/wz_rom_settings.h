@@ -13,6 +13,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include <stddef.h>
 
 #include "core/wz_machine.h"
+#include "core/wz_machine_profile.h"
 #include "core/wz_types.h"
 
 typedef enum {
