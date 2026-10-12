@@ -54,6 +54,7 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "app/wz_compatibility_tools.h"
 #include "app/wz_file_dialog.h"
 #include "app/wz_host_output.h"
+#include "app/wz_host_config.h"
 #include "app/wz_host_media_ownership.h"
 #include "app/wz_printer_manager.h"
 #include "app/wz_printer_commands.h"
@@ -271,6 +272,9 @@ typedef struct {
 } wz_host_tape_persist_context_t;
 
 static wz_host_session_t wz_host_session;
+static wz_host_preferences_t wz_host_preferences;
+static char wz_host_preferences_file[1024];
+static bool wz_host_preferences_path_ready;
 static void wz_host_release_local_keys(void);
 static bool wz_host_extension_is(const char* path, const char* expected);
 static bool wz_host_microdrive_path_read_only(size_t slot);
@@ -5827,8 +5831,10 @@ static void wz_host_ui_draw_status(struct nk_context* context,
     if (nk_begin(context, "Machine status",
             nk_rect(0.0f, height - 48.0f, width, 48.0f),
             NK_WINDOW_NO_SCROLLBAR)) {
-        nk_layout_row_dynamic(context, 20.0f, 1);
-        nk_label(context, status, NK_TEXT_LEFT);
+        if (state->status_panel_visible) {
+            nk_layout_row_dynamic(context, 20.0f, 1);
+            nk_label(context, status, NK_TEXT_LEFT);
+        }
         nk_layout_row_dynamic(context, 20.0f, 1);
         if (nk_button_label(context, control_status)) {
             wz_host_session.remote_settings_visible = true;
@@ -6527,6 +6533,10 @@ static void wz_host_session_init(void)
     const wz_machine_profile_t* profile;
     stm_setup();
     wz_host_display_settings_init(&wz_host_session.display_settings);
+    (void)wz_host_display_settings_set_scale(
+        &wz_host_session.display_settings, wz_host_preferences.display_scale);
+    (void)wz_host_display_settings_set_crop(
+        &wz_host_session.display_settings, wz_host_preferences.crop_to_display);
     wz_rom_settings_init(&wz_host_session.rom_settings);
     wz_snapshot_save_workflow_init(&wz_host_session.snapshot_save_workflow);
     wz_snapshot_inspector_init(&wz_host_session.snapshot_inspector);
@@ -6638,6 +6648,11 @@ static void wz_host_session_init(void)
             wz_host_session.machine.microdrive.image_present != 0u;
         wz_host_session.ui_window.layout.microdrive_mounted[0] =
             wz_host_session.machine.microdrive.image_present != 0u;
+        wz_host_session.ui_window.layout.status_panel_visible =
+            wz_host_preferences.status_panel_visible;
+        (void)wz_ui_layout_set_audio_output(
+            &wz_host_session.ui_window.layout,
+            wz_host_preferences.audio_enabled, wz_host_session.speed);
         (void)wz_headless_runner_init(&wz_host_session.runner,
                                       &wz_host_session.machine, 0);
         if (!wz_host_register_commands()) {
@@ -6720,8 +6735,29 @@ static void wz_host_init(void)
     wz_host_session_init();
 }
 
+static void wz_host_preferences_save_current(void)
+{
+    if (!wz_host_preferences_path_ready || !wz_host_session.initialized) return;
+    wz_host_preferences.window_width = sapp_width();
+    wz_host_preferences.window_height = sapp_height();
+    wz_host_preferences.fullscreen = sapp_is_fullscreen();
+    wz_host_preferences.display_scale = (unsigned)
+        wz_host_display_settings_scale(&wz_host_session.display_settings);
+    wz_host_preferences.crop_to_display = wz_host_display_settings_crop(
+        &wz_host_session.display_settings);
+    wz_host_preferences.audio_enabled =
+        wz_host_session.ui_window.layout.audio_output_enabled;
+    wz_host_preferences.status_panel_visible =
+        wz_host_session.ui_window.layout.status_panel_visible;
+    if (!wz_host_preferences_write(wz_host_preferences_file,
+                                   &wz_host_preferences)) {
+        (void)fprintf(stderr, "Host preferences could not be saved.\n");
+    }
+}
+
 static void wz_host_cleanup(void)
 {
+    wz_host_preferences_save_current();
     wz_host_session_shutdown();
 }
 
@@ -7141,13 +7177,28 @@ static void wz_host_event(const sapp_event* event)
 
 int main(void)
 {
+    wz_host_preferences_init(&wz_host_preferences);
+    wz_host_preferences_path_ready = wz_host_preferences_path(
+        wz_host_preferences_file, sizeof(wz_host_preferences_file));
+    if (!wz_host_preferences_path_ready) {
+        (void)fprintf(stderr,
+            "Host preferences directory is unavailable; settings will not persist.\n");
+    } else if (!wz_host_preferences_load(wz_host_preferences_file,
+                                         &wz_host_preferences)) {
+        (void)fprintf(stderr,
+            "Host preferences are invalid; using built-in defaults.\n");
+        wz_host_preferences_init(&wz_host_preferences);
+    }
     sapp_run(&(sapp_desc){
         .init_cb = wz_host_init,
         .frame_cb = wz_host_frame,
         .cleanup_cb = wz_host_cleanup,
         .event_cb = wz_host_event,
-        .width = 1024,
-        .height = 768,
+        .width = wz_host_preferences.window_width > 0
+            ? wz_host_preferences.window_width : 1024,
+        .height = wz_host_preferences.window_height > 0
+            ? wz_host_preferences.window_height : 768,
+        .fullscreen = wz_host_preferences.fullscreen,
         .window_title = "Warajevo ZX Spectrum Next",
         .swap_interval = 0,
     });

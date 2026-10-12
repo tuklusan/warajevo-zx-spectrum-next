@@ -13,15 +13,15 @@
     },
     {
       "path": "ci/test/host-display-settings/contract.c",
-      "sha256": "91371fa01de8ec98a6bc8ed1f2028ff8f54f1e828826ceb99029751089f72161"
+      "sha256": "c135dfacbdf55d0fae949b0e8d08671f759b6918e4e74f4a4172f4c516c02412"
     },
     {
       "path": "src/app/wz_host_config.c",
-      "sha256": "5cd5b1c698a5493f79a8210aaa3caf14b2998b4d7581abf4b718cfda4b8a66d2"
+      "sha256": "bb47dd7e107806c141704519e6194d510168769d70fbe7c230276a7333dd6847"
     },
     {
       "path": "src/app/wz_host_config.h",
-      "sha256": "783558070f5b5d2faac7198592a7e7b07bb2f765014dbae4a039d9f2dd4e256b"
+      "sha256": "331a4633fa40e33cbfb0dc93eeff0175510d27546a8e38b4093100b5686a6ca3"
     },
     {
       "path": "src/app/wz_host_presentation.c",
@@ -41,7 +41,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "8ba29e1fc209f98750da493cb8e992fe22f62583be75fc1801843a6b174ee651"
+      "sha256": "344d6498a543070a049d47d6c63e2451555b7035703479cbba3a5cafbfc964e6"
     },
     {
       "path": "src/core/wz_raster.h",

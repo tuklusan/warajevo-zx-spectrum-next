@@ -24,6 +24,13 @@ typedef struct wz_host_preferences {
 
 void wz_host_preferences_init(wz_host_preferences_t* preferences);
 
+/* Resolve and create the platform user-config directory for host settings. */
+bool wz_host_preferences_path(char* output, size_t capacity);
+
+/* Load a complete validated host-settings.v1 record; missing files keep defaults. */
+bool wz_host_preferences_load(const char* path,
+                              wz_host_preferences_t* preferences);
+
 /* Serialize only approved host preferences; machine/session state is excluded. */
 bool wz_host_preferences_serialize(const wz_host_preferences_t* preferences,
                                    char* output,

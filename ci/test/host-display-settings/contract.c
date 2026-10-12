@@ -11,6 +11,7 @@ SANYALnet Labs." See LICENSE for full terms.
 #include "app/wz_host_config.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #define REQUIRE(condition) do { \
@@ -31,6 +32,9 @@ int main(void)
     size_t source_y = 0u;
     char serialized[512];
     size_t serialized_size = 0u;
+    char resolved_path[1024];
+    const char settings_path[] = "host-settings-contract.v1";
+    FILE* settings_file;
 
     wz_host_display_settings_init(&settings);
     REQUIRE(wz_host_display_settings_scale(&settings) == 0u);
@@ -52,14 +56,49 @@ int main(void)
     REQUIRE(!wz_host_display_settings_crop(&settings));
 
     wz_host_preferences_init(&preferences);
+    REQUIRE(wz_host_preferences_path(resolved_path, sizeof(resolved_path)));
+    REQUIRE(strstr(resolved_path, "host-settings.v1") != NULL);
+    (void)remove(settings_path);
+    REQUIRE(wz_host_preferences_load(settings_path, &preferences));
+    REQUIRE(preferences.window_width == 0);
+    REQUIRE(preferences.audio_enabled);
     REQUIRE(preferences.display_scale == 0u);
     REQUIRE(!preferences.crop_to_display);
+    preferences.display_scale = 5u;
+    REQUIRE(!wz_host_preferences_serialize(&preferences, serialized,
+        sizeof(serialized), &serialized_size));
+    preferences.display_scale = 0u;
     REQUIRE(wz_host_preferences_serialize(&preferences, serialized,
         sizeof(serialized), &serialized_size));
     REQUIRE(serialized_size > 0u);
     REQUIRE(serialized_size < sizeof(serialized));
     REQUIRE(strstr(serialized, "display_scale=0\n") != NULL);
     REQUIRE(strstr(serialized, "crop_to_display=0\n") != NULL);
+    REQUIRE(strstr(serialized, "version=1\n") != NULL);
+    preferences.window_width = 1280;
+    preferences.window_height = 800;
+    preferences.fullscreen = true;
+    preferences.display_scale = 3u;
+    preferences.crop_to_display = true;
+    preferences.audio_enabled = false;
+    preferences.status_panel_visible = false;
+    REQUIRE(wz_host_preferences_write(settings_path, &preferences));
+    wz_host_preferences_init(&preferences);
+    REQUIRE(wz_host_preferences_load(settings_path, &preferences));
+    REQUIRE(preferences.window_width == 1280);
+    REQUIRE(preferences.window_height == 800);
+    REQUIRE(preferences.fullscreen);
+    REQUIRE(preferences.display_scale == 3u);
+    REQUIRE(preferences.crop_to_display);
+    REQUIRE(!preferences.audio_enabled);
+    REQUIRE(!preferences.status_panel_visible);
+    settings_file = fopen(settings_path, "wb");
+    REQUIRE(settings_file != NULL);
+    REQUIRE(fputs("version=1\nwindow_width=-1\n", settings_file) >= 0);
+    REQUIRE(fclose(settings_file) == 0);
+    REQUIRE(!wz_host_preferences_load(settings_path, &preferences));
+    REQUIRE(preferences.window_width == 1280);
+    REQUIRE(remove(settings_path) == 0);
 
     source = wz_host_presentation_default_rect();
     REQUIRE(source.width == WZ_RASTER_CANONICAL_WIDTH);
