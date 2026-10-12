@@ -1,10 +1,10 @@
 {
   "testId": "ui-command-equivalence",
   "status": "pass",
-  "commit": "b0dec08756dc3538aa5447313c66f7edb85e6cf4",
+  "commit": "a55e07edd5f296e4d196c576028662765c539be2",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-10-02T07:38:13+00:00",
-  "runId": 36979390179,
+  "timestamp": "2026-10-12T16:15:47+00:00",
+  "runId": 38273237701,
   "runners": [
     {
       "id": "windows-x64",
@@ -74,11 +74,11 @@
     },
     {
       "path": "src/app/wz_host_audio_policy.c",
-      "sha256": "7248245e6f4ff506a436ab09a1121e0fefe68cb729be28267d25e4f54ca0cc68"
+      "sha256": "24ed4f2318ba10bb2cb9ec48b5ae9bf854ecdef71687f2bd6908bb9bb9b17bce"
     },
     {
       "path": "src/app/wz_host_audio_policy.h",
-      "sha256": "99f86c6701dec5ccae2b932b31daafc95909143dd192bf1cfe43bc91a5991430"
+      "sha256": "630b754c18a3f0b3c36088d587be1f9264343cad7418b7c2caa44d36eb5d669d"
     },
     {
       "path": "src/app/wz_speed_policy.c",
@@ -130,15 +130,15 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "ec222a2c51adb0914aae8a929d1f080c3d66354baec2068614a724216c84110b"
+      "sha256": "c289df3896df2768e0b441e659be9df85eef0ebaab85a4a96feff0ca9d108d77"
     },
     {
       "path": "src/app/wz_ui_layout.h",
-      "sha256": "33260080b489f02274ad91fb7b6e739839293dafe107798b1e3a5b684940b4d8"
+      "sha256": "82b311ec0944bafa0c7256f2becef7f56d69d51843ece9e7d62c68f36b75151e"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "6f8d4b34ff7062bf2f29c8caa5c61dca4ca05c74e1f3bb2941de8c49d185aa89"
+      "sha256": "0b06d5f3d6e248fd566be6ec45084ddaaeb03243f300490837b9d6082e29e0a2"
     },
     {
       "path": "src/core/wz_keyboard_matrix.c",
