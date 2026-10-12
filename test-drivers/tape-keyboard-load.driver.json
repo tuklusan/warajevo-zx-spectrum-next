@@ -8,59 +8,59 @@
   "fixtures": [
     {
       "path": ".github/workflows/tape-keyboard-load.yml",
-      "sha256": "314d808c963ebd6b51af2b39bb31ea955d619d7222baa0c48dc0f5311a498ae9"
+      "sha256": "a82d2d61bb65815ff797496d9356194552765d62f9db5dd6a04f2f948331f7ea"
     },
     {
       "path": "ci/test/tape-keyboard-load/CMakeLists.txt",
-      "sha256": "4dd5b551ca462866edc3dabb3ac849f9374d7a8e144bf99f527b0ccf663faf0b"
+      "sha256": "e188858dcabfbef6b28f2b1b04b42372931192926e52e8099f0d08aac7ee563e"
     },
     {
       "path": "ci/test/tape-keyboard-load/tape-keyboard-load.c",
-      "sha256": "a2f8f8d6c801d9247a22e414c36dd76f3f1b305eab5c473f7dd7e42737c10ddb"
+      "sha256": "50c1c118cf772e4de2be5d1f881dc080f4ba1c9a63751462bbeef401565a412f"
     },
     {
       "path": "ci/test/tape-keyboard-load/write-proof.py",
-      "sha256": "e06bec090981dd60c453cf0e39dec6f51dca781419f8122659363687eafc842d"
+      "sha256": "c36faa8c9af3e250f7d6df317441859953603756ea519b558ddf63f92128aaab"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "a0b903d4da0c26159175ad2a863c77d223b81cd706a48b3f85bec41bd0e33fde"
+      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "197907797e2a3e2b9ee1479bb6c498adcc130f0f05aa8a9252233d55be8bad4b"
+      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
     },
     {
       "path": "src/core/wz_keyboard_matrix.c",
-      "sha256": "0c2ea7753c22c0225f532ae648bb621f3ec6f011f3d5a0125466f84d269ca4c0"
+      "sha256": "68deeb821563f28e5af3e0872765fedd5ae7e24a0491c011c24ebb9d4abbd575"
     },
     {
       "path": "src/core/wz_keyboard_matrix.h",
-      "sha256": "fc1207974234dd91436f781561dbd56b4b22952deecf064e1ec0f7850a2c5864"
+      "sha256": "85282af5969a6212c528cb92edafd7d3fbf71375bbb4be1bad5cd9622e1cf976"
     },
     {
       "path": "src/core/wz_machine_profile.c",
-      "sha256": "4f365f1f47ef85c3f837c2a2f5c8318b5e06c72e79d474cae64ee8b3f1d9b726"
+      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09"
     },
     {
       "path": "src/core/wz_machine_profile.h",
-      "sha256": "809da6951d690c04032725fe7551148f2c4be6d1a19b676284c08c0b3c03f19c"
+      "sha256": "099be5f41f428466e5da622452abec6e0daf6402abcf4ab2e7d8c2df47457cc4"
     },
     {
       "path": "src/core/wz_runner.c",
-      "sha256": "b0afd8647ce2ac00adba42917acc6def7f9a62b2089d43896081826da35a232e"
+      "sha256": "ded90228d1227ef361170e1bc95d2b98365fa380136fd5269733b6119d8c7b90"
     },
     {
       "path": "src/core/wz_runner.h",
-      "sha256": "df302a27ae93d7e4421878bba5916581a57e54ec52b9acec9f022246e232f7bc"
+      "sha256": "b34e16b1c9ef80588bc6a563ce2b77099bdceb899ace0e5254a0a9669b5f6e51"
     },
     {
       "path": "src/core/wz_tape.c",
-      "sha256": "e5cd18ca9b169f1bc04210cc4ad508bd435d50c8cf390a2263d5a275b36a6a85"
+      "sha256": "20c4523214f828d5129cbde2fb2c0d077ed15dae0daa923d019d1934b0c33d0b"
     },
     {
       "path": "src/core/wz_tape.h",
-      "sha256": "7241cb8df05c796c723c89b29708466024f96c59f0f0f7debc561cc899c2652b"
+      "sha256": "d483f3f99bcfa26590bf259114193d2314dd2af2720316bf66021462f5c31fd6"
     },
     {
       "path": "roms/48.rom",
@@ -68,7 +68,7 @@
     },
     {
       "path": "test-media/DIZZY4K.TAP",
-      "sha256": "283e30c36edcb26f2914c1ef1493a650c40e2ef84955ff3c733b83e58e6e9b35"
+      "sha256": "9bd60921359b2e2e39a35501b718319c7702a6f0cfd7493570b589300f4f2a27"
     }
   ]
 }

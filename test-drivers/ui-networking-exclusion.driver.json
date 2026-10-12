@@ -8,51 +8,51 @@
   "fixtures": [
     {
       "path": ".github/workflows/ui-networking-exclusion.yml",
-      "sha256": "b44ccf6a6a501c1063ede679163569b52850f6f3a5a34d9d37e5edfdda9a2894"
+      "sha256": "da80a657512d70d0a38c2a8820e55b7274a9fb23800a99e7beb219f3ebd11ffb"
     },
     {
       "path": "ci/test/ui-networking-exclusion/CMakeLists.txt",
-      "sha256": "593a0db1b16537704437b9e9470376f680f8bfbeba44bfcd60e02e9e764744b1"
+      "sha256": "1b6563f4dbf302f12f2b299fb699e873c3db879e7564a8a0c57853a232022641"
     },
     {
       "path": "ci/test/ui-networking-exclusion/ui-networking-exclusion-contract.c",
-      "sha256": "b885780e73fd35f32a66565abbbcc2c39e42431288f34872eb90f6d63c3bcb16"
+      "sha256": "b48717ddce4caf0772b9129089081ca3dcd5972e74ddb2a33f240d34220298e6"
     },
     {
       "path": "ci/test/ui-networking-exclusion/write-proof.py",
-      "sha256": "0f1772caed8026150808ac028ff0c14605743a86cb2ea0036b6bc8b22ac1e039"
+      "sha256": "77c56b91a52935861a9fc791d460980b625f95fe55122dad7de8c8757cfd5538"
     },
     {
       "path": "src/app/wz_command_registry.c",
-      "sha256": "93277b2eed8ad36fc3e9bad4ed6897ac2255a32ccd6142ccb0ee6f9d41ca70bf"
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
     },
     {
       "path": "src/app/wz_command_registry.h",
-      "sha256": "af687e17b60dbad891de7cafcc4ca39c48182e299140fcda1fafc23b486b6b53"
+      "sha256": "80110080861a05baae47cd6d294315055bb6b1a636c79891b55c56717cb53c94"
     },
     {
       "path": "src/app/wz_networking_commands.c",
-      "sha256": "e03a0872395307b5453a845ac2d09912a11787e5c536e1b8c47e939ab1881d5f"
+      "sha256": "e8ae3db57a941288103f501744bd0eb054c072b41ec960dde31e16085c65b0a5"
     },
     {
       "path": "src/app/wz_networking_commands.h",
-      "sha256": "7957a4fc5751dbb8fe7e1f39ee494e7a0a38fcc5b35dd4b549180761309f4662"
+      "sha256": "4ed126aa9388bee42619642f70bb0f28b54afabeac4e955ece9413e6f9772049"
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "938562d96ab2f18c1268497a21453c5d82f584b3265e87b09b9ccbbf642b49b8"
+      "sha256": "c289df3896df2768e0b441e659be9df85eef0ebaab85a4a96feff0ca9d108d77"
     },
     {
       "path": "src/app/wz_ui_layout.h",
-      "sha256": "f872c410ac2efba211fe060a2438439b824012eaa82a88caa1e207b2e9eca2e0"
+      "sha256": "82b311ec0944bafa0c7256f2becef7f56d69d51843ece9e7d62c68f36b75151e"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "a0b903d4da0c26159175ad2a863c77d223b81cd706a48b3f85bec41bd0e33fde"
+      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "197907797e2a3e2b9ee1479bb6c498adcc130f0f05aa8a9252233d55be8bad4b"
+      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
     }
   ]
 }

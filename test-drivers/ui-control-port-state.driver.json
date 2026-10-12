@@ -8,39 +8,39 @@
   "fixtures": [
     {
       "path": ".github/workflows/ui-control-port-state.yml",
-      "sha256": "0a871fb9e05ab08dd32d85cecca8516774e222786d24ac2ca341d58ae414f848"
+      "sha256": "8c4de42b00c747dec602b4dee1d33758eb34fadaeece9d2132870df768fa5d6d"
     },
     {
       "path": "ci/test/ui-control-port-state/CMakeLists.txt",
-      "sha256": "dbff6508aaff0265a5e23bd2026f0c72f09dccfe42817af221b9a3086b0eba59"
+      "sha256": "9447cfc8e0be664466fc4d57f2f33148d760fb4db9df46670b04b428f4db31b4"
     },
     {
       "path": "ci/test/ui-control-port-state/ui-control-port-state-contract.c",
-      "sha256": "5ffd76acbaa4dbe05a8078afca8f967e26272d6ae201a1870194c6a8121b2172"
+      "sha256": "3485d8a157884bb33824d10522cfe8f27ff4c4d2f1bf4ab318847fd1717601e6"
     },
     {
       "path": "ci/test/ui-control-port-state/write-proof.py",
-      "sha256": "556969dea7c1362cac6ef6f49168d55b1b8358072a5657cc4d878fd71752d525"
+      "sha256": "6c25f1ee695cd2cec6a1a7eba643fb16548bc9ae1f275017c5e1b1f4d869b177"
     },
     {
       "path": "src/app/wz_host_config.c",
-      "sha256": "c6c718e2a579b235566025201b5f45c3c859ef7207dd63f7d25783b196f90a51"
+      "sha256": "5cd5b1c698a5493f79a8210aaa3caf14b2998b4d7581abf4b718cfda4b8a66d2"
     },
     {
       "path": "src/app/wz_host_config.h",
-      "sha256": "7f5d6b90d6b05c2750b286779e94d72a38fef10f963271baa6ae98a67aa8f67d"
+      "sha256": "783558070f5b5d2faac7198592a7e7b07bb2f765014dbae4a039d9f2dd4e256b"
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "938562d96ab2f18c1268497a21453c5d82f584b3265e87b09b9ccbbf642b49b8"
+      "sha256": "c289df3896df2768e0b441e659be9df85eef0ebaab85a4a96feff0ca9d108d77"
     },
     {
       "path": "src/app/wz_ui_layout.h",
-      "sha256": "f872c410ac2efba211fe060a2438439b824012eaa82a88caa1e207b2e9eca2e0"
+      "sha256": "82b311ec0944bafa0c7256f2becef7f56d69d51843ece9e7d62c68f36b75151e"
     },
     {
       "path": "src/app/wz_control_port.h",
-      "sha256": "e4e85d677eb4e43a506a31b4ead633f87621bc54cfc286a99fcf5cdef7304423"
+      "sha256": "44a2a09d58c56dff09494d2176a43f8de0982ff719e3914fb53853fcca4ea32a"
     }
   ]
 }

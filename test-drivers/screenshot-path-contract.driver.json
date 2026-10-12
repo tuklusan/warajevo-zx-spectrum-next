@@ -8,91 +8,91 @@
   "fixtures": [
     {
       "path": ".github/workflows/screenshot-path-contract.yml",
-      "sha256": "d922931938954b994c604c1f4cff66b5c31b36a7f09e6c09ac55ce83da411d1e"
+      "sha256": "3910f7f8023ad50ef758148948542a48eaff1a2265c1b3cb5723b159e028395b"
     },
     {
       "path": "ci/test/screenshot-path-contract/CMakeLists.txt",
-      "sha256": "761b0d29ffc0a09fce5549420b4671f7c4fc86ca6f2a1e22052371320384f983"
+      "sha256": "e02abf7b69e80473e9f2caff6b88f95e6dd11cd58fe6953d4449cd57b92924b4"
     },
     {
       "path": "ci/test/screenshot-path-contract/write-proof.py",
-      "sha256": "cdc0be5baa8df94bd4bf9b09a52db09b1564920a7546036d90fd1a1d8cdb3064"
+      "sha256": "33f30674889a6156b0e0cc50ae7b7d36f1e3cec229c9b721151284ebe7ded78d"
     },
     {
       "path": "ci/test/screenshot-path-contract/screenshot-path-contract.c",
-      "sha256": "f4b39e5521abeb55010aae6ba0cdcf4e302bd244b38987373b057c165160bb9a"
+      "sha256": "52759753de1a414224764e98ae3304c06b51c7cab42767649a8ff108eb3fa664"
     },
     {
       "path": "ci/test/screenshot-path-contract/README.md",
-      "sha256": "b480a50c352649de37e18a6f1ad79bc8ea13fb28ad4ec27c444a22af0a806179"
+      "sha256": "cd0abe8ca4be5862fd1d83a377197291c1805d2e5d73b2835b3dcbe8164538fa"
     },
     {
       "path": "src/app/wz_host_output.c",
-      "sha256": "8949c5b287f63d61d0108781968967fc7f723732f6966ec66bbc47b5d702b7a1"
+      "sha256": "504322b9d5c80d2c865f6e8362557af61bce90240df83ccd25ca7065441191e6"
     },
     {
       "path": "src/app/wz_host_output.h",
-      "sha256": "9102584aaa91d3d0fa9664ea493168abedad43d4e8a15ca6a3d9eeeee7e76888"
+      "sha256": "0c415f0029214f54d2a92dd9aa46bfc53d1801dee71c7eeb9acd8bd65a104895"
     },
     {
       "path": "src/app/wz_screenshot_service.c",
-      "sha256": "cc3efcef8c2c60aec3ec514473d9149d2429d39a755666283edc38df3620f057"
+      "sha256": "05c8da60b7b90ca6b3a2b6b865ef6e00ab017ac739be8e282f196078fd195949"
     },
     {
       "path": "src/app/wz_screenshot_service.h",
-      "sha256": "7bd9f5240213b8d774bf6e6ee4d315ffba088dd1ca145e749fcc043aee1f7999"
+      "sha256": "1b58549d40bf834a9b2ebf6afa4820119349fa2afce66082c0e041299b634017"
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.c",
-      "sha256": "dd6400232e4cc0ce5de4cb0e492cdea374b90b403dba648883064e8dc0c173e1"
+      "sha256": "240c70171a4ea43836a83198f7935560e03391f60bc3528ba95d16e323e08f3b"
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.h",
-      "sha256": "c41111940e26230bcd63be2dd139c7ddeaf37c8f2b5104851e99041561ec888c"
+      "sha256": "1704f552714cf2f0183672bf8486dd5ac001f2c2223b371a704e71fc723e0656"
     },
     {
       "path": "src/app/wz_command_registry.c",
-      "sha256": "93277b2eed8ad36fc3e9bad4ed6897ac2255a32ccd6142ccb0ee6f9d41ca70bf"
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
     },
     {
       "path": "src/app/wz_command_registry.h",
-      "sha256": "af687e17b60dbad891de7cafcc4ca39c48182e299140fcda1fafc23b486b6b53"
+      "sha256": "80110080861a05baae47cd6d294315055bb6b1a636c79891b55c56717cb53c94"
     },
     {
       "path": "src/app/wz_host_thread.c",
-      "sha256": "cb3ae66f27150b343717a20a464f95d71efa46d9ea53f008dbefc96ff623733a"
+      "sha256": "6f8cbe0e171adfe7b9f42d9517e31d72f7917048339ff8941d5bccadfa305151"
     },
     {
       "path": "src/app/wz_host_thread.h",
-      "sha256": "0c1cc121673b1d86b07e3c56cace72810218e55b3c39af5d0e3d54831667fdce"
+      "sha256": "bd4e189a40c8f9ad31f014dc12afc3c67b7a4bd5580df262b0cf92db8fbe8471"
     },
     {
       "path": "src/app/wz_telnet_keymap.c",
-      "sha256": "cc8eccf5fa887c3a96fbfcb4c353ddfb25f7b495633951c1bcb857cba3998131"
+      "sha256": "c28b14ee6726eb99c6f26a4b7511c0b60dfaea008dcbe2cbe6bd7750a4092f3c"
     },
     {
       "path": "src/app/wz_telnet_keymap.h",
-      "sha256": "7039398e07d1c3a3d7a828f2f7e2dcd6dfe483cf8eabb0316ee6576b5f38096f"
+      "sha256": "056a9e1304fe7db114b1b860d6628f7d7866e84d0d4c44c75df4e58406bf1ff7"
     },
     {
       "path": "src/core/wz_raster.c",
-      "sha256": "358c008a4d2d343bc2d76a7ed07d823fba137aa1fce7900a70c1a74b928c3e45"
+      "sha256": "d87884dda947060b1b52e5ba3af9bebb5178c0d58505aeda4699078f8fc346c2"
     },
     {
       "path": "src/core/wz_raster.h",
-      "sha256": "973927676035b54eb8c8ac7d727274eb13b277e751ab1f7664cf953501b0ffe3"
+      "sha256": "c231c401076b312c4b8ae6ef55492fd7e4068742c59a3583b4efaefee0ec5396"
     },
     {
       "path": "src/core/wz_presentation_snapshot.c",
-      "sha256": "163e154223eefb38cefc45e454325a884b6e89d4e98a9ca9dba83e93cbc4ab19"
+      "sha256": "e486ad41490593ff803f647460d3542f69f425bf8c15bd0892e882962a685367"
     },
     {
       "path": "src/core/wz_presentation_snapshot.h",
-      "sha256": "2212a4254b8dc27a2b48e248ce34fa979bd1ab7ee6ce55b5536c529cff6925df"
+      "sha256": "5dc1be78cf4627ed526b39e7d1ee4e961c3bff8b00f869e635675f2180af820d"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "3ebe1ed963559316c4287da77063e03371cf581e49045f1e485ce405d239d902"
+      "sha256": "485fa49b71bac837584046e3eac678170f71d86ed4a1a657ccd84d12f61ba882"
     }
   ]
 }

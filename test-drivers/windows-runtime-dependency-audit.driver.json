@@ -8,19 +8,19 @@
   "fixtures": [
     {
       "path": ".github/workflows/windows-runtime-dependency-audit.yml",
-      "sha256": "e3851b93cbd3a24b1ba837e161e17a0fd655b971b4b9e6bf93b343208bfec570"
+      "sha256": "7071125e29f009c1596ef0a17b5e1e36533bd06d4d8427798a29620396cb56ca"
     },
     {
       "path": "ci/test/windows-runtime-dependencies/inspect_pe.py",
-      "sha256": "b9d002464cc7b3fdc77a7be0afe0d6cf5136ac7b4d2c0c4b97baa8c4aa0eebc0"
+      "sha256": "75072af6c4c79d1f4f6ea44f3d304c0b6abec415f3db6815fc11c3c8a3b33a77"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "3ebe1ed963559316c4287da77063e03371cf581e49045f1e485ce405d239d902"
+      "sha256": "485fa49b71bac837584046e3eac678170f71d86ed4a1a657ccd84d12f61ba882"
     },
     {
       "path": "ci/test/windows-runtime-dependencies/README.md",
-      "sha256": "8dba04da1921456ef35b0f8c557dd3f8d74601d45ab89e522739d45485526118"
+      "sha256": "f788c860f6fdfde3ce15586f755e9e33e8440f8b1fec04e97ae657df8ffb3aef"
     }
   ]
 }

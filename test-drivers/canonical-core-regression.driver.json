@@ -15,11 +15,11 @@
   "fixtures": [
     {
       "path": "ci/test/core-regression/canonical-fingerprints.h",
-      "sha256": "d7974fd74cc87f5a9ff89eb28e817fc8a96fc93c9b9ef058a78ecede566dc463"
+      "sha256": "c281c6dfae15ec99acb122aa4b5b64ab091bd4d622a8bf5c9b2bedb868b1660c"
     },
     {
       "path": "ci/test/core-regression/reset-retention-regression.c",
-      "sha256": "e52635670edffbb675e8a2596a98e20f44a6ffca2854fd9f264de410e4bd4137"
+      "sha256": "8d5d9a1e423c729e10d46464026096a0aaadc8974a3adc00b06d2171b67b6583"
     }
   ]
 }

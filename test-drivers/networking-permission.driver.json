@@ -9,131 +9,131 @@
   "fixtures": [
     {
       "path": ".github/workflows/networking-permission-regression.yml",
-      "sha256": "c3a7b8d5a75d66679eab702d6cca6541b1663d0eda34ce4943ad628b1174c8c4"
+      "sha256": "59150335df0808ad0fd3735030c44ec750eec5f933bc8f13e30df78c23ad079e"
     },
     {
       "path": "ci/test/networking-permission/CMakeLists.txt",
-      "sha256": "3b3efe5667b691450dc1a1016b83f09c9e9bc44ee1e26a1a363f832f952039f6"
+      "sha256": "c28586e3fe5ede8dae60353d91cd8310d77e535381cd9fedfcb1b58a49bbbc78"
     },
     {
       "path": "ci/test/networking-permission/networking-permission-regression.c",
-      "sha256": "819724b685d86bb4cc9dabe1ad17480de23e4798d28f0d06960353d0b4a9c82d"
+      "sha256": "29d42480d09acc2a17dbccf5e63cfed22f0b885eccad31de179954d8be259155"
     },
     {
       "path": "ci/test/networking-permission/write-proof.py",
-      "sha256": "b3189352d1dabe2f8ced02f8846dbf5e2a8f34d45d9b62f3b8fd9f1ac7e2cc0f"
+      "sha256": "75a8e59bfc777a1f80f5f759008080e172340d68f31bd3ee61174398d656403b"
     },
     {
       "path": "src/app/wz_command_registry.c",
-      "sha256": "93277b2eed8ad36fc3e9bad4ed6897ac2255a32ccd6142ccb0ee6f9d41ca70bf"
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
     },
     {
       "path": "src/app/wz_command_registry.h",
-      "sha256": "af687e17b60dbad891de7cafcc4ca39c48182e299140fcda1fafc23b486b6b53"
+      "sha256": "80110080861a05baae47cd6d294315055bb6b1a636c79891b55c56717cb53c94"
     },
     {
       "path": "src/app/wz_networking_commands.c",
-      "sha256": "e03a0872395307b5453a845ac2d09912a11787e5c536e1b8c47e939ab1881d5f"
+      "sha256": "e8ae3db57a941288103f501744bd0eb054c072b41ec960dde31e16085c65b0a5"
     },
     {
       "path": "src/app/wz_networking_commands.h",
-      "sha256": "7957a4fc5751dbb8fe7e1f39ee494e7a0a38fcc5b35dd4b549180761309f4662"
+      "sha256": "4ed126aa9388bee42619642f70bb0f28b54afabeac4e955ece9413e6f9772049"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "d9017c14bb5d36faa2169890bb5c7da51f022a6cf4b8241a313c16cd7ae77c61"
+      "sha256": "d48d5f50c6086b7fd9ace25b0566ef1edb96ef697797b73d93431f18f0262339"
     },
     {
       "path": "src/core/wz_machine_profile.c",
-      "sha256": "4f365f1f47ef85c3f837c2a2f5c8318b5e06c72e79d474cae64ee8b3f1d9b726"
+      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09"
     },
     {
       "path": "src/core/wz_keyboard_matrix.c",
-      "sha256": "0c2ea7753c22c0225f532ae648bb621f3ec6f011f3d5a0125466f84d269ca4c0"
+      "sha256": "68deeb821563f28e5af3e0872765fedd5ae7e24a0491c011c24ebb9d4abbd575"
     },
     {
       "path": "src/core/wz_kempston.c",
-      "sha256": "1ce585375560a1357418d333da3449aea9dd12800b66f0dab1798fb6bc62a85d"
+      "sha256": "3a5a7d442da3debf4d114b660ae6b606f95ab963244fc5987e190689cd40b35a"
     },
     {
       "path": "src/core/audio/wz_beeper.c",
-      "sha256": "0ab33d64644701890684777acafb905020619f6cf881664faf7c920eb2b9c9ed"
+      "sha256": "c6afe70cf3939f33d3af3084fe72faf85898ab25c7046f991980ddb5fff20b6c"
     },
     {
       "path": "src/core/audio/wz_ay.c",
-      "sha256": "454c71a28146bfc06b3d77b930310b835533c178f51879496272180533c1e331"
+      "sha256": "ddb27e2d878c5e9a0ca803e5198e04468c97f9c95a4dd9ac33d7324033c5ae39"
     },
     {
       "path": "src/core/audio/wz_audio_mixer.c",
-      "sha256": "34b6f8d673b06724e398fe18c50f7bbdf88fcf366ab1abf759985e4a36bb0c3a"
+      "sha256": "2236bdde5587652100b7f94390b439985166a848573114e71252faac43adfd67"
     },
     {
       "path": "src/core/audio/wz_audio_evidence.c",
-      "sha256": "847ce04cecb80bf44bd08bf4683c16083dc9dce13af98c6beb581d0521d58c14"
+      "sha256": "8e01e5376bd09b00cc2f14d4497b9c5877f7201132ac3f5ec33a2a964fa37192"
     },
     {
       "path": "src/core/wz_bus.c",
-      "sha256": "9bf59b595c552d7977979fe31d71f97dbe01bc805cc714b1940019201661df55"
+      "sha256": "a84850869148d8f70a2ee5b31570d9d221d7159cbff832982ddbc8dd1f69c47e"
     },
     {
       "path": "src/core/wz_debugger.c",
-      "sha256": "2078b893cb65d2a13a475059b898274476f6ad1030fbb0bbb5fde94c49492faa"
+      "sha256": "479b238f1aa668002aba6a4959750296cef553c2d4fe4425b0164b7f08e35eaf"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "a0b903d4da0c26159175ad2a863c77d223b81cd706a48b3f85bec41bd0e33fde"
+      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
     },
     {
       "path": "src/core/wz_microdrive.c",
-      "sha256": "e0dec04ca476a6127e758d82da2eaa45fe51ec79c136f885a6d5f94a88c742cc"
+      "sha256": "0d80d9a9144cdc39f5df0b8a9abb8e5e21bc71cfeb92f13ee2f7f34e532bc522"
     },
     {
       "path": "src/core/wz_printer.c",
-      "sha256": "30aee5db58cc7defcd7002b427d407ce4e77aac32db465b8c31991bc51a4407a"
+      "sha256": "fbcd4ceb9d809fe626517fe336ece5a0dd07f3a7ff3b00dfbb2b64bc7bd58e52"
     },
     {
       "path": "src/core/wz_zxnet.c",
-      "sha256": "85e33a2e07664e4a86d74b1eb7acb6173c7dd1673f6e9eb376783e37802a6a87"
+      "sha256": "827a71779f8b9ea11dd7644c2b2c757dea33d8a955dd8548fa110dd57325cef5"
     },
     {
       "path": "src/core/wz_raster.c",
-      "sha256": "358c008a4d2d343bc2d76a7ed07d823fba137aa1fce7900a70c1a74b928c3e45"
+      "sha256": "d87884dda947060b1b52e5ba3af9bebb5178c0d58505aeda4699078f8fc346c2"
     },
     {
       "path": "src/core/wz_presentation_snapshot.c",
-      "sha256": "163e154223eefb38cefc45e454325a884b6e89d4e98a9ca9dba83e93cbc4ab19"
+      "sha256": "e486ad41490593ff803f647460d3542f69f425bf8c15bd0892e882962a685367"
     },
     {
       "path": "src/core/wz_raster_diagnostic.c",
-      "sha256": "0929f6d5f72d1b43b419169da81a5d30bbf251cdbc2a09cc90daf62fdcba9f1f"
+      "sha256": "313a045ff4a389f25a296df239061cc16ea924891bc8cc9073477e8b0617fbe2"
     },
     {
       "path": "src/core/wz_raster_evidence.c",
-      "sha256": "b6fefc1c5972de474563f08b9e021c1084f9a14a5a4d06715f73d5721f7358a3"
+      "sha256": "5380a2fd77e8534a95cfe23ec621ec39d78aa6735e4fe28f8f1a0731ffb66576"
     },
     {
       "path": "src/core/wz_runner.c",
-      "sha256": "b0afd8647ce2ac00adba42917acc6def7f9a62b2089d43896081826da35a232e"
+      "sha256": "ded90228d1227ef361170e1bc95d2b98365fa380136fd5269733b6119d8c7b90"
     },
     {
       "path": "src/core/wz_scheduler.c",
-      "sha256": "846f1401daa9246e87fa178d22e5e95b2aef187ae628ff5a2ff28e4cf7a4a333"
+      "sha256": "524f6560c883d1a374548e1418bb23a05f1270f7c57561f284fa13452543f6f3"
     },
     {
       "path": "src/core/wz_tape.c",
-      "sha256": "e5cd18ca9b169f1bc04210cc4ad508bd435d50c8cf390a2263d5a275b36a6a85"
+      "sha256": "20c4523214f828d5129cbde2fb2c0d077ed15dae0daa923d019d1934b0c33d0b"
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "d95eebfc5c60fcff400ed205a7b9312ebe36b65d883916fc5b3355ad790d7241"
+      "sha256": "d57cd0aaab0ae29e6e056593b9ca574d958523b89ee810335aec88b714338b61"
     },
     {
       "path": "src/core/wz_trace.c",
-      "sha256": "cbe3aff5b43bc6cf50ab325e45c8a0055b46ca0ed43b50c4076d74f0c60f31ff"
+      "sha256": "d5283eff30dcaadb192ab2465901423abef769976687129c967e521f22bb8dd2"
     },
     {
       "path": "src/core/wz_z80.c",
-      "sha256": "286fac7caa894686984e49f332fa6c92543e60e5c8fb92d481a37a3fdb4fc8c1"
+      "sha256": "4414a17180681cc18c03a3a84c960196c1fa0d7bdfe09f59d0b664919a369195"
     }
   ],
   "command": "cmake -S ci/test/networking-permission -B dist/networking-permission -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/networking-permission --config Release --target wz_networking_permission_regression --parallel 2 && dist/networking-permission/wz_networking_permission_regression",

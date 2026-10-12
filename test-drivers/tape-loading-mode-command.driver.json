@@ -5,103 +5,103 @@
   "fixtures": [
     {
       "path": "ci/test/tape-loading-mode-command/tape-loading-mode-command.c",
-      "sha256": "1c7db8339156397c0404791feb3fe23f945cf2bd01c9aefd603722b940bbfda4"
+      "sha256": "e6cacc29b9477d40ff163d3e130965f3e8656794d4e8063167d3a6df02afe465"
     },
     {
       "path": "ci/test/tape-loading-mode-command/CMakeLists.txt",
-      "sha256": "c44008872c7adcfcf4e37920cc1aa31cc2a83400229b0d7056d53ab88f5523aa"
+      "sha256": "65effa8a1dd8e3697b8849ed2f02ab2eca9aede8dd0ea346b57801d04222ca0c"
     },
     {
       "path": "src/app/wz_tape_loading_commands.c",
-      "sha256": "baf4d260d715d7cab04e2ec0b835764204b10ce74c8bd521ab99bbd035242615"
+      "sha256": "b24e2e22bf91780cea306db01a9bf0cf8ac21382aeefd17a90bbea66e57c63dc"
     },
     {
       "path": "src/app/wz_tape_loading_commands.h",
-      "sha256": "d26325a9d401e1fe2f4730af8f1094972e24ad8e54a71d0a89408ec8117af233"
+      "sha256": "b2d0c4a71bd33c66412344c571d0aab1a936c22a25bf785df4cca5f7b39dca26"
     },
     {
       "path": "src/app/wz_command_registry.c",
-      "sha256": "93277b2eed8ad36fc3e9bad4ed6897ac2255a32ccd6142ccb0ee6f9d41ca70bf"
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
     },
     {
       "path": "src/app/wz_command_registry.h",
-      "sha256": "af687e17b60dbad891de7cafcc4ca39c48182e299140fcda1fafc23b486b6b53"
+      "sha256": "80110080861a05baae47cd6d294315055bb6b1a636c79891b55c56717cb53c94"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "a0b903d4da0c26159175ad2a863c77d223b81cd706a48b3f85bec41bd0e33fde"
+      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "197907797e2a3e2b9ee1479bb6c498adcc130f0f05aa8a9252233d55be8bad4b"
+      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
     },
     {
       "path": "src/core/wz_machine_profile.c",
-      "sha256": "4f365f1f47ef85c3f837c2a2f5c8318b5e06c72e79d474cae64ee8b3f1d9b726"
+      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09"
     },
     {
       "path": "src/core/wz_machine_profile.h",
-      "sha256": "809da6951d690c04032725fe7551148f2c4be6d1a19b676284c08c0b3c03f19c"
+      "sha256": "099be5f41f428466e5da622452abec6e0daf6402abcf4ab2e7d8c2df47457cc4"
     },
     {
       "path": "src/app/wz_host_thread.c",
-      "sha256": "cb3ae66f27150b343717a20a464f95d71efa46d9ea53f008dbefc96ff623733a"
+      "sha256": "6f8cbe0e171adfe7b9f42d9517e31d72f7917048339ff8941d5bccadfa305151"
     },
     {
       "path": "src/app/wz_host_thread.h",
-      "sha256": "0c1cc121673b1d86b07e3c56cace72810218e55b3c39af5d0e3d54831667fdce"
+      "sha256": "bd4e189a40c8f9ad31f014dc12afc3c67b7a4bd5580df262b0cf92db8fbe8471"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "3ebe1ed963559316c4287da77063e03371cf581e49045f1e485ce405d239d902"
+      "sha256": "485fa49b71bac837584046e3eac678170f71d86ed4a1a657ccd84d12f61ba882"
     },
     {
       "path": ".github/workflows/tape-loading-mode-command.yml",
-      "sha256": "3869bf68134f8e238dfd408be890e89c1e9f41d4d72413ce5e2998e9c7027536"
+      "sha256": "9e7933a3ee53dfe289f07110d9a8a76d4ba45d0c101cb01cfaa830835179bac5"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "d9017c14bb5d36faa2169890bb5c7da51f022a6cf4b8241a313c16cd7ae77c61"
+      "sha256": "d48d5f50c6086b7fd9ace25b0566ef1edb96ef697797b73d93431f18f0262339"
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "938562d96ab2f18c1268497a21453c5d82f584b3265e87b09b9ccbbf642b49b8"
+      "sha256": "c289df3896df2768e0b441e659be9df85eef0ebaab85a4a96feff0ca9d108d77"
     },
     {
       "path": "src/app/wz_tape_media_commands.c",
-      "sha256": "1e7144995d9cf83b7d9ce716b231a07edf50b9c1af808d86f861d1399380de8d"
+      "sha256": "f92f691c68a8ab55d7c4472e6860160935fe0c6c78593f1ff28393d03294f67c"
     },
     {
       "path": "src/app/wz_tape_media_commands.h",
-      "sha256": "d0182ea05d9c0b48d5776143242b4794761ff618ea8d74570bdea210d17627a4"
+      "sha256": "81fd3289f37b5a4d6c0f8848f7b891543a23e9816a7125b92ccccdfb4e56a4f8"
     },
     {
       "path": "src/app/wz_file_dialog.h",
-      "sha256": "69bbfda58d3f57c9c3d989bd8ca38ad3544332634a8b029a79f18108222c2fa4"
+      "sha256": "6686668d4a0e92030066f7e177824169e09aeb137de4beaf2eb43958f982f41b"
     },
     {
       "path": "src/app/wz_file_dialog_linux.c",
-      "sha256": "4f1ef0ba1a509f14bc45bd897121d4660c5462dc058470e98568f439b00665aa"
+      "sha256": "d4c8d61d56da6efa47636f12fff0a68474b5e682490e9704c39d725146f86408"
     },
     {
       "path": "src/app/wz_file_dialog_macos.m",
-      "sha256": "af63c6a942643d1c35f127cac449021607a39164513d694e38689c51a3408474"
+      "sha256": "03046b36b1bff1a6fd5ae4e700bf042c0db66672614db6ebde86ef2c9c854ca3"
     },
     {
       "path": "src/app/wz_file_dialog_win32.c",
-      "sha256": "f25c8f7bd2989d848d1a41d75cde78b01b4b77018428eefc01ff8889053db75f"
+      "sha256": "bcf5a298feaad7e6c11cd378c8c18bd47eacd8e2ded89f7b664712f47d8017c1"
     },
     {
       "path": "src/app/wz_host_output.c",
-      "sha256": "8949c5b287f63d61d0108781968967fc7f723732f6966ec66bbc47b5d702b7a1"
+      "sha256": "504322b9d5c80d2c865f6e8362557af61bce90240df83ccd25ca7065441191e6"
     },
     {
       "path": "src/app/wz_tape_manager.c",
-      "sha256": "79092d950a7cff6c5b96956d5305e0ecde0aab5f0818bb2cac2e509c8329c29c"
+      "sha256": "7a08c91c117233f94182465b75ea98964dab4f97a5e9560f3cdc58d67a79a076"
     },
     {
       "path": "src/app/wz_tape_manager.h",
-      "sha256": "cc5c98ed5bc0bb52ab7c2ab48757ee028e2c3d38fb901191a08a8987f48bac04"
+      "sha256": "cf005620d51c51f9e219c61d8910f579dd3ec366bf172d34c01b3058c2037586"
     }
   ]
 }

@@ -2,90 +2,90 @@
   "fixtures": [
     {
       "path": ".github/workflows/audio-delivery-regression.yml",
-      "sha256": "13f297e8223c222d66db56ced2014991c6d1e3c0e0af83bd882d09cb53ae2a53"
+      "sha256": "d3787d282f86acdabe59c7ca84ee9ae7bd072bc99e8f5ecbd3f15fe0b64964e8"
     },
     {
       "path": "ci/test/audio-delivery/sokol-audio-delivery-regression.c",
-      "sha256": "585612bf9ea40000aa843089f9d3f17e64a2ef3f73a4c33bc6a8405731e7689f"
+      "sha256": "148feb78f4a3a258cff10fb8378e212df08dbd0c3d024a14583b48df07a5ea84"
     },
     {
       "path": "ci/test/audio-delivery/sokol_audio_stub/sokol_audio.h",
-      "sha256": "2cd2da7d3d6fff10f8001226a1487ef0936056d5357eac48d210429e639bec9b"
+      "sha256": "241b80c7c29052de62cc2400f9ed6416b9d4cbb8d1b3ef470a84c74dede75193"
     },
     {
       "path": "ci/test/audio-delivery/write-proof.py",
-      "sha256": "e3567d1eae7ccd2abd053267db785aec9423f3fb445f4ef3ab789a441bf43d31"
+      "sha256": "9ec2d7eba4f6eda1652e88f25ef7a7a66e61557b866a5773b4b22e8094cb222a"
     },
     {
       "path": "src/app/wz_host_audio_push.c",
-      "sha256": "4b50aa8572ab0a3af2c65d3db61b1434216f9a7bdeae12f222360bac6fabf345"
+      "sha256": "1a3a87bc6c19474d0f24883d6848f9de35ce460535f4a56edebb8231966e6f71"
     },
     {
       "path": "src/app/wz_host_audio_push.h",
-      "sha256": "a64fc65b54d3e4c3ac7f8ef001dafa077efe39716b9f1d192e797d44f61b48a0"
+      "sha256": "78c2932e1a8a4569f386da3627e4fabd51cc51b7532c6243d9c21638a73f629d"
     },
     {
       "path": "src/app/wz_host_audio_policy.c",
-      "sha256": "0d46bae6f5ce43e5ad0d85af8fe48f2556f6b5e873ebfbbcb98ad4d54dec89c1"
+      "sha256": "24ed4f2318ba10bb2cb9ec48b5ae9bf854ecdef71687f2bd6908bb9bb9b17bce"
     },
     {
       "path": "src/app/wz_host_audio_policy.h",
-      "sha256": "3a838cb037d813888cf5ceb5d452d2c077c122c61393246ea7d95a4fa41367bc"
+      "sha256": "630b754c18a3f0b3c36088d587be1f9264343cad7418b7c2caa44d36eb5d669d"
     },
     {
       "path": "src/app/wz_host_config.c",
-      "sha256": "c6c718e2a579b235566025201b5f45c3c859ef7207dd63f7d25783b196f90a51"
+      "sha256": "5cd5b1c698a5493f79a8210aaa3caf14b2998b4d7581abf4b718cfda4b8a66d2"
     },
     {
       "path": "src/app/wz_command_registry.c",
-      "sha256": "93277b2eed8ad36fc3e9bad4ed6897ac2255a32ccd6142ccb0ee6f9d41ca70bf"
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
     },
     {
       "path": "src/app/wz_host_thread.c",
-      "sha256": "cb3ae66f27150b343717a20a464f95d71efa46d9ea53f008dbefc96ff623733a"
+      "sha256": "6f8cbe0e171adfe7b9f42d9517e31d72f7917048339ff8941d5bccadfa305151"
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "938562d96ab2f18c1268497a21453c5d82f584b3265e87b09b9ccbbf642b49b8"
+      "sha256": "c289df3896df2768e0b441e659be9df85eef0ebaab85a4a96feff0ca9d108d77"
     },
     {
       "path": "src/app/wz_ui_layout.h",
-      "sha256": "f872c410ac2efba211fe060a2438439b824012eaa82a88caa1e207b2e9eca2e0"
+      "sha256": "82b311ec0944bafa0c7256f2becef7f56d69d51843ece9e7d62c68f36b75151e"
     },
     {
       "path": "src/app/wz_sokol_audio.c",
-      "sha256": "a3088048f4b16ff4b63fa7ad464b590c33c4d48525fe1ae976a439699d983c02"
+      "sha256": "104b26e4f27289dc4afbc58f92be8b8bbceb2cc52c7648c075b1c33aa40cbefc"
     },
     {
       "path": "src/app/wz_sokol_audio.h",
-      "sha256": "73d56c586709a95479e244c1838b3cab24f8120661aa96da7e8b7ba2d377074a"
+      "sha256": "cec736aa3183a6b35db788456fa44273c4b82bd8cd13e19fa14f9e9944c61b68"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "d9017c14bb5d36faa2169890bb5c7da51f022a6cf4b8241a313c16cd7ae77c61"
+      "sha256": "d48d5f50c6086b7fd9ace25b0566ef1edb96ef697797b73d93431f18f0262339"
     },
     {
       "path": "src/app/wz_speed_policy.c",
-      "sha256": "714f4694767df8b2556f6e8107459cf667e9cb9e63990c0ad4b6c9bd1b6b6437"
+      "sha256": "cb9d2d0befc0becaa81558d794a257f399c4a46e1c1a0bdb19c4893d8f547183"
     },
     {
       "path": "src/app/wz_speed_policy.h",
-      "sha256": "92028fc6a9a88a2e7efbfc2de03989a139bc6b1d9a7ce791b6eacfc4193d173c"
+      "sha256": "0895e0cac0254cb95d4b2347d911f0fdddfd0bab414d37e5dd4052cfc9eaa2df"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "3ebe1ed963559316c4287da77063e03371cf581e49045f1e485ce405d239d902"
+      "sha256": "485fa49b71bac837584046e3eac678170f71d86ed4a1a657ccd84d12f61ba882"
     },
     {
-      "sha256": "42b567f71d695c12ce3aedc3a90241d346638ded0ca9ff5c34d7bd79524d352e",
+      "sha256": "98e77532404a726162a1bd8b075df7934b66a231f085e901094a1aa2cee2f04f",
       "path": "src/app/wz_telnet_status.c"
     },
     {
-      "sha256": "1b28882621fa84db5f180bb240238c23e6f0004a2d9041106e78d0d7d1978edd",
+      "sha256": "8bd49ab44fe070e0ad30b61c7118d36ac641f298ccb495186ee305c0449bc8d9",
       "path": "src/app/wz_telnet_status.h"
     },
     {
-      "sha256": "8461842d0eca21d4b2a7305dfb7b0b9a22a5523329b89413961faec142a1a931",
+      "sha256": "70ecabb37fe68f5460c0596ef62f3564637e5f824e1917a9c9a56693aeda1038",
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md"
     }
   ],
