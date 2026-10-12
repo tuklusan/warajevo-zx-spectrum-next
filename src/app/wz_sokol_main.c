@@ -6148,6 +6148,11 @@ static void wz_host_ui_draw_networking_settings(
         }
         if (!option->available) {
             nk_widget_disable_end(context);
+            if (option->disabled_reason != NULL &&
+                option->disabled_reason[0] != '\0') {
+                nk_layout_row_dynamic(context, 20.0f, 1);
+                nk_label(context, option->disabled_reason, NK_TEXT_LEFT);
+            }
         }
     }
     nk_layout_row_dynamic(context, 40.0f, 1);
