@@ -3630,6 +3630,43 @@ static void wz_host_ui_draw_speed_items(struct nk_context* context)
     }
 }
 
+static void wz_host_ui_draw_printer_settings(struct nk_context* context)
+{
+    static const char* printer_modes[] = {
+        "Disabled", "Epson", "Epson enlarged", "HP", "HP enlarged"
+    };
+    const char* command_id = WZ_PRINTER_MODE_COMMAND_ID;
+    const bool enabled = wz_command_registry_state(
+        &wz_host_session.command_registry, command_id, NULL) ==
+        WZ_COMMAND_ENABLED;
+    if (!enabled) nk_widget_disable_begin(context);
+    if (nk_menu_begin_label(context, "Peripherals", NK_TEXT_LEFT,
+                             nk_vec2(210.0f, 180.0f))) {
+        nk_layout_row_dynamic(context, 24.0f, 1);
+        if (nk_menu_begin_label(context, "ZX Printer", NK_TEXT_LEFT,
+                                nk_vec2(190.0f, 5.0f * 25.0f))) {
+            nk_layout_row_dynamic(context, 24.0f, 1);
+            for (uint8_t mode = 0u;
+                 mode <= (uint8_t)WZ_PRINTER_MODE_HP_ENLARGED; ++mode) {
+                char mode_label[64];
+                (void)snprintf(mode_label, sizeof(mode_label), "%s%s",
+                    printer_modes[mode],
+                    wz_machine_printer_mode(&wz_host_session.machine) ==
+                        (wz_printer_mode_t)mode ? " *" : "");
+                if (nk_menu_item_label(context, mode_label, NK_TEXT_LEFT)) {
+                    wz_command_result_t result;
+                    (void)wz_command_registry_dispatch(
+                        &wz_host_session.command_registry, command_id,
+                        (wz_command_arguments_t){&mode, sizeof(mode)}, &result);
+                }
+            }
+            nk_menu_end(context);
+        }
+        nk_menu_end(context);
+    }
+    if (!enabled) nk_widget_disable_end(context);
+}
+
 static void wz_host_ui_draw_menus(struct nk_context* context, float width)
 {
     size_t root_index;
@@ -3704,34 +3741,6 @@ static void wz_host_ui_draw_menus(struct nk_context* context, float width)
                     nk_menu_end(context);
                 }
                 if (!enabled) nk_widget_disable_end(context);
-            } else if (strcmp(command->id,
-                       WZ_PRINTER_MODE_COMMAND_ID) == 0) {
-                static const char* printer_modes[] = {
-                    "Disabled", "Epson", "Epson enlarged", "HP", "HP enlarged"
-                };
-                if (!enabled) nk_widget_disable_begin(context);
-                if (nk_menu_begin_label(context, "ZX Printer Mode",
-                        NK_TEXT_LEFT, nk_vec2(190.0f, 5.0f * 25.0f))) {
-                    nk_layout_row_dynamic(context, 24.0f, 1);
-                    for (uint8_t mode = 0u;
-                         mode <= (uint8_t)WZ_PRINTER_MODE_HP_ENLARGED; ++mode) {
-                        char mode_label[64];
-                        (void)snprintf(mode_label, sizeof(mode_label), "%s%s",
-                            printer_modes[mode],
-                            wz_machine_printer_mode(&wz_host_session.machine) ==
-                                (wz_printer_mode_t)mode ? " *" : "");
-                        if (nk_menu_item_label(context, mode_label,
-                                NK_TEXT_LEFT)) {
-                            wz_command_result_t result;
-                            (void)wz_command_registry_dispatch(
-                                &wz_host_session.command_registry, command->id,
-                                (wz_command_arguments_t){&mode, sizeof(mode)},
-                                &result);
-                        }
-                    }
-                    nk_menu_end(context);
-                }
-                if (!enabled) nk_widget_disable_end(context);
             } else if (command->parameter_schema != NULL &&
                        strcmp(command->parameter_schema, "NONE") != 0) {
                 nk_widget_disable_begin(context);
@@ -3754,6 +3763,9 @@ static void wz_host_ui_draw_menus(struct nk_context* context, float width)
                 }
                 if (!enabled) nk_widget_disable_end(context);
             }
+        }
+        if (strcmp(root->id, "settings") == 0) {
+            wz_host_ui_draw_printer_settings(context);
         }
         nk_menu_end(context);
     }
