@@ -1,10 +1,10 @@
 {
   "testId": "ui-command-equivalence",
   "status": "pass",
-  "commit": "a55e07edd5f296e4d196c576028662765c539be2",
+  "commit": "31ddc546a54998d4fb72477759919372f4f5e504",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-10-12T16:15:47+00:00",
-  "runId": 38273237701,
+  "timestamp": "2026-10-12T22:56:55+00:00",
+  "runId": 38319426486,
   "runners": [
     {
       "id": "windows-x64",
@@ -138,7 +138,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "0b06d5f3d6e248fd566be6ec45084ddaaeb03243f300490837b9d6082e29e0a2"
+      "sha256": "b171289db934e9bc02d943b3e77a06f0af43a32fae3a073f025c707dac6d56b3"
     },
     {
       "path": "src/core/wz_keyboard_matrix.c",
@@ -163,6 +163,14 @@
     {
       "path": "src/core/wz_raster.h",
       "sha256": "c231c401076b312c4b8ae6ef55492fd7e4068742c59a3583b4efaefee0ec5396"
+    },
+    {
+      "path": "src/app/wz_rom_settings.c",
+      "sha256": "994b1adc805838998b182a193506462a9165359b0e86315b342ceb32d95752f3"
+    },
+    {
+      "path": "src/app/wz_rom_settings.h",
+      "sha256": "30eab69df6a396832f44d3bc34bf8f29adde294e7665642fa55fa0f17a52d0fa"
     }
   ]
 }
