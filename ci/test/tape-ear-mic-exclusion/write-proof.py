@@ -44,7 +44,7 @@ def main() -> None:
         "runId": args.run_id,
         "runner": args.runner,
         "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "caseCount": 9,
+        "caseCount": driver["requiredCases"],
         "fixtures": fixtures,
     }
     args.proof.parent.mkdir(parents=True, exist_ok=True)

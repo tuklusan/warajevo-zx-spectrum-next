@@ -20,7 +20,7 @@
     },
     {
       "path": "ci/test/tape-ear-mic-exclusion/write-proof.py",
-      "sha256": "6950d9f9b6bb76407e783ee8725d51f47d0ee2e2b08f2787c154636d2301bd97"
+      "sha256": "5970ad36f2b1a26aa8ae5093dc595afb889803b6de95cafb68f69f24cd6df43a"
     },
     {
       "path": "src/core/wz_machine.c",
