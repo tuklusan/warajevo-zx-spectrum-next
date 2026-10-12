@@ -1,10 +1,10 @@
 {
   "testId": "input-dialog-focus",
   "status": "pass",
-  "commit": "34cab513461f10e6e9a135b538c7feb7018b0fe7",
-  "runId": 38306475902,
+  "commit": "69d903967bc30ecc5d44a8075f0a91ec9dbef585",
+  "runId": 38315897695,
   "runner": "Linux/X64",
-  "timestamp": "2026-10-12T20:47:31+00:00",
+  "timestamp": "2026-10-12T22:20:12+00:00",
   "caseCount": 18,
   "fixtures": [
     {
@@ -25,7 +25,7 @@
     },
     {
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
-      "sha256": "912f7f227b1ce340713fd24e149f777a1ba0f02d072f775afc78a01ac8d5df77"
+      "sha256": "dc47afb96f2c0566788d59ef74a691c33a8943e1c4e199c96c74d07739e68b31"
     },
     {
       "path": "src/app/wz_input_arbiter.c",
@@ -45,7 +45,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "091e6b733902b559c0233f94189ae3a22ffb7d27bf80bad347c85e40678270c1"
+      "sha256": "b171289db934e9bc02d943b3e77a06f0af43a32fae3a073f025c707dac6d56b3"
     },
     {
       "path": "src/app/wz_telnet_input.c",

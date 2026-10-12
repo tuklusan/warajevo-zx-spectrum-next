@@ -1,10 +1,10 @@
 {
   "testId": "model-switch",
   "status": "pass",
-  "commit": "7e3a1dc16c00b70669ea7587632847b04698a9c6",
+  "commit": "69d903967bc30ecc5d44a8075f0a91ec9dbef585",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-09-29T12:03:41+00:00",
-  "runId": 36563713245,
+  "timestamp": "2026-10-12T22:25:48+00:00",
+  "runId": 38315897682,
   "runners": [
     {
       "id": "windows-x64",
@@ -18,7 +18,7 @@
       "runnerLabel": "Windows ARM64",
       "os": "Windows",
       "architecture": "ARM64",
-      "runnerName": "win11-arm64"
+      "runnerName": "win11-vs2026-arm64"
     },
     {
       "id": "macos-x64",
@@ -58,7 +58,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "8a6368a21d6c9000cd39e8c88147b3596354f89b1ea428b14a3a109cd203292e"
+      "sha256": "b171289db934e9bc02d943b3e77a06f0af43a32fae3a073f025c707dac6d56b3"
     },
     {
       "path": "src/app/wz_telnet_alias_response.c",
@@ -70,15 +70,15 @@
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.c",
-      "sha256": "f74a7067a930222a6036ddb1c80d3fd76f947fa85e7ff8769c6db0cef40c92d7"
+      "sha256": "240c70171a4ea43836a83198f7935560e03391f60bc3528ba95d16e323e08f3b"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "ff2f9f8f2e9c3237accb07b0c300e0e6a2af060ca6d6628b635c5745874cbb21"
+      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "84d9e0b84a02993917b0e74cb9ba0d71158f45223a707d801ce927029ab2b0aa"
+      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
     },
     {
       "path": "src/core/wz_machine_profile.c",
@@ -118,7 +118,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "71baaae8ab59240cf9af91f53679a102f07229947d9241112d84ed963068e632"
+      "sha256": "af1a055ba24a42e870645a1b7389cffcf449028e8dd2f3344881282db94f51f4"
     },
     {
       "path": "test-media/DIZZY4K.TAP",

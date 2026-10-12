@@ -1,10 +1,10 @@
 {
   "testId": "keyboard-menu",
   "status": "pass",
-  "commit": "389b72720c38facdf88848c821d318cc25789073",
-  "runId": 38311764659,
+  "commit": "69d903967bc30ecc5d44a8075f0a91ec9dbef585",
+  "runId": 38315897770,
   "runner": "Linux/X64",
-  "timestamp": "2026-10-12T21:37:24+00:00",
+  "timestamp": "2026-10-12T22:20:01+00:00",
   "caseCount": 86,
   "fixtures": [
     {
@@ -57,7 +57,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "8ba29e1fc209f98750da493cb8e992fe22f62583be75fc1801843a6b174ee651"
+      "sha256": "b171289db934e9bc02d943b3e77a06f0af43a32fae3a073f025c707dac6d56b3"
     },
     {
       "path": "src/app/wz_ui_keyboard_menu.c",

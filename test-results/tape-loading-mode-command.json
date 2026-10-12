@@ -1,10 +1,10 @@
 {
   "testId": "tape-loading-mode-command",
   "status": "pass",
-  "commit": "046b89d82afa14946954d5c83072c6489306b74f",
+  "commit": "69d903967bc30ecc5d44a8075f0a91ec9dbef585",
   "runner": "Linux/x86_64",
-  "timestamp": "2026-09-29T19:22:00.257701+00:00",
-  "runId": 36617973444,
+  "timestamp": "2026-10-12T22:19:29.506728+00:00",
+  "runId": 38315897718,
   "fixtures": [
     {
       "path": "ci/test/tape-loading-mode-command/tape-loading-mode-command.c",
@@ -32,11 +32,11 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "ff2f9f8f2e9c3237accb07b0c300e0e6a2af060ca6d6628b635c5745874cbb21"
+      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "84d9e0b84a02993917b0e74cb9ba0d71158f45223a707d801ce927029ab2b0aa"
+      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
     },
     {
       "path": "src/core/wz_machine_profile.c",
@@ -56,7 +56,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "9ecafdaf9f137684e77a3b722e7d1dd289ba9e8b3333af1244844e2d604436c0"
+      "sha256": "af1a055ba24a42e870645a1b7389cffcf449028e8dd2f3344881282db94f51f4"
     },
     {
       "path": ".github/workflows/tape-loading-mode-command.yml",
@@ -64,11 +64,11 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "3e67cb171009e06fda0f5e7a4c9df2c9f7c31d2ecbf5e16ea389e778aa580a27"
+      "sha256": "b171289db934e9bc02d943b3e77a06f0af43a32fae3a073f025c707dac6d56b3"
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "7d78188b959e29cd031382c7f9a788f7fe837d9d24d3ebe446137cc8c4d28b38"
+      "sha256": "c289df3896df2768e0b441e659be9df85eef0ebaab85a4a96feff0ca9d108d77"
     },
     {
       "path": "src/app/wz_tape_media_commands.c",

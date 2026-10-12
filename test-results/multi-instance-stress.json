@@ -1,9 +1,9 @@
 {
   "testId": "multi-instance-stress",
   "status": "pass",
-  "commit": "6d7694aa23ecd70f7a59e5e40b57d56ee1ad1398",
+  "commit": "69d903967bc30ecc5d44a8075f0a91ec9dbef585",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-10-02T06:22:21+00:00",
+  "timestamp": "2026-10-12T22:21:24+00:00",
   "caseCount": 5,
   "runners": [
     {
@@ -50,11 +50,11 @@
     },
     {
       "path": "src/app/wz_host_config.c",
-      "sha256": "5fdecc8d1f9abe5e9f6a4297c83fc7e0fe0590a2d4022dce15c3e49c5a76edaa"
+      "sha256": "bb47dd7e107806c141704519e6194d510168769d70fbe7c230276a7333dd6847"
     },
     {
       "path": "src/app/wz_host_config.h",
-      "sha256": "dc7886087ef96ae7f98d7dbfdfff69df2e2c48aa39c3a8f52ef33d0664f44e14"
+      "sha256": "331a4633fa40e33cbfb0dc93eeff0175510d27546a8e38b4093100b5686a6ca3"
     },
     {
       "path": "src/app/wz_host_media_ownership.c",
@@ -150,7 +150,7 @@
     },
     {
       "path": "test-drivers/multi-instance-stress.driver.json",
-      "sha256": "8758a2a77ec081ce25bd3bb4e29eab5cdb6114e7a33c0aa633f3995c164f767f"
+      "sha256": "76ba9fdb2a81dccd120f6a2662a9bb0a7637246dca491e3b6ae952cbe1b5e2aa"
     },
     {
       "path": ".github/workflows/multi-instance-stress.yml",

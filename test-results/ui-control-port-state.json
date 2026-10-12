@@ -1,10 +1,10 @@
 {
   "testId": "ui-control-port-state",
   "status": "pass",
-  "commit": "98628ffe7bba75762688f75cddd14e44a298ac43",
-  "runId": 38312965811,
+  "commit": "69d903967bc30ecc5d44a8075f0a91ec9dbef585",
+  "runId": 38315897925,
   "runner": "Linux/X64",
-  "timestamp": "2026-10-12T21:49:07+00:00",
+  "timestamp": "2026-10-12T22:20:45+00:00",
   "caseCount": 12,
   "fixtures": [
     {
@@ -25,15 +25,15 @@
     },
     {
       "path": "test-drivers/ui-control-port-state.driver.json",
-      "sha256": "c8df051423f576aa81815e9c5c66b53b53e5c17b0ae7785e9ec6f31c99a81172"
+      "sha256": "6e346db4abd00fc01670796d560ccc6f5d73aaf6e2f963d9c72167a7312e9f4c"
     },
     {
       "path": "src/app/wz_host_config.c",
-      "sha256": "5cd5b1c698a5493f79a8210aaa3caf14b2998b4d7581abf4b718cfda4b8a66d2"
+      "sha256": "bb47dd7e107806c141704519e6194d510168769d70fbe7c230276a7333dd6847"
     },
     {
       "path": "src/app/wz_host_config.h",
-      "sha256": "783558070f5b5d2faac7198592a7e7b07bb2f765014dbae4a039d9f2dd4e256b"
+      "sha256": "331a4633fa40e33cbfb0dc93eeff0175510d27546a8e38b4093100b5686a6ca3"
     },
     {
       "path": "src/app/wz_ui_layout.c",

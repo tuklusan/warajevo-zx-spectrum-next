@@ -1,10 +1,10 @@
 {
   "testId": "ui-networking-mode",
   "status": "pass",
-  "commit": "37dbe76e1117d3f1b147a03a6754a9a7d0155685",
-  "runId": 38297296509,
+  "commit": "69d903967bc30ecc5d44a8075f0a91ec9dbef585",
+  "runId": 38315897793,
   "runner": "Linux/X64",
-  "timestamp": "2026-10-12T19:23:21+00:00",
+  "timestamp": "2026-10-12T22:20:41+00:00",
   "caseCount": 16,
   "fixtures": [
     {
@@ -25,7 +25,7 @@
     },
     {
       "path": "test-drivers/ui-networking-mode.driver.json",
-      "sha256": "8fc10668b7b1463aebab778b4102a213113ff820460987e03f74c062621fde00"
+      "sha256": "8ec6f3ae29d5632dd0aec5b6e18be073d5ce5dc39410eae6ef297a46318c406f"
     },
     {
       "path": "src/app/wz_command_registry.c",
@@ -65,7 +65,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "a3722426ceb848417fbfcf3dd3d1db6594c3d127234b538a38fdd7d00496da81"
+      "sha256": "b171289db934e9bc02d943b3e77a06f0af43a32fae3a073f025c707dac6d56b3"
     },
     {
       "path": "src/core/wz_machine.c",
@@ -77,7 +77,7 @@
     },
     {
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
-      "sha256": "70ecabb37fe68f5460c0596ef62f3564637e5f824e1917a9c9a56693aeda1038"
+      "sha256": "dc47afb96f2c0566788d59ef74a691c33a8943e1c4e199c96c74d07739e68b31"
     }
   ]
 }
