@@ -89,6 +89,7 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "app/wz_host_socket.h"
 #include "app/wz_input_arbiter.h"
 #include "app/wz_input_focus.h"
+#include "app/wz_ui_keyboard_menu.h"
 #include "app/wz_keyboard_mapping.h"
 #include "app/wz_kempston_mapping.h"
 #include "app/wz_sokol_audio.h"
@@ -150,6 +151,7 @@ typedef struct {
     size_t input_kempston_target;
     unsigned input_capture_kind;
     bool tape_enter_down;
+    wz_ui_keyboard_menu_t keyboard_menu;
     wz_control_port_owner_t control_port;
     wz_telnet_client_gate_t telnet_client;
     wz_host_display_settings_t display_settings;
@@ -3667,6 +3669,170 @@ static void wz_host_ui_draw_printer_settings(struct nk_context* context)
     if (!enabled) nk_widget_disable_end(context);
 }
 
+typedef struct {
+    const char* label;
+    const char* command_id;
+    int speed;
+    const char* model;
+    bool insert_tape;
+    bool show_status;
+} wz_host_keyboard_action_t;
+
+static const wz_host_keyboard_action_t wz_host_keyboard_actions[] = {
+    {"Open / Run...", "file.open_run", -1, NULL, false, false},
+    {"Load Snapshot...", "snapshot.load", -1, NULL, false, false},
+    {"Save Snapshot", "snapshot.save", -1, NULL, false, false},
+    {"Save Snapshot As...", "snapshot.save_as", -1, NULL, false, false},
+    {"Pause / Resume", "machine.pause_resume", -1, NULL, false, false},
+    {"Reset", "machine.reset", -1, NULL, false, false},
+    {"Speed: 25%", "machine.speed.set", WZ_SPEED_25, NULL, false, false},
+    {"Speed: 50%", "machine.speed.set", WZ_SPEED_50, NULL, false, false},
+    {"Speed: 100%", "machine.speed.set", WZ_SPEED_100, NULL, false, false},
+    {"Speed: 200%", "machine.speed.set", WZ_SPEED_200, NULL, false, false},
+    {"Speed: 400%", "machine.speed.set", WZ_SPEED_400, NULL, false, false},
+    {"Speed: 800%", "machine.speed.set", WZ_SPEED_800, NULL, false, false},
+    {"Speed: Unlimited", "machine.speed.set", WZ_SPEED_UNLIMITED, NULL, false, false},
+    {"Model: 48K", "machine.model.set", -1, "48k", false, false},
+    {"Model: 128K", "machine.model.set", -1, "128k", false, false},
+    {"Insert Tape...", "media.tape.insert", -1, NULL, true, false},
+    {"Eject Tape", "media.tape.eject", -1, NULL, false, false},
+    {"Tape Loading: Normal", "media.tape.loading_mode.normal", -1, NULL, false, false},
+    {"Tape Loading: Instant / Trap", "media.tape.loading_mode.instant", -1, NULL, false, false},
+    {"Fullscreen", "view.fullscreen", -1, NULL, false, false},
+    {"Debugger / Monitor...", WZ_DEBUGGER_WINDOW_COMMAND_ID, -1, NULL, false, false},
+    {"Snapshot Inspector...", WZ_SNAPSHOT_INSPECTOR_COMMAND_ID, -1, NULL, false, false},
+    {"Display Settings...", "settings.display.open", -1, NULL, false, false},
+    {"Audio Settings...", "settings.audio.open", -1, NULL, false, false},
+    {"Input Settings...", "settings.input", -1, NULL, false, false},
+    {"ROM / Firmware...", "settings.rom.open", -1, NULL, false, false},
+    {"Networking...", "settings.networking.open", -1, NULL, false, false},
+    {"Open Tape Manager...", "media.tape.manager", -1, NULL, false, false},
+    {"Open Microdrive Manager...", "media.microdrive.manager", -1, NULL, false, false},
+    {"Eject MDV 1...", "media.microdrive.eject.1", -1, NULL, false, false},
+    {"Eject MDV 2...", "media.microdrive.eject.2", -1, NULL, false, false},
+    {"Eject MDV 3...", "media.microdrive.eject.3", -1, NULL, false, false},
+    {"Eject MDV 4...", "media.microdrive.eject.4", -1, NULL, false, false},
+    {"Eject MDV 5...", "media.microdrive.eject.5", -1, NULL, false, false},
+    {"Eject MDV 6...", "media.microdrive.eject.6", -1, NULL, false, false},
+    {"Eject MDV 7...", "media.microdrive.eject.7", -1, NULL, false, false},
+    {"Eject MDV 8...", "media.microdrive.eject.8", -1, NULL, false, false},
+    {"Remote Control Status...", NULL, -1, NULL, false, true}
+};
+
+static void wz_host_keyboard_menu_close(void)
+{
+    (void)wz_ui_keyboard_menu_close(&wz_host_session.keyboard_menu,
+                                    &wz_host_session.input_focus);
+}
+
+static void wz_host_keyboard_menu_activate(void)
+{
+    const wz_host_keyboard_action_t* action;
+    wz_command_result_t result = {0};
+    if (wz_ui_keyboard_menu_selection(&wz_host_session.keyboard_menu) >=
+        sizeof(wz_host_keyboard_actions) / sizeof(wz_host_keyboard_actions[0])) {
+        return;
+    }
+    action = &wz_host_keyboard_actions[wz_ui_keyboard_menu_selection(
+        &wz_host_session.keyboard_menu)];
+    if (action->command_id != NULL) {
+        const char* reason = NULL;
+        if (wz_command_registry_state(&wz_host_session.command_registry,
+                action->command_id, &reason) != WZ_COMMAND_ENABLED) {
+            (void)snprintf(wz_host_session.file_notification,
+                sizeof(wz_host_session.file_notification), "%s",
+                reason == NULL ? "Command unavailable" : reason);
+            return;
+        }
+    }
+    if (action->show_status) {
+        wz_host_session.remote_settings_visible = true;
+    } else if (action->insert_tape) {
+        wz_host_ui_insert_tape();
+    } else if (action->speed >= 0) {
+        (void)wz_ui_layout_activate_speed(&wz_host_session.command_registry,
+            (wz_speed_policy_t)action->speed, &result);
+    } else if (action->model != NULL) {
+        (void)wz_ui_layout_activate_model(&wz_host_session.command_registry,
+            action->model, &result);
+    } else if (action->command_id != NULL) {
+        (void)wz_command_registry_dispatch(&wz_host_session.command_registry,
+            action->command_id, (wz_command_arguments_t){NULL, 0u}, &result);
+    }
+    if (result.message[0] != '\0' || result.reason != NULL) {
+        (void)snprintf(wz_host_session.file_notification,
+            sizeof(wz_host_session.file_notification), "%s",
+            result.message[0] != '\0' ? result.message : result.reason);
+    }
+    if (action->show_status ||
+        strcmp(action->command_id, WZ_DEBUGGER_WINDOW_COMMAND_ID) == 0 ||
+        strcmp(action->command_id, WZ_SNAPSHOT_INSPECTOR_COMMAND_ID) == 0 ||
+        strcmp(action->command_id, "media.tape.manager") == 0 ||
+        strcmp(action->command_id, "media.microdrive.manager") == 0 ||
+        strncmp(action->command_id, "settings.", 9u) == 0 ||
+        strncmp(action->command_id, "media.microdrive.eject.", 23u) == 0) {
+        (void)wz_ui_keyboard_menu_set_return_target(
+            &wz_host_session.keyboard_menu, WZ_INPUT_FOCUS_TEXT_CONTROL);
+    }
+    wz_host_keyboard_menu_close();
+}
+
+static void wz_host_ui_draw_keyboard_menu(struct nk_context* context,
+                                           float width, float height)
+{
+    const size_t action_count = sizeof(wz_host_keyboard_actions) /
+        sizeof(wz_host_keyboard_actions[0]);
+    const size_t visible_count = 15u;
+    const size_t selection = wz_ui_keyboard_menu_selection(
+        &wz_host_session.keyboard_menu);
+    const size_t first = selection >= 7u ? selection - 7u : 0u;
+    const size_t last = first + visible_count < action_count ?
+        first + visible_count : action_count;
+    const float panel_width = width >= 520.0f ? 500.0f : width - 16.0f;
+    const float panel_height = height >= 500.0f ? 470.0f : height - 24.0f;
+    size_t index;
+    if (!wz_ui_keyboard_menu_is_active(&wz_host_session.keyboard_menu) ||
+        panel_width < 260.0f ||
+        panel_height < 240.0f) return;
+    if (!nk_begin(context, "Keyboard Commands",
+            nk_rect((width - panel_width) * 0.5f,
+                    (height - panel_height) * 0.5f,
+                    panel_width, panel_height),
+            NK_WINDOW_BORDER | NK_WINDOW_TITLE)) {
+        nk_end(context);
+        return;
+    }
+    nk_layout_row_dynamic(context, 24.0f, 1);
+    nk_label(context, "Keyboard menu. Up/Down: move; Enter: run; Esc: close.",
+              NK_TEXT_LEFT);
+    for (index = first; index < last; ++index) {
+        char label[128];
+        const bool selected = index == selection;
+        const char* reason = NULL;
+        const wz_host_keyboard_action_t* action = &wz_host_keyboard_actions[index];
+        bool enabled = true;
+        if (action->command_id != NULL) {
+            enabled = wz_command_registry_state(
+                &wz_host_session.command_registry, action->command_id,
+                &reason) == WZ_COMMAND_ENABLED;
+        }
+        (void)snprintf(label, sizeof(label), "%s%s%s",
+            selected ? "> " : "  ", action->label,
+            selected ? "  < focus" : "");
+        if (!enabled) nk_widget_disable_begin(context);
+        nk_layout_row_dynamic(context, 22.0f, 1);
+        nk_label(context, label, NK_TEXT_LEFT);
+        if (!enabled) nk_widget_disable_end(context);
+        if (selected && !enabled && reason != NULL) {
+            nk_layout_row_dynamic(context, 20.0f, 1);
+            nk_label_wrap(context, reason);
+        }
+    }
+    nk_layout_row_dynamic(context, 28.0f, 1);
+    if (nk_button_label(context, "Close (Esc)")) wz_host_keyboard_menu_close();
+    nk_end(context);
+}
+
 static void wz_host_ui_draw_menus(struct nk_context* context, float width)
 {
     size_t root_index;
@@ -4052,21 +4218,21 @@ static void wz_host_ui_draw_microdrive_eject_confirmation(
         : "Eject this mounted Microdrive cartridge?");
     if (dirty) {
         nk_layout_row_dynamic(context, 30.0f, 3);
-        if (nk_button_label(context, "Save and Eject")) {
+        if (nk_button_label(context, "Save and Eject (Enter/S)")) {
             wz_host_ui_resolve_microdrive_eject(slot, false);
         }
-        if (nk_button_label(context, "Discard and Eject")) {
+        if (nk_button_label(context, "Discard and Eject (D)")) {
             wz_host_ui_resolve_microdrive_eject(slot, true);
         }
-        if (nk_button_label(context, "Cancel")) {
+        if (nk_button_label(context, "Cancel (Esc)")) {
             wz_host_session.microdrive_eject_confirmation_open = false;
         }
     } else {
         nk_layout_row_dynamic(context, 30.0f, 2);
-        if (nk_button_label(context, "Eject")) {
+        if (nk_button_label(context, "Eject (Enter)")) {
             wz_host_ui_resolve_microdrive_eject(slot, false);
         }
-        if (nk_button_label(context, "Cancel")) {
+        if (nk_button_label(context, "Cancel (Esc)")) {
             wz_host_session.microdrive_eject_confirmation_open = false;
         }
     }
@@ -4732,10 +4898,10 @@ static void wz_host_ui_draw_microdrive_manager(
         nk_layout_row_dynamic(context, 23.0f, 1);
         nk_label(context, warning, NK_TEXT_LEFT);
         nk_layout_row_dynamic(context, 26.0f, 2);
-        if (nk_button_label(context, "Confirm operation")) {
+        if (nk_button_label(context, "Confirm operation (Enter)")) {
             wz_host_microdrive_manager_confirm();
         }
-        if (nk_button_label(context, "Cancel")) {
+        if (nk_button_label(context, "Cancel (Esc)")) {
             session->microdrive_manager_confirmation_open = false;
         }
     }
@@ -6198,6 +6364,7 @@ static void wz_host_render_native_ui(struct nk_context* context,
     wz_host_ui_draw_networking_settings(context, width, height);
     wz_host_ui_draw_remote_settings(context, width, height);
     wz_host_ui_draw_status(context, width, height);
+    wz_host_ui_draw_keyboard_menu(context, width, height);
 }
 
 static void wz_host_render_raster(void)
@@ -6415,6 +6582,7 @@ static void wz_host_session_init(void)
     wz_telnet_key_press_state_init(&wz_host_session.telnet_key_presses);
     wz_input_focus_init(&wz_host_session.input_focus,
                         &wz_host_session.input_arbiter);
+    wz_ui_keyboard_menu_init(&wz_host_session.keyboard_menu);
     (void)wz_application_lifecycle_init(&wz_host_session.lifecycle, 0, 0);
     wz_host_session.socket_system_initialized = wz_host_socket_system_init();
     if (wz_host_session.socket_system_initialized) {
@@ -6704,6 +6872,29 @@ static void wz_host_input_focus_from_mouse(const sapp_event* event)
             ui_target = true;
         }
     }
+    if (wz_host_session.microdrive_eject_confirmation_open) {
+        const float modal_width = 420.0f;
+        const float modal_height = 184.0f;
+        const float modal_x = (width - modal_width) * 0.5f;
+        if (event->mouse_x >= modal_x &&
+            event->mouse_x <= modal_x + modal_width &&
+            event->mouse_y >= 100.0f &&
+            event->mouse_y <= 100.0f + modal_height) {
+            ui_target = true;
+        }
+    }
+    if (wz_host_session.microdrive_manager_open) {
+        const float manager_width = width >= 980.0f ? 980.0f : width - 16.0f;
+        const float manager_height = height >= 700.0f ? 700.0f : height - 32.0f;
+        const float manager_x = (width - manager_width) * 0.5f;
+        const float manager_y = (height - manager_height) * 0.5f;
+        if (event->mouse_x >= manager_x &&
+            event->mouse_x <= manager_x + manager_width &&
+            event->mouse_y >= manager_y &&
+            event->mouse_y <= manager_y + manager_height) {
+            ui_target = true;
+        }
+    }
     if (ui_target) wz_host_release_local_keys();
     (void)wz_input_focus_set_target(&wz_host_session.input_focus,
         ui_target ? WZ_INPUT_FOCUS_TEXT_CONTROL : WZ_INPUT_FOCUS_VIEWPORT);
@@ -6846,6 +7037,40 @@ static void wz_host_event(const sapp_event* event)
         }
         return;
     }
+    if (event->type == SAPP_EVENTTYPE_KEY_DOWN &&
+        !wz_ui_keyboard_menu_is_active(&wz_host_session.keyboard_menu)) {
+        if (wz_host_session.microdrive_eject_confirmation_open) {
+            const size_t slot =
+                wz_host_session.microdrive_eject_confirmation_slot;
+            if (event->key_code == SAPP_KEYCODE_ESCAPE) {
+                wz_host_session.microdrive_eject_confirmation_open = false;
+                return;
+            }
+            if (event->key_code == SAPP_KEYCODE_ENTER ||
+                event->key_code == SAPP_KEYCODE_S) {
+                wz_host_ui_resolve_microdrive_eject(slot, false);
+                return;
+            }
+            if (event->key_code == SAPP_KEYCODE_D &&
+                slot < WZ_UI_MICRODRIVE_COUNT &&
+                wz_mdr_transport_is_dirty(
+                    wz_machine_microdrive_at_const(
+                        &wz_host_session.machine, slot)) != 0u) {
+                wz_host_ui_resolve_microdrive_eject(slot, true);
+                return;
+            }
+        }
+        if (wz_host_session.microdrive_manager_confirmation_open) {
+            if (event->key_code == SAPP_KEYCODE_ESCAPE) {
+                wz_host_session.microdrive_manager_confirmation_open = false;
+                return;
+            }
+            if (event->key_code == SAPP_KEYCODE_ENTER) {
+                wz_host_microdrive_manager_confirm();
+                return;
+            }
+        }
+    }
     if (wz_host_session.ui_toolkit_initialized) {
         (void)snk_handle_event(event);
     }
@@ -6856,11 +7081,45 @@ static void wz_host_event(const sapp_event* event)
     if (event->type == SAPP_EVENTTYPE_UNFOCUSED) {
         wz_host_release_local_keys();
         wz_host_session.input_capture_kind = 0u;
+        wz_ui_keyboard_menu_focus_lost(&wz_host_session.keyboard_menu,
+                                       &wz_host_session.input_focus);
         (void)wz_input_focus_lost(&wz_host_session.input_focus);
         return;
     }
     if (event->type == SAPP_EVENTTYPE_MOUSE_DOWN) {
         wz_host_input_focus_from_mouse(event);
+        return;
+    }
+    if (event->type == SAPP_EVENTTYPE_KEY_DOWN &&
+        event->key_code == SAPP_KEYCODE_F1 &&
+        wz_input_focus_is_focused(&wz_host_session.input_focus)) {
+        if (!wz_ui_keyboard_menu_is_active(&wz_host_session.keyboard_menu)) {
+            wz_host_release_local_keys();
+            (void)wz_ui_keyboard_menu_open(&wz_host_session.keyboard_menu,
+                                           &wz_host_session.input_focus);
+        } else {
+            wz_host_keyboard_menu_close();
+        }
+        return;
+    }
+    if (wz_ui_keyboard_menu_is_active(&wz_host_session.keyboard_menu) &&
+        (event->type == SAPP_EVENTTYPE_KEY_DOWN ||
+         event->type == SAPP_EVENTTYPE_KEY_UP)) {
+        if (event->type == SAPP_EVENTTYPE_KEY_DOWN) {
+            const size_t action_count = sizeof(wz_host_keyboard_actions) /
+                sizeof(wz_host_keyboard_actions[0]);
+            if (event->key_code == SAPP_KEYCODE_ESCAPE) {
+                wz_host_keyboard_menu_close();
+            } else if (event->key_code == SAPP_KEYCODE_UP) {
+                (void)wz_ui_keyboard_menu_move(&wz_host_session.keyboard_menu,
+                                               action_count, -1);
+            } else if (event->key_code == SAPP_KEYCODE_DOWN) {
+                (void)wz_ui_keyboard_menu_move(&wz_host_session.keyboard_menu,
+                                               action_count, 1);
+            } else if (event->key_code == SAPP_KEYCODE_ENTER) {
+                wz_host_keyboard_menu_activate();
+            }
+        }
         return;
     }
     if ((event->type == SAPP_EVENTTYPE_KEY_DOWN ||

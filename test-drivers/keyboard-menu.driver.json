@@ -1,0 +1,78 @@
+{
+  "runnerMatrix": [
+    "ubuntu-24.04"
+  ],
+  "testId": "keyboard-menu",
+  "requiredCases": 85,
+  "fixtures": [
+    {
+      "sha256": "97bb714fe812ebc43ff2f6442bdc57f3d28851dc87bdc64fe972114f98a7c8ff",
+      "path": ".github/workflows/keyboard-menu.yml"
+    },
+    {
+      "sha256": "d761b87e6378e307d6581a7189066a825b5ec8949f4dce42e016386c33b10fb3",
+      "path": "ci/test/keyboard-menu/CMakeLists.txt"
+    },
+    {
+      "sha256": "b28d5f3db04df657f75aeda0a3b829712f7b781af6bb21b65879c569b2d90fbc",
+      "path": "ci/test/keyboard-menu/keyboard-menu.c"
+    },
+    {
+      "sha256": "1405866475b846c38bc9e1bedd8d986ab9aec568b7901cfe1ec7e18a08d116b5",
+      "path": "ci/test/keyboard-menu/verify-integration.py"
+    },
+    {
+      "sha256": "a26d424c0743f9105f23c8ef86bd9ffa1a13aeff6d309466e01fe5c17e90072f",
+      "path": "ci/test/keyboard-menu/write-proof.py"
+    },
+    {
+      "sha256": "6aa932820c60e16befb57b1a8a65a947c0927ca2ed3f7a849ab363cb4746ede1",
+      "path": "design/ui-phase-12-decisions.md"
+    },
+    {
+      "sha256": "dc47afb96f2c0566788d59ef74a691c33a8943e1c4e199c96c74d07739e68b31",
+      "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md"
+    },
+    {
+      "sha256": "2e363f0e653a1408841d5cc662a0ed7f39ba6d169ad8a06c5745a037fdda5b9e",
+      "path": "docs/design/04-wzsn-architectures-1-2-developer-tasks.md"
+    },
+    {
+      "sha256": "861909b1bab54c95594d9f657b3a7a59587bfc1dfc06600951b62a30229e0e1c",
+      "path": "docs/design/keyboard-menu-contract.md"
+    },
+    {
+      "sha256": "52bc39d6c9d5326e76d695f4f4a725f410e02cb9852a48a5f13b266ce2523bcb",
+      "path": "src/app/wz_input_arbiter.c"
+    },
+    {
+      "sha256": "d16b682056e7bf3864c46083407eaca716956ae137e23ab83d51190afc1dffcd",
+      "path": "src/app/wz_input_arbiter.h"
+    },
+    {
+      "sha256": "4ce12b4b7f4045319753bf324d425a2f209e01583b710939a6e9f3e03671bfdb",
+      "path": "src/app/wz_input_focus.c"
+    },
+    {
+      "sha256": "ef2d8f3e72d10d7d7a3c221714cce84b43bdd6e9a87c7b20ae8e39cdcfb2cbdb",
+      "path": "src/app/wz_input_focus.h"
+    },
+    {
+      "sha256": "8ba29e1fc209f98750da493cb8e992fe22f62583be75fc1801843a6b174ee651",
+      "path": "src/app/wz_sokol_main.c"
+    },
+    {
+      "sha256": "c13327cd674be81ac48d27ab9f98f3cf527a5693230b7f2c82de4ed394f6e866",
+      "path": "src/app/wz_ui_keyboard_menu.c"
+    },
+    {
+      "sha256": "6caf7d57fa89bd2e9fee6669240bb0550effab9a703915885995b56fde3b4b48",
+      "path": "src/app/wz_ui_keyboard_menu.h"
+    },
+    {
+      "sha256": "11b9c154fe6b4bd19a22ae31b707575635c20a77485aa9b6b98286220830860c",
+      "path": "src/cmake/CMakeLists.txt"
+    }
+  ],
+  "command": "cmake -S ci/test/keyboard-menu -B dist/keyboard-menu -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/keyboard-menu --config Release --target wz_keyboard_menu_contract --parallel 2 && dist/keyboard-menu/wz_keyboard_menu_contract && python3 ci/test/keyboard-menu/verify-integration.py"
+}

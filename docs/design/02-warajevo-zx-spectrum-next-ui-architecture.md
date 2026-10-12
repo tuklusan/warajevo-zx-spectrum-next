@@ -2661,6 +2661,16 @@ must have normal keyboard-operable paths supported by the selected UI toolkit.
 Visible focus, readable disabled-state explanations where practical, and
 non-color-only status signaling are required.
 
+The host provides an app-owned keyboard command menu on **F1**. Up/Down move
+through its action list, Enter activates the selected command, and Escape
+closes it and restores the previous focus owner. The selected row carries a
+textual `> ... < focus` marker, and disabled actions display their reason.
+Opening this menu releases local Spectrum key ownership; Telnet ownership stays
+independent. Native file dialogs retain their platform keyboard behavior.
+Keyboard access for controls inside every settings and manager panel, and
+platform screen-reader exposure, remain acceptance requirements until covered
+by their own contracts.
+
 Platform-native accessibility APIs should be used when supplied by the chosen
 UI toolkit. The Phase-12 toolkit decision must document accessibility support.
 

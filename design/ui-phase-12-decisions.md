@@ -53,10 +53,14 @@ accessibility exposure remain acceptance gaps; none is waived by this review.
 
 ## Accessibility and persistence
 
-- Nuklear supplies in-window keyboard input/navigation. The project owns menu
-  labels, action state/reasons, focus order, and a visible focus indicator.
-  No native accessibility bridge is currently implemented; platform API
-  exposure remains an acceptance gap and is not waived by this choice.
+- Nuklear and its Sokol adapter provide keyboard events and in-window text
+  input; they do not provide the application's complete menu and control focus
+  order. The project owns keyboard traversal, menu labels, action state/reasons,
+  and visible focus. The app-owned F1 keyboard command menu supplies keyboard
+  access to core commands; settings and manager control traversal remains an
+  acceptance gap until implemented and tested. No native accessibility bridge
+  is currently implemented; platform screen-reader exposure remains an
+  acceptance gap and is not waived by this choice.
 - Persist only host preferences, never canonical machine/session state. Use a
   versioned `host-settings.v1` key/value file in the platform's user config
   directory: `%LOCALAPPDATA%` on Windows, Application Support on macOS, and
