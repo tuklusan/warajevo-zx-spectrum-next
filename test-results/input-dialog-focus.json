@@ -1,0 +1,59 @@
+{
+  "testId": "input-dialog-focus",
+  "status": "pass",
+  "commit": "34cab513461f10e6e9a135b538c7feb7018b0fe7",
+  "runId": 38306475902,
+  "runner": "Linux/X64",
+  "timestamp": "2026-10-12T20:47:31+00:00",
+  "caseCount": 18,
+  "fixtures": [
+    {
+      "path": ".github/workflows/input-dialog-focus.yml",
+      "sha256": "90afb4ff9a78c1a1522645bd524466df1f5f8715c1493969a9d283155cd38fe0"
+    },
+    {
+      "path": "ci/test/input-dialog-focus/CMakeLists.txt",
+      "sha256": "e4b36715bbc89a660bae287946d742f6127e7f6571b82453df2bb5fa1d7db441"
+    },
+    {
+      "path": "ci/test/input-dialog-focus/input-dialog-focus.c",
+      "sha256": "d3483eb6f85e44c064f3851ecaaa451d98092f8137a02fc0e5fa3a45be91c60b"
+    },
+    {
+      "path": "ci/test/input-dialog-focus/write-proof.py",
+      "sha256": "821731a6330c42d94b04628cac1af1df569445a09ed6034d6e3ad50ab33fda24"
+    },
+    {
+      "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
+      "sha256": "912f7f227b1ce340713fd24e149f777a1ba0f02d072f775afc78a01ac8d5df77"
+    },
+    {
+      "path": "src/app/wz_input_arbiter.c",
+      "sha256": "52bc39d6c9d5326e76d695f4f4a725f410e02cb9852a48a5f13b266ce2523bcb"
+    },
+    {
+      "path": "src/app/wz_input_arbiter.h",
+      "sha256": "d16b682056e7bf3864c46083407eaca716956ae137e23ab83d51190afc1dffcd"
+    },
+    {
+      "path": "src/app/wz_input_focus.c",
+      "sha256": "4ce12b4b7f4045319753bf324d425a2f209e01583b710939a6e9f3e03671bfdb"
+    },
+    {
+      "path": "src/app/wz_input_focus.h",
+      "sha256": "ef2d8f3e72d10d7d7a3c221714cce84b43bdd6e9a87c7b20ae8e39cdcfb2cbdb"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "091e6b733902b559c0233f94189ae3a22ffb7d27bf80bad347c85e40678270c1"
+    },
+    {
+      "path": "src/app/wz_telnet_input.c",
+      "sha256": "e682ff54b87756ba572c84e5f48d7673df5957501da89656db39386d7ae64b0c"
+    },
+    {
+      "path": "src/app/wz_telnet_input.h",
+      "sha256": "e826751e33025bb69dd7199929ecb64a974598ae2ddc2cec208f5c34b030a4bc"
+    }
+  ]
+}
