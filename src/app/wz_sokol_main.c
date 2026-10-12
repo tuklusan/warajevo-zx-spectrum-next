@@ -6133,7 +6133,7 @@ static void wz_host_ui_draw_networking_settings(
         if (nk_option_label(context, option->label,
                             selected ? nk_true : nk_false) &&
             option->available) {
-            wz_command_result_t command_result;
+            wz_command_result_t command_result = {0};
             const wz_result_t activate_result = wz_ui_layout_activate_networking(
                 &wz_host_session.command_registry, option->mode,
                 &command_result);
