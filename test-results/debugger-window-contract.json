@@ -1,0 +1,67 @@
+{
+  "testId": "debugger-window-contract",
+  "status": "pass",
+  "commit": "23259a044c4fb8c20678c078d4b63f78e8a18c39",
+  "runId": 38323997617,
+  "runner": "Linux/X64",
+  "timestamp": "2026-10-12T23:48:03+00:00",
+  "caseCount": 1,
+  "fixtures": [
+    {
+      "path": ".github/workflows/debugger-window-contract.yml",
+      "sha256": "2f4b396aeaad4db2327d82cc06473254c17d50d6532714cd3d5c965ee05cc778"
+    },
+    {
+      "path": "ci/test/debugger-window-contract/CMakeLists.txt",
+      "sha256": "93d9e45d9aa1f5d35061336ca6efa5027214634d35c357dc7eb75800dd9b067a"
+    },
+    {
+      "path": "ci/test/debugger-window-contract/write-proof.py",
+      "sha256": "bf22edf0735b67e56bd369e9657546ef4eb2be074c693676966e7b77ad4311f2"
+    },
+    {
+      "path": "ci/test/debugger-window-contract/debugger-window-contract.c",
+      "sha256": "2c1c405ce15ff40ce8a175e3c4e9736b61bb195c44cff228d6fe4c2896330101"
+    },
+    {
+      "path": "src/app/wz_debugger_window.c",
+      "sha256": "a2e5c1763a5f8bf07138a72cd2622170991caed0bd1d99f78a54267fa583bdc0"
+    },
+    {
+      "path": "src/app/wz_debugger_window.h",
+      "sha256": "e305cdcf9dc963b0229f51d7714e910bac9e9253b8afe19f6763468089ed9432"
+    },
+    {
+      "path": "src/app/wz_command_registry.c",
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
+    },
+    {
+      "path": "src/app/wz_command_registry.h",
+      "sha256": "80110080861a05baae47cd6d294315055bb6b1a636c79891b55c56717cb53c94"
+    },
+    {
+      "path": "src/app/wz_host_thread.c",
+      "sha256": "6f8cbe0e171adfe7b9f42d9517e31d72f7917048339ff8941d5bccadfa305151"
+    },
+    {
+      "path": "src/app/wz_host_thread.h",
+      "sha256": "bd4e189a40c8f9ad31f014dc12afc3c67b7a4bd5580df262b0cf92db8fbe8471"
+    },
+    {
+      "path": "src/core/wz_debugger.c",
+      "sha256": "479b238f1aa668002aba6a4959750296cef553c2d4fe4425b0164b7f08e35eaf"
+    },
+    {
+      "path": "src/core/wz_debugger.h",
+      "sha256": "9c14eda410b6b50fdad279fc6076a385da5ff26b160c54fbf957c1e8c31041a1"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "af1a055ba24a42e870645a1b7389cffcf449028e8dd2f3344881282db94f51f4"
+    },
+    {
+      "path": "test-drivers/debugger-window-contract.driver.json",
+      "sha256": "d756e87547def5b15db07170538f49f48c049af7b16f03c8bf696b1419ea59b1"
+    }
+  ]
+}
