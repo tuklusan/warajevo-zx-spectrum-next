@@ -41,7 +41,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "9a24f2546c7f3d7100b50344b19545712b2c5273283b29abccfd38d98146ceba"
+      "sha256": "0b06d5f3d6e248fd566be6ec45084ddaaeb03243f300490837b9d6082e29e0a2"
     },
     {
       "path": "src/core/wz_raster.h",
