@@ -246,6 +246,7 @@ typedef struct {
     bool socket_system_initialized;
     bool remote_settings_visible;
     bool display_settings_visible;
+    bool audio_settings_visible;
     bool initialized;
 } wz_host_session_t;
 
@@ -433,7 +434,8 @@ static void wz_host_audio_render_frame(wz_host_session_t* session,
     size_t event_index = 0u;
     size_t event_count = machine->ay.event_count;
 
-    if (!wz_host_audio_enabled(session->speed) ||
+    if (!wz_host_audio_output_enabled(session->speed,
+            session->ui_window.layout.audio_output_enabled) ||
         !wz_sokol_audio_valid(&session->audio) || initial_ay == NULL ||
         profile == NULL || profile->master_hz_den == 0u) {
         session->audio_sample_remainder = 0u;
@@ -2496,8 +2498,8 @@ static wz_result_t wz_host_command_resume(
         return WZ_RESULT_INVALID_STATE;
     }
     session->ui_window.layout.paused = false;
-    session->ui_window.layout.audio_muted =
-        !wz_host_audio_enabled(session->speed);
+    (void)wz_ui_layout_select_speed(&session->ui_window.layout,
+                                    session->speed);
     (void)snprintf(result->message, sizeof(result->message), "running");
     return WZ_RESULT_OK;
 }
@@ -2574,7 +2576,8 @@ static wz_result_t wz_host_command_speed(
     session->speed = (wz_speed_policy_t)speed;
     session->ui_window.layout.audio_muted =
         session->ui_window.layout.paused ||
-        !wz_host_audio_enabled((wz_speed_policy_t)speed);
+        !wz_host_audio_output_enabled((wz_speed_policy_t)speed,
+            session->ui_window.layout.audio_output_enabled);
     (void)snprintf(result->message, sizeof(result->message), "%s",
                    wz_ui_layout_speed_label((size_t)speed));
     return WZ_RESULT_OK;
@@ -2765,7 +2768,7 @@ static bool wz_host_compatibility_tools_available(const void* context,
     return true;
 }
 
-static bool wz_host_display_settings_available(const void* context,
+static bool wz_host_settings_available(const void* context,
                                                const char** reason)
 {
     if (context == NULL || !wz_host_session.initialized) {
@@ -2785,9 +2788,27 @@ static wz_result_t wz_host_display_settings_open(
         return WZ_RESULT_INVALID_ARGUMENT;
     }
     session->display_settings_visible = true;
+    session->audio_settings_visible = false;
     if (result != NULL) {
         (void)snprintf(result->message, sizeof(result->message),
                        "Display settings opened");
+    }
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_host_audio_settings_open(
+    const void* context, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    wz_host_session_t* session = (wz_host_session_t*)context;
+    if (session == NULL || arguments.size != 0u) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    session->display_settings_visible = false;
+    session->audio_settings_visible = true;
+    if (result != NULL) {
+        (void)snprintf(result->message, sizeof(result->message),
+                       "Audio settings opened");
     }
     return WZ_RESULT_OK;
 }
@@ -2938,15 +2959,23 @@ static bool wz_host_register_commands(void)
             "Adjust host-only scaling, border crop, and fullscreen presentation",
             "settings", "NONE", "wz-command-result",
             "wz_host_display_settings_open", "local", NULL,
-            WZ_COMMAND_LOCAL_ONLY, wz_host_display_settings_available,
+            WZ_COMMAND_LOCAL_ONLY, wz_host_settings_available,
             wz_host_display_settings_open, &wz_host_session, false, false, NULL
+        },
+        {
+            "settings.audio.open", "Audio...",
+            "Adjust host audio output without changing emulated beeper or AY state",
+            "settings", "NONE", "wz-command-result",
+            "wz_host_audio_settings_open", "local", NULL,
+            WZ_COMMAND_LOCAL_ONLY, wz_host_settings_available,
+            wz_host_audio_settings_open, &wz_host_session, false, false, NULL
         },
         {
             "view.fullscreen", "Fullscreen",
             "Toggle host window fullscreen presentation",
             "view", "NONE", "wz-command-result",
             "wz_host_toggle_fullscreen", "local", NULL,
-            WZ_COMMAND_LOCAL_ONLY, wz_host_display_settings_available,
+            WZ_COMMAND_LOCAL_ONLY, wz_host_settings_available,
             wz_host_toggle_fullscreen, &wz_host_session, false, false, NULL
         },
         {
@@ -5494,6 +5523,43 @@ static void wz_host_ui_draw_display_settings(struct nk_context* context,
     nk_end(context);
 }
 
+static void wz_host_ui_draw_audio_settings(struct nk_context* context,
+                                           float width, float height)
+{
+    const float panel_width = width >= 440.0f ? 420.0f : width - 16.0f;
+    const float panel_height = height >= 232.0f ? 200.0f : height - 32.0f;
+    int enabled;
+
+    if (!wz_host_session.audio_settings_visible || panel_width < 220.0f ||
+        panel_height < 140.0f) {
+        return;
+    }
+    if (!nk_begin(context, "Audio Settings",
+            nk_rect((width - panel_width) * 0.5f,
+                    (height - panel_height) * 0.5f,
+                    panel_width, panel_height),
+            NK_WINDOW_BORDER | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE)) {
+        nk_end(context);
+        return;
+    }
+    enabled = wz_host_session.ui_window.layout.audio_output_enabled
+        ? nk_true : nk_false;
+    nk_layout_row_dynamic(context, 32.0f, 1);
+    if (nk_checkbox_label(context, "Enable host audio output", &enabled)) {
+        (void)wz_ui_layout_set_audio_output(
+            &wz_host_session.ui_window.layout, enabled != nk_false,
+            wz_host_session.speed);
+    }
+    nk_layout_row_dynamic(context, 38.0f, 1);
+    nk_label_wrap(context,
+        "Mute affects host playback only. Emulated beeper and AY state continue; speed policy also mutes outside 50% to 200%.");
+    nk_layout_row_dynamic(context, 28.0f, 1);
+    if (nk_button_label(context, "Close")) {
+        wz_host_session.audio_settings_visible = false;
+    }
+    nk_end(context);
+}
+
 static void wz_host_render_native_ui(struct nk_context* context,
                                      float width, float height)
 {
@@ -5509,6 +5575,7 @@ static void wz_host_render_native_ui(struct nk_context* context,
     wz_host_ui_draw_tape_manager(context, width);
     wz_host_ui_draw_snapshot_inspector(context, width, height);
     wz_host_ui_draw_display_settings(context, width, height);
+    wz_host_ui_draw_audio_settings(context, width, height);
     wz_host_ui_draw_remote_settings(context, width, height);
     wz_host_ui_draw_status(context, width, height);
 }
@@ -5935,6 +6002,18 @@ static void wz_host_input_focus_from_mouse(const sapp_event* event)
             ui_target = true;
         }
     }
+    if (wz_host_session.audio_settings_visible) {
+        panel_width = width >= 440.0f ? 420.0f : width - 16.0f;
+        panel_height = height >= 232.0f ? 200.0f : height - 32.0f;
+        panel_x = (width - panel_width) * 0.5f;
+        panel_y = (height - panel_height) * 0.5f;
+        if (event->mouse_x >= panel_x &&
+            event->mouse_x <= panel_x + panel_width &&
+            event->mouse_y >= panel_y &&
+            event->mouse_y <= panel_y + panel_height) {
+            ui_target = true;
+        }
+    }
     if (wz_host_session.display_settings_visible) {
         panel_width = width >= 440.0f ? 420.0f : width - 16.0f;
         panel_height = height >= 264.0f ? 232.0f : height - 32.0f;
@@ -6022,7 +6101,8 @@ static void wz_host_frame(void)
                 wz_host_apply_keyboard_input();
             }
             bool capture_audio =
-                wz_host_audio_enabled(wz_host_session.speed) &&
+                wz_host_audio_output_enabled(wz_host_session.speed,
+                    wz_host_session.ui_window.layout.audio_output_enabled) &&
                 wz_sokol_audio_valid(&wz_host_session.audio);
             if (wz_host_machine_frame_execute(
                     &wz_host_session.runner, frame_ticks, capture_audio,

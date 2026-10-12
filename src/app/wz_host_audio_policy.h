@@ -14,5 +14,6 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "app/wz_speed_policy.h"
 
 bool wz_host_audio_enabled(wz_speed_policy_t speed);
+bool wz_host_audio_output_enabled(wz_speed_policy_t speed, bool user_enabled);
 
 #endif

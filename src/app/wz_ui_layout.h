@@ -140,6 +140,7 @@ typedef struct {
     unsigned speed_percent;
     bool unlimited_speed;
     bool paused;
+    bool audio_output_enabled;
     bool audio_muted;
     bool audio_degraded;
     bool tape_mounted;
@@ -255,6 +256,9 @@ size_t wz_ui_layout_speed_count(void);
 const char* wz_ui_layout_speed_label(size_t index);
 bool wz_ui_layout_select_speed(wz_ui_layout_state_t* state,
                                wz_speed_policy_t speed);
+bool wz_ui_layout_set_audio_output(wz_ui_layout_state_t* state,
+                                   bool enabled,
+                                   wz_speed_policy_t speed);
 wz_result_t wz_ui_layout_activate_toolbar(
     const wz_command_registry_t* registry,
     size_t index,

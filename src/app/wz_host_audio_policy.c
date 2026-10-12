@@ -13,3 +13,8 @@ bool wz_host_audio_enabled(wz_speed_policy_t speed)
     return speed == WZ_SPEED_50 || speed == WZ_SPEED_100 ||
            speed == WZ_SPEED_200;
 }
+
+bool wz_host_audio_output_enabled(wz_speed_policy_t speed, bool user_enabled)
+{
+    return user_enabled && wz_host_audio_enabled(speed);
+}

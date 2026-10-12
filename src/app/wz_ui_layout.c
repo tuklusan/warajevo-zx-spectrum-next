@@ -133,6 +133,7 @@ void wz_ui_layout_state_init(wz_ui_layout_state_t* state)
     state->speed_percent = 100u;
     state->unlimited_speed = false;
     state->paused = false;
+    state->audio_output_enabled = true;
     state->audio_muted = false;
     state->audio_degraded = false;
     state->tape_mounted = false;
@@ -913,8 +914,20 @@ bool wz_ui_layout_select_speed(wz_ui_layout_state_t* state,
     }
     state->speed_percent = wz_speed_policy_percent(speed);
     state->unlimited_speed = wz_speed_policy_is_unlimited(speed);
-    state->audio_muted = !wz_host_audio_enabled(speed);
+    state->audio_muted = state->paused ||
+        !wz_host_audio_output_enabled(speed, state->audio_output_enabled);
     return true;
+}
+
+bool wz_ui_layout_set_audio_output(wz_ui_layout_state_t* state,
+                                   bool enabled,
+                                   wz_speed_policy_t speed)
+{
+    if (state == 0 || !wz_speed_policy_valid(speed)) {
+        return false;
+    }
+    state->audio_output_enabled = enabled;
+    return wz_ui_layout_select_speed(state, speed);
 }
 
 wz_result_t wz_ui_layout_activate_toolbar(
