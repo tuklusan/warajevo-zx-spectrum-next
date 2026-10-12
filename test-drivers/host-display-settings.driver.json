@@ -13,7 +13,7 @@
     },
     {
       "path": "ci/test/host-display-settings/contract.c",
-      "sha256": "6660830f1f8ce021ecc9373114d89367f58d1f359a370a9ce3f2a36e4e9637f2"
+      "sha256": "aa100715592bd08ef56886aa7ca27fb9644a44d5b7813a3af4d0fb18bdfd178f"
     },
     {
       "path": "src/app/wz_host_config.c",
