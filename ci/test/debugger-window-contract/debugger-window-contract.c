@@ -51,13 +51,13 @@ static bool verify_live_shared_machine_and_pause_gate(void)
         wz_debugger_read_memory(machine, 0x8000u, &value) != WZ_RESULT_OK ||
         value != 0x5au) goto cleanup;
 
-    wz_debugger_window_close(&window);
+    if (window.open) wz_debugger_window_close(&window);
     if (wz_debugger_window_is_open(&window) || window.machine != NULL ||
         wz_debugger_window_snapshot(&window) != NULL) goto cleanup;
     ok = true;
 
 cleanup:
-    wz_debugger_window_close(&window);
+    if (window.open) wz_debugger_window_close(&window);
     wz_machine_destroy(machine);
     free(machine);
     REQUIRE(ok);
