@@ -1,10 +1,10 @@
 {
   "testId": "keyboard-menu",
   "status": "pass",
-  "commit": "69cf2f2adeef3cf769ea516a61bf17b6aa68f278",
-  "runId": 38311297025,
+  "commit": "389b72720c38facdf88848c821d318cc25789073",
+  "runId": 38311764659,
   "runner": "Linux/X64",
-  "timestamp": "2026-10-12T21:32:56+00:00",
+  "timestamp": "2026-10-12T21:37:24+00:00",
   "caseCount": 86,
   "fixtures": [
     {
@@ -29,7 +29,7 @@
     },
     {
       "path": "design/ui-phase-12-decisions.md",
-      "sha256": "6aa932820c60e16befb57b1a8a65a947c0927ca2ed3f7a849ab363cb4746ede1"
+      "sha256": "857e19b695321148d6fa0541e0adf3041075c37b0d2195dc908c1d48439628fa"
     },
     {
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
