@@ -5,63 +5,63 @@
   "fixtures": [
     {
       "path": ".github/workflows/tape-native-dialog-desktop.yml",
-      "sha256": "8040a0d249801457ad79c86648df9270897112cfadf5537094db637adbd15a25"
+      "sha256": "611ea0090d3276223b0d63574cd1167825c4888c2406e06fd040443f8aa5a8a8"
     },
     {
       "path": "ci/test/tape-native-dialog-desktop/CMakeLists.txt",
-      "sha256": "b6ce9ea84ef43f39ab7ab7726247a65424477600c8f8facb8b51327886a204f4"
+      "sha256": "00fec129c97c9467d056e10b8a40af20c3ea069fdeeb3fe866ac7555b3e055fb"
     },
     {
       "path": "ci/test/tape-native-dialog-desktop/dialog-contract.c",
-      "sha256": "d20f9f1d58e55a5c1ccd78c4aa4bf7768e39c9da31e328cf65c4e5aaa4a49a29"
+      "sha256": "8e9d4c97163b2a519013e041f4dcb0fab1111f3eeff85073fe066cd8cd46f63b"
     },
     {
       "path": "ci/test/tape-native-dialog-desktop/macos-shim.m",
-      "sha256": "39cf5c13f9a8989ed04ce3e2a253588ef28596fe6546cfcb5323a8a919417260"
+      "sha256": "f45c360904cb694cbefe4e935189465f2cd9524a985632f0798b2503ac1d11d6"
     },
     {
       "path": "ci/test/tape-native-dialog-desktop/run-windows-cancel.py",
-      "sha256": "6605ffbb77f233ef2c4b8c71e9daaed6f6336e47d2a0d0ed44386123b7af8ef6"
+      "sha256": "b3a113daf3550ef0e0f4cd3b69fa93e0c47b42ed238c45bdba2ef2d66e9b30f1"
     },
     {
       "path": "ci/test/tape-native-dialog-desktop/windows-shim.c",
-      "sha256": "134c3fffccb2150125510b722f0b29cf967114b27ffe346f6c4b65654d02f908"
+      "sha256": "e8868a6643d1fdf99bdae0b9a31b6d47b4fa5ef8569091e5e2cdc503f5b721f1"
     },
     {
       "path": "src/app/wz_file_dialog.h",
-      "sha256": "6686668d4a0e92030066f7e177824169e09aeb137de4beaf2eb43958f982f41b"
+      "sha256": "69bbfda58d3f57c9c3d989bd8ca38ad3544332634a8b029a79f18108222c2fa4"
     },
     {
       "path": "src/app/wz_file_dialog_macos.m",
-      "sha256": "03046b36b1bff1a6fd5ae4e700bf042c0db66672614db6ebde86ef2c9c854ca3"
+      "sha256": "af63c6a942643d1c35f127cac449021607a39164513d694e38689c51a3408474"
     },
     {
       "path": "src/app/wz_file_dialog_win32.c",
-      "sha256": "bcf5a298feaad7e6c11cd378c8c18bd47eacd8e2ded89f7b664712f47d8017c1"
+      "sha256": "f25c8f7bd2989d848d1a41d75cde78b01b4b77018428eefc01ff8889053db75f"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
+      "sha256": "a0b903d4da0c26159175ad2a863c77d223b81cd706a48b3f85bec41bd0e33fde"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
+      "sha256": "197907797e2a3e2b9ee1479bb6c498adcc130f0f05aa8a9252233d55be8bad4b"
     },
     {
       "path": "src/core/wz_machine_profile.c",
-      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09"
+      "sha256": "4f365f1f47ef85c3f837c2a2f5c8318b5e06c72e79d474cae64ee8b3f1d9b726"
     },
     {
       "path": "src/core/wz_machine_profile.h",
-      "sha256": "099be5f41f428466e5da622452abec6e0daf6402abcf4ab2e7d8c2df47457cc4"
+      "sha256": "809da6951d690c04032725fe7551148f2c4be6d1a19b676284c08c0b3c03f19c"
     },
     {
       "path": "src/core/wz_tape.c",
-      "sha256": "20c4523214f828d5129cbde2fb2c0d077ed15dae0daa923d019d1934b0c33d0b"
+      "sha256": "e5cd18ca9b169f1bc04210cc4ad508bd435d50c8cf390a2263d5a275b36a6a85"
     },
     {
       "path": "src/core/wz_tape.h",
-      "sha256": "d483f3f99bcfa26590bf259114193d2314dd2af2720316bf66021462f5c31fd6"
+      "sha256": "7241cb8df05c796c723c89b29708466024f96c59f0f0f7debc561cc899c2652b"
     }
   ]
 }

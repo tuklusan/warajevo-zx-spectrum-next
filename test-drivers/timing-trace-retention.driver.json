@@ -5,23 +5,23 @@
   "fixtures": [
     {
       "path": ".github/workflows/timing-trace-retention.yml",
-      "sha256": "86ea7879b0562ec2537f003c6306b21717dc34172c925424ca032246b03ede0c"
+      "sha256": "db6f20bc68ce0cdc5ad728a66d0794407cf8db9b7a61c51527cf7935d772ded4"
     },
     {
       "path": "ci/test/timing-trace-retention/CMakeLists.txt",
-      "sha256": "cf974d34703fef2fa895dcf474a24309d2da75719643aa5dcf13310b5674113f"
+      "sha256": "f3c51b5e2c287904d486f59497e78d3c9c2b4f8e6518682271ab06692b203e04"
     },
     {
       "path": "ci/test/timing-trace-retention/README.md",
-      "sha256": "e82564412d87372c221e79cc5c29108f9056455621db178b0619b3b5e649e1e9"
+      "sha256": "028c0a7bb5f905726b6d1b25fb42a970f1e7539855ea0074e5c54b57d15657ec"
     },
     {
       "path": "ci/test/timing-trace-retention/timing-trace-retention.c",
-      "sha256": "c920f45673c5106893f9aaebbc4fde697ec0963eecf1cda0de5f153a51812f75"
+      "sha256": "400a7883be387736117258623947dd6c24d9901b7cdf0feb6f0032c87794cc21"
     },
     {
       "path": "ci/test/timing-trace-retention/write-proof.py",
-      "sha256": "40da9511f2497835bbbe3b9e3bf181b7c5b00f4a8d642793acd8a99841b1b1d6"
+      "sha256": "64fd37b8cdbedb74d9363336a3f38bc6c19fbae3c13384d6adb62adaf7b0a0ec"
     },
     {
       "path": "roms/48.rom",
@@ -29,39 +29,39 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "1dc71a255b61187261ef1b97a3694f780c8c2cb9be08d98e942e98768bec2b29"
+      "sha256": "a0b903d4da0c26159175ad2a863c77d223b81cd706a48b3f85bec41bd0e33fde"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
+      "sha256": "197907797e2a3e2b9ee1479bb6c498adcc130f0f05aa8a9252233d55be8bad4b"
     },
     {
       "path": "src/core/wz_machine_profile.c",
-      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09"
+      "sha256": "4f365f1f47ef85c3f837c2a2f5c8318b5e06c72e79d474cae64ee8b3f1d9b726"
     },
     {
       "path": "src/core/wz_z80.c",
-      "sha256": "c7cf9761cc3448474ccce3e88a20a4bc619ae35ee2b8357545debf901a50ba16"
+      "sha256": "286fac7caa894686984e49f332fa6c92543e60e5c8fb92d481a37a3fdb4fc8c1"
     },
     {
       "path": "src/core/wz_z80.h",
-      "sha256": "c32d23b4a650ae13031f8f61dd41f66cd8ac19136f058cb47502a2e54df5f8cd"
+      "sha256": "b684b645d5b6a6c4bc58943f003f58726838bca6e92e2b3398dd7364680cb207"
     },
     {
       "path": "src/core/wz_trace.h",
-      "sha256": "9730762f41380dc9ef42b8cd1d6ed454dc4d091fa83dd81c9578925f4bbd8466"
+      "sha256": "feea1e6950bfb059e9d5b082fc8b3c44706ecc942a7885761f42ec435f0b44fc"
     },
     {
       "path": "src/diagnostics/wz_trace_file.c",
-      "sha256": "0ea566d026b25c8b2590fd2ee80f1299a75b92c33616e424fef1987185f4535f"
+      "sha256": "9be3e9fb6efa6b3aa6b27384ec264a02c22800d7a16da8d154b2bfc5b99e3019"
     },
     {
       "path": "src/diagnostics/wz_trace_file.h",
-      "sha256": "e39f47ab133980a1da378aecc1a0fd87f2c77289b3e29e7dd2c7423250f2119e"
+      "sha256": "88fc7ec6e0b7477271dd90ff70dd15bd0bb1598eb7892f917d253d28d0d3ab8b"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "485fa49b71bac837584046e3eac678170f71d86ed4a1a657ccd84d12f61ba882"
+      "sha256": "3ebe1ed963559316c4287da77063e03371cf581e49045f1e485ce405d239d902"
     }
   ]
 }

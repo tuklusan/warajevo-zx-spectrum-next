@@ -12,119 +12,119 @@
   "fixtures": [
     {
       "path": ".github/workflows/multi-instance-stress.yml",
-      "sha256": "58deca885f66c92d841155797e0167a03ef5f04b9c2a5d802f1fcb5da392576a"
+      "sha256": "8a22edd940f7755b2f943a33275e889dfb566f8b4e762d7cb07e0fa37439386f"
     },
     {
       "path": "ci/test/multi-instance/CMakeLists.txt",
-      "sha256": "22d988789ef67d53753f0bb5673c19f2e73f45bcb11f4895652253fcf752a753"
+      "sha256": "b584b8d0cc7fa77cfbdb645d9a1a18706cacfcab674c9a7dc625f6daeb70a577"
     },
     {
       "path": "ci/test/multi-instance/README.md",
-      "sha256": "e3b093545603795f7cdb78e804e9d62992e268515e93593f5fcdeaad2ce47592"
+      "sha256": "2ebc83c3493aa29ec8c0a02edde32c3b265d2a03c55647fdfb0ae2f042546fc0"
     },
     {
       "path": "ci/test/multi-instance/run-stress.py",
-      "sha256": "302d38617bec9c3ea7897f4d3f6b49d97b67f303b9d6959968aa65171df9b7da"
+      "sha256": "7e9e7e5ddc18d414f31e38eb5f18bed75f0cf8c8946ccd86ead358b3787a22d2"
     },
     {
       "path": "ci/test/multi-instance/write-proof.py",
-      "sha256": "6f5e989abac1380a7c1ecb974f72d516b1966e236ee39e94e391f75669d39267"
+      "sha256": "71052f6fde8891dfba7ce73a7962f3d5ef907adf98bf45f84972340ca691cc79"
     },
     {
       "path": "src/app/wz_command_registry.c",
-      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
+      "sha256": "93277b2eed8ad36fc3e9bad4ed6897ac2255a32ccd6142ccb0ee6f9d41ca70bf"
     },
     {
       "path": "src/app/wz_command_registry.h",
-      "sha256": "80110080861a05baae47cd6d294315055bb6b1a636c79891b55c56717cb53c94"
+      "sha256": "af687e17b60dbad891de7cafcc4ca39c48182e299140fcda1fafc23b486b6b53"
     },
     {
       "path": "src/app/wz_control_port.c",
-      "sha256": "c26016fe66e2f3932bf80070f8a00c873946c3ea893b0458e7994f06fbba1ef5"
+      "sha256": "43bdc85ebe1bdfd8eb39c9e4938482632b210204ee6fd05080edcaa056ece604"
     },
     {
       "path": "src/app/wz_control_port.h",
-      "sha256": "44a2a09d58c56dff09494d2176a43f8de0982ff719e3914fb53853fcca4ea32a"
+      "sha256": "e4e85d677eb4e43a506a31b4ead633f87621bc54cfc286a99fcf5cdef7304423"
     },
     {
       "path": "src/app/wz_host_config.c",
-      "sha256": "5fdecc8d1f9abe5e9f6a4297c83fc7e0fe0590a2d4022dce15c3e49c5a76edaa"
+      "sha256": "c6c718e2a579b235566025201b5f45c3c859ef7207dd63f7d25783b196f90a51"
     },
     {
       "path": "src/app/wz_host_config.h",
-      "sha256": "dc7886087ef96ae7f98d7dbfdfff69df2e2c48aa39c3a8f52ef33d0664f44e14"
+      "sha256": "7f5d6b90d6b05c2750b286779e94d72a38fef10f963271baa6ae98a67aa8f67d"
     },
     {
       "path": "src/app/wz_host_media_ownership.c",
-      "sha256": "f2e74a877d0019ea18d8bfd0e552d66a161990489a63dc4058520b1f46bd3dc6"
+      "sha256": "aff90d792a1dda23f277ee0a23ee1a1643b4044f4742ffdd04c052d5e459c315"
     },
     {
       "path": "src/app/wz_host_media_ownership.h",
-      "sha256": "0d8095dbd690d9c8b3241f26e34eac5e64b45963ce9c166ae43c2aa46f0b744d"
+      "sha256": "a72a327f47ad95e088407ba656ac0aa4fa28ecb86ea3980afe59c03410fc7305"
     },
     {
       "path": "src/app/wz_host_output.c",
-      "sha256": "504322b9d5c80d2c865f6e8362557af61bce90240df83ccd25ca7065441191e6"
+      "sha256": "8949c5b287f63d61d0108781968967fc7f723732f6966ec66bbc47b5d702b7a1"
     },
     {
       "path": "src/app/wz_host_output.h",
-      "sha256": "0c415f0029214f54d2a92dd9aa46bfc53d1801dee71c7eeb9acd8bd65a104895"
+      "sha256": "9102584aaa91d3d0fa9664ea493168abedad43d4e8a15ca6a3d9eeeee7e76888"
     },
     {
       "path": "src/app/wz_host_socket.c",
-      "sha256": "f7c9c9eb5032b170a6c152064bb9556e2a5bf41805eff683bc53b02a7f5c2259"
+      "sha256": "6722d85c40d6bdcdaaf4ce2b7ef503cecb8186ac082e4313f99a021e62aba952"
     },
     {
       "path": "src/app/wz_host_socket.h",
-      "sha256": "1c5bbe42e47fd27db8b2781c699eb51026963bfe9d3831580489dce472444230"
+      "sha256": "e7c9f3fdcecc61c453cd1ce587bf092b3a839c1b6d4aaf8eb115bac8d98d68c6"
     },
     {
       "path": "src/app/wz_host_thread.c",
-      "sha256": "6f8cbe0e171adfe7b9f42d9517e31d72f7917048339ff8941d5bccadfa305151"
+      "sha256": "cb3ae66f27150b343717a20a464f95d71efa46d9ea53f008dbefc96ff623733a"
     },
     {
       "path": "src/app/wz_host_thread.h",
-      "sha256": "bd4e189a40c8f9ad31f014dc12afc3c67b7a4bd5580df262b0cf92db8fbe8471"
+      "sha256": "0c1cc121673b1d86b07e3c56cace72810218e55b3c39af5d0e3d54831667fdce"
     },
     {
       "path": "src/app/wz_screenshot_service.c",
-      "sha256": "05c8da60b7b90ca6b3a2b6b865ef6e00ab017ac739be8e282f196078fd195949"
+      "sha256": "cc3efcef8c2c60aec3ec514473d9149d2429d39a755666283edc38df3620f057"
     },
     {
       "path": "src/app/wz_screenshot_service.h",
-      "sha256": "1b58549d40bf834a9b2ebf6afa4820119349fa2afce66082c0e041299b634017"
+      "sha256": "7bd9f5240213b8d774bf6e6ee4d315ffba088dd1ca145e749fcc043aee1f7999"
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.c",
-      "sha256": "240c70171a4ea43836a83198f7935560e03391f60bc3528ba95d16e323e08f3b"
+      "sha256": "dd6400232e4cc0ce5de4cb0e492cdea374b90b403dba648883064e8dc0c173e1"
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.h",
-      "sha256": "1704f552714cf2f0183672bf8486dd5ac001f2c2223b371a704e71fc723e0656"
+      "sha256": "c41111940e26230bcd63be2dd139c7ddeaf37c8f2b5104851e99041561ec888c"
     },
     {
       "path": "src/app/wz_telnet_keymap.c",
-      "sha256": "c28b14ee6726eb99c6f26a4b7511c0b60dfaea008dcbe2cbe6bd7750a4092f3c"
+      "sha256": "cc8eccf5fa887c3a96fbfcb4c353ddfb25f7b495633951c1bcb857cba3998131"
     },
     {
       "path": "src/app/wz_telnet_keymap.h",
-      "sha256": "056a9e1304fe7db114b1b860d6628f7d7866e84d0d4c44c75df4e58406bf1ff7"
+      "sha256": "7039398e07d1c3a3d7a828f2f7e2dcd6dfe483cf8eabb0316ee6576b5f38096f"
     },
     {
       "path": "src/core/wz_presentation_snapshot.c",
-      "sha256": "e486ad41490593ff803f647460d3542f69f425bf8c15bd0892e882962a685367"
+      "sha256": "163e154223eefb38cefc45e454325a884b6e89d4e98a9ca9dba83e93cbc4ab19"
     },
     {
       "path": "src/core/wz_presentation_snapshot.h",
-      "sha256": "5dc1be78cf4627ed526b39e7d1ee4e961c3bff8b00f869e635675f2180af820d"
+      "sha256": "2212a4254b8dc27a2b48e248ce34fa979bd1ab7ee6ce55b5536c529cff6925df"
     },
     {
       "path": "tests/multi-instance-stress.c",
-      "sha256": "5ddb0bb2af26230d639c517186e41be070e9da95e37bb06d7cfdbcf0fbad43f0"
+      "sha256": "b0723b7d3dd527b086bdca51b16a4b8069b8f1d27ef9ba74ede82a90303d81c4"
     },
     {
       "path": "tests/multi-instance-stress.md",
-      "sha256": "0bd30dabae3bcdc59be15f3dc22adcf0c0c036a3978a16882a85c7eca2fd4ec9"
+      "sha256": "466a51dcded4200b6a36183e7802f6c1330dcd11bac0b7dc5977c1a1d03b025e"
     }
   ]
 }

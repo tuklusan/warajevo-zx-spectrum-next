@@ -5,11 +5,11 @@
   "fixtures": [
     {
       "path": "ci/test/cassette-speed-contract/cassette-speed-contract.c",
-      "sha256": "234920a9b7d10f4fcdc6a3f4d8fe39fcfb90622d56194cfcb5c280bab5f3184f"
+      "sha256": "eb9ebb636e7fac202e118d5c77066b3ac2942f9a585fe1f23c0d91d5272c5e65"
     },
     {
       "path": "ci/test/cassette-speed-contract/CMakeLists.txt",
-      "sha256": "2748a6aa2bddbe53b8bb2fbebf1c9405a71c7f78f32bac485738943fa0180c3d"
+      "sha256": "fce4ac2d24563861647c6a735f316cc14e2a5b519f0af7e295f0a65cdada4979"
     }
   ]
 }

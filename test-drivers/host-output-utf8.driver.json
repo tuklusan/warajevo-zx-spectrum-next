@@ -5,23 +5,23 @@
   "fixtures": [
     {
       "path": ".github/workflows/host-output-utf8.yml",
-      "sha256": "60450f2a778897404f065ded6d9c829aecd1b2334ec82588b14f966ec8a79d40"
+      "sha256": "9fd4f20e1cd6a9aeeb2d0ca29da4b83cb19081f80fdd7782652f89963762bb5a"
     },
     {
       "path": "ci/test/host-output-utf8/CMakeLists.txt",
-      "sha256": "89cd52fc86f159bd37af5c92aca32709c1f4a0b5aa2612d2bc980b9d09ae002b"
+      "sha256": "3921f9423078d8da84951de33b68725d53a898050af70a5e6efb84ff949a62e7"
     },
     {
       "path": "ci/test/host-output-utf8/host-output-utf8.c",
-      "sha256": "a66efd920c5d4a9b7adcb831e9c9cd906c2f8f1d2677500c55b0beb30f9db57f"
+      "sha256": "b2fad715aaae168a1fa43e234ddd2ca2f8f6a9359f72515423afa25892f1f5f3"
     },
     {
       "path": "src/app/wz_host_output_utf8.c",
-      "sha256": "9e9ddf5f8bf6d6983a6efa6954bc6263397777f96ddebb953db85952fcc6ac15"
+      "sha256": "26236bf3579de38671c5a15cccfd776408b3861a39e95b7d2fdd53e7e0fe512f"
     },
     {
       "path": "src/app/wz_host_output_utf8.h",
-      "sha256": "6cb9224603f1d13f3f2fb064f5266bfa14d8c52896c328bf8c36c8d5eb912b2a"
+      "sha256": "14ecc376ec7f8b954137bd7ff798a82cb64562f902c8e76467936e3ac3893cb4"
     },
     {
       "path": "src/app/wz_host_output.c",
@@ -29,15 +29,15 @@
     },
     {
       "path": "src/app/wz_host_output.h",
-      "sha256": "0c415f0029214f54d2a92dd9aa46bfc53d1801dee71c7eeb9acd8bd65a104895"
+      "sha256": "9102584aaa91d3d0fa9664ea493168abedad43d4e8a15ca6a3d9eeeee7e76888"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "d48d5f50c6086b7fd9ace25b0566ef1edb96ef697797b73d93431f18f0262339"
+      "sha256": "d9017c14bb5d36faa2169890bb5c7da51f022a6cf4b8241a313c16cd7ae77c61"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "485fa49b71bac837584046e3eac678170f71d86ed4a1a657ccd84d12f61ba882"
+      "sha256": "3ebe1ed963559316c4287da77063e03371cf581e49045f1e485ce405d239d902"
     }
   ]
 }

@@ -4,35 +4,35 @@
   "workflow": ".github/workflows/microdrive-ui-contract.yml",
   "fixtures": [
     {
-      "sha256": "bbbe8c6a700c32030c58dfbe30d8d2139dec345ea069a6b6a38493b045f061a1",
+      "sha256": "54841d1eac75ece32afa5166d73b200f02e8bb8792f6bbc01ecaa6269d17047e",
       "path": ".github/workflows/microdrive-ui-contract.yml"
     },
     {
-      "sha256": "a0cdcd930519a350a7e3017a8990b67d5d94e45ef55bfc8e27330a87bf5d4a1a",
+      "sha256": "758ff7721aabf8b6179bccb0c57eeea2e16b25ba095da4ab06e02a08feedb86d",
       "path": "ci/test/microdrive-ui/CMakeLists.txt"
     },
     {
-      "sha256": "c25035ace4d3f9c516c4551f5be818b786421c089caf07ab2d2fb767115d801f",
+      "sha256": "a4584ef7b1a86806eff09c5713638eccc878fe8ce5ea37a327ccb1410010e7a6",
       "path": "ci/test/microdrive-ui/microdrive-ui-contract.c"
     },
     {
-      "sha256": "d48d5f50c6086b7fd9ace25b0566ef1edb96ef697797b73d93431f18f0262339",
+      "sha256": "d9017c14bb5d36faa2169890bb5c7da51f022a6cf4b8241a313c16cd7ae77c61",
       "path": "src/app/wz_sokol_main.c"
     },
     {
-      "sha256": "707bd4c4c9d0e12db0135ef857d3c7de8a5d6e7d717d790d09f3080bb90c9607",
+      "sha256": "93277b2eed8ad36fc3e9bad4ed6897ac2255a32ccd6142ccb0ee6f9d41ca70bf",
       "path": "src/app/wz_command_registry.c"
     },
     {
-      "sha256": "089f17123ebfdc9be2ff8606aa849f72c06bc26036ac0f5710dbb978509b9d34",
+      "sha256": "af687e17b60dbad891de7cafcc4ca39c48182e299140fcda1fafc23b486b6b53",
       "path": "src/app/wz_command_registry.h"
     },
     {
-      "sha256": "bd46ced2af90907b222a43fcaef3bfe8943b6ca32fd4831fbaca82483ec264c5",
+      "sha256": "cb3ae66f27150b343717a20a464f95d71efa46d9ea53f008dbefc96ff623733a",
       "path": "src/app/wz_host_thread.c"
     },
     {
-      "sha256": "2fa71a370c5b0597e25f8e4ecbc8457e7e9b2d3b62cd48af2eb6111053283805",
+      "sha256": "0c1cc121673b1d86b07e3c56cace72810218e55b3c39af5d0e3d54831667fdce",
       "path": "src/app/wz_host_thread.h"
     },
     {
@@ -44,11 +44,11 @@
       "path": "src/app/wz_host_audio_policy.h"
     },
     {
-      "sha256": "cb9d2d0befc0becaa81558d794a257f399c4a46e1c1a0bdb19c4893d8f547183",
+      "sha256": "714f4694767df8b2556f6e8107459cf667e9cb9e63990c0ad4b6c9bd1b6b6437",
       "path": "src/app/wz_speed_policy.c"
     },
     {
-      "sha256": "0895e0cac0254cb95d4b2347d911f0fdddfd0bab414d37e5dd4052cfc9eaa2df",
+      "sha256": "92028fc6a9a88a2e7efbfc2de03989a139bc6b1d9a7ce791b6eacfc4193d173c",
       "path": "src/app/wz_speed_policy.h"
     },
     {
@@ -60,39 +60,39 @@
       "path": "src/app/wz_ui_layout.h"
     },
     {
-      "sha256": "c1db9feadf120808bc6c6ec5793b40f129d3972035d10a19085a966fa5b7b005",
+      "sha256": "25fb9a4339d91426633cb3aad0a9d36e4aaf32dc041d89e4f1a9419c7d43d3ff",
       "path": "src/app/wz_microdrive_eject_workflow.c"
     },
     {
-      "sha256": "224c0b0abe528070566e61833a43897daaabc242039ebb8e967b329edd2f743d",
+      "sha256": "d581656a98a8f7f7797d118dfd5db37af09dce52222ba53759074dacef0929b1",
       "path": "src/app/wz_microdrive_eject_workflow.h"
     },
     {
-      "sha256": "1dc71a255b61187261ef1b97a3694f780c8c2cb9be08d98e942e98768bec2b29",
+      "sha256": "a0b903d4da0c26159175ad2a863c77d223b81cd706a48b3f85bec41bd0e33fde",
       "path": "src/core/wz_machine.c"
     },
     {
-      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe",
+      "sha256": "197907797e2a3e2b9ee1479bb6c498adcc130f0f05aa8a9252233d55be8bad4b",
       "path": "src/core/wz_machine.h"
     },
     {
-      "sha256": "0d80d9a9144cdc39f5df0b8a9abb8e5e21bc71cfeb92f13ee2f7f34e532bc522",
+      "sha256": "e0dec04ca476a6127e758d82da2eaa45fe51ec79c136f885a6d5f94a88c742cc",
       "path": "src/core/wz_microdrive.c"
     },
     {
-      "sha256": "fa4e47c5efc658d533e14b6bf571712447771951202b66eb8575c6869f60a90c",
+      "sha256": "067b850d0a888d5144d2477c6967b69ba2035a4afbd40a5bb7d81e473b03c531",
       "path": "src/core/wz_microdrive.h"
     },
     {
-      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09",
+      "sha256": "4f365f1f47ef85c3f837c2a2f5c8318b5e06c72e79d474cae64ee8b3f1d9b726",
       "path": "src/core/wz_machine_profile.c"
     },
     {
-      "sha256": "099be5f41f428466e5da622452abec6e0daf6402abcf4ab2e7d8c2df47457cc4",
+      "sha256": "809da6951d690c04032725fe7551148f2c4be6d1a19b676284c08c0b3c03f19c",
       "path": "src/core/wz_machine_profile.h"
     },
     {
-      "sha256": "485fa49b71bac837584046e3eac678170f71d86ed4a1a657ccd84d12f61ba882",
+      "sha256": "3ebe1ed963559316c4287da77063e03371cf581e49045f1e485ce405d239d902",
       "path": "src/cmake/CMakeLists.txt"
     }
   ]

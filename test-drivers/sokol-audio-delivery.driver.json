@@ -2,15 +2,15 @@
   "fixtures": [
     {
       "path": ".github/workflows/audio-delivery-regression.yml",
-      "sha256": "d3787d282f86acdabe59c7ca84ee9ae7bd072bc99e8f5ecbd3f15fe0b64964e8"
+      "sha256": "13f297e8223c222d66db56ced2014991c6d1e3c0e0af83bd882d09cb53ae2a53"
     },
     {
       "path": "ci/test/audio-delivery/sokol-audio-delivery-regression.c",
-      "sha256": "148feb78f4a3a258cff10fb8378e212df08dbd0c3d024a14583b48df07a5ea84"
+      "sha256": "585612bf9ea40000aa843089f9d3f17e64a2ef3f73a4c33bc6a8405731e7689f"
     },
     {
       "path": "ci/test/audio-delivery/sokol_audio_stub/sokol_audio.h",
-      "sha256": "241b80c7c29052de62cc2400f9ed6416b9d4cbb8d1b3ef470a84c74dede75193"
+      "sha256": "2cd2da7d3d6fff10f8001226a1487ef0936056d5357eac48d210429e639bec9b"
     },
     {
       "path": "ci/test/audio-delivery/write-proof.py",
@@ -18,11 +18,11 @@
     },
     {
       "path": "src/app/wz_host_audio_push.c",
-      "sha256": "063757f4ad223bbc7de3190e8d1bc321b8c295ecc1da2d0d620a27d3725d1f23"
+      "sha256": "4b50aa8572ab0a3af2c65d3db61b1434216f9a7bdeae12f222360bac6fabf345"
     },
     {
       "path": "src/app/wz_host_audio_push.h",
-      "sha256": "5e864911c75396fbd9247d14e48cf8743656807fbb7174b6522d14527d130988"
+      "sha256": "a64fc65b54d3e4c3ac7f8ef001dafa077efe39716b9f1d192e797d44f61b48a0"
     },
     {
       "path": "src/app/wz_host_audio_policy.c",
@@ -34,15 +34,15 @@
     },
     {
       "path": "src/app/wz_host_config.c",
-      "sha256": "5cd5b1c698a5493f79a8210aaa3caf14b2998b4d7581abf4b718cfda4b8a66d2"
+      "sha256": "c6c718e2a579b235566025201b5f45c3c859ef7207dd63f7d25783b196f90a51"
     },
     {
       "path": "src/app/wz_command_registry.c",
-      "sha256": "707bd4c4c9d0e12db0135ef857d3c7de8a5d6e7d717d790d09f3080bb90c9607"
+      "sha256": "93277b2eed8ad36fc3e9bad4ed6897ac2255a32ccd6142ccb0ee6f9d41ca70bf"
     },
     {
       "path": "src/app/wz_host_thread.c",
-      "sha256": "bd46ced2af90907b222a43fcaef3bfe8943b6ca32fd4831fbaca82483ec264c5"
+      "sha256": "cb3ae66f27150b343717a20a464f95d71efa46d9ea53f008dbefc96ff623733a"
     },
     {
       "path": "src/app/wz_ui_layout.c",
@@ -54,38 +54,38 @@
     },
     {
       "path": "src/app/wz_sokol_audio.c",
-      "sha256": "43cf233b84cf42c75db6df98d728b24c777bc0cd7609dc02e556546ff19646e4"
+      "sha256": "a3088048f4b16ff4b63fa7ad464b590c33c4d48525fe1ae976a439699d983c02"
     },
     {
       "path": "src/app/wz_sokol_audio.h",
-      "sha256": "868841f7a1cff55649b5f7ca9e52db5b8612803563579372a01fb005017e80a2"
+      "sha256": "73d56c586709a95479e244c1838b3cab24f8120661aa96da7e8b7ba2d377074a"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "d48d5f50c6086b7fd9ace25b0566ef1edb96ef697797b73d93431f18f0262339"
+      "sha256": "d9017c14bb5d36faa2169890bb5c7da51f022a6cf4b8241a313c16cd7ae77c61"
     },
     {
       "path": "src/app/wz_speed_policy.c",
-      "sha256": "cb9d2d0befc0becaa81558d794a257f399c4a46e1c1a0bdb19c4893d8f547183"
+      "sha256": "714f4694767df8b2556f6e8107459cf667e9cb9e63990c0ad4b6c9bd1b6b6437"
     },
     {
       "path": "src/app/wz_speed_policy.h",
-      "sha256": "0895e0cac0254cb95d4b2347d911f0fdddfd0bab414d37e5dd4052cfc9eaa2df"
+      "sha256": "92028fc6a9a88a2e7efbfc2de03989a139bc6b1d9a7ce791b6eacfc4193d173c"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "485fa49b71bac837584046e3eac678170f71d86ed4a1a657ccd84d12f61ba882"
+      "sha256": "3ebe1ed963559316c4287da77063e03371cf581e49045f1e485ce405d239d902"
     },
     {
-      "sha256": "98e77532404a726162a1bd8b075df7934b66a231f085e901094a1aa2cee2f04f",
+      "sha256": "42b567f71d695c12ce3aedc3a90241d346638ded0ca9ff5c34d7bd79524d352e",
       "path": "src/app/wz_telnet_status.c"
     },
     {
-      "sha256": "8bd49ab44fe070e0ad30b61c7118d36ac641f298ccb495186ee305c0449bc8d9",
+      "sha256": "1b28882621fa84db5f180bb240238c23e6f0004a2d9041106e78d0d7d1978edd",
       "path": "src/app/wz_telnet_status.h"
     },
     {
-      "sha256": "70ecabb37fe68f5460c0596ef62f3564637e5f824e1917a9c9a56693aeda1038",
+      "sha256": "8461842d0eca21d4b2a7305dfb7b0b9a22a5523329b89413961faec142a1a931",
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md"
     }
   ],

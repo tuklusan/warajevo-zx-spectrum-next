@@ -5,31 +5,31 @@
   "fixtures": [
     {
       "path": ".github/workflows/microdrive-sectors-contract.yml",
-      "sha256": "993e0d052d3ab8e68821b6a10c49bafdb2391882338f67a91734e897b8014a61"
+      "sha256": "c1d776af3c689a7ee37a9fcc2b4e6295aad9a9c78c3b0d5d36bfb4624fea6644"
     },
     {
       "path": "ci/test/microdrive-sectors/CMakeLists.txt",
-      "sha256": "386a87b7df9ec897fdbd8980f9ec6fe7cae3b33b39886912d1b8a4e84a202d98"
+      "sha256": "6026ab164676280b613bd9d6596d8ade4388094bffdeb3ff59341a127c20d73d"
     },
     {
       "path": "ci/test/microdrive-sectors/microdrive-sectors-contract.c",
-      "sha256": "5df5a60396a30287eba1cf8b8d19342472bfb5dc7e01c73504b8a84dd6cfec40"
+      "sha256": "5933c3d7750ba3a11ad18970b4a4c0e8632f5823d8c6ae1269b51be79da22c54"
     },
     {
       "path": "src/app/wz_microdrive_manager.c",
-      "sha256": "4caf4844a3369191c4b0679e33ebca107b024990d64c44c813fdb57133828b31"
+      "sha256": "1456cb55745300ed7bd6cefb16718a3c1c15343f48b6eaf56ca34abf48c59273"
     },
     {
       "path": "src/app/wz_microdrive_manager.h",
-      "sha256": "794b88473fbf2ca239cbeafdaa46ea2d583394d389d51a30420471c596f18c67"
+      "sha256": "a4b4dfb5cae16e032b0eaaf1972165e3e65cb420f9febe47d58028cd797c0680"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "d48d5f50c6086b7fd9ace25b0566ef1edb96ef697797b73d93431f18f0262339"
+      "sha256": "d9017c14bb5d36faa2169890bb5c7da51f022a6cf4b8241a313c16cd7ae77c61"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "485fa49b71bac837584046e3eac678170f71d86ed4a1a657ccd84d12f61ba882"
+      "sha256": "3ebe1ed963559316c4287da77063e03371cf581e49045f1e485ce405d239d902"
     }
   ]
 }

@@ -5,43 +5,43 @@
   "fixtures": [
     {
       "path": "ci/test/microdrive-bank/microdrive-bank-contract.c",
-      "sha256": "7e6f181782d154a0febede59cdfbf81753ca2ab7343b616636407fd23174e90e"
+      "sha256": "8f190a365904eac0d9cb26abb574bd55b51d7760190733c772b675b1a5d3d58c"
     },
     {
       "path": "ci/test/microdrive-bank/CMakeLists.txt",
-      "sha256": "3e742a67ec3f8fd105040da8886c4fe93340c961e4594b6fe889f751201b5cbe"
+      "sha256": "13e058bdb657d4d05ef69905c38184119197064081c3a8a5212ae998ff51f2d6"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "1dc71a255b61187261ef1b97a3694f780c8c2cb9be08d98e942e98768bec2b29"
+      "sha256": "a0b903d4da0c26159175ad2a863c77d223b81cd706a48b3f85bec41bd0e33fde"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
+      "sha256": "197907797e2a3e2b9ee1479bb6c498adcc130f0f05aa8a9252233d55be8bad4b"
     },
     {
       "path": "src/core/wz_microdrive.c",
-      "sha256": "0d80d9a9144cdc39f5df0b8a9abb8e5e21bc71cfeb92f13ee2f7f34e532bc522"
+      "sha256": "e0dec04ca476a6127e758d82da2eaa45fe51ec79c136f885a6d5f94a88c742cc"
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "c5904fc7576d2d582704c0c5578a281921a5b73c42c775d2b109a70accaa3126"
+      "sha256": "d95eebfc5c60fcff400ed205a7b9312ebe36b65d883916fc5b3355ad790d7241"
     },
     {
       "path": "src/core/wz_state.h",
-      "sha256": "d1981cbe18c53870804ff78ffe5dc9e27b02a8fe08b60a0fdb478d8f2130ea94"
+      "sha256": "fcfe9088448c5ed16af8ffae5343c87da7b1419c5e76751ad5b4bfa20abd7145"
     },
     {
       "path": "src/core/wz_bus.c",
-      "sha256": "a84850869148d8f70a2ee5b31570d9d221d7159cbff832982ddbc8dd1f69c47e"
+      "sha256": "9bf59b595c552d7977979fe31d71f97dbe01bc805cc714b1940019201661df55"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "485fa49b71bac837584046e3eac678170f71d86ed4a1a657ccd84d12f61ba882"
+      "sha256": "3ebe1ed963559316c4287da77063e03371cf581e49045f1e485ce405d239d902"
     },
     {
       "path": ".github/workflows/microdrive-bank-contract.yml",
-      "sha256": "b4a4b36b837201d30fb4e129641da402ceafe9fc21657105c40029af0e34e8d7"
+      "sha256": "d634d5f2f6a7f91a8c42b4dbb55d862f17c5eaae4199dcfb0fd5333499e23986"
     }
   ]
 }

@@ -5,47 +5,47 @@
   "fixtures": [
     {
       "path": ".github/workflows/input-mapping-contract.yml",
-      "sha256": "d2f94eef17ac2eb27977477df0ed1734dd427c4eab2bfbc4adea1e563688e293"
+      "sha256": "fc432478c2e305e6b5112f48010addcab76107a086eedc58e4306ea2aca53f4e"
     },
     {
       "path": "ci/test/input-mapping/CMakeLists.txt",
-      "sha256": "7a3028bdb60d4baca0e714d1c8194efa8efbff85b1c0b84fcc1eaaef294a8e5a"
+      "sha256": "55f1a738ee4c8d3f1862e5b47362f1690ed6db09f4db02ec1380eaa95a53392b"
     },
     {
       "path": "ci/test/input-mapping/contract.c",
-      "sha256": "92c700ae1cc5985c28d63c1565cfdc66c3f9f3d6fb63a0f60df4491fcab2de5b"
+      "sha256": "cb0459ad361b523d7082b0a2b30802a7ff664f2f75c6bd49e6abe505c2f4f7d7"
     },
     {
       "path": "src/app/wz_keyboard_mapping.c",
-      "sha256": "e19e2c5d6a3a3c8252c0028c1eb500ba2e9c9e26f891c6dc3dfb96ee718067cd"
+      "sha256": "36fca3ad784a29ea30cec277c797af7f22b4c6e126d654a0037ebe6a264594a8"
     },
     {
       "path": "src/app/wz_keyboard_mapping.h",
-      "sha256": "75faab2a9ca0f93004b8667848c6de8f6cc5d46e2f8fb6e2ff685fd7c46498bd"
+      "sha256": "9b568da6bdb297ce54884c5d6e6e7b89cd6e7d9ce09147b36f38c52b07997432"
     },
     {
       "path": "src/app/wz_kempston_mapping.c",
-      "sha256": "0ca55ab8f3670ec756b1788969f3ccde9b93a46393a5661ff9c033e2e08107af"
+      "sha256": "d41411d438f93059afc4895fb06f90bb23910a33e59b9ea85ea101fd0cfcba51"
     },
     {
       "path": "src/app/wz_kempston_mapping.h",
-      "sha256": "158836614d6dad89c52fb7c56ea4825d28a5715cf63214e50d090de12605a5a9"
+      "sha256": "94f0467e02717e43268ef3454c647cc3efbda5c525affd78c3384ed7606ff1de"
     },
     {
       "path": "src/core/wz_kempston.c",
-      "sha256": "3a5a7d442da3debf4d114b660ae6b606f95ab963244fc5987e190689cd40b35a"
+      "sha256": "1ce585375560a1357418d333da3449aea9dd12800b66f0dab1798fb6bc62a85d"
     },
     {
       "path": "src/core/wz_kempston.h",
-      "sha256": "21ddeac1344f770e29180b8b015c5b8ebad3deffa2031beaad2ad09db2b947bd"
+      "sha256": "08e535c4d7a8090bb5bb282b76b6d1d1b8b44a980480f009f6fd0372c4e5f8b5"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "485fa49b71bac837584046e3eac678170f71d86ed4a1a657ccd84d12f61ba882"
+      "sha256": "3ebe1ed963559316c4287da77063e03371cf581e49045f1e485ce405d239d902"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "d48d5f50c6086b7fd9ace25b0566ef1edb96ef697797b73d93431f18f0262339"
+      "sha256": "d9017c14bb5d36faa2169890bb5c7da51f022a6cf4b8241a313c16cd7ae77c61"
     }
   ]
 }

@@ -8,35 +8,35 @@
   "fixtures": [
     {
       "path": ".github/workflows/host-pacing-regression.yml",
-      "sha256": "e1afb846ac814875b9f857d67f2a4718e2c5adf869462d083a2552573c1fd4a0"
+      "sha256": "1092064a9891ee5a2b807b2cb542d2f2dd3841fab35b722026335d4157bfc250"
     },
     {
       "path": "ci/test/host-pacing/pacing-regression.c",
-      "sha256": "a6a591a54ee138ab646127c4e3033e879592e50a22fecc06281f0145c3070e5e"
+      "sha256": "be6c59c982005eaba6aabfea25fed69b87931b57d20d411b6e97b26b872ceb8a"
     },
     {
       "path": "ci/test/host-pacing/write-proof.py",
-      "sha256": "268a7acabf2ac852475cafcc9c1e475d8f1f41d4b3620e88709a04d439331c69"
+      "sha256": "6e49dcd01e68b76e7ce2001cf1536f0a1136442e214b26ec59476a7cf803584d"
     },
     {
       "path": "src/app/wz_host_pacing.c",
-      "sha256": "95f8c0e83dc00296de250ec8dedc643023182aa6dfe33cea015a0d3154a30ca7"
+      "sha256": "81f0c21752118076a4cfd346922c88407901e4812fa5e1508237674ec214bd2d"
     },
     {
       "path": "src/app/wz_host_pacing.h",
-      "sha256": "cc9cf2c62618116bc982299039942b56a0e110dd8ab720fe1e4f2c262185ebc1"
+      "sha256": "7ad3e0ca09310aa93b67237bdc277251fa4facda2112f6afcf5d0dcc01f444cd"
     },
     {
       "path": "src/app/wz_speed_policy.c",
-      "sha256": "cb9d2d0befc0becaa81558d794a257f399c4a46e1c1a0bdb19c4893d8f547183"
+      "sha256": "714f4694767df8b2556f6e8107459cf667e9cb9e63990c0ad4b6c9bd1b6b6437"
     },
     {
       "path": "src/app/wz_speed_policy.h",
-      "sha256": "0895e0cac0254cb95d4b2347d911f0fdddfd0bab414d37e5dd4052cfc9eaa2df"
+      "sha256": "92028fc6a9a88a2e7efbfc2de03989a139bc6b1d9a7ce791b6eacfc4193d173c"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "485fa49b71bac837584046e3eac678170f71d86ed4a1a657ccd84d12f61ba882"
+      "sha256": "3ebe1ed963559316c4287da77063e03371cf581e49045f1e485ce405d239d902"
     }
   ]
 }

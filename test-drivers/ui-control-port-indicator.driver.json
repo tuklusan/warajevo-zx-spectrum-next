@@ -8,31 +8,31 @@
   "fixtures": [
     {
       "path": ".github/workflows/ui-control-port-indicator.yml",
-      "sha256": "c6f4cc25a2483b375b30279443c15101ab5d94de8e245a6f3ff8274dd8147c0c"
+      "sha256": "fa25a8a91bbbfde8f86119e5e460bba44f9759665c4b15d405752f0456228337"
     },
     {
       "path": "ci/test/ui-control-port-indicator/CMakeLists.txt",
-      "sha256": "b4fe0033c5cc5481938d1dbd57a156b674c905b7ff777e6c28c1f8f5af27d164"
+      "sha256": "0cc2fe0d6ac7e4b156ed9931ba53f7a40d8cebf7dc04829e90b2a960722bc5e6"
     },
     {
       "path": "ci/test/ui-control-port-indicator/ui-control-port-indicator-contract.c",
-      "sha256": "43cb273cc2cf36ae4eac534e80d4d19fb980bafc9eca581c782e1ed376426320"
+      "sha256": "e3532c073785cdaba258760b2e2a5d73e708e5d0f7b61a7a29162ad8eccd70ff"
     },
     {
       "path": "ci/test/ui-control-port-indicator/write-proof.py",
-      "sha256": "ecaff193747161bb6a57df1368118c3125f8ce17eb6f84fc91460601a18b2203"
+      "sha256": "26604b4e7c586678f33f76e025db8890795476983cfc37be02b5da4c2e40b49b"
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "c289df3896df2768e0b441e659be9df85eef0ebaab85a4a96feff0ca9d108d77"
+      "sha256": "938562d96ab2f18c1268497a21453c5d82f584b3265e87b09b9ccbbf642b49b8"
     },
     {
       "path": "src/app/wz_ui_layout.h",
-      "sha256": "82b311ec0944bafa0c7256f2becef7f56d69d51843ece9e7d62c68f36b75151e"
+      "sha256": "f872c410ac2efba211fe060a2438439b824012eaa82a88caa1e207b2e9eca2e0"
     },
     {
       "path": "src/app/wz_control_port.h",
-      "sha256": "44a2a09d58c56dff09494d2176a43f8de0982ff719e3914fb53853fcca4ea32a"
+      "sha256": "e4e85d677eb4e43a506a31b4ead633f87621bc54cfc286a99fcf5cdef7304423"
     }
   ]
 }

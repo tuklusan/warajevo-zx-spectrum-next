@@ -11,35 +11,35 @@
   "fixtures": [
     {
       "path": ".github/workflows/ui-command-equivalence.yml",
-      "sha256": "35209193e222181df89d26b0e384a6e8cc86914538d2051201447ec51b6aaf9b"
+      "sha256": "0af3a3cb4d3182e7f166d4d21b14532ac5a8a23d0dad5db066d51168a48bc7fb"
     },
     {
       "path": "ci/test/ui-command-equivalence/CMakeLists.txt",
-      "sha256": "0ac805a9b5593998af72cf3a50efea65cc929d85a91001f5b56f8c4a457221df"
+      "sha256": "ec2349ab327b8eb7819d0d40be320564bfefc2bf7a16ded6c77b86bc354b051e"
     },
     {
       "path": "ci/test/ui-command-equivalence/ui-command-equivalence-regression.c",
-      "sha256": "ea1a3cbec2abf0cab914e03f4cdc26c94c2c175134902d495917f7767715ad9a"
+      "sha256": "b961e764fd9559f07c2ff74bd3170dd3b4449bbdaab021a09a82a804e43333b0"
     },
     {
       "path": "ci/test/ui-command-equivalence/write-proof.py",
-      "sha256": "2ef1cd6f554a66fbe876a8aac642e863a31b0afa3cb1e193eb1c03927dc45b1f"
+      "sha256": "c7a4a85dc5d584871e01ce293d404193c496ab93a955b695dc3d7479c159a6e5"
     },
     {
       "path": "src/app/wz_command_registry.c",
-      "sha256": "707bd4c4c9d0e12db0135ef857d3c7de8a5d6e7d717d790d09f3080bb90c9607"
+      "sha256": "93277b2eed8ad36fc3e9bad4ed6897ac2255a32ccd6142ccb0ee6f9d41ca70bf"
     },
     {
       "path": "src/app/wz_command_registry.h",
-      "sha256": "089f17123ebfdc9be2ff8606aa849f72c06bc26036ac0f5710dbb978509b9d34"
+      "sha256": "af687e17b60dbad891de7cafcc4ca39c48182e299140fcda1fafc23b486b6b53"
     },
     {
       "path": "src/app/wz_host_thread.c",
-      "sha256": "bd46ced2af90907b222a43fcaef3bfe8943b6ca32fd4831fbaca82483ec264c5"
+      "sha256": "cb3ae66f27150b343717a20a464f95d71efa46d9ea53f008dbefc96ff623733a"
     },
     {
       "path": "src/app/wz_host_thread.h",
-      "sha256": "2fa71a370c5b0597e25f8e4ecbc8457e7e9b2d3b62cd48af2eb6111053283805"
+      "sha256": "0c1cc121673b1d86b07e3c56cace72810218e55b3c39af5d0e3d54831667fdce"
     },
     {
       "path": "src/app/wz_host_output.c",
@@ -47,7 +47,7 @@
     },
     {
       "path": "src/app/wz_host_output.h",
-      "sha256": "0c415f0029214f54d2a92dd9aa46bfc53d1801dee71c7eeb9acd8bd65a104895"
+      "sha256": "9102584aaa91d3d0fa9664ea493168abedad43d4e8a15ca6a3d9eeeee7e76888"
     },
     {
       "path": "src/app/wz_host_audio_policy.c",
@@ -59,51 +59,51 @@
     },
     {
       "path": "src/app/wz_speed_policy.c",
-      "sha256": "cb9d2d0befc0becaa81558d794a257f399c4a46e1c1a0bdb19c4893d8f547183"
+      "sha256": "714f4694767df8b2556f6e8107459cf667e9cb9e63990c0ad4b6c9bd1b6b6437"
     },
     {
       "path": "src/app/wz_speed_policy.h",
-      "sha256": "0895e0cac0254cb95d4b2347d911f0fdddfd0bab414d37e5dd4052cfc9eaa2df"
+      "sha256": "92028fc6a9a88a2e7efbfc2de03989a139bc6b1d9a7ce791b6eacfc4193d173c"
     },
     {
       "path": "src/app/wz_screenshot_service.c",
-      "sha256": "05c8da60b7b90ca6b3a2b6b865ef6e00ab017ac739be8e282f196078fd195949"
+      "sha256": "cc3efcef8c2c60aec3ec514473d9149d2429d39a755666283edc38df3620f057"
     },
     {
       "path": "src/app/wz_screenshot_service.h",
-      "sha256": "1b58549d40bf834a9b2ebf6afa4820119349fa2afce66082c0e041299b634017"
+      "sha256": "7bd9f5240213b8d774bf6e6ee4d315ffba088dd1ca145e749fcc043aee1f7999"
     },
     {
       "path": "src/app/wz_screenshot_save_workflow.c",
-      "sha256": "b7c6732c2a8cd2949ecbf93a9bb58cd6e268a414817adc6ec34ac4a292c01a62"
+      "sha256": "bde3797eba9a2490702a50bbf549e101f59913dacacfbe6f07b7e975ff7ebc43"
     },
     {
       "path": "src/app/wz_screenshot_save_workflow.h",
-      "sha256": "9adeeeff5d35c88126838db36d79373167c816530924e95aaac5ac54ce40b076"
+      "sha256": "bc6c731065fd1da3cdff2cf0ed05a43776db54e40a006497c000bda8a44483ce"
     },
     {
       "path": "src/app/wz_telnet_alias_response.c",
-      "sha256": "3cbcf8d6e85cc444e63f7142ea6972b9850cde9eca6d4c8be029fb8ee59d8671"
+      "sha256": "3614e787f4d7cb7edb4e023caf2a61994826087a2d2c6934d6be4380c5d52d24"
     },
     {
       "path": "src/app/wz_telnet_alias_response.h",
-      "sha256": "1d39dcff0ade48fcb6ede4297bd4ede2b6de81e6b8b6955cf76af7103d3a5334"
+      "sha256": "d6a3ba098d97c66da1fe1d1c4926878babdaf7f9726e6b1ab31ab3ccab9e4b57"
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.c",
-      "sha256": "240c70171a4ea43836a83198f7935560e03391f60bc3528ba95d16e323e08f3b"
+      "sha256": "dd6400232e4cc0ce5de4cb0e492cdea374b90b403dba648883064e8dc0c173e1"
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.h",
-      "sha256": "1704f552714cf2f0183672bf8486dd5ac001f2c2223b371a704e71fc723e0656"
+      "sha256": "c41111940e26230bcd63be2dd139c7ddeaf37c8f2b5104851e99041561ec888c"
     },
     {
       "path": "src/app/wz_telnet_keymap.c",
-      "sha256": "c28b14ee6726eb99c6f26a4b7511c0b60dfaea008dcbe2cbe6bd7750a4092f3c"
+      "sha256": "cc8eccf5fa887c3a96fbfcb4c353ddfb25f7b495633951c1bcb857cba3998131"
     },
     {
       "path": "src/app/wz_telnet_keymap.h",
-      "sha256": "056a9e1304fe7db114b1b860d6628f7d7866e84d0d4c44c75df4e58406bf1ff7"
+      "sha256": "7039398e07d1c3a3d7a828f2f7e2dcd6dfe483cf8eabb0316ee6576b5f38096f"
     },
     {
       "path": "src/app/wz_ui_layout.c",
@@ -115,39 +115,39 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "d48d5f50c6086b7fd9ace25b0566ef1edb96ef697797b73d93431f18f0262339"
+      "sha256": "d9017c14bb5d36faa2169890bb5c7da51f022a6cf4b8241a313c16cd7ae77c61"
     },
     {
       "path": "src/core/wz_keyboard_matrix.c",
-      "sha256": "68deeb821563f28e5af3e0872765fedd5ae7e24a0491c011c24ebb9d4abbd575"
+      "sha256": "0c2ea7753c22c0225f532ae648bb621f3ec6f011f3d5a0125466f84d269ca4c0"
     },
     {
       "path": "src/core/wz_keyboard_matrix.h",
-      "sha256": "85282af5969a6212c528cb92edafd7d3fbf71375bbb4be1bad5cd9622e1cf976"
+      "sha256": "fc1207974234dd91436f781561dbd56b4b22952deecf064e1ec0f7850a2c5864"
     },
     {
       "path": "src/core/wz_presentation_snapshot.c",
-      "sha256": "e486ad41490593ff803f647460d3542f69f425bf8c15bd0892e882962a685367"
+      "sha256": "163e154223eefb38cefc45e454325a884b6e89d4e98a9ca9dba83e93cbc4ab19"
     },
     {
       "path": "src/core/wz_presentation_snapshot.h",
-      "sha256": "5dc1be78cf4627ed526b39e7d1ee4e961c3bff8b00f869e635675f2180af820d"
+      "sha256": "2212a4254b8dc27a2b48e248ce34fa979bd1ab7ee6ce55b5536c529cff6925df"
     },
     {
       "path": "src/core/wz_raster.c",
-      "sha256": "d87884dda947060b1b52e5ba3af9bebb5178c0d58505aeda4699078f8fc346c2"
+      "sha256": "358c008a4d2d343bc2d76a7ed07d823fba137aa1fce7900a70c1a74b928c3e45"
     },
     {
       "path": "src/core/wz_raster.h",
-      "sha256": "c231c401076b312c4b8ae6ef55492fd7e4068742c59a3583b4efaefee0ec5396"
+      "sha256": "973927676035b54eb8c8ac7d727274eb13b277e751ab1f7664cf953501b0ffe3"
     },
     {
       "path": "src/app/wz_rom_settings.c",
-      "sha256": "994b1adc805838998b182a193506462a9165359b0e86315b342ceb32d95752f3"
+      "sha256": "a7856a695a4602590771dbc823890a9044792d2ecd13464103faff2d8ec8963f"
     },
     {
       "path": "src/app/wz_rom_settings.h",
-      "sha256": "30eab69df6a396832f44d3bc34bf8f29adde294e7665642fa55fa0f17a52d0fa"
+      "sha256": "2d241654a90dfd51026120058d119e5f92c0ad5fb6ff9fbfdfed6185948a91e1"
     }
   ]
 }
