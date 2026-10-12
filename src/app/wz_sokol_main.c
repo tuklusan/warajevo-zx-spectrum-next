@@ -74,6 +74,7 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "app/wz_application_lifecycle.h"
 #include "app/wz_control_port.h"
 #include "app/wz_host_scaling.h"
+#include "app/wz_rom_settings.h"
 
 #define WZ_TAPE_MANAGER_MOVE_UP_COMMAND_ID "media.tape.manager.block.move_up"
 #define WZ_TAPE_MANAGER_MOVE_DOWN_COMMAND_ID "media.tape.manager.block.move_down"
@@ -152,6 +153,8 @@ typedef struct {
     wz_control_port_owner_t control_port;
     wz_telnet_client_gate_t telnet_client;
     wz_host_display_settings_t display_settings;
+    wz_rom_settings_t rom_settings;
+    char rom_settings_message[WZ_COMMAND_MESSAGE_CAPACITY];
     wz_command_registry_t command_registry;
     wz_command_metadata_t command_storage[WZ_HOST_COMMAND_CAPACITY];
     wz_networking_command_context_t networking_command_context;
@@ -253,6 +256,8 @@ typedef struct {
     bool display_settings_visible;
     bool audio_settings_visible;
     bool input_settings_visible;
+    bool rom_settings_visible;
+    bool rom_license_approved;
     bool initialized;
 } wz_host_session_t;
 
@@ -578,7 +583,8 @@ static bool wz_host_audio_frame_output(
     return !wz_sokol_audio_degraded(&session->audio);
 }
 
-static bool wz_host_read_file(const char* path, wz_byte_t** data, size_t* length)
+static bool wz_host_read_file_limited(const char* path, wz_byte_t** data,
+                                     size_t* length, size_t maximum_length)
 {
     FILE* file;
     long file_length;
@@ -609,7 +615,9 @@ static bool wz_host_read_file(const char* path, wz_byte_t** data, size_t* length
         return false;
     }
     file_length = ftell(file);
-    if (file_length <= 0 || fseek(file, 0, SEEK_SET) != 0) {
+    if (file_length <= 0 ||
+        (uintmax_t)file_length > (uintmax_t)maximum_length ||
+        fseek(file, 0, SEEK_SET) != 0) {
         fclose(file);
         return false;
     }
@@ -629,13 +637,45 @@ static bool wz_host_read_file(const char* path, wz_byte_t** data, size_t* length
     return true;
 }
 
-static bool wz_host_load_external_rom(wz_host_session_t* session, const char* path)
+static bool wz_host_read_file(const char* path, wz_byte_t** data,
+                              size_t* length)
+{
+    return wz_host_read_file_limited(path, data, length, SIZE_MAX);
+}
+
+static wz_result_t wz_host_load_rom_bytes(wz_host_session_t* session,
+                                          const wz_byte_t* data,
+                                          size_t length,
+                                          bool license_approved)
+{
+    wz_result_t result;
+
+    if (session == NULL || data == NULL) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    result = wz_rom_settings_load(&session->rom_settings, &session->machine,
+                                  data, length, license_approved);
+    if (result != WZ_RESULT_OK) {
+        return result;
+    }
+    memcpy(session->model_48k_rom, data, WZ_48K_ROM_SIZE);
+    session->model_48k_rom_identity = session->rom_settings.identity;
+    session->has_model_48k_rom = true;
+    return WZ_RESULT_OK;
+}
+
+static bool wz_host_load_external_rom(wz_host_session_t* session,
+                                      const char* path,
+                                      bool license_approved)
 {
     wz_byte_t* data = NULL;
     size_t length = 0u;
     bool loaded;
-    if (session == NULL || !wz_host_read_file(path, &data, &length)) return false;
-    loaded = wz_machine_load_48k_rom(&session->machine, data, length) == WZ_RESULT_OK;
+    if (session == NULL || !wz_host_read_file_limited(
+            path, &data, &length, WZ_48K_ROM_SIZE)) return false;
+    loaded = wz_host_load_rom_bytes(session, data, length, license_approved) ==
+        WZ_RESULT_OK;
+    if (loaded) session->rom_license_approved = license_approved;
     free(data);
     return loaded;
 }
@@ -2444,13 +2484,20 @@ static wz_result_t wz_host_command_model_set(
         result->reason = "model-change-failed";
         return WZ_RESULT_INVALID_STATE;
     }
-    if (profile->kind == WZ_MACHINE_48K_PAL &&
-        session->has_model_48k_rom &&
-        session->model_48k_rom_identity == profile->expected_rom_identity &&
-        wz_machine_load_48k_rom(&session->machine, session->model_48k_rom,
-                                sizeof(session->model_48k_rom)) != WZ_RESULT_OK) {
-        result->reason = "model-rom-restore-failed";
-        return WZ_RESULT_INVALID_STATE;
+    if (profile->kind == WZ_MACHINE_128K_PAL) {
+        (void)wz_rom_settings_select(&session->rom_settings, profile, NULL,
+                                     0u, true);
+    } else if (session->has_model_48k_rom &&
+               session->model_48k_rom_identity ==
+                   profile->expected_rom_identity) {
+        if (wz_rom_settings_load(&session->rom_settings, &session->machine,
+                session->model_48k_rom, sizeof(session->model_48k_rom),
+                true) != WZ_RESULT_OK) {
+            result->reason = "model-rom-restore-failed";
+            return WZ_RESULT_INVALID_STATE;
+        }
+    } else {
+        wz_rom_settings_init(&session->rom_settings);
     }
     session->audio_sample_remainder = 0u;
     session->audio_sample_speed_initialized = false;
@@ -2785,6 +2832,140 @@ static bool wz_host_settings_available(const void* context,
     return true;
 }
 
+static const char* wz_host_rom_settings_status_text(
+    wz_rom_settings_status_t status)
+{
+    switch (status) {
+    case WZ_ROM_SETTINGS_NONE:
+        return "No ROM is loaded for this profile.";
+    case WZ_ROM_SETTINGS_READY:
+        return "Loaded ROM identity matches the certified profile.";
+    case WZ_ROM_SETTINGS_UNAVAILABLE:
+        return "No certified ROM identity is available for this profile.";
+    case WZ_ROM_SETTINGS_IDENTITY_MISMATCH:
+        return "Selected ROM identity does not match this profile.";
+    case WZ_ROM_SETTINGS_LICENSE_REQUIRED:
+        return "Confirm that you have rights to use an external ROM.";
+    case WZ_ROM_SETTINGS_LOAD_FAILED:
+        return "ROM identity passed, but the core could not load it.";
+    default:
+        return "ROM status unavailable.";
+    }
+}
+
+static wz_result_t wz_host_rom_settings_open(
+    const void* context, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    wz_host_session_t* session = (wz_host_session_t*)context;
+    if (session == NULL || arguments.size != 0u) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    session->display_settings_visible = false;
+    session->audio_settings_visible = false;
+    session->input_settings_visible = false;
+    session->rom_settings_visible = true;
+    session->rom_settings_message[0] = '\0';
+    if (result != NULL) {
+        (void)snprintf(result->message, sizeof(result->message),
+                       "ROM / Firmware settings opened");
+    }
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_host_rom_settings_choose(
+    const void* context, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    wz_host_session_t* session = (wz_host_session_t*)context;
+    wz_file_dialog_result_t dialog_result;
+    const wz_machine_profile_t* profile;
+    wz_byte_t* bytes = NULL;
+    size_t length = 0u;
+    char path[4096];
+    wz_result_t load_result;
+    const char* message;
+
+    if (session == NULL || arguments.size != 0u || result == NULL) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    profile = session->machine.profile;
+    if (profile == NULL) {
+        result->reason = "machine-profile-unavailable";
+        return WZ_RESULT_INVALID_PROFILE;
+    }
+    if (profile->expected_rom_identity == 0u) {
+        (void)wz_rom_settings_select(&session->rom_settings, profile,
+                                     NULL, 0u, true);
+        result->reason = "rom-identity-unavailable";
+        message = wz_host_rom_settings_status_text(
+            session->rom_settings.status);
+        (void)snprintf(result->message, sizeof(result->message), "%s", message);
+        (void)snprintf(session->rom_settings_message,
+            sizeof(session->rom_settings_message), "%s", message);
+        return WZ_RESULT_INVALID_PROFILE;
+    }
+    if (!session->rom_license_approved) {
+        (void)wz_rom_settings_select(&session->rom_settings, profile,
+                                     NULL, 0u, false);
+        result->reason = "rom-license-confirmation-required";
+        message = wz_host_rom_settings_status_text(
+            session->rom_settings.status);
+        (void)snprintf(result->message, sizeof(result->message), "%s", message);
+        (void)snprintf(session->rom_settings_message,
+            sizeof(session->rom_settings_message), "%s", message);
+        return WZ_RESULT_INVALID_STATE;
+    }
+
+    dialog_result = wz_file_dialog_open(path, sizeof(path));
+    if (dialog_result == WZ_FILE_DIALOG_CANCELLED) {
+        session->rom_settings_message[0] = '\0';
+        (void)snprintf(result->message, sizeof(result->message),
+                       "ROM selection cancelled");
+        return WZ_RESULT_OK;
+    }
+    if (dialog_result != WZ_FILE_DIALOG_SELECTED) {
+        result->reason = "rom-file-selection-failed";
+        message = "The ROM file could not be selected.";
+        load_result = WZ_RESULT_INVALID_STATE;
+    } else if (!wz_host_read_file_limited(path, &bytes, &length,
+                                           WZ_48K_ROM_SIZE)) {
+        result->reason = "rom-file-read-failed";
+        message = "The selected ROM file could not be read.";
+        load_result = WZ_RESULT_INVALID_STATE;
+    } else {
+        load_result = wz_host_load_rom_bytes(session, bytes, length, true);
+        if (load_result == WZ_RESULT_OK) {
+            message = "ROM verified and loaded. Use Reset to boot it.";
+        } else {
+            switch (session->rom_settings.status) {
+            case WZ_ROM_SETTINGS_UNAVAILABLE:
+                result->reason = "rom-identity-unavailable";
+                break;
+            case WZ_ROM_SETTINGS_IDENTITY_MISMATCH:
+                result->reason = "rom-identity-mismatch";
+                break;
+            case WZ_ROM_SETTINGS_LICENSE_REQUIRED:
+                result->reason = "rom-license-confirmation-required";
+                break;
+            case WZ_ROM_SETTINGS_LOAD_FAILED:
+                result->reason = "rom-load-failed";
+                break;
+            default:
+                result->reason = "rom-load-failed";
+                break;
+            }
+            message = wz_host_rom_settings_status_text(
+                session->rom_settings.status);
+        }
+    }
+    free(bytes);
+    (void)snprintf(result->message, sizeof(result->message), "%s", message);
+    (void)snprintf(session->rom_settings_message,
+        sizeof(session->rom_settings_message), "%s", message);
+    return load_result;
+}
+
 static wz_result_t wz_host_display_settings_open(
     const void* context, wz_command_arguments_t arguments,
     wz_command_result_t* result)
@@ -2796,6 +2977,7 @@ static wz_result_t wz_host_display_settings_open(
     session->display_settings_visible = true;
     session->audio_settings_visible = false;
     session->input_settings_visible = false;
+    session->rom_settings_visible = false;
     if (result != NULL) {
         (void)snprintf(result->message, sizeof(result->message),
                        "Display settings opened");
@@ -2814,6 +2996,7 @@ static wz_result_t wz_host_audio_settings_open(
     session->display_settings_visible = false;
     session->audio_settings_visible = true;
     session->input_settings_visible = false;
+    session->rom_settings_visible = false;
     if (result != NULL) {
         (void)snprintf(result->message, sizeof(result->message),
                        "Audio settings opened");
@@ -2832,6 +3015,7 @@ static wz_result_t wz_host_input_settings_open(
     session->display_settings_visible = false;
     session->audio_settings_visible = false;
     session->input_settings_visible = true;
+    session->rom_settings_visible = false;
     session->input_capture_kind = 0u;
     if (result != NULL) {
         (void)snprintf(result->message, sizeof(result->message),
@@ -3004,6 +3188,22 @@ static bool wz_host_register_commands(void)
             "wz_host_input_settings_open", "local", NULL,
             WZ_COMMAND_LOCAL_ONLY, wz_host_settings_available,
             wz_host_input_settings_open, &wz_host_session, false, false, NULL
+        },
+        {
+            "settings.rom.open", "ROM / Firmware...",
+            "Inspect the required ROM identity and user-supplied firmware status",
+            "settings", "NONE", "wz-command-result",
+            "wz_host_rom_settings_open", "local", NULL,
+            WZ_COMMAND_LOCAL_ONLY, wz_host_settings_available,
+            wz_host_rom_settings_open, &wz_host_session, false, false, NULL
+        },
+        {
+            "settings.rom.choose", "Choose ROM...",
+            "Load a licensed external ROM matching the active machine profile",
+            "NONE", "NONE", "wz-command-result",
+            "wz_host_rom_settings_choose", "native-file-dialog", NULL,
+            WZ_COMMAND_LOCAL_ONLY, wz_host_settings_available,
+            wz_host_rom_settings_choose, &wz_host_session, true, false, NULL
         },
         {
             "view.fullscreen", "Fullscreen",
@@ -5751,6 +5951,116 @@ static void wz_host_ui_draw_input_settings(struct nk_context* context,
     nk_end(context);
 }
 
+static void wz_host_ui_draw_rom_settings(struct nk_context* context,
+                                         float width, float height)
+{
+    const float panel_width = width >= 440.0f ? 420.0f : width - 16.0f;
+    const float panel_height = height >= 392.0f ? 360.0f : height - 32.0f;
+    const wz_machine_profile_t* profile = wz_host_session.machine.profile;
+    char expected_label[64];
+    char loaded_label[64];
+    char candidate_label[64];
+    int license_approved;
+
+    if (!wz_host_session.rom_settings_visible || panel_width < 220.0f ||
+        panel_height < 280.0f || profile == NULL) {
+        return;
+    }
+    if (!nk_begin(context, "ROM / Firmware Settings",
+            nk_rect((width - panel_width) * 0.5f,
+                    (height - panel_height) * 0.5f,
+                    panel_width, panel_height),
+            NK_WINDOW_BORDER | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE)) {
+        nk_end(context);
+        return;
+    }
+
+    if (profile->expected_rom_identity == 0u) {
+        (void)snprintf(expected_label, sizeof(expected_label),
+                       "Required ROM identity: unavailable");
+    } else {
+        (void)snprintf(expected_label, sizeof(expected_label),
+                       "Required ROM identity: 0x%016llX",
+                       (unsigned long long)profile->expected_rom_identity);
+    }
+    if (wz_host_session.machine.has_48k_rom != 0u) {
+        (void)snprintf(loaded_label, sizeof(loaded_label),
+                       "Loaded core ROM identity: 0x%016llX",
+                       (unsigned long long)wz_host_session.machine.rom_identity);
+    } else {
+        (void)snprintf(loaded_label, sizeof(loaded_label),
+                       "Loaded core ROM identity: none");
+    }
+    if (wz_host_session.rom_settings.identity != 0u) {
+        (void)snprintf(candidate_label, sizeof(candidate_label),
+                       "Selected candidate identity: 0x%016llX",
+                       (unsigned long long)wz_host_session.rom_settings.identity);
+    } else {
+        (void)snprintf(candidate_label, sizeof(candidate_label),
+                       "Selected candidate identity: none");
+    }
+
+    nk_layout_row_dynamic(context, 22.0f, 1);
+    nk_label(context, "Machine profile", NK_TEXT_LEFT);
+    nk_layout_row_dynamic(context, 22.0f, 1);
+    nk_label(context, profile->name, NK_TEXT_LEFT);
+    nk_layout_row_dynamic(context, 22.0f, 1);
+    nk_label(context, expected_label, NK_TEXT_LEFT);
+    nk_layout_row_dynamic(context, 22.0f, 1);
+    nk_label(context, loaded_label, NK_TEXT_LEFT);
+    nk_layout_row_dynamic(context, 22.0f, 1);
+    nk_label(context, candidate_label, NK_TEXT_LEFT);
+    nk_layout_row_dynamic(context, 34.0f, 1);
+    nk_label_wrap(context,
+        "Identity verifies compatibility, not legal rights. ROM bytes stay in memory; choose the machine model separately from the Machine menu.");
+    nk_layout_row_dynamic(context, 36.0f, 1);
+    nk_label_wrap(context,
+        wz_host_rom_settings_status_text(wz_host_session.rom_settings.status));
+    if (profile->expected_rom_identity != 0u) {
+        license_approved = wz_host_session.rom_license_approved
+            ? nk_true : nk_false;
+        nk_layout_row_dynamic(context, 34.0f, 1);
+        if (nk_checkbox_label(context,
+                "I have rights to use the selected external ROM",
+                &license_approved)) {
+            wz_host_session.rom_license_approved =
+                license_approved != nk_false;
+            wz_host_session.rom_settings_message[0] = '\0';
+            if (wz_host_session.rom_license_approved &&
+                wz_host_session.rom_settings.status ==
+                    WZ_ROM_SETTINGS_LICENSE_REQUIRED) {
+                if (wz_host_session.machine.has_48k_rom != 0u &&
+                    wz_host_session.machine.rom_identity ==
+                        profile->expected_rom_identity) {
+                    (void)wz_rom_settings_select(
+                        &wz_host_session.rom_settings, profile,
+                        wz_host_session.machine.memory, WZ_48K_ROM_SIZE,
+                        true);
+                } else {
+                    wz_rom_settings_init(&wz_host_session.rom_settings);
+                }
+            }
+        }
+        nk_layout_row_dynamic(context, 30.0f, 1);
+        if (nk_button_label(context, "Choose and verify ROM...")) {
+            wz_command_result_t command_result;
+            const wz_command_arguments_t arguments = {NULL, 0u};
+            (void)wz_command_registry_dispatch(
+                &wz_host_session.command_registry, "settings.rom.choose",
+                arguments, &command_result);
+        }
+    }
+    if (wz_host_session.rom_settings_message[0] != '\0') {
+        nk_layout_row_dynamic(context, 30.0f, 1);
+        nk_label_wrap(context, wz_host_session.rom_settings_message);
+    }
+    nk_layout_row_dynamic(context, 28.0f, 1);
+    if (nk_button_label(context, "Close")) {
+        wz_host_session.rom_settings_visible = false;
+    }
+    nk_end(context);
+}
+
 static void wz_host_render_native_ui(struct nk_context* context,
                                      float width, float height)
 {
@@ -5768,6 +6078,7 @@ static void wz_host_render_native_ui(struct nk_context* context,
     wz_host_ui_draw_display_settings(context, width, height);
     wz_host_ui_draw_audio_settings(context, width, height);
     wz_host_ui_draw_input_settings(context, width, height);
+    wz_host_ui_draw_rom_settings(context, width, height);
     wz_host_ui_draw_remote_settings(context, width, height);
     wz_host_ui_draw_status(context, width, height);
 }
@@ -5932,6 +6243,7 @@ static void wz_host_session_init(void)
     const wz_machine_profile_t* profile;
     stm_setup();
     wz_host_display_settings_init(&wz_host_session.display_settings);
+    wz_rom_settings_init(&wz_host_session.rom_settings);
     wz_snapshot_save_workflow_init(&wz_host_session.snapshot_save_workflow);
     wz_snapshot_inspector_init(&wz_host_session.snapshot_inspector);
     wz_printer_manager_init(&wz_host_session.printer_manager);
@@ -6021,8 +6333,9 @@ static void wz_host_session_init(void)
         {
             const char* rom_path = getenv("WZSN_ROM_PATH");
             const char* tape_path = getenv("WZSN_TAPE_PATH");
-            if (rom_path != NULL && !wz_host_load_external_rom(&wz_host_session, rom_path)) {
-                (void)fprintf(stderr, "WZSN_ROM_PATH could not be loaded: %s\n", rom_path);
+            if (rom_path != NULL && !wz_host_load_external_rom(
+                    &wz_host_session, rom_path, true)) {
+                (void)fprintf(stderr, "WZSN_ROM_PATH could not be loaded.\n");
             }
             if (tape_path != NULL && !wz_host_load_external_tape(&wz_host_session, tape_path)) {
                 (void)fprintf(stderr, "WZSN_TAPE_PATH could not be loaded: %s\n", tape_path);
@@ -6239,6 +6552,18 @@ static void wz_host_input_focus_from_mouse(const sapp_event* event)
         }
     }
     if (wz_host_session.input_settings_visible) {
+        panel_width = width >= 440.0f ? 420.0f : width - 16.0f;
+        panel_height = height >= 392.0f ? 360.0f : height - 32.0f;
+        panel_x = (width - panel_width) * 0.5f;
+        panel_y = (height - panel_height) * 0.5f;
+        if (event->mouse_x >= panel_x &&
+            event->mouse_x <= panel_x + panel_width &&
+            event->mouse_y >= panel_y &&
+            event->mouse_y <= panel_y + panel_height) {
+            ui_target = true;
+        }
+    }
+    if (wz_host_session.rom_settings_visible) {
         panel_width = width >= 440.0f ? 420.0f : width - 16.0f;
         panel_height = height >= 392.0f ? 360.0f : height - 32.0f;
         panel_x = (width - panel_width) * 0.5f;

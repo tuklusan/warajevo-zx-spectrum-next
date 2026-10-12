@@ -1,0 +1,51 @@
+{
+  "testId": "rom-settings-contract",
+  "command": "cmake -S ci/test/rom-settings -B dist/rom-settings -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/rom-settings --config Release --target rom_settings_contract --parallel 2 && ctest --test-dir dist/rom-settings -C Release -R '^rom_settings_contract$' --output-on-failure",
+  "workflow": ".github/workflows/rom-settings-contract.yml",
+  "fixtures": [
+    {
+      "path": ".github/workflows/rom-settings-contract.yml",
+      "sha256": "5fdb6838f68c44ed5fe7f9366967f0b84bbc6b14c7f8265a43e28b1c28140965"
+    },
+    {
+      "path": "ci/test/rom-settings/CMakeLists.txt",
+      "sha256": "5d285152b8b99806f300ce414e40fc13f2098696988a465522ffe153b869685d"
+    },
+    {
+      "path": "ci/test/rom-settings/contract.c",
+      "sha256": "3f08afe509444d5083e6c5ce40c945ad83bc7e232f0d0dc01d00525acb03f525"
+    },
+    {
+      "path": "src/app/wz_rom_settings.c",
+      "sha256": "994b1adc805838998b182a193506462a9165359b0e86315b342ceb32d95752f3"
+    },
+    {
+      "path": "src/app/wz_rom_settings.h",
+      "sha256": "afc2eda7652beae2efaad91be4ed1c08b519cc3d3831a61f8e88b8469147b777"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "16593138352b356ba0c4f509ee65b3066d1f3fb7a978fee031e9ea5dac4af88b"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "3ebe1ed963559316c4287da77063e03371cf581e49045f1e485ce405d239d902"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "1dc71a255b61187261ef1b97a3694f780c8c2cb9be08d98e942e98768bec2b29"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
+    },
+    {
+      "path": "src/core/wz_machine_profile.c",
+      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09"
+    },
+    {
+      "path": "src/core/wz_machine_profile.h",
+      "sha256": "099be5f41f428466e5da622452abec6e0daf6402abcf4ab2e7d8c2df47457cc4"
+    }
+  ]
+}

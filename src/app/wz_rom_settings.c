@@ -16,6 +16,7 @@ void wz_rom_settings_init(wz_rom_settings_t* settings)
         return;
     }
     settings->machine_kind = WZ_MACHINE_48K_PAL;
+    settings->expected_identity = 0u;
     settings->identity = 0u;
     settings->status = WZ_ROM_SETTINGS_NONE;
 }
@@ -31,23 +32,49 @@ wz_result_t wz_rom_settings_select(wz_rom_settings_t* settings,
     if (settings == 0 || profile == 0) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
+    settings->machine_kind = profile->kind;
+    settings->expected_identity = profile->expected_rom_identity;
+    settings->identity = 0u;
     if (profile->expected_rom_identity == 0u) {
         settings->status = WZ_ROM_SETTINGS_UNAVAILABLE;
         return WZ_RESULT_INVALID_PROFILE;
-    }
-    identity = wz_machine_rom_identity(bytes, length);
-    if (identity == 0u || identity != profile->expected_rom_identity) {
-        settings->status = WZ_ROM_SETTINGS_IDENTITY_MISMATCH;
-        return WZ_RESULT_ROM_IDENTITY_MISMATCH;
     }
     if (!license_approved) {
         settings->status = WZ_ROM_SETTINGS_LICENSE_REQUIRED;
         return WZ_RESULT_INVALID_STATE;
     }
-    settings->machine_kind = profile->kind;
+    identity = wz_machine_rom_identity(bytes, length);
     settings->identity = identity;
+    if (identity == 0u || identity != profile->expected_rom_identity) {
+        settings->status = WZ_ROM_SETTINGS_IDENTITY_MISMATCH;
+        return WZ_RESULT_ROM_IDENTITY_MISMATCH;
+    }
     settings->status = WZ_ROM_SETTINGS_READY;
     return WZ_RESULT_OK;
+}
+
+wz_result_t wz_rom_settings_load(wz_rom_settings_t* settings,
+                                 wz_machine_t* machine,
+                                 const wz_byte_t* bytes,
+                                 size_t length,
+                                 bool license_approved)
+{
+    wz_result_t result;
+
+    if (settings == 0 || machine == 0 || machine->profile == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    result = wz_rom_settings_select(settings, machine->profile, bytes, length,
+                                    license_approved);
+    if (result != WZ_RESULT_OK) {
+        return result;
+    }
+    result = wz_machine_load_48k_rom(machine, bytes, length);
+    if (result != WZ_RESULT_OK) {
+        settings->status = WZ_ROM_SETTINGS_LOAD_FAILED;
+        return result;
+    }
+    return result;
 }
 
 wz_machine_kind_t wz_rom_settings_machine_kind(

@@ -25,7 +25,7 @@
     },
     {
       "path": "src/app/wz_host_output.c",
-      "sha256": "504322b9d5c80d2c865f6e8362557af61bce90240df83ccd25ca7065441191e6"
+      "sha256": "8949c5b287f63d61d0108781968967fc7f723732f6966ec66bbc47b5d702b7a1"
     },
     {
       "path": "src/app/wz_host_output.h",
@@ -33,11 +33,11 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "0b06d5f3d6e248fd566be6ec45084ddaaeb03243f300490837b9d6082e29e0a2"
+      "sha256": "16593138352b356ba0c4f509ee65b3066d1f3fb7a978fee031e9ea5dac4af88b"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "1e19f3dd6f81a77e10214510fb18a2b57fb914dbbe067649375924b146373a64"
+      "sha256": "3ebe1ed963559316c4287da77063e03371cf581e49045f1e485ce405d239d902"
     }
   ]
 }

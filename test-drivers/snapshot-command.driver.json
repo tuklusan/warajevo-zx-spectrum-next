@@ -52,11 +52,11 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "0b06d5f3d6e248fd566be6ec45084ddaaeb03243f300490837b9d6082e29e0a2"
+      "sha256": "16593138352b356ba0c4f509ee65b3066d1f3fb7a978fee031e9ea5dac4af88b"
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "d57cd0aaab0ae29e6e056593b9ca574d958523b89ee810335aec88b714338b61"
+      "sha256": "c5904fc7576d2d582704c0c5578a281921a5b73c42c775d2b109a70accaa3126"
     },
     {
       "path": "src/core/wz_state.h",
