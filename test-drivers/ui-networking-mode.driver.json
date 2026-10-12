@@ -32,7 +32,7 @@
     },
     {
       "path": "src/app/wz_host_audio_policy.c",
-      "sha256": "7248245e6f4ff506a436ab09a1121e0fefe68cb729be28267d25e4f54ca0cc68"
+      "sha256": "24ed4f2318ba10bb2cb9ec48b5ae9bf854ecdef71687f2bd6908bb9bb9b17bce"
     },
     {
       "path": "src/app/wz_host_thread.c",
@@ -52,11 +52,11 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "ec222a2c51adb0914aae8a929d1f080c3d66354baec2068614a724216c84110b"
+      "sha256": "c289df3896df2768e0b441e659be9df85eef0ebaab85a4a96feff0ca9d108d77"
     },
     {
       "path": "src/app/wz_ui_layout.h",
-      "sha256": "33260080b489f02274ad91fb7b6e739839293dafe107798b1e3a5b684940b4d8"
+      "sha256": "82b311ec0944bafa0c7256f2becef7f56d69d51843ece9e7d62c68f36b75151e"
     },
     {
       "path": "src/core/wz_machine.c",
