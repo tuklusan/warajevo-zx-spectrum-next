@@ -92,7 +92,7 @@ int main(void)
     REQUIRE(preferences.crop_to_display);
     REQUIRE(!preferences.audio_enabled);
     REQUIRE(!preferences.status_panel_visible);
-    settings_file = fopen(settings_path, "wb");
+    settings_file = fopen(settings_path, "w");
     REQUIRE(settings_file != NULL);
     REQUIRE(fputs("version=1\nwindow_width=-1\n", settings_file) >= 0);
     REQUIRE(fclose(settings_file) == 0);

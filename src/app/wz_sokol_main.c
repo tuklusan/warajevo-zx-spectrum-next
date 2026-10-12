@@ -275,6 +275,7 @@ static wz_host_session_t wz_host_session;
 static wz_host_preferences_t wz_host_preferences;
 static char wz_host_preferences_file[1024];
 static bool wz_host_preferences_path_ready;
+static bool wz_host_preferences_save_allowed;
 static void wz_host_release_local_keys(void);
 static bool wz_host_extension_is(const char* path, const char* expected);
 static bool wz_host_microdrive_path_read_only(size_t slot);
@@ -6737,10 +6738,13 @@ static void wz_host_init(void)
 
 static void wz_host_preferences_save_current(void)
 {
-    if (!wz_host_preferences_path_ready || !wz_host_session.initialized) return;
-    wz_host_preferences.window_width = sapp_width();
-    wz_host_preferences.window_height = sapp_height();
+    if (!wz_host_preferences_path_ready || !wz_host_preferences_save_allowed ||
+        !wz_host_session.initialized) return;
     wz_host_preferences.fullscreen = sapp_is_fullscreen();
+    if (!wz_host_preferences.fullscreen) {
+        wz_host_preferences.window_width = sapp_width();
+        wz_host_preferences.window_height = sapp_height();
+    }
     wz_host_preferences.display_scale = (unsigned)
         wz_host_display_settings_scale(&wz_host_session.display_settings);
     wz_host_preferences.crop_to_display = wz_host_display_settings_crop(
@@ -7180,14 +7184,16 @@ int main(void)
     wz_host_preferences_init(&wz_host_preferences);
     wz_host_preferences_path_ready = wz_host_preferences_path(
         wz_host_preferences_file, sizeof(wz_host_preferences_file));
+    wz_host_preferences_save_allowed = wz_host_preferences_path_ready;
     if (!wz_host_preferences_path_ready) {
         (void)fprintf(stderr,
             "Host preferences directory is unavailable; settings will not persist.\n");
     } else if (!wz_host_preferences_load(wz_host_preferences_file,
                                          &wz_host_preferences)) {
         (void)fprintf(stderr,
-            "Host preferences are invalid; using built-in defaults.\n");
+            "Host preferences are invalid; using defaults without replacing the file.\n");
         wz_host_preferences_init(&wz_host_preferences);
+        wz_host_preferences_save_allowed = false;
     }
     sapp_run(&(sapp_desc){
         .init_cb = wz_host_init,

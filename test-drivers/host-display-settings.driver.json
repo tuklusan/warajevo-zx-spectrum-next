@@ -13,7 +13,7 @@
     },
     {
       "path": "ci/test/host-display-settings/contract.c",
-      "sha256": "c135dfacbdf55d0fae949b0e8d08671f759b6918e4e74f4a4172f4c516c02412"
+      "sha256": "b273a37fe802154cabed967db2ad62758a0d1d3fca8ee259a113918a4c1fe257"
     },
     {
       "path": "src/app/wz_host_config.c",
@@ -41,7 +41,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "344d6498a543070a049d47d6c63e2451555b7035703479cbba3a5cafbfc964e6"
+      "sha256": "b171289db934e9bc02d943b3e77a06f0af43a32fae3a073f025c707dac6d56b3"
     },
     {
       "path": "src/core/wz_raster.h",
