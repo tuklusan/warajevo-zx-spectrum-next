@@ -1,10 +1,10 @@
 {
   "testId": "model-switch",
   "status": "pass",
-  "commit": "69d903967bc30ecc5d44a8075f0a91ec9dbef585",
+  "commit": "68b222176734b0951d0fa7e7915c2389eedc31bd",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-10-12T22:25:48+00:00",
-  "runId": 38315897682,
+  "timestamp": "2026-10-12T22:47:57+00:00",
+  "runId": 38318124963,
   "runners": [
     {
       "id": "windows-x64",

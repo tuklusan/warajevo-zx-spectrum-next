@@ -1,10 +1,10 @@
 {
   "testId": "snapshot-command",
   "status": "pass",
-  "commit": "046b89d82afa14946954d5c83072c6489306b74f",
-  "runId": 36617973322,
+  "commit": "68b222176734b0951d0fa7e7915c2389eedc31bd",
+  "runId": 38318093543,
   "runner": "Linux/X64",
-  "timestamp": "2026-09-29T19:16:59+00:00",
+  "timestamp": "2026-10-12T22:41:43+00:00",
   "caseCount": 4,
   "fixtures": [
     {
@@ -41,7 +41,7 @@
     },
     {
       "path": "src/app/wz_file_open_run.c",
-      "sha256": "67883bb4e03fbb1563d983766763ee34d2b8e14863f9e099d1093a143dc2e38d"
+      "sha256": "9343f4f16880011075e96b0e903f5ea808d559ec160cf26bb0a140a41c41cb5e"
     },
     {
       "path": "src/app/wz_snapshot_save_workflow.c",
@@ -53,19 +53,19 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "3e67cb171009e06fda0f5e7a4c9df2c9f7c31d2ecbf5e16ea389e778aa580a27"
+      "sha256": "b171289db934e9bc02d943b3e77a06f0af43a32fae3a073f025c707dac6d56b3"
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "32aa7ddaebe10ffc0a4d933162103c59d40280cd4392593d4136f41fba9338a7"
+      "sha256": "d57cd0aaab0ae29e6e056593b9ca574d958523b89ee810335aec88b714338b61"
     },
     {
       "path": "src/core/wz_state.h",
-      "sha256": "311dc111529c01924b0f4ed3bb1e4e1bb782461ab21b7c446473dd73b4a664c1"
+      "sha256": "d1981cbe18c53870804ff78ffe5dc9e27b02a8fe08b60a0fdb478d8f2130ea94"
     },
     {
       "path": "test-drivers/snapshot-command.driver.json",
-      "sha256": "58b726017fcabbdc75c7b1a8cddd11dde4604d160d03827038d00f5b78cd0fcd"
+      "sha256": "21552848574f9f56bb92149e08ce9c814e7d4833d955c97025e33c494920d82a"
     }
   ]
 }

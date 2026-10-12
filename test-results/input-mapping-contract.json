@@ -1,10 +1,10 @@
 {
   "testId": "input-mapping-contract",
   "status": "pass",
-  "commit": "92cfa343edc762d180084152f2681b478615da29",
+  "commit": "68b222176734b0951d0fa7e7915c2389eedc31bd",
   "runner": "Linux/x86_64",
-  "timestamp": "2026-10-12T15:44:33.497776+00:00",
-  "runId": 38272430021,
+  "timestamp": "2026-10-12T22:42:06.179239+00:00",
+  "runId": 38318127652,
   "fixtures": [
     {
       "path": ".github/workflows/input-mapping-contract.yml",
@@ -44,11 +44,11 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "1e19f3dd6f81a77e10214510fb18a2b57fb914dbbe067649375924b146373a64"
+      "sha256": "af1a055ba24a42e870645a1b7389cffcf449028e8dd2f3344881282db94f51f4"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "0b06d5f3d6e248fd566be6ec45084ddaaeb03243f300490837b9d6082e29e0a2"
+      "sha256": "b171289db934e9bc02d943b3e77a06f0af43a32fae3a073f025c707dac6d56b3"
     }
   ]
 }

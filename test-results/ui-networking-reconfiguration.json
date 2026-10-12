@@ -1,10 +1,10 @@
 {
   "testId": "ui-networking-reconfiguration",
   "status": "pass",
-  "commit": "84244d7c22a54d62a9ad58471cd406f4300163d5",
-  "runId": 36606295113,
+  "commit": "68b222176734b0951d0fa7e7915c2389eedc31bd",
+  "runId": 38318140506,
   "runner": "Linux/X64",
-  "timestamp": "2026-09-29T17:42:28+00:00",
+  "timestamp": "2026-10-12T22:42:26+00:00",
   "caseCount": 41,
   "fixtures": [
     {
@@ -25,7 +25,7 @@
     },
     {
       "path": "test-drivers/ui-networking-reconfiguration.driver.json",
-      "sha256": "0844c76822922e384fbabf25a02abd3edec7fcd4f92e9f0678c2fcbce10e5ba4"
+      "sha256": "e6f0b25fc281f649ea794fb52520455d5a6618f8b4b1977670f1c1aa98edc712"
     },
     {
       "path": "src/app/wz_command_registry.c",
@@ -37,7 +37,7 @@
     },
     {
       "path": "src/app/wz_networking_commands.c",
-      "sha256": "72168c59016deaab5c110a8040902b5ba5b0f7d89c2c39bb432b6cba7f558638"
+      "sha256": "e8ae3db57a941288103f501744bd0eb054c072b41ec960dde31e16085c65b0a5"
     },
     {
       "path": "src/app/wz_networking_commands.h",
@@ -45,19 +45,19 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "7d78188b959e29cd031382c7f9a788f7fe837d9d24d3ebe446137cc8c4d28b38"
+      "sha256": "c289df3896df2768e0b441e659be9df85eef0ebaab85a4a96feff0ca9d108d77"
     },
     {
       "path": "src/app/wz_ui_layout.h",
-      "sha256": "cfe6cf9135dd1ef6771a1513e9dc3f72cd42636f4f005e576017aa745915d2d9"
+      "sha256": "82b311ec0944bafa0c7256f2becef7f56d69d51843ece9e7d62c68f36b75151e"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "ff2f9f8f2e9c3237accb07b0c300e0e6a2af060ca6d6628b635c5745874cbb21"
+      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "84d9e0b84a02993917b0e74cb9ba0d71158f45223a707d801ce927029ab2b0aa"
+      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
     },
     {
       "path": "src/core/wz_kempston.h",
@@ -65,7 +65,7 @@
     },
     {
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
-      "sha256": "af10f6f1947d37281711abbf3f905a168a914ef88da5ac62cc78e47638b8bbf8"
+      "sha256": "dc47afb96f2c0566788d59ef74a691c33a8943e1c4e199c96c74d07739e68b31"
     }
   ]
 }

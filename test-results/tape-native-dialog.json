@@ -1,10 +1,10 @@
 {
   "testId": "tape-native-dialog",
   "status": "pass",
-  "commit": "ec1cb863ce298ae9514ed8a992c6e3a8df15b885",
+  "commit": "68b222176734b0951d0fa7e7915c2389eedc31bd",
   "runner": "Linux/x86_64",
-  "timestamp": "2026-09-29T07:44:57.933394+00:00",
-  "runId": 36538414553,
+  "timestamp": "2026-10-12T22:42:22.914378+00:00",
+  "runId": 38318104870,
   "fixtures": [
     {
       "path": ".github/workflows/tape-native-dialog.yml",
@@ -24,19 +24,19 @@
     },
     {
       "path": "src/app/wz_file_dialog.h",
-      "sha256": "3b86ef82087dd5c345b14d6d6549c3466ff5e99991829e7edb291d6333bf19a3"
+      "sha256": "6686668d4a0e92030066f7e177824169e09aeb137de4beaf2eb43958f982f41b"
     },
     {
       "path": "src/app/wz_file_dialog_linux.c",
-      "sha256": "14033d8ddf81e77df1bb5dcd7fe3bec1b07827489c8619516a01d685876f3144"
+      "sha256": "d4c8d61d56da6efa47636f12fff0a68474b5e682490e9704c39d725146f86408"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "224d130dcd6214b12cda239a157de528a26a7e3c0b4e5bc31348d963d2e92205"
+      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "84d9e0b84a02993917b0e74cb9ba0d71158f45223a707d801ce927029ab2b0aa"
+      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
     },
     {
       "path": "src/core/wz_machine_profile.c",
@@ -48,7 +48,7 @@
     },
     {
       "path": "src/core/wz_tape.c",
-      "sha256": "5792fabbfc3c6956444c3532097cb0febb1d3497e988fd2a62c9e677ea8aeac3"
+      "sha256": "20c4523214f828d5129cbde2fb2c0d077ed15dae0daa923d019d1934b0c33d0b"
     },
     {
       "path": "src/core/wz_tape.h",

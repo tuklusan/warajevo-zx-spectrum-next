@@ -1,10 +1,10 @@
 {
   "testId": "microdrive-sectors-contract",
   "status": "pass",
-  "commit": "e6924bcd79c6c444fbea9bee0de7ffa5a856c501",
+  "commit": "68b222176734b0951d0fa7e7915c2389eedc31bd",
   "runner": "Linux/x86_64",
-  "timestamp": "2026-10-02T05:56:55.155827+00:00",
-  "runId": 36971203398,
+  "timestamp": "2026-10-12T22:42:15.574118+00:00",
+  "runId": 38318119421,
   "fixtures": [
     {
       "path": ".github/workflows/microdrive-sectors-contract.yml",
@@ -28,11 +28,11 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "cd6bf80679d0111ecafd0c364d90a571cd3ff2471b2de11bb591e82c41f040ce"
+      "sha256": "b171289db934e9bc02d943b3e77a06f0af43a32fae3a073f025c707dac6d56b3"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "a312be8c83bd96c0b18d0fabc28557f4d5d784cb12e527e28f0ffddffb0ebca9"
+      "sha256": "af1a055ba24a42e870645a1b7389cffcf449028e8dd2f3344881282db94f51f4"
     }
   ]
 }

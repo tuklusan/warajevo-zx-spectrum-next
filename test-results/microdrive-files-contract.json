@@ -1,10 +1,10 @@
 {
   "testId": "microdrive-files-contract",
   "status": "pass",
-  "commit": "fad0e927c3a93d7a398646cf82fee64f99b215ad",
+  "commit": "68b222176734b0951d0fa7e7915c2389eedc31bd",
   "runner": "Linux/x86_64",
-  "timestamp": "2026-10-02T05:37:48.531013+00:00",
-  "runId": 36969710658,
+  "timestamp": "2026-10-12T22:42:07.430455+00:00",
+  "runId": 38318116648,
   "fixtures": [
     {
       "path": ".github/workflows/microdrive-files-contract.yml",
@@ -20,19 +20,19 @@
     },
     {
       "path": "src/app/wz_microdrive_manager.c",
-      "sha256": "37e39acb8ba2418a27b496506a863421b3354300e282750e835ab5f11b42fc7f"
+      "sha256": "4caf4844a3369191c4b0679e33ebca107b024990d64c44c813fdb57133828b31"
     },
     {
       "path": "src/app/wz_microdrive_manager.h",
-      "sha256": "4ab4cf70ec489f27ed972ab003d9f7572a6657b68f7772fa9b972786903c0745"
+      "sha256": "794b88473fbf2ca239cbeafdaa46ea2d583394d389d51a30420471c596f18c67"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "fa01735c26988aeca7a468376c8f09ce2e86f2b22c524e88da3f4d0cef264e57"
+      "sha256": "b171289db934e9bc02d943b3e77a06f0af43a32fae3a073f025c707dac6d56b3"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "a312be8c83bd96c0b18d0fabc28557f4d5d784cb12e527e28f0ffddffb0ebca9"
+      "sha256": "af1a055ba24a42e870645a1b7389cffcf449028e8dd2f3344881282db94f51f4"
     }
   ]
 }

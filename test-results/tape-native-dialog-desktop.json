@@ -1,34 +1,34 @@
 {
   "testId": "tape-native-dialog-desktop",
   "status": "pass",
-  "commit": "57457f667f4488013698f1d50116c379c293c47d",
+  "commit": "68b222176734b0951d0fa7e7915c2389eedc31bd",
   "runner": "Windows x64, macOS Intel, and macOS ARM64 hosted matrix",
-  "timestamp": "2026-09-29T08:46:40.154851+00:00",
-  "runId": 36544788870,
+  "timestamp": "2026-10-12T22:42:41.338962+00:00",
+  "runId": 38318108356,
   "runners": [
     {
       "id": "macos-arm64",
       "os": "macOS",
       "architecture": "ARM64",
       "runnerName": "macos-15",
-      "timestamp": "2026-09-29T08:46:30.175717+00:00",
-      "runId": 36544788870
+      "timestamp": "2026-10-12T22:42:12.562466+00:00",
+      "runId": 38318108356
     },
     {
       "id": "macos-intel",
       "os": "macOS",
       "architecture": "X64",
       "runnerName": "macos-15-intel",
-      "timestamp": "2026-09-29T08:46:19.740101+00:00",
-      "runId": 36544788870
+      "timestamp": "2026-10-12T22:42:21.118790+00:00",
+      "runId": 38318108356
     },
     {
       "id": "windows-x64",
       "os": "Windows",
       "architecture": "X64",
       "runnerName": "windows-2025",
-      "timestamp": "2026-09-29T08:46:40.154851+00:00",
-      "runId": 36544788870
+      "timestamp": "2026-10-12T22:42:41.338962+00:00",
+      "runId": 38318108356
     }
   ],
   "fixtures": [
@@ -58,23 +58,23 @@
     },
     {
       "path": "src/app/wz_file_dialog.h",
-      "sha256": "3b86ef82087dd5c345b14d6d6549c3466ff5e99991829e7edb291d6333bf19a3"
+      "sha256": "6686668d4a0e92030066f7e177824169e09aeb137de4beaf2eb43958f982f41b"
     },
     {
       "path": "src/app/wz_file_dialog_macos.m",
-      "sha256": "09edd90a01527ecf8bd5f39224a31fbc12669279f7e560547150ea00c9270b79"
+      "sha256": "03046b36b1bff1a6fd5ae4e700bf042c0db66672614db6ebde86ef2c9c854ca3"
     },
     {
       "path": "src/app/wz_file_dialog_win32.c",
-      "sha256": "efe7f4708b5db6a5c5d708755139d4bfaa3eafdebfdf43e37dca7aa810601280"
+      "sha256": "bcf5a298feaad7e6c11cd378c8c18bd47eacd8e2ded89f7b664712f47d8017c1"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "224d130dcd6214b12cda239a157de528a26a7e3c0b4e5bc31348d963d2e92205"
+      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "84d9e0b84a02993917b0e74cb9ba0d71158f45223a707d801ce927029ab2b0aa"
+      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
     },
     {
       "path": "src/core/wz_machine_profile.c",
@@ -86,7 +86,7 @@
     },
     {
       "path": "src/core/wz_tape.c",
-      "sha256": "5792fabbfc3c6956444c3532097cb0febb1d3497e988fd2a62c9e677ea8aeac3"
+      "sha256": "20c4523214f828d5129cbde2fb2c0d077ed15dae0daa923d019d1934b0c33d0b"
     },
     {
       "path": "src/core/wz_tape.h",
