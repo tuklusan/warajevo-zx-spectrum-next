@@ -13,11 +13,11 @@
     },
     {
       "path": "ci/test/input-mapping/contract.c",
-      "sha256": "5efb9c4f4b515488f53ebc15d2861384ae31de8d9424145216ccd0812a2598ed"
+      "sha256": "92c700ae1cc5985c28d63c1565cfdc66c3f9f3d6fb63a0f60df4491fcab2de5b"
     },
     {
       "path": "src/app/wz_keyboard_mapping.c",
-      "sha256": "f8137fe99b0b22aff830782f0c4d3d5eb7e6511f55626f37cd68cc11cf32d5d0"
+      "sha256": "e19e2c5d6a3a3c8252c0028c1eb500ba2e9c9e26f891c6dc3dfb96ee718067cd"
     },
     {
       "path": "src/app/wz_keyboard_mapping.h",
@@ -45,7 +45,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "adcc1c8f16d783e7ffcabcbc4ff0307d422ec47052e9301475dcfa139a859e13"
+      "sha256": "0b06d5f3d6e248fd566be6ec45084ddaaeb03243f300490837b9d6082e29e0a2"
     }
   ]
 }

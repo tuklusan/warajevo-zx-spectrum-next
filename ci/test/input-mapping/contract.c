@@ -48,6 +48,11 @@ int main(void)
     REQUIRE(!wz_keyboard_mapping_bind(&keyboard,
         WZ_KEYBOARD_MAPPING_HOST_KEY_LIMIT, WZ_KEY_A));
     REQUIRE(!wz_keyboard_mapping_bind(&keyboard, 0u, WZ_KEY_A));
+    keyboard.bindings[0].host_key = 67u;
+    keyboard.bindings[0].spectrum_key =
+        (wz_keyboard_key_t)WZ_KEYBOARD_MATRIX_KEY_COUNT;
+    keyboard.bindings[0].bound = true;
+    REQUIRE(!wz_keyboard_mapping_resolve(&keyboard, 67u, &spectrum_key));
 
     wz_kempston_init(&joystick);
     wz_kempston_mapping_init(&joystick_mapping, defaults);

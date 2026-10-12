@@ -6153,6 +6153,9 @@ static bool wz_host_set_local_key(sapp_keycode key_code, bool pressed)
     host_key = (unsigned)key_code;
     keyboard_mapped = wz_host_keycode_to_spectrum_key(key_code,
                                                        &physical_key);
+    if (keyboard_mapped && physical_key >= WZ_KEYBOARD_MATRIX_KEY_COUNT) {
+        keyboard_mapped = false;
+    }
     if (wz_host_session.local_host_key_down[host_key] ==
         (unsigned char)(pressed ? 1u : 0u)) {
         return keyboard_mapped ||

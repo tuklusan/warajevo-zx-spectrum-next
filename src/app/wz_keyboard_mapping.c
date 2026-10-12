@@ -14,10 +14,7 @@ void wz_keyboard_mapping_init(wz_keyboard_mapping_t* mapping)
     if (mapping == NULL) {
         return;
     }
-    for (size_t index = 0u; index < WZ_KEYBOARD_MAPPING_BINDING_COUNT; ++index) {
-        mapping->bindings[index] = (wz_keyboard_binding_t){0u, WZ_KEY_SHIFT,
-                                                           false};
-    }
+    *mapping = (wz_keyboard_mapping_t){0};
 }
 
 bool wz_keyboard_mapping_bind(wz_keyboard_mapping_t* mapping,
@@ -78,6 +75,10 @@ bool wz_keyboard_mapping_resolve(const wz_keyboard_mapping_t* mapping,
     for (size_t index = 0u; index < WZ_KEYBOARD_MAPPING_BINDING_COUNT; ++index) {
         if (mapping->bindings[index].bound &&
             mapping->bindings[index].host_key == host_key) {
+            if ((size_t)mapping->bindings[index].spectrum_key >=
+                WZ_KEYBOARD_MATRIX_KEY_COUNT) {
+                return false;
+            }
             *spectrum_key = mapping->bindings[index].spectrum_key;
             return true;
         }
