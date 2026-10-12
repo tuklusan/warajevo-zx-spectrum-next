@@ -1,10 +1,10 @@
 {
   "testId": "host-audio-settings",
   "status": "pass",
-  "commit": "26c7a04ed79783b8c4723e4e72c6d70ce9b2dd16",
+  "commit": "2c580195900be03a5d1c77406d1db9ba5fcd07f2",
   "runner": "Linux/x86_64",
-  "timestamp": "2026-10-12T15:19:04.396207+00:00",
-  "runId": 38268269139,
+  "timestamp": "2026-10-12T15:49:08.198146+00:00",
+  "runId": 38272804357,
   "fixtures": [
     {
       "path": ".github/workflows/host-audio-settings-contract.yml",
@@ -52,7 +52,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "9a24f2546c7f3d7100b50344b19545712b2c5273283b29abccfd38d98146ceba"
+      "sha256": "0b06d5f3d6e248fd566be6ec45084ddaaeb03243f300490837b9d6082e29e0a2"
     }
   ]
 }
