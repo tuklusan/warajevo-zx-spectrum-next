@@ -1,0 +1,46 @@
+{
+  "testId": "debugger-window-contract",
+  "command": "cmake -S ci/test/debugger-window-contract -B dist/debugger-window-contract -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/debugger-window-contract --config Release --target wz_debugger_window_contract --parallel 2 && ctest --test-dir dist/debugger-window-contract --output-on-failure --verbose -R '^wz_debugger_window_contract$'",
+  "requiredCases": 1,
+  "runnerMatrix": [
+    "ubuntu-24.04"
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/debugger-window-contract.yml",
+      "sha256": "780173f3af2f0d363788f8edd66a10c50b6b3cc6d7e37c07d37256d429966dec"
+    },
+    {
+      "path": "ci/test/debugger-window-contract/CMakeLists.txt",
+      "sha256": "edb25342a5371d63fac06508b6e507b3e306ffc2dcfcc93e2c45f44e8246213a"
+    },
+    {
+      "path": "ci/test/debugger-window-contract/write-proof.py",
+      "sha256": "9ce899bd99970504f87fdadd2ffa5aad9b734d95abfd17cd631596c982aebc5d"
+    },
+    {
+      "path": "ci/test/debugger-window-contract/debugger-window-contract.c",
+      "sha256": "05230ffe0aa0e291eeabb44ac5cfb35ed0bb7eef08820eb6096522261fc3267b"
+    },
+    {
+      "path": "src/app/wz_debugger_window.c",
+      "sha256": "a2e5c1763a5f8bf07138a72cd2622170991caed0bd1d99f78a54267fa583bdc0"
+    },
+    {
+      "path": "src/app/wz_debugger_window.h",
+      "sha256": "e305cdcf9dc963b0229f51d7714e910bac9e9253b8afe19f6763468089ed9432"
+    },
+    {
+      "path": "src/core/wz_debugger.c",
+      "sha256": "479b238f1aa668002aba6a4959750296cef553c2d4fe4425b0164b7f08e35eaf"
+    },
+    {
+      "path": "src/core/wz_debugger.h",
+      "sha256": "9c14eda410b6b50fdad279fc6076a385da5ff26b160c54fbf957c1e8c31041a1"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "11b9c154fe6b4bd19a22ae31b707575635c20a77485aa9b6b98286220830860c"
+    }
+  ]
+}
