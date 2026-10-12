@@ -1,15 +1,15 @@
 {
   "testId": "ui-networking-mode",
   "status": "pass",
-  "commit": "046b89d82afa14946954d5c83072c6489306b74f",
-  "runId": 36617973615,
+  "commit": "12d924523a2309b337bf963908716004ec3c2192",
+  "runId": 38288783284,
   "runner": "Linux/X64",
-  "timestamp": "2026-09-29T19:22:23+00:00",
+  "timestamp": "2026-10-12T18:10:00+00:00",
   "caseCount": 16,
   "fixtures": [
     {
       "path": ".github/workflows/ui-networking-mode.yml",
-      "sha256": "7df1bcaf351bb945c2ef0f89dcb83e69afb9c4f4c8e6a2f46d0f776d927e57d6"
+      "sha256": "d35bd2e589c74cbf9765911d82e5a2ed9ecedd06af4fca05c50e2182b0cf58a8"
     },
     {
       "path": "ci/test/ui-networking-mode/CMakeLists.txt",
@@ -21,11 +21,11 @@
     },
     {
       "path": "ci/test/ui-networking-mode/write-proof.py",
-      "sha256": "5c85a1d1a672e443fc6652538854236c8c099986a8091a8f26b781c71e60670a"
+      "sha256": "25d9cc414db3a1626211d39c7d1654e264374bd01fe58e7b1772a8b4550bc46b"
     },
     {
       "path": "test-drivers/ui-networking-mode.driver.json",
-      "sha256": "46243324c8e1db277eeffa81bead01beae6e820bd3bfe1ea1dd648329ead84a8"
+      "sha256": "dd69c4c7e3fd28a78387e991b57a79eebf9e44efcb6b77d60922176b65de3279"
     },
     {
       "path": "src/app/wz_command_registry.c",
@@ -37,7 +37,7 @@
     },
     {
       "path": "src/app/wz_host_audio_policy.c",
-      "sha256": "7248245e6f4ff506a436ab09a1121e0fefe68cb729be28267d25e4f54ca0cc68"
+      "sha256": "24ed4f2318ba10bb2cb9ec48b5ae9bf854ecdef71687f2bd6908bb9bb9b17bce"
     },
     {
       "path": "src/app/wz_host_thread.c",
@@ -45,7 +45,7 @@
     },
     {
       "path": "src/app/wz_networking_commands.c",
-      "sha256": "72168c59016deaab5c110a8040902b5ba5b0f7d89c2c39bb432b6cba7f558638"
+      "sha256": "e8ae3db57a941288103f501744bd0eb054c072b41ec960dde31e16085c65b0a5"
     },
     {
       "path": "src/app/wz_networking_commands.h",
@@ -57,23 +57,27 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "7d78188b959e29cd031382c7f9a788f7fe837d9d24d3ebe446137cc8c4d28b38"
+      "sha256": "c289df3896df2768e0b441e659be9df85eef0ebaab85a4a96feff0ca9d108d77"
     },
     {
       "path": "src/app/wz_ui_layout.h",
-      "sha256": "cfe6cf9135dd1ef6771a1513e9dc3f72cd42636f4f005e576017aa745915d2d9"
+      "sha256": "82b311ec0944bafa0c7256f2becef7f56d69d51843ece9e7d62c68f36b75151e"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "77c4f84e0058bdb1c2a1653dfb478771ecbc26ed7ea2a00302ee0c90988957e9"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "ff2f9f8f2e9c3237accb07b0c300e0e6a2af060ca6d6628b635c5745874cbb21"
+      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "84d9e0b84a02993917b0e74cb9ba0d71158f45223a707d801ce927029ab2b0aa"
+      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
     },
     {
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
-      "sha256": "af10f6f1947d37281711abbf3f905a168a914ef88da5ac62cc78e47638b8bbf8"
+      "sha256": "70ecabb37fe68f5460c0596ef62f3564637e5f824e1917a9c9a56693aeda1038"
     }
   ]
 }
