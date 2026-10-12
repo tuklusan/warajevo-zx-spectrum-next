@@ -31,7 +31,7 @@ Task 451 audit is complete; UI acceptance is not. Current status: 13 PASS, 29 PA
 | 18 | legacy conversion features are grouped under Compatibility Tools; | OPEN | No criterion-specific proof is recorded. |
 | 19 | historical DOS shell/directory/heap/child-EXE UI is absent; | OPEN | No criterion-specific proof is recorded. |
 | 20 | the historical database application is not reproduced as an initial top-level subsystem; | OPEN | No criterion-specific proof is recorded. |
-| 21 | Dock UI is absent until Timex/DCK support is actually implemented; | OPEN | No criterion-specific proof is recorded. |
+| 21 | Dock UI is absent until Timex/DCK support is actually implemented; | PASS | The command-registry contract asserts the exact seven canonical top-level roots (with no Dock root); the Compatibility Tools contract also rejects any Dock conversion entry before Timex/DCK support. Hosted proof: [wz-compatibility-tools.json](../../test-results/wz-compatibility-tools.json). |
 | 22 | the toolbar contains the canonical quick controls in Section 24; | OPEN | No criterion-specific proof is recorded. |
 | 23 | the emulation-speed selector exposes exactly 25, 50, 100, 200, 400, 800, and Unlimited; | OPEN | No criterion-specific proof is recorded. |
 | 24 | speed state is visible and audio-muted-by-speed state is visible; | OPEN | No criterion-specific proof is recorded. |

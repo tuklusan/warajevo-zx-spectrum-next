@@ -39,6 +39,14 @@ static wz_result_t open_tools(const void* context,
 int main(void)
 {
     static const struct {
+        const char* id;
+        const char* label;
+    } menu_roots[] = {
+        {"file", "File"}, {"machine", "Machine"}, {"media", "Media"},
+        {"view", "View"}, {"tools", "Tools"},
+        {"settings", "Settings"}, {"help", "Help"}
+    };
+    static const struct {
         const char* extension;
         wz_open_run_route_t open_run_route;
     } native_formats[] = {
@@ -69,6 +77,24 @@ int main(void)
     wz_command_metadata_t storage[1];
     wz_command_result_t result;
     size_t index;
+
+    if (wz_command_registry_menu_root_count() !=
+        sizeof(menu_roots) / sizeof(menu_roots[0])) {
+        fputs("initial menu roots changed before Dock support\n", stderr);
+        return 10;
+    }
+    for (index = 0u; index < sizeof(menu_roots) / sizeof(menu_roots[0]);
+         ++index) {
+        const wz_command_menu_root_t* root =
+            wz_command_registry_menu_root_at(index);
+        if (root == NULL || root->id == NULL || root->label == NULL ||
+            strcmp(root->id, menu_roots[index].id) != 0 ||
+            strcmp(root->label, menu_roots[index].label) != 0) {
+            fputs("Dock or noncanonical menu root exposed before support\n",
+                  stderr);
+            return 10;
+        }
+    }
 
     wz_compatibility_tools_window_init(&window);
     if (wz_compatibility_tools_window_is_open(&window) ||
