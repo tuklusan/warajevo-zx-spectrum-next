@@ -1,11 +1,11 @@
 {
   "testId": "ui-control-port-state",
   "status": "pass",
-  "commit": "458cfaceb892ec7973208836b450d166b2480122",
-  "runId": 36598938370,
+  "commit": "98628ffe7bba75762688f75cddd14e44a298ac43",
+  "runId": 38312965811,
   "runner": "Linux/X64",
-  "timestamp": "2026-09-29T16:37:45+00:00",
-  "caseCount": 8,
+  "timestamp": "2026-10-12T21:49:07+00:00",
+  "caseCount": 12,
   "fixtures": [
     {
       "path": ".github/workflows/ui-control-port-state.yml",
@@ -17,31 +17,31 @@
     },
     {
       "path": "ci/test/ui-control-port-state/ui-control-port-state-contract.c",
-      "sha256": "3485d8a157884bb33824d10522cfe8f27ff4c4d2f1bf4ab318847fd1717601e6"
+      "sha256": "18c5dc36beb480e3c1b0842085a61093a0ac8f32aea06c00057e95daf4fc5a7b"
     },
     {
       "path": "ci/test/ui-control-port-state/write-proof.py",
-      "sha256": "6c25f1ee695cd2cec6a1a7eba643fb16548bc9ae1f275017c5e1b1f4d869b177"
+      "sha256": "cfe7ebe239b175bbcfd80c30f8aec9a9237592d44c3d4a0d0b8097e1c0dee266"
     },
     {
       "path": "test-drivers/ui-control-port-state.driver.json",
-      "sha256": "bbfe8458c9c8e3e6cf67b7fe0139ddbaec49751ee8140ade6b333e04992aab36"
+      "sha256": "c8df051423f576aa81815e9c5c66b53b53e5c17b0ae7785e9ec6f31c99a81172"
     },
     {
       "path": "src/app/wz_host_config.c",
-      "sha256": "5fdecc8d1f9abe5e9f6a4297c83fc7e0fe0590a2d4022dce15c3e49c5a76edaa"
+      "sha256": "5cd5b1c698a5493f79a8210aaa3caf14b2998b4d7581abf4b718cfda4b8a66d2"
     },
     {
       "path": "src/app/wz_host_config.h",
-      "sha256": "dc7886087ef96ae7f98d7dbfdfff69df2e2c48aa39c3a8f52ef33d0664f44e14"
+      "sha256": "783558070f5b5d2faac7198592a7e7b07bb2f765014dbae4a039d9f2dd4e256b"
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "7d78188b959e29cd031382c7f9a788f7fe837d9d24d3ebe446137cc8c4d28b38"
+      "sha256": "c289df3896df2768e0b441e659be9df85eef0ebaab85a4a96feff0ca9d108d77"
     },
     {
       "path": "src/app/wz_ui_layout.h",
-      "sha256": "cfe6cf9135dd1ef6771a1513e9dc3f72cd42636f4f005e576017aa745915d2d9"
+      "sha256": "82b311ec0944bafa0c7256f2becef7f56d69d51843ece9e7d62c68f36b75151e"
     },
     {
       "path": "src/app/wz_control_port.h",
