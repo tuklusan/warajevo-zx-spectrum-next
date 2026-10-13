@@ -6417,15 +6417,13 @@ static void wz_host_render_raster(void)
         (float)source_y / (float)WZ_RASTER_CANONICAL_HEIGHT;
     const float texture_bottom = (float)(source_y + source_height) /
         (float)WZ_RASTER_CANONICAL_HEIGHT;
+    float dpi_scale = sapp_dpi_scale();
     struct nk_context* ui_context = wz_host_session.ui_toolkit_initialized ?
         snk_new_frame() : NULL;
     wz_host_session.ui_window.layout.fullscreen = sapp_is_fullscreen();
-    {
-        float scale = sapp_dpi_scale();
-        if (scale <= 0.0f) scale = 1.0f;
-        wz_host_render_native_ui(ui_context,
-            (float)sapp_width() / scale, (float)sapp_height() / scale);
-    }
+    if (dpi_scale <= 0.0f) dpi_scale = 1.0f;
+    wz_host_render_native_ui(ui_context,
+        (float)sapp_width() / dpi_scale, (float)sapp_height() / dpi_scale);
     if (!wz_host_session.graphics_initialized ||
         wz_machine_render_raster(&wz_host_session.machine,
                                  &wz_host_session.raster) != WZ_RESULT_OK) {
@@ -6480,7 +6478,8 @@ static void wz_host_render_raster(void)
     sgl_draw();
     sgl_disable_texture();
     if (wz_host_session.ui_toolkit_initialized) {
-        snk_render(sapp_width(), sapp_height());
+        snk_render((int)((float)sapp_width() / dpi_scale),
+                   (int)((float)sapp_height() / dpi_scale));
     }
     sg_end_pass();
     sg_commit();
