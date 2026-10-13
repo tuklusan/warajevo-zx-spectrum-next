@@ -5796,7 +5796,7 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
 }
 
 static void wz_host_ui_draw_status(struct nk_context* context,
-                                  float width, float height)
+                                  float width, float height, float dpi_scale)
 {
     const wz_ui_layout_state_t* state =
         wz_ui_window_layout(&wz_host_session.ui_window);
@@ -5808,6 +5808,7 @@ static void wz_host_ui_draw_status(struct nk_context* context,
     const char* model = wz_host_session.machine.profile == NULL ?
         "Unavailable" : wz_host_session.machine.profile->name;
     if (state == NULL || remote_status == NULL) return;
+    if (dpi_scale <= 0.0f) dpi_scale = 1.0f;
     wz_ui_remote_control_indicator(
         remote_status, control_status, sizeof(control_status));
     (void)snprintf(status, sizeof(status),
@@ -5832,13 +5833,14 @@ static void wz_host_ui_draw_status(struct nk_context* context,
     saved_padding = context->style.window.padding;
     context->style.window.padding = nk_vec2(0.0f, 0.0f);
     if (nk_begin(context, "Machine status",
-            nk_rect(0.0f, height - 48.0f, width, 48.0f),
+            nk_rect(0.0f, height - 48.0f / dpi_scale, width,
+                    48.0f / dpi_scale),
             NK_WINDOW_NO_SCROLLBAR)) {
         if (state->status_panel_visible) {
-            nk_layout_row_dynamic(context, 20.0f, 1);
+            nk_layout_row_dynamic(context, 20.0f / dpi_scale, 1);
             nk_label(context, status, NK_TEXT_LEFT);
         }
-        nk_layout_row_dynamic(context, 20.0f, 1);
+        nk_layout_row_dynamic(context, 20.0f / dpi_scale, 1);
         if (nk_button_label(context, control_status)) {
             wz_host_session.remote_settings_visible = true;
         }
@@ -6353,7 +6355,7 @@ static void wz_host_ui_draw_networking_settings(
 }
 
 static void wz_host_render_native_ui(struct nk_context* context,
-                                     float width, float height)
+                                     float width, float height, float dpi_scale)
 {
     if (context == NULL) return;
     wz_host_ui_draw_menus(context, width);
@@ -6372,7 +6374,7 @@ static void wz_host_render_native_ui(struct nk_context* context,
     wz_host_ui_draw_rom_settings(context, width, height);
     wz_host_ui_draw_networking_settings(context, width, height);
     wz_host_ui_draw_remote_settings(context, width, height);
-    wz_host_ui_draw_status(context, width, height);
+    wz_host_ui_draw_status(context, width, height, dpi_scale);
     wz_host_ui_draw_keyboard_menu(context, width, height);
 }
 
@@ -6423,7 +6425,8 @@ static void wz_host_render_raster(void)
     wz_host_session.ui_window.layout.fullscreen = sapp_is_fullscreen();
     if (dpi_scale <= 0.0f) dpi_scale = 1.0f;
     wz_host_render_native_ui(ui_context,
-        (float)sapp_width() / dpi_scale, (float)sapp_height() / dpi_scale);
+        (float)sapp_width() / dpi_scale, (float)sapp_height() / dpi_scale,
+        dpi_scale);
     if (!wz_host_session.graphics_initialized ||
         wz_machine_render_raster(&wz_host_session.machine,
                                  &wz_host_session.raster) != WZ_RESULT_OK) {
@@ -6856,7 +6859,7 @@ static void wz_host_input_focus_from_mouse(const sapp_event* event)
     height = (float)sapp_height() / scale;
     ui_target = event->mouse_y <=
         WZ_UI_MENU_BAR_HEIGHT + WZ_UI_TOOLBAR_HEIGHT ||
-        event->mouse_y >= height - 48.0f;
+        event->mouse_y >= height - 48.0f / scale;
     if (wz_host_session.remote_settings_visible) {
         panel_width = width >= 440.0f ? 420.0f : width - 16.0f;
         panel_height = height >= 238.0f ? 190.0f : height - 48.0f;
