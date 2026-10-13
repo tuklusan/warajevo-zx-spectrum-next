@@ -570,6 +570,8 @@ fingerprints and throughput gates on all four runners; the maximum slowdown
 was 38.9% on Windows Intel UI presentation. The four-runner clean-build gate
 also passed on this commit in run `36495266071`.
 
+Current-source Phase-16 run `38340402972` tested `cdea39ed1cdf63ae3ac6932ee4c9392e17916b3b`; all six deterministic fingerprints and throughput gates passed on Windows x64/ARM64 and macOS Intel/ARM64. The largest slowdown was 6.1% on Windows x64 audio mixing. Four-platform clean Release build `38340403019`, runner bootstrap `38340403169`, test-ledger `38340402868`, and pathname gate `38340403037` also passed for this source.
+
 ## Final Architecture-#1/#2 acceptance and release-readiness sweep
 
 450. [FINAL][Core §50][AUDITED; gaps remain] Inventory all 75 criteria and record conservative evidence status in [acceptance-evidence-audit.md](acceptance-evidence-audit.md); current status is 27 PASS, 30 PARTIAL, and 18 OPEN. The audit is complete; architecture completion remains gated on resolving the OPEN criteria.
