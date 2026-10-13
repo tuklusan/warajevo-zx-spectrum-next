@@ -29,7 +29,7 @@ The comparator rejects blank captures and undersized active-area crops, but
 cannot determine whether a sufficiently large caller-selected application crop
 omitted some border. The comparator does not treat the application's
 pre-presentation raster as a display capture. The hosted delivery gate passed
-all four supported backends in run `38354012417`; the pinned metrics and
+all four supported backends in run `38367375863`; the pinned metrics and
 capture hashes are recorded in
 [`test-results/fuse-visual-equivalence.json`](../../../test-results/fuse-visual-equivalence.json).
 
