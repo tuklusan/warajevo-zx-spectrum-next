@@ -1,0 +1,30 @@
+{
+  "testId": "fuse-visual-reference-capture",
+  "command": "Build Fuse and libspectrum from pinned source revisions on Ubuntu, run the certified 48K ROM in Fuse's null UI, and retain the automated PNG screen capture with source and ROM hashes.",
+  "requiredCases": 1,
+  "runnerMatrix": [
+    "ubuntu-24.04"
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/fuse-visual-reference.yml",
+      "sha256": "c5ec7f9f586db84d73594ec33c6d29856b92aca7612d92849d97711ac183a21f"
+    },
+    {
+      "path": "ci/test/fuse-visual-equivalence/capture-reference.sh",
+      "sha256": "331ab60716370e24ba8a31d136798f419cff29b80c93f19250767294b9c03930"
+    },
+    {
+      "path": "ci/test/fuse-visual-equivalence/write-reference-proof.py",
+      "sha256": "d5ce0a3d676c4596849b1f9e02417d1b5798115beb2bb689a58dc0182e67296"
+    },
+    {
+      "path": "ci/test/fuse-visual-equivalence/compare.py",
+      "sha256": "e55ddfdc5c94060fce1a836160f223162e2960410931afd2962053df05b89a79"
+    },
+    {
+      "path": "roms/48.rom",
+      "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"
+    }
+  ]
+}

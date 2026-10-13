@@ -1,0 +1,38 @@
+name: Pinned Fuse screen reference
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fuse-visual-reference.yml'
+      - 'ci/test/fuse-visual-equivalence/**'
+      - 'roms/48.rom'
+      - 'test-drivers/fuse-visual-reference.driver.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  capture-reference:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install pinned-build prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes autoconf automake build-essential bison gettext \
+            flex libbz2-dev libglib2.0-dev libgcrypt20-dev libpng-dev \
+            libtool libxml2-dev pkg-config zlib1g-dev
+      - name: Build pinned Fuse and capture the certified 48K ROM
+        shell: bash
+        run: bash ci/test/fuse-visual-equivalence/capture-reference.sh
+      - name: Upload pinned screen reference and run metadata
+        uses: actions/upload-artifact@v4
+        with:
+          name: fuse-screen-reference-${{ github.sha }}
+          path: dist/fuse-visual-reference/
+          if-no-files-found: error
+          retention-days: 30

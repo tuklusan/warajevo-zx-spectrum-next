@@ -1,7 +1,7 @@
 {
   "testId": "fuse-visual-comparator-contract",
-  "command": "Run ci/test/fuse-visual-equivalence/contract.py on Ubuntu with Pillow; require identical full-frame captures to pass and mirrored or 256 by 192 active-area-only captures to fail.",
-  "requiredCases": 4,
+  "command": "Run ci/test/fuse-visual-equivalence/contract.py on Ubuntu with Pillow; require equivalent Fuse/application frames to pass and horizontal flips, vertical flips, 256 by 192 active-area-only captures, and reduced output sizes to fail.",
+  "requiredCases": 5,
   "runnerMatrix": [
     "ubuntu-24.04"
   ],
@@ -12,11 +12,11 @@
     },
     {
       "path": "ci/test/fuse-visual-equivalence/compare.py",
-      "sha256": "ebe2b284752f38594bc29434dc80e9fbb268b593e69a842e63f66e5138e7613a"
+      "sha256": "e55ddfdc5c94060fce1a836160f223162e2960410931afd2962053df05b89a79"
     },
     {
       "path": "ci/test/fuse-visual-equivalence/contract.py",
-      "sha256": "c9f1061edf8c2442d31908b3008e9b375cd2f16ac7496537656b3e95ab463e7b"
+      "sha256": "133730306ca06d3358d5293ad4a91054e4e2c28482e662f8d83ac0490b8c85b2"
     }
   ]
 }

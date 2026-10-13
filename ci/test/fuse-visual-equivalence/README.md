@@ -6,18 +6,18 @@ LICENSE for full terms. -->
 
 # Fuse visual-equivalence comparator
 
-`compare.py` compares desktop captures after the runner has identified the
-Spectrum-display rectangle in each image. Pass those rectangles with
-`--reference-region` and `--candidate-region` as `x y width height`. The
-comparator removes host chrome, scales both crops to the 448 by 312 full
-Spectrum raster with nearest-neighbor resampling, retains the normalized images
-and pixel-difference image, and writes JSON mismatch metrics. Each source crop
-must be at least 448 by 312 pixels, and the comparison output cannot be reduced
-below that size, so a 256 by 192 active-area-only capture cannot pass. The
-capture workflow must still select the complete display rectangle; border and
-its orientation are part of the comparison. Fuse and the application may use
-different display pixel aspect ratios, so normalization scales each captured
-rectangle independently.
+`compare.py` compares the pinned Fuse `screen.png` with a production-app
+desktop capture. Pass the app display rectangle with `--candidate-region` as
+`x y width height`; Fuse's direct PNG is the full reference frame. The
+comparator maps the pinned Fuse PNG (320 by 240, including its border) to the
+application's 448 by 312 raster. It aligns the 256 by 192 active area without
+rescaling its pixels and independently scales the border tiles to their target
+extents. The application crop must be at least 448 by 312 pixels, and the
+comparison output cannot be reduced below that size, so active-area-only
+captures cannot pass. The comparator retains both normalized images and the
+pixel-difference image and writes JSON mismatch metrics. The capture workflow
+must still select the complete application display rectangle; border and its
+orientation are part of the comparison.
 
 The caller must capture the production application's displayed output and the
 pinned Fuse display, using the same certified ROM and 48K PAL configuration.
@@ -26,8 +26,8 @@ Fuse visual-reference revision
 to produce the headless reference PNG; its build must include PNG support and
 the null UI.
 The comparator rejects blank captures and undersized active-area crops, but
-cannot determine whether a sufficiently large caller-selected crop omitted
-some border. The comparator does not treat the application's
+cannot determine whether a sufficiently large caller-selected application crop
+omitted some border. The comparator does not treat the application's
 pre-presentation raster as a display capture. The workflow gate remains open
 until capture automation and passing evidence cover every supported host
 backend.
