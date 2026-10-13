@@ -186,6 +186,19 @@ passes. Use the pinned Fuse emulator as the software reference where applicable
 when physical Spectrum hardware is unavailable; record that evidence as an
 emulated comparison, not hardware validation.
 
+Spectrum video delivery has a mandatory Fuse visual-equivalence gate. A hosted
+test must boot the same certified 48K ROM in the production application and the
+pinned Fuse revision, capture the Spectrum display from each, normalize only
+scale and host chrome, and compare the visible raster. The comparison must
+cover active pixels and border orientation, report pixel mismatch metrics, and
+retain both images as runner artifacts. A rotated, mirrored, cropped, blank, or
+otherwise materially different display fails the gate. Changes to raster
+generation, texture upload, presentation transforms, palette, or display
+cropping must run this gate before delivery. Fuse evidence is a software
+emulator comparison only. Until a reproducible hosted comparison passes on all
+supported host backends, Spectrum video delivery remains blocked; in-memory
+raster tests alone do not satisfy this gate.
+
 The CPU, bus, ULA, raster, ROM-loader, and tape timing contract is in
 `reference/t-state-description.md`.
 
