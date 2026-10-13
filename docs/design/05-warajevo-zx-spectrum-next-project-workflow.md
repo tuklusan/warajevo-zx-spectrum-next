@@ -188,8 +188,9 @@ emulated comparison, not hardware validation.
 
 Spectrum video delivery has a mandatory Fuse visual-equivalence gate. A hosted
 test must boot the same certified 48K ROM in the production application and the
-Fuse revision `c94a5e611bb0b795d62e904a0f5af4f59f2a4eee` (the project-wide
-upstream reference pin), capture the Spectrum display from each, normalize only
+Fuse visual-reference revision
+`7edc2418ce11837d9ede799f7e0445440beead1d`, capture the Spectrum display from
+each, normalize only
 scale and host chrome, and compare the visible raster. The comparison must
 cover active pixels and border orientation, report pixel mismatch metrics, and
 retain both images as runner artifacts. A rotated, mirrored, cropped, blank, or

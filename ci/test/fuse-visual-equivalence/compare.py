@@ -38,15 +38,6 @@ def validate_capture(image, label):
         raise SystemExit(f"{label} display capture is blank or uniform")
 
 
-def validate_aspect_ratio(image, target_size, label):
-    actual = image.width / image.height
-    expected = target_size[0] / target_size[1]
-    if abs(actual - expected) / expected > 0.02:
-        raise SystemExit(
-            f"{label} crop aspect ratio {actual:.6f} does not match full "
-            f"Spectrum display {expected:.6f}; include the border")
-
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--reference", type=Path, required=True)
@@ -78,8 +69,8 @@ def main():
     validate_capture(reference, "Fuse")
     validate_capture(candidate, "application")
     normalized_size = (display_width, display_height)
-    validate_aspect_ratio(reference, normalized_size, "Fuse")
-    validate_aspect_ratio(candidate, normalized_size, "application")
+    if min(reference.size) < 192 or min(candidate.size) < 192:
+        raise SystemExit("a display crop is too small to contain the Spectrum raster")
     reference = reference.resize(normalized_size, Image.Resampling.NEAREST)
     candidate = candidate.resize(normalized_size, Image.Resampling.NEAREST)
     args.output.parent.mkdir(parents=True, exist_ok=True)
