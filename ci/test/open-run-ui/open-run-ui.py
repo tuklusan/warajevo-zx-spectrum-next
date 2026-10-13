@@ -20,48 +20,44 @@ from ctypes import wintypes
 TITLE = "Warajevo ZX Spectrum Next"
 
 
+class KEYBDINPUT(ctypes.Structure):
+    _fields_ = [("wVk", wintypes.WORD), ("wScan", wintypes.WORD),
+                ("dwFlags", wintypes.DWORD), ("time", wintypes.DWORD),
+                ("dwExtraInfo", ctypes.c_size_t)]
+
+
+class MOUSEINPUT(ctypes.Structure):
+    _fields_ = [("dx", wintypes.LONG), ("dy", wintypes.LONG),
+                ("mouseData", wintypes.DWORD),
+                ("dwFlags", wintypes.DWORD), ("time", wintypes.DWORD),
+                ("dwExtraInfo", ctypes.c_size_t)]
+
+
+class INPUTUNION(ctypes.Union):
+    _fields_ = [("ki", KEYBDINPUT), ("mi", MOUSEINPUT)]
+
+
+class INPUT(ctypes.Structure):
+    _anonymous_ = ("u",)
+    _fields_ = [("type", wintypes.DWORD), ("u", INPUTUNION)]
+
+
 def windows_key(vk, down):
     user32 = ctypes.windll.user32
-    class KEYBDINPUT(ctypes.Structure):
-        _fields_ = [("wVk", wintypes.WORD), ("wScan", wintypes.WORD),
-                    ("dwFlags", wintypes.DWORD),
-                    ("time", wintypes.DWORD),
-                    ("dwExtraInfo", ctypes.c_size_t)]
-
-    class INPUTUNION(ctypes.Union):
-        _fields_ = [("ki", KEYBDINPUT)]
-
-    class INPUT(ctypes.Structure):
-        _anonymous_ = ("u",)
-        _fields_ = [("type", wintypes.DWORD), ("u", INPUTUNION)]
-
     event = INPUT(type=1, ki=KEYBDINPUT(vk, 0, 0 if down else 2, 0, 0))
     if user32.SendInput(1, ctypes.byref(event), ctypes.sizeof(INPUT)) != 1:
-        raise ctypes.WinError()
+        user32.keybd_event(vk, 0, 0 if down else 2, 0)
 
 
 def windows_text(value):
     user32 = ctypes.windll.user32
     for character in value:
-        class KEYBDINPUT(ctypes.Structure):
-            _fields_ = [("wVk", wintypes.WORD), ("wScan", wintypes.WORD),
-                        ("dwFlags", wintypes.DWORD),
-                        ("time", wintypes.DWORD),
-                        ("dwExtraInfo", ctypes.c_size_t)]
-
-        class INPUTUNION(ctypes.Union):
-            _fields_ = [("ki", KEYBDINPUT)]
-
-        class INPUT(ctypes.Structure):
-            _anonymous_ = ("u",)
-            _fields_ = [("type", wintypes.DWORD), ("u", INPUTUNION)]
-
         for flags in (4, 4 | 2):
             event = INPUT(type=1, ki=KEYBDINPUT(0, ord(character), flags,
                                                 0, 0))
             if user32.SendInput(1, ctypes.byref(event),
                                 ctypes.sizeof(INPUT)) != 1:
-                raise ctypes.WinError()
+                user32.keybd_event(0, ord(character), flags, 0)
 
 
 def windows_press(vk):
@@ -70,20 +66,6 @@ def windows_press(vk):
 
 
 def windows_mouse(flags):
-    class MOUSEINPUT(ctypes.Structure):
-        _fields_ = [("dx", wintypes.LONG), ("dy", wintypes.LONG),
-                    ("mouseData", wintypes.DWORD),
-                    ("dwFlags", wintypes.DWORD),
-                    ("time", wintypes.DWORD),
-                    ("dwExtraInfo", ctypes.c_size_t)]
-
-    class INPUTUNION(ctypes.Union):
-        _fields_ = [("mi", MOUSEINPUT)]
-
-    class INPUT(ctypes.Structure):
-        _anonymous_ = ("u",)
-        _fields_ = [("type", wintypes.DWORD), ("u", INPUTUNION)]
-
     event = INPUT(type=0, mi=MOUSEINPUT(0, 0, 0, flags, 0, 0))
     if ctypes.windll.user32.SendInput(1, ctypes.byref(event),
                                       ctypes.sizeof(INPUT)) != 1:
