@@ -28,9 +28,10 @@ the null UI.
 The comparator rejects blank captures and undersized active-area crops, but
 cannot determine whether a sufficiently large caller-selected application crop
 omitted some border. The comparator does not treat the application's
-pre-presentation raster as a display capture. The workflow gate remains open
-until capture automation and passing evidence cover every supported host
-backend.
+pre-presentation raster as a display capture. The hosted delivery gate passed
+all four supported backends in run `38354012417`; the pinned metrics and
+capture hashes are recorded in
+[`test-results/fuse-visual-equivalence.json`](../../../test-results/fuse-visual-equivalence.json).
 
 Pillow is required. The hosted runner should install it with its system Python
 package manager before invoking the comparator.
