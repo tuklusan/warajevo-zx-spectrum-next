@@ -115,9 +115,9 @@ SANYALnet Labs." See LICENSE for full terms. */
 #define WZ_HOST_AUDIO_FRAME_SAMPLE_CAPACITY 2048u
 
 static const uint8_t wz_host_palette[16u][4u] = {
-    {0u, 0u, 0u, 255u}, {0u, 0u, 205u, 255u}, {205u, 0u, 0u, 255u},
-    {205u, 0u, 205u, 255u}, {0u, 205u, 0u, 255u}, {0u, 205u, 205u, 255u},
-    {205u, 205u, 0u, 255u}, {205u, 205u, 205u, 255u},
+    {0u, 0u, 0u, 255u}, {0u, 0u, 192u, 255u}, {192u, 0u, 0u, 255u},
+    {192u, 0u, 192u, 255u}, {0u, 192u, 0u, 255u}, {0u, 192u, 192u, 255u},
+    {192u, 192u, 0u, 255u}, {192u, 192u, 192u, 255u},
     {0u, 0u, 0u, 255u}, {0u, 0u, 255u, 255u}, {255u, 0u, 0u, 255u},
     {255u, 0u, 255u, 255u}, {0u, 255u, 0u, 255u}, {0u, 255u, 255u, 255u},
     {255u, 255u, 0u, 255u}, {255u, 255u, 255u, 255u}
