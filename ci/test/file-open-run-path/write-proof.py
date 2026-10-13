@@ -10,6 +10,7 @@ import argparse
 import hashlib
 import json
 import os
+import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -25,6 +26,14 @@ FIXTURES = (
 )
 
 
+def repository_blob(commit, path):
+    return subprocess.run(
+        ["git", "show", f"{commit}:{path}"],
+        check=True,
+        stdout=subprocess.PIPE,
+    ).stdout
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--proof", required=True, type=Path)
@@ -32,15 +41,18 @@ def main():
     driver = json.loads(Path("test-drivers/file-open-run-path.driver.json").read_text(
         encoding="utf-8"))
     if driver.get("testId") != "file-open-run-path":
-        raise SystemExit("file-open-run path driver identity mismatch")
+        raise SystemExit("file-open-run-path driver identity mismatch")
+    commit = os.environ["GITHUB_SHA"]
     for fixture in driver["fixtures"]:
-        actual = hashlib.sha256(Path(fixture["path"]).read_bytes()).hexdigest()
+        actual = hashlib.sha256(
+            repository_blob(commit, fixture["path"])
+        ).hexdigest()
         if actual != fixture["sha256"]:
             raise SystemExit(f"fixture hash mismatch: {fixture['path']}")
     proof = {
         "testId": "file-open-run-path",
         "status": "pass",
-        "commit": os.environ["GITHUB_SHA"],
+        "commit": commit,
         "runId": int(os.environ["GITHUB_RUN_ID"]),
         "runner": f"{os.environ['RUNNER_OS']}/{os.environ['RUNNER_ARCH']}",
         "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
@@ -48,7 +60,7 @@ def main():
         "fixtures": [
             {
                 "path": name,
-                "sha256": hashlib.sha256(Path(name).read_bytes()).hexdigest(),
+                "sha256": hashlib.sha256(repository_blob(commit, name)).hexdigest(),
             }
             for name in FIXTURES
         ],
