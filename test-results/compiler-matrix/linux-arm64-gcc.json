@@ -1,10 +1,10 @@
 {
   "testId": "canonical-core-regression",
   "status": "pass",
-  "commit": "c824f48d8b8d56b4aaa4bb86a0b79418474b63da",
+  "commit": "68ebac2f17b587006db2ff2c9694da867f846c58",
   "runner": "Linux/ARM64",
-  "timestamp": "2026-10-01T02:46:59+00:00",
-  "runId": "36807166249",
+  "timestamp": "2026-10-13T07:47:39+00:00",
+  "runId": "38364840875",
   "compiler": {
     "requested": "gcc",
     "id": "GNU",
@@ -15,7 +15,7 @@
   "fixtures": [
     {
       "path": "ci/test/core-regression/canonical-fingerprints.h",
-      "sha256": "c5ee27c44afe44b4905304df6edd378964cb15f58b39254b54214881228fadf5"
+      "sha256": "c281c6dfae15ec99acb122aa4b5b64ab091bd4d622a8bf5c9b2bedb868b1660c"
     },
     {
       "path": "tests/canonical-core-regression.c",
@@ -27,7 +27,7 @@
     },
     {
       "path": "test-drivers/canonical-core-regression.driver.json",
-      "sha256": "a1c843a5939816c1799d41e21f43be077bcdcc829b5e8a4b8614cfc6f54ddbca"
+      "sha256": "2659511864e9a779063d18504f12eadd0c4e2116e8d5dce8f867de0a7beb2bf7"
     }
   ],
   "errors": []

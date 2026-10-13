@@ -1,10 +1,10 @@
 {
   "testId": "desktop-packages",
   "status": "pass",
-  "commit": "1505917b8842851cf4d84844c8514294c323164c",
+  "commit": "3665a44382a0ae7bea0164a6213b8203557f5b62",
   "runner": "Windows x64 and macOS Intel/Apple Silicon hosted matrix",
-  "timestamp": "2026-10-02T08:06:42+00:00",
-  "runId": 36982052631,
+  "timestamp": "2026-10-13T07:56:19+00:00",
+  "runId": 38365701355,
   "runners": [
     {
       "id": "windows-x86_64",
@@ -12,7 +12,7 @@
       "os": "Windows",
       "architecture": "X64",
       "runnerName": "win25-vs2026",
-      "commit": "1505917b8842851cf4d84844c8514294c323164c"
+      "commit": "3665a44382a0ae7bea0164a6213b8203557f5b62"
     },
     {
       "id": "macos-x86_64",
@@ -20,7 +20,7 @@
       "os": "macOS",
       "architecture": "X64",
       "runnerName": "macos15",
-      "commit": "1505917b8842851cf4d84844c8514294c323164c"
+      "commit": "3665a44382a0ae7bea0164a6213b8203557f5b62"
     },
     {
       "id": "macos-arm64",
@@ -28,7 +28,7 @@
       "os": "macOS",
       "architecture": "ARM64",
       "runnerName": "macos15",
-      "commit": "1505917b8842851cf4d84844c8514294c323164c"
+      "commit": "3665a44382a0ae7bea0164a6213b8203557f5b62"
     }
   ],
   "packages": [
@@ -36,8 +36,8 @@
       "platform": "windows-x86_64",
       "architecture": "x86_64",
       "archive": "Warajevo-ZX-Spectrum-Next-windows-x86_64.zip",
-      "archiveSha256": "7a5106edebdeec176ff2a95b7db32a099a9faa802a3ac4e89615c179b0133421",
-      "binarySha256": "d29fd089fd27f54db4c6d85f8efada350a8a8b5006535e999c90a58acd0e596a",
+      "archiveSha256": "26e1476bfab0e87628f742e1363da14e4ffb7636598bd6606717284d92d3e991",
+      "binarySha256": "bcc01fe88d5fb8dca7e22604b1a48aace12ba441e7fb634983d22cde21b00b87",
       "members": [
         "Warajevo-ZX-Spectrum-Next/LICENSE",
         "Warajevo-ZX-Spectrum-Next/README.md",
@@ -49,14 +49,15 @@
       "runtimeAudit": {
         "testId": "windows-runtime-dependency-audit",
         "status": "pass",
-        "commit": "1505917b8842851cf4d84844c8514294c323164c",
-        "runId": "36982052631",
+        "commit": "3665a44382a0ae7bea0164a6213b8203557f5b62",
+        "runId": "38365701355",
         "runner": "Windows/X64",
-        "timestamp": "2026-10-02T08:06:28+00:00",
+        "timestamp": "2026-10-13T07:55:36+00:00",
         "binary": "Warajevo-ZX-Spectrum-Next.exe",
-        "binarySha256": "d29fd089fd27f54db4c6d85f8efada350a8a8b5006535e999c90a58acd0e596a",
+        "binarySha256": "bcc01fe88d5fb8dca7e22604b1a48aace12ba441e7fb634983d22cde21b00b87",
         "peMachine": "0x8664",
         "imports": [
+          "api-ms-win-crt-convert-l1-1-0.dll",
           "api-ms-win-crt-environment-l1-1-0.dll",
           "api-ms-win-crt-heap-l1-1-0.dll",
           "api-ms-win-crt-locale-l1-1-0.dll",
@@ -67,6 +68,7 @@
           "api-ms-win-crt-string-l1-1-0.dll",
           "api-ms-win-crt-time-l1-1-0.dll",
           "api-ms-win-crt-utility-l1-1-0.dll",
+          "comdlg32.dll",
           "d3d11.dll",
           "gdi32.dll",
           "kernel32.dll",
@@ -87,7 +89,7 @@
           },
           {
             "path": "src/cmake/CMakeLists.txt",
-            "sha256": "bf5dd8ea02d7eade351bbcd2cfbd15107a42be3bf719897b4a5ea96383bb8477"
+            "sha256": "ddcb11d8cb9a3034f5ebd8c254b43778b4441ce23ed111606bcb70c41cf76739"
           },
           {
             "path": "ci/test/windows-runtime-dependencies/README.md",
@@ -100,8 +102,8 @@
       "platform": "macos-x86_64",
       "architecture": "x86_64",
       "archive": "Warajevo-ZX-Spectrum-Next-macos-x86_64.zip",
-      "archiveSha256": "702c00867de4acbc6a501eb0b7292051f5b8130f9e498e503aea04ce7736479c",
-      "binarySha256": "f4c46cbbcb40fa5721bdee0dd019b3f5de8592a1810cc7109ca278684fdf9427",
+      "archiveSha256": "634a5a1b77f883429505cb9a290f40bf4c0349f2d4bf4c75a612a2a00f86356e",
+      "binarySha256": "e8e55da2202bc48a3d2eac0c2209f2f3a84d743f6234c986761daf8b5db03364",
       "members": [
         "Warajevo-ZX-Spectrum-Next/LICENSE",
         "Warajevo-ZX-Spectrum-Next/README.md",
@@ -116,7 +118,7 @@
         "os": "Darwin",
         "architecture": "x86_64",
         "binary": "Warajevo-ZX-Spectrum-Next",
-        "binarySha256": "f4c46cbbcb40fa5721bdee0dd019b3f5de8592a1810cc7109ca278684fdf9427",
+        "binarySha256": "e8e55da2202bc48a3d2eac0c2209f2f3a84d743f6234c986761daf8b5db03364",
         "dependencies": [
           {
             "name": "AppKit",
@@ -173,8 +175,8 @@
       "platform": "macos-arm64",
       "architecture": "arm64",
       "archive": "Warajevo-ZX-Spectrum-Next-macos-arm64.zip",
-      "archiveSha256": "347ced61872f3b2b84bfb86eeac70f84349a91ac621f1a13975c455b07ec5244",
-      "binarySha256": "5e357a80a0ff2d9af1971bb56678f5f5d2bc4154b06ce2d1901ead73776aa0bc",
+      "archiveSha256": "f806a0861d3900a3291ec88e76e9e5a01e931f78480742a5bedcc04867149ec4",
+      "binarySha256": "45a78bcf2a62e11b7e6726fd8fae47659c131b53369dc3e510a4e4f22a8e4bc6",
       "members": [
         "Warajevo-ZX-Spectrum-Next/LICENSE",
         "Warajevo-ZX-Spectrum-Next/README.md",
@@ -189,7 +191,7 @@
         "os": "Darwin",
         "architecture": "arm64",
         "binary": "Warajevo-ZX-Spectrum-Next",
-        "binarySha256": "5e357a80a0ff2d9af1971bb56678f5f5d2bc4154b06ce2d1901ead73776aa0bc",
+        "binarySha256": "45a78bcf2a62e11b7e6726fd8fae47659c131b53369dc3e510a4e4f22a8e4bc6",
         "dependencies": [
           {
             "name": "AppKit",
@@ -282,11 +284,11 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "bf5dd8ea02d7eade351bbcd2cfbd15107a42be3bf719897b4a5ea96383bb8477"
+      "sha256": "ddcb11d8cb9a3034f5ebd8c254b43778b4441ce23ed111606bcb70c41cf76739"
     },
     {
       "path": "test-drivers/windows-runtime-dependency-audit.driver.json",
-      "sha256": "32020f050a607d80e589d46c4958a853226ff554ba774ae5173e631c770430cb"
+      "sha256": "efb0f31c3cdb758fb8ecad847b4443b7171e7d62ced9faddd303e60e8c580d6e"
     }
   ]
 }

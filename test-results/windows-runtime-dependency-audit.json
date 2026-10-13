@@ -1,30 +1,32 @@
 {
   "testId": "windows-runtime-dependency-audit",
   "status": "pass",
-  "commit": "c517c60783409bcea052adbd967ff70ae992ae84",
-  "runId": "36427305860",
+  "commit": "3665a44382a0ae7bea0164a6213b8203557f5b62",
+  "runId": "38365701355",
   "runner": "Windows/X64",
-  "timestamp": "2026-09-28T13:20:20+00:00",
+  "timestamp": "2026-10-13T07:55:36+00:00",
   "binary": "Warajevo-ZX-Spectrum-Next.exe",
-  "binarySha256": "ac70c96e28b3f71e8630c87115711f7686ddd37dac6e9555923a12327f8040bc",
+  "binarySha256": "bcc01fe88d5fb8dca7e22604b1a48aace12ba441e7fb634983d22cde21b00b87",
   "peMachine": "0x8664",
   "imports": [
+    "api-ms-win-crt-convert-l1-1-0.dll",
     "api-ms-win-crt-environment-l1-1-0.dll",
     "api-ms-win-crt-heap-l1-1-0.dll",
     "api-ms-win-crt-locale-l1-1-0.dll",
     "api-ms-win-crt-math-l1-1-0.dll",
+    "api-ms-win-crt-private-l1-1-0.dll",
     "api-ms-win-crt-runtime-l1-1-0.dll",
     "api-ms-win-crt-stdio-l1-1-0.dll",
     "api-ms-win-crt-string-l1-1-0.dll",
     "api-ms-win-crt-time-l1-1-0.dll",
     "api-ms-win-crt-utility-l1-1-0.dll",
+    "comdlg32.dll",
     "d3d11.dll",
     "gdi32.dll",
     "kernel32.dll",
     "ole32.dll",
     "shell32.dll",
     "user32.dll",
-    "vcruntime140.dll",
     "ws2_32.dll"
   ],
   "fixturePolicy": "only Windows system DLLs and Windows API-set DLLs are imported",
@@ -39,7 +41,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "d3c09a688001e54098b3789349fd2e6ae37119e273c9d229848e32662813b285"
+      "sha256": "ddcb11d8cb9a3034f5ebd8c254b43778b4441ce23ed111606bcb70c41cf76739"
     },
     {
       "path": "ci/test/windows-runtime-dependencies/README.md",
