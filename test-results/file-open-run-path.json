@@ -1,0 +1,65 @@
+{
+  "testId": "file-open-run-path",
+  "status": "pass",
+  "commit": "589f8081ad80d8dc71c458208822d68f9bb4af67",
+  "runId": 38328900835,
+  "runner": "4-runner desktop matrix",
+  "timestamp": "2026-10-12T20:46:47-04:00",
+  "caseCount": 44,
+  "runnerResults": [
+    {
+      "runner": "macOS/ARM64",
+      "status": "pass",
+      "caseCount": 11,
+      "timestamp": "2026-10-12T20:46:47-04:00"
+    },
+    {
+      "runner": "macOS/X64",
+      "status": "pass",
+      "caseCount": 11,
+      "timestamp": "2026-10-12T20:46:49-04:00"
+    },
+    {
+      "runner": "Windows/ARM64",
+      "status": "pass",
+      "caseCount": 11,
+      "timestamp": "2026-10-12T20:46:59-04:00"
+    },
+    {
+      "runner": "Windows/X64",
+      "status": "pass",
+      "caseCount": 11,
+      "timestamp": "2026-10-12T20:47:02-04:00"
+    }
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/file-open-run-path-contract.yml",
+      "sha256": "24304e3b54847717fb5188d27944b4c48376eba2108d54a22d0f0f38bd0ea495"
+    },
+    {
+      "path": "ci/test/file-open-run-path/CMakeLists.txt",
+      "sha256": "f823c04e5b20822d71f1a5c6afd2b5c1f550d132908d3e0d823a9b09c10b069e"
+    },
+    {
+      "path": "ci/test/file-open-run-path/file-open-run-path-contract.c",
+      "sha256": "45d6e4c95a33333bbd9bd46360ada5588899a7a5d74738d4110761d3e0959b0c"
+    },
+    {
+      "path": "ci/test/file-open-run-path/write-proof.py",
+      "sha256": "37296470e59bf256b71b662a09746c6e6ad6f4e2702fdd9c5246a1cbc3514016"
+    },
+    {
+      "path": "src/app/wz_file_open_run.c",
+      "sha256": "0935793d2fcf5e9776b8c89de29d63d8a79c2705f839d5ec80b280da92c1ae1e"
+    },
+    {
+      "path": "src/app/wz_file_open_run.h",
+      "sha256": "6147d0501cab7ede9919fca4198fb3621f7c35d8825b9c4fd17a02a199e3512d"
+    },
+    {
+      "path": "test-drivers/file-open-run-path.driver.json",
+      "sha256": "623c82d92a6f577fe8516073cabc42ddd31660544fe2d24ad4f8a81255ff8524"
+    }
+  ]
+}
