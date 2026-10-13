@@ -69,7 +69,8 @@ def main():
     validate_capture(reference, "Fuse")
     validate_capture(candidate, "application")
     normalized_size = (display_width, display_height)
-    if min(reference.size) < 192 or min(candidate.size) < 192:
+    if reference.width < 256 or reference.height < 192 or \
+            candidate.width < 256 or candidate.height < 192:
         raise SystemExit("a display crop is too small to contain the Spectrum raster")
     reference = reference.resize(normalized_size, Image.Resampling.NEAREST)
     candidate = candidate.resize(normalized_size, Image.Resampling.NEAREST)
