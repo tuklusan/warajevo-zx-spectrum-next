@@ -104,7 +104,19 @@ jobs:
           $policy = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\OOBE'
           New-Item -Path $policy -Force | Out-Null
           New-ItemProperty -Path $policy -Name DisablePrivacyExperience -PropertyType DWord -Value 1 -Force | Out-Null
-          Get-Process -Name msoobe,UserOOBEBroker,CloudExperienceHostBroker,wsl,WindowsTerminal -ErrorAction SilentlyContinue |
+          Write-Host 'Visible windows before runner setup dismissal:'
+          Get-Process | Where-Object { $_.MainWindowHandle -ne 0 } |
+            ForEach-Object { Write-Host ("{0} ({1}): {2}" -f $_.Name, $_.Id, $_.MainWindowTitle) }
+          Get-Process -Name wsl,WindowsTerminal -ErrorAction SilentlyContinue |
+            Stop-Process -Force -ErrorAction SilentlyContinue
+          $keyboard = New-Object -ComObject WScript.Shell
+          1..5 | ForEach-Object {
+            $keyboard.SendKeys('{ENTER}')
+            Start-Sleep -Seconds 2
+            Get-Process -Name wsl,WindowsTerminal -ErrorAction SilentlyContinue |
+              Stop-Process -Force -ErrorAction SilentlyContinue
+          }
+          Get-Process -Name msoobe,UserOOBEBroker,CloudExperienceHostBroker -ErrorAction SilentlyContinue |
             Stop-Process -Force -ErrorAction SilentlyContinue
           Start-Sleep -Seconds 2
           $overlay = Get-Process -Name msoobe,UserOOBEBroker,CloudExperienceHostBroker,wsl,WindowsTerminal -ErrorAction SilentlyContinue
