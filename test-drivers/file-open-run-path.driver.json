@@ -1,0 +1,37 @@
+{
+  "testId": "file-open-run-path",
+  "command": "cmake -S ci/test/file-open-run-path -B dist/file-open-run-path -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/file-open-run-path --config Release --target wz_file_open_run_path_contract --parallel 2 && ctest --test-dir dist/file-open-run-path --output-on-failure --verbose -R '^wz_file_open_run_path_contract$'",
+  "requiredCases": 9,
+  "runnerMatrix": [
+    "windows-2025",
+    "windows-11-arm",
+    "macos-15-intel",
+    "macos-15"
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/file-open-run-path-contract.yml",
+      "sha256": "24304e3b54847717fb5188d27944b4c48376eba2108d54a22d0f0f38bd0ea495"
+    },
+    {
+      "path": "ci/test/file-open-run-path/CMakeLists.txt",
+      "sha256": "f823c04e5b20822d71f1a5c6afd2b5c1f550d132908d3e0d823a9b09c10b069e"
+    },
+    {
+      "path": "ci/test/file-open-run-path/file-open-run-path-contract.c",
+      "sha256": "4ef42c5fd71f17ed88b0442cd3dfdc8731866148505e700d83485b77903228f0"
+    },
+    {
+      "path": "ci/test/file-open-run-path/write-proof.py",
+      "sha256": "10e64097c1b8565f48fcf9dd5a52fd9eaf6fb9d28720ef0510632d4751967da3"
+    },
+    {
+      "path": "src/app/wz_file_open_run.c",
+      "sha256": "859419d4f5cce1aa246e913d8be803747d655dfb4fdf3ce25a88a67dba2a2e6b"
+    },
+    {
+      "path": "src/app/wz_file_open_run.h",
+      "sha256": "6147d0501cab7ede9919fca4198fb3621f7c35d8825b9c4fd17a02a199e3512d"
+    }
+  ]
+}

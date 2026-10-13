@@ -43,13 +43,21 @@ static bool wz_conversion_extension(const char* extension)
 wz_open_run_result_t wz_file_open_run_route(const char* path,
                                              wz_open_run_route_t* route)
 {
+    const char* basename;
+    const char* cursor;
     const char* separator;
     const char* extension;
 
     if (path == NULL || route == NULL || path[0] == '\0') {
         return WZ_OPEN_RUN_INVALID_ARGUMENT;
     }
-    separator = strrchr(path, '.');
+    basename = path;
+    for (cursor = path; *cursor != '\0'; ++cursor) {
+        if (*cursor == '/' || *cursor == '\\') {
+            basename = cursor + 1;
+        }
+    }
+    separator = strrchr(basename, '.');
     if (separator == NULL || separator[1] == '\0') {
         *route = WZ_OPEN_RUN_UNSUPPORTED;
         return WZ_OPEN_RUN_UNSUPPORTED_FORMAT;
