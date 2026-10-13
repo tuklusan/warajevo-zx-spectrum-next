@@ -582,7 +582,7 @@ wz_result_t wz_debugger_step(wz_machine_t* machine, size_t* executed)
 {
     wz_result_t result;
 
-    if (machine == 0 || executed == 0u) {
+    if (machine == 0 || executed == 0) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
     *executed = 0u;
@@ -610,7 +610,7 @@ wz_result_t wz_debugger_continue(wz_machine_t* machine,
 {
     wz_result_t result;
 
-    if (machine == 0 || executed == 0u || max_instructions == 0u) {
+    if (machine == 0 || executed == 0 || max_instructions == 0u) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
     *executed = 0u;
