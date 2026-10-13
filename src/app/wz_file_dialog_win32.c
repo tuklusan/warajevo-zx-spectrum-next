@@ -11,12 +11,103 @@
 #include <shobjidl.h>
 #include <sokol_app.h>
 #include <limits.h>
+#include <process.h>
 #include <stdio.h>
 
 #include "app/wz_file_dialog.h"
 
+typedef enum wz_file_dialog_operation {
+    WZ_FILE_DIALOG_OPERATION_OPEN,
+    WZ_FILE_DIALOG_OPERATION_SAVE_TAP,
+    WZ_FILE_DIALOG_OPERATION_SAVE_SNAPSHOT
+} wz_file_dialog_operation_t;
+
+typedef struct wz_file_dialog_request {
+    wz_file_dialog_operation_t operation;
+    char* utf8_path;
+    size_t path_capacity;
+    wz_file_dialog_result_t result;
+} wz_file_dialog_request_t;
+
+static wz_file_dialog_result_t wz_file_dialog_open_sta(
+    char* utf8_path, size_t path_capacity);
+static wz_file_dialog_result_t wz_file_dialog_save_tap_sta(
+    char* utf8_path, size_t path_capacity);
+static wz_file_dialog_result_t wz_file_dialog_save_snapshot_sta(
+    char* utf8_path, size_t path_capacity);
+
+static unsigned __stdcall wz_file_dialog_thread(void* user_data)
+{
+    wz_file_dialog_request_t* request =
+        (wz_file_dialog_request_t*)user_data;
+    if (request == NULL) return 0u;
+    switch (request->operation) {
+    case WZ_FILE_DIALOG_OPERATION_OPEN:
+        request->result = wz_file_dialog_open_sta(
+            request->utf8_path, request->path_capacity);
+        break;
+    case WZ_FILE_DIALOG_OPERATION_SAVE_TAP:
+        request->result = wz_file_dialog_save_tap_sta(
+            request->utf8_path, request->path_capacity);
+        break;
+    case WZ_FILE_DIALOG_OPERATION_SAVE_SNAPSHOT:
+        request->result = wz_file_dialog_save_snapshot_sta(
+            request->utf8_path, request->path_capacity);
+        break;
+    default:
+        request->result = WZ_FILE_DIALOG_FAILED;
+        break;
+    }
+    return 0u;
+}
+
+static wz_file_dialog_result_t wz_file_dialog_run_sta(
+    wz_file_dialog_operation_t operation, char* utf8_path,
+    size_t path_capacity)
+{
+    wz_file_dialog_request_t request = {
+        operation, utf8_path, path_capacity, WZ_FILE_DIALOG_FAILED
+    };
+    uintptr_t thread_value;
+    HANDLE thread;
+    if (utf8_path == NULL || path_capacity == 0u) {
+        return WZ_FILE_DIALOG_FAILED;
+    }
+    utf8_path[0] = '\0';
+    thread_value = _beginthreadex(NULL, 0u, wz_file_dialog_thread,
+                                  &request, 0u, NULL);
+    if (thread_value == 0u) return WZ_FILE_DIALOG_FAILED;
+    thread = (HANDLE)thread_value;
+    if (WaitForSingleObject(thread, INFINITE) != WAIT_OBJECT_0) {
+        (void)WaitForSingleObject(thread, INFINITE);
+    }
+    (void)CloseHandle(thread);
+    return request.result;
+}
+
 wz_file_dialog_result_t wz_file_dialog_open(char* utf8_path,
                                             size_t path_capacity)
+{
+    return wz_file_dialog_run_sta(WZ_FILE_DIALOG_OPERATION_OPEN,
+                                  utf8_path, path_capacity);
+}
+
+wz_file_dialog_result_t wz_file_dialog_save_tap(char* utf8_path,
+                                                size_t path_capacity)
+{
+    return wz_file_dialog_run_sta(WZ_FILE_DIALOG_OPERATION_SAVE_TAP,
+                                  utf8_path, path_capacity);
+}
+
+wz_file_dialog_result_t wz_file_dialog_save_snapshot(char* utf8_path,
+                                                     size_t path_capacity)
+{
+    return wz_file_dialog_run_sta(WZ_FILE_DIALOG_OPERATION_SAVE_SNAPSHOT,
+                                  utf8_path, path_capacity);
+}
+
+static wz_file_dialog_result_t wz_file_dialog_open_sta(char* utf8_path,
+                                                       size_t path_capacity)
 {
     static const COMDLG_FILTERSPEC filters[] = {
         {L"Supported media and snapshots",
@@ -91,8 +182,8 @@ cleanup:
     return dialog_result;
 }
 
-wz_file_dialog_result_t wz_file_dialog_save_tap(char* utf8_path,
-                                                size_t path_capacity)
+static wz_file_dialog_result_t wz_file_dialog_save_tap_sta(
+    char* utf8_path, size_t path_capacity)
 {
     static const COMDLG_FILTERSPEC filters[] = {
         {L"Standard TAP tape", L"*.tap"}, {L"All files", L"*.*"}
@@ -156,8 +247,8 @@ cleanup:
     return dialog_result;
 }
 
-wz_file_dialog_result_t wz_file_dialog_save_snapshot(char* utf8_path,
-                                                      size_t path_capacity)
+static wz_file_dialog_result_t wz_file_dialog_save_snapshot_sta(
+    char* utf8_path, size_t path_capacity)
 {
     static const COMDLG_FILTERSPEC filters[] = {
         {L"Spectrum snapshots", L"*.sna;*.z80"}, {L"All files", L"*.*"}
