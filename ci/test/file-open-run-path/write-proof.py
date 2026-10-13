@@ -29,6 +29,14 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--proof", required=True, type=Path)
     args = parser.parse_args()
+    driver = json.loads(Path("test-drivers/file-open-run-path.driver.json").read_text(
+        encoding="utf-8"))
+    if driver.get("testId") != "file-open-run-path":
+        raise SystemExit("file-open-run path driver identity mismatch")
+    for fixture in driver["fixtures"]:
+        actual = hashlib.sha256(Path(fixture["path"]).read_bytes()).hexdigest()
+        if actual != fixture["sha256"]:
+            raise SystemExit(f"fixture hash mismatch: {fixture['path']}")
     proof = {
         "testId": "file-open-run-path",
         "status": "pass",
@@ -36,7 +44,7 @@ def main():
         "runId": int(os.environ["GITHUB_RUN_ID"]),
         "runner": f"{os.environ['RUNNER_OS']}/{os.environ['RUNNER_ARCH']}",
         "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "caseCount": 11,
+        "caseCount": driver["requiredCases"],
         "fixtures": [
             {
                 "path": name,
