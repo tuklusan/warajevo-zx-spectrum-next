@@ -27,6 +27,6 @@ Task 461 is not ready to create or announce an
 implementation-complete candidate until every applicable item above is closed.
 Task 462 is an additional hard delivery gate: production Spectrum video is not
 delivery-ready until hosted pixel-equivalence against pinned Fuse passes on all
-supported host backends. Current pinned Mac GUI evidence shows a 180-degree
-orientation error; no visual-equivalence proof exists. A green in-memory raster
+supported host backends. Current pinned Mac GUI evidence shows an orientation
+mismatch; no visual-equivalence proof exists. A green in-memory raster
 regression or a package audit cannot waive this gate.

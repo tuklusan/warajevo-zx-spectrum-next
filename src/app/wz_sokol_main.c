@@ -6462,16 +6462,16 @@ static void wz_host_render_raster(void)
     sgl_enable_texture();
     sgl_texture(wz_host_session.raster_view, wz_host_session.raster_sampler);
     sgl_begin_quads();
-    sgl_t2f(texture_right, texture_bottom);
+    sgl_t2f(texture_left, texture_bottom);
     sgl_v2f(viewport_left / window_width * 2.0f - 1.0f,
             1.0f - display_bottom / window_height * 2.0f);
-    sgl_t2f(texture_left, texture_bottom);
+    sgl_t2f(texture_right, texture_bottom);
     sgl_v2f(viewport_right / window_width * 2.0f - 1.0f,
             1.0f - display_bottom / window_height * 2.0f);
-    sgl_t2f(texture_left, texture_top);
+    sgl_t2f(texture_right, texture_top);
     sgl_v2f(viewport_right / window_width * 2.0f - 1.0f,
             1.0f - display_top / window_height * 2.0f);
-    sgl_t2f(texture_right, texture_top);
+    sgl_t2f(texture_left, texture_top);
     sgl_v2f(viewport_left / window_width * 2.0f - 1.0f,
             1.0f - display_top / window_height * 2.0f);
     sgl_end();
