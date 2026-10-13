@@ -89,7 +89,7 @@
     },
     {
       "path": "src/app/wz_file_dialog_win32.c",
-      "sha256": "bcf5a298feaad7e6c11cd378c8c18bd47eacd8e2ded89f7b664712f47d8017c1"
+      "sha256": "d44dd58636bab8f9f25e8961e87796e8b807eb5bdf323b034591f14c15443668"
     },
     {
       "path": "src/app/wz_host_output.c",

@@ -11,6 +11,7 @@
 #include <shobjidl.h>
 #include <sokol_app.h>
 #include <limits.h>
+#include <stdio.h>
 
 #include "app/wz_file_dialog.h"
 
@@ -38,6 +39,9 @@ wz_file_dialog_result_t wz_file_dialog_open(char* utf8_path,
     utf8_path[0] = '\0';
     apartment_result = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
     if (FAILED(apartment_result)) {
+        (void)fprintf(stderr,
+            "Open / Run dialog COM initialization failed: 0x%08lx\n",
+            (unsigned long)apartment_result);
         return WZ_FILE_DIALOG_FAILED;
     }
     result = CoCreateInstance(&CLSID_FileOpenDialog, NULL,
@@ -76,6 +80,10 @@ wz_file_dialog_result_t wz_file_dialog_open(char* utf8_path,
     dialog_result = WZ_FILE_DIALOG_SELECTED;
 
 cleanup:
+    if (dialog_result == WZ_FILE_DIALOG_FAILED) {
+        (void)fprintf(stderr, "Open / Run dialog failed: 0x%08lx\n",
+                      (unsigned long)result);
+    }
     if (wide_path != NULL) CoTaskMemFree(wide_path);
     if (item != NULL) IShellItem_Release(item);
     if (dialog != NULL) IFileOpenDialog_Release(dialog);
