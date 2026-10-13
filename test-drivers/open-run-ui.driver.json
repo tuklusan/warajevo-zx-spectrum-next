@@ -15,7 +15,7 @@
     },
     {
       "path": "ci/test/open-run-ui/open-run-ui.py",
-      "sha256": "7d2b9baa0b57092d77a0bd1d67338bce39ece7f6abfe2a8a700b54c2c185b8f7"
+      "sha256": "8c90009b2e6ff852c2a65a1ce9ab1336acae889d2f0aba8c69302d4f5d045642"
     },
     {
       "path": "ci/test/open-run-ui/write-proof.py",

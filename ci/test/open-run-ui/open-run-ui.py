@@ -56,6 +56,10 @@ def activate_and_open_dialog(process):
         user32.GetWindowThreadProcessId.argtypes = [wintypes.HWND,
                                                     ctypes.POINTER(wintypes.DWORD)]
         user32.GetWindowThreadProcessId.restype = wintypes.DWORD
+        user32.SetActiveWindow.argtypes = [wintypes.HWND]
+        user32.SetFocus.argtypes = [wintypes.HWND]
+        user32.AttachThreadInput.argtypes = [wintypes.DWORD, wintypes.DWORD,
+                                             wintypes.BOOL]
         windows = []
         callback = ctypes.WINFUNCTYPE(wintypes.BOOL, wintypes.HWND,
                                       wintypes.LPARAM)
@@ -82,7 +86,23 @@ def activate_and_open_dialog(process):
             raise RuntimeError(f"emulator window not found for process {process.pid}")
         hwnd = windows[0]
         user32.ShowWindow(hwnd, 9)
+        user32.GetForegroundWindow.restype = wintypes.HWND
+        foreground = user32.GetForegroundWindow()
+        foreground_thread = user32.GetWindowThreadProcessId(
+            foreground, None) if foreground else 0
+        target_thread = user32.GetWindowThreadProcessId(hwnd, None)
+        if foreground_thread and foreground_thread != target_thread:
+            user32.AttachThreadInput(target_thread, foreground_thread, True)
         user32.SetForegroundWindow(hwnd)
+        user32.SetActiveWindow(hwnd)
+        user32.SetFocus(hwnd)
+        if foreground_thread and foreground_thread != target_thread:
+            user32.AttachThreadInput(target_thread, foreground_thread, False)
+        focused = user32.GetForegroundWindow()
+        focused_value = focused.value if hasattr(focused, "value") else focused
+        hwnd_value = hwnd.value if hasattr(hwnd, "value") else hwnd
+        if focused_value != hwnd_value:
+            raise RuntimeError("emulator window could not receive desktop input")
         # Open / Run is the first toolbar button, centered near client (42,42).
         point = wintypes.POINT(42, 42)
         user32.ClientToScreen.argtypes = [wintypes.HWND,
