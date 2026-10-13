@@ -117,6 +117,12 @@ def activate_and_open_dialog(process):
         user32.mouse_event(0x0002, 0, 0, 0, 0)
         time.sleep(0.1)
         user32.mouse_event(0x0004, 0, 0, 0, 0)
+        time.sleep(0.5)
+        if not native_dialog_visible():
+            # The same command is available as the first keyboard-menu action.
+            windows_press(0x70)
+            time.sleep(0.25)
+            windows_press(0x0D)
     elif sys.platform == "darwin":
         mac_keys('tell application "System Events" to set frontmost of first application process whose name is "Warajevo-ZX-Spectrum-Next" to true')
         mac_keys('tell application "System Events" to key code 122')
@@ -257,7 +263,7 @@ def main():
         proof = {
             "status": "pass",
             "runner": platform.platform(),
-            "action": ("Open / Run toolbar button > native file chooser"
+            "action": ("Open / Run toolbar button/F1 keyboard menu > native file chooser"
                        if os.name == "nt" else
                        "F1 keyboard menu > Open / Run > native file chooser"),
             "selectedFixture": tap.name,
