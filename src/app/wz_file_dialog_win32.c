@@ -10,6 +10,7 @@
 #include <commdlg.h>
 #include <sokol_app.h>
 #include <limits.h>
+#include <stdlib.h>
 
 #include "app/wz_file_dialog.h"
 
@@ -18,7 +19,7 @@ static wz_file_dialog_result_t wz_file_dialog_show(
     const wchar_t* default_name, const wchar_t* default_extension,
     char* utf8_path, size_t path_capacity)
 {
-    wchar_t wide_path[32768] = L"";
+    wchar_t* wide_path;
     OPENFILENAMEW dialog;
     DWORD error;
     int required;
@@ -28,12 +29,14 @@ static wz_file_dialog_result_t wz_file_dialog_show(
         return WZ_FILE_DIALOG_FAILED;
     }
     utf8_path[0] = '\0';
+    wide_path = (wchar_t*)calloc(32768u, sizeof(*wide_path));
+    if (wide_path == NULL) return WZ_FILE_DIALOG_FAILED;
     ZeroMemory(&dialog, sizeof(dialog));
     dialog.lStructSize = sizeof(dialog);
     dialog.hwndOwner = (HWND)sapp_win32_get_hwnd();
     dialog.lpstrFilter = filter;
     dialog.lpstrFile = wide_path;
-    dialog.nMaxFile = (DWORD)(sizeof(wide_path) / sizeof(wide_path[0]));
+    dialog.nMaxFile = 32768u;
     dialog.lpstrTitle = title;
     dialog.lpstrDefExt = default_extension;
     dialog.Flags = OFN_EXPLORER | OFN_ENABLESIZING | OFN_NOCHANGEDIR |
@@ -44,6 +47,7 @@ static wz_file_dialog_result_t wz_file_dialog_show(
 
     if (!(save ? GetSaveFileNameW(&dialog) : GetOpenFileNameW(&dialog))) {
         error = CommDlgExtendedError();
+        free(wide_path);
         return error == 0u ? WZ_FILE_DIALOG_CANCELLED : WZ_FILE_DIALOG_FAILED;
     }
     required = WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, wide_path,
@@ -53,8 +57,10 @@ static wz_file_dialog_result_t wz_file_dialog_show(
                             utf8_path, (int)path_capacity, NULL, NULL) !=
             required) {
         utf8_path[0] = '\0';
+        free(wide_path);
         return WZ_FILE_DIALOG_FAILED;
     }
+    free(wide_path);
     return WZ_FILE_DIALOG_SELECTED;
 }
 
