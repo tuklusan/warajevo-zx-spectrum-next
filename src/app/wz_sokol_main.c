@@ -6848,6 +6848,8 @@ static void wz_host_input_focus_from_mouse(const sapp_event* event)
     float scale = sapp_dpi_scale();
     float width;
     float height;
+    float mouse_x;
+    float mouse_y;
     float panel_width;
     float panel_height;
     float panel_x;
@@ -6857,18 +6859,18 @@ static void wz_host_input_focus_from_mouse(const sapp_event* event)
     if (scale <= 0.0f) scale = 1.0f;
     width = (float)sapp_width() / scale;
     height = (float)sapp_height() / scale;
-    ui_target = event->mouse_y <=
+    mouse_x = event->mouse_x / scale;
+    mouse_y = event->mouse_y / scale;
+    ui_target = mouse_y <=
         WZ_UI_MENU_BAR_HEIGHT + WZ_UI_TOOLBAR_HEIGHT ||
-        event->mouse_y >= height - 48.0f / scale;
+        mouse_y >= height - 48.0f / scale;
     if (wz_host_session.remote_settings_visible) {
         panel_width = width >= 440.0f ? 420.0f : width - 16.0f;
         panel_height = height >= 238.0f ? 190.0f : height - 48.0f;
         panel_x = width - panel_width - 8.0f;
         panel_y = height - panel_height - 56.0f;
-        if (event->mouse_x >= panel_x &&
-            event->mouse_x <= panel_x + panel_width &&
-            event->mouse_y >= panel_y &&
-            event->mouse_y <= panel_y + panel_height) {
+        if (mouse_x >= panel_x && mouse_x <= panel_x + panel_width &&
+            mouse_y >= panel_y && mouse_y <= panel_y + panel_height) {
             ui_target = true;
         }
     }
@@ -6877,10 +6879,8 @@ static void wz_host_input_focus_from_mouse(const sapp_event* event)
         panel_height = height >= 232.0f ? 200.0f : height - 32.0f;
         panel_x = (width - panel_width) * 0.5f;
         panel_y = (height - panel_height) * 0.5f;
-        if (event->mouse_x >= panel_x &&
-            event->mouse_x <= panel_x + panel_width &&
-            event->mouse_y >= panel_y &&
-            event->mouse_y <= panel_y + panel_height) {
+        if (mouse_x >= panel_x && mouse_x <= panel_x + panel_width &&
+            mouse_y >= panel_y && mouse_y <= panel_y + panel_height) {
             ui_target = true;
         }
     }
@@ -6889,10 +6889,8 @@ static void wz_host_input_focus_from_mouse(const sapp_event* event)
         panel_height = height >= 392.0f ? 360.0f : height - 32.0f;
         panel_x = (width - panel_width) * 0.5f;
         panel_y = (height - panel_height) * 0.5f;
-        if (event->mouse_x >= panel_x &&
-            event->mouse_x <= panel_x + panel_width &&
-            event->mouse_y >= panel_y &&
-            event->mouse_y <= panel_y + panel_height) {
+        if (mouse_x >= panel_x && mouse_x <= panel_x + panel_width &&
+            mouse_y >= panel_y && mouse_y <= panel_y + panel_height) {
             ui_target = true;
         }
     }
@@ -6901,10 +6899,8 @@ static void wz_host_input_focus_from_mouse(const sapp_event* event)
         panel_height = height >= 392.0f ? 360.0f : height - 32.0f;
         panel_x = (width - panel_width) * 0.5f;
         panel_y = (height - panel_height) * 0.5f;
-        if (event->mouse_x >= panel_x &&
-            event->mouse_x <= panel_x + panel_width &&
-            event->mouse_y >= panel_y &&
-            event->mouse_y <= panel_y + panel_height) {
+        if (mouse_x >= panel_x && mouse_x <= panel_x + panel_width &&
+            mouse_y >= panel_y && mouse_y <= panel_y + panel_height) {
             ui_target = true;
         }
     }
@@ -6913,10 +6909,8 @@ static void wz_host_input_focus_from_mouse(const sapp_event* event)
         panel_height = height >= 264.0f ? 232.0f : height - 32.0f;
         panel_x = (width - panel_width) * 0.5f;
         panel_y = (height - panel_height) * 0.5f;
-        if (event->mouse_x >= panel_x &&
-            event->mouse_x <= panel_x + panel_width &&
-            event->mouse_y >= panel_y &&
-            event->mouse_y <= panel_y + panel_height) {
+        if (mouse_x >= panel_x && mouse_x <= panel_x + panel_width &&
+            mouse_y >= panel_y && mouse_y <= panel_y + panel_height) {
             ui_target = true;
         }
     }
@@ -6924,10 +6918,8 @@ static void wz_host_input_focus_from_mouse(const sapp_event* event)
         const float modal_width = 420.0f;
         const float modal_height = 184.0f;
         const float modal_x = (width - modal_width) * 0.5f;
-        if (event->mouse_x >= modal_x &&
-            event->mouse_x <= modal_x + modal_width &&
-            event->mouse_y >= 100.0f &&
-            event->mouse_y <= 100.0f + modal_height) {
+        if (mouse_x >= modal_x && mouse_x <= modal_x + modal_width &&
+            mouse_y >= 100.0f && mouse_y <= 100.0f + modal_height) {
             ui_target = true;
         }
     }
@@ -6936,10 +6928,8 @@ static void wz_host_input_focus_from_mouse(const sapp_event* event)
         const float manager_height = height >= 700.0f ? 700.0f : height - 32.0f;
         const float manager_x = (width - manager_width) * 0.5f;
         const float manager_y = (height - manager_height) * 0.5f;
-        if (event->mouse_x >= manager_x &&
-            event->mouse_x <= manager_x + manager_width &&
-            event->mouse_y >= manager_y &&
-            event->mouse_y <= manager_y + manager_height) {
+        if (mouse_x >= manager_x && mouse_x <= manager_x + manager_width &&
+            mouse_y >= manager_y && mouse_y <= manager_y + manager_height) {
             ui_target = true;
         }
     }
@@ -7212,7 +7202,12 @@ int main(void)
         .width = wz_host_preferences.window_width > 0
             ? wz_host_preferences.window_width : 1024,
         .height = wz_host_preferences.window_height > 0
-            ? wz_host_preferences.window_height : 768,
+            ? wz_host_preferences.window_height :
+#if defined(_WIN32)
+                720,
+#else
+                768,
+#endif
         .fullscreen = wz_host_preferences.fullscreen,
         .window_title = "Warajevo ZX Spectrum Next",
         .swap_interval = 0,

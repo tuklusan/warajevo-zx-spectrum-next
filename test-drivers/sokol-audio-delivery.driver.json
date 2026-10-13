@@ -62,7 +62,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "449fef5f04e0beb84dafa4aabbf1a3939734bb7ef85728c9394cf3e362bca9ee"
+      "sha256": "ba7e657fcc808d0ae55308702cb6ccc1dec5610d6c0ba4edbe22126466869dbf"
     },
     {
       "path": "src/app/wz_speed_policy.c",
