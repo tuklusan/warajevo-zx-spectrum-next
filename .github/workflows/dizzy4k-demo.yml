@@ -98,9 +98,23 @@ jobs:
           path: dist/packages/${{ matrix.id }}/
           if-no-files-found: error
 
+      - name: Allow the app listener through the ephemeral runner firewall
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $binary = Join-Path $env:GITHUB_WORKSPACE 'dist/${{ matrix.id }}/Warajevo-ZX-Spectrum-Next.exe'
+          if (-not (Test-Path -LiteralPath $binary)) { throw 'The production GUI binary is missing.' }
+          Set-NetFirewallProfile -Profile Domain,Private,Public -NotifyOnListen 'False'
+          New-NetFirewallRule -DisplayName 'WZSN temporary DIZZY4K gate' -Direction Inbound -Action Allow -Program $binary -Profile Any | Out-Null
+
       - name: Run DIZZY4K tape/demo harness
         shell: bash
         run: bash ci/test/run-dizzy4k-demo.sh dist/${{ matrix.id }}/Warajevo-ZX-Spectrum-Next test-media/DIZZY4K.TAP test-results/screenshots/${{ matrix.id }}
+
+      - name: Remove temporary Windows firewall rule
+        if: always() && runner.os == 'Windows'
+        shell: pwsh
+        run: Remove-NetFirewallRule -DisplayName 'WZSN temporary DIZZY4K gate' -ErrorAction SilentlyContinue
 
       - name: Publish runner screenshot summary
         if: always()
