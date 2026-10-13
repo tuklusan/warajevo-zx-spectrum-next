@@ -1,0 +1,101 @@
+{
+  "testId": "open-run-ui",
+  "command": "Build the production GUI on Windows x64/ARM64 and macOS x64/ARM64, use the F1 keyboard menu to open the native Open / Run chooser, select a generated checksummed TAP fixture, and inspect the desktop screenshot for the mounted tape state.",
+  "requiredCases": 1,
+  "runnerMatrix": [
+    "windows-2025",
+    "windows-11-arm",
+    "macos-15-intel",
+    "macos-15"
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/open-run-ui-contract.yml",
+      "sha256": "33c464d638a773c65d2cb20013c72092aae6ca2906dbaf238d2ed2b14dae39ae"
+    },
+    {
+      "path": "ci/test/open-run-ui/open-run-ui.py",
+      "sha256": "7d9b89ccb5079e94130a3e6b8cfc8673fb324cfb16ad7a50d396f8ee7b3a01b5"
+    },
+    {
+      "path": "ci/test/open-run-ui/write-proof.py",
+      "sha256": "fe5b88a8bbd13d68ecd4162c438e05105ef955856b1b17d0dbacdfe644ae9136"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "b171289db934e9bc02d943b3e77a06f0af43a32fae3a073f025c707dac6d56b3"
+    },
+    {
+      "path": "src/app/wz_file_dialog.h",
+      "sha256": "6686668d4a0e92030066f7e177824169e09aeb137de4beaf2eb43958f982f41b"
+    },
+    {
+      "path": "src/app/wz_file_dialog_win32.c",
+      "sha256": "bcf5a298feaad7e6c11cd378c8c18bd47eacd8e2ded89f7b664712f47d8017c1"
+    },
+    {
+      "path": "src/app/wz_file_dialog_macos.m",
+      "sha256": "03046b36b1bff1a6fd5ae4e700bf042c0db66672614db6ebde86ef2c9c854ca3"
+    },
+    {
+      "path": "src/app/wz_file_open_run.c",
+      "sha256": "0935793d2fcf5e9776b8c89de29d63d8a79c2705f839d5ec80b280da92c1ae1e"
+    },
+    {
+      "path": "src/app/wz_file_open_run.h",
+      "sha256": "6147d0501cab7ede9919fca4198fb3621f7c35d8825b9c4fd17a02a199e3512d"
+    },
+    {
+      "path": "src/app/wz_ui_keyboard_menu.c",
+      "sha256": "c6dc2525263bd213c19aff65b78c2c14d3d35c80a40ffd3daa4fe380fc9bf45e"
+    },
+    {
+      "path": "src/app/wz_ui_keyboard_menu.h",
+      "sha256": "6caf7d57fa89bd2e9fee6669240bb0550effab9a703915885995b56fde3b4b48"
+    },
+    {
+      "path": "src/core/wz_tape.c",
+      "sha256": "20c4523214f828d5129cbde2fb2c0d077ed15dae0daa923d019d1934b0c33d0b"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "af1a055ba24a42e870645a1b7389cffcf449028e8dd2f3344881282db94f51f4"
+    },
+    {
+      "path": "ci/runner-bootstrap/bootstrap-unix.sh",
+      "sha256": "2425f329f0424995fdb476f3c452fa712045b861651d2e00b20970a2c9c67da4"
+    },
+    {
+      "path": "ci/runner-bootstrap/bootstrap-windows.ps1",
+      "sha256": "b93d8772e1bb8b5360e7368d30e1ad364bd8a9df826f2af51a382d0be22f3291"
+    },
+    {
+      "path": "ci/runner-bootstrap/manifests/windows-x86_64.txt",
+      "sha256": "d214577bcefed7d901b4316973c4932d06f3d629cbfdf7873b6f3c71bb6f7ab5"
+    },
+    {
+      "path": "ci/runner-bootstrap/manifests/windows-arm64.txt",
+      "sha256": "d214577bcefed7d901b4316973c4932d06f3d629cbfdf7873b6f3c71bb6f7ab5"
+    },
+    {
+      "path": "ci/runner-bootstrap/manifests/macos-x86_64.txt",
+      "sha256": "eb578acc9c5cde20f4de08e39f90187fbe937b066ba89a3295d45cad86b7af99"
+    },
+    {
+      "path": "ci/runner-bootstrap/manifests/macos-arm64.txt",
+      "sha256": "eb578acc9c5cde20f4de08e39f90187fbe937b066ba89a3295d45cad86b7af99"
+    },
+    {
+      "path": "roms/48.rom",
+      "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"
+    }
+  ]
+}

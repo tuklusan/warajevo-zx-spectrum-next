@@ -1,0 +1,89 @@
+name: Open Run native media selection
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/open-run-ui-contract.yml'
+      - 'ci/test/open-run-ui/**'
+      - 'test-drivers/open-run-ui.driver.json'
+      - 'src/app/wz_sokol_main.c'
+      - 'src/app/wz_file_dialog_*'
+      - 'src/app/wz_file_open_run.*'
+      - 'src/app/wz_ui_keyboard_menu.*'
+      - 'src/core/wz_tape.*'
+      - 'src/cmake/CMakeLists.txt'
+      - 'ci/runner-bootstrap/**'
+      - 'roms/48.rom'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  open-run:
+    if: github.ref == 'refs/heads/main'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: windows-x86_64
+            label: windows-2025
+          - id: windows-arm64
+            label: windows-11-arm
+          - id: macos-x86_64
+            label: macos-15-intel
+          - id: macos-arm64
+            label: macos-15
+    name: ${{ matrix.id }}
+    runs-on: ${{ matrix.label }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/cache@v4
+        id: bootstrap
+        with:
+          path: ci/.runner-bootstrap-cache
+          key: runner-bootstrap-${{ matrix.id }}-${{ hashFiles('ci/runner-bootstrap/manifests/**', 'ci/runner-bootstrap/**') }}
+      - name: Bootstrap Windows runner
+        if: runner.os == 'Windows' && steps.bootstrap.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: .\ci\runner-bootstrap\bootstrap-windows.ps1 ci\runner-bootstrap\manifests\${{ matrix.id }}.txt
+      - name: Bootstrap macOS runner
+        if: runner.os == 'macOS' && steps.bootstrap.outputs.cache-hit != 'true'
+        shell: bash
+        run: bash ci/runner-bootstrap/bootstrap-unix.sh ci/runner-bootstrap/manifests/${{ matrix.id }}.txt
+      - name: Record bootstrap identity
+        if: steps.bootstrap.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          mkdir -p ci/.runner-bootstrap-cache
+          printf 'runner_label=%s\nrunner_name=%s\nrunner_arch=%s\nimage=%s\nmanifest=ci/runner-bootstrap/manifests/%s.txt\nrecorded_at=%s\n' \
+            '${{ matrix.label }}' "$RUNNER_NAME" "$RUNNER_ARCH" "${ImageOS:-unknown}" \
+            '${{ matrix.id }}' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            > ci/.runner-bootstrap-cache/manifest.txt
+      - name: Build product GUI
+        shell: bash
+        run: |
+          cmake -S src/cmake -B dist/open-run/${{ matrix.id }} -G Ninja -DCMAKE_BUILD_TYPE=Release -DWZSN_BUILD_SOKOL_HOST=ON
+          cmake --build dist/open-run/${{ matrix.id }} --clean-first --parallel 2
+      - name: Exercise keyboard entry, native chooser, and media load
+        shell: bash
+        run: |
+          set -euo pipefail
+          binary="dist/open-run/${{ matrix.id }}/Warajevo-ZX-Spectrum-Next"
+          if [ -f "${binary}.exe" ]; then binary="${binary}.exe"; fi
+          test -f "$binary"
+          python ci/test/open-run-ui/open-run-ui.py "$binary" dist/open-run/${{ matrix.id }}/evidence
+      - name: Pin source and screenshot evidence
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          RUNNER_ARCH: ${{ runner.arch }}
+        run: python ci/test/open-run-ui/write-proof.py --output dist/open-run/${{ matrix.id }}/evidence
+      - uses: actions/upload-artifact@v4
+        with:
+          name: open-run-ui-${{ matrix.id }}-${{ github.sha }}
+          path: dist/open-run/${{ matrix.id }}/evidence/
+          if-no-files-found: error
+          retention-days: 1
