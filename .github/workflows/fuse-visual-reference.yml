@@ -89,6 +89,13 @@ jobs:
         run: |
           cmake -S src/cmake -B dist/fuse-visual/${{ matrix.id }} -G Ninja -DCMAKE_BUILD_TYPE=Release -DWZSN_BUILD_SOKOL_HOST=ON
           cmake --build dist/fuse-visual/${{ matrix.id }} --clean-first --parallel 2
+      - name: Allow the app listener through the ephemeral runner firewall
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $binary = Join-Path $env:GITHUB_WORKSPACE 'dist/fuse-visual/${{ matrix.id }}/Warajevo-ZX-Spectrum-Next.exe'
+          if (-not (Test-Path -LiteralPath $binary)) { throw 'The production GUI binary is missing.' }
+          New-NetFirewallRule -DisplayName 'WZSN temporary visual gate' -Direction Inbound -Action Allow -Program $binary -Profile Any | Out-Null
       - name: Download pinned Fuse display
         uses: actions/download-artifact@v4
         with:
