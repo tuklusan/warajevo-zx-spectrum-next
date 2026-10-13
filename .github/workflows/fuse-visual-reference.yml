@@ -97,6 +97,18 @@ jobs:
           if (-not (Test-Path -LiteralPath $binary)) { throw 'The production GUI binary is missing.' }
           Set-NetFirewallProfile -Profile Domain,Private,Public -NotifyOnListen 'False'
           New-NetFirewallRule -DisplayName 'WZSN temporary visual gate' -Direction Inbound -Action Allow -Program $binary -Profile Any | Out-Null
+      - name: Clear first-logon overlays on the Windows ARM runner
+        if: matrix.id == 'windows-arm64'
+        shell: pwsh
+        run: |
+          $policy = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\OOBE'
+          New-Item -Path $policy -Force | Out-Null
+          New-ItemProperty -Path $policy -Name DisablePrivacyExperience -PropertyType DWord -Value 1 -Force | Out-Null
+          Get-Process -Name msoobe,UserOOBEBroker,CloudExperienceHostBroker,wsl,WindowsTerminal -ErrorAction SilentlyContinue |
+            Stop-Process -Force -ErrorAction SilentlyContinue
+          Start-Sleep -Seconds 2
+          $overlay = Get-Process -Name msoobe,UserOOBEBroker,CloudExperienceHostBroker,wsl,WindowsTerminal -ErrorAction SilentlyContinue
+          if ($overlay) { throw "Windows first-logon overlay remains: $($overlay.Name -join ', ')" }
       - name: Download pinned Fuse display
         uses: actions/download-artifact@v4
         with:
