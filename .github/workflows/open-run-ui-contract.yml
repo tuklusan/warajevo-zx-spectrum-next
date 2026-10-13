@@ -97,6 +97,8 @@ jobs:
           Start-Sleep -Seconds 1
           Get-Process -Name wsl,WindowsTerminal -ErrorAction SilentlyContinue |
             Stop-Process -Force -ErrorAction SilentlyContinue
+          Get-Process -Name msoobe,UserOOBEBroker,CloudExperienceHostBroker -ErrorAction SilentlyContinue |
+            Stop-Process -Force -ErrorAction SilentlyContinue
           Start-Sleep -Seconds 2
           $overlay = Get-Process -Name msoobe,UserOOBEBroker,CloudExperienceHostBroker -ErrorAction SilentlyContinue
           if ($overlay) { throw "Windows first-logon overlay remains: $($overlay.Name -join ', ')" }
