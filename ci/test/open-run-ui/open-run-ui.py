@@ -59,6 +59,8 @@ def activate_and_open_dialog(process):
         windows = []
         callback = ctypes.WINFUNCTYPE(wintypes.BOOL, wintypes.HWND,
                                       wintypes.LPARAM)
+        user32.EnumWindows.argtypes = [callback, wintypes.LPARAM]
+        user32.EnumWindows.restype = wintypes.BOOL
 
         def visit(hwnd, _):
             length = user32.GetWindowTextLengthW(hwnd)
@@ -81,11 +83,20 @@ def activate_and_open_dialog(process):
         hwnd = windows[0]
         user32.ShowWindow(hwnd, 9)
         user32.SetForegroundWindow(hwnd)
-        # Open / Run is the first toolbar action; post the actual client click.
-        point = (42 << 16) | 42
-        user32.PostMessageW(hwnd, 0x0200, 0, point)  # WM_MOUSEMOVE
-        user32.PostMessageW(hwnd, 0x0201, 1, point)  # WM_LBUTTONDOWN
-        user32.PostMessageW(hwnd, 0x0202, 0, point)  # WM_LBUTTONUP
+        # Open / Run is the first toolbar button, centered near client (42,42).
+        point = wintypes.POINT(42, 42)
+        user32.ClientToScreen.argtypes = [wintypes.HWND,
+                                          ctypes.POINTER(wintypes.POINT)]
+        user32.ClientToScreen.restype = wintypes.BOOL
+        user32.SetCursorPos.argtypes = [ctypes.c_int, ctypes.c_int]
+        user32.SetCursorPos.restype = wintypes.BOOL
+        if not user32.ClientToScreen(hwnd, ctypes.byref(point)) or not \
+                user32.SetCursorPos(point.x, point.y):
+            raise RuntimeError("could not position pointer on Open / Run")
+        time.sleep(0.2)
+        user32.mouse_event(0x0002, 0, 0, 0, 0)
+        time.sleep(0.1)
+        user32.mouse_event(0x0004, 0, 0, 0, 0)
     elif sys.platform == "darwin":
         mac_keys('tell application "System Events" to set frontmost of first application process whose name is "Warajevo-ZX-Spectrum-Next" to true')
         mac_keys('tell application "System Events" to key code 122')
@@ -104,6 +115,8 @@ def native_dialog_visible():
         found = []
         callback = ctypes.WINFUNCTYPE(wintypes.BOOL, wintypes.HWND,
                                       wintypes.LPARAM)
+        user32.EnumWindows.argtypes = [callback, wintypes.LPARAM]
+        user32.EnumWindows.restype = wintypes.BOOL
 
         def visit(hwnd, _):
             length = user32.GetWindowTextLengthW(hwnd)
