@@ -1,10 +1,10 @@
 {
   "testId": "networking-permission",
   "status": "pass",
-  "commit": "68b222176734b0951d0fa7e7915c2389eedc31bd",
+  "commit": "31e209c03931b765df5ceac6af3a174f11148aca",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-10-12T22:43:06+00:00",
-  "runId": 38318142751,
+  "timestamp": "2026-10-13T07:50:55+00:00",
+  "runId": 38365180523,
   "runners": [
     {
       "id": "windows-x64",
@@ -66,7 +66,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "b171289db934e9bc02d943b3e77a06f0af43a32fae3a073f025c707dac6d56b3"
+      "sha256": "ba7e657fcc808d0ae55308702cb6ccc1dec5610d6c0ba4edbe22126466869dbf"
     },
     {
       "path": "src/core/wz_machine_profile.c",
@@ -102,7 +102,7 @@
     },
     {
       "path": "src/core/wz_debugger.c",
-      "sha256": "479b238f1aa668002aba6a4959750296cef553c2d4fe4425b0164b7f08e35eaf"
+      "sha256": "d3c93f73ed001493467c613554bdd142728bdc5c4b0f1f5cdc24068dcebe795a"
     },
     {
       "path": "src/core/wz_machine.c",
