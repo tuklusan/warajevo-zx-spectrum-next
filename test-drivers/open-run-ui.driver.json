@@ -11,7 +11,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/open-run-ui-contract.yml",
-      "sha256": "cbc459111f79d00733cd62041d4b672899796524aac4d0aa51532633bb7af93e"
+      "sha256": "c3b5b4de33dd5a3e3ba6922b6951d98aee6694047636c9bfae716db7cdc74bf8"
     },
     {
       "path": "ci/test/open-run-ui/open-run-ui.py",
