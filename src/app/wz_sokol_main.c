@@ -10,6 +10,7 @@ SANYALnet Labs." See LICENSE for full terms. */
 #endif
 #define SOKOL_NO_ENTRY
 #define SOKOL_IMPL
+#define SOKOL_LOG_IMPL
 #if defined(_WIN32)
 #define SOKOL_D3D11
 #elif defined(__APPLE__)
@@ -24,6 +25,7 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "sokol_glue.h"
 #include "sokol_gl.h"
 #include "sokol_time.h"
+#include "sokol_log.h"
 #define NK_IMPLEMENTATION
 #include "app/wz_nuklear_config.h"
 #include "sokol_nuklear.h"
@@ -6550,7 +6552,10 @@ static void wz_host_session_init(void)
         NULL, NULL, NULL, false);
     wz_host_input_mappings_init(&wz_host_session);
     wz_host_session.speed = WZ_SPEED_100;
-    sg_setup(&(sg_desc){.environment = sglue_environment()});
+    sg_setup(&(sg_desc){
+        .environment = sglue_environment(),
+        .logger = {.func = slog_func}
+    });
     sgl_setup(&(sgl_desc_t){0});
     wz_host_session.graphics_initialized = sg_isvalid();
     if (wz_host_session.graphics_initialized) {
@@ -7200,6 +7205,7 @@ int main(void)
         .frame_cb = wz_host_frame,
         .cleanup_cb = wz_host_cleanup,
         .event_cb = wz_host_event,
+        .logger = {.func = slog_func},
         .width = wz_host_preferences.window_width > 0
             ? wz_host_preferences.window_width : 1024,
         .height = wz_host_preferences.window_height > 0
