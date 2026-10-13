@@ -6574,6 +6574,7 @@ static void wz_host_session_init(void)
         wz_host_session.raster_image = sg_make_image(&(sg_image_desc){
             .width = WZ_RASTER_CANONICAL_WIDTH,
             .height = WZ_RASTER_CANONICAL_HEIGHT,
+            .usage = {.immutable = false, .dynamic_update = true},
             .pixel_format = SG_PIXELFORMAT_RGBA8,
             .data.mip_levels[0] = {
                 .ptr = wz_host_session.raster_rgba,
