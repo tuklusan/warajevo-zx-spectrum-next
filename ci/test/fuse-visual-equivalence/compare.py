@@ -69,9 +69,11 @@ def main():
     validate_capture(reference, "Fuse")
     validate_capture(candidate, "application")
     normalized_size = (display_width, display_height)
-    if reference.width < 256 or reference.height < 192 or \
-            candidate.width < 256 or candidate.height < 192:
-        raise SystemExit("a display crop is too small to contain the Spectrum raster")
+    if reference.width < display_width or reference.height < display_height or \
+            candidate.width < display_width or candidate.height < display_height:
+        raise SystemExit(
+            "a display crop is smaller than the full normalized Spectrum frame; "
+            "active-area-only captures are not accepted")
     reference = reference.resize(normalized_size, Image.Resampling.NEAREST)
     candidate = candidate.resize(normalized_size, Image.Resampling.NEAREST)
     args.output.parent.mkdir(parents=True, exist_ok=True)
@@ -111,6 +113,7 @@ def main():
         "maximumMismatchPercent": args.maximum_mismatch_percent,
         "maximumMeanChannelError": args.maximum_mean_channel_error,
         "normalization": "explicit crop followed by nearest-neighbor scale",
+        "minimumSourceSize": [display_width, display_height],
         "fuseCapture": reference_path.name,
         "applicationCapture": candidate_path.name,
         "differenceImage": output_image.name,

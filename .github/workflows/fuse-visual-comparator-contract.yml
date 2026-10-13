@@ -1,0 +1,28 @@
+name: Fuse visual comparator contract
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fuse-visual-comparator-contract.yml'
+      - 'ci/test/fuse-visual-equivalence/**'
+      - 'test-drivers/fuse-visual-equivalence.driver.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  comparator-contract:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install comparator dependency
+        run: python -m pip install Pillow
+      - name: Verify full-frame comparison contract
+        run: python ci/test/fuse-visual-equivalence/contract.py
