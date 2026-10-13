@@ -92,7 +92,7 @@ def main():
     difference = ImageChops.difference(reference, candidate)
     stats = ImageStat.Stat(difference)
     mean_channel_error = sum(stats.mean) / 3.0
-    pixels = list(difference.getdata())
+    pixels = difference.getdata()
     mismatches = sum(
         1 for red, green, blue in pixels
         if max(red, green, blue) > args.channel_tolerance)
