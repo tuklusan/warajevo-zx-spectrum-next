@@ -65,6 +65,17 @@ def windows_press(vk):
     windows_key(vk, False)
 
 
+def windows_post_key(hwnd, vk):
+    user32 = ctypes.windll.user32
+    scan = user32.MapVirtualKeyW(vk, 0)
+    message_down = (1 | (scan << 16))
+    message_up = message_down | (1 << 30) | (1 << 31)
+    if not user32.PostMessageW(hwnd, 0x0100, vk, message_down):
+        raise ctypes.WinError()
+    if not user32.PostMessageW(hwnd, 0x0101, vk, message_up):
+        raise ctypes.WinError()
+
+
 def windows_mouse(flags):
     event = INPUT(type=0, mi=MOUSEINPUT(0, 0, 0, flags, 0, 0))
     if ctypes.windll.user32.SendInput(1, ctypes.byref(event),
@@ -154,9 +165,9 @@ def activate_and_open_dialog(process):
         time.sleep(0.5)
         if not native_dialog_visible():
             # The same command is available as the first keyboard-menu action.
-            windows_press(0x70)
+            windows_post_key(hwnd, 0x70)
             time.sleep(0.25)
-            windows_press(0x0D)
+            windows_post_key(hwnd, 0x0D)
     elif sys.platform == "darwin":
         mac_keys('tell application "System Events" to set frontmost of first application process whose name is "Warajevo-ZX-Spectrum-Next" to true')
         mac_keys('tell application "System Events" to key code 122')
