@@ -111,7 +111,7 @@
     },
     {
       "path": "src/core/wz_debugger.c",
-      "sha256": "479b238f1aa668002aba6a4959750296cef553c2d4fe4425b0164b7f08e35eaf"
+      "sha256": "d3c93f73ed001493467c613554bdd142728bdc5c4b0f1f5cdc24068dcebe795a"
     },
     {
       "path": "src/core/wz_kempston.c",

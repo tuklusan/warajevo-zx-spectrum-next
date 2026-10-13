@@ -50,7 +50,7 @@
     },
     {
       "path": "test-drivers/windows-runtime-dependency-audit.driver.json",
-      "sha256": "ae3c8c536d20d26831f1bb73f85f9fa24ab489ff51ef15e2b9f32a61c6dbcc6c"
+      "sha256": "efb0f31c3cdb758fb8ecad847b4443b7171e7d62ced9faddd303e60e8c580d6e"
     }
   ]
 }
