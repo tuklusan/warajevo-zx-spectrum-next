@@ -1,0 +1,108 @@
+{
+  "status": "pass",
+  "runner": "Windows-ARM64",
+  "action": "Open / Run toolbar button/F1 keyboard menu > native file chooser",
+  "selectedFixture": "open-run-smoke.tap",
+  "selectedSha256": "a665e6b115dd56fd3e0c89be631e6eda8e9666b822e0bd7026bf0822c4bbc68f",
+  "desktopScreenshot": "open-run-desktop.png",
+  "desktopScreenshotSha256": "5f55cb9108ef2a7b5f2dc752dffde83196642d1cedcc36b76a575524fea92c6d",
+  "testId": "open-run-ui",
+  "commit": "682a3c825ef34a93f1fa73474b152bc888dbbd8e",
+  "runId": 38360186175,
+  "timestamp": "2026-10-13T07:05:24+00:00",
+  "caseCount": 1,
+  "fixtures": [
+    {
+      "path": ".github/workflows/open-run-ui-contract.yml",
+      "sha256": "6352c8d593930f6edba268ecfed51769f3842cdbb0e3547fdeaf56aae27be35d"
+    },
+    {
+      "path": "ci/test/open-run-ui/open-run-ui.py",
+      "sha256": "21bce7853df880defc56301288eb233eb7ec7bff2122e4a56513e3bc0ba88091"
+    },
+    {
+      "path": "ci/test/open-run-ui/write-proof.py",
+      "sha256": "c67d6fcd3cd5aae2e12c73fe9df3615b13b832bd91c69a8820c440c2d483d0b3"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "ba7e657fcc808d0ae55308702cb6ccc1dec5610d6c0ba4edbe22126466869dbf"
+    },
+    {
+      "path": "src/app/wz_file_dialog.h",
+      "sha256": "6686668d4a0e92030066f7e177824169e09aeb137de4beaf2eb43958f982f41b"
+    },
+    {
+      "path": "src/app/wz_file_dialog_win32.c",
+      "sha256": "897f9c1d6a647f22c0700482f603188fc701ff70ff836ac33f5a3130934abdc9"
+    },
+    {
+      "path": "src/app/wz_file_dialog_macos.m",
+      "sha256": "03046b36b1bff1a6fd5ae4e700bf042c0db66672614db6ebde86ef2c9c854ca3"
+    },
+    {
+      "path": "src/app/wz_file_open_run.c",
+      "sha256": "0935793d2fcf5e9776b8c89de29d63d8a79c2705f839d5ec80b280da92c1ae1e"
+    },
+    {
+      "path": "src/app/wz_file_open_run.h",
+      "sha256": "6147d0501cab7ede9919fca4198fb3621f7c35d8825b9c4fd17a02a199e3512d"
+    },
+    {
+      "path": "src/app/wz_ui_keyboard_menu.c",
+      "sha256": "c6dc2525263bd213c19aff65b78c2c14d3d35c80a40ffd3daa4fe380fc9bf45e"
+    },
+    {
+      "path": "src/app/wz_ui_keyboard_menu.h",
+      "sha256": "6caf7d57fa89bd2e9fee6669240bb0550effab9a703915885995b56fde3b4b48"
+    },
+    {
+      "path": "src/core/wz_tape.c",
+      "sha256": "20c4523214f828d5129cbde2fb2c0d077ed15dae0daa923d019d1934b0c33d0b"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "ddcb11d8cb9a3034f5ebd8c254b43778b4441ce23ed111606bcb70c41cf76739"
+    },
+    {
+      "path": "ci/runner-bootstrap/bootstrap-unix.sh",
+      "sha256": "2425f329f0424995fdb476f3c452fa712045b861651d2e00b20970a2c9c67da4"
+    },
+    {
+      "path": "ci/runner-bootstrap/bootstrap-windows.ps1",
+      "sha256": "b93d8772e1bb8b5360e7368d30e1ad364bd8a9df826f2af51a382d0be22f3291"
+    },
+    {
+      "path": "ci/runner-bootstrap/manifests/windows-x86_64.txt",
+      "sha256": "d214577bcefed7d901b4316973c4932d06f3d629cbfdf7873b6f3c71bb6f7ab5"
+    },
+    {
+      "path": "ci/runner-bootstrap/manifests/windows-arm64.txt",
+      "sha256": "d214577bcefed7d901b4316973c4932d06f3d629cbfdf7873b6f3c71bb6f7ab5"
+    },
+    {
+      "path": "ci/runner-bootstrap/manifests/macos-x86_64.txt",
+      "sha256": "eb578acc9c5cde20f4de08e39f90187fbe937b066ba89a3295d45cad86b7af99"
+    },
+    {
+      "path": "ci/runner-bootstrap/manifests/macos-arm64.txt",
+      "sha256": "eb578acc9c5cde20f4de08e39f90187fbe937b066ba89a3295d45cad86b7af99"
+    },
+    {
+      "path": "roms/48.rom",
+      "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"
+    },
+    {
+      "path": "test-drivers/open-run-ui.driver.json",
+      "sha256": "c1d7201d775b71d1ddadf1a599718635c9a6d87df39471216d4ad138239b6088"
+    }
+  ]
+}

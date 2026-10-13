@@ -5,16 +5,16 @@
   "selectedFixture": "open-run-smoke.tap",
   "selectedSha256": "a665e6b115dd56fd3e0c89be631e6eda8e9666b822e0bd7026bf0822c4bbc68f",
   "desktopScreenshot": "open-run-desktop.png",
-  "desktopScreenshotSha256": "4328f89b08ffa72aa68ef12ffbe9d9ca53e9f41603ae4ad5d5a642333cf12c34",
+  "desktopScreenshotSha256": "2a74471096c38df1999b8320a1d6376ea40e52dfe691e36e9651a8ed9c5ea0f7",
   "testId": "open-run-ui",
-  "commit": "a37d760ef274d79c4281e0c56706e710167ebe03",
-  "runId": 38335968352,
-  "timestamp": "2026-10-13T02:15:50+00:00",
+  "commit": "682a3c825ef34a93f1fa73474b152bc888dbbd8e",
+  "runId": 38360186175,
+  "timestamp": "2026-10-13T07:03:26+00:00",
   "caseCount": 1,
   "fixtures": [
     {
       "path": ".github/workflows/open-run-ui-contract.yml",
-      "sha256": "cbc459111f79d00733cd62041d4b672899796524aac4d0aa51532633bb7af93e"
+      "sha256": "6352c8d593930f6edba268ecfed51769f3842cdbb0e3547fdeaf56aae27be35d"
     },
     {
       "path": "ci/test/open-run-ui/open-run-ui.py",
@@ -26,7 +26,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "b171289db934e9bc02d943b3e77a06f0af43a32fae3a073f025c707dac6d56b3"
+      "sha256": "ba7e657fcc808d0ae55308702cb6ccc1dec5610d6c0ba4edbe22126466869dbf"
     },
     {
       "path": "src/app/wz_file_dialog.h",
@@ -34,7 +34,7 @@
     },
     {
       "path": "src/app/wz_file_dialog_win32.c",
-      "sha256": "bcf5a298feaad7e6c11cd378c8c18bd47eacd8e2ded89f7b664712f47d8017c1"
+      "sha256": "897f9c1d6a647f22c0700482f603188fc701ff70ff836ac33f5a3130934abdc9"
     },
     {
       "path": "src/app/wz_file_dialog_macos.m",
@@ -70,7 +70,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "af1a055ba24a42e870645a1b7389cffcf449028e8dd2f3344881282db94f51f4"
+      "sha256": "ddcb11d8cb9a3034f5ebd8c254b43778b4441ce23ed111606bcb70c41cf76739"
     },
     {
       "path": "ci/runner-bootstrap/bootstrap-unix.sh",
@@ -102,7 +102,7 @@
     },
     {
       "path": "test-drivers/open-run-ui.driver.json",
-      "sha256": "6c9ccaa70938db510c5a5d0c0823eddf49381e6bb3ef3be63b99e8a4852389be"
+      "sha256": "c1d7201d775b71d1ddadf1a599718635c9a6d87df39471216d4ad138239b6088"
     }
   ]
 }
