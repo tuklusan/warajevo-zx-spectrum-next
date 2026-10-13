@@ -22,20 +22,72 @@ TITLE = "Warajevo ZX Spectrum Next"
 
 def windows_key(vk, down):
     user32 = ctypes.windll.user32
-    flags = 0 if down else 2
-    user32.keybd_event(vk, 0, flags, 0)
+    class KEYBDINPUT(ctypes.Structure):
+        _fields_ = [("wVk", wintypes.WORD), ("wScan", wintypes.WORD),
+                    ("dwFlags", wintypes.DWORD),
+                    ("time", wintypes.DWORD),
+                    ("dwExtraInfo", ctypes.c_size_t)]
+
+    class INPUTUNION(ctypes.Union):
+        _fields_ = [("ki", KEYBDINPUT)]
+
+    class INPUT(ctypes.Structure):
+        _anonymous_ = ("u",)
+        _fields_ = [("type", wintypes.DWORD), ("u", INPUTUNION)]
+
+    event = INPUT(type=1, ki=KEYBDINPUT(vk, 0, 0 if down else 2, 0, 0))
+    if user32.SendInput(1, ctypes.byref(event), ctypes.sizeof(INPUT)) != 1:
+        raise ctypes.WinError()
 
 
 def windows_text(value):
     user32 = ctypes.windll.user32
     for character in value:
-        user32.keybd_event(0, ord(character), 4, 0)
-        user32.keybd_event(0, ord(character), 4 | 2, 0)
+        class KEYBDINPUT(ctypes.Structure):
+            _fields_ = [("wVk", wintypes.WORD), ("wScan", wintypes.WORD),
+                        ("dwFlags", wintypes.DWORD),
+                        ("time", wintypes.DWORD),
+                        ("dwExtraInfo", ctypes.c_size_t)]
+
+        class INPUTUNION(ctypes.Union):
+            _fields_ = [("ki", KEYBDINPUT)]
+
+        class INPUT(ctypes.Structure):
+            _anonymous_ = ("u",)
+            _fields_ = [("type", wintypes.DWORD), ("u", INPUTUNION)]
+
+        for flags in (4, 4 | 2):
+            event = INPUT(type=1, ki=KEYBDINPUT(0, ord(character), flags,
+                                                0, 0))
+            if user32.SendInput(1, ctypes.byref(event),
+                                ctypes.sizeof(INPUT)) != 1:
+                raise ctypes.WinError()
 
 
 def windows_press(vk):
     windows_key(vk, True)
     windows_key(vk, False)
+
+
+def windows_mouse(flags):
+    class MOUSEINPUT(ctypes.Structure):
+        _fields_ = [("dx", wintypes.LONG), ("dy", wintypes.LONG),
+                    ("mouseData", wintypes.DWORD),
+                    ("dwFlags", wintypes.DWORD),
+                    ("time", wintypes.DWORD),
+                    ("dwExtraInfo", ctypes.c_size_t)]
+
+    class INPUTUNION(ctypes.Union):
+        _fields_ = [("mi", MOUSEINPUT)]
+
+    class INPUT(ctypes.Structure):
+        _anonymous_ = ("u",)
+        _fields_ = [("type", wintypes.DWORD), ("u", INPUTUNION)]
+
+    event = INPUT(type=0, mi=MOUSEINPUT(0, 0, 0, flags, 0, 0))
+    if ctypes.windll.user32.SendInput(1, ctypes.byref(event),
+                                      ctypes.sizeof(INPUT)) != 1:
+        raise ctypes.WinError()
 
 
 def mac_keys(script):
@@ -114,9 +166,9 @@ def activate_and_open_dialog(process):
                 user32.SetCursorPos(point.x, point.y):
             raise RuntimeError("could not position pointer on Open / Run")
         time.sleep(0.2)
-        user32.mouse_event(0x0002, 0, 0, 0, 0)
+        windows_mouse(0x0002)
         time.sleep(0.1)
-        user32.mouse_event(0x0004, 0, 0, 0, 0)
+        windows_mouse(0x0004)
         time.sleep(0.5)
         if not native_dialog_visible():
             # The same command is available as the first keyboard-menu action.
@@ -196,7 +248,11 @@ def select_file(path):
         time.sleep(1)
         escaped_name = path.name.replace("\\", "\\\\").replace('"', '\\"')
         mac_keys(f'tell application "System Events" to keystroke "{escaped_name}"')
-        mac_keys('tell application "System Events" to key code 36')
+        time.sleep(0.25)
+        try:
+            mac_keys('tell application "System Events" to click button "Open" of window 1 of process "Warajevo-ZX-Spectrum-Next"')
+        except subprocess.CalledProcessError:
+            mac_keys('tell application "System Events" to key code 36')
     else:
         subprocess.run(["xdotool", "key", "ctrl+l"], check=True)
         subprocess.run(["xdotool", "type", "--clearmodifiers", str(path)],
