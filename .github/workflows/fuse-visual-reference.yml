@@ -116,6 +116,8 @@ jobs:
             Get-Process -Name wsl,WindowsTerminal -ErrorAction SilentlyContinue |
               Stop-Process -Force -ErrorAction SilentlyContinue
           }
+          $keyboard.SendKeys('{ESC}')
+          Start-Sleep -Seconds 1
           Get-Process -Name msoobe,UserOOBEBroker,CloudExperienceHostBroker -ErrorAction SilentlyContinue |
             Stop-Process -Force -ErrorAction SilentlyContinue
           Start-Sleep -Seconds 2
