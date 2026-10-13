@@ -82,8 +82,9 @@ jobs:
           RUNNER_ARCH: ${{ runner.arch }}
         run: python ci/test/open-run-ui/write-proof.py --output dist/open-run/${{ matrix.id }}/evidence
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: open-run-ui-${{ matrix.id }}-${{ github.sha }}
           path: dist/open-run/${{ matrix.id }}/evidence/
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 1

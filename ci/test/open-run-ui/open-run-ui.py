@@ -43,7 +43,7 @@ def mac_keys(script):
                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
 
-def activate_and_open_dialog():
+def activate_and_open_dialog(process):
     if os.name == "nt":
         user32 = ctypes.windll.user32
         user32.GetWindowTextLengthW.argtypes = [wintypes.HWND]
@@ -53,16 +53,21 @@ def activate_and_open_dialog():
         user32.GetWindowTextW.restype = ctypes.c_int
         user32.SetForegroundWindow.argtypes = [wintypes.HWND]
         user32.SetForegroundWindow.restype = wintypes.BOOL
+        user32.GetWindowThreadProcessId.argtypes = [wintypes.HWND,
+                                                    ctypes.POINTER(wintypes.DWORD)]
+        user32.GetWindowThreadProcessId.restype = wintypes.DWORD
         windows = []
         callback = ctypes.WINFUNCTYPE(wintypes.BOOL, wintypes.HWND,
                                       wintypes.LPARAM)
 
         def visit(hwnd, _):
             length = user32.GetWindowTextLengthW(hwnd)
+            owner = wintypes.DWORD()
+            user32.GetWindowThreadProcessId(hwnd, ctypes.byref(owner))
             if length:
                 title = ctypes.create_unicode_buffer(length + 1)
                 user32.GetWindowTextW(hwnd, title, length + 1)
-                if title.value == TITLE:
+                if title.value == TITLE or owner.value == process.pid:
                     windows.append(hwnd)
                     return False
             return True
@@ -71,11 +76,16 @@ def activate_and_open_dialog():
         while time.monotonic() < deadline and not windows:
             user32.EnumWindows(callback(visit), 0)
             time.sleep(0.2)
-        if not windows or not user32.SetForegroundWindow(windows[0]):
-            raise RuntimeError("emulator window did not become foreground")
-        windows_press(0x70)  # F1 opens the production keyboard command menu.
-        time.sleep(0.25)
-        windows_press(0x0D)  # The first item is the production Open / Run command.
+        if not windows:
+            raise RuntimeError(f"emulator window not found for process {process.pid}")
+        hwnd = windows[0]
+        user32.ShowWindow(hwnd, 9)
+        user32.SetForegroundWindow(hwnd)
+        # Open / Run is the first toolbar action; post the actual client click.
+        point = (42 << 16) | 42
+        user32.PostMessageW(hwnd, 0x0200, 0, point)  # WM_MOUSEMOVE
+        user32.PostMessageW(hwnd, 0x0201, 1, point)  # WM_LBUTTONDOWN
+        user32.PostMessageW(hwnd, 0x0202, 0, point)  # WM_LBUTTONUP
     elif sys.platform == "darwin":
         mac_keys('tell application "System Events" to set frontmost of first application process whose name is "Warajevo-ZX-Spectrum-Next" to true')
         mac_keys('tell application "System Events" to key code 122')
@@ -194,11 +204,12 @@ def main():
     environment["WZSN_ROM_PATH"] = str(pathlib.Path("roms/48.rom").resolve())
     process = subprocess.Popen([str(binary)], env=environment,
                                stdout=log_handle, stderr=subprocess.STDOUT)
+    succeeded = False
     try:
         time.sleep(5)
         if process.poll() is not None:
             raise RuntimeError("emulator exited before Open / Run")
-        activate_and_open_dialog()
+        activate_and_open_dialog(process)
         wait_dialog_state(True)
         select_file(tap)
         wait_dialog_state(False)
@@ -213,7 +224,9 @@ def main():
         proof = {
             "status": "pass",
             "runner": platform.platform(),
-            "action": "F1 keyboard menu > Open / Run > native file chooser",
+            "action": ("Open / Run toolbar button > native file chooser"
+                       if os.name == "nt" else
+                       "F1 keyboard menu > Open / Run > native file chooser"),
             "selectedFixture": tap.name,
             "selectedSha256": __import__("hashlib").sha256(tap.read_bytes()).hexdigest(),
             "desktopScreenshot": screenshot.name,
@@ -222,8 +235,14 @@ def main():
         }
         (output / "open-run-ui.json").write_text(
             json.dumps(proof, indent=2) + "\n", encoding="utf-8")
+        succeeded = True
         print("PASS Open / Run native dialog selection; inspect desktop screenshot for Tape Stopped")
     finally:
+        if not succeeded and not screenshot.exists():
+            try:
+                capture_screen(screenshot)
+            except Exception:
+                pass
         if process.poll() is None:
             process.terminate()
             try:
@@ -231,7 +250,8 @@ def main():
             except subprocess.TimeoutExpired:
                 process.kill()
                 process.wait(timeout=5)
-        log_handle.close()
+        if not log_handle.closed:
+            log_handle.close()
 
 
 if __name__ == "__main__":

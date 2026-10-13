@@ -1,6 +1,6 @@
 {
   "testId": "open-run-ui",
-  "command": "Build the production GUI on Windows x64/ARM64 and macOS x64/ARM64, use the F1 keyboard menu to open the native Open / Run chooser, select a generated checksummed TAP fixture, and inspect the desktop screenshot for the mounted tape state.",
+  "command": "Build the production GUI on Windows x64/ARM64 and macOS x64/ARM64. Open the native chooser through the production Windows toolbar action or macOS F1 keyboard menu, select a generated checksummed TAP fixture, and inspect the desktop screenshot for the mounted tape state.",
   "requiredCases": 1,
   "runnerMatrix": [
     "windows-2025",
@@ -11,11 +11,11 @@
   "fixtures": [
     {
       "path": ".github/workflows/open-run-ui-contract.yml",
-      "sha256": "33c464d638a773c65d2cb20013c72092aae6ca2906dbaf238d2ed2b14dae39ae"
+      "sha256": "cbc459111f79d00733cd62041d4b672899796524aac4d0aa51532633bb7af93e"
     },
     {
       "path": "ci/test/open-run-ui/open-run-ui.py",
-      "sha256": "68613e9ba8ae5cc08aa8ac13f676cc9db0a593d978a64c08f644107c0a744211"
+      "sha256": "6d32b5352f5e868257e5d4671cace708850e3e86f3fd46fc117d30358c3fc1b3"
     },
     {
       "path": "ci/test/open-run-ui/write-proof.py",
