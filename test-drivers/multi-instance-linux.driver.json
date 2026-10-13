@@ -1,0 +1,123 @@
+{
+  "testId": "multi-instance-linux",
+  "command": "cmake -S ci/test/multi-instance -B dist/multi-instance -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/multi-instance --config Release --target wz_multi_instance_worker --parallel 2 && python ci/test/multi-instance/run-stress.py dist/multi-instance/wz_multi_instance_worker",
+  "requiredCases": 5,
+  "runnerMatrix": [
+    "ubuntu-24.04",
+    "ubuntu-24.04-arm"
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/multi-instance-linux-contract.yml",
+      "sha256": "9f2a8bbe859e526bc2687e94bd4af7410c0db4c4022c7dc65e7f37e3692c84c0"
+    },
+    {
+      "path": "ci/test/multi-instance/CMakeLists.txt",
+      "sha256": "22d988789ef67d53753f0bb5673c19f2e73f45bcb11f4895652253fcf752a753"
+    },
+    {
+      "path": "ci/test/multi-instance/run-stress.py",
+      "sha256": "302d38617bec9c3ea7897f4d3f6b49d97b67f303b9d6959968aa65171df9b7da"
+    },
+    {
+      "path": "ci/test/multi-instance-linux/write-proof.py",
+      "sha256": "a549e9770c9b6e33272d2e2ffb768a67f40172077b782e0fa4f2e05dab922657"
+    },
+    {
+      "path": "src/app/wz_command_registry.c",
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
+    },
+    {
+      "path": "src/app/wz_command_registry.h",
+      "sha256": "80110080861a05baae47cd6d294315055bb6b1a636c79891b55c56717cb53c94"
+    },
+    {
+      "path": "src/app/wz_control_port.c",
+      "sha256": "c26016fe66e2f3932bf80070f8a00c873946c3ea893b0458e7994f06fbba1ef5"
+    },
+    {
+      "path": "src/app/wz_control_port.h",
+      "sha256": "44a2a09d58c56dff09494d2176a43f8de0982ff719e3914fb53853fcca4ea32a"
+    },
+    {
+      "path": "src/app/wz_host_config.c",
+      "sha256": "bb47dd7e107806c141704519e6194d510168769d70fbe7c230276a7333dd6847"
+    },
+    {
+      "path": "src/app/wz_host_config.h",
+      "sha256": "331a4633fa40e33cbfb0dc93eeff0175510d27546a8e38b4093100b5686a6ca3"
+    },
+    {
+      "path": "src/app/wz_host_media_ownership.c",
+      "sha256": "f2e74a877d0019ea18d8bfd0e552d66a161990489a63dc4058520b1f46bd3dc6"
+    },
+    {
+      "path": "src/app/wz_host_media_ownership.h",
+      "sha256": "0d8095dbd690d9c8b3241f26e34eac5e64b45963ce9c166ae43c2aa46f0b744d"
+    },
+    {
+      "path": "src/app/wz_host_output.c",
+      "sha256": "504322b9d5c80d2c865f6e8362557af61bce90240df83ccd25ca7065441191e6"
+    },
+    {
+      "path": "src/app/wz_host_output.h",
+      "sha256": "0c415f0029214f54d2a92dd9aa46bfc53d1801dee71c7eeb9acd8bd65a104895"
+    },
+    {
+      "path": "src/app/wz_host_socket.c",
+      "sha256": "f7c9c9eb5032b170a6c152064bb9556e2a5bf41805eff683bc53b02a7f5c2259"
+    },
+    {
+      "path": "src/app/wz_host_socket.h",
+      "sha256": "1c5bbe42e47fd27db8b2781c699eb51026963bfe9d3831580489dce472444230"
+    },
+    {
+      "path": "src/app/wz_host_thread.c",
+      "sha256": "6f8cbe0e171adfe7b9f42d9517e31d72f7917048339ff8941d5bccadfa305151"
+    },
+    {
+      "path": "src/app/wz_host_thread.h",
+      "sha256": "bd4e189a40c8f9ad31f014dc12afc3c67b7a4bd5580df262b0cf92db8fbe8471"
+    },
+    {
+      "path": "src/app/wz_screenshot_service.c",
+      "sha256": "05c8da60b7b90ca6b3a2b6b865ef6e00ab017ac739be8e282f196078fd195949"
+    },
+    {
+      "path": "src/app/wz_screenshot_service.h",
+      "sha256": "1b58549d40bf834a9b2ebf6afa4820119349fa2afce66082c0e041299b634017"
+    },
+    {
+      "path": "src/app/wz_telnet_keyboard_command.c",
+      "sha256": "240c70171a4ea43836a83198f7935560e03391f60bc3528ba95d16e323e08f3b"
+    },
+    {
+      "path": "src/app/wz_telnet_keyboard_command.h",
+      "sha256": "1704f552714cf2f0183672bf8486dd5ac001f2c2223b371a704e71fc723e0656"
+    },
+    {
+      "path": "src/app/wz_telnet_keymap.c",
+      "sha256": "c28b14ee6726eb99c6f26a4b7511c0b60dfaea008dcbe2cbe6bd7750a4092f3c"
+    },
+    {
+      "path": "src/app/wz_telnet_keymap.h",
+      "sha256": "056a9e1304fe7db114b1b860d6628f7d7866e84d0d4c44c75df4e58406bf1ff7"
+    },
+    {
+      "path": "src/core/wz_presentation_snapshot.c",
+      "sha256": "e486ad41490593ff803f647460d3542f69f425bf8c15bd0892e882962a685367"
+    },
+    {
+      "path": "src/core/wz_presentation_snapshot.h",
+      "sha256": "5dc1be78cf4627ed526b39e7d1ee4e961c3bff8b00f869e635675f2180af820d"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "af1a055ba24a42e870645a1b7389cffcf449028e8dd2f3344881282db94f51f4"
+    },
+    {
+      "path": "tests/multi-instance-stress.c",
+      "sha256": "5ddb0bb2af26230d639c517186e41be070e9da95e37bb06d7cfdbcf0fbad43f0"
+    }
+  ]
+}
