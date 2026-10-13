@@ -38,13 +38,16 @@ int main(void)
         {"folder.with.dot\\disk.data.mdr", WZ_OPEN_RUN_MICRODRIVE},
         {"folder.with.dot\\unknown.bin", WZ_OPEN_RUN_UNSUPPORTED},
         {"single.tap", WZ_OPEN_RUN_TAPE},
-        {"folder.with.dot/", WZ_OPEN_RUN_UNSUPPORTED}
+        {"folder.with.dot/", WZ_OPEN_RUN_UNSUPPORTED},
+        {"folder/.tap", WZ_OPEN_RUN_UNSUPPORTED},
+        {"folder/.hidden.z80", WZ_OPEN_RUN_SNAPSHOT}
     };
     size_t index;
 
     for (index = 0u; index < sizeof(cases) / sizeof(cases[0]); ++index) {
         if (!expect_route(cases[index].path, cases[index].route)) return 1;
     }
-    (void)puts("PASS file_open_run_basename_path_contract cases=9");
+    (void)printf("PASS file_open_run_route_path_contract cases=%zu\n",
+        sizeof(cases) / sizeof(cases[0]));
     return 0;
 }

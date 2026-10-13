@@ -36,7 +36,7 @@ def main():
         "runId": int(os.environ["GITHUB_RUN_ID"]),
         "runner": f"{os.environ['RUNNER_OS']}/{os.environ['RUNNER_ARCH']}",
         "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "caseCount": 9,
+        "caseCount": 11,
         "fixtures": [
             {
                 "path": name,

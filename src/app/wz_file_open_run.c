@@ -58,7 +58,7 @@ wz_open_run_result_t wz_file_open_run_route(const char* path,
         }
     }
     separator = strrchr(basename, '.');
-    if (separator == NULL || separator[1] == '\0') {
+    if (separator == NULL || separator == basename || separator[1] == '\0') {
         *route = WZ_OPEN_RUN_UNSUPPORTED;
         return WZ_OPEN_RUN_UNSUPPORTED_FORMAT;
     }
