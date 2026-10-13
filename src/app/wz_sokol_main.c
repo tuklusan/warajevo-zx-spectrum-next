@@ -6478,8 +6478,8 @@ static void wz_host_render_raster(void)
     sgl_draw();
     sgl_disable_texture();
     if (wz_host_session.ui_toolkit_initialized) {
-        snk_render((int)((float)sapp_width() / dpi_scale),
-                   (int)((float)sapp_height() / dpi_scale));
+        snk_render((int)((float)sapp_width() / dpi_scale + 0.5f),
+                   (int)((float)sapp_height() / dpi_scale + 0.5f));
     }
     sg_end_pass();
     sg_commit();
