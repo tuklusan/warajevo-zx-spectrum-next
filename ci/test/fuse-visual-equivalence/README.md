@@ -1,3 +1,9 @@
+<!-- Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+This file is governed by the SANYALnet Labs Non-Commercial License in the
+root LICENSE file. Commercial Use and use for AI/ML model training are
+prohibited unless separately authorized. Attribution is required. See
+LICENSE for full terms. -->
+
 # Fuse visual-equivalence comparator
 
 `compare.py` compares desktop captures after the runner has identified the
