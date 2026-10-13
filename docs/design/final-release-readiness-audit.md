@@ -25,11 +25,4 @@ belong on hosted runners under Workflow 05.
 
 Task 461 is not ready to create or announce an
 implementation-complete candidate until every applicable item above is closed.
-Task 462 is an additional hard delivery gate: production Spectrum video is not
-delivery-ready until hosted pixel-equivalence against pinned Fuse passes on all
-supported host backends. Source `61616f2` corrects the vertical texture mapping;
-current-source Mac Intel and ARM64 GUI captures in run `38338525052` show the
-ROM copyright text upright. Windows x64's captured viewport was black, and the
-Windows ARM64 runner remained in OOBE/security dialogs. No pinned-Fuse pixel
-comparison exists. A green in-memory raster regression or a package audit
-cannot waive this gate.
+Task 462 passed on source `8f2dd82132bdcd3fbf98af7cc8005f0f7c1ab29f` in hosted Fuse visual-equivalence run `38354012417`. All four backends passed the 1.0% mismatch and 3.0 mean-error thresholds (observed 0.376316% and 0.722527–0.722735). The Windows default window now fits above the taskbar; reference and candidate screenshots are retained as run artifacts, with checksums and metrics pinned in [fuse-visual-equivalence.json](../../test-results/fuse-visual-equivalence.json). Task 461 remains open because other applicable implementation and release-readiness criteria remain incomplete.
