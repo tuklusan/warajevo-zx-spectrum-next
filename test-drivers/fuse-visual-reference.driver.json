@@ -1,14 +1,18 @@
 {
   "testId": "fuse-visual-reference-capture",
-  "command": "Build Fuse and libspectrum from pinned source revisions on Ubuntu, run the certified 48K ROM in Fuse's null UI, and retain the automated PNG screen capture with source and ROM hashes.",
-  "requiredCases": 1,
+  "command": "Build pinned Fuse and the production GUI on hosted runners; boot the certified 48K ROM in each, compare normalized full-frame captures including border orientation, and retain captures plus mismatch metrics.",
+  "requiredCases": 5,
   "runnerMatrix": [
-    "ubuntu-24.04"
+    "ubuntu-24.04",
+    "windows-2025",
+    "windows-11-arm",
+    "macos-15-intel",
+    "macos-15"
   ],
   "fixtures": [
     {
       "path": ".github/workflows/fuse-visual-reference.yml",
-      "sha256": "c5ec7f9f586db84d73594ec33c6d29856b92aca7612d92849d97711ac183a21f"
+      "sha256": "8baabd587698463652d78800c36280e14fec38ec4972bdeee8ecbc6604548411"
     },
     {
       "path": "ci/test/fuse-visual-equivalence/capture-reference.sh",
@@ -16,7 +20,11 @@
     },
     {
       "path": "ci/test/fuse-visual-equivalence/write-reference-proof.py",
-      "sha256": "d5ce0a3d676c4596849b1f9e02417d1b5798115beb2bb689a58dc0182e67296"
+      "sha256": "d5ce0a3d676c4596849b1f9e02417d1b5798115bebe2bb689a58dc0182e67296"
+    },
+    {
+      "path": "ci/test/fuse-visual-equivalence/capture-candidate.py",
+      "sha256": "1e219007d736d4ad0b55d04d23fba2d05e5a9e2050dba6a88f707fe6e48602e2"
     },
     {
       "path": "ci/test/fuse-visual-equivalence/compare.py",
@@ -25,6 +33,10 @@
     {
       "path": "roms/48.rom",
       "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "f0476b625171f4bace334619fca037eb186c7812522d648b0c2eed6a020f6605"
     }
   ]
 }
