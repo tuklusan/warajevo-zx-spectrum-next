@@ -61,8 +61,8 @@ def main():
         parser.error("maximum mean channel error cannot be negative")
 
     display_width, display_height = args.display_size
-    if display_width < 256 or display_height < 192:
-        parser.error("display size must include at least the 256 by 192 active raster")
+    if display_width < 448 or display_height < 312:
+        parser.error("display size must preserve the full 448 by 312 frame including border")
     reference = crop_region(load_rgb(args.reference), args.reference_region, "Fuse")
     candidate = crop_region(load_rgb(args.candidate), args.candidate_region,
                             "application")

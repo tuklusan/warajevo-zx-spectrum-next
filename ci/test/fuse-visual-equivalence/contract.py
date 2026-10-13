@@ -30,10 +30,10 @@ def pattern():
     return image
 
 
-def compare(reference, candidate, output):
+def compare(reference, candidate, output, extra_args=()):
     return subprocess.run(
         [sys.executable, str(COMPARATOR), "--reference", str(reference),
-         "--candidate", str(candidate), "--output", str(output)],
+         "--candidate", str(candidate), "--output", str(output), *extra_args],
         capture_output=True, text=True, check=False)
 
 
@@ -63,6 +63,12 @@ def main():
         result = compare(reference, candidate, output)
         if result.returncode == 0 or "active-area-only captures are not accepted" not in result.stderr:
             raise SystemExit("active-area-only display crop was not rejected")
+
+        image.save(candidate)
+        result = compare(reference, candidate, output,
+                        ("--display-size", "256", "192"))
+        if result.returncode == 0 or "must preserve the full 448 by 312 frame" not in result.stderr:
+            raise SystemExit("reduced comparison frame was not rejected")
 
     print("PASS Fuse comparator accepts matching full frames and rejects mirrored or active-only captures")
 

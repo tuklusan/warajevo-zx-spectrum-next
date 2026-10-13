@@ -12,11 +12,12 @@ Spectrum-display rectangle in each image. Pass those rectangles with
 comparator removes host chrome, scales both crops to the 448 by 312 full
 Spectrum raster with nearest-neighbor resampling, retains the normalized images
 and pixel-difference image, and writes JSON mismatch metrics. Each source crop
-must be at least 448 by 312 pixels, so a 256 by 192 active-area-only capture
-cannot pass. The capture workflow must still select the complete display
-rectangle; border and its orientation are part of the comparison. Fuse and the
-application may use different display pixel aspect ratios, so normalization
-scales each captured rectangle independently.
+must be at least 448 by 312 pixels, and the comparison output cannot be reduced
+below that size, so a 256 by 192 active-area-only capture cannot pass. The
+capture workflow must still select the complete display rectangle; border and
+its orientation are part of the comparison. Fuse and the application may use
+different display pixel aspect ratios, so normalization scales each captured
+rectangle independently.
 
 The caller must capture the production application's displayed output and the
 pinned Fuse display, using the same certified ROM and 48K PAL configuration.
