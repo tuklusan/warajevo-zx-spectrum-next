@@ -25,7 +25,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "af1a055ba24a42e870645a1b7389cffcf449028e8dd2f3344881282db94f51f4"
+      "sha256": "17f24ef6829ddd78b21a54c53dba6d9c018f9c7891d12fc69b716dd22db5198e"
     },
     {
       "path": "src/core/wz_machine.c",

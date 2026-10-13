@@ -36,7 +36,7 @@
     },
     {
       "path": "src/app/wz_file_dialog_win32.c",
-      "sha256": "7a380995883ec7e9ee0dc52ccfdfcb8ef4e743e41ea4d80bc5520ef479dd98f1"
+      "sha256": "cc1ce3744e17705fd53fe0b00e3c4325e33ab46eeded0001cddd062b0268bc0a"
     },
     {
       "path": "src/app/wz_file_open_run.c",
