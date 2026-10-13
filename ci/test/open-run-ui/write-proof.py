@@ -19,6 +19,13 @@ from pathlib import Path
 DRIVER = "test-drivers/open-run-ui.driver.json"
 
 
+def required_env(name):
+    value = os.environ.get(name)
+    if not value:
+        raise SystemExit(f"missing required workflow environment: {name}")
+    return value
+
+
 def blob(commit, path):
     return subprocess.check_output(["git", "show", f"{commit}:{path}"])
 
@@ -27,8 +34,10 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", required=True, type=Path)
     args = parser.parse_args()
-    commit = os.environ["GITHUB_SHA"]
+    commit = required_env("GITHUB_SHA")
     driver = json.loads(blob(commit, DRIVER))
+    if driver.get("testId") != "open-run-ui":
+        raise SystemExit("Open / Run UI driver identity mismatch")
     fixtures = []
     for fixture in driver["fixtures"]:
         digest = hashlib.sha256(blob(commit, fixture["path"])).hexdigest()
@@ -47,8 +56,8 @@ def main():
     proof.update({
         "testId": driver["testId"],
         "commit": commit,
-        "runId": int(os.environ["GITHUB_RUN_ID"]),
-        "runner": f"{platform.system()}-{os.environ['RUNNER_ARCH']}",
+        "runId": int(required_env("GITHUB_RUN_ID")),
+        "runner": f"{platform.system()}-{required_env('RUNNER_ARCH')}",
         "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "caseCount": 1,
         "fixtures": fixtures + [{

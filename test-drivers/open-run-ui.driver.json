@@ -15,11 +15,11 @@
     },
     {
       "path": "ci/test/open-run-ui/open-run-ui.py",
-      "sha256": "7d9b89ccb5079e94130a3e6b8cfc8673fb324cfb16ad7a50d396f8ee7b3a01b5"
+      "sha256": "68613e9ba8ae5cc08aa8ac13f676cc9db0a593d978a64c08f644107c0a744211"
     },
     {
       "path": "ci/test/open-run-ui/write-proof.py",
-      "sha256": "fe5b88a8bbd13d68ecd4162c438e05105ef955856b1b17d0dbacdfe644ae9136"
+      "sha256": "c67d6fcd3cd5aae2e12c73fe9df3615b13b832bd91c69a8820c440c2d483d0b3"
     },
     {
       "path": "src/app/wz_sokol_main.c",

@@ -205,6 +205,7 @@ def main():
         time.sleep(3)
         if process.poll() is not None:
             log_handle.flush()
+            log_handle.close()
             output_log = (output / "emulator.log").read_text(
                 encoding="utf-8", errors="replace")
             raise RuntimeError(f"emulator exited after selection: {output_log}")
