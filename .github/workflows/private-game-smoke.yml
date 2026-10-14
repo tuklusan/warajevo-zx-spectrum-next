@@ -42,6 +42,9 @@ jobs:
           python3 -m venv dist/private-game-smoke/venv
           dist/private-game-smoke/venv/bin/python -m pip install Pillow
 
+      - name: Install temporary screen text classifier
+        run: brew install tesseract
+
       - name: Observe private game through the normal ROM loader
         run: |
           dist/private-game-smoke/venv/bin/python ci/test/private-game-smoke.py \

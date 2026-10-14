@@ -8,6 +8,7 @@
 """Observe authentic-ROM game loading without publishing private media frames."""
 
 import argparse
+from io import BytesIO
 import hashlib
 import json
 import os
@@ -17,7 +18,7 @@ import socket
 import subprocess
 import time
 
-from PIL import Image, ImageChops, ImageStat
+from PIL import Image, ImageChops, ImageOps, ImageStat
 
 
 def connect(process):
@@ -99,6 +100,20 @@ def sample(frame, digest, baseline, elapsed):
     histogram = difference.convert("L").histogram()
     pixels = frame.width * frame.height
     changed = pixels - histogram[0]
+    colors = frame.getcolors(pixels)
+    palette = sorted(colors or [], reverse=True)[:5]
+    ocr_image = ImageOps.autocontrast(frame.convert("L")).resize(
+        (frame.width * 4, frame.height * 4), Image.Resampling.NEAREST
+    )
+    encoded = BytesIO()
+    ocr_image.save(encoded, format="PNG")
+    recognized = " ".join(
+        subprocess.run(
+            ["tesseract", "stdin", "stdout", "--psm", mode],
+            input=encoded.getvalue(), capture_output=True, check=True,
+        ).stdout.decode("utf-8", "replace")
+        for mode in ("6", "11")
+    ).upper()
     return {
         "elapsedSeconds": elapsed,
         "frameSha256": digest,
@@ -109,6 +124,18 @@ def sample(frame, digest, baseline, elapsed):
         "meanChannelDifferenceFromBoot": round(
             sum(ImageStat.Stat(difference).mean) / 3.0, 6
         ),
+        "dominantColors": [
+            {"rgb": "#%02x%02x%02x" % color, "pixels": count}
+            for count, color in palette
+        ],
+        "textSignals": {
+            "romCopyright": "SINCLAIR" in recognized,
+            "loadCommand": "LOAD" in recognized,
+            "tapeError": "TAPE" in recognized or "ERROR" in recognized,
+            "gameTitle": "ABU" in recognized or "SIMBEL" in recognized,
+            "startPrompt": "START" in recognized or "PULSA" in recognized,
+            "score": "SCORE" in recognized or "PUNTOS" in recognized,
+        },
     }
 
 
@@ -136,7 +163,7 @@ def main():
             )
             sock = connect(process)
             time.sleep(5.0)
-            boot, _ = screenshot(sock)
+            boot, boot_digest = screenshot(sock)
             command(sock, "SPEED 100")
             command(sock, "KEY PRESS J")
             time.sleep(0.1)
@@ -175,6 +202,7 @@ def main():
                 "romSha256": hashlib.sha256(args.rom.read_bytes()).hexdigest(),
                 "speedPercent": 400,
                 "normalTapeTransport": True,
+                "bootFrameSha256": boot_digest,
                 "post240SecondInput": ["ENTER", "O", "P", "Q"],
                 "samples": samples,
                 "limitations": [
