@@ -68,7 +68,11 @@ def screenshot(sock):
             response = command(sock, "SCREENSHOT")
             break
         except RuntimeError as error:
-            if "ERR SCREENSHOT no-raster" not in str(error) or time.monotonic() >= deadline:
+            raster_pending = (
+                "ERR SCREENSHOT no-raster" in str(error)
+                or "ERR DO host.screenshot.temp screenshot-failed" in str(error)
+            )
+            if not raster_pending or time.monotonic() >= deadline:
                 raise
             time.sleep(0.25)
     match = re.search(
