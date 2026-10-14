@@ -199,6 +199,8 @@ def main():
     parser.add_argument("--tape", type=Path, required=True)
     parser.add_argument("--proof", type=Path, required=True)
     parser.add_argument("--fuse-reference", type=Path)
+    parser.add_argument("--sample-seconds", type=float, nargs="+",
+                        default=[30.0, 90.0, 180.0, 240.0, 300.0])
     args = parser.parse_args()
     for path in (args.binary, args.rom, args.tape):
         if not path.is_file() or path.stat().st_size < 1000:
@@ -229,7 +231,7 @@ def main():
             started = time.monotonic()
             samples = []
             frames = []
-            for target in (30.0, 90.0, 180.0, 240.0, 300.0):
+            for target in args.sample_seconds:
                 remaining = target - (time.monotonic() - started)
                 if remaining > 0:
                     time.sleep(remaining)
@@ -254,7 +256,8 @@ def main():
                 "speedPercent": 400,
                 "normalTapeTransport": True,
                 "bootFrameSha256": boot_digest,
-                "post240SecondInput": ["ENTER", "O", "P", "Q"],
+                "post240SecondInput": ["ENTER", "O", "P", "Q"]
+                if 240.0 in args.sample_seconds else [],
                 "samples": samples,
                 "limitations": [
                     "Aggregate frame metrics are an observation, not gameplay or Fuse visual equivalence proof.",

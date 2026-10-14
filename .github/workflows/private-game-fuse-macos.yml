@@ -1,0 +1,101 @@
+name: Private game Fuse comparison on macOS
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compare:
+    if: github.ref == 'refs/heads/main'
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Fetch selected private game on the runner
+        run: git lfs pull --include='test-media/Abu Simbel Profanation.tap' --exclude=''
+
+      - name: Install pinned Fuse build dependencies
+        run: brew install autoconf automake libtool pkg-config glib libgcrypt libpng libxml2 bison flex gettext tesseract
+
+      - name: Build pinned Fuse without a desktop UI
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/private-game-fuse"
+          install="$root/install"
+          mkdir -p "$root/libspectrum" "$root/fuse" "$install"
+          git -C "$root/libspectrum" init -q
+          git -C "$root/libspectrum" remote add origin https://git.code.sf.net/p/fuse-emulator/libspectrum
+          git -C "$root/libspectrum" fetch --no-tags --depth=1 origin ebac4e5f55ba434549cd7970d257fb9a0f1e2f63
+          git -C "$root/libspectrum" checkout --detach FETCH_HEAD -q
+          git -C "$root/fuse" init -q
+          git -C "$root/fuse" remote add origin https://git.code.sf.net/p/fuse-emulator/fuse
+          git -C "$root/fuse" fetch --no-tags --depth=1 origin 7edc2418ce11837d9ede799f7e0445440beead1d
+          git -C "$root/fuse" checkout --detach FETCH_HEAD -q
+          prefix="$(brew --prefix)"
+          export PATH="$prefix/opt/bison/bin:$prefix/opt/flex/bin:$prefix/opt/gettext/bin:$PATH"
+          export PKG_CONFIG_PATH="$prefix/lib/pkgconfig:$prefix/opt/libxml2/lib/pkgconfig:$prefix/opt/libgcrypt/lib/pkgconfig:$prefix/opt/libpng/lib/pkgconfig"
+          (
+            cd "$root/libspectrum"
+            ./autogen.sh
+            ./configure --prefix="$install"
+            make --jobs=2
+            make install
+          )
+          (
+            cd "$root/fuse"
+            ./autogen.sh
+            PKG_CONFIG_PATH="$install/lib/pkgconfig:$PKG_CONFIG_PATH" \
+              ./configure --prefix="$install" --with-null-ui --enable-automation
+            make --jobs=2
+            make install
+          )
+          test -x "$install/bin/fuse"
+
+      - name: Capture the pinned Fuse game screen
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist/private-game-fuse-macos/reference dist/private-game-fuse-macos/fuse-cwd
+          cp roms/48.rom dist/private-game-fuse-macos/fuse-cwd/48.rom
+          reference="$PWD/dist/private-game-fuse-macos/reference"
+          game="$PWD/test-media/Abu Simbel Profanation.tap"
+          export DYLD_LIBRARY_PATH="$RUNNER_TEMP/private-game-fuse/install/lib${DYLD_LIBRARY_PATH:+:$DYLD_LIBRARY_PATH}"
+          (
+            cd dist/private-game-fuse-macos/fuse-cwd
+            "$RUNNER_TEMP/private-game-fuse/install/bin/fuse" \
+              --machine 48 --no-sound --tape "$game" --auto-load \
+              --automation-output "$reference" \
+              --automation-frames 3000 --automation-capture-screen
+          )
+          test -s "$reference/screen.png"
+          test "$(shasum -a 256 "$reference/screen.png" | cut -d ' ' -f 1)" != d93bbbd59a0a7a675780f198697401b2e2f63b85a6fa2d9469107e7d82b83302
+
+      - name: Build production macOS desktop host
+        run: |
+          cmake -S src/cmake -B dist/private-game-fuse-macos/product -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release -DWZSN_BUILD_SOKOL_HOST=ON
+          cmake --build dist/private-game-fuse-macos/product --clean-first --parallel 2
+
+      - name: Compare private game frames without exporting images
+        run: |
+          python3 -m venv dist/private-game-fuse-macos/venv
+          dist/private-game-fuse-macos/venv/bin/python -m pip install Pillow
+          dist/private-game-fuse-macos/venv/bin/python ci/test/private-game-smoke.py \
+            --binary dist/private-game-fuse-macos/product/Warajevo-ZX-Spectrum-Next \
+            --rom roms/48.rom --tape 'test-media/Abu Simbel Profanation.tap' \
+            --fuse-reference dist/private-game-fuse-macos/reference/screen.png \
+            --sample-seconds 30 60 90 \
+            --proof dist/private-game-fuse-macos/observation.json
+
+      - name: Upload aggregate comparison only
+        uses: actions/upload-artifact@v4
+        with:
+          name: private-game-fuse-macos-metrics-${{ github.sha }}
+          path: dist/private-game-fuse-macos/observation.json
+          if-no-files-found: error
