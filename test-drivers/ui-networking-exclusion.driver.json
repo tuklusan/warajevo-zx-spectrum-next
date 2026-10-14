@@ -24,11 +24,11 @@
     },
     {
       "path": "src/app/wz_command_registry.c",
-      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
+      "sha256": "707bd4c4c9d0e12db0135ef857d3c7de8a5d6e7d717d790d09f3080bb90c9607"
     },
     {
       "path": "src/app/wz_command_registry.h",
-      "sha256": "80110080861a05baae47cd6d294315055bb6b1a636c79891b55c56717cb53c94"
+      "sha256": "089f17123ebfdc9be2ff8606aa849f72c06bc26036ac0f5710dbb978509b9d34"
     },
     {
       "path": "src/app/wz_networking_commands.c",
@@ -40,15 +40,15 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "c289df3896df2768e0b441e659be9df85eef0ebaab85a4a96feff0ca9d108d77"
+      "sha256": "6c5de7b5b6a20cad20643b1f9007629846bccc0bb49bf7412cad9464ae9be062"
     },
     {
       "path": "src/app/wz_ui_layout.h",
-      "sha256": "82b311ec0944bafa0c7256f2becef7f56d69d51843ece9e7d62c68f36b75151e"
+      "sha256": "0ef859ac915722f0ea2e2e6d66b8cda00c78577ad14029966c98ebb324abd8ac"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
+      "sha256": "1dc71a255b61187261ef1b97a3694f780c8c2cb9be08d98e942e98768bec2b29"
     },
     {
       "path": "src/core/wz_machine.h",

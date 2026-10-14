@@ -66,7 +66,6 @@ typedef struct {
     bool selected_control_port_available;
     unsigned selected_control_port;
     bool ipv4_listener_up;
-    bool ipv6_listener_up;
     wz_ui_remote_listener_state_t listener_state;
     bool active_client;
     bool plaintext_no_authentication;

@@ -16,11 +16,11 @@
     },
     {
       "path": "ci/test/debugger-window-contract/write-proof.py",
-      "sha256": "bf22edf0735b67e56bd369e9657546ef4eb2be074c693676966e7b77ad4311f2"
+      "sha256": "625389d1a145756b25c65e26976fdc24665dfeb2037725026756ecc0011d8c7e"
     },
     {
       "path": "ci/test/debugger-window-contract/debugger-window-contract.c",
-      "sha256": "2c1c405ce15ff40ce8a175e3c4e9736b61bb195c44cff228d6fe4c2896330101"
+      "sha256": "114d4a9bfd6554d2d193918a9e3ad754aee2c664bcebc90a50872e431cd69063"
     },
     {
       "path": "src/app/wz_debugger_window.c",
@@ -32,19 +32,19 @@
     },
     {
       "path": "src/app/wz_command_registry.c",
-      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
+      "sha256": "707bd4c4c9d0e12db0135ef857d3c7de8a5d6e7d717d790d09f3080bb90c9607"
     },
     {
       "path": "src/app/wz_command_registry.h",
-      "sha256": "80110080861a05baae47cd6d294315055bb6b1a636c79891b55c56717cb53c94"
+      "sha256": "089f17123ebfdc9be2ff8606aa849f72c06bc26036ac0f5710dbb978509b9d34"
     },
     {
       "path": "src/app/wz_host_thread.c",
-      "sha256": "6f8cbe0e171adfe7b9f42d9517e31d72f7917048339ff8941d5bccadfa305151"
+      "sha256": "bd46ced2af90907b222a43fcaef3bfe8943b6ca32fd4831fbaca82483ec264c5"
     },
     {
       "path": "src/app/wz_host_thread.h",
-      "sha256": "bd4e189a40c8f9ad31f014dc12afc3c67b7a4bd5580df262b0cf92db8fbe8471"
+      "sha256": "2fa71a370c5b0597e25f8e4ecbc8457e7e9b2d3b62cd48af2eb6111053283805"
     },
     {
       "path": "src/core/wz_debugger.c",
@@ -56,7 +56,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "ddcb11d8cb9a3034f5ebd8c254b43778b4441ce23ed111606bcb70c41cf76739"
+      "sha256": "c4b038801b872b3e7149a7504e2086be805506f714e6c7f18b1a8c5ab2aaae45"
     }
   ]
 }

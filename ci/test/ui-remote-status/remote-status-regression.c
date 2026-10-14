@@ -32,36 +32,33 @@ int main(void)
     wz_ui_remote_control_status_init(&status);
     owner.selected_port = 30741u;
     owner.ipv4_active = true;
-    owner.ipv6_active = false;
     wz_ui_layout_sync_remote_control(&state, &status, &owner, true);
     REQUIRE(state.control_port_available);
     REQUIRE(state.control_port == 30741u);
     REQUIRE(status.selected_control_port_available);
     REQUIRE(status.selected_control_port == 30741u);
     REQUIRE(status.ipv4_listener_up);
-    REQUIRE(!status.ipv6_listener_up);
-    REQUIRE(status.listener_state == WZ_UI_REMOTE_LISTENER_DEGRADED);
+    REQUIRE(status.listener_state == WZ_UI_REMOTE_LISTENER_UP);
     REQUIRE(status.active_client);
     wz_ui_remote_control_indicator(&status, indicator, sizeof(indicator));
     REQUIRE(strcmp(indicator,
-            "Control Port: 30741 | IPv4: UP | IPv6: DOWN | "
-            "Listener: DEGRADED | Telnet: ACTIVE") == 0);
+            "Control Port: 30741 | IPv4: UP | "
+            "Listener: UP | Telnet: ACTIVE") == 0);
     wz_ui_remote_control_status_page(&status, page, sizeof(page));
     REQUIRE(strstr(page, "Base Control Port: 30740") != NULL);
     REQUIRE(strstr(page, "Probe range: 30740-32787") != NULL);
     REQUIRE(strstr(page, "Selected Control Port: 30741") != NULL);
-    REQUIRE(strstr(page, "IPv4 listener: UP | IPv6 listener: DOWN") != NULL);
-    REQUIRE(strstr(page, "Listener: DEGRADED | Active client: ACTIVE") != NULL);
+    REQUIRE(strstr(page, "IPv4 listener: UP") != NULL);
+    REQUIRE(strstr(page, "Listener: UP | Active client: ACTIVE") != NULL);
     REQUIRE(strstr(page, "Warning: plaintext/no-authentication") != NULL);
     REQUIRE(strstr(page, "Permissions: default-deny host-file/destructive/quit policy") != NULL);
 
     owner.selected_port = 0u;
     owner.ipv4_active = false;
-    owner.ipv6_active = false;
     wz_ui_layout_sync_remote_control(&state, &status, &owner, false);
     wz_ui_remote_control_indicator(&status, indicator, sizeof(indicator));
     REQUIRE(strcmp(indicator,
-            "Control Port: unavailable | IPv4: DOWN | IPv6: DOWN | "
+            "Control Port: unavailable | IPv4: DOWN | "
             "Listener: UNAVAILABLE | Telnet: NONE") == 0);
     wz_ui_remote_control_status_page(&status, page, sizeof(page));
     REQUIRE(strstr(page, "Selected Control Port: unavailable") != NULL);

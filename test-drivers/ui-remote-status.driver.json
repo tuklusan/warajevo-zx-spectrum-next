@@ -19,7 +19,7 @@
     },
     {
       "path": "ci/test/ui-remote-status/remote-status-regression.c",
-      "sha256": "feaadb6ad4529f8f46159e5173252aeb9fe03a90357d9f08a30fc10af2e814d0"
+      "sha256": "ac6d1c0f3021d38b8f00ed70da9bca42bb2c1b7ca8d9ea072b1cb90591adace0"
     },
     {
       "path": "ci/test/ui-remote-status/write-proof.py",
@@ -27,39 +27,39 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "c289df3896df2768e0b441e659be9df85eef0ebaab85a4a96feff0ca9d108d77"
+      "sha256": "6c5de7b5b6a20cad20643b1f9007629846bccc0bb49bf7412cad9464ae9be062"
     },
     {
       "path": "src/app/wz_ui_layout.h",
-      "sha256": "82b311ec0944bafa0c7256f2becef7f56d69d51843ece9e7d62c68f36b75151e"
+      "sha256": "0ef859ac915722f0ea2e2e6d66b8cda00c78577ad14029966c98ebb324abd8ac"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "ba7e657fcc808d0ae55308702cb6ccc1dec5610d6c0ba4edbe22126466869dbf"
+      "sha256": "5b26789496f0561d5b32e5dcd421cc9e3c26aa2efea4084fd84335d03a36f2eb"
     },
     {
       "path": "src/app/wz_command_registry.c",
-      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
+      "sha256": "707bd4c4c9d0e12db0135ef857d3c7de8a5d6e7d717d790d09f3080bb90c9607"
     },
     {
       "path": "src/app/wz_command_registry.h",
-      "sha256": "80110080861a05baae47cd6d294315055bb6b1a636c79891b55c56717cb53c94"
+      "sha256": "089f17123ebfdc9be2ff8606aa849f72c06bc26036ac0f5710dbb978509b9d34"
     },
     {
       "path": "src/app/wz_host_thread.c",
-      "sha256": "6f8cbe0e171adfe7b9f42d9517e31d72f7917048339ff8941d5bccadfa305151"
+      "sha256": "bd46ced2af90907b222a43fcaef3bfe8943b6ca32fd4831fbaca82483ec264c5"
     },
     {
       "path": "src/app/wz_host_thread.h",
-      "sha256": "bd4e189a40c8f9ad31f014dc12afc3c67b7a4bd5580df262b0cf92db8fbe8471"
+      "sha256": "2fa71a370c5b0597e25f8e4ecbc8457e7e9b2d3b62cd48af2eb6111053283805"
     },
     {
       "path": "src/app/wz_host_audio_policy.c",
-      "sha256": "24ed4f2318ba10bb2cb9ec48b5ae9bf854ecdef71687f2bd6908bb9bb9b17bce"
+      "sha256": "0d46bae6f5ce43e5ad0d85af8fe48f2556f6b5e873ebfbbcb98ad4d54dec89c1"
     },
     {
       "path": "src/app/wz_host_audio_policy.h",
-      "sha256": "630b754c18a3f0b3c36088d587be1f9264343cad7418b7c2caa44d36eb5d669d"
+      "sha256": "3a838cb037d813888cf5ceb5d452d2c077c122c61393246ea7d95a4fa41367bc"
     },
     {
       "path": "src/app/wz_speed_policy.c",
@@ -79,7 +79,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "ddcb11d8cb9a3034f5ebd8c254b43778b4441ce23ed111606bcb70c41cf76739"
+      "sha256": "c4b038801b872b3e7149a7504e2086be805506f714e6c7f18b1a8c5ab2aaae45"
     }
   ]
 }

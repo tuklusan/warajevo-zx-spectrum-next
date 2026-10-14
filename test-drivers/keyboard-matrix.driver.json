@@ -8,11 +8,11 @@
   "fixtures": [
     {
       "path": ".github/workflows/keyboard-matrix-contract.yml",
-      "sha256": "86ccc4dd50f48601c7918b085f23a755cf40cd8597b6630ee76f40787ec1d85f"
+      "sha256": "b3437c565430519c08848b1d19788fb3a52a4b5ae2cecc8f701188a7261e32d4"
     },
     {
       "path": "ci/test/keyboard-matrix/CMakeLists.txt",
-      "sha256": "cbc504cffe5c505d4715850ceafffc636db313dc9767e3afbc44ec4108a4efda"
+      "sha256": "f1ae6926d93d4c0e6be540cab93b8f4682156b795e46f9dc4cf0d42bd5e6be81"
     },
     {
       "path": "ci/test/keyboard-matrix/keyboard-matrix-contract.c",
@@ -20,7 +20,7 @@
     },
     {
       "path": "ci/test/keyboard-matrix/write-proof.py",
-      "sha256": "2c06ade729d76b5ffa0de55253b3538be1191d11fb585703e795d5917acba0b2"
+      "sha256": "a735bfb5500ebc41acb77b102abb81c15eb34d3ccb1d0a7cd285dce80b0907c9"
     },
     {
       "path": "src/core/wz_keyboard_matrix.c",

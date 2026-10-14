@@ -240,7 +240,6 @@ void wz_ui_layout_sync_remote_control(
     remote_status->selected_control_port = remote_status->selected_control_port_available
         ? (unsigned)owner->selected_port : 0u;
     remote_status->ipv4_listener_up = owner != 0 && owner->ipv4_active;
-    remote_status->ipv6_listener_up = owner != 0 && owner->ipv6_active;
     remote_status->listener_state = listener;
     remote_status->active_client = active_client;
 }
@@ -257,7 +256,6 @@ void wz_ui_remote_control_status_init(wz_ui_remote_control_status_t* status)
     status->selected_control_port_available = false;
     status->selected_control_port = 0u;
     status->ipv4_listener_up = false;
-    status->ipv6_listener_up = false;
     status->listener_state = WZ_UI_REMOTE_LISTENER_UNAVAILABLE;
     status->active_client = false;
     status->plaintext_no_authentication = true;
@@ -288,7 +286,7 @@ void wz_ui_remote_control_status_page(
                        "Telnet Keyboard & Remote Control | "
                        "Service: %s | Base Control Port: %u | "
                        "Probe range: %u-%u | Selected Control Port: %u | "
-                       "IPv4 listener: %s | IPv6 listener: %s | "
+                       "IPv4 listener: %s | "
                        "Listener: %s | Active client: %s | "
                        "Warning: %s | Permissions: %s",
                        status->service_enabled_by_architecture ? "enabled" : "disabled",
@@ -297,7 +295,6 @@ void wz_ui_remote_control_status_page(
                        status->probe_last_port,
                        status->selected_control_port,
                        status->ipv4_listener_up ? "UP" : "DOWN",
-                       status->ipv6_listener_up ? "UP" : "DOWN",
                        remote_listener_state_label(status->listener_state),
                        status->active_client ? "ACTIVE" : "NONE",
                        status->plaintext_no_authentication ?
@@ -308,7 +305,7 @@ void wz_ui_remote_control_status_page(
                        "Telnet Keyboard & Remote Control | "
                        "Service: %s | Base Control Port: %u | "
                        "Probe range: %u-%u | Selected Control Port: %s | "
-                       "IPv4 listener: %s | IPv6 listener: %s | "
+                       "IPv4 listener: %s | "
                        "Listener: %s | Active client: %s | "
                        "Warning: %s | Permissions: %s",
                        status->service_enabled_by_architecture ? "enabled" : "disabled",
@@ -317,7 +314,6 @@ void wz_ui_remote_control_status_page(
                        status->probe_last_port,
                        selected,
                        status->ipv4_listener_up ? "UP" : "DOWN",
-                       status->ipv6_listener_up ? "UP" : "DOWN",
                        remote_listener_state_label(status->listener_state),
                        status->active_client ? "ACTIVE" : "NONE",
                        status->plaintext_no_authentication ?
@@ -347,11 +343,10 @@ void wz_ui_remote_control_indicator(
         (void)snprintf(selected, sizeof(selected), "unavailable");
     }
     (void)snprintf(output, capacity,
-                   "Control Port: %s | IPv4: %s | IPv6: %s | "
+                   "Control Port: %s | IPv4: %s | "
                    "Listener: %s | Telnet: %s",
                    selected,
                    status->ipv4_listener_up ? "UP" : "DOWN",
-                   status->ipv6_listener_up ? "UP" : "DOWN",
                    remote_listener_state_label(status->listener_state),
                    status->active_client ? "ACTIVE" : "NONE");
     output[capacity - 1u] = '\0';
