@@ -52,10 +52,14 @@ def command(sock, value):
         if not part:
             break
         response.extend(part.replace(b"\xff", b""))
-        if b"\n" in response and (b"OK " in response or b"ERR " in response):
+        lines = response.split(b"\n")[:-1]
+        if any(line.rstrip(b"\r") == b"OK" or line.startswith((b"OK ", b"ERR ")) for line in lines):
             break
     text = response.decode("utf-8", "replace")
-    if "ERR " in text or "OK " not in text:
+    lines = text.splitlines()
+    if any(line.startswith("ERR ") for line in lines) or not any(
+        line == "OK" or line.startswith("OK ") for line in lines
+    ):
         reason = next((line for line in text.splitlines() if line.startswith("ERR ")), "no response")
         raise RuntimeError("control command failed: " + value + ": " + reason)
     return text
