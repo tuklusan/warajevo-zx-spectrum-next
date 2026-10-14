@@ -151,7 +151,7 @@ def main():
             command(sock, "SPEED 400")
             started = time.monotonic()
             samples = []
-            for target in (30.0, 90.0, 180.0):
+            for target in (30.0, 90.0, 180.0, 240.0, 300.0):
                 remaining = target - (time.monotonic() - started)
                 if remaining > 0:
                     time.sleep(remaining)
@@ -159,6 +159,12 @@ def main():
                 samples.append(sample(
                     frame, digest, boot, round(time.monotonic() - started, 3)
                 ))
+                if target == 240.0:
+                    command(sock, "KEY PRESS ENTER")
+                    time.sleep(2.0)
+                    for key in ("O", "P", "Q"):
+                        command(sock, "KEY PRESS " + key)
+                        time.sleep(0.1)
             proof = {
                 "testId": "private-game-rom-loading-observation",
                 "status": "observation",
@@ -169,6 +175,7 @@ def main():
                 "romSha256": hashlib.sha256(args.rom.read_bytes()).hexdigest(),
                 "speedPercent": 400,
                 "normalTapeTransport": True,
+                "post240SecondInput": ["ENTER", "O", "P", "Q"],
                 "samples": samples,
                 "limitations": [
                     "Aggregate frame metrics are an observation, not gameplay or Fuse visual equivalence proof.",
