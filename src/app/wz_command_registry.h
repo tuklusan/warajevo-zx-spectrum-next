@@ -17,7 +17,8 @@ SANYALnet Labs." See LICENSE for full terms.
 #include "app/wz_host_thread.h"
 
 #define WZ_COMMAND_REASON_CAPACITY 48u
-#define WZ_COMMAND_MESSAGE_CAPACITY 128u
+/* A screenshot result carries a quoted path of up to 1023 bytes. */
+#define WZ_COMMAND_MESSAGE_CAPACITY 1152u
 
 typedef enum {
     WZ_COMMAND_REMOTE_SAFE = 0,
