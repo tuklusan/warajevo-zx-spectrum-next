@@ -86,6 +86,25 @@ bool wz_telnet_keyboard_command_key_press(const char* command,
     return parse_key_command(command, "KEY PRESS ", physical_key);
 }
 
+bool wz_telnet_keyboard_command_unknown_key(const char* command)
+{
+    static const char* const prefixes[] = {
+        "KEY DOWN ", "KEY UP ", "KEY PRESS "
+    };
+    if (command == NULL) return false;
+    for (size_t prefix = 0u;
+         prefix < sizeof(prefixes) / sizeof(prefixes[0]); ++prefix) {
+        size_t length = strlen(prefixes[prefix]);
+        size_t index = 0u;
+        while (index < length && command[index] != '\0' &&
+               toupper((unsigned char)command[index]) == prefixes[prefix][index]) {
+            ++index;
+        }
+        if (index == length && command[length] != '\0') return true;
+    }
+    return false;
+}
+
 bool wz_telnet_keyboard_command_release_all(const char* command)
 {
     static const char expected[] = "RELEASE ALL";

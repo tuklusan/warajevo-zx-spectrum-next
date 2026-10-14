@@ -3636,7 +3636,10 @@ static void wz_host_telnet_process_command(const char* command)
         (void)wz_telnet_screenshot_format_response(result, path, output,
                                                    sizeof(output), &length);
     } else {
-        (void)wz_telnet_error_format(WZ_TELNET_ERROR_BAD_COMMAND,
+        (void)wz_telnet_error_format(
+                                      wz_telnet_keyboard_command_unknown_key(command) ?
+                                          WZ_TELNET_ERROR_BAD_KEY :
+                                          WZ_TELNET_ERROR_BAD_COMMAND,
                                       output, sizeof(output), &length);
     }
     wz_host_telnet_send(output, length);
