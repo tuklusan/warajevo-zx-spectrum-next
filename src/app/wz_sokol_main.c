@@ -115,6 +115,7 @@ SANYALnet Labs." See LICENSE for full terms. */
     (WZ_UI_MICRODRIVE_COUNT * WZ_UI_MICRODRIVE_OPERATION_COUNT)
 #define WZ_HOST_RASTER_BYTES (WZ_RASTER_CANONICAL_WIDTH * WZ_RASTER_CANONICAL_HEIGHT)
 #define WZ_HOST_TELNET_IO_CAPACITY 2048u
+#define WZ_HOST_TELNET_RESPONSE_CAPACITY 65536u
 #define WZ_HOST_AUDIO_FRAME_SAMPLE_CAPACITY 2048u
 
 static const uint8_t wz_host_palette[16u][4u] = {
@@ -3506,14 +3507,20 @@ static void wz_host_telnet_send(const char* output, size_t length)
 {
     if (wz_telnet_client_is_active(&wz_host_session.telnet_client) &&
         output != NULL && length != 0u) {
-        (void)wz_host_socket_send(wz_host_session.telnet_client.active_client,
-                                  output, length);
+        size_t sent = 0u;
+        while (sent < length) {
+            int count = wz_host_socket_send(
+                wz_host_session.telnet_client.active_client,
+                output + sent, length - sent);
+            if (count <= 0) break;
+            sent += (size_t)count;
+        }
     }
 }
 
 static void wz_host_telnet_process_command(const char* command)
 {
-    char output[WZ_HOST_TELNET_IO_CAPACITY];
+    char output[WZ_HOST_TELNET_RESPONSE_CAPACITY];
     char projected[WZ_HOST_TELNET_IO_CAPACITY];
     char id[WZ_HOST_TELNET_IO_CAPACITY];
     char arguments[WZ_HOST_TELNET_IO_CAPACITY];

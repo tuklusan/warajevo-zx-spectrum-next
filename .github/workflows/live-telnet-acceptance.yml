@@ -13,11 +13,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - id: windows-x64
+          - id: windows-x86_64
             runner: windows-2025
           - id: windows-arm64
             runner: windows-11-arm
-          - id: macos-x64
+          - id: macos-x86_64
             runner: macos-15-intel
           - id: macos-arm64
             runner: macos-15
@@ -25,6 +25,30 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@v5
+
+      - name: Restore runner bootstrap cache
+        id: bootstrap
+        uses: actions/cache@v4
+        with:
+          path: ci/.runner-bootstrap-cache
+          key: runner-bootstrap-${{ matrix.id }}-${{ hashFiles('ci/runner-bootstrap/manifests/**', 'ci/runner-bootstrap/**') }}
+
+      - name: Bootstrap Windows runner
+        if: runner.os == 'Windows' && steps.bootstrap.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: .\ci\runner-bootstrap\bootstrap-windows.ps1 ci\runner-bootstrap\manifests\${{ matrix.id }}.txt
+
+      - name: Bootstrap macOS runner
+        if: runner.os != 'Windows' && steps.bootstrap.outputs.cache-hit != 'true'
+        shell: bash
+        run: bash ci/runner-bootstrap/bootstrap-unix.sh ci/runner-bootstrap/manifests/${{ matrix.id }}.txt
+
+      - name: Record bootstrap identity
+        if: steps.bootstrap.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          mkdir -p ci/.runner-bootstrap-cache
+          printf 'runner_label=%s\n' '${{ matrix.runner }}' > ci/.runner-bootstrap-cache/manifest.txt
 
       - name: Verify certified ROM
         shell: bash
@@ -77,3 +101,11 @@ jobs:
           name: live-telnet-${{ matrix.id }}-${{ github.sha }}
           path: dist/live-telnet/proof.json
           if-no-files-found: error
+
+      - name: Show product startup diagnostics on failure
+        if: failure()
+        shell: bash
+        run: |
+          if [[ -f dist/live-telnet/application.log ]]; then
+            tail -n 20 dist/live-telnet/application.log
+          fi
