@@ -94,7 +94,15 @@ def screenshot(sock):
 
 
 def press_key(sock, key):
-    command(sock, "KEY PRESS " + key)
+    deadline = time.monotonic() + 10.0
+    while True:
+        try:
+            command(sock, "KEY PRESS " + key)
+            break
+        except RuntimeError as error:
+            if "ERR BAD_STATE" not in str(error) or time.monotonic() >= deadline:
+                raise
+            time.sleep(0.25)
     time.sleep(0.5)
 
 
