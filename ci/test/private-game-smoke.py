@@ -139,12 +139,53 @@ def sample(frame, digest, baseline, elapsed):
     }
 
 
+def normalize_fuse(frame):
+    if frame.size != (320, 240):
+        raise RuntimeError("Fuse reference has unexpected display dimensions")
+    normalized = Image.new("RGB", (448, 312))
+    for source_y, target_y in zip(((0, 24), (24, 216), (216, 240)),
+                                  ((0, 60), (60, 252), (252, 312))):
+        for source_x, target_x in zip(((0, 32), (32, 288), (288, 320)),
+                                      ((0, 96), (96, 352), (352, 448))):
+            tile = frame.crop((source_x[0], source_y[0], source_x[1], source_y[1]))
+            normalized.paste(tile.resize((target_x[1] - target_x[0],
+                                          target_y[1] - target_y[0]),
+                                         Image.Resampling.NEAREST),
+                             (target_x[0], target_y[0]))
+    return normalized
+
+
+def compare_fuse(reference_path, frames):
+    reference_bytes = reference_path.read_bytes()
+    with Image.open(reference_path) as image:
+        reference = normalize_fuse(image.convert("RGB"))
+    comparisons = []
+    for elapsed, frame in frames:
+        difference = ImageChops.difference(reference, frame)
+        mismatches = sum(
+            max(pixel) > 16 for pixel in difference.getdata()
+        )
+        comparisons.append({
+            "elapsedSeconds": elapsed,
+            "mismatchPercent": round(100.0 * mismatches / (448 * 312), 6),
+            "meanChannelError": round(sum(ImageStat.Stat(difference).mean) / 3.0, 6),
+        })
+    return {
+        "inputSha256": hashlib.sha256(reference_bytes).hexdigest(),
+        "sourceSize": [320, 240],
+        "channelTolerance": 16,
+        "comparisons": comparisons,
+        "bestMismatchPercent": min(item["mismatchPercent"] for item in comparisons),
+    }
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--binary", type=Path, required=True)
     parser.add_argument("--rom", type=Path, required=True)
     parser.add_argument("--tape", type=Path, required=True)
     parser.add_argument("--proof", type=Path, required=True)
+    parser.add_argument("--fuse-reference", type=Path)
     args = parser.parse_args()
     for path in (args.binary, args.rom, args.tape):
         if not path.is_file() or path.stat().st_size < 1000:
@@ -178,6 +219,7 @@ def main():
             command(sock, "SPEED 400")
             started = time.monotonic()
             samples = []
+            frames = []
             for target in (30.0, 90.0, 180.0, 240.0, 300.0):
                 remaining = target - (time.monotonic() - started)
                 if remaining > 0:
@@ -186,6 +228,7 @@ def main():
                 samples.append(sample(
                     frame, digest, boot, round(time.monotonic() - started, 3)
                 ))
+                frames.append((samples[-1]["elapsedSeconds"], frame))
                 if target == 240.0:
                     command(sock, "KEY PRESS ENTER")
                     time.sleep(2.0)
@@ -210,6 +253,8 @@ def main():
                     "Private media bytes, media paths, and screenshots are not uploaded.",
                 ],
             }
+            if args.fuse_reference is not None:
+                proof["fuseReference"] = compare_fuse(args.fuse_reference, frames)
             args.proof.write_text(json.dumps(proof, indent=2) + "\n", encoding="utf-8")
         finally:
             if sock is not None:
