@@ -135,14 +135,16 @@ def main():
                 stdout=log, stderr=subprocess.STDOUT,
             )
             sock = connect(process)
+            time.sleep(5.0)
             boot, _ = screenshot(sock)
-            command(sock, "SPEED 400")
+            command(sock, "SPEED 100")
             command(sock, "KEY PRESS J")
             command(sock, "KEY DOWN SYMBOL_SHIFT")
             command(sock, "KEY PRESS P")
             command(sock, "KEY PRESS P")
             command(sock, "KEY UP SYMBOL_SHIFT")
             command(sock, "KEY PRESS ENTER")
+            command(sock, "SPEED 400")
             started = time.monotonic()
             samples = []
             for target in (30.0, 90.0, 180.0):
