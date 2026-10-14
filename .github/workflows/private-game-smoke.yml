@@ -1,0 +1,56 @@
+name: Private game ROM loading observation
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  observe:
+    if: github.ref == 'refs/heads/main'
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact main commit
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Fetch only the selected private game
+        run: git lfs pull --include='test-media/Abu Simbel Profanation.tap' --exclude=''
+
+      - name: Restore runner bootstrap cache
+        id: bootstrap
+        uses: actions/cache@v4
+        with:
+          path: ci/.runner-bootstrap-cache
+          key: runner-bootstrap-macos-arm64-${{ hashFiles('ci/runner-bootstrap/manifests/**', 'ci/runner-bootstrap/**') }}
+
+      - name: Bootstrap macOS runner
+        if: steps.bootstrap.outputs.cache-hit != 'true'
+        run: bash ci/runner-bootstrap/bootstrap-unix.sh ci/runner-bootstrap/manifests/macos-arm64.txt
+
+      - name: Build production desktop host
+        run: |
+          cmake -S src/cmake -B dist/private-game-smoke/product -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release -DWZSN_BUILD_SOKOL_HOST=ON
+          cmake --build dist/private-game-smoke/product --clean-first --parallel 2
+
+      - name: Install image metrics dependency
+        run: python3 -m pip install Pillow
+
+      - name: Observe private game through the normal ROM loader
+        run: |
+          python3 ci/test/private-game-smoke.py \
+            --binary dist/private-game-smoke/product/Warajevo-ZX-Spectrum-Next \
+            --rom roms/48.rom \
+            --tape 'test-media/Abu Simbel Profanation.tap' \
+            --proof dist/private-game-smoke/observation.json
+
+      - name: Upload aggregate observation only
+        uses: actions/upload-artifact@v4
+        with:
+          name: private-game-smoke-${{ github.sha }}
+          path: dist/private-game-smoke/observation.json
+          if-no-files-found: error
