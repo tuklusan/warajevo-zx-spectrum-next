@@ -34,14 +34,23 @@ jobs:
       - name: Capture Fuse after automatic private game load
         shell: bash
         run: |
-          mkdir -p dist/private-game-fuse/reference
+          mkdir -p dist/private-game-fuse/reference dist/private-game-fuse/fuse-cwd
+          cp roms/48.rom dist/private-game-fuse/fuse-cwd/48.rom
+          reference="$PWD/dist/private-game-fuse/reference"
+          game="$PWD/test-media/Abu Simbel Profanation.tap"
           export LD_LIBRARY_PATH="$RUNNER_TEMP/wzsn-fuse-visual/install/lib:$RUNNER_TEMP/wzsn-fuse-visual/install/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-          timeout --signal=TERM 240s "$RUNNER_TEMP/wzsn-fuse-visual/install/bin/fuse" \
-            --machine 48 --rom-48 roms/48.rom --no-sound \
-            --tape 'test-media/Abu Simbel Profanation.tap' --auto-load \
-            --automation-output dist/private-game-fuse/reference \
-            --automation-frames 3000 --automation-capture-screen
+          (
+            cd dist/private-game-fuse/fuse-cwd
+            timeout --signal=TERM 240s "$RUNNER_TEMP/wzsn-fuse-visual/install/bin/fuse" \
+              --machine 48 --no-sound --tape "$game" --auto-load \
+              --automation-output "$reference" \
+              --automation-frames 3000 --automation-capture-screen
+          )
           test -s dist/private-game-fuse/reference/screen.png
+          if cmp -s dist/fuse-visual-reference/screen.png dist/private-game-fuse/reference/screen.png; then
+            echo 'Fuse remained at the ROM startup screen' >&2
+            exit 1
+          fi
 
       - name: Build production Linux desktop host
         run: |
