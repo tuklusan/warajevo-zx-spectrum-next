@@ -12,3 +12,13 @@ closure requirements.
 The local workstation is not a build or test machine. Compilation, execution,
 media loading, and evidence generation are performed by the configured hosted
 project runners.
+
+## Remote control and Windows Firewall
+
+The application attempts to start a Telnet control listener on the first
+available IPv4 port from 30740 through 32787. It listens on the host's
+network interfaces.
+Windows may request firewall permission when the application starts. Allow
+access only on networks where remote control is intended; local emulation
+continues if inbound access is denied. The active Control Port and listener
+state are shown in the application's remote-control status panel.

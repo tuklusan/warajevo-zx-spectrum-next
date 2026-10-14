@@ -29,8 +29,12 @@ void wz_ui_help_text(char* output, size_t capacity)
 {
     if (output == 0 || capacity == 0u) return;
     (void)snprintf(output, capacity,
-                   "Help: use the canonical menu and command registry actions; "
-                   "machine state remains deterministic and host-independent.");
+                   "F1 opens keyboard commands; F2 opens Help; F3 opens About. "
+                   "Use File > Open / Run to select tape, snapshot, or "
+                   "Microdrive media. The remote-control listener starts "
+                   "automatically on the first free IPv4 port from 30740 "
+                   "through 32787. Windows may ask for firewall permission; "
+                   "allow access only on networks where remote control is intended.");
     output[capacity - 1u] = '\0';
 }
 
@@ -38,7 +42,9 @@ void wz_ui_about_text(char* output, size_t capacity)
 {
     if (output == 0 || capacity == 0u) return;
     (void)snprintf(output, capacity,
-                   "Warajevo ZX Spectrum Next | Copyright (c) 2026 Supratim Sanyal, "
-                   "SANYALnet Labs | GPL-2.0-or-later for new original project material.");
+                   "Warajevo ZX Spectrum Next. Based on original work by "
+                   "Supratim Sanyal of SANYALnet Labs. Copyright (c) 2026 "
+                   "Supratim Sanyal. See the included LICENSE and "
+                   "THIRD-PARTY-NOTICES for terms and provenance.");
     output[capacity - 1u] = '\0';
 }

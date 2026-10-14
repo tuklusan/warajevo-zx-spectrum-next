@@ -108,6 +108,7 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "app/wz_telnet_input.h"
 #include "app/wz_telnet_key_press.h"
 #include "app/wz_ui_window.h"
+#include "app/wz_ui_help.h"
 
 #define WZ_HOST_COMMAND_CAPACITY 128u
 #define WZ_HOST_MICRODRIVE_COMMAND_COUNT \
@@ -263,6 +264,8 @@ typedef struct {
     bool input_settings_visible;
     bool rom_settings_visible;
     bool networking_settings_visible;
+    bool help_visible;
+    bool about_visible;
     bool rom_license_approved;
     bool initialized;
 } wz_host_session_t;
@@ -2611,6 +2614,54 @@ static wz_result_t wz_host_command_screenshot(
     return WZ_RESULT_OK;
 }
 
+static wz_result_t wz_host_command_help(
+    const void* context, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    wz_host_session_t* session = (wz_host_session_t*)context;
+    (void)arguments;
+    if (session == NULL || result == NULL) return WZ_RESULT_INVALID_ARGUMENT;
+    wz_host_release_local_keys();
+    session->about_visible = false;
+    session->help_visible = true;
+    (void)wz_input_focus_set_target(&session->input_focus,
+                                    WZ_INPUT_FOCUS_TEXT_CONTROL);
+    (void)snprintf(result->message, sizeof(result->message), "Help opened");
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_host_command_about(
+    const void* context, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    wz_host_session_t* session = (wz_host_session_t*)context;
+    (void)arguments;
+    if (session == NULL || result == NULL) return WZ_RESULT_INVALID_ARGUMENT;
+    wz_host_release_local_keys();
+    session->help_visible = false;
+    session->about_visible = true;
+    (void)wz_input_focus_set_target(&session->input_focus,
+                                    WZ_INPUT_FOCUS_TEXT_CONTROL);
+    (void)snprintf(result->message, sizeof(result->message), "About opened");
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_host_command_quit(
+    const void* context, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    wz_host_session_t* session = (wz_host_session_t*)context;
+    (void)arguments;
+    if (session == NULL || result == NULL) return WZ_RESULT_INVALID_ARGUMENT;
+    if (wz_application_request_quit(&session->lifecycle) != WZ_RESULT_OK) {
+        result->reason = "quit-unavailable";
+        return WZ_RESULT_INVALID_STATE;
+    }
+    sapp_request_quit();
+    (void)snprintf(result->message, sizeof(result->message), "Quit requested");
+    return WZ_RESULT_OK;
+}
+
 static wz_result_t wz_host_command_speed(
     const void* context, wz_command_arguments_t arguments,
     wz_command_result_t* result)
@@ -3188,6 +3239,13 @@ static bool wz_host_register_commands(void)
             &wz_host_session, true, false, NULL
         },
         {
+            "application.quit", "Quit", "Quit the application",
+            "file", "NONE", "wz-command-result",
+            "wz_host_command_quit", "local", "Alt+F4",
+            WZ_COMMAND_LOCAL_ONLY, NULL, wz_host_command_quit,
+            &wz_host_session, false, false, NULL
+        },
+        {
             WZ_SNAPSHOT_INSPECTOR_COMMAND_ID, "Snapshot Inspector...",
             "Inspect registers, paging, AY state, and memory pages",
             "tools", "NONE", NULL, "wz_host_command_snapshot_inspector", "local",
@@ -3258,6 +3316,21 @@ static bool wz_host_register_commands(void)
             "wz_host_toggle_fullscreen", "local", NULL,
             WZ_COMMAND_LOCAL_ONLY, wz_host_settings_available,
             wz_host_toggle_fullscreen, &wz_host_session, false, false, NULL
+        },
+        {
+            "help.help", "Help", "Show keyboard and application help",
+            "help", "NONE", "wz-command-result",
+            "wz_host_command_help", "local", "F2",
+            WZ_COMMAND_LOCAL_ONLY, NULL, wz_host_command_help,
+            &wz_host_session, false, false, NULL
+        },
+        {
+            "help.about", "About Warajevo ZX Spectrum Next",
+            "Show project identity and licensing information",
+            "help", "NONE", "wz-command-result",
+            "wz_host_command_about", "local", "F3",
+            WZ_COMMAND_LOCAL_ONLY, NULL, wz_host_command_about,
+            &wz_host_session, false, false, NULL
         },
         {
             "machine.pause_resume", "Pause", "Pause or resume the emulated machine",
@@ -6354,6 +6427,43 @@ static void wz_host_ui_draw_networking_settings(
     nk_end(context);
 }
 
+static void wz_host_help_close(void)
+{
+    wz_host_session.help_visible = false;
+    wz_host_session.about_visible = false;
+    (void)wz_input_focus_set_target(&wz_host_session.input_focus,
+                                    WZ_INPUT_FOCUS_VIEWPORT);
+}
+
+static void wz_host_ui_draw_help(struct nk_context* context,
+                                  float width, float height)
+{
+    const float panel_width = width >= 560.0f ? 540.0f : width - 16.0f;
+    const float panel_height = height >= 300.0f ? 260.0f : height - 32.0f;
+    const bool about = wz_host_session.about_visible;
+    char message[512];
+    if ((!wz_host_session.help_visible && !about) ||
+        panel_width < 220.0f || panel_height < 150.0f) return;
+    if (about) {
+        wz_ui_about_text(message, sizeof(message));
+    } else {
+        wz_ui_help_text(message, sizeof(message));
+    }
+    if (!nk_begin(context, about ? "About Warajevo ZX Spectrum Next" : "Help",
+            nk_rect((width - panel_width) * 0.5f,
+                    (height - panel_height) * 0.5f,
+                    panel_width, panel_height),
+            NK_WINDOW_BORDER | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE)) {
+        nk_end(context);
+        return;
+    }
+    nk_layout_row_dynamic(context, 180.0f, 1);
+    nk_label_wrap(context, message);
+    nk_layout_row_dynamic(context, 28.0f, 1);
+    if (nk_button_label(context, "Close (Esc)")) wz_host_help_close();
+    nk_end(context);
+}
+
 static void wz_host_render_native_ui(struct nk_context* context,
                                      float width, float height, float dpi_scale)
 {
@@ -6374,6 +6484,7 @@ static void wz_host_render_native_ui(struct nk_context* context,
     wz_host_ui_draw_rom_settings(context, width, height);
     wz_host_ui_draw_networking_settings(context, width, height);
     wz_host_ui_draw_remote_settings(context, width, height);
+    wz_host_ui_draw_help(context, width, height);
     wz_host_ui_draw_status(context, width, height, dpi_scale);
     wz_host_ui_draw_keyboard_menu(context, width, height);
 }
@@ -6863,7 +6974,8 @@ static void wz_host_input_focus_from_mouse(const sapp_event* event)
     mouse_y = event->mouse_y / scale;
     ui_target = mouse_y <=
         WZ_UI_MENU_BAR_HEIGHT + WZ_UI_TOOLBAR_HEIGHT ||
-        mouse_y >= height - 48.0f / scale;
+        mouse_y >= height - 48.0f / scale ||
+        wz_host_session.help_visible || wz_host_session.about_visible;
     if (wz_host_session.remote_settings_visible) {
         panel_width = width >= 440.0f ? 420.0f : width - 16.0f;
         panel_height = height >= 238.0f ? 190.0f : height - 48.0f;
@@ -7126,6 +7238,27 @@ static void wz_host_event(const sapp_event* event)
     }
     if (event->type == SAPP_EVENTTYPE_MOUSE_DOWN) {
         wz_host_input_focus_from_mouse(event);
+        return;
+    }
+    if ((wz_host_session.help_visible || wz_host_session.about_visible) &&
+        (event->type == SAPP_EVENTTYPE_KEY_DOWN ||
+         event->type == SAPP_EVENTTYPE_KEY_UP)) {
+        if (event->type == SAPP_EVENTTYPE_KEY_DOWN &&
+            (event->key_code == SAPP_KEYCODE_ESCAPE ||
+             event->key_code == SAPP_KEYCODE_ENTER)) {
+            wz_host_help_close();
+        }
+        return;
+    }
+    if (event->type == SAPP_EVENTTYPE_KEY_DOWN &&
+        !wz_ui_keyboard_menu_is_active(&wz_host_session.keyboard_menu) &&
+        wz_input_focus_is_focused(&wz_host_session.input_focus) &&
+        (event->key_code == SAPP_KEYCODE_F2 ||
+         event->key_code == SAPP_KEYCODE_F3)) {
+        wz_command_result_t result;
+        (void)wz_command_registry_dispatch(&wz_host_session.command_registry,
+            event->key_code == SAPP_KEYCODE_F2 ? "help.help" : "help.about",
+            (wz_command_arguments_t){NULL, 0u}, &result);
         return;
     }
     if (event->type == SAPP_EVENTTYPE_KEY_DOWN &&
