@@ -12,7 +12,7 @@
       "artifact": "dizzy4k-screenshot-windows-x86_64",
       "screenshotFile": "dizzy4k-30740.png",
       "sha256": "e3ca92e29892f94e09e3ac52403bb265f1908f11c7da7426600c9351fa59b97c",
-      "observation": "Centered monochrome loading graphic on a black Spectrum display."
+      "observation": "Centered monochrome intro frame on a black Spectrum display."
     },
     {
       "id": "windows-arm64",
@@ -20,7 +20,7 @@
       "artifact": "dizzy4k-screenshot-windows-arm64",
       "screenshotFile": "dizzy4k-30740.png",
       "sha256": "9a96092227a1bcee472e65ff53b66593dc4a430e62fefa43b913121949beba72",
-      "observation": "Centered monochrome loading graphic on a black Spectrum display."
+      "observation": "Centered monochrome intro frame on a black Spectrum display."
     },
     {
       "id": "macos-x86_64",
@@ -28,7 +28,7 @@
       "artifact": "dizzy4k-screenshot-macos-x86_64",
       "screenshotFile": "dizzy4k-30740.png",
       "sha256": "6dcf61b87a154b3c0e5c9b2ea1decacc1fea6f224fe4abed9be7c49a10d821a8",
-      "observation": "Centered monochrome loading graphic on a black Spectrum display."
+      "observation": "Centered monochrome intro frame on a black Spectrum display."
     },
     {
       "id": "macos-arm64",
@@ -36,12 +36,18 @@
       "artifact": "dizzy4k-screenshot-macos-arm64",
       "screenshotFile": "dizzy4k-30740.png",
       "sha256": "b03dde8f84507804d576b60e47deafa125e0ecfb44f4374bebb025a0e52ea70e",
-      "observation": "Centered monochrome loading graphic on a black Spectrum display."
+      "observation": "Centered monochrome intro frame on a black Spectrum display."
     }
   ],
   "artifactRetentionDays": 30,
   "limitations": [
-    "A single loading graphic after the scripted interval does not establish gameplay, stable visual equivalence with Fuse for this media, or delivered host audio.",
-    "Screenshot bytes remain in hosted artifacts; no new screenshot or private-media bytes were committed."
-  ]
+    "A single intro frame does not establish animation timing, stable visual equivalence with Fuse, or delivered host audio.",
+    "Screenshot bytes remain in hosted artifacts; no new screenshot or private-media bytes were committed.",
+    "DIZZY4K.TAP is a scene demo; gameplay must be verified with separate game media."
+  ],
+  "media": {
+    "tapCrc32": "3f57d49d",
+    "classification": "ZX Spectrum scene demo (Dizzy 4K Intro), not a game",
+    "catalog": "https://worldofspectrum.net/archive/demos/"
+  }
 }
