@@ -18,20 +18,20 @@ import time
 
 
 def connect(process):
-    deadline = time.monotonic() + 120
-    while time.monotonic() < deadline:
+    time.sleep(5)
+    for _ in range(120):
         if process.poll() is not None:
             raise RuntimeError("application exited before the listener was ready")
         for port in range(30740, 32788):
             connection = socket.socket()
-            connection.settimeout(0.1)
+            connection.settimeout(0.25)
             try:
                 connection.connect(("127.0.0.1", port))
                 connection.settimeout(10)
                 return connection
             except OSError:
                 connection.close()
-        time.sleep(0.25)
+        time.sleep(1)
     raise RuntimeError("application listener did not become available")
 
 
