@@ -93,6 +93,11 @@ def screenshot(sock):
     return frame, hashlib.sha256(data).hexdigest()
 
 
+def press_key(sock, key):
+    command(sock, "KEY PRESS " + key)
+    time.sleep(0.5)
+
+
 def sample(frame, digest, baseline, elapsed):
     if frame.size != baseline.size:
         raise RuntimeError("Spectrum frame dimensions changed during loading")
@@ -206,16 +211,12 @@ def main():
             time.sleep(5.0)
             boot, boot_digest = screenshot(sock)
             command(sock, "SPEED 100")
-            command(sock, "KEY PRESS J")
-            time.sleep(0.1)
+            press_key(sock, "J")
             command(sock, "KEY DOWN SYMBOL_SHIFT")
-            command(sock, "KEY PRESS P")
-            time.sleep(0.1)
-            command(sock, "KEY PRESS P")
-            time.sleep(0.1)
+            press_key(sock, "P")
+            press_key(sock, "P")
             command(sock, "KEY UP SYMBOL_SHIFT")
-            command(sock, "KEY PRESS ENTER")
-            time.sleep(0.1)
+            press_key(sock, "ENTER")
             command(sock, "SPEED 400")
             started = time.monotonic()
             samples = []
@@ -230,11 +231,10 @@ def main():
                 ))
                 frames.append((samples[-1]["elapsedSeconds"], frame))
                 if target == 240.0:
-                    command(sock, "KEY PRESS ENTER")
+                    press_key(sock, "ENTER")
                     time.sleep(2.0)
                     for key in ("O", "P", "Q"):
-                        command(sock, "KEY PRESS " + key)
-                        time.sleep(0.1)
+                        press_key(sock, key)
             proof = {
                 "testId": "private-game-rom-loading-observation",
                 "status": "observation",
