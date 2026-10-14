@@ -1,0 +1,259 @@
+{
+  "testId": "private-game-rom-loading-observation",
+  "status": "observation",
+  "commit": "e3e45db870587c22b4e5193473b3a5d4c7471f27",
+  "runId": 38650729563,
+  "runner": "macOS ARM64",
+  "mediaClass": "private ZX Spectrum game TAP",
+  "romSha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42",
+  "speedPercent": 400,
+  "normalTapeTransport": true,
+  "bootFrameSha256": "55aa70bf047750ae0990f6b82a75a6e7a6f0f5ab676b2258250845b7f565efcd",
+  "post240SecondInput": [
+    "ENTER",
+    "O",
+    "P",
+    "Q"
+  ],
+  "samples": [
+    {
+      "elapsedSeconds": 30.096,
+      "frameSha256": "d1706cfc9b9d5cb036c4fdbf78f4e90e59c1e5623b91f37cdfa59f4d6bfe35da",
+      "width": 448,
+      "height": 312,
+      "changedPixelsFromBoot": 48426,
+      "changedPercentFromBoot": 34.645433,
+      "meanChannelDifferenceFromBoot": 65.773352,
+      "dominantColors": [
+        {
+          "rgb": "#c0c0c0",
+          "pixels": 91043
+        },
+        {
+          "rgb": "#000000",
+          "pixels": 47104
+        },
+        {
+          "rgb": "#c00000",
+          "pixels": 1629
+        }
+      ],
+      "textSignals": {
+        "romCopyright": false,
+        "loadCommand": false,
+        "tapeError": false,
+        "gameTitle": true,
+        "startPrompt": false,
+        "score": false
+      }
+    },
+    {
+      "elapsedSeconds": 90.028,
+      "frameSha256": "d1706cfc9b9d5cb036c4fdbf78f4e90e59c1e5623b91f37cdfa59f4d6bfe35da",
+      "width": 448,
+      "height": 312,
+      "changedPixelsFromBoot": 48426,
+      "changedPercentFromBoot": 34.645433,
+      "meanChannelDifferenceFromBoot": 65.773352,
+      "dominantColors": [
+        {
+          "rgb": "#c0c0c0",
+          "pixels": 91043
+        },
+        {
+          "rgb": "#000000",
+          "pixels": 47104
+        },
+        {
+          "rgb": "#c00000",
+          "pixels": 1629
+        }
+      ],
+      "textSignals": {
+        "romCopyright": false,
+        "loadCommand": false,
+        "tapeError": false,
+        "gameTitle": true,
+        "startPrompt": false,
+        "score": false
+      }
+    },
+    {
+      "elapsedSeconds": 180.143,
+      "frameSha256": "d1706cfc9b9d5cb036c4fdbf78f4e90e59c1e5623b91f37cdfa59f4d6bfe35da",
+      "width": 448,
+      "height": 312,
+      "changedPixelsFromBoot": 48426,
+      "changedPercentFromBoot": 34.645433,
+      "meanChannelDifferenceFromBoot": 65.773352,
+      "dominantColors": [
+        {
+          "rgb": "#c0c0c0",
+          "pixels": 91043
+        },
+        {
+          "rgb": "#000000",
+          "pixels": 47104
+        },
+        {
+          "rgb": "#c00000",
+          "pixels": 1629
+        }
+      ],
+      "textSignals": {
+        "romCopyright": false,
+        "loadCommand": false,
+        "tapeError": false,
+        "gameTitle": true,
+        "startPrompt": false,
+        "score": false
+      }
+    },
+    {
+      "elapsedSeconds": 240.172,
+      "frameSha256": "d1706cfc9b9d5cb036c4fdbf78f4e90e59c1e5623b91f37cdfa59f4d6bfe35da",
+      "width": 448,
+      "height": 312,
+      "changedPixelsFromBoot": 48426,
+      "changedPercentFromBoot": 34.645433,
+      "meanChannelDifferenceFromBoot": 65.773352,
+      "dominantColors": [
+        {
+          "rgb": "#c0c0c0",
+          "pixels": 91043
+        },
+        {
+          "rgb": "#000000",
+          "pixels": 47104
+        },
+        {
+          "rgb": "#c00000",
+          "pixels": 1629
+        }
+      ],
+      "textSignals": {
+        "romCopyright": false,
+        "loadCommand": false,
+        "tapeError": false,
+        "gameTitle": true,
+        "startPrompt": false,
+        "score": false
+      }
+    },
+    {
+      "elapsedSeconds": 300.186,
+      "frameSha256": "0b05c9f1f4e1b39d44ce53233712bebc202e6f0c6d94e12decaa7099f3c2f926",
+      "width": 448,
+      "height": 312,
+      "changedPixelsFromBoot": 48964,
+      "changedPercentFromBoot": 35.030334,
+      "meanChannelDifferenceFromBoot": 58.666101,
+      "dominantColors": [
+        {
+          "rgb": "#c0c0c0",
+          "pixels": 90624
+        },
+        {
+          "rgb": "#000000",
+          "pixels": 35626
+        },
+        {
+          "rgb": "#ffff00",
+          "pixels": 10101
+        },
+        {
+          "rgb": "#ffffff",
+          "pixels": 2417
+        },
+        {
+          "rgb": "#00ff00",
+          "pixels": 1008
+        }
+      ],
+      "textSignals": {
+        "romCopyright": false,
+        "loadCommand": false,
+        "tapeError": false,
+        "gameTitle": false,
+        "startPrompt": false,
+        "score": false
+      }
+    }
+  ],
+  "limitations": [
+    "Aggregate frame metrics are an observation, not gameplay or Fuse visual equivalence proof.",
+    "Private media bytes, media paths, and screenshots are not uploaded."
+  ],
+  "fuseReference": {
+    "inputSha256": "a54aa9d21c16e0700dab6ea816dab7a62c8c7b0e92fc04f8e8f0fb255b1c4d2a",
+    "sourceSize": [
+      320,
+      240
+    ],
+    "channelTolerance": 16,
+    "dominantColors": [
+      {
+        "rgb": "#000000",
+        "pixels": 131955
+      },
+      {
+        "rgb": "#c0c000",
+        "pixels": 5837
+      },
+      {
+        "rgb": "#00c000",
+        "pixels": 1242
+      },
+      {
+        "rgb": "#ffffff",
+        "pixels": 742
+      }
+    ],
+    "textSignals": {
+      "romCopyright": false,
+      "loadCommand": false,
+      "tapeError": false,
+      "gameTitle": false,
+      "startPrompt": false,
+      "score": false
+    },
+    "comparisons": [
+      {
+        "elapsedSeconds": 30.096,
+        "mismatchPercent": 71.29264,
+        "activeScreenMismatchPercent": 20.446777,
+        "borderMismatchPercent": 98.870056,
+        "meanChannelError": 132.284985
+      },
+      {
+        "elapsedSeconds": 90.028,
+        "mismatchPercent": 71.29264,
+        "activeScreenMismatchPercent": 20.446777,
+        "borderMismatchPercent": 98.870056,
+        "meanChannelError": 132.284985
+      },
+      {
+        "elapsedSeconds": 180.143,
+        "mismatchPercent": 71.29264,
+        "activeScreenMismatchPercent": 20.446777,
+        "borderMismatchPercent": 98.870056,
+        "meanChannelError": 132.284985
+      },
+      {
+        "elapsedSeconds": 240.172,
+        "mismatchPercent": 71.29264,
+        "activeScreenMismatchPercent": 20.446777,
+        "borderMismatchPercent": 98.870056,
+        "meanChannelError": 132.284985
+      },
+      {
+        "elapsedSeconds": 300.186,
+        "mismatchPercent": 77.896062,
+        "activeScreenMismatchPercent": 38.452148,
+        "borderMismatchPercent": 99.289371,
+        "meanChannelError": 143.873576
+      }
+    ],
+    "bestMismatchPercent": 71.29264
+  }
+}
