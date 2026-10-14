@@ -46,11 +46,11 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "c4b038801b872b3e7149a7504e2086be805506f714e6c7f18b1a8c5ab2aaae45"
+      "sha256": "7c92695d1282104d62ac3b4c9c929a96a6ed7169533fa3e71ba6f93af1186469"
     },
     {
       "path": "test-drivers/windows-runtime-dependency-audit.driver.json",
-      "sha256": "d2cd468bcc05d818b7ffd9ab3e5453f71174cfcba611f406619672b1160daa87"
+      "sha256": "210913fff32b804a1a360b7b3508f25855fff6c8fb825bd97a463602940810eb"
     }
   ]
 }

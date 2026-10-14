@@ -25,11 +25,11 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "c4b038801b872b3e7149a7504e2086be805506f714e6c7f18b1a8c5ab2aaae45"
+      "sha256": "7c92695d1282104d62ac3b4c9c929a96a6ed7169533fa3e71ba6f93af1186469"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "1dc71a255b61187261ef1b97a3694f780c8c2cb9be08d98e942e98768bec2b29"
+      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
     },
     {
       "path": "src/core/wz_machine.h",

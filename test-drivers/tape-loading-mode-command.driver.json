@@ -21,15 +21,15 @@
     },
     {
       "path": "src/app/wz_command_registry.c",
-      "sha256": "707bd4c4c9d0e12db0135ef857d3c7de8a5d6e7d717d790d09f3080bb90c9607"
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
     },
     {
       "path": "src/app/wz_command_registry.h",
-      "sha256": "089f17123ebfdc9be2ff8606aa849f72c06bc26036ac0f5710dbb978509b9d34"
+      "sha256": "80110080861a05baae47cd6d294315055bb6b1a636c79891b55c56717cb53c94"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "1dc71a255b61187261ef1b97a3694f780c8c2cb9be08d98e942e98768bec2b29"
+      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
     },
     {
       "path": "src/core/wz_machine.h",
@@ -45,19 +45,19 @@
     },
     {
       "path": "src/app/wz_host_thread.c",
-      "sha256": "bd46ced2af90907b222a43fcaef3bfe8943b6ca32fd4831fbaca82483ec264c5"
+      "sha256": "6f8cbe0e171adfe7b9f42d9517e31d72f7917048339ff8941d5bccadfa305151"
     },
     {
       "path": "src/app/wz_host_thread.h",
-      "sha256": "2fa71a370c5b0597e25f8e4ecbc8457e7e9b2d3b62cd48af2eb6111053283805"
+      "sha256": "bd4e189a40c8f9ad31f014dc12afc3c67b7a4bd5580df262b0cf92db8fbe8471"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "c4b038801b872b3e7149a7504e2086be805506f714e6c7f18b1a8c5ab2aaae45"
+      "sha256": "7c92695d1282104d62ac3b4c9c929a96a6ed7169533fa3e71ba6f93af1186469"
     },
     {
       "path": ".github/workflows/tape-loading-mode-command.yml",
-      "sha256": "07e6c3cba0c2b7386036f5442ba0c20f948e65633e2a82db11020dcb844590fd"
+      "sha256": "9e7933a3ee53dfe289f07110d9a8a76d4ba45d0c101cb01cfaa830835179bac5"
     },
     {
       "path": "src/app/wz_sokol_main.c",
@@ -65,7 +65,7 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "6c5de7b5b6a20cad20643b1f9007629846bccc0bb49bf7412cad9464ae9be062"
+      "sha256": "6c8aaea15cdd323d0f9a7c28d12e254e2145cbdabf07849f05892dc3807758f0"
     },
     {
       "path": "src/app/wz_tape_media_commands.c",
@@ -93,15 +93,15 @@
     },
     {
       "path": "src/app/wz_host_output.c",
-      "sha256": "8949c5b287f63d61d0108781968967fc7f723732f6966ec66bbc47b5d702b7a1"
+      "sha256": "504322b9d5c80d2c865f6e8362557af61bce90240df83ccd25ca7065441191e6"
     },
     {
       "path": "src/app/wz_tape_manager.c",
-      "sha256": "bbe18851ffea6041d0b5ca663e1a38db881e5fd9e083ed5c76456d8930df2121"
+      "sha256": "7a08c91c117233f94182465b75ea98964dab4f97a5e9560f3cdc58d67a79a076"
     },
     {
       "path": "src/app/wz_tape_manager.h",
-      "sha256": "29ce5c4a99ece5b42d402bca3c384668079897e77d8dcc89d554e6a2b3444765"
+      "sha256": "cf005620d51c51f9e219c61d8910f579dd3ec366bf172d34c01b3058c2037586"
     }
   ]
 }

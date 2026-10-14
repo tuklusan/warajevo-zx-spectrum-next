@@ -8,11 +8,11 @@
   "fixtures": [
     {
       "path": ".github/workflows/control-port-exhaustion.yml",
-      "sha256": "eb802b8c038a4151cb7f5a3be8a2d23179c01518340af4b0d6b5c8b21c4516ed"
+      "sha256": "ca428419a8873544582b16ee41b43ec4444e28b3820f3ffdc77c7b041bcccf84"
     },
     {
       "path": "ci/test/control-port-exhaustion/CMakeLists.txt",
-      "sha256": "a578b8acf847960b4e5b19539630c80e4d7f5b29288159414c5f285ffa71d7d2"
+      "sha256": "7c57fd15631250ad554fe87e41d460aaf2eea54478b37abe3651dd925cc34881"
     },
     {
       "path": "ci/test/control-port-exhaustion/control-port-exhaustion.c",
@@ -20,11 +20,11 @@
     },
     {
       "path": "ci/test/control-port-exhaustion/write-proof.py",
-      "sha256": "0328952c67dbca8e422e95865f29d2d803431f07a70b4afb490e88bd3d6072fe"
+      "sha256": "bda4e403ebcf83ded70330007bd2650ed5633776bb46477da5240dd8af9fc7be"
     },
     {
       "path": "src/app/wz_control_port.c",
-      "sha256": "43bdc85ebe1bdfd8eb39c9e4938482632b210204ee6fd05080edcaa056ece604"
+      "sha256": "c26016fe66e2f3932bf80070f8a00c873946c3ea893b0458e7994f06fbba1ef5"
     },
     {
       "path": "src/app/wz_control_port.h",

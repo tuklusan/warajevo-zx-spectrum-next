@@ -24,7 +24,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "1dc71a255b61187261ef1b97a3694f780c8c2cb9be08d98e942e98768bec2b29"
+      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
     },
     {
       "path": "src/core/wz_machine.h",
@@ -68,7 +68,7 @@
     },
     {
       "path": "test-media/DIZZY4K.TAP",
-      "sha256": "283e30c36edcb26f2914c1ef1493a650c40e2ef84955ff3c733b83e58e6e9b35"
+      "sha256": "9bd60921359b2e2e39a35501b718319c7702a6f0cfd7493570b589300f4f2a27"
     }
   ]
 }

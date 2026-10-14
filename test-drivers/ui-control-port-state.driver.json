@@ -32,11 +32,11 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "6c5de7b5b6a20cad20643b1f9007629846bccc0bb49bf7412cad9464ae9be062"
+      "sha256": "6c8aaea15cdd323d0f9a7c28d12e254e2145cbdabf07849f05892dc3807758f0"
     },
     {
       "path": "src/app/wz_ui_layout.h",
-      "sha256": "0ef859ac915722f0ea2e2e6d66b8cda00c78577ad14029966c98ebb324abd8ac"
+      "sha256": "30d784d2ff43fe237251e559cd8bc35d0d51b85c9e80953ba8f9cf6e2052ea7b"
     },
     {
       "path": "src/app/wz_control_port.h",

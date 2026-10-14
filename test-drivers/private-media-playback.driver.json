@@ -21,11 +21,11 @@
     },
     {
       "path": "docs/design/private-media-playback-test.md",
-      "sha256": "de59a8511da7ca25775687155802efbb9726a39f313753c6f0973d15ed80f15a"
+      "sha256": "563062baf5ecf6fd68d026bc0b25d6427f9436d71d301c46d647f7eaeca8cc3a"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "1dc71a255b61187261ef1b97a3694f780c8c2cb9be08d98e942e98768bec2b29"
+      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
     },
     {
       "path": "src/core/wz_machine.h",

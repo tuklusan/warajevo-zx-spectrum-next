@@ -8,11 +8,11 @@
   "fixtures": [
     {
       "path": ".github/workflows/tape-loading-equivalence.yml",
-      "sha256": "48bb9361710f35ba55f97b761a915ced34460e34c9348406f70380429c5e8393"
+      "sha256": "b05408496e4ef8576e5981a7489838c3497eb3b1cad52e419cba73f185109757"
     },
     {
       "path": "ci/test/tape-loading-equivalence/CMakeLists.txt",
-      "sha256": "bb09052974d8803ed74de69c35cdfd8ce1ca492b896292d53afdee2959be1fbf"
+      "sha256": "342e64f5f164cb2c88e4a992d98be692b734309a934180d5e83c0f59763e0232"
     },
     {
       "path": "ci/test/tape-loading-equivalence/tape-loading-equivalence.c",
@@ -20,11 +20,11 @@
     },
     {
       "path": "ci/test/tape-loading-equivalence/write-proof.py",
-      "sha256": "3f848b0afdcf16f16689cf1a65ad36b18fb38bc56d699f1b7b8ac852b740ee65"
+      "sha256": "cd9cca86eefe9f915935cb6743c769950af2fcc934659eddd2a18c3efeb99215"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "1dc71a255b61187261ef1b97a3694f780c8c2cb9be08d98e942e98768bec2b29"
+      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
     },
     {
       "path": "src/core/wz_machine.h",
@@ -40,7 +40,7 @@
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "c5904fc7576d2d582704c0c5578a281921a5b73c42c775d2b109a70accaa3126"
+      "sha256": "d57cd0aaab0ae29e6e056593b9ca574d958523b89ee810335aec88b714338b61"
     },
     {
       "path": "src/core/wz_state.h",
