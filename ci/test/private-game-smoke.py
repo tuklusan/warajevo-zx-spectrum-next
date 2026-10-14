@@ -56,12 +56,21 @@ def command(sock, value):
             break
     text = response.decode("utf-8", "replace")
     if "ERR " in text or "OK " not in text:
-        raise RuntimeError("control command failed: " + value)
+        reason = next((line for line in text.splitlines() if line.startswith("ERR ")), "no response")
+        raise RuntimeError("control command failed: " + value + ": " + reason)
     return text
 
 
 def screenshot(sock):
-    response = command(sock, "SCREENSHOT")
+    deadline = time.monotonic() + 20.0
+    while True:
+        try:
+            response = command(sock, "SCREENSHOT")
+            break
+        except RuntimeError as error:
+            if "ERR SCREENSHOT no-raster" not in str(error) or time.monotonic() >= deadline:
+                raise
+            time.sleep(0.25)
     match = re.search(
         r'OK (?:SCREENSHOT\s+|DO host\.screenshot\.temp\s+PATH=)"?([^"\r\n]+)',
         response,
@@ -118,6 +127,7 @@ def main():
                 stdout=log, stderr=subprocess.STDOUT,
             )
             sock = connect(process)
+            command(sock, "HELP")
             boot, _ = screenshot(sock)
             command(sock, "SPEED 400")
             command(sock, "KEY PRESS J")
