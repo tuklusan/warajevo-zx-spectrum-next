@@ -1,38 +1,47 @@
 {
   "testId": "dizzy4k-demo-visual-observation",
   "status": "partial",
-  "commit": "e785c76ca2301e880f71f5abf28bb136adfa807f",
-  "runId": 38362758851,
-  "runConclusion": "cancelled",
-  "observedAt": "2026-10-13T07:37:53Z",
+  "commit": "edd1ca08d8a18dcb7c039a5ffc02ff33ba10fb69",
+  "runId": 38511550912,
+  "runConclusion": "success",
+  "observedAt": "2026-10-14T04:42:00Z",
   "runners": [
+    {
+      "id": "windows-x86_64",
+      "job": "success",
+      "artifact": "dizzy4k-screenshot-windows-x86_64",
+      "screenshotFile": "dizzy4k-30740.png",
+      "sha256": "e3ca92e29892f94e09e3ac52403bb265f1908f11c7da7426600c9351fa59b97c",
+      "observation": "Centered monochrome loading graphic on a black Spectrum display."
+    },
+    {
+      "id": "windows-arm64",
+      "job": "success",
+      "artifact": "dizzy4k-screenshot-windows-arm64",
+      "screenshotFile": "dizzy4k-30740.png",
+      "sha256": "9a96092227a1bcee472e65ff53b66593dc4a430e62fefa43b913121949beba72",
+      "observation": "Centered monochrome loading graphic on a black Spectrum display."
+    },
     {
       "id": "macos-x86_64",
       "job": "success",
-      "screenshot": "macos-x86_64/dizzy4k.png",
-      "sha256": "b52c1381292703a2f641731ad939c4a6d22902148c1dabd494d261bcb945cadf",
-      "observation": "Blue title text on a black Spectrum display."
+      "artifact": "dizzy4k-screenshot-macos-x86_64",
+      "screenshotFile": "dizzy4k-30740.png",
+      "sha256": "6dcf61b87a154b3c0e5c9b2ea1decacc1fea6f224fe4abed9be7c49a10d821a8",
+      "observation": "Centered monochrome loading graphic on a black Spectrum display."
     },
     {
       "id": "macos-arm64",
       "job": "success",
-      "screenshot": "macos-arm64/dizzy4k.png",
-      "sha256": "b5f748c8414869988e40507655d29753bbe77b60293f181f98b893cc2df345e2",
-      "observation": "A centered monochrome graphic on a black Spectrum display."
-    },
-    {
-      "id": "windows-x86_64",
-      "job": "cancelled",
-      "screenshot": null
-    },
-    {
-      "id": "windows-arm64",
-      "job": "cancelled",
-      "screenshot": null
+      "artifact": "dizzy4k-screenshot-macos-arm64",
+      "screenshotFile": "dizzy4k-30740.png",
+      "sha256": "b03dde8f84507804d576b60e47deafa125e0ecfb44f4374bebb025a0e52ea70e",
+      "observation": "Centered monochrome loading graphic on a black Spectrum display."
     }
   ],
+  "artifactRetentionDays": 30,
   "limitations": [
-    "The Windows jobs remained in the existing runner harness and were cancelled; no Windows result is claimed.",
-    "The two macOS screenshots do not establish complete gameplay, stable visual equivalence, or host audio output."
+    "A single loading graphic after the scripted interval does not establish gameplay, stable visual equivalence with Fuse for this media, or delivered host audio.",
+    "Screenshot bytes remain in hosted artifacts; no new screenshot or private-media bytes were committed."
   ]
 }
