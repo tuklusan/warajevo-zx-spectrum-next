@@ -127,7 +127,6 @@ def main():
                 stdout=log, stderr=subprocess.STDOUT,
             )
             sock = connect(process)
-            command(sock, "HELP")
             boot, _ = screenshot(sock)
             command(sock, "SPEED 400")
             command(sock, "KEY PRESS J")
