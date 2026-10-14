@@ -90,7 +90,7 @@ jobs:
             --binary dist/private-game-fuse-macos/product/Warajevo-ZX-Spectrum-Next \
             --rom roms/48.rom --tape 'test-media/Abu Simbel Profanation.tap' \
             --fuse-reference dist/private-game-fuse-macos/reference/screen.png \
-            --sample-seconds 30 60 90 \
+            --sample-seconds 30 90 180 240 300 \
             --proof dist/private-game-fuse-macos/observation.json
 
       - name: Upload aggregate comparison only

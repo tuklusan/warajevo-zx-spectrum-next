@@ -172,6 +172,8 @@ def compare_fuse(reference_path, frames):
     reference_bytes = reference_path.read_bytes()
     with Image.open(reference_path) as image:
         reference = normalize_fuse(image.convert("RGB"))
+    reference_summary = sample(reference, hashlib.sha256(reference_bytes).hexdigest(),
+                               reference, 0.0)
     comparisons = []
     for elapsed, frame in frames:
         difference = ImageChops.difference(reference, frame)
@@ -187,6 +189,8 @@ def compare_fuse(reference_path, frames):
         "inputSha256": hashlib.sha256(reference_bytes).hexdigest(),
         "sourceSize": [320, 240],
         "channelTolerance": 16,
+        "dominantColors": reference_summary["dominantColors"],
+        "textSignals": reference_summary["textSignals"],
         "comparisons": comparisons,
         "bestMismatchPercent": min(item["mismatchPercent"] for item in comparisons),
     }
