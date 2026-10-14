@@ -38,11 +38,13 @@ jobs:
           cmake --build dist/private-game-smoke/product --clean-first --parallel 2
 
       - name: Install image metrics dependency
-        run: python3 -m pip install Pillow
+        run: |
+          python3 -m venv dist/private-game-smoke/venv
+          dist/private-game-smoke/venv/bin/python -m pip install Pillow
 
       - name: Observe private game through the normal ROM loader
         run: |
-          python3 ci/test/private-game-smoke.py \
+          dist/private-game-smoke/venv/bin/python ci/test/private-game-smoke.py \
             --binary dist/private-game-smoke/product/Warajevo-ZX-Spectrum-Next \
             --rom roms/48.rom \
             --tape 'test-media/Abu Simbel Profanation.tap' \
