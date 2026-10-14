@@ -109,7 +109,16 @@ jobs:
 
       - name: Run DIZZY4K tape/demo harness
         shell: bash
-        run: bash ci/test/run-dizzy4k-demo.sh dist/${{ matrix.id }}/Warajevo-ZX-Spectrum-Next test-media/DIZZY4K.TAP test-results/screenshots/${{ matrix.id }}
+        run: |
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            python ci/test/telnet-dizzy4k.py \
+              "dist/${{ matrix.id }}/Warajevo-ZX-Spectrum-Next.exe" \
+              test-media/DIZZY4K.TAP test-results/screenshots/${{ matrix.id }}
+          else
+            bash ci/test/run-dizzy4k-demo.sh \
+              "dist/${{ matrix.id }}/Warajevo-ZX-Spectrum-Next" \
+              test-media/DIZZY4K.TAP test-results/screenshots/${{ matrix.id }}
+          fi
 
       - name: Remove temporary Windows firewall rule
         if: always() && runner.os == 'Windows'
