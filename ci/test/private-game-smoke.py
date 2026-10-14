@@ -175,14 +175,21 @@ def compare_fuse(reference_path, frames):
     reference_summary = sample(reference, hashlib.sha256(reference_bytes).hexdigest(),
                                reference, 0.0)
     comparisons = []
+    active_reference = reference.crop((96, 60, 352, 252))
     for elapsed, frame in frames:
         difference = ImageChops.difference(reference, frame)
         mismatches = sum(
             max(pixel) > 16 for pixel in difference.getdata()
         )
+        active_frame = frame.crop((96, 60, 352, 252))
+        active_difference = ImageChops.difference(active_reference, active_frame)
+        active_mismatches = sum(max(pixel) > 16 for pixel in active_difference.getdata())
+        border_mismatches = mismatches - active_mismatches
         comparisons.append({
             "elapsedSeconds": elapsed,
             "mismatchPercent": round(100.0 * mismatches / (448 * 312), 6),
+            "activeScreenMismatchPercent": round(100.0 * active_mismatches / (256 * 192), 6),
+            "borderMismatchPercent": round(100.0 * border_mismatches / (448 * 312 - 256 * 192), 6),
             "meanChannelError": round(sum(ImageStat.Stat(difference).mean) / 3.0, 6),
         })
     return {
