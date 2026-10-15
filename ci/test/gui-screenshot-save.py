@@ -113,12 +113,13 @@ def click_toolbar(host_window, index):
     width = int(re.search(r"^WIDTH=(\d+)$", geometry, re.MULTILINE).group(1))
     xdotool("mousemove", "--sync", "--window", host_window,
             str(int(width * (index + 0.5) / 11)), "42")
-    time.sleep(0.2)
+    time.sleep(1.0)
     print("pointer before toolbar click:",
           xdotool("getmouselocation", "--shell"), flush=True)
     xdotool("mousedown", "1")
-    time.sleep(0.1)
+    time.sleep(1.0)
     xdotool("mouseup", "1")
+    time.sleep(0.5)
 
 
 def click_screenshot(host_window):
