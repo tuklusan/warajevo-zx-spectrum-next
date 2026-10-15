@@ -41,5 +41,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: gui-screenshot-save-diagnostic
-          path: dist/gui-screenshot-save/desktop-diagnostic.png
+          path: |
+            dist/gui-screenshot-save/desktop-diagnostic.png
+            dist/gui-screenshot-save/application-diagnostic.log
           if-no-files-found: warn

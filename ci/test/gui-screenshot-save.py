@@ -205,6 +205,14 @@ def run(args):
                 }, indent=2) + "\n", encoding="utf-8")
         except Exception:
             args.proof.parent.mkdir(parents=True, exist_ok=True)
+            if process is not None:
+                print("desktop process exit status:", process.poll(), flush=True)
+            log_path = root / "application.log"
+            if log_path.exists():
+                log_text = log_path.read_text(encoding="utf-8", errors="replace")
+                print("desktop log tail:", log_text[-4000:], flush=True)
+                (args.proof.parent / "application-diagnostic.log").write_text(
+                    log_text, encoding="utf-8")
             subprocess.run(["import", "-window", "root",
                             str(args.proof.parent / "desktop-diagnostic.png")],
                            check=False, capture_output=True)
