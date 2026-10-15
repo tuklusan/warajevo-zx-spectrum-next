@@ -69,13 +69,13 @@ bool wz_host_output_write_atomic(const char* path,
     if (file == INVALID_HANDLE_VALUE) {
         return false;
     }
-    if (write_complete(file, data, size) && CloseHandle(file)) {
-        file = INVALID_HANDLE_VALUE;
-        success = MoveFileExA(temporary, path, MOVEFILE_REPLACE_EXISTING |
-                              MOVEFILE_WRITE_THROUGH) != 0;
-    }
-    if (file != INVALID_HANDLE_VALUE) {
-        CloseHandle(file);
+    {
+        bool written = write_complete(file, data, size);
+        bool closed = CloseHandle(file) != 0;
+        if (written && closed) {
+            success = MoveFileExA(temporary, path, MOVEFILE_REPLACE_EXISTING |
+                                  MOVEFILE_WRITE_THROUGH) != 0;
+        }
     }
     if (!success) {
         DeleteFileA(temporary);
@@ -93,9 +93,12 @@ bool wz_host_output_write_exclusive(const char* path,
     file = CreateFileA(path, GENERIC_WRITE, 0, NULL, CREATE_NEW,
                        FILE_ATTRIBUTE_TEMPORARY, NULL);
     if (file == INVALID_HANDLE_VALUE) return false;
-    success = write_complete(file, data, size) && CloseHandle(file);
+    {
+        bool written = write_complete(file, data, size);
+        bool closed = CloseHandle(file) != 0;
+        success = written && closed;
+    }
     if (!success) {
-        if (file != INVALID_HANDLE_VALUE) CloseHandle(file);
         DeleteFileA(path);
     }
     return success;
@@ -133,12 +136,12 @@ bool wz_host_output_write_atomic(const char* path,
     if (file < 0) {
         return false;
     }
-    if (write_complete(file, data, size) && close(file) == 0) {
-        file = -1;
-        success = rename(temporary, path) == 0;
-    }
-    if (file >= 0) {
-        close(file);
+    {
+        bool written = write_complete(file, data, size);
+        bool closed = close(file) == 0;
+        if (written && closed) {
+            success = rename(temporary, path) == 0;
+        }
     }
     if (!success) {
         unlink(temporary);
@@ -156,7 +159,11 @@ bool wz_host_output_write_exclusive(const char* path,
     if (path == NULL || (data == NULL && size != 0u)) return false;
     file = open(path, O_WRONLY | O_CREAT | O_EXCL, 0600);
     if (file < 0) return false;
-    success = write_complete(file, bytes, size) && close(file) == 0;
+    {
+        bool written = write_complete(file, bytes, size);
+        bool closed = close(file) == 0;
+        success = written && closed;
+    }
     if (!success) unlink(path);
     return success;
 }
