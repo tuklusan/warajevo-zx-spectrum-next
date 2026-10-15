@@ -148,7 +148,7 @@ def run(args):
                            "-ex", "thread apply all bt 30", "--args",
                            str(args.binary.resolve())] if args.debugger else
                           [str(args.binary.resolve())])
-                process = subprocess.Popen(launch,
+                process = subprocess.Popen(launch, cwd=root,
                     env=environment, stdout=log, stderr=subprocess.STDOUT)
                 host_window = window(TITLE)
                 sock = connect(process)
@@ -179,8 +179,10 @@ def run(args):
                     raise RuntimeError("screenshot cancellation changed the paused raster")
                 dialog = click_screenshot(host_window)
                 xdotool("windowfocus", "--sync", dialog)
-                xdotool("key", "ctrl+l")
-                xdotool("type", "--clearmodifiers", str(destination))
+                xdotool("mousemove", "--window", dialog, "300", "26")
+                xdotool("click", "1")
+                xdotool("key", "ctrl+a")
+                xdotool("type", "--clearmodifiers", "selected-screen")
                 xdotool("key", "Return")
                 deadline = time.monotonic() + 15
                 while time.monotonic() < deadline and not destination.exists():
