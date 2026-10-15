@@ -62,10 +62,12 @@ static const char* const patterns[] = {
         gtk_file_filter_add_pattern(supported_filter, patterns[index]);
     }
     gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), supported_filter);
+    supported_filter = NULL; /* The chooser owns the added filter. */
     all_filter = gtk_file_filter_new();
     gtk_file_filter_set_name(all_filter, "All files");
     gtk_file_filter_add_pattern(all_filter, "*");
     gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), all_filter);
+    all_filter = NULL;
 
     wait.loop = g_main_loop_new(NULL, FALSE);
     if (wait.loop == NULL) goto cleanup;
@@ -127,6 +129,7 @@ wz_file_dialog_result_t wz_file_dialog_save_tap(char* utf8_path,
     gtk_file_filter_add_pattern(filter, "*.tap");
     gtk_file_filter_add_pattern(filter, "*.TAP");
     gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
+    filter = NULL;
     wait.loop = g_main_loop_new(NULL, FALSE);
     if (wait.loop == NULL) goto cleanup;
     g_signal_connect(dialog, "response",
@@ -182,6 +185,7 @@ wz_file_dialog_result_t wz_file_dialog_save_snapshot(char* utf8_path,
     gtk_file_filter_add_pattern(filter, "*.z80");
     gtk_file_filter_add_pattern(filter, "*.Z80");
     gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
+    filter = NULL;
     wait.loop = g_main_loop_new(NULL, FALSE);
     if (wait.loop == NULL) goto cleanup;
     g_signal_connect(dialog, "response",
@@ -235,6 +239,7 @@ wz_file_dialog_result_t wz_file_dialog_save_png(char* utf8_path,
     gtk_file_filter_add_pattern(filter, "*.png");
     gtk_file_filter_add_pattern(filter, "*.PNG");
     gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
+    filter = NULL;
     wait.loop = g_main_loop_new(NULL, FALSE);
     if (wait.loop == NULL) goto cleanup;
     g_signal_connect(dialog, "response",
