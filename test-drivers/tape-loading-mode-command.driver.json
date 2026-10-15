@@ -61,7 +61,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "b87998def6b833169910cd984e4d53554f5961c54199262149f3302fed2ee17f"
+      "sha256": "e8360483da6ed6bcfef5a1971ed54f4f66dd2a266e1b6c0e68dbeb9e40a43003"
     },
     {
       "path": "src/app/wz_ui_layout.c",
@@ -81,7 +81,7 @@
     },
     {
       "path": "src/app/wz_file_dialog_linux.c",
-      "sha256": "93df19ea6e2aa1fc5e4778a228d532f897395ff97844f3f749f83535d29ceb15"
+      "sha256": "d3082ef25361fd28aa792b5e891725b7ec4f5f103cbeb0c96b0e5f2e80b3f387"
     },
     {
       "path": "src/app/wz_file_dialog_macos.m",
