@@ -28,7 +28,7 @@
     },
     {
       "path": "src/app/wz_host_output.c",
-      "sha256": "504322b9d5c80d2c865f6e8362557af61bce90240df83ccd25ca7065441191e6"
+      "sha256": "63a550c23df08743136ca508e0a5e2c383d415d8963e63d879a143458a564daa"
     },
     {
       "path": "src/app/wz_host_output.h",

@@ -61,7 +61,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "64b64c7d1f78fb5d3083cd47e08a6cd69f909b9ccd73fddfb0a303d65e671165"
+      "sha256": "5a36bab6209b03c11d1e16ee34e5d5607505b2a554ffb19e98bf346e1bf0ccfe"
     },
     {
       "path": "src/app/wz_ui_layout.c",
@@ -93,7 +93,7 @@
     },
     {
       "path": "src/app/wz_host_output.c",
-      "sha256": "504322b9d5c80d2c865f6e8362557af61bce90240df83ccd25ca7065441191e6"
+      "sha256": "63a550c23df08743136ca508e0a5e2c383d415d8963e63d879a143458a564daa"
     },
     {
       "path": "src/app/wz_tape_manager.c",
