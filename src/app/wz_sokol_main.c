@@ -3854,7 +3854,6 @@ static const wz_host_keyboard_action_t wz_host_keyboard_actions[] = {
     {"Load Snapshot...", "snapshot.load", -1, NULL, false, false},
     {"Save Snapshot", "snapshot.save", -1, NULL, false, false},
     {"Save Snapshot As...", "snapshot.save_as", -1, NULL, false, false},
-    {"Save Screenshot...", "host.screenshot.save", -1, NULL, false, false},
     {"Pause / Resume", "machine.pause_resume", -1, NULL, false, false},
     {"Reset", "machine.reset", -1, NULL, false, false},
     {"Speed: 25%", "machine.speed.set", WZ_SPEED_25, NULL, false, false},
