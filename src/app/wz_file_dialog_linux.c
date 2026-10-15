@@ -169,7 +169,7 @@ wz_file_dialog_result_t wz_file_dialog_save_snapshot(char* utf8_path,
 {
     GtkFileChooserNative* dialog = NULL;
     GtkFileFilter* filter = NULL;
-    wz_file_dialog_wait_t wait = {NULL, GTK_RESPONSE_NONE};
+    gint response;
     char* filename = NULL;
     char* utf8_filename = NULL;
     GError* error = NULL;
@@ -192,13 +192,8 @@ wz_file_dialog_result_t wz_file_dialog_save_snapshot(char* utf8_path,
     gtk_file_filter_add_pattern(filter, "*.Z80");
     gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
     filter = NULL;
-    wait.loop = g_main_loop_new(NULL, FALSE);
-    if (wait.loop == NULL) goto cleanup;
-    g_signal_connect(dialog, "response",
-                     G_CALLBACK(wz_file_dialog_on_response), &wait);
-    gtk_native_dialog_show(GTK_NATIVE_DIALOG(dialog));
-    g_main_loop_run(wait.loop);
-    if (wait.response != GTK_RESPONSE_ACCEPT) {
+    response = gtk_native_dialog_run(GTK_NATIVE_DIALOG(dialog));
+    if (response != GTK_RESPONSE_ACCEPT) {
         result = WZ_FILE_DIALOG_CANCELLED;
     } else {
         filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
@@ -211,7 +206,6 @@ wz_file_dialog_result_t wz_file_dialog_save_snapshot(char* utf8_path,
         }
     }
 cleanup:
-    if (wait.loop != NULL) g_main_loop_unref(wait.loop);
     if (error != NULL) g_error_free(error);
     g_free(utf8_filename);
     g_free(filename);
