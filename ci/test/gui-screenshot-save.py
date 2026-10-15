@@ -81,10 +81,15 @@ def command(sock, value):
 
 
 def screenshot(sock):
-    answer = command(sock, "SCREENSHOT")
-    match = re.search(r'OK SCREENSHOT\s+"?([^"\r\n]+)', answer)
-    if match is None:
-        raise RuntimeError("Telnet screenshot did not return a path")
+    deadline = time.monotonic() + 20
+    while True:
+        answer = command(sock, "SCREENSHOT")
+        match = re.search(r'OK SCREENSHOT\s+"?([^"\r\n]+)', answer)
+        if match is not None:
+            break
+        if "ERR SCREENSHOT no-raster" not in answer or time.monotonic() >= deadline:
+            raise RuntimeError(f"Telnet screenshot did not return a path: {answer.strip()}")
+        time.sleep(0.25)
     path = Path(match.group(1))
     try:
         return path.read_bytes()
