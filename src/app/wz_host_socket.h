@@ -33,6 +33,8 @@ void wz_host_socket_system_shutdown(void);
 wz_host_socket_t wz_host_socket_tcp_open(void);
 wz_host_socket_t wz_host_socket_tcp_open_family(wz_host_socket_family_t family);
 bool wz_host_socket_set_nonblocking(wz_host_socket_t socket_handle, bool enabled);
+/* Poll a connected socket without delaying the host frame. */
+int wz_host_socket_readable(wz_host_socket_t socket_handle);
 bool wz_host_socket_bind_listen(wz_host_socket_t socket_handle,
                                 uint16_t port,
                                 int backlog);

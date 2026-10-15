@@ -3735,6 +3735,7 @@ static void wz_host_telnet_process_command(const char* command)
 
 static void wz_host_telnet_poll(void)
 {
+    int readable;
     int received;
     size_t application_length = 0u;
     size_t protocol_length = 0u;
@@ -3742,6 +3743,14 @@ static void wz_host_telnet_poll(void)
     bool malformed = false;
     wz_telnet_command_error_t error = WZ_TELNET_COMMAND_ERROR_NONE;
     if (!wz_telnet_client_is_active(&wz_host_session.telnet_client)) return;
+    readable = wz_host_socket_readable(
+        wz_host_session.telnet_client.active_client);
+    if (readable == 0) return;
+    if (readable < 0) {
+        wz_telnet_client_disconnect(&wz_host_session.telnet_client);
+        wz_telnet_key_press_cancel_all(&wz_host_session.telnet_key_presses);
+        return;
+    }
     received = wz_host_socket_receive(wz_host_session.telnet_client.active_client,
                                       wz_host_session.telnet_input,
                                       sizeof(wz_host_session.telnet_input));

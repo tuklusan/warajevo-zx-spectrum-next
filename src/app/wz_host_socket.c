@@ -20,6 +20,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <netinet/in.h>
+#include <sys/select.h>
 #include <sys/socket.h>
 #include <unistd.h>
 #endif
@@ -91,6 +92,24 @@ bool wz_host_socket_set_nonblocking(wz_host_socket_t socket_handle, bool enabled
                  F_SETFL,
                  enabled ? (flags | O_NONBLOCK) : (flags & ~O_NONBLOCK)) == 0;
 #endif
+}
+
+int wz_host_socket_readable(wz_host_socket_t socket_handle)
+{
+    fd_set read_set;
+    struct timeval timeout = {0, 0};
+    int ready;
+    if (socket_handle == WZ_HOST_SOCKET_INVALID) return -1;
+    FD_ZERO(&read_set);
+#if defined(_WIN32)
+    FD_SET((SOCKET)socket_handle, &read_set);
+    ready = select(0, &read_set, NULL, NULL, &timeout);
+#else
+    if (socket_handle < 0 || socket_handle >= FD_SETSIZE) return -1;
+    FD_SET((int)socket_handle, &read_set);
+    ready = select((int)socket_handle + 1, &read_set, NULL, NULL, &timeout);
+#endif
+    return ready < 0 ? -1 : ready > 0 ? 1 : 0;
 }
 
 bool wz_host_socket_bind_listen(wz_host_socket_t socket_handle,
