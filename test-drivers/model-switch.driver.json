@@ -4,79 +4,79 @@
   "fixtures": [
     {
       "path": ".github/workflows/model-switch-regression.yml",
-      "sha256": "f6e56f158d6e4be22ed52165d8454f798067f79b613d50cb4d2e76d8259cf794"
+      "sha256": "0968a06b467b1d322e133097a63e1c1745621bb69566d2f15098fe8a936b2277"
     },
     {
       "path": "ci/test/model-switch/CMakeLists.txt",
-      "sha256": "7427c2b375bb6ac9e1eb83e14fc87dbdae7a90ce68606af1628f3170ed76e411"
+      "sha256": "39c06475756d9fa5d978f176f06b046cd2bc03450ac05da7416d8ef23465a530"
     },
     {
       "path": "ci/test/model-switch/model-switch-regression.c",
-      "sha256": "3a880b93b24d15ae0bb530ff8b94aad76b0e6f5e3b56ba5b7c4e1f4169beccc6"
+      "sha256": "a7b5405f1c66161a792232af86be3a6c264b66e1ff5ad8562270df8bdf1b9aed"
     },
     {
       "path": "ci/test/model-switch/telnet-model-alias-regression.c",
-      "sha256": "27c935c1d5e6d32df05a6c9dda4f89c317106de3a353a454d3cea14ef44bedb9"
+      "sha256": "d85696d7e54e8d2a628f71b527ddf37b6ab98ce20ae14c6cd77597c4e8f43ae8"
     },
     {
       "path": "ci/test/model-switch/write-proof.py",
-      "sha256": "2a2383555c02bb5bcba88eb4cff2d4d281dace3d009d64f2da983ffa82cad1d4"
+      "sha256": "a8ea7dff21cd4769b0cdcf1f21cddfc8517158df6c8cfe414c1d04b2aaa01c23"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "64b64c7d1f78fb5d3083cd47e08a6cd69f909b9ccd73fddfb0a303d65e671165"
+      "sha256": "bfdbc92f2778892b6528f6cf3c7a4adb60346ddb8e0d52de6b56eec02f1b4866"
     },
     {
       "path": "src/app/wz_telnet_alias_response.c",
-      "sha256": "3cbcf8d6e85cc444e63f7142ea6972b9850cde9eca6d4c8be029fb8ee59d8671"
+      "sha256": "3614e787f4d7cb7edb4e023caf2a61994826087a2d2c6934d6be4380c5d52d24"
     },
     {
       "path": "src/app/wz_telnet_alias_response.h",
-      "sha256": "1d39dcff0ade48fcb6ede4297bd4ede2b6de81e6b8b6955cf76af7103d3a5334"
+      "sha256": "d6a3ba098d97c66da1fe1d1c4926878babdaf7f9726e6b1ab31ab3ccab9e4b57"
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.c",
-      "sha256": "240c70171a4ea43836a83198f7935560e03391f60bc3528ba95d16e323e08f3b"
+      "sha256": "32cd9c90ec1385e3a40dcb08ff1d5d36736347e12980c974483865bf1dd89233"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
+      "sha256": "a0b903d4da0c26159175ad2a863c77d223b81cd706a48b3f85bec41bd0e33fde"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
+      "sha256": "197907797e2a3e2b9ee1479bb6c498adcc130f0f05aa8a9252233d55be8bad4b"
     },
     {
       "path": "src/core/wz_machine_profile.c",
-      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09"
+      "sha256": "4f365f1f47ef85c3f837c2a2f5c8318b5e06c72e79d474cae64ee8b3f1d9b726"
     },
     {
       "path": "ci/test/model-switch/telnet-model-switch.py",
-      "sha256": "7162fd2813cc5c5496bdc4a7aa073edb7d9cbf1d8a9f53ee57e1d6ec5db59fac"
+      "sha256": "9d97ce20727c5bab540845617d5343dd62515bfbfab7151efd6157e0e3ce22b5"
     },
     {
       "path": "ci/runner-bootstrap/bootstrap-unix.sh",
-      "sha256": "2425f329f0424995fdb476f3c452fa712045b861651d2e00b20970a2c9c67da4"
+      "sha256": "2a6702de2191603409d09212ffb6a32f870275f0a54bc090dc3f78c9c6925fcd"
     },
     {
       "path": "ci/runner-bootstrap/bootstrap-windows.ps1",
-      "sha256": "b93d8772e1bb8b5360e7368d30e1ad364bd8a9df826f2af51a382d0be22f3291"
+      "sha256": "a088692b1e8cba17d46bd184bd22c100f897c5a12dc255ea5bad5cf500dde407"
     },
     {
       "path": "ci/runner-bootstrap/manifests/windows-x86_64.txt",
-      "sha256": "d214577bcefed7d901b4316973c4932d06f3d629cbfdf7873b6f3c71bb6f7ab5"
+      "sha256": "a2265124fcb1ccbf1fabae8e35f1206cec3866aee55623132b450104e9ed7918"
     },
     {
       "path": "ci/runner-bootstrap/manifests/windows-arm64.txt",
-      "sha256": "d214577bcefed7d901b4316973c4932d06f3d629cbfdf7873b6f3c71bb6f7ab5"
+      "sha256": "a2265124fcb1ccbf1fabae8e35f1206cec3866aee55623132b450104e9ed7918"
     },
     {
       "path": "ci/runner-bootstrap/manifests/macos-x86_64.txt",
-      "sha256": "eb578acc9c5cde20f4de08e39f90187fbe937b066ba89a3295d45cad86b7af99"
+      "sha256": "29217897f4e62d1d6eca4778f329860058531d29860747765d63a935b523e1df"
     },
     {
       "path": "ci/runner-bootstrap/manifests/macos-arm64.txt",
-      "sha256": "eb578acc9c5cde20f4de08e39f90187fbe937b066ba89a3295d45cad86b7af99"
+      "sha256": "29217897f4e62d1d6eca4778f329860058531d29860747765d63a935b523e1df"
     },
     {
       "path": "roms/48.rom",
@@ -84,19 +84,19 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "7c92695d1282104d62ac3b4c9c929a96a6ed7169533fa3e71ba6f93af1186469"
+      "sha256": "c4b038801b872b3e7149a7504e2086be805506f714e6c7f18b1a8c5ab2aaae45"
     },
     {
       "path": "test-media/DIZZY4K.TAP",
-      "sha256": "9bd60921359b2e2e39a35501b718319c7702a6f0cfd7493570b589300f4f2a27"
+      "sha256": "283e30c36edcb26f2914c1ef1493a650c40e2ef84955ff3c733b83e58e6e9b35"
     },
     {
       "path": "src/core/wz_kempston.c",
-      "sha256": "3a5a7d442da3debf4d114b660ae6b606f95ab963244fc5987e190689cd40b35a"
+      "sha256": "1ce585375560a1357418d333da3449aea9dd12800b66f0dab1798fb6bc62a85d"
     },
     {
       "path": "src/core/wz_kempston.h",
-      "sha256": "21ddeac1344f770e29180b8b015c5b8ebad3deffa2031beaad2ad09db2b947bd"
+      "sha256": "08e535c4d7a8090bb5bb282b76b6d1d1b8b44a980480f009f6fd0372c4e5f8b5"
     }
   ],
   "matrixWorkflow": ".github/workflows/model-switch-regression.yml"

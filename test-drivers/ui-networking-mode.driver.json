@@ -8,71 +8,71 @@
   "fixtures": [
     {
       "path": ".github/workflows/ui-networking-mode.yml",
-      "sha256": "d35bd2e589c74cbf9765911d82e5a2ed9ecedd06af4fca05c50e2182b0cf58a8"
+      "sha256": "7a804853b3e2e90dc56d286a843e6d5e08efd9616dcb232c6907baa8572c0eb5"
     },
     {
       "path": "ci/test/ui-networking-mode/CMakeLists.txt",
-      "sha256": "fc444a9d9e9d5d158b6fccf29cef8d9a5a73ec92ef18eef051618ec2e056b35d"
+      "sha256": "c8094d39dacbd975d4ebf3ccfbcc0c3ea45731558c43fa02601bbf1a4eb7137b"
     },
     {
       "path": "ci/test/ui-networking-mode/ui-networking-mode-contract.c",
-      "sha256": "888f2e21840071837184ae4a2d62c99d1da82bcd0067e8ea2761801505c3713b"
+      "sha256": "27b59acea6424bc2cb421f0cd7362c1d13eff6363727f61042aeb228623c9fdb"
     },
     {
       "path": "ci/test/ui-networking-mode/write-proof.py",
-      "sha256": "25d9cc414db3a1626211d39c7d1654e264374bd01fe58e7b1772a8b4550bc46b"
+      "sha256": "bcef24ab551bf259d79f8fdd5f97f07c66864a4ab929f0c1d01daef5bc598b0c"
     },
     {
       "path": "src/app/wz_command_registry.c",
-      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
+      "sha256": "93277b2eed8ad36fc3e9bad4ed6897ac2255a32ccd6142ccb0ee6f9d41ca70bf"
     },
     {
       "path": "src/app/wz_command_registry.h",
-      "sha256": "80110080861a05baae47cd6d294315055bb6b1a636c79891b55c56717cb53c94"
+      "sha256": "4db02acabdc4e07a60b78d52b5223ee5c7ab1f0a7c90afcb676c3336d7cca0e5"
     },
     {
       "path": "src/app/wz_host_audio_policy.c",
-      "sha256": "24ed4f2318ba10bb2cb9ec48b5ae9bf854ecdef71687f2bd6908bb9bb9b17bce"
+      "sha256": "0d46bae6f5ce43e5ad0d85af8fe48f2556f6b5e873ebfbbcb98ad4d54dec89c1"
     },
     {
       "path": "src/app/wz_host_thread.c",
-      "sha256": "6f8cbe0e171adfe7b9f42d9517e31d72f7917048339ff8941d5bccadfa305151"
+      "sha256": "cb3ae66f27150b343717a20a464f95d71efa46d9ea53f008dbefc96ff623733a"
     },
     {
       "path": "src/app/wz_networking_commands.c",
-      "sha256": "e8ae3db57a941288103f501744bd0eb054c072b41ec960dde31e16085c65b0a5"
+      "sha256": "e03a0872395307b5453a845ac2d09912a11787e5c536e1b8c47e939ab1881d5f"
     },
     {
       "path": "src/app/wz_networking_commands.h",
-      "sha256": "4ed126aa9388bee42619642f70bb0f28b54afabeac4e955ece9413e6f9772049"
+      "sha256": "7957a4fc5751dbb8fe7e1f39ee494e7a0a38fcc5b35dd4b549180761309f4662"
     },
     {
       "path": "src/app/wz_speed_policy.c",
-      "sha256": "cb9d2d0befc0becaa81558d794a257f399c4a46e1c1a0bdb19c4893d8f547183"
+      "sha256": "714f4694767df8b2556f6e8107459cf667e9cb9e63990c0ad4b6c9bd1b6b6437"
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "6c8aaea15cdd323d0f9a7c28d12e254e2145cbdabf07849f05892dc3807758f0"
+      "sha256": "6c5de7b5b6a20cad20643b1f9007629846bccc0bb49bf7412cad9464ae9be062"
     },
     {
       "path": "src/app/wz_ui_layout.h",
-      "sha256": "30d784d2ff43fe237251e559cd8bc35d0d51b85c9e80953ba8f9cf6e2052ea7b"
+      "sha256": "0ef859ac915722f0ea2e2e6d66b8cda00c78577ad14029966c98ebb324abd8ac"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
+      "sha256": "a0b903d4da0c26159175ad2a863c77d223b81cd706a48b3f85bec41bd0e33fde"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
+      "sha256": "197907797e2a3e2b9ee1479bb6c498adcc130f0f05aa8a9252233d55be8bad4b"
     },
     {
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
-      "sha256": "dc47afb96f2c0566788d59ef74a691c33a8943e1c4e199c96c74d07739e68b31"
+      "sha256": "b429298d42dc0083c445d1e47eb3fb4803e1dfc9cc4542f3fec46b89ead3c369"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "64b64c7d1f78fb5d3083cd47e08a6cd69f909b9ccd73fddfb0a303d65e671165"
+      "sha256": "bfdbc92f2778892b6528f6cf3c7a4adb60346ddb8e0d52de6b56eec02f1b4866"
     }
   ]
 }

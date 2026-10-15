@@ -5,39 +5,39 @@
   "fixtures": [
     {
       "path": ".github/workflows/private-media-playback.yml",
-      "sha256": "7a13f7f033a2021f50907c54dc07b2bf4bafa6fabd07df447b78e2546c6e5838"
+      "sha256": "45bb9574ebe009207bfeb828de0f8c15c702c587ef55f846f2d87d43126ac0d9"
     },
     {
       "path": "ci/test/private-media-playback/CMakeLists.txt",
-      "sha256": "b6c61c6d6b23f1c6048da5dd1314189755df7c294758198e3144274b8e0a9064"
+      "sha256": "c7209fc9cba729188325701f5fd0c9ea5fdaacc35dc09d11c5dbefc7db488fec"
     },
     {
       "path": "ci/test/private-media-playback/private-media-playback.c",
-      "sha256": "d04f964e8a2b27c24440c1bd35cafba2dc9acbe58e461ad9608a8e3dda0ac147"
+      "sha256": "cad8c89f463a39d0580a07b64e822f0e5e96c0673ce80206446d46bee7ebc255"
     },
     {
       "path": "ci/test/private-media-playback/write-proof.py",
-      "sha256": "f4855d0b50659e0a4ad24cbfdf6e32b224425b3208bb12e446baf7648f8d3649"
+      "sha256": "21797cfa46f04e370f8752dba08bcc5fd0efebcb77f5bc5862e7d8e66b87edef"
     },
     {
       "path": "docs/design/private-media-playback-test.md",
-      "sha256": "563062baf5ecf6fd68d026bc0b25d6427f9436d71d301c46d647f7eaeca8cc3a"
+      "sha256": "de59a8511da7ca25775687155802efbb9726a39f313753c6f0973d15ed80f15a"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
+      "sha256": "a0b903d4da0c26159175ad2a863c77d223b81cd706a48b3f85bec41bd0e33fde"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
+      "sha256": "197907797e2a3e2b9ee1479bb6c498adcc130f0f05aa8a9252233d55be8bad4b"
     },
     {
       "path": "src/core/wz_tape.c",
-      "sha256": "20c4523214f828d5129cbde2fb2c0d077ed15dae0daa923d019d1934b0c33d0b"
+      "sha256": "e5cd18ca9b169f1bc04210cc4ad508bd435d50c8cf390a2263d5a275b36a6a85"
     },
     {
       "path": "src/core/wz_tape.h",
-      "sha256": "d483f3f99bcfa26590bf259114193d2314dd2af2720316bf66021462f5c31fd6"
+      "sha256": "7241cb8df05c796c723c89b29708466024f96c59f0f0f7debc561cc899c2652b"
     }
   ]
 }

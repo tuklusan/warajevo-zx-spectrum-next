@@ -8,59 +8,59 @@
   "fixtures": [
     {
       "path": ".github/workflows/snapshot-command-regression.yml",
-      "sha256": "8e285b27491ae88ca7affe62f80dca571ae08f55ccf8223530ecf1becd647fa8"
+      "sha256": "f9c46bb5e8a49e48dae943be77366cbff806edeb34f091d96c79062fc00b85f0"
     },
     {
       "path": "ci/test/snapshot-command/CMakeLists.txt",
-      "sha256": "0157eef5fe9730bed7f26b7c8040d921eb2be5a1cb1bbdbbdedbd72cc6b2085e"
+      "sha256": "db39c5a3d270b9c915ed9a241fd0678d7147c364f548200a48c60878ab53ebce"
     },
     {
       "path": "ci/test/snapshot-command/snapshot-command-contract.c",
-      "sha256": "4c920ced5f3a592192473ce2f2ab59f881f37d67dff393164f83ebb8712edf46"
+      "sha256": "37c24b2882407936d60a56908cd699d04fabf862f834a4c63e5b7a3ef21a84d4"
     },
     {
       "path": "ci/test/snapshot-command/write-proof.py",
-      "sha256": "d6c4847a35ee51840f2e13345868b9077042ad7d344d9a617af61efdbf5f1957"
+      "sha256": "964a15ded9e929ef57e71714155059f921eb7521f02e05cc5f2cc8155fd601c8"
     },
     {
       "path": "src/app/wz_file_dialog.h",
-      "sha256": "e05f07141e924b7968025491fdbefa081bc8e7960c095272df8e4b23b747b74d"
+      "sha256": "e3f99434de29bc8f36b3fdffea093873ad3a602509b7dc7b9e7b089e5e39748b"
     },
     {
       "path": "src/app/wz_file_dialog_linux.c",
-      "sha256": "273da2fe14a1afc489d73c81d547012cd258c25737768d77afabdd6f5355f8a6"
+      "sha256": "0735fd2b42ff8e8537d1103d96bb681002ac84142361851be86c17688ddfe134"
     },
     {
       "path": "src/app/wz_file_dialog_macos.m",
-      "sha256": "c4a05398208aefa5a34314001438ff9b04e107ab9124f56a1154353f5936f925"
+      "sha256": "925e3de5baef007c7784fad307a5599cfe182737fa655e4dbd590df47895b02a"
     },
     {
       "path": "src/app/wz_file_dialog_win32.c",
-      "sha256": "34f5a0cf135d2a9cdd88184c777aaecb62cff49069d212aacfd12c14c3e09dc9"
+      "sha256": "6072df8e6479a373a3cfbe2699fbd7c3521d275e73e1f9f4f72e9cc9f8eb600d"
     },
     {
       "path": "src/app/wz_file_open_run.c",
-      "sha256": "0935793d2fcf5e9776b8c89de29d63d8a79c2705f839d5ec80b280da92c1ae1e"
+      "sha256": "9f819026cf16cd80662687dc962d281cb26e34f7cb3bbf7efeb829f56dbfe67f"
     },
     {
       "path": "src/app/wz_snapshot_save_workflow.c",
-      "sha256": "48325582e5c51eed363a19c95fbdc3e1446d5c24314e311dd67a85e6ead158c1"
+      "sha256": "e0d444aa524f30e7281271ce334be4edfcca1864e52bfd9050ab68e46747dd9b"
     },
     {
       "path": "src/app/wz_snapshot_save_workflow.h",
-      "sha256": "e4f486ce5fe4d7192b2ba1f06937885b951d3dcd26fa37cc8962d0cbad7d46dd"
+      "sha256": "fdb3a62e3caf48a09697a88751de8a7470f76c7df3153715f694dff8c0b9cff8"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "64b64c7d1f78fb5d3083cd47e08a6cd69f909b9ccd73fddfb0a303d65e671165"
+      "sha256": "bfdbc92f2778892b6528f6cf3c7a4adb60346ddb8e0d52de6b56eec02f1b4866"
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "d57cd0aaab0ae29e6e056593b9ca574d958523b89ee810335aec88b714338b61"
+      "sha256": "d95eebfc5c60fcff400ed205a7b9312ebe36b65d883916fc5b3355ad790d7241"
     },
     {
       "path": "src/core/wz_state.h",
-      "sha256": "d1981cbe18c53870804ff78ffe5dc9e27b02a8fe08b60a0fdb478d8f2130ea94"
+      "sha256": "fcfe9088448c5ed16af8ffae5343c87da7b1419c5e76751ad5b4bfa20abd7145"
     }
   ]
 }

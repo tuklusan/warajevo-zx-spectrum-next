@@ -5,31 +5,31 @@
   "fixtures": [
     {
       "path": "ci/test/tape-selection-contract/tape-selection-contract.c",
-      "sha256": "cf6239f8c47a3ab600f2cb7fce6aeb60839cc90ef945c4f9ec1e035aef7fbebf"
+      "sha256": "e5528f06de199f315b2002b3d7e844d1788c6a7f83adac66299e31f00594c3e6"
     },
     {
       "path": "ci/test/tape-selection-contract/CMakeLists.txt",
-      "sha256": "5884e6e598ef724a8fc001f94d541bfa38f58630f1b753853fee67033e1f9c83"
+      "sha256": "51a9e029ee3f943cdc8a56db004b8ea1070e5138d72dec99b830e00932b84b8f"
     },
     {
       "path": "src/app/wz_tape_manager.c",
-      "sha256": "7a08c91c117233f94182465b75ea98964dab4f97a5e9560f3cdc58d67a79a076"
+      "sha256": "79092d950a7cff6c5b96956d5305e0ecde0aab5f0818bb2cac2e509c8329c29c"
     },
     {
       "path": "src/app/wz_tape_manager.h",
-      "sha256": "cf005620d51c51f9e219c61d8910f579dd3ec366bf172d34c01b3058c2037586"
+      "sha256": "cc5c98ed5bc0bb52ab7c2ab48757ee028e2c3d38fb901191a08a8987f48bac04"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "64b64c7d1f78fb5d3083cd47e08a6cd69f909b9ccd73fddfb0a303d65e671165"
+      "sha256": "bfdbc92f2778892b6528f6cf3c7a4adb60346ddb8e0d52de6b56eec02f1b4866"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "7c92695d1282104d62ac3b4c9c929a96a6ed7169533fa3e71ba6f93af1186469"
+      "sha256": "c4b038801b872b3e7149a7504e2086be805506f714e6c7f18b1a8c5ab2aaae45"
     },
     {
       "path": ".github/workflows/tape-selection-contract.yml",
-      "sha256": "548fee61b16e080cb211fdc97ce63376dce755768a296c1f8e9d0a3a2b323be9"
+      "sha256": "1e470f0aa5165f3c975bd4037927b04701bb0c76f6341bd150e1edab8a2e580b"
     }
   ]
 }

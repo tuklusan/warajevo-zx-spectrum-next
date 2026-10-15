@@ -12,23 +12,23 @@
   "fixtures": [
     {
       "path": ".github/workflows/fuse-visual-reference.yml",
-      "sha256": "b1790ebdd99392bc118bd60ee995a17221c2888847b37bbc41c8201a01158fe2"
+      "sha256": "c446a4932c5ef19208800a2e0e35ce6dcf0daf32b2adcb2c7897ac90fc0a4e90"
     },
     {
       "path": "ci/test/fuse-visual-equivalence/capture-reference.sh",
-      "sha256": "331ab60716370e24ba8a31d136798f419cff29b80c93f19250767294b9c03930"
+      "sha256": "719aacbaff04c6c7d98ebf5aa5e6a0a3b267787935f940774616d0e873819d59"
     },
     {
       "path": "ci/test/fuse-visual-equivalence/write-reference-proof.py",
-      "sha256": "d5ce0a3d676c4596849b1f9e02417d1b5798115bebe2bb689a58dc0182e67296"
+      "sha256": "975cd66686dd3e78a8a1b6a3df844dfc7add9b2b11a3b479c34123621f1a230a"
     },
     {
       "path": "ci/test/fuse-visual-equivalence/capture-candidate.py",
-      "sha256": "1e219007d736d4ad0b55d04d23fba2d05e5a9e2050dba6a88f707fe6e48602e2"
+      "sha256": "e6a90125776c25bfeec6df09be43fc70b8a9b7fc2ad25e691d721a27c92f2c77"
     },
     {
       "path": "ci/test/fuse-visual-equivalence/compare.py",
-      "sha256": "e55ddfdc5c94060fce1a836160f223162e2960410931afd2962053df05b89a79"
+      "sha256": "075dc434b958f0e68fd55465ed1d3882e3891822326d479dd975c7e21a835a31"
     },
     {
       "path": "roms/48.rom",
@@ -36,7 +36,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "64b64c7d1f78fb5d3083cd47e08a6cd69f909b9ccd73fddfb0a303d65e671165"
+      "sha256": "bfdbc92f2778892b6528f6cf3c7a4adb60346ddb8e0d52de6b56eec02f1b4866"
     }
   ]
 }

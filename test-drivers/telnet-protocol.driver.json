@@ -11,31 +11,31 @@
   "fixtures": [
     {
       "path": ".github/workflows/telnet-protocol-regression.yml",
-      "sha256": "096ca9a2cd5ea0d0a333abb110eb78137e2fb6a4ead0c0b21a131beff10292b4"
+      "sha256": "9d52e0d3fc2b72aadb2d744f83c06ddb741e9d0dce8a4a38344f30433b24f0a6"
     },
     {
       "path": "ci/test/telnet-protocol/CMakeLists.txt",
-      "sha256": "1af8546686f9b1a1be376233c7416aa60d1ac5b7973114d5263db134e7a50246"
+      "sha256": "d5d4feaa5a54ce4eeb96c799f39d74ac515772b340d7f644c0e94abccbe156b5"
     },
     {
       "path": "ci/test/telnet-protocol/telnet-protocol-regression.c",
-      "sha256": "af7c8c1894fb7248d49c37e77ca70dce9836a1ff13a7900d77fdd66f778b192f"
+      "sha256": "8872748419428ea6410f14ea87c024a7bf6a63beeacd5a53de85dc8fa8f4bd18"
     },
     {
       "path": "ci/test/telnet-protocol/write-proof.py",
-      "sha256": "020628724daff81f403de6d7c94d008b560b2c5044e692efc6362037dd99ef7d"
+      "sha256": "9e600b4cbc501c87673025f4ab05fec80fe1a30df5b836af769ca67e88ab2928"
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.c",
-      "sha256": "240c70171a4ea43836a83198f7935560e03391f60bc3528ba95d16e323e08f3b"
+      "sha256": "32cd9c90ec1385e3a40dcb08ff1d5d36736347e12980c974483865bf1dd89233"
     },
     {
       "path": "src/app/wz_telnet_negotiation.c",
-      "sha256": "215a0ad15361f7c4698851b0c4cb9be44782cf01388ce3137bb99702996cffcb"
+      "sha256": "a3414377564400552734e445e039cae45cc84f7bd4e430bb80460e936c05ebbe"
     },
     {
       "path": "src/app/wz_telnet_status.c",
-      "sha256": "98e77532404a726162a1bd8b075df7934b66a231f085e901094a1aa2cee2f04f"
+      "sha256": "42b567f71d695c12ce3aedc3a90241d346638ded0ca9ff5c34d7bd79524d352e"
     }
   ]
 }

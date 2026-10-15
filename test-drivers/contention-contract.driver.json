@@ -5,43 +5,43 @@
   "fixtures": [
     {
       "path": "ci/test/contention-contract/contention-contract.c",
-      "sha256": "fe0a6a66b6e26160e20ebc9032bc45194d6dbcc5fa7f23fed50f95b7e698eccb"
+      "sha256": "92841f373057ca9c1c7c4ab652811a88c7868ad6909a9800257d6d6d3fe30236"
     },
     {
       "path": "ci/test/contention-contract/CMakeLists.txt",
-      "sha256": "ef78babc5a91ff041d380c5127b2fbd060f0f7895835b3352833c3f1fd133661"
+      "sha256": "2e61c154f1c3bc2e05699c2ad88fdc7afc05d48e99125d8e2a790067f06e5250"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
+      "sha256": "a0b903d4da0c26159175ad2a863c77d223b81cd706a48b3f85bec41bd0e33fde"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
+      "sha256": "197907797e2a3e2b9ee1479bb6c498adcc130f0f05aa8a9252233d55be8bad4b"
     },
     {
       "path": "src/core/wz_bus.c",
-      "sha256": "a84850869148d8f70a2ee5b31570d9d221d7159cbff832982ddbc8dd1f69c47e"
+      "sha256": "9bf59b595c552d7977979fe31d71f97dbe01bc805cc714b1940019201661df55"
     },
     {
       "path": "src/core/wz_bus.h",
-      "sha256": "0a6019987ae86f7c7293e1f428d086f52684ea5353eadb758c0b2d056677abaa"
+      "sha256": "b84057a99d2b7d0686a414064cfcbea2e8eac343c75b4ff4621bbe76e6d38a56"
     },
     {
       "path": "src/core/wz_machine_profile.c",
-      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09"
+      "sha256": "4f365f1f47ef85c3f837c2a2f5c8318b5e06c72e79d474cae64ee8b3f1d9b726"
     },
     {
       "path": "src/core/wz_machine_profile.h",
-      "sha256": "099be5f41f428466e5da622452abec6e0daf6402abcf4ab2e7d8c2df47457cc4"
+      "sha256": "809da6951d690c04032725fe7551148f2c4be6d1a19b676284c08c0b3c03f19c"
     },
     {
       "path": ".github/workflows/contention-contract.yml",
-      "sha256": "de49596de04a56817a8bb26d5a58986c065c5404c0aed44f9b2a62ae8beb6483"
+      "sha256": "13e1c909889b56c3a37131181214d4b13c480d8695d584b51fb37da68f376446"
     },
     {
       "path": "reference/t-state-description.md",
-      "sha256": "8b059f881feec0069f6f32a3efbe076fed779ce3108fe22a001d0001492f32a1"
+      "sha256": "ca42d2a65ad2a2ffa095b509d33040f27fbdf7efddb00e3e888447db71c134ba"
     }
   ]
 }

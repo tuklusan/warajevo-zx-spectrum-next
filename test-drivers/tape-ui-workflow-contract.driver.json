@@ -5,71 +5,71 @@
   "fixtures": [
     {
       "path": "ci/test/tape-ui-workflow-contract/CMakeLists.txt",
-      "sha256": "d0c3db7b53ac7189139fd56b5ecb8d9f606eeffbe9bf86f90b3249f3d78d471c"
+      "sha256": "81100ae0f996f9e902ca301341a186d694c42ddc943ebd5dd75448a17c331f3d"
     },
     {
       "path": "ci/test/tape-ui-workflow-contract/tape-ui-workflow-contract.c",
-      "sha256": "4172f91607b547039b997412c180dd8de395972bdcde0b0c4cbbcec8d3ada405"
+      "sha256": "b6b7863229272f43e534f240978ee61d6d003b1c24a3a20956c94ab6d5bcc12f"
     },
     {
       "path": "src/app/wz_tape_insert_action.c",
-      "sha256": "d72d1aa1824b7b815d9af0b7819bc5bc942b6e35a3f84324623d37e3952330b5"
+      "sha256": "bc5caca5c7b91ba1b573e345179678fab566413fa2bf29eb82ad5d503a5d9e8e"
     },
     {
       "path": "src/app/wz_tape_insert_action.h",
-      "sha256": "77b86a312216b6d3efb16e588e4cac8476c62955756797f5e03fdf4350eed3c7"
+      "sha256": "95f26d5857f7853ea2e45cf06ca15248b0efce414c2a206e6c6e2940a9f7908b"
     },
     {
       "path": "src/app/wz_tape_media_commands.c",
-      "sha256": "f92f691c68a8ab55d7c4472e6860160935fe0c6c78593f1ff28393d03294f67c"
+      "sha256": "1e7144995d9cf83b7d9ce716b231a07edf50b9c1af808d86f861d1399380de8d"
     },
     {
       "path": "src/app/wz_tape_media_commands.h",
-      "sha256": "81fd3289f37b5a4d6c0f8848f7b891543a23e9816a7125b92ccccdfb4e56a4f8"
+      "sha256": "d0182ea05d9c0b48d5776143242b4794761ff618ea8d74570bdea210d17627a4"
     },
     {
       "path": "src/app/wz_command_registry.c",
-      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
+      "sha256": "93277b2eed8ad36fc3e9bad4ed6897ac2255a32ccd6142ccb0ee6f9d41ca70bf"
     },
     {
       "path": "src/app/wz_command_registry.h",
-      "sha256": "80110080861a05baae47cd6d294315055bb6b1a636c79891b55c56717cb53c94"
+      "sha256": "4db02acabdc4e07a60b78d52b5223ee5c7ab1f0a7c90afcb676c3336d7cca0e5"
     },
     {
       "path": "src/app/wz_host_thread.c",
-      "sha256": "6f8cbe0e171adfe7b9f42d9517e31d72f7917048339ff8941d5bccadfa305151"
+      "sha256": "cb3ae66f27150b343717a20a464f95d71efa46d9ea53f008dbefc96ff623733a"
     },
     {
       "path": "src/app/wz_host_thread.h",
-      "sha256": "bd4e189a40c8f9ad31f014dc12afc3c67b7a4bd5580df262b0cf92db8fbe8471"
+      "sha256": "0c1cc121673b1d86b07e3c56cace72810218e55b3c39af5d0e3d54831667fdce"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
+      "sha256": "a0b903d4da0c26159175ad2a863c77d223b81cd706a48b3f85bec41bd0e33fde"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
+      "sha256": "197907797e2a3e2b9ee1479bb6c498adcc130f0f05aa8a9252233d55be8bad4b"
     },
     {
       "path": "src/core/wz_machine_profile.c",
-      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09"
+      "sha256": "4f365f1f47ef85c3f837c2a2f5c8318b5e06c72e79d474cae64ee8b3f1d9b726"
     },
     {
       "path": "src/core/wz_machine_profile.h",
-      "sha256": "099be5f41f428466e5da622452abec6e0daf6402abcf4ab2e7d8c2df47457cc4"
+      "sha256": "809da6951d690c04032725fe7551148f2c4be6d1a19b676284c08c0b3c03f19c"
     },
     {
       "path": "src/core/wz_tape.c",
-      "sha256": "20c4523214f828d5129cbde2fb2c0d077ed15dae0daa923d019d1934b0c33d0b"
+      "sha256": "e5cd18ca9b169f1bc04210cc4ad508bd435d50c8cf390a2263d5a275b36a6a85"
     },
     {
       "path": "src/core/wz_tape.h",
-      "sha256": "d483f3f99bcfa26590bf259114193d2314dd2af2720316bf66021462f5c31fd6"
+      "sha256": "7241cb8df05c796c723c89b29708466024f96c59f0f0f7debc561cc899c2652b"
     },
     {
       "path": "src/core/wz_types.h",
-      "sha256": "b989adaa74e4ac0ec7e753da23a3fd16a3c02561744cca893fcd66f7c077c409"
+      "sha256": "8b018e10b39bf648b702b6f17ea55a8864fa7c8afa0b410a2a6a4ac01b9153c1"
     }
   ]
 }

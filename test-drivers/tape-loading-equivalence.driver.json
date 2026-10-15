@@ -8,63 +8,63 @@
   "fixtures": [
     {
       "path": ".github/workflows/tape-loading-equivalence.yml",
-      "sha256": "b05408496e4ef8576e5981a7489838c3497eb3b1cad52e419cba73f185109757"
+      "sha256": "9b6f31fae4dedcd78e8fb3437bc5668b69a8f10eb96f69adc8c66d58765d097d"
     },
     {
       "path": "ci/test/tape-loading-equivalence/CMakeLists.txt",
-      "sha256": "342e64f5f164cb2c88e4a992d98be692b734309a934180d5e83c0f59763e0232"
+      "sha256": "9666c0156e6f94f490416ddf01a8d51fd9786559824b9305c1d0984f4d31cd6c"
     },
     {
       "path": "ci/test/tape-loading-equivalence/tape-loading-equivalence.c",
-      "sha256": "6ca74cf02bbd16ed498b65ba6f04cb6a1574563f30560c704fd21b65262a23af"
+      "sha256": "1c4f01eb267ff33fa044dda35f042fc51ac3f6e32d06ad1430e036655a19df3a"
     },
     {
       "path": "ci/test/tape-loading-equivalence/write-proof.py",
-      "sha256": "cd9cca86eefe9f915935cb6743c769950af2fcc934659eddd2a18c3efeb99215"
+      "sha256": "1276476fd149ab4fa7db9ca550c8c251c7304339dc8ca26b4be35a6227e52884"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
+      "sha256": "a0b903d4da0c26159175ad2a863c77d223b81cd706a48b3f85bec41bd0e33fde"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
+      "sha256": "197907797e2a3e2b9ee1479bb6c498adcc130f0f05aa8a9252233d55be8bad4b"
     },
     {
       "path": "src/core/wz_runner.c",
-      "sha256": "ded90228d1227ef361170e1bc95d2b98365fa380136fd5269733b6119d8c7b90"
+      "sha256": "b0afd8647ce2ac00adba42917acc6def7f9a62b2089d43896081826da35a232e"
     },
     {
       "path": "src/core/wz_runner.h",
-      "sha256": "b34e16b1c9ef80588bc6a563ce2b77099bdceb899ace0e5254a0a9669b5f6e51"
+      "sha256": "df302a27ae93d7e4421878bba5916581a57e54ec52b9acec9f022246e232f7bc"
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "d57cd0aaab0ae29e6e056593b9ca574d958523b89ee810335aec88b714338b61"
+      "sha256": "d95eebfc5c60fcff400ed205a7b9312ebe36b65d883916fc5b3355ad790d7241"
     },
     {
       "path": "src/core/wz_state.h",
-      "sha256": "d1981cbe18c53870804ff78ffe5dc9e27b02a8fe08b60a0fdb478d8f2130ea94"
+      "sha256": "fcfe9088448c5ed16af8ffae5343c87da7b1419c5e76751ad5b4bfa20abd7145"
     },
     {
       "path": "src/core/wz_tape.c",
-      "sha256": "20c4523214f828d5129cbde2fb2c0d077ed15dae0daa923d019d1934b0c33d0b"
+      "sha256": "e5cd18ca9b169f1bc04210cc4ad508bd435d50c8cf390a2263d5a275b36a6a85"
     },
     {
       "path": "src/core/wz_tape.h",
-      "sha256": "d483f3f99bcfa26590bf259114193d2314dd2af2720316bf66021462f5c31fd6"
+      "sha256": "7241cb8df05c796c723c89b29708466024f96c59f0f0f7debc561cc899c2652b"
     },
     {
       "path": "src/core/wz_keyboard_matrix.c",
-      "sha256": "68deeb821563f28e5af3e0872765fedd5ae7e24a0491c011c24ebb9d4abbd575"
+      "sha256": "0c2ea7753c22c0225f532ae648bb621f3ec6f011f3d5a0125466f84d269ca4c0"
     },
     {
       "path": "src/core/wz_keyboard_matrix.h",
-      "sha256": "85282af5969a6212c528cb92edafd7d3fbf71375bbb4be1bad5cd9622e1cf976"
+      "sha256": "fc1207974234dd91436f781561dbd56b4b22952deecf064e1ec0f7850a2c5864"
     },
     {
       "path": "docs/design/01-warajevo-zx-spectrum-next-architecture.md",
-      "sha256": "dc5cf052d8ad6e6df51e81a5a1156fa6d7c874881bd6a7617b4115029cf0d990"
+      "sha256": "307bfa2d1133ca4ea8b1ef8403f61a0137a4c992201be6820faabc72e9779f28"
     }
   ]
 }

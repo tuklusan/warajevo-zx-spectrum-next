@@ -5,47 +5,47 @@
   "fixtures": [
     {
       "path": "ci/test/tape-save-transaction-contract/tape-save-transaction-contract.c",
-      "sha256": "b8e639c354932672b2b9506b352104203641e6a5b1ff34346c15b53f05e8f8f3"
+      "sha256": "8444a96bee979efd74345279b400210715018fa3418a4408c9e5666b923c0905"
     },
     {
       "path": "ci/test/tape-save-transaction-contract/CMakeLists.txt",
-      "sha256": "4e21ac30b8a928eb3f44da308360dd69991881da29d834847ab864e003e4a5dc"
+      "sha256": "24158dc43d8b18eea6f2c43bafb311a7f8eb3a68ac45387947f1ea900f8b0a43"
     },
     {
       "path": "src/app/wz_tape_save_transaction.c",
-      "sha256": "64da0047dea5ffa2a4a6668e28debca25b1938dcac39325872fcbfd167c2b5e4"
+      "sha256": "914b44341e50806527bef5366a82814503dc9721e5f712bb3752d6bf7acca6d6"
     },
     {
       "path": "src/app/wz_tape_save_transaction.h",
-      "sha256": "13de5969c59caeb7319df4baf194a21196fd61e74b9f0a49f5997e684c336093"
+      "sha256": "2406f1554ddc94ac01528a7b7045b97128ddd5a2455f90bd5f2d61c6adf3d78d"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "64b64c7d1f78fb5d3083cd47e08a6cd69f909b9ccd73fddfb0a303d65e671165"
+      "sha256": "bfdbc92f2778892b6528f6cf3c7a4adb60346ddb8e0d52de6b56eec02f1b4866"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "7c92695d1282104d62ac3b4c9c929a96a6ed7169533fa3e71ba6f93af1186469"
+      "sha256": "c4b038801b872b3e7149a7504e2086be805506f714e6c7f18b1a8c5ab2aaae45"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
+      "sha256": "a0b903d4da0c26159175ad2a863c77d223b81cd706a48b3f85bec41bd0e33fde"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
+      "sha256": "197907797e2a3e2b9ee1479bb6c498adcc130f0f05aa8a9252233d55be8bad4b"
     },
     {
       "path": "src/core/wz_tape.c",
-      "sha256": "20c4523214f828d5129cbde2fb2c0d077ed15dae0daa923d019d1934b0c33d0b"
+      "sha256": "e5cd18ca9b169f1bc04210cc4ad508bd435d50c8cf390a2263d5a275b36a6a85"
     },
     {
       "path": "src/core/wz_tape.h",
-      "sha256": "d483f3f99bcfa26590bf259114193d2314dd2af2720316bf66021462f5c31fd6"
+      "sha256": "7241cb8df05c796c723c89b29708466024f96c59f0f0f7debc561cc899c2652b"
     },
     {
       "path": ".github/workflows/tape-save-transaction-contract.yml",
-      "sha256": "d5a55d4e18feef9e18e6bdb734e9826f4dfddf648f497e95dbc972b4d383144a"
+      "sha256": "0b6011ec1675c3579f732360475889f11b58181c1c9dede3617db8e9867fbf49"
     }
   ]
 }

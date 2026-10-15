@@ -8,63 +8,63 @@
   "fixtures": [
     {
       "path": ".github/workflows/printer-settings.yml",
-      "sha256": "00bf292c149e1fbb0fd938bfb905655db1f263aeca0b25de223bf0c85e7c0530"
+      "sha256": "af9aea05edb8452652d520ea5e5501c29f4ffcb1862898af3c0687189e55db31"
     },
     {
       "path": "ci/test/printer-settings/CMakeLists.txt",
-      "sha256": "6240bf62dbb41e5a353fa1d84d072dbf523652fa928229c344dca02a77f0b483"
+      "sha256": "a435787c3c9e0dfc7a90ebed4805d6401738a8f978371ac91980994e297c4172"
     },
     {
       "path": "ci/test/printer-settings/printer-settings.c",
-      "sha256": "1aa5c88e076870b0e0621f6d7e7a347f7f22ace3d580635405553923c5286794"
+      "sha256": "c1c98b53c4c5a2536b5f1a0f06fd2866a7a6bc6b638502436cc3abeef0347837"
     },
     {
       "path": "ci/test/printer-settings/write-proof.py",
-      "sha256": "fc34a58c5fea2d880565f3b34f7a08f1282203d06aef26b5da8686686189211a"
+      "sha256": "db7cd62d3197d0389365f3c49e560a6bf4ba638518f465a17e3a76ac33e2ddff"
     },
     {
       "path": "src/app/wz_command_registry.c",
-      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
+      "sha256": "93277b2eed8ad36fc3e9bad4ed6897ac2255a32ccd6142ccb0ee6f9d41ca70bf"
     },
     {
       "path": "src/app/wz_command_registry.h",
-      "sha256": "80110080861a05baae47cd6d294315055bb6b1a636c79891b55c56717cb53c94"
+      "sha256": "4db02acabdc4e07a60b78d52b5223ee5c7ab1f0a7c90afcb676c3336d7cca0e5"
     },
     {
       "path": "src/app/wz_host_thread.c",
-      "sha256": "6f8cbe0e171adfe7b9f42d9517e31d72f7917048339ff8941d5bccadfa305151"
+      "sha256": "cb3ae66f27150b343717a20a464f95d71efa46d9ea53f008dbefc96ff623733a"
     },
     {
       "path": "src/app/wz_host_thread.h",
-      "sha256": "bd4e189a40c8f9ad31f014dc12afc3c67b7a4bd5580df262b0cf92db8fbe8471"
+      "sha256": "0c1cc121673b1d86b07e3c56cace72810218e55b3c39af5d0e3d54831667fdce"
     },
     {
       "path": "src/app/wz_printer_commands.c",
-      "sha256": "1c5863eedb03f2ea0bc088b50a18446fe7bb102adfbb51dcd6582686627c7163"
+      "sha256": "bc288be013e1765faeeb91d62f18230d625e7f0557861ee29368d4dba81f804e"
     },
     {
       "path": "src/app/wz_printer_commands.h",
-      "sha256": "e8706cd05d0f6a8ea4b9ff61db9a2538baf4a59836395be81bc07841c16fcf11"
+      "sha256": "f5d9d2cba0f6d686fde81bd9d46aead1cf3fb4f8e172b114be96848102d0d1f8"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "64b64c7d1f78fb5d3083cd47e08a6cd69f909b9ccd73fddfb0a303d65e671165"
+      "sha256": "bfdbc92f2778892b6528f6cf3c7a4adb60346ddb8e0d52de6b56eec02f1b4866"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
+      "sha256": "a0b903d4da0c26159175ad2a863c77d223b81cd706a48b3f85bec41bd0e33fde"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
+      "sha256": "197907797e2a3e2b9ee1479bb6c498adcc130f0f05aa8a9252233d55be8bad4b"
     },
     {
       "path": "src/core/wz_printer.c",
-      "sha256": "fbcd4ceb9d809fe626517fe336ece5a0dd07f3a7ff3b00dfbb2b64bc7bd58e52"
+      "sha256": "30aee5db58cc7defcd7002b427d407ce4e77aac32db465b8c31991bc51a4407a"
     },
     {
       "path": "src/core/wz_printer.h",
-      "sha256": "9ec8c70d7e7ad3c74c38859ee5801524e80907e326f39d4527147d743152e7ac"
+      "sha256": "5cfb0830506731b6ac42c0bc8aa94d7342afa2bdfbabf8ebbe439139bbaf52fc"
     }
   ]
 }
