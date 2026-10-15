@@ -1,42 +1,29 @@
 {
   "testId": "host-output-utf8",
   "status": "pass",
-  "commit": "3c360c9c69be38b5ab0434d6bd93bec2c737f3b4",
+  "commit": "d1449280ba29271bee4e32e68e78bdba371ea0a1",
+  "runId": 38759121859,
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-10-12T23:01:21.425315+00:00",
-  "runId": 38319839105,
   "runners": [
     {
-      "id": "windows-x64",
-      "os": "Windows",
-      "architecture": "X64",
-      "runnerName": "windows-2025",
-      "timestamp": "2026-10-12T23:01:12.700006+00:00",
-      "runId": 38319839105
+      "runner": "Darwin/arm64",
+      "timestamp": "2026-10-15T11:19:54.405493-04:00",
+      "runId": 38759121859
     },
     {
-      "id": "windows-arm64",
-      "os": "Windows",
-      "architecture": "ARM64",
-      "runnerName": "windows-11-arm",
-      "timestamp": "2026-10-12T23:01:21.425315+00:00",
-      "runId": 38319839105
+      "runner": "Darwin/x86_64",
+      "timestamp": "2026-10-15T11:19:51.420669-04:00",
+      "runId": 38759121859
     },
     {
-      "id": "macos-x64",
-      "os": "macOS",
-      "architecture": "X64",
-      "runnerName": "macos-15-intel",
-      "timestamp": "2026-10-12T23:01:01.899555+00:00",
-      "runId": 38319839105
+      "runner": "Windows/ARM64",
+      "timestamp": "2026-10-15T11:19:46.995235-04:00",
+      "runId": 38759121859
     },
     {
-      "id": "macos-arm64",
-      "os": "macOS",
-      "architecture": "ARM64",
-      "runnerName": "macos-15",
-      "timestamp": "2026-10-12T23:00:52.480751+00:00",
-      "runId": 38319839105
+      "runner": "Windows/AMD64",
+      "timestamp": "2026-10-15T11:19:12.54432-04:00",
+      "runId": 38759121859
     }
   ],
   "fixtures": [
@@ -62,7 +49,7 @@
     },
     {
       "path": "src/app/wz_host_output.c",
-      "sha256": "504322b9d5c80d2c865f6e8362557af61bce90240df83ccd25ca7065441191e6"
+      "sha256": "57ac1582e7769cbb66c6a3fb3a641a6f14de2878814c7ac4dc31ed8a7e21a6d3"
     },
     {
       "path": "src/app/wz_host_output.h",
@@ -70,11 +57,11 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "b171289db934e9bc02d943b3e77a06f0af43a32fae3a073f025c707dac6d56b3"
+      "sha256": "b87998def6b833169910cd984e4d53554f5961c54199262149f3302fed2ee17f"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "af1a055ba24a42e870645a1b7389cffcf449028e8dd2f3344881282db94f51f4"
+      "sha256": "7c92695d1282104d62ac3b4c9c929a96a6ed7169533fa3e71ba6f93af1186469"
     }
   ]
 }
