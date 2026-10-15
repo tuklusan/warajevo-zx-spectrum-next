@@ -1,0 +1,15 @@
+{
+  "testId": "gui-file-state",
+  "status": "pass",
+  "commit": "d5cb1da97ed3de5ec9dd68e07cd24ad528af81ce",
+  "runId": 38760612465,
+  "runner": "Linux",
+  "cases": [
+    "snapshot-save-cancel",
+    "snapshot-load-cancel",
+    "unsupported-save-destination",
+    "save-destination-rollback",
+    "malformed-snapshot-load"
+  ],
+  "pausedRasterSha256": "55aa70bf047750ae0990f6b82a75a6e7a6f0f5ab676b2258250845b7f565efcd"
+}
