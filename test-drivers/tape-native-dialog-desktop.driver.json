@@ -29,15 +29,15 @@
     },
     {
       "path": "src/app/wz_file_dialog.h",
-      "sha256": "6686668d4a0e92030066f7e177824169e09aeb137de4beaf2eb43958f982f41b"
+      "sha256": "e05f07141e924b7968025491fdbefa081bc8e7960c095272df8e4b23b747b74d"
     },
     {
       "path": "src/app/wz_file_dialog_macos.m",
-      "sha256": "03046b36b1bff1a6fd5ae4e700bf042c0db66672614db6ebde86ef2c9c854ca3"
+      "sha256": "c4a05398208aefa5a34314001438ff9b04e107ab9124f56a1154353f5936f925"
     },
     {
       "path": "src/app/wz_file_dialog_win32.c",
-      "sha256": "897f9c1d6a647f22c0700482f603188fc701ff70ff836ac33f5a3130934abdc9"
+      "sha256": "34f5a0cf135d2a9cdd88184c777aaecb62cff49069d212aacfd12c14c3e09dc9"
     },
     {
       "path": "src/core/wz_machine.c",

@@ -21,11 +21,11 @@
     },
     {
       "path": "src/app/wz_file_dialog.h",
-      "sha256": "6686668d4a0e92030066f7e177824169e09aeb137de4beaf2eb43958f982f41b"
+      "sha256": "e05f07141e924b7968025491fdbefa081bc8e7960c095272df8e4b23b747b74d"
     },
     {
       "path": "src/app/wz_file_dialog_linux.c",
-      "sha256": "d4c8d61d56da6efa47636f12fff0a68474b5e682490e9704c39d725146f86408"
+      "sha256": "273da2fe14a1afc489d73c81d547012cd258c25737768d77afabdd6f5355f8a6"
     },
     {
       "path": "src/core/wz_machine.c",
