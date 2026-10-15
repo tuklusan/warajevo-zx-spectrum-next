@@ -72,11 +72,11 @@
     },
     {
       "path": "src/app/wz_host_socket.c",
-      "sha256": "f7c9c9eb5032b170a6c152064bb9556e2a5bf41805eff683bc53b02a7f5c2259"
+      "sha256": "fefc065bfd90b46e4acbe045f079fe44a0d66ee45a65decafc83e7030453342a"
     },
     {
       "path": "src/app/wz_host_socket.h",
-      "sha256": "1c5bbe42e47fd27db8b2781c699eb51026963bfe9d3831580489dce472444230"
+      "sha256": "b6d825de818d8866f4e388a3e165daf21aba6b9c916697ae6f3a4fb0ff623868"
     },
     {
       "path": "src/app/wz_host_thread.c",

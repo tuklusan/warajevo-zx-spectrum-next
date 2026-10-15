@@ -31,7 +31,7 @@
     },
     {
       "path": "src/app/wz_host_socket.c",
-      "sha256": "f7c9c9eb5032b170a6c152064bb9556e2a5bf41805eff683bc53b02a7f5c2259"
+      "sha256": "fefc065bfd90b46e4acbe045f079fe44a0d66ee45a65decafc83e7030453342a"
     },
     {
       "path": "src/app/wz_telnet_client.c",
