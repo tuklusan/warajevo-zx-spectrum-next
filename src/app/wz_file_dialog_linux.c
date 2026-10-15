@@ -101,7 +101,7 @@ cleanup:
     if (supported_filter != NULL) g_object_unref(supported_filter);
     if (all_filter != NULL) g_object_unref(all_filter);
     if (dialog != NULL) {
-        gtk_native_dialog_hide(GTK_NATIVE_DIALOG(dialog));
+        gtk_native_dialog_destroy(GTK_NATIVE_DIALOG(dialog));
         g_object_unref(dialog);
     }
     return result;
@@ -158,7 +158,7 @@ cleanup:
     g_free(filename);
     if (filter != NULL) g_object_unref(filter);
     if (dialog != NULL) {
-        gtk_native_dialog_hide(GTK_NATIVE_DIALOG(dialog));
+        gtk_native_dialog_destroy(GTK_NATIVE_DIALOG(dialog));
         g_object_unref(dialog);
     }
     return result;
@@ -211,7 +211,7 @@ cleanup:
     g_free(filename);
     if (filter != NULL) g_object_unref(filter);
     if (dialog != NULL) {
-        gtk_native_dialog_hide(GTK_NATIVE_DIALOG(dialog));
+        gtk_native_dialog_destroy(GTK_NATIVE_DIALOG(dialog));
         g_object_unref(dialog);
     }
     return result;
@@ -268,7 +268,7 @@ cleanup:
     g_free(filename);
     if (filter != NULL) g_object_unref(filter);
     if (dialog != NULL) {
-        gtk_native_dialog_hide(GTK_NATIVE_DIALOG(dialog));
+        gtk_native_dialog_destroy(GTK_NATIVE_DIALOG(dialog));
         g_object_unref(dialog);
     }
     return result;
