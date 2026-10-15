@@ -16,7 +16,7 @@ jobs:
       - name: Install desktop dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install --yes libgtk-3-dev libasound2-dev libgl1-mesa-dev libxi-dev libxcursor-dev xvfb xdotool
+          sudo apt-get install --yes libgtk-3-dev libasound2-dev libgl1-mesa-dev libxi-dev libxcursor-dev xvfb xdotool imagemagick
       - name: Build production desktop host
         run: |
           cmake -S src/cmake -B dist/gui-screenshot-save/product -G Ninja \
@@ -30,8 +30,16 @@ jobs:
             --rom roms/48.rom \
             --proof dist/gui-screenshot-save/proof.json
       - name: Upload aggregate proof
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: gui-screenshot-save-proof
           path: dist/gui-screenshot-save/proof.json
           if-no-files-found: error
+      - name: Upload diagnostic desktop on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gui-screenshot-save-diagnostic
+          path: dist/gui-screenshot-save/desktop-diagnostic.png
+          if-no-files-found: warn

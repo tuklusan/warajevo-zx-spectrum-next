@@ -181,6 +181,12 @@ def run(args):
                     "dimensions": [448, 312],
                     "pngSha256": hashlib.sha256(saved).hexdigest(),
                 }, indent=2) + "\n", encoding="utf-8")
+        except Exception:
+            args.proof.parent.mkdir(parents=True, exist_ok=True)
+            subprocess.run(["import", "-window", "root",
+                            str(args.proof.parent / "desktop-diagnostic.png")],
+                           check=False, capture_output=True)
+            raise
         finally:
             if sock is not None:
                 sock.close()
