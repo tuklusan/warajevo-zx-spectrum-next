@@ -67,15 +67,20 @@ def wait_for_file(path, timeout=12):
     raise RuntimeError(f"expected saved file missing: {path.name}")
 
 
-def wait_closed(title, timeout=12):
+def window_ids(title):
+    result = subprocess.run(["xdotool", "search", "--onlyvisible",
+                             "--name", title], capture_output=True, text=True)
+    return set(result.stdout.splitlines()) if result.returncode == 0 else set()
+
+
+def wait_new_window(title, previous, timeout=12):
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
-        result = subprocess.run(["xdotool", "search", "--onlyvisible",
-                                 "--name", title], capture_output=True)
-        if result.returncode != 0:
-            return
+        added = window_ids(title) - previous
+        if added:
+            return max(added, key=int)
         time.sleep(0.2)
-    raise RuntimeError(f"native chooser did not close: {title}")
+    raise RuntimeError(f"new native chooser did not open: {title}")
 
 
 def reserve_temporary_names(path, process_id):
@@ -119,17 +124,20 @@ def run(args):
                 type_name(dialog, "baseline.z80")
                 submit_save(dialog)
                 before_state = wait_for_file(saved_snapshot)
-                wait_closed("Save Snapshot")
+                if "STATE=PAUSED" not in command(sock, "STATUS"):
+                    raise RuntimeError("baseline snapshot save did not finish")
                 if not before_state:
                     raise RuntimeError("baseline snapshot was empty")
 
+                previous = window_ids("Save Snapshot")
                 activate(host_window, 3)
-                dialog = window("Save Snapshot")
+                dialog = wait_new_window("Save Snapshot", previous)
                 type_name(dialog, "failed-state.z80")
                 snapshot_reservations = reserve_temporary_names(
                     rejected_snapshot, process.pid)
                 submit_save(dialog)
-                wait_closed("Save Snapshot")
+                if "STATE=PAUSED" not in command(sock, "STATUS"):
+                    raise RuntimeError("rejected snapshot save did not finish")
                 if rejected_snapshot.exists():
                     raise RuntimeError("failed snapshot write left an output file")
                 check_reservations(snapshot_reservations)
@@ -139,7 +147,8 @@ def run(args):
                 png_reservations = reserve_temporary_names(
                     rejected_png, process.pid)
                 submit_save(dialog)
-                wait_closed("Save Screenshot")
+                if "STATE=PAUSED" not in command(sock, "STATUS"):
+                    raise RuntimeError("rejected PNG save did not finish")
                 if rejected_png.exists():
                     raise RuntimeError("failed screenshot write left an output file")
                 check_reservations(png_reservations)
