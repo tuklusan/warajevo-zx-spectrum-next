@@ -220,6 +220,11 @@ cleanup:
         gtk_native_dialog_destroy(GTK_NATIVE_DIALOG(dialog));
         g_object_unref(dialog);
         fprintf(stderr, "snapshot-dialog %u destroyed\n", invocation);
+        for (unsigned pending = 0u;
+             pending < 64u && g_main_context_pending(NULL); ++pending) {
+            g_main_context_iteration(NULL, FALSE);
+        }
+        gdk_display_flush(gdk_display_get_default());
     }
     return result;
 }
