@@ -1,0 +1,15 @@
+{
+  "testId": "gui-output-failure",
+  "status": "pass",
+  "commit": "f541f069be675d8af7f5e458c6b3aad0e960fc18",
+  "runId": 38806780912,
+  "runner": "Linux",
+  "snapshotCollisionRejected": true,
+  "screenshotCollisionRejected": true,
+  "temporaryFilesPreserved": true,
+  "snapshotDestinationPreserved": true,
+  "snapshotBytesUnchanged": true,
+  "pausedRasterUnchanged": true,
+  "snapshotSha256": "d3425281662621f48036615cb0330daad666756cd9f95d095fa2be822e9413f0",
+  "rasterPngSha256": "55aa70bf047750ae0990f6b82a75a6e7a6f0f5ab676b2258250845b7f565efcd"
+}
