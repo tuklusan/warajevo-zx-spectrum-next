@@ -17,6 +17,8 @@ SANYALnet Labs." See LICENSE for full terms.
 #define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
 #define NK_INCLUDE_FONT_BAKING
 #define NK_INCLUDE_DEFAULT_FONT
+/* Complete pointer releases before opening synchronous native dialogs. */
+#define NK_BUTTON_TRIGGER_ON_RELEASE
 
 #include "nuklear.h"
 
