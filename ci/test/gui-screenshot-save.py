@@ -84,7 +84,9 @@ def screenshot(sock):
     deadline = time.monotonic() + 20
     while True:
         answer = command(sock, "SCREENSHOT")
-        match = re.search(r'OK SCREENSHOT\s+"?([^"\r\n]+)', answer)
+        match = re.search(
+            r'OK (?:SCREENSHOT\s+|DO host\.screenshot\.temp\s+PATH=)"?([^"\r\n]+)',
+            answer)
         if match is not None:
             break
         if "ERR SCREENSHOT no-raster" not in answer or time.monotonic() >= deadline:
