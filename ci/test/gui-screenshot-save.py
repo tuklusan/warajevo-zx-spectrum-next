@@ -107,18 +107,22 @@ def screenshot(sock):
         path.unlink(missing_ok=True)
 
 
-def click_screenshot(host_window):
+def click_toolbar(host_window, index):
     xdotool("windowfocus", "--sync", host_window)
     geometry = xdotool("getwindowgeometry", "--shell", host_window)
     width = int(re.search(r"^WIDTH=(\d+)$", geometry, re.MULTILINE).group(1))
     xdotool("mousemove", "--sync", "--window", host_window,
-            str(int(width * 8.5 / 11)), "42")
+            str(int(width * (index + 0.5) / 11)), "42")
     time.sleep(0.2)
-    print("pointer before screenshot click:",
+    print("pointer before toolbar click:",
           xdotool("getmouselocation", "--shell"), flush=True)
     xdotool("mousedown", "1")
     time.sleep(0.1)
     xdotool("mouseup", "1")
+
+
+def click_screenshot(host_window):
+    click_toolbar(host_window, 8)
     return window("Save Screenshot")
 
 
@@ -145,6 +149,14 @@ def run(args):
                 sock = connect(process)
                 if "OK" not in command(sock, "PAUSE"):
                     raise RuntimeError("could not pause the host")
+                click_toolbar(host_window, 1)
+                time.sleep(0.5)
+                if "STATE=RUNNING" not in command(sock, "STATUS"):
+                    raise RuntimeError("toolbar Resume did not activate")
+                click_toolbar(host_window, 1)
+                time.sleep(0.5)
+                if "STATE=PAUSED" not in command(sock, "STATUS"):
+                    raise RuntimeError("toolbar Pause did not activate")
                 before = screenshot(sock)
                 if png_dimensions(before) != (448, 312):
                     raise RuntimeError("Telnet capture did not contain the Spectrum raster")
