@@ -94,3 +94,13 @@ wz_file_dialog_result_t wz_file_dialog_save_snapshot(char* utf8_path,
                                L"machine.z80", L"z80", utf8_path,
                                path_capacity);
 }
+
+wz_file_dialog_result_t wz_file_dialog_save_png(char* utf8_path,
+                                                size_t path_capacity)
+{
+    static const wchar_t filter[] =
+        L"PNG image\0*.png\0All files\0*.*\0\0";
+    return wz_file_dialog_show(true, L"Save Screenshot", filter,
+                               L"screenshot.png", L"png", utf8_path,
+                               path_capacity);
+}

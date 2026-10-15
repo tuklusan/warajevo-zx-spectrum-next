@@ -97,3 +97,29 @@ wz_file_dialog_result_t wz_file_dialog_save_snapshot(char* utf8_path,
     }
     return result;
 }
+
+wz_file_dialog_result_t wz_file_dialog_save_png(char* utf8_path,
+                                                size_t path_capacity)
+{
+    wz_file_dialog_result_t result = WZ_FILE_DIALOG_FAILED;
+    if (utf8_path == NULL || path_capacity == 0u) return result;
+    utf8_path[0] = '\0';
+    @autoreleasepool {
+        NSSavePanel* panel = [NSSavePanel savePanel];
+        [panel setTitle:@"Save Screenshot"];
+        [panel setAllowedFileTypes:@[@"png"]];
+        [panel setNameFieldStringValue:@"screenshot.png"];
+        [panel setCanCreateDirectories:YES];
+        if ([panel runModal] != NSModalResponseOK) {
+            result = WZ_FILE_DIALOG_CANCELLED;
+        } else {
+            const char* path = [[[panel URL] path] UTF8String];
+            size_t length = path == NULL ? 0u : strlen(path);
+            if (length != 0u && length < path_capacity) {
+                memcpy(utf8_path, path, length + 1u);
+                result = WZ_FILE_DIALOG_SELECTED;
+            }
+        }
+    }
+    return result;
+}

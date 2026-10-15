@@ -56,6 +56,7 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "app/wz_compatibility_tools.h"
 #include "app/wz_file_dialog.h"
 #include "app/wz_host_output.h"
+#include "app/wz_screenshot_service.h"
 #include "app/wz_host_config.h"
 #include "app/wz_host_media_ownership.h"
 #include "app/wz_printer_manager.h"
@@ -2615,6 +2616,79 @@ static wz_result_t wz_host_command_screenshot(
     return WZ_RESULT_OK;
 }
 
+static wz_result_t wz_host_command_screenshot_save(
+    const void* context, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    wz_host_session_t* session = (wz_host_session_t*)context;
+    char path[4096];
+    const char* base;
+    const wz_raster_buffer_t* raster;
+    wz_file_dialog_result_t dialog_result;
+    wz_qword_t sleep_nanoseconds;
+    size_t required, written, length;
+    wz_byte_t* png;
+    (void)arguments;
+    if (session == NULL || result == NULL) return WZ_RESULT_INVALID_ARGUMENT;
+    wz_host_release_local_keys();
+    if (!wz_input_focus_dialog_enter(&session->input_focus)) {
+        result->reason = "file-dialog-focus-unavailable";
+        return WZ_RESULT_INVALID_STATE;
+    }
+    dialog_result = wz_file_dialog_save_png(path, sizeof(path));
+    (void)wz_input_focus_dialog_leave(&session->input_focus);
+    if (session->pacing_initialized &&
+        wz_host_pacing_set_speed(&session->pacing, session->speed)) {
+        (void)wz_host_pacing_wait(&session->pacing, wz_host_now_nanoseconds(),
+            session->machine.master_tick, NULL, NULL, &sleep_nanoseconds);
+    }
+    if (dialog_result == WZ_FILE_DIALOG_CANCELLED) {
+        (void)snprintf(result->message, sizeof(result->message), "cancelled");
+        return WZ_RESULT_OK;
+    }
+    if (dialog_result != WZ_FILE_DIALOG_SELECTED) {
+        result->reason = "file-dialog-failed";
+        return WZ_RESULT_INVALID_STATE;
+    }
+    base = path;
+    for (const char* cursor = path; *cursor != '\0'; ++cursor) {
+        if (*cursor == '/' || *cursor == '\\') base = cursor + 1;
+    }
+    if (!wz_host_extension_is(path, ".png")) {
+        length = strlen(path);
+        if (strrchr(base, '.') != NULL || length > sizeof(path) - 5u) {
+            result->reason = "unsupported-screenshot-format";
+            return WZ_RESULT_INVALID_ARGUMENT;
+        }
+        memcpy(path + length, ".png", sizeof(".png"));
+    }
+    raster = wz_presentation_snapshot_raster(&session->snapshot);
+    if (wz_presentation_snapshot_sequence(&session->snapshot) == 0u ||
+        raster == NULL) {
+        result->reason = "screenshot-no-raster";
+        return WZ_RESULT_INVALID_STATE;
+    }
+    required = wz_screenshot_png_required_size(raster);
+    png = required == 0u ? NULL : (wz_byte_t*)malloc(required);
+    if (png == NULL) {
+        result->reason = "screenshot-encode-failed";
+        return WZ_RESULT_INVALID_STATE;
+    }
+    if (wz_screenshot_png_encode(raster, png, required, &written) != WZ_RESULT_OK) {
+        free(png);
+        result->reason = "screenshot-encode-failed";
+        return WZ_RESULT_INVALID_STATE;
+    }
+    if (!wz_host_output_write_atomic(path, png, written)) {
+        free(png);
+        result->reason = "screenshot-write-failed";
+        return WZ_RESULT_INVALID_STATE;
+    }
+    free(png);
+    (void)snprintf(result->message, sizeof(result->message), "saved");
+    return WZ_RESULT_OK;
+}
+
 static wz_result_t wz_host_command_help(
     const void* context, wz_command_arguments_t arguments,
     wz_command_result_t* result)
@@ -3240,6 +3314,13 @@ static bool wz_host_register_commands(void)
             &wz_host_session, true, false, NULL
         },
         {
+            "host.screenshot.save", "Save Screenshot...",
+            "Choose a PNG destination for the current screen",
+            "file", "NONE", NULL, "wz_host_command_screenshot_save", "native-file-dialog",
+            NULL, WZ_COMMAND_LOCAL_ONLY, NULL, wz_host_command_screenshot_save,
+            &wz_host_session, true, false, NULL
+        },
+        {
             "application.quit", "Quit", "Quit the application",
             "file", "NONE", "wz-command-result",
             "wz_host_command_quit", "local", "Alt+F4",
@@ -3773,6 +3854,7 @@ static const wz_host_keyboard_action_t wz_host_keyboard_actions[] = {
     {"Load Snapshot...", "snapshot.load", -1, NULL, false, false},
     {"Save Snapshot", "snapshot.save", -1, NULL, false, false},
     {"Save Snapshot As...", "snapshot.save_as", -1, NULL, false, false},
+    {"Save Screenshot...", "host.screenshot.save", -1, NULL, false, false},
     {"Pause / Resume", "machine.pause_resume", -1, NULL, false, false},
     {"Reset", "machine.reset", -1, NULL, false, false},
     {"Speed: 25%", "machine.speed.set", WZ_SPEED_25, NULL, false, false},
