@@ -101,7 +101,7 @@ def run(args):
 
                 original_limit = resource.prlimit(process.pid, resource.RLIMIT_FSIZE)
                 resource.prlimit(process.pid, resource.RLIMIT_FSIZE,
-                                (0, original_limit[1]))
+                                (1024, original_limit[1]))
 
                 activate(host_window, 3)
                 choose_name(window("Save Snapshot"), "failed-state.z80")
