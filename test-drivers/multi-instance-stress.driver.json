@@ -64,7 +64,7 @@
     },
     {
       "path": "src/app/wz_host_output.c",
-      "sha256": "63a550c23df08743136ca508e0a5e2c383d415d8963e63d879a143458a564daa"
+      "sha256": "57ac1582e7769cbb66c6a3fb3a641a6f14de2878814c7ac4dc31ed8a7e21a6d3"
     },
     {
       "path": "src/app/wz_host_output.h",
