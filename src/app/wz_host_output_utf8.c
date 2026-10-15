@@ -34,17 +34,18 @@ bool wz_host_output_write_atomic_utf8(const char* utf8_path,
         int temporary_length;
         HANDLE file;
         bool success = false;
-        bool created = false;
         if (wide_length <= 0) return false;
         temporary_length = swprintf(temporary,
             sizeof(temporary) / sizeof(temporary[0]),
             L"%ls.tmp.%lu.%ld", path, (unsigned long)_getpid(),
             (long)InterlockedIncrement(&wz_host_output_utf8_attempt));
-        if (temporary_length < 0) return false;
+        if (temporary_length < 0 ||
+            (size_t)temporary_length >= sizeof(temporary) / sizeof(temporary[0])) {
+            return false;
+        }
         file = CreateFileW(temporary, GENERIC_WRITE, 0, NULL, CREATE_NEW,
                            FILE_ATTRIBUTE_TEMPORARY, NULL);
         if (file == INVALID_HANDLE_VALUE) return false;
-        created = true;
         {
             const unsigned char* bytes = (const unsigned char*)data;
             size_t remaining = size;
@@ -61,14 +62,16 @@ bool wz_host_output_write_atomic_utf8(const char* utf8_path,
                 bytes += written;
                 remaining -= written;
             }
-            if (written_all && FlushFileBuffers(file) && CloseHandle(file)) {
-                file = INVALID_HANDLE_VALUE;
-                success = MoveFileExW(temporary, path,
-                    MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH) != 0;
+            {
+                bool flushed = written_all && FlushFileBuffers(file) != 0;
+                bool closed = CloseHandle(file) != 0;
+                if (flushed && closed) {
+                    success = MoveFileExW(temporary, path,
+                        MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH) != 0;
+                }
             }
         }
-        if (file != INVALID_HANDLE_VALUE) CloseHandle(file);
-        if (!success && created) DeleteFileW(temporary);
+        if (!success) DeleteFileW(temporary);
         return success;
     }
 #else
