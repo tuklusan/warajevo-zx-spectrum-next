@@ -82,7 +82,8 @@ limit from review start, saves reviewer output under Git metadata, and on
 timeout records `STALL`, elapsed time, and the diagnostic log path in
 `wzsn-source-review-stall.log` under Git metadata. A completed review permits
 the gate to continue; review findings remain advisory and require developer
-adjudication. `STALL` is a failed gate, never a review pass. Missing
+adjudication. A processing warning that skipped any source file rejects the
+push. `STALL` is a failed gate, never a review pass. Missing
 credentials, reviewer errors, or other validation/tool configuration failures
 also reject the push before the remote is contacted.
 
