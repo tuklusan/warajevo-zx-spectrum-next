@@ -3925,6 +3925,17 @@ static void wz_host_keyboard_menu_activate(void)
             return;
         }
     }
+    if (action->show_status ||
+        strcmp(action->command_id, WZ_DEBUGGER_WINDOW_COMMAND_ID) == 0 ||
+        strcmp(action->command_id, WZ_SNAPSHOT_INSPECTOR_COMMAND_ID) == 0 ||
+        strcmp(action->command_id, "media.tape.manager") == 0 ||
+        strcmp(action->command_id, "media.microdrive.manager") == 0 ||
+        strncmp(action->command_id, "settings.", 9u) == 0 ||
+        strncmp(action->command_id, "media.microdrive.eject.", 23u) == 0) {
+        (void)wz_ui_keyboard_menu_set_return_target(
+            &wz_host_session.keyboard_menu, WZ_INPUT_FOCUS_TEXT_CONTROL);
+    }
+    wz_host_keyboard_menu_close();
     if (action->show_status) {
         wz_host_session.remote_settings_visible = true;
     } else if (action->insert_tape) {
@@ -3944,17 +3955,6 @@ static void wz_host_keyboard_menu_activate(void)
             sizeof(wz_host_session.file_notification), "%s",
             result.message[0] != '\0' ? result.message : result.reason);
     }
-    if (action->show_status ||
-        strcmp(action->command_id, WZ_DEBUGGER_WINDOW_COMMAND_ID) == 0 ||
-        strcmp(action->command_id, WZ_SNAPSHOT_INSPECTOR_COMMAND_ID) == 0 ||
-        strcmp(action->command_id, "media.tape.manager") == 0 ||
-        strcmp(action->command_id, "media.microdrive.manager") == 0 ||
-        strncmp(action->command_id, "settings.", 9u) == 0 ||
-        strncmp(action->command_id, "media.microdrive.eject.", 23u) == 0) {
-        (void)wz_ui_keyboard_menu_set_return_target(
-            &wz_host_session.keyboard_menu, WZ_INPUT_FOCUS_TEXT_CONTROL);
-    }
-    wz_host_keyboard_menu_close();
 }
 
 static void wz_host_ui_draw_keyboard_menu(struct nk_context* context,
