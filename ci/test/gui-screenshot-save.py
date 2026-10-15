@@ -144,7 +144,11 @@ def run(args):
         sock = None
         try:
             with (root / "application.log").open("w", encoding="utf-8") as log:
-                process = subprocess.Popen([str(args.binary.resolve())],
+                launch = (["gdb", "--batch", "-ex", "run",
+                           "-ex", "thread apply all bt 30", "--args",
+                           str(args.binary.resolve())] if args.debugger else
+                          [str(args.binary.resolve())])
+                process = subprocess.Popen(launch,
                     env=environment, stdout=log, stderr=subprocess.STDOUT)
                 host_window = window(TITLE)
                 sock = connect(process)
@@ -205,6 +209,11 @@ def run(args):
                 }, indent=2) + "\n", encoding="utf-8")
         except Exception:
             args.proof.parent.mkdir(parents=True, exist_ok=True)
+            if args.debugger and process is not None and process.poll() is None:
+                try:
+                    process.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    pass
             if process is not None:
                 print("desktop process exit status:", process.poll(), flush=True)
             log_path = root / "application.log"
@@ -234,4 +243,5 @@ if __name__ == "__main__":
     parser.add_argument("--binary", type=Path, required=True)
     parser.add_argument("--rom", type=Path, required=True)
     parser.add_argument("--proof", type=Path, required=True)
+    parser.add_argument("--debugger", action="store_true")
     run(parser.parse_args())

@@ -16,11 +16,11 @@ jobs:
       - name: Install desktop dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install --yes libgtk-3-dev libasound2-dev libgl1-mesa-dev libxi-dev libxcursor-dev xvfb xdotool imagemagick
+          sudo apt-get install --yes libgtk-3-dev libasound2-dev libgl1-mesa-dev libxi-dev libxcursor-dev xvfb xdotool imagemagick gdb
       - name: Build production desktop host
         run: |
           cmake -S src/cmake -B dist/gui-screenshot-save/product -G Ninja \
-            -DCMAKE_BUILD_TYPE=Release -DWZSN_BUILD_SOKOL_HOST=ON
+            -DCMAKE_BUILD_TYPE=RelWithDebInfo -DWZSN_BUILD_SOKOL_HOST=ON
           cmake --build dist/gui-screenshot-save/product --config Release \
             --target wz_sokol_host --parallel 2
       - name: Exercise native save and cancellation
@@ -28,7 +28,8 @@ jobs:
           xvfb-run -a python3 ci/test/gui-screenshot-save.py \
             --binary dist/gui-screenshot-save/product/Warajevo-ZX-Spectrum-Next \
             --rom roms/48.rom \
-            --proof dist/gui-screenshot-save/proof.json
+            --proof dist/gui-screenshot-save/proof.json \
+            --debugger
       - name: Upload aggregate proof
         if: success()
         uses: actions/upload-artifact@v4
