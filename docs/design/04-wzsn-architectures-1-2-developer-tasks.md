@@ -572,6 +572,8 @@ also passed on this commit in run `36495266071`.
 
 Current-source Phase-16 run `38340402972` tested `cdea39ed1cdf63ae3ac6932ee4c9392e17916b3b`; all six deterministic fingerprints and throughput gates passed on Windows x64/ARM64 and macOS Intel/ARM64. The largest slowdown was 6.1% on Windows x64 audio mixing. Four-platform clean Release build `38340403019`, runner bootstrap `38340403169`, test-ledger `38340402868`, and pathname gate `38340403037` also passed for this source. The latest current-source Phase-16 run `38354012204` passed all six fingerprints and throughput gates on all four runners at `8f2dd82132bdcd3fbf98af7cc8005f0f7c1ab29f`; maximum slowdown was 7.9% on macOS ARM64 audio mixing. Four-platform clean Release build `38354012231`, runner bootstrap `38354012263`, test-ledger `38354012261`, pathname gate `38354012369`, and debug host compile `38354012453` also passed.
 
+Current product source at `735bc50` passed all 24 Phase-16 fingerprint and throughput comparisons in hosted run `38760963557`; four-platform clean Release build `38760963673`, runner bootstrap `38760963653`, test ledger `38760963638`, and pathname gate `38760963663` passed. The four raw performance records are pinned in [performance-baseline](../../test-results/performance-baseline/).
+
 ## Final Architecture-#1/#2 acceptance and release-readiness sweep
 
 450. [FINAL][Core §50][AUDITED; gaps remain] Inventory all 75 criteria and record conservative evidence status in [acceptance-evidence-audit.md](acceptance-evidence-audit.md); current status is 27 PASS, 30 PARTIAL, and 18 OPEN. The audit is complete; architecture completion remains gated on resolving the OPEN criteria.
