@@ -28,6 +28,18 @@ static void wz_file_dialog_on_response(GtkNativeDialog* dialog,
     g_main_loop_quit(wait->loop);
 }
 
+static void wz_file_dialog_finish(GtkFileChooserNative* dialog)
+{
+    if (dialog == NULL) return;
+    gtk_native_dialog_destroy(GTK_NATIVE_DIALOG(dialog));
+    g_object_unref(dialog);
+    for (unsigned pending = 0u;
+         pending < 64u && g_main_context_pending(NULL); ++pending) {
+        g_main_context_iteration(NULL, FALSE);
+    }
+    gdk_display_flush(gdk_display_get_default());
+}
+
 wz_file_dialog_result_t wz_file_dialog_open(char* utf8_path,
                                             size_t path_capacity)
 {
@@ -100,15 +112,7 @@ cleanup:
     g_free(filename);
     if (supported_filter != NULL) g_object_unref(supported_filter);
     if (all_filter != NULL) g_object_unref(all_filter);
-    if (dialog != NULL) {
-        gtk_native_dialog_destroy(GTK_NATIVE_DIALOG(dialog));
-        g_object_unref(dialog);
-        for (unsigned pending = 0u;
-             pending < 64u && g_main_context_pending(NULL); ++pending) {
-            g_main_context_iteration(NULL, FALSE);
-        }
-        gdk_display_flush(gdk_display_get_default());
-    }
+    wz_file_dialog_finish(dialog);
     return result;
 }
 
@@ -162,15 +166,7 @@ cleanup:
     g_free(utf8_filename);
     g_free(filename);
     if (filter != NULL) g_object_unref(filter);
-    if (dialog != NULL) {
-        gtk_native_dialog_destroy(GTK_NATIVE_DIALOG(dialog));
-        g_object_unref(dialog);
-        for (unsigned pending = 0u;
-             pending < 64u && g_main_context_pending(NULL); ++pending) {
-            g_main_context_iteration(NULL, FALSE);
-        }
-        gdk_display_flush(gdk_display_get_default());
-    }
+    wz_file_dialog_finish(dialog);
     return result;
 }
 
@@ -220,15 +216,7 @@ cleanup:
     g_free(utf8_filename);
     g_free(filename);
     if (filter != NULL) g_object_unref(filter);
-    if (dialog != NULL) {
-        gtk_native_dialog_destroy(GTK_NATIVE_DIALOG(dialog));
-        g_object_unref(dialog);
-        for (unsigned pending = 0u;
-             pending < 64u && g_main_context_pending(NULL); ++pending) {
-            g_main_context_iteration(NULL, FALSE);
-        }
-        gdk_display_flush(gdk_display_get_default());
-    }
+    wz_file_dialog_finish(dialog);
     return result;
 }
 
@@ -282,14 +270,6 @@ cleanup:
     g_free(utf8_filename);
     g_free(filename);
     if (filter != NULL) g_object_unref(filter);
-    if (dialog != NULL) {
-        gtk_native_dialog_destroy(GTK_NATIVE_DIALOG(dialog));
-        g_object_unref(dialog);
-        for (unsigned pending = 0u;
-             pending < 64u && g_main_context_pending(NULL); ++pending) {
-            g_main_context_iteration(NULL, FALSE);
-        }
-        gdk_display_flush(gdk_display_get_default());
-    }
+    wz_file_dialog_finish(dialog);
     return result;
 }
