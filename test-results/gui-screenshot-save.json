@@ -1,0 +1,15 @@
+{
+  "testId": "gui-screenshot-save",
+  "status": "pass",
+  "commit": "e2f1446cf3f4788d189ff21a9ff64f066dc02e4b",
+  "runId": 38756608165,
+  "runner": "Linux",
+  "cancelPreservedPausedRaster": true,
+  "selectedDestinationWritten": true,
+  "guiTelnetPngByteEquivalent": true,
+  "dimensions": [
+    448,
+    312
+  ],
+  "pngSha256": "55aa70bf047750ae0990f6b82a75a6e7a6f0f5ab676b2258250845b7f565efcd"
+}
