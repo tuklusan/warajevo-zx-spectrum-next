@@ -1,0 +1,74 @@
+{
+  "testId": "production-live-telnet-acceptance",
+  "status": "pass",
+  "runId": 38657400982,
+  "commit": "7316baf13a3f5eb9b9021aaf4fb291b6d88a303b",
+  "platforms": [
+    {
+      "testId": "production-live-telnet-acceptance",
+      "status": "pass",
+      "commit": "7316baf13a3f5eb9b9021aaf4fb291b6d88a303b",
+      "runId": 38657400982,
+      "runner": "Windows",
+      "architecture": "ARM64",
+      "assertions": 17,
+      "checks": [
+        "keyboard-responses",
+        "path-free-discovery",
+        "remote-denial",
+        "pause-reset-resume"
+      ]
+    },
+    {
+      "testId": "production-live-telnet-acceptance",
+      "status": "pass",
+      "commit": "7316baf13a3f5eb9b9021aaf4fb291b6d88a303b",
+      "runId": 38657400982,
+      "runner": "Windows",
+      "architecture": "X64",
+      "assertions": 17,
+      "checks": [
+        "keyboard-responses",
+        "path-free-discovery",
+        "remote-denial",
+        "pause-reset-resume"
+      ]
+    },
+    {
+      "testId": "production-live-telnet-acceptance",
+      "status": "pass",
+      "commit": "7316baf13a3f5eb9b9021aaf4fb291b6d88a303b",
+      "runId": 38657400982,
+      "runner": "macOS",
+      "architecture": "ARM64",
+      "assertions": 17,
+      "checks": [
+        "keyboard-responses",
+        "path-free-discovery",
+        "remote-denial",
+        "pause-reset-resume"
+      ]
+    },
+    {
+      "testId": "production-live-telnet-acceptance",
+      "status": "pass",
+      "commit": "7316baf13a3f5eb9b9021aaf4fb291b6d88a303b",
+      "runId": 38657400982,
+      "runner": "macOS",
+      "architecture": "X64",
+      "assertions": 17,
+      "checks": [
+        "keyboard-responses",
+        "path-free-discovery",
+        "remote-denial",
+        "pause-reset-resume"
+      ]
+    }
+  ],
+  "totalAssertions": 68,
+  "scope": "Production desktop host over its real IPv4 control socket; four hosted runner families.",
+  "limitations": [
+    "The live run did not insert media, so dynamic Recent-path redaction remains separately gated.",
+    "The run does not cover every remote permission class or the 1024-byte parser boundary."
+  ]
+}
