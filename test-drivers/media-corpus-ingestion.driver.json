@@ -10,39 +10,39 @@
   "fixtures": [
     {
       "path": ".github/workflows/media-corpus-ingestion.yml",
-      "sha256": "58ee075c7982be54c52a91b7bc4ee9aad24199b475bd3067c681da73aa518e13"
+      "sha256": "09af0a8d908eb9bb1b0455d7d674619253459f6ec582b499c5a7c3173d28b5a7"
     },
     {
       "path": "ci/test/media-corpus-ingestion/CMakeLists.txt",
-      "sha256": "3db7641e6a40515a571ccce620681c52be08b30d8475e17ceaf98449f5306263"
+      "sha256": "700f145faab8bbe4872af16cf03cc21df0a747ef46410a529be54995d6ac0b55"
     },
     {
       "path": "tests/media-corpus-ingestion.c",
-      "sha256": "674028446414db9d2a7ab5bc08378c100f9eeaf9185827d9a3ad21b2e6523c15"
+      "sha256": "d222ca5e318de094c9576b44e414caf1f187e3525233768a3ca3b0e6215eaf79"
     },
     {
       "path": "ci/test/media-corpus-ingestion/write-proof.py",
-      "sha256": "97ffe613dd5cd4a5aaabb08d105ea844b63c5f3bec7da843aae45c6fde1bfaf1"
+      "sha256": "2f653db765372f74bc56785f558c42a866775ad4e10118a825d30dabcc42aaf0"
     },
     {
       "path": "docs/design/01-warajevo-zx-spectrum-next-architecture.md",
-      "sha256": "307bfa2d1133ca4ea8b1ef8403f61a0137a4c992201be6820faabc72e9779f28"
+      "sha256": "dc5cf052d8ad6e6df51e81a5a1156fa6d7c874881bd6a7617b4115029cf0d990"
     },
     {
       "path": "docs/design/media-corpus-ingestion-test.md",
-      "sha256": "b195028166ce9f5d6b3169ab9e9af271a69b12e1be21fcdbcac57bd6edfa9a6f"
+      "sha256": "09258485ef0e2795fb4e4b2ecbcff5f13407d0b1ee6342dcd429ba2705b51f8a"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "197907797e2a3e2b9ee1479bb6c498adcc130f0f05aa8a9252233d55be8bad4b"
+      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
     },
     {
       "path": "src/core/wz_tape.c",
-      "sha256": "e5cd18ca9b169f1bc04210cc4ad508bd435d50c8cf390a2263d5a275b36a6a85"
+      "sha256": "20c4523214f828d5129cbde2fb2c0d077ed15dae0daa923d019d1934b0c33d0b"
     },
     {
       "path": "src/core/wz_tape.h",
-      "sha256": "7241cb8df05c796c723c89b29708466024f96c59f0f0f7debc561cc899c2652b"
+      "sha256": "d483f3f99bcfa26590bf259114193d2314dd2af2720316bf66021462f5c31fd6"
     }
   ]
 }

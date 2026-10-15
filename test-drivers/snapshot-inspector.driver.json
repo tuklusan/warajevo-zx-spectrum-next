@@ -8,39 +8,39 @@
   "fixtures": [
     {
       "path": ".github/workflows/snapshot-inspector-regression.yml",
-      "sha256": "23789cd82e7ccf8587bcc0f32f8cc3b82d70c7febc39921d082c5cad77a43ffb"
+      "sha256": "f12bf5031adfb19036feb16e48d1041e8dc471ae303012927369e661f4060f09"
     },
     {
       "path": "ci/test/snapshot-inspector/CMakeLists.txt",
-      "sha256": "ccebe02cc2d33ed0a4012cbe21355d9586bdfa1d4cbfe9bf203c9fa6581bdcc5"
+      "sha256": "68131523e1c1ef0da3d14dc64d966936b9394b610301c9dd70203fac3edc70f4"
     },
     {
       "path": "ci/test/snapshot-inspector/write-proof.py",
-      "sha256": "cf54380d73b36a37e0fd281b7e65fe6b3ca82bfaee8169592bbc2dd746d108bd"
+      "sha256": "3086d505a7c10016c8cc446a6f5e44def0f24ec4ed8d64e8d01b98a207545a14"
     },
     {
       "path": "src/app/wz_snapshot_inspector.c",
-      "sha256": "bd83b591340e0ddefa65905fcf852a8bb75302af2086a21f294eb862d6cdeac5"
+      "sha256": "d504f918458df469951e3d9241b00de324a9895266c17d1958bc37a3cb101863"
     },
     {
       "path": "src/app/wz_snapshot_inspector.h",
-      "sha256": "ea72d41f7dc4258b06cc8769a7991981f0fbc92e95e2a34cb57c13ae8d83ad21"
+      "sha256": "8852a2602b131fe55a8702b2b28dfd6e1fb972e3f3ea1b66aba8d6b0e8f96ab7"
     },
     {
       "path": "src/core/wz_debugger.c",
-      "sha256": "0588bb29465dc3a4331683f167d469c312c5ce2108ab0cedf7072574529ae952"
+      "sha256": "d3c93f73ed001493467c613554bdd142728bdc5c4b0f1f5cdc24068dcebe795a"
     },
     {
       "path": "src/core/wz_debugger.h",
-      "sha256": "5a772c97429fcc39933c0ac4b42e1954ca2485313109caff99606935e1e58808"
+      "sha256": "9c14eda410b6b50fdad279fc6076a385da5ff26b160c54fbf957c1e8c31041a1"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "c4b038801b872b3e7149a7504e2086be805506f714e6c7f18b1a8c5ab2aaae45"
+      "sha256": "7c92695d1282104d62ac3b4c9c929a96a6ed7169533fa3e71ba6f93af1186469"
     },
     {
       "path": "ci/test/snapshot-inspector/snapshot-inspector-contract.c",
-      "sha256": "bfe8d0fed58083609b0eb8ae4947da4bbffc7cc6b4d31378304fb37d59b6818d"
+      "sha256": "23308facbf9b27a3b807c75dc9591ae822f44b1b33f9a20d9a76bdcdfaf4d5ca"
     }
   ]
 }

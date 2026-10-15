@@ -8,55 +8,55 @@
   "fixtures": [
     {
       "path": ".github/workflows/debugger-window-contract.yml",
-      "sha256": "e246bd0dfed07b8c99d6262f0a936373935b190e9fc74801ab991aef30f41ed5"
+      "sha256": "2f4b396aeaad4db2327d82cc06473254c17d50d6532714cd3d5c965ee05cc778"
     },
     {
       "path": "ci/test/debugger-window-contract/CMakeLists.txt",
-      "sha256": "fb44257056f3dea15dd08f776bfc93ef4992aaefcf2265d641587c9f36cf72cd"
+      "sha256": "93d9e45d9aa1f5d35061336ca6efa5027214634d35c357dc7eb75800dd9b067a"
     },
     {
       "path": "ci/test/debugger-window-contract/write-proof.py",
-      "sha256": "6723679bfc56139451381978027a7fec592b7fb7ed564c5fba79caa51f82713a"
+      "sha256": "bf22edf0735b67e56bd369e9657546ef4eb2be074c693676966e7b77ad4311f2"
     },
     {
       "path": "ci/test/debugger-window-contract/debugger-window-contract.c",
-      "sha256": "114d4a9bfd6554d2d193918a9e3ad754aee2c664bcebc90a50872e431cd69063"
+      "sha256": "2c1c405ce15ff40ce8a175e3c4e9736b61bb195c44cff228d6fe4c2896330101"
     },
     {
       "path": "src/app/wz_debugger_window.c",
-      "sha256": "066dd032a4205bb9c1d55816701f76f1182a88885eb7f54ffc5c3ce46dc80f93"
+      "sha256": "a2e5c1763a5f8bf07138a72cd2622170991caed0bd1d99f78a54267fa583bdc0"
     },
     {
       "path": "src/app/wz_debugger_window.h",
-      "sha256": "9732c77cf5d7893b83d2bf53afe5dea63d77a1bf89cdd4e281bce5e57ed42556"
+      "sha256": "e305cdcf9dc963b0229f51d7714e910bac9e9253b8afe19f6763468089ed9432"
     },
     {
       "path": "src/app/wz_command_registry.c",
-      "sha256": "93277b2eed8ad36fc3e9bad4ed6897ac2255a32ccd6142ccb0ee6f9d41ca70bf"
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
     },
     {
       "path": "src/app/wz_command_registry.h",
-      "sha256": "4db02acabdc4e07a60b78d52b5223ee5c7ab1f0a7c90afcb676c3336d7cca0e5"
+      "sha256": "54cc2e949ff026fa183b0aa30cac9ebad8b431c97b80d966ef0ac1ff35a06087"
     },
     {
       "path": "src/app/wz_host_thread.c",
-      "sha256": "cb3ae66f27150b343717a20a464f95d71efa46d9ea53f008dbefc96ff623733a"
+      "sha256": "6f8cbe0e171adfe7b9f42d9517e31d72f7917048339ff8941d5bccadfa305151"
     },
     {
       "path": "src/app/wz_host_thread.h",
-      "sha256": "0c1cc121673b1d86b07e3c56cace72810218e55b3c39af5d0e3d54831667fdce"
+      "sha256": "bd4e189a40c8f9ad31f014dc12afc3c67b7a4bd5580df262b0cf92db8fbe8471"
     },
     {
       "path": "src/core/wz_debugger.c",
-      "sha256": "0588bb29465dc3a4331683f167d469c312c5ce2108ab0cedf7072574529ae952"
+      "sha256": "d3c93f73ed001493467c613554bdd142728bdc5c4b0f1f5cdc24068dcebe795a"
     },
     {
       "path": "src/core/wz_debugger.h",
-      "sha256": "5a772c97429fcc39933c0ac4b42e1954ca2485313109caff99606935e1e58808"
+      "sha256": "9c14eda410b6b50fdad279fc6076a385da5ff26b160c54fbf957c1e8c31041a1"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "c4b038801b872b3e7149a7504e2086be805506f714e6c7f18b1a8c5ab2aaae45"
+      "sha256": "7c92695d1282104d62ac3b4c9c929a96a6ed7169533fa3e71ba6f93af1186469"
     }
   ]
 }

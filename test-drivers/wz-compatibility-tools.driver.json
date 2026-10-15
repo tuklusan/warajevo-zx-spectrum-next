@@ -5,59 +5,59 @@
   "fixtures": [
     {
       "path": ".github/workflows/compatibility-tools-contract.yml",
-      "sha256": "e29ba895b5b16704b82cba6303027510be36b161f15078124e0c9890b653d68a"
+      "sha256": "77b3e1352de9b8e3cc831bb473216fadfbadf44a9e17144f236f6ea03021fc89"
     },
     {
       "path": "ci/test/compatibility-tools/CMakeLists.txt",
-      "sha256": "f6ffb41dd4c7000a6266489d5b9d231f7385112fa2e0add7cf949895f6e18fc2"
+      "sha256": "be5a96d5925713538292660a0b086ebad64e6ded1596d10f6c6273d6f1bb99bb"
     },
     {
       "path": "ci/test/compatibility-tools/contract.c",
-      "sha256": "f3453478e4ce10a7718028e8fe417b180b6fce8692bdcedd6bcece24dce4415b"
+      "sha256": "2d088cbdc6824f9026b06a38f9008a79cad1b2387b826536f8171b6d3151bf10"
     },
     {
       "path": "src/app/wz_compatibility_tools.c",
-      "sha256": "2d3a74101badda9ce1a13350e7fc7d7d534b64f9640ceafb9a2eb4f08dc71197"
+      "sha256": "90be5ded11d3858955ce83084b6e493255ccb0e9a24a6133f22e717ade56ede0"
     },
     {
       "path": "src/app/wz_compatibility_tools.h",
-      "sha256": "af8eb2bbfa1b0d24449c8b3af4560ed1d2fcfeecc66afd3ee7ecb16a18a73752"
+      "sha256": "6840392ee4e975843a97e1447d970cd2d40441929d77efb71b989f16bd2528c5"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "bfdbc92f2778892b6528f6cf3c7a4adb60346ddb8e0d52de6b56eec02f1b4866"
+      "sha256": "64b64c7d1f78fb5d3083cd47e08a6cd69f909b9ccd73fddfb0a303d65e671165"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "c4b038801b872b3e7149a7504e2086be805506f714e6c7f18b1a8c5ab2aaae45"
+      "sha256": "7c92695d1282104d62ac3b4c9c929a96a6ed7169533fa3e71ba6f93af1186469"
     },
     {
       "path": "src/app/wz_file_open_run.c",
-      "sha256": "9f819026cf16cd80662687dc962d281cb26e34f7cb3bbf7efeb829f56dbfe67f"
+      "sha256": "0935793d2fcf5e9776b8c89de29d63d8a79c2705f839d5ec80b280da92c1ae1e"
     },
     {
       "path": "src/app/wz_file_open_run.h",
-      "sha256": "b082c5d28bd6d3be4876b122b55cbee812bf3c0f9d380be4cf8aad26c3e3b123"
+      "sha256": "6147d0501cab7ede9919fca4198fb3621f7c35d8825b9c4fd17a02a199e3512d"
     },
     {
       "path": "src/app/wz_command_registry.c",
-      "sha256": "93277b2eed8ad36fc3e9bad4ed6897ac2255a32ccd6142ccb0ee6f9d41ca70bf"
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
     },
     {
       "path": "src/app/wz_command_registry.h",
-      "sha256": "4db02acabdc4e07a60b78d52b5223ee5c7ab1f0a7c90afcb676c3336d7cca0e5"
+      "sha256": "54cc2e949ff026fa183b0aa30cac9ebad8b431c97b80d966ef0ac1ff35a06087"
     },
     {
       "path": "src/app/wz_host_thread.c",
-      "sha256": "cb3ae66f27150b343717a20a464f95d71efa46d9ea53f008dbefc96ff623733a"
+      "sha256": "6f8cbe0e171adfe7b9f42d9517e31d72f7917048339ff8941d5bccadfa305151"
     },
     {
       "path": "src/app/wz_host_thread.h",
-      "sha256": "0c1cc121673b1d86b07e3c56cace72810218e55b3c39af5d0e3d54831667fdce"
+      "sha256": "bd4e189a40c8f9ad31f014dc12afc3c67b7a4bd5580df262b0cf92db8fbe8471"
     },
     {
       "path": "docs/design/ui-legacy-disposition-audit.md",
-      "sha256": "54f6d51d1ac74969792dbed0d9cd37488486566c188eadc5b7be4583427baef9"
+      "sha256": "5bfdff01e425618e86f49f8586d30761bb880e10412216c1805ad574c541026f"
     }
   ]
 }

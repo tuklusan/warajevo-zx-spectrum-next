@@ -11,87 +11,87 @@
   "fixtures": [
     {
       "path": ".github/workflows/open-run-ui-contract.yml",
-      "sha256": "0c8ee4412d7ff55e860988823cffdb8e38db776ffa69974dceb47dcc2406f1ae"
+      "sha256": "6352c8d593930f6edba268ecfed51769f3842cdbb0e3547fdeaf56aae27be35d"
     },
     {
       "path": "ci/test/open-run-ui/open-run-ui.py",
-      "sha256": "76d69a1889602ce35082e2a1912a5a8d4f0cc2f256a0b3de85238bce781de3e0"
+      "sha256": "21bce7853df880defc56301288eb233eb7ec7bff2122e4a56513e3bc0ba88091"
     },
     {
       "path": "ci/test/open-run-ui/write-proof.py",
-      "sha256": "970e2c3ed92c41ea32c597d4c10d3913136b693e505c65ab362529f4697f4f4d"
+      "sha256": "c67d6fcd3cd5aae2e12c73fe9df3615b13b832bd91c69a8820c440c2d483d0b3"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "bfdbc92f2778892b6528f6cf3c7a4adb60346ddb8e0d52de6b56eec02f1b4866"
+      "sha256": "64b64c7d1f78fb5d3083cd47e08a6cd69f909b9ccd73fddfb0a303d65e671165"
     },
     {
       "path": "src/app/wz_file_dialog.h",
-      "sha256": "e3f99434de29bc8f36b3fdffea093873ad3a602509b7dc7b9e7b089e5e39748b"
+      "sha256": "e05f07141e924b7968025491fdbefa081bc8e7960c095272df8e4b23b747b74d"
     },
     {
       "path": "src/app/wz_file_dialog_win32.c",
-      "sha256": "6072df8e6479a373a3cfbe2699fbd7c3521d275e73e1f9f4f72e9cc9f8eb600d"
+      "sha256": "34f5a0cf135d2a9cdd88184c777aaecb62cff49069d212aacfd12c14c3e09dc9"
     },
     {
       "path": "src/app/wz_file_dialog_macos.m",
-      "sha256": "925e3de5baef007c7784fad307a5599cfe182737fa655e4dbd590df47895b02a"
+      "sha256": "c4a05398208aefa5a34314001438ff9b04e107ab9124f56a1154353f5936f925"
     },
     {
       "path": "src/app/wz_file_open_run.c",
-      "sha256": "9f819026cf16cd80662687dc962d281cb26e34f7cb3bbf7efeb829f56dbfe67f"
+      "sha256": "0935793d2fcf5e9776b8c89de29d63d8a79c2705f839d5ec80b280da92c1ae1e"
     },
     {
       "path": "src/app/wz_file_open_run.h",
-      "sha256": "b082c5d28bd6d3be4876b122b55cbee812bf3c0f9d380be4cf8aad26c3e3b123"
+      "sha256": "6147d0501cab7ede9919fca4198fb3621f7c35d8825b9c4fd17a02a199e3512d"
     },
     {
       "path": "src/app/wz_ui_keyboard_menu.c",
-      "sha256": "2972e13066169ba36021cb296e066af8503d6c69b5b5c939c35f73ac3dd73c5b"
+      "sha256": "c6dc2525263bd213c19aff65b78c2c14d3d35c80a40ffd3daa4fe380fc9bf45e"
     },
     {
       "path": "src/app/wz_ui_keyboard_menu.h",
-      "sha256": "e9ae3df6e2df58ec3008b02e729f54eb3beb4c2c98a2914b283cc45c6d6260f9"
+      "sha256": "6caf7d57fa89bd2e9fee6669240bb0550effab9a703915885995b56fde3b4b48"
     },
     {
       "path": "src/core/wz_tape.c",
-      "sha256": "e5cd18ca9b169f1bc04210cc4ad508bd435d50c8cf390a2263d5a275b36a6a85"
+      "sha256": "20c4523214f828d5129cbde2fb2c0d077ed15dae0daa923d019d1934b0c33d0b"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "a0b903d4da0c26159175ad2a863c77d223b81cd706a48b3f85bec41bd0e33fde"
+      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "197907797e2a3e2b9ee1479bb6c498adcc130f0f05aa8a9252233d55be8bad4b"
+      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "c4b038801b872b3e7149a7504e2086be805506f714e6c7f18b1a8c5ab2aaae45"
+      "sha256": "7c92695d1282104d62ac3b4c9c929a96a6ed7169533fa3e71ba6f93af1186469"
     },
     {
       "path": "ci/runner-bootstrap/bootstrap-unix.sh",
-      "sha256": "2a6702de2191603409d09212ffb6a32f870275f0a54bc090dc3f78c9c6925fcd"
+      "sha256": "2425f329f0424995fdb476f3c452fa712045b861651d2e00b20970a2c9c67da4"
     },
     {
       "path": "ci/runner-bootstrap/bootstrap-windows.ps1",
-      "sha256": "a088692b1e8cba17d46bd184bd22c100f897c5a12dc255ea5bad5cf500dde407"
+      "sha256": "b93d8772e1bb8b5360e7368d30e1ad364bd8a9df826f2af51a382d0be22f3291"
     },
     {
       "path": "ci/runner-bootstrap/manifests/windows-x86_64.txt",
-      "sha256": "a2265124fcb1ccbf1fabae8e35f1206cec3866aee55623132b450104e9ed7918"
+      "sha256": "d214577bcefed7d901b4316973c4932d06f3d629cbfdf7873b6f3c71bb6f7ab5"
     },
     {
       "path": "ci/runner-bootstrap/manifests/windows-arm64.txt",
-      "sha256": "a2265124fcb1ccbf1fabae8e35f1206cec3866aee55623132b450104e9ed7918"
+      "sha256": "d214577bcefed7d901b4316973c4932d06f3d629cbfdf7873b6f3c71bb6f7ab5"
     },
     {
       "path": "ci/runner-bootstrap/manifests/macos-x86_64.txt",
-      "sha256": "29217897f4e62d1d6eca4778f329860058531d29860747765d63a935b523e1df"
+      "sha256": "eb578acc9c5cde20f4de08e39f90187fbe937b066ba89a3295d45cad86b7af99"
     },
     {
       "path": "ci/runner-bootstrap/manifests/macos-arm64.txt",
-      "sha256": "29217897f4e62d1d6eca4778f329860058531d29860747765d63a935b523e1df"
+      "sha256": "eb578acc9c5cde20f4de08e39f90187fbe937b066ba89a3295d45cad86b7af99"
     },
     {
       "path": "roms/48.rom",

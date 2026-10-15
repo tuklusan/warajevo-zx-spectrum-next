@@ -11,27 +11,27 @@
   "fixtures": [
     {
       "path": ".github/workflows/file-open-run-path-contract.yml",
-      "sha256": "9b3862d7be3bffea117197b69e744a4f7d8daf7b1839a499928cf7aab7a3282c"
+      "sha256": "24304e3b54847717fb5188d27944b4c48376eba2108d54a22d0f0f38bd0ea495"
     },
     {
       "path": "ci/test/file-open-run-path/CMakeLists.txt",
-      "sha256": "582100c72683f3492739ef7137ed3a40d42c3b60a359fa5a6bc24b3bcf1ceb5b"
+      "sha256": "f823c04e5b20822d71f1a5c6afd2b5c1f550d132908d3e0d823a9b09c10b069e"
     },
     {
       "path": "ci/test/file-open-run-path/file-open-run-path-contract.c",
-      "sha256": "3b95570fee81ab2dbca0d4c5c5285a4394799026c46c4d6c5ddedef6fe574f45"
+      "sha256": "45d6e4c95a33333bbd9bd46360ada5588899a7a5d74738d4110761d3e0959b0c"
     },
     {
       "path": "ci/test/file-open-run-path/write-proof.py",
-      "sha256": "7967b7bf9657d9fbc60d58418269b355f3cc30b300df191e9c1402f0ff3aa63b"
+      "sha256": "37296470e59bf256b71b662a09746c6e6ad6f4e2702fdd9c5246a1cbc3514016"
     },
     {
       "path": "src/app/wz_file_open_run.c",
-      "sha256": "9f819026cf16cd80662687dc962d281cb26e34f7cb3bbf7efeb829f56dbfe67f"
+      "sha256": "0935793d2fcf5e9776b8c89de29d63d8a79c2705f839d5ec80b280da92c1ae1e"
     },
     {
       "path": "src/app/wz_file_open_run.h",
-      "sha256": "b082c5d28bd6d3be4876b122b55cbee812bf3c0f9d380be4cf8aad26c3e3b123"
+      "sha256": "6147d0501cab7ede9919fca4198fb3621f7c35d8825b9c4fd17a02a199e3512d"
     }
   ]
 }

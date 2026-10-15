@@ -8,59 +8,59 @@
   "fixtures": [
     {
       "path": ".github/workflows/ui-networking-reconfiguration.yml",
-      "sha256": "e0a52fee693f4023439d2d934ac98519c46172e056f4b7ad213aabf98b14e8f5"
+      "sha256": "c56b1e2b64abcfc14ac280bbb82b69b3b7cd09d071ab6e333df26ec86767ab8a"
     },
     {
       "path": "ci/test/ui-networking-reconfiguration/CMakeLists.txt",
-      "sha256": "03a468edcb60a80c292c52ef3e2177714afbed1361365cbd3e4c782f43bd4c9a"
+      "sha256": "208660b509c4a11f4e4753de0d03e8b46eab9872d6915e04f5cf6da5201b28ce"
     },
     {
       "path": "ci/test/ui-networking-reconfiguration/ui-networking-reconfiguration-contract.c",
-      "sha256": "118c228e04cb8216e65f0e6afeb187b025b15a5fea082f6024b09c114d8d4cb2"
+      "sha256": "ce4f8c309288ef0024d8be8a8a42cf28aa32f0c19872bfa3bf041737167140e2"
     },
     {
       "path": "ci/test/ui-networking-reconfiguration/write-proof.py",
-      "sha256": "0590d2b2f0acc2997857ca564d41df50ed8d2207829a2bc1ca858fbf53d6afed"
+      "sha256": "970aff6a17771d5c5cdc4add773d404b67ddd898b4b67c9e3c4b7b783b661117"
     },
     {
       "path": "src/app/wz_command_registry.c",
-      "sha256": "93277b2eed8ad36fc3e9bad4ed6897ac2255a32ccd6142ccb0ee6f9d41ca70bf"
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
     },
     {
       "path": "src/app/wz_command_registry.h",
-      "sha256": "4db02acabdc4e07a60b78d52b5223ee5c7ab1f0a7c90afcb676c3336d7cca0e5"
+      "sha256": "54cc2e949ff026fa183b0aa30cac9ebad8b431c97b80d966ef0ac1ff35a06087"
     },
     {
       "path": "src/app/wz_networking_commands.c",
-      "sha256": "e03a0872395307b5453a845ac2d09912a11787e5c536e1b8c47e939ab1881d5f"
+      "sha256": "e8ae3db57a941288103f501744bd0eb054c072b41ec960dde31e16085c65b0a5"
     },
     {
       "path": "src/app/wz_networking_commands.h",
-      "sha256": "7957a4fc5751dbb8fe7e1f39ee494e7a0a38fcc5b35dd4b549180761309f4662"
+      "sha256": "4ed126aa9388bee42619642f70bb0f28b54afabeac4e955ece9413e6f9772049"
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "6c5de7b5b6a20cad20643b1f9007629846bccc0bb49bf7412cad9464ae9be062"
+      "sha256": "6c8aaea15cdd323d0f9a7c28d12e254e2145cbdabf07849f05892dc3807758f0"
     },
     {
       "path": "src/app/wz_ui_layout.h",
-      "sha256": "0ef859ac915722f0ea2e2e6d66b8cda00c78577ad14029966c98ebb324abd8ac"
+      "sha256": "30d784d2ff43fe237251e559cd8bc35d0d51b85c9e80953ba8f9cf6e2052ea7b"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "a0b903d4da0c26159175ad2a863c77d223b81cd706a48b3f85bec41bd0e33fde"
+      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "197907797e2a3e2b9ee1479bb6c498adcc130f0f05aa8a9252233d55be8bad4b"
+      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
     },
     {
       "path": "src/core/wz_kempston.h",
-      "sha256": "08e535c4d7a8090bb5bb282b76b6d1d1b8b44a980480f009f6fd0372c4e5f8b5"
+      "sha256": "21ddeac1344f770e29180b8b015c5b8ebad3deffa2031beaad2ad09db2b947bd"
     },
     {
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
-      "sha256": "b429298d42dc0083c445d1e47eb3fb4803e1dfc9cc4542f3fec46b89ead3c369"
+      "sha256": "dc47afb96f2c0566788d59ef74a691c33a8943e1c4e199c96c74d07739e68b31"
     }
   ]
 }

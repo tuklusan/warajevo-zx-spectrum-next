@@ -8,15 +8,15 @@
   "fixtures": [
     {
       "path": ".github/workflows/fuse-visual-comparator-contract.yml",
-      "sha256": "8ed4b5e6448e8e83a4934767fad94068b9dde064133c5f64c3d6506f039b4131"
+      "sha256": "2439f49d6a10dd3c9ba6d6d6364e5a6e8ae1bd7980a5595bca93adaeb305e259"
     },
     {
       "path": "ci/test/fuse-visual-equivalence/compare.py",
-      "sha256": "075dc434b958f0e68fd55465ed1d3882e3891822326d479dd975c7e21a835a31"
+      "sha256": "e55ddfdc5c94060fce1a836160f223162e2960410931afd2962053df05b89a79"
     },
     {
       "path": "ci/test/fuse-visual-equivalence/contract.py",
-      "sha256": "34e70aed8f8dbaf2901f9c1f5f566699adabcc8e5cc97e6d7d0f8b34e84a222a"
+      "sha256": "133730306ca06d3358d5293ad4a91054e4e2c28482e662f8d83ac0490b8c85b2"
     }
   ]
 }

@@ -11,39 +11,39 @@
   "fixtures": [
     {
       "path": ".github/workflows/telnet-client-gate-regression.yml",
-      "sha256": "c2866675fffa510db0cab7166a11b50aa44a72f319685275ec248459439b98cf"
+      "sha256": "d448d156cf5fd5a59c3d1df73d7c01addc01842108096c186cbb0ba1750daf34"
     },
     {
       "path": "ci/test/telnet-client-gate/CMakeLists.txt",
-      "sha256": "fcb81fe849dfe760f98b12d06b4d32112ec8cdd054b6a96c5cae45fe0ac7b14f"
+      "sha256": "614136cf19fcdc9cb5d663943775b64f626708bb7d7b0b1e9c31fca25b48178d"
     },
     {
       "path": "ci/test/telnet-client-gate/telnet-client-gate-regression.c",
-      "sha256": "363a520b1bc61825a419677577e06ec0663d13a255107cbe8c8671306095bae3"
+      "sha256": "3aa0a7dde3bd3c82daeb82532d3f86d0d91493ad10c90a94a5ae57171103bdca"
     },
     {
       "path": "ci/test/telnet-client-gate/write-proof.py",
-      "sha256": "9e64f35dd96fbfce4d3373ef347f90a7ba60c6041667dbabe2ff6384d0fd29d3"
+      "sha256": "5566bb2bff4a23f21087759c6b055b864d5015a57be1678a39420661396a0e25"
     },
     {
       "path": "src/app/wz_control_port.c",
-      "sha256": "43bdc85ebe1bdfd8eb39c9e4938482632b210204ee6fd05080edcaa056ece604"
+      "sha256": "c26016fe66e2f3932bf80070f8a00c873946c3ea893b0458e7994f06fbba1ef5"
     },
     {
       "path": "src/app/wz_host_socket.c",
-      "sha256": "6722d85c40d6bdcdaaf4ce2b7ef503cecb8186ac082e4313f99a021e62aba952"
+      "sha256": "f7c9c9eb5032b170a6c152064bb9556e2a5bf41805eff683bc53b02a7f5c2259"
     },
     {
       "path": "src/app/wz_telnet_client.c",
-      "sha256": "0ed0fefe8ffc3a7d665aeee589f683ea5c09e19ed40fe0b9f3d7c2edc8d119f0"
+      "sha256": "9f480cd87be95c0721464487456069b61e8ff26491adc9b551a72ea87094d976"
     },
     {
       "path": "src/app/wz_telnet_input.c",
-      "sha256": "88e4b8c009ac23ea0f6dc0cab3d136dc6e862c4937daef964d763c806a24ef09"
+      "sha256": "e682ff54b87756ba572c84e5f48d7673df5957501da89656db39386d7ae64b0c"
     },
     {
       "path": "src/app/wz_input_arbiter.c",
-      "sha256": "ffc8a871a721b4cd678e94691707213aaeaa166f003751481be07430fa1b229e"
+      "sha256": "52bc39d6c9d5326e76d695f4f4a725f410e02cb9852a48a5f13b266ce2523bcb"
     }
   ]
 }

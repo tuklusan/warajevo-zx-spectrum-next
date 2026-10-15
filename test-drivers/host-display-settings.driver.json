@@ -5,47 +5,47 @@
   "fixtures": [
     {
       "path": ".github/workflows/host-display-settings-contract.yml",
-      "sha256": "7ff93d259152ee46ef23b908b9d386e99c5c1158f78a239e3d1609bf2547cda4"
+      "sha256": "ac97cd7997d4a6420b5b21cf19e9a5fc9580ed7f007ae13edb4f47f87c4b943c"
     },
     {
       "path": "ci/test/host-display-settings/CMakeLists.txt",
-      "sha256": "3a8fdbfa6f405eb1ff974ac5390bf530176b2fe8473361109189bc4a2f33174e"
+      "sha256": "0c3f7fb5d22e16406ae2e760fcb019ef5433b16eecd58922ebfd7e8810b0ea29"
     },
     {
       "path": "ci/test/host-display-settings/contract.c",
-      "sha256": "f03f6df75ae02f3a96049cd12e85bade629cf06651208a546c2f937d2d4077e1"
+      "sha256": "b273a37fe802154cabed967db2ad62758a0d1d3fca8ee259a113918a4c1fe257"
     },
     {
       "path": "src/app/wz_host_config.c",
-      "sha256": "89de9efc24a9ed7ac5af0e495f376257f107e8775675075ffb5950795c3e2ff7"
+      "sha256": "bb47dd7e107806c141704519e6194d510168769d70fbe7c230276a7333dd6847"
     },
     {
       "path": "src/app/wz_host_config.h",
-      "sha256": "01c07a7bde2ae87e72d6143a906f19883f0f7d4805932ff1b93f0237ad61b858"
+      "sha256": "331a4633fa40e33cbfb0dc93eeff0175510d27546a8e38b4093100b5686a6ca3"
     },
     {
       "path": "src/app/wz_host_presentation.c",
-      "sha256": "d84d6b509a0c7992bfc1b727f9cac4b427eac9089f8bb510eb9d802143cf52ab"
+      "sha256": "abfbb1f4b290e0da544218da1b32ec99dd19c6cbee0247204a063fe4668c2b21"
     },
     {
       "path": "src/app/wz_host_presentation.h",
-      "sha256": "c744c80e85bd2d5442d605e066c39ba6ebada6c87d1513b7de7cbaf353f469ec"
+      "sha256": "049a4220f4f49e54d1efb99630ae9381c93cb6a1348e23fbf007c72537c6e705"
     },
     {
       "path": "src/app/wz_host_scaling.c",
-      "sha256": "d924502facc80140e4fd75a15313c03225f26518a8ba4f3696a0af487d7bf15a"
+      "sha256": "24170dbcad638e0bfdea70049020c191afbeadbdea9a6d599fce69f8896a8200"
     },
     {
       "path": "src/app/wz_host_scaling.h",
-      "sha256": "d918ee600d671b074b579653181bacdaace0b4dac795f2fee11f78301f8edf7d"
+      "sha256": "12b8e8c91b33029a4c7dd69b07fbc91c42a81b3cee76cde2957bd440abf65d46"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "bfdbc92f2778892b6528f6cf3c7a4adb60346ddb8e0d52de6b56eec02f1b4866"
+      "sha256": "64b64c7d1f78fb5d3083cd47e08a6cd69f909b9ccd73fddfb0a303d65e671165"
     },
     {
       "path": "src/core/wz_raster.h",
-      "sha256": "973927676035b54eb8c8ac7d727274eb13b277e751ab1f7664cf953501b0ffe3"
+      "sha256": "c231c401076b312c4b8ae6ef55492fd7e4068742c59a3583b4efaefee0ec5396"
     }
   ]
 }

@@ -11,75 +11,75 @@
   "fixtures": [
     {
       "path": ".github/workflows/ui-remote-status.yml",
-      "sha256": "da80ed80582756dd3212f380a2f27038b2713e50970a4102213bd8eb1780d89c"
+      "sha256": "840c482fc747a625d945652d5edcb22fcf348b0c9204d658437bd6b5bdba1e93"
     },
     {
       "path": "ci/test/ui-remote-status/CMakeLists.txt",
-      "sha256": "9e6461f8153d83d827968261900e13860f72fbe01d8b6fccd004727e4b867871"
+      "sha256": "0dcbc08c4f8ae7442b5e699b3aa5ec52ed72f4e13248332b727e871b54e68a61"
     },
     {
       "path": "ci/test/ui-remote-status/remote-status-regression.c",
-      "sha256": "62c39293b8a4f933df2144e0aa7229168b6572f9f9024ccb009835016ba5d9bd"
+      "sha256": "ac6d1c0f3021d38b8f00ed70da9bca42bb2c1b7ca8d9ea072b1cb90591adace0"
     },
     {
       "path": "ci/test/ui-remote-status/write-proof.py",
-      "sha256": "d3212cdbca3cef855db3b3b9123c7c5833add6e3f202f016daa5244e5cb9f30d"
+      "sha256": "caac55ef632b0ff2f37a2d226b74cbbe464298a8d9dc19be492521cba9c88a66"
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "6c5de7b5b6a20cad20643b1f9007629846bccc0bb49bf7412cad9464ae9be062"
+      "sha256": "6c8aaea15cdd323d0f9a7c28d12e254e2145cbdabf07849f05892dc3807758f0"
     },
     {
       "path": "src/app/wz_ui_layout.h",
-      "sha256": "0ef859ac915722f0ea2e2e6d66b8cda00c78577ad14029966c98ebb324abd8ac"
+      "sha256": "30d784d2ff43fe237251e559cd8bc35d0d51b85c9e80953ba8f9cf6e2052ea7b"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "bfdbc92f2778892b6528f6cf3c7a4adb60346ddb8e0d52de6b56eec02f1b4866"
+      "sha256": "64b64c7d1f78fb5d3083cd47e08a6cd69f909b9ccd73fddfb0a303d65e671165"
     },
     {
       "path": "src/app/wz_command_registry.c",
-      "sha256": "93277b2eed8ad36fc3e9bad4ed6897ac2255a32ccd6142ccb0ee6f9d41ca70bf"
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
     },
     {
       "path": "src/app/wz_command_registry.h",
-      "sha256": "4db02acabdc4e07a60b78d52b5223ee5c7ab1f0a7c90afcb676c3336d7cca0e5"
+      "sha256": "54cc2e949ff026fa183b0aa30cac9ebad8b431c97b80d966ef0ac1ff35a06087"
     },
     {
       "path": "src/app/wz_host_thread.c",
-      "sha256": "cb3ae66f27150b343717a20a464f95d71efa46d9ea53f008dbefc96ff623733a"
+      "sha256": "6f8cbe0e171adfe7b9f42d9517e31d72f7917048339ff8941d5bccadfa305151"
     },
     {
       "path": "src/app/wz_host_thread.h",
-      "sha256": "0c1cc121673b1d86b07e3c56cace72810218e55b3c39af5d0e3d54831667fdce"
+      "sha256": "bd4e189a40c8f9ad31f014dc12afc3c67b7a4bd5580df262b0cf92db8fbe8471"
     },
     {
       "path": "src/app/wz_host_audio_policy.c",
-      "sha256": "0d46bae6f5ce43e5ad0d85af8fe48f2556f6b5e873ebfbbcb98ad4d54dec89c1"
+      "sha256": "24ed4f2318ba10bb2cb9ec48b5ae9bf854ecdef71687f2bd6908bb9bb9b17bce"
     },
     {
       "path": "src/app/wz_host_audio_policy.h",
-      "sha256": "3a838cb037d813888cf5ceb5d452d2c077c122c61393246ea7d95a4fa41367bc"
+      "sha256": "630b754c18a3f0b3c36088d587be1f9264343cad7418b7c2caa44d36eb5d669d"
     },
     {
       "path": "src/app/wz_speed_policy.c",
-      "sha256": "714f4694767df8b2556f6e8107459cf667e9cb9e63990c0ad4b6c9bd1b6b6437"
+      "sha256": "cb9d2d0befc0becaa81558d794a257f399c4a46e1c1a0bdb19c4893d8f547183"
     },
     {
       "path": "src/app/wz_speed_policy.h",
-      "sha256": "92028fc6a9a88a2e7efbfc2de03989a139bc6b1d9a7ce791b6eacfc4193d173c"
+      "sha256": "0895e0cac0254cb95d4b2347d911f0fdddfd0bab414d37e5dd4052cfc9eaa2df"
     },
     {
       "path": "src/app/wz_control_port.h",
-      "sha256": "e4e85d677eb4e43a506a31b4ead633f87621bc54cfc286a99fcf5cdef7304423"
+      "sha256": "44a2a09d58c56dff09494d2176a43f8de0982ff719e3914fb53853fcca4ea32a"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "197907797e2a3e2b9ee1479bb6c498adcc130f0f05aa8a9252233d55be8bad4b"
+      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "c4b038801b872b3e7149a7504e2086be805506f714e6c7f18b1a8c5ab2aaae45"
+      "sha256": "7c92695d1282104d62ac3b4c9c929a96a6ed7169533fa3e71ba6f93af1186469"
     }
   ]
 }

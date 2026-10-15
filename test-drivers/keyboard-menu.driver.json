@@ -6,67 +6,67 @@
   "requiredCases": 86,
   "fixtures": [
     {
-      "sha256": "32641472d5bc5b66ac669bc149b4ba7aa528f85023850fa056cc6f9f379ecb63",
+      "sha256": "97bb714fe812ebc43ff2f6442bdc57f3d28851dc87bdc64fe972114f98a7c8ff",
       "path": ".github/workflows/keyboard-menu.yml"
     },
     {
-      "sha256": "b60211edad1086814551b600c52027ec03ed67e28a308a653e45dfb196295b3d",
+      "sha256": "d761b87e6378e307d6581a7189066a825b5ec8949f4dce42e016386c33b10fb3",
       "path": "ci/test/keyboard-menu/CMakeLists.txt"
     },
     {
-      "sha256": "7c0ebbdaa0049fc59928c0c79bdaacd39173c8522e05fef9707ff96b068205e5",
+      "sha256": "ccf11cb8397f24de073dff5a7a2b8f5d3276eb8a0184bc6a3e9e2471bc6fc9ec",
       "path": "ci/test/keyboard-menu/keyboard-menu.c"
     },
     {
-      "sha256": "edcf3f1dc0d3588c2b132423eafa699cb5f2b57dadd8ab41bf74d5ea90ec9ebc",
+      "sha256": "b35c62fa4f2aef5507d63768f428990ae1e53377cca653e8671326d05c704471",
       "path": "ci/test/keyboard-menu/verify-integration.py"
     },
     {
-      "sha256": "365f3fb29adcc075d1cc8d0f287d1926482f8a4567052cc0e92a5d794962e3f3",
+      "sha256": "a26d424c0743f9105f23c8ef86bd9ffa1a13aeff6d309466e01fe5c17e90072f",
       "path": "ci/test/keyboard-menu/write-proof.py"
     },
     {
-      "sha256": "8361b9e4e24883992a90dc48f49bd944823e9e6bce4eea7a56ef357ee7d16dc6",
+      "sha256": "857e19b695321148d6fa0541e0adf3041075c37b0d2195dc908c1d48439628fa",
       "path": "design/ui-phase-12-decisions.md"
     },
     {
-      "sha256": "b429298d42dc0083c445d1e47eb3fb4803e1dfc9cc4542f3fec46b89ead3c369",
+      "sha256": "dc47afb96f2c0566788d59ef74a691c33a8943e1c4e199c96c74d07739e68b31",
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md"
     },
     {
-      "sha256": "bfcd67baa6c2b2d2dafd72c0b228c59308612cb2cce590b18c85d833fde19e2a",
+      "sha256": "32e9177d371f12ec167a40884c758c59a4f85ff4e8c44457ae5ed592ffcd81f0",
       "path": "docs/design/keyboard-menu-contract.md"
     },
     {
-      "sha256": "ffc8a871a721b4cd678e94691707213aaeaa166f003751481be07430fa1b229e",
+      "sha256": "52bc39d6c9d5326e76d695f4f4a725f410e02cb9852a48a5f13b266ce2523bcb",
       "path": "src/app/wz_input_arbiter.c"
     },
     {
-      "sha256": "b57d17d00bc0b1772d96ab36460279fcf81fbdb2f0374dce9c7b24f001b7a0ad",
+      "sha256": "d16b682056e7bf3864c46083407eaca716956ae137e23ab83d51190afc1dffcd",
       "path": "src/app/wz_input_arbiter.h"
     },
     {
-      "sha256": "18beed6cbc10ec51c0ef920b67876e1e47d68ff6bd7d8bb29ab21e06c52528b7",
+      "sha256": "4ce12b4b7f4045319753bf324d425a2f209e01583b710939a6e9f3e03671bfdb",
       "path": "src/app/wz_input_focus.c"
     },
     {
-      "sha256": "32da76660298812ee5d46c4553c31388aee67d1e6b03f6256cdba6cce9b4625b",
+      "sha256": "ef2d8f3e72d10d7d7a3c221714cce84b43bdd6e9a87c7b20ae8e39cdcfb2cbdb",
       "path": "src/app/wz_input_focus.h"
     },
     {
-      "sha256": "bfdbc92f2778892b6528f6cf3c7a4adb60346ddb8e0d52de6b56eec02f1b4866",
+      "sha256": "64b64c7d1f78fb5d3083cd47e08a6cd69f909b9ccd73fddfb0a303d65e671165",
       "path": "src/app/wz_sokol_main.c"
     },
     {
-      "sha256": "2972e13066169ba36021cb296e066af8503d6c69b5b5c939c35f73ac3dd73c5b",
+      "sha256": "c6dc2525263bd213c19aff65b78c2c14d3d35c80a40ffd3daa4fe380fc9bf45e",
       "path": "src/app/wz_ui_keyboard_menu.c"
     },
     {
-      "sha256": "e9ae3df6e2df58ec3008b02e729f54eb3beb4c2c98a2914b283cc45c6d6260f9",
+      "sha256": "6caf7d57fa89bd2e9fee6669240bb0550effab9a703915885995b56fde3b4b48",
       "path": "src/app/wz_ui_keyboard_menu.h"
     },
     {
-      "sha256": "c4b038801b872b3e7149a7504e2086be805506f714e6c7f18b1a8c5ab2aaae45",
+      "sha256": "7c92695d1282104d62ac3b4c9c929a96a6ed7169533fa3e71ba6f93af1186469",
       "path": "src/cmake/CMakeLists.txt"
     }
   ],

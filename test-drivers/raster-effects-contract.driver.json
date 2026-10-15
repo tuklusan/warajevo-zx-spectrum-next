@@ -5,11 +5,11 @@
   "fixtures": [
     {
       "path": "ci/test/raster-effects-contract/raster-effects-contract.c",
-      "sha256": "ced4088247c8d0510d49b547c26a8cad170cc23afa66aea8c90254ec78965556"
+      "sha256": "514d0812dfb38feaca90845e0629a8b783dcdabd550ca57a70c3610c9e2bfe16"
     },
     {
       "path": "ci/test/raster-effects-contract/CMakeLists.txt",
-      "sha256": "05981bbefcf015fb000d52f9f711e749e8563b7260badca6250f3bc8e961d097"
+      "sha256": "4859066043d4ec07216fc666664f860b1be38d27c312e7f3053e8ab9f5c20f16"
     }
   ]
 }
