@@ -26,7 +26,7 @@ jobs:
       - name: Exercise native save and cancellation
         run: |
           xvfb-run -a python3 ci/test/gui-screenshot-save.py \
-            --binary dist/gui-screenshot-save/product/wz_sokol_host \
+            --binary dist/gui-screenshot-save/product/Warajevo-ZX-Spectrum-Next \
             --rom roms/48.rom \
             --proof dist/gui-screenshot-save/proof.json
       - name: Upload aggregate proof
