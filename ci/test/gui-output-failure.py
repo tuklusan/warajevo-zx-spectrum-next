@@ -41,7 +41,9 @@ def choose_name(dialog, name):
     xdotool("click", "1")
     xdotool("key", "ctrl+a")
     xdotool("type", "--clearmodifiers", name)
-    xdotool("key", "Return")
+    time.sleep(0.3)
+    xdotool("mousemove", "--window", dialog, "1046", "798")
+    xdotool("click", "1")
 
 
 def wait_for_file(path, timeout=12):
