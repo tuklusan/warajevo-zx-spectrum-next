@@ -8,7 +8,6 @@
 
 #include <gtk/gtk.h>
 
-#include <stdio.h>
 #include <string.h>
 
 #include "app/wz_file_dialog.h"
@@ -104,6 +103,11 @@ cleanup:
     if (dialog != NULL) {
         gtk_native_dialog_destroy(GTK_NATIVE_DIALOG(dialog));
         g_object_unref(dialog);
+        for (unsigned pending = 0u;
+             pending < 64u && g_main_context_pending(NULL); ++pending) {
+            g_main_context_iteration(NULL, FALSE);
+        }
+        gdk_display_flush(gdk_display_get_default());
     }
     return result;
 }
@@ -161,6 +165,11 @@ cleanup:
     if (dialog != NULL) {
         gtk_native_dialog_destroy(GTK_NATIVE_DIALOG(dialog));
         g_object_unref(dialog);
+        for (unsigned pending = 0u;
+             pending < 64u && g_main_context_pending(NULL); ++pending) {
+            g_main_context_iteration(NULL, FALSE);
+        }
+        gdk_display_flush(gdk_display_get_default());
     }
     return result;
 }
@@ -168,8 +177,6 @@ cleanup:
 wz_file_dialog_result_t wz_file_dialog_save_snapshot(char* utf8_path,
                                                       size_t path_capacity)
 {
-    static unsigned invocation_count;
-    unsigned invocation = ++invocation_count;
     GtkFileChooserNative* dialog = NULL;
     GtkFileFilter* filter = NULL;
     gint response;
@@ -184,7 +191,6 @@ wz_file_dialog_result_t wz_file_dialog_save_snapshot(char* utf8_path,
     dialog = gtk_file_chooser_native_new("Save Snapshot", NULL,
         GTK_FILE_CHOOSER_ACTION_SAVE, "Save", "Cancel");
     if (dialog == NULL) goto cleanup;
-    fprintf(stderr, "snapshot-dialog %u opened\n", invocation);
     gtk_native_dialog_set_modal(GTK_NATIVE_DIALOG(dialog), TRUE);
     gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), TRUE);
     gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(dialog), "machine.z80");
@@ -197,8 +203,6 @@ wz_file_dialog_result_t wz_file_dialog_save_snapshot(char* utf8_path,
     gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
     filter = NULL;
     response = gtk_native_dialog_run(GTK_NATIVE_DIALOG(dialog));
-    fprintf(stderr, "snapshot-dialog %u response=%d visible=%d\n", invocation,
-            response, gtk_native_dialog_get_visible(GTK_NATIVE_DIALOG(dialog)));
     if (response != GTK_RESPONSE_ACCEPT) {
         result = WZ_FILE_DIALOG_CANCELLED;
     } else {
@@ -219,7 +223,6 @@ cleanup:
     if (dialog != NULL) {
         gtk_native_dialog_destroy(GTK_NATIVE_DIALOG(dialog));
         g_object_unref(dialog);
-        fprintf(stderr, "snapshot-dialog %u destroyed\n", invocation);
         for (unsigned pending = 0u;
              pending < 64u && g_main_context_pending(NULL); ++pending) {
             g_main_context_iteration(NULL, FALSE);
@@ -282,6 +285,11 @@ cleanup:
     if (dialog != NULL) {
         gtk_native_dialog_destroy(GTK_NATIVE_DIALOG(dialog));
         g_object_unref(dialog);
+        for (unsigned pending = 0u;
+             pending < 64u && g_main_context_pending(NULL); ++pending) {
+            g_main_context_iteration(NULL, FALSE);
+        }
+        gdk_display_flush(gdk_display_get_default());
     }
     return result;
 }
