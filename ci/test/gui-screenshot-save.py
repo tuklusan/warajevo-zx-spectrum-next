@@ -111,9 +111,14 @@ def click_screenshot(host_window):
     xdotool("windowfocus", "--sync", host_window)
     geometry = xdotool("getwindowgeometry", "--shell", host_window)
     width = int(re.search(r"^WIDTH=(\d+)$", geometry, re.MULTILINE).group(1))
-    xdotool("mousemove", "--window", host_window,
+    xdotool("mousemove", "--sync", "--window", host_window,
             str(int(width * 8.5 / 11)), "42")
-    xdotool("click", "1")
+    time.sleep(0.2)
+    print("pointer before screenshot click:",
+          xdotool("getmouselocation", "--shell"), flush=True)
+    xdotool("mousedown", "1")
+    time.sleep(0.1)
+    xdotool("mouseup", "1")
     return window("Save Screenshot")
 
 
