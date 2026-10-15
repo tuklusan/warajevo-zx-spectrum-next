@@ -2679,7 +2679,7 @@ static wz_result_t wz_host_command_screenshot_save(
         result->reason = "screenshot-encode-failed";
         return WZ_RESULT_INVALID_STATE;
     }
-    if (!wz_host_output_write_atomic(path, png, written)) {
+    if (!wz_host_output_write_atomic_utf8(path, png, written)) {
         free(png);
         result->reason = "screenshot-write-failed";
         return WZ_RESULT_INVALID_STATE;

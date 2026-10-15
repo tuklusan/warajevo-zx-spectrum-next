@@ -18,7 +18,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include <unistd.h>
 #endif
 
-#define WZ_HOST_OUTPUT_PATH_CAPACITY 1024u
+#define WZ_HOST_OUTPUT_PATH_CAPACITY 4096u
 
 static unsigned wz_host_output_attempt;
 
