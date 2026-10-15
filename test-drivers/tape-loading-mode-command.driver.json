@@ -81,7 +81,7 @@
     },
     {
       "path": "src/app/wz_file_dialog_linux.c",
-      "sha256": "273da2fe14a1afc489d73c81d547012cd258c25737768d77afabdd6f5355f8a6"
+      "sha256": "b93d3112234854d69d05b97d1b1e887806e21a89cc2f275edbc5e9dd0bc0dee6"
     },
     {
       "path": "src/app/wz_file_dialog_macos.m",
