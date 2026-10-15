@@ -12,6 +12,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import runpy
 import subprocess
 import tempfile
@@ -35,14 +36,21 @@ def activate(host_window, index):
     xdotool("key", "Return")
 
 
-def choose_name(dialog, name):
+def type_name(dialog, name):
     xdotool("windowfocus", "--sync", dialog)
     xdotool("mousemove", "--window", dialog, "300", "26")
     xdotool("click", "1")
     xdotool("key", "ctrl+a")
     xdotool("type", "--clearmodifiers", name)
     time.sleep(0.3)
-    xdotool("mousemove", "--window", dialog, "1046", "798")
+
+
+def submit_save(dialog):
+    geometry = xdotool("getwindowgeometry", "--shell", dialog)
+    width = int(re.search(r"^WIDTH=(\d+)$", geometry, re.MULTILINE).group(1))
+    height = int(re.search(r"^HEIGHT=(\d+)$", geometry, re.MULTILINE).group(1))
+    xdotool("mousemove", "--window", dialog,
+            str(width - 49), str(height - 21))
     xdotool("click", "1")
 
 
@@ -103,25 +111,29 @@ def run(args):
                 before_png = screenshot(sock)
 
                 activate(host_window, 3)
-                choose_name(window("Save Snapshot"), "baseline.z80")
+                dialog = window("Save Snapshot")
+                type_name(dialog, "baseline.z80")
+                submit_save(dialog)
                 before_state = wait_for_file(saved_snapshot)
                 if not before_state:
                     raise RuntimeError("baseline snapshot was empty")
 
+                activate(host_window, 3)
+                dialog = window("Save Snapshot")
+                type_name(dialog, "failed-state.z80")
                 snapshot_reservations = reserve_temporary_names(
                     rejected_snapshot, process.pid)
-                png_reservations = reserve_temporary_names(
-                    rejected_png, process.pid)
-
-                activate(host_window, 3)
-                choose_name(window("Save Snapshot"), "failed-state.z80")
+                submit_save(dialog)
                 wait_closed("Save Snapshot")
                 if rejected_snapshot.exists():
                     raise RuntimeError("failed snapshot write left an output file")
                 check_reservations(snapshot_reservations)
 
                 dialog = helpers["click_screenshot"](host_window)
-                choose_name(dialog, "failed-screen")
+                type_name(dialog, "failed-screen")
+                png_reservations = reserve_temporary_names(
+                    rejected_png, process.pid)
+                submit_save(dialog)
                 wait_closed("Save Screenshot")
                 if rejected_png.exists():
                     raise RuntimeError("failed screenshot write left an output file")
