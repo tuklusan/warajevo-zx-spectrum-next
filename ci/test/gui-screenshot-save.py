@@ -150,10 +150,14 @@ def run(args):
                 sock = connect(process)
                 if "OK" not in command(sock, "PAUSE"):
                     raise RuntimeError("could not pause the host")
+                sock.close()
+                sock = None
+                time.sleep(0.5)
                 click_toolbar(host_window, 1)
                 time.sleep(0.5)
+                sock = connect(process)
                 if "STATE=RUNNING" not in command(sock, "STATUS"):
-                    raise RuntimeError("toolbar Resume did not activate")
+                    raise RuntimeError("toolbar Resume did not activate after remote disconnect")
                 click_toolbar(host_window, 1)
                 time.sleep(0.5)
                 if "STATE=PAUSED" not in command(sock, "STATUS"):
