@@ -152,6 +152,11 @@ review_outgoing_source() {
     fi
     review_elapsed=$(($(date +%s) - review_started))
     cat "$review_log" >&2
+    if [ "$review_status" -eq 0 ] &&
+       grep -Fq 'PROCESSING WARNINGS' "$review_log"; then
+        printf '%s\n' "Push rejected: source review skipped one or more files." >&2
+        review_status=1
+    fi
     if [ "$review_status" -eq 124 ] && [ "$review_elapsed" -ge 1200 ]; then
         stall_log=$(git rev-parse --git-path wzsn-source-review-stall.log)
         printf 'STALL elapsed=%ss limit=1200s diagnostics=%s\n' \
