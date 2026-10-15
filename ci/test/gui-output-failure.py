@@ -47,8 +47,12 @@ def type_name(dialog, name):
 
 def submit_save(dialog):
     geometry = xdotool("getwindowgeometry", "--shell", dialog)
-    width = int(re.search(r"^WIDTH=(\d+)$", geometry, re.MULTILINE).group(1))
-    height = int(re.search(r"^HEIGHT=(\d+)$", geometry, re.MULTILINE).group(1))
+    width_match = re.search(r"^WIDTH=(\d+)$", geometry, re.MULTILINE)
+    height_match = re.search(r"^HEIGHT=(\d+)$", geometry, re.MULTILINE)
+    if width_match is None or height_match is None:
+        raise RuntimeError(f"could not read chooser geometry: {geometry}")
+    width = int(width_match.group(1))
+    height = int(height_match.group(1))
     xdotool("mousemove", "--window", dialog,
             str(width - 49), str(height - 21))
     xdotool("click", "1")
@@ -115,6 +119,7 @@ def run(args):
                 type_name(dialog, "baseline.z80")
                 submit_save(dialog)
                 before_state = wait_for_file(saved_snapshot)
+                wait_closed("Save Snapshot")
                 if not before_state:
                     raise RuntimeError("baseline snapshot was empty")
 
