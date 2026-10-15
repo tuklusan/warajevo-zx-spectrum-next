@@ -105,6 +105,8 @@ def run(args):
                 xdotool("key", "ctrl+l")
                 xdotool("type", "--clearmodifiers", str(root / "broken.z80"))
                 xdotool("key", "Return")
+                time.sleep(0.3)
+                xdotool("key", "Return")
                 time.sleep(1.0)
                 unchanged(sock, original, "malformed snapshot load")
 
