@@ -37,7 +37,15 @@ def window(pattern, timeout=20):
         if result.returncode == 0 and result.stdout.strip():
             return result.stdout.splitlines()[-1]
         time.sleep(0.2)
-    raise RuntimeError(f"window unavailable: {pattern}")
+    visible = subprocess.run(
+        ["xdotool", "search", "--onlyvisible", "--name", "."],
+        capture_output=True, text=True)
+    names = []
+    for identifier in visible.stdout.splitlines():
+        name = subprocess.run(["xdotool", "getwindowname", identifier],
+                              capture_output=True, text=True)
+        names.append(name.stdout.strip())
+    raise RuntimeError(f"window unavailable: {pattern}; visible windows: {names}")
 
 
 def connect(process):
@@ -101,7 +109,10 @@ def screenshot(sock):
 
 def click_screenshot(host_window):
     xdotool("windowfocus", "--sync", host_window)
-    xdotool("mousemove", "--window", host_window, "791", "42")
+    geometry = xdotool("getwindowgeometry", "--shell", host_window)
+    width = int(re.search(r"^WIDTH=(\d+)$", geometry, re.MULTILINE).group(1))
+    xdotool("mousemove", "--window", host_window,
+            str(int(width * 8.5 / 11)), "42")
     xdotool("click", "1")
     return window("Save Screenshot")
 

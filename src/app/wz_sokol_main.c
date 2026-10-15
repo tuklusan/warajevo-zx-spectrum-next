@@ -3318,7 +3318,7 @@ static bool wz_host_register_commands(void)
             "Choose a PNG destination for the current screen",
             "file", "NONE", NULL, "wz_host_command_screenshot_save", "native-file-dialog",
             NULL, WZ_COMMAND_LOCAL_ONLY, NULL, wz_host_command_screenshot_save,
-            &wz_host_session, true, false, NULL
+            &wz_host_session, false, false, NULL
         },
         {
             "application.quit", "Quit", "Quit the application",
