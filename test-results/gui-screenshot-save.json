@@ -1,8 +1,8 @@
 {
   "testId": "gui-screenshot-save",
   "status": "pass",
-  "commit": "e2f1446cf3f4788d189ff21a9ff64f066dc02e4b",
-  "runId": 38756608165,
+  "commit": "9bfdcd59ce7dd3f1142fa92bd2b446feb544f410",
+  "runId": 38761724032,
   "runner": "Linux",
   "cancelPreservedPausedRaster": true,
   "selectedDestinationWritten": true,
