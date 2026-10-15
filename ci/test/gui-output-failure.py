@@ -12,9 +12,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
-import resource
 import runpy
-import signal
 import subprocess
 import tempfile
 import time
@@ -26,10 +24,6 @@ window = helpers["window"]
 connect = helpers["connect"]
 command = helpers["command"]
 screenshot = helpers["screenshot"]
-
-
-def ignore_file_limit_signal():
-    signal.signal(signal.SIGXFSZ, signal.SIG_IGN)
 
 
 def activate(host_window, index):
@@ -70,6 +64,21 @@ def wait_closed(title, timeout=12):
     raise RuntimeError(f"native chooser did not close: {title}")
 
 
+def reserve_temporary_names(path, process_id):
+    reservations = []
+    for attempt in range(1, 129):
+        temporary = Path(f"{path}.tmp.{process_id}.{attempt}")
+        temporary.write_bytes(b"reserved temporary path")
+        reservations.append(temporary)
+    return reservations
+
+
+def check_reservations(reservations):
+    if any(path.read_bytes() != b"reserved temporary path"
+           for path in reservations):
+        raise RuntimeError("an existing temporary path was changed")
+
+
 def run(args):
     with tempfile.TemporaryDirectory(prefix="wz-gui-output-failure-") as temporary:
         root = Path(temporary)
@@ -81,12 +90,10 @@ def run(args):
         environment["XDG_CONFIG_HOME"] = str(root / "config")
         process = None
         sock = None
-        original_limit = None
         try:
             with (root / "application.log").open("w", encoding="utf-8") as log:
                 process = subprocess.Popen([str(args.binary.resolve())], cwd=root,
-                    env=environment, stdout=log, stderr=subprocess.STDOUT,
-                    preexec_fn=ignore_file_limit_signal)
+                    env=environment, stdout=log, stderr=subprocess.STDOUT)
                 host_window = window(helpers["TITLE"])
                 sock = connect(process)
                 if "OK" not in command(sock, "PAUSE"):
@@ -99,24 +106,25 @@ def run(args):
                 if not before_state:
                     raise RuntimeError("baseline snapshot was empty")
 
-                original_limit = resource.prlimit(process.pid, resource.RLIMIT_FSIZE)
-                resource.prlimit(process.pid, resource.RLIMIT_FSIZE,
-                                (1024, original_limit[1]))
+                snapshot_reservations = reserve_temporary_names(
+                    rejected_snapshot, process.pid)
+                png_reservations = reserve_temporary_names(
+                    rejected_png, process.pid)
 
                 activate(host_window, 3)
                 choose_name(window("Save Snapshot"), "failed-state.z80")
                 wait_closed("Save Snapshot")
-                if rejected_snapshot.exists() or list(root.glob("failed-state.z80.tmp.*")):
+                if rejected_snapshot.exists():
                     raise RuntimeError("failed snapshot write left an output file")
+                check_reservations(snapshot_reservations)
 
                 dialog = helpers["click_screenshot"](host_window)
                 choose_name(dialog, "failed-screen")
                 wait_closed("Save Screenshot")
-                if rejected_png.exists() or list(root.glob("failed-screen.png.tmp.*")):
+                if rejected_png.exists():
                     raise RuntimeError("failed screenshot write left an output file")
+                check_reservations(png_reservations)
 
-                resource.prlimit(process.pid, resource.RLIMIT_FSIZE, original_limit)
-                original_limit = None
                 if "STATE=PAUSED" not in command(sock, "STATUS"):
                     raise RuntimeError("output failures changed pause state")
                 if screenshot(sock) != before_png:
@@ -133,8 +141,9 @@ def run(args):
                     "commit": os.environ.get("GITHUB_SHA", ""),
                     "runId": int(os.environ.get("GITHUB_RUN_ID", "0")),
                     "runner": os.environ.get("RUNNER_OS", ""),
-                    "snapshotWriteFailedWithoutResidue": True,
-                    "screenshotWriteFailedWithoutResidue": True,
+                    "snapshotCollisionRejected": True,
+                    "screenshotCollisionRejected": True,
+                    "temporaryFilesPreserved": True,
                     "snapshotDestinationPreserved": True,
                     "snapshotBytesUnchanged": True,
                     "pausedRasterUnchanged": True,
@@ -156,9 +165,6 @@ def run(args):
                            check=False, capture_output=True)
             raise
         finally:
-            if process is not None and process.poll() is None and original_limit is not None:
-                resource.prlimit(process.pid, resource.RLIMIT_FSIZE,
-                                original_limit)
             if sock is not None:
                 sock.close()
             if process is not None:
