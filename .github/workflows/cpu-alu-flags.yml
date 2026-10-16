@@ -1,0 +1,29 @@
+name: Project-owned CPU ALU flag acceptance
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  alu-flags:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure CPU ALU flag acceptance
+        run: cmake -S ci/test/cpu-alu-flags -B dist/cpu-alu-flags -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build CPU ALU flag acceptance
+        run: cmake --build dist/cpu-alu-flags --target wz_cpu_alu_flags --parallel 2
+      - name: Verify 8-bit flags
+        run: |
+          set -o pipefail
+          dist/cpu-alu-flags/wz_cpu_alu_flags | tee dist/cpu-alu-flags/proof.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-alu-flags-proof
+          path: dist/cpu-alu-flags/proof.json
+          if-no-files-found: error
