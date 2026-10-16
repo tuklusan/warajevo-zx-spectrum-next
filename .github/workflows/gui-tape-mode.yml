@@ -1,0 +1,58 @@
+# Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+# This file is governed by the SANYALnet Labs Non-Commercial License in the
+# root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
+# for AI/ML model training are prohibited unless separately authorized.
+# Attribution is required: "Based on original work by Supratim Sanyal of
+# SANYALnet Labs." See LICENSE for full terms.
+name: GUI Tape mode selection
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tape-mode:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install desktop and OCR dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes libgtk-3-dev libasound2-dev libgl1-mesa-dev \
+            libxi-dev libxcursor-dev xvfb xdotool imagemagick tesseract-ocr python3-pil
+      - name: Build production desktop host
+        run: |
+          cmake -S src/cmake -B dist/gui-tape-mode/product -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release -DWZSN_BUILD_SOKOL_HOST=ON
+          cmake --build dist/gui-tape-mode/product --config Release \
+            --target wz_sokol_host --parallel 2
+      - name: Exercise Tape mode through the GUI
+        run: |
+          xvfb-run -a python3 ci/test/gui-tape-mode.py \
+            --binary dist/gui-tape-mode/product/Warajevo-ZX-Spectrum-Next \
+            --rom roms/48.rom \
+            --proof dist/gui-tape-mode/proof.json
+      - name: Upload proof and captures
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gui-tape-mode-proof
+          path: |
+            dist/gui-tape-mode/proof.json
+            dist/gui-tape-mode/normal-initial.png
+            dist/gui-tape-mode/instant-selected.png
+            dist/gui-tape-mode/normal-restored.png
+          if-no-files-found: error
+      - name: Upload diagnostics on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gui-tape-mode-diagnostic
+          path: |
+            dist/gui-tape-mode/*.png
+            dist/gui-tape-mode/application-diagnostic.log
+          if-no-files-found: warn
