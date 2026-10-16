@@ -1,0 +1,20 @@
+{
+  "testId": "gui-tape-mode",
+  "status": "pass",
+  "commit": "0fb05cea8f60252e3bdfe39d0c75a268157e9e55",
+  "runId": 38837326057,
+  "runner": "Linux",
+  "initialMode": "Normal",
+  "selectedMode": "Instant",
+  "restoredMode": "Normal",
+  "ocr": [
+    "Mile Machine Media 1 eww Tools SeEbings Hel p\nOpen \u201cRun Pause Reset 100% Fo Empty / Normal We Load Snapsho Save Snapsho MOY 1 Screenshot Fullscreen Debugger",
+    "File Machine Media 1 eww Tools SeEbings Hel p\nOpen \u201cRun Pause Reset 100% Wo Empty / Instant FW Load Snapsho Save Snapsho MOY 1 Screenshot Fullscreen Debugger",
+    "File Machine Media 1 eww Tools SeEbings Hel p\nOpen \u201cRun Pause Reset 100% Fo Empty / Normal We Load Snapsho Save Snapsho MOY 1 Screenshot Fullscreen Debugger"
+  ],
+  "screenshotsSha256": {
+    "normal-initial": "247aaef0cf43f6b452e4741125eda42eb41e7de2273ce6e35356984dad663c37",
+    "instant-selected": "21c8ce83573fa876539747d0fcfc94a8cdeeacc4f836f65784da603220eeaa8d",
+    "normal-restored": "002e94eff15ac3d5225fb9503820a050f0f6240b8991eecc395e6dc9147bf3fd"
+  }
+}

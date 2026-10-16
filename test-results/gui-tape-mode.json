@@ -1,0 +1,57 @@
+{
+  "testId": "gui-tape-mode",
+  "status": "pass",
+  "commit": "0fb05cea8f60252e3bdfe39d0c75a268157e9e55",
+  "runId": 38837326057,
+  "runner": "Linux",
+  "initialMode": "Normal",
+  "selectedMode": "Instant",
+  "restoredMode": "Normal",
+  "ocr": [
+    "Mile Machine Media 1 eww Tools SeEbings Hel p\nOpen \u201cRun Pause Reset 100% Fo Empty / Normal We Load Snapsho Save Snapsho MOY 1 Screenshot Fullscreen Debugger",
+    "File Machine Media 1 eww Tools SeEbings Hel p\nOpen \u201cRun Pause Reset 100% Wo Empty / Instant FW Load Snapsho Save Snapsho MOY 1 Screenshot Fullscreen Debugger",
+    "File Machine Media 1 eww Tools SeEbings Hel p\nOpen \u201cRun Pause Reset 100% Fo Empty / Normal We Load Snapsho Save Snapsho MOY 1 Screenshot Fullscreen Debugger"
+  ],
+  "screenshotsSha256": {
+    "normal-initial": "247aaef0cf43f6b452e4741125eda42eb41e7de2273ce6e35356984dad663c37",
+    "instant-selected": "21c8ce83573fa876539747d0fcfc94a8cdeeacc4f836f65784da603220eeaa8d",
+    "normal-restored": "002e94eff15ac3d5225fb9503820a050f0f6240b8991eecc395e6dc9147bf3fd"
+  },
+  "timestamp": "2026-10-16T01:52:28Z",
+  "fixtures": [
+    {
+      "path": ".github/workflows/gui-tape-mode.yml",
+      "sha256": "affdd24701513e36fbd121c16649b34dc6fffeb5ab97789ad2dfa6d6519852dd"
+    },
+    {
+      "path": "ci/test/gui-tape-mode.py",
+      "sha256": "91455a3f21caabdfacfefb98721b02fd033d6ac88fb3b23b5a73e350177758a2"
+    },
+    {
+      "path": "ci/test/gui-screenshot-save.py",
+      "sha256": "b141ac9b4c91e33028291b0312f8fc2ac31f67c161c52cc0eb51a42bc54ff82f"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "917b342f916c0bc9862dfba580531f3d1a9e5bfa6c2e4df1d6736d374bb32088"
+    },
+    {
+      "path": "src/app/wz_ui_layout.c",
+      "sha256": "6c8aaea15cdd323d0f9a7c28d12e254e2145cbdabf07849f05892dc3807758f0"
+    },
+    {
+      "path": "src/app/wz_tape_loading_commands.c",
+      "sha256": "b24e2e22bf91780cea306db01a9bf0cf8ac21382aeefd17a90bbea66e57c63dc"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
+    },
+    {
+      "path": "roms/48.rom",
+      "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"
+    }
+  ],
+  "sourceArtifact": "gui-tape-mode-proof",
+  "hostedProofSha256": "efaab0d342e1c770762ee144b0bce3de979aeec12779bed86a29b1e51e22ffc0"
+}
