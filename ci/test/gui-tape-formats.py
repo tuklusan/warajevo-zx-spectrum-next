@@ -98,11 +98,13 @@ def one_case(binary, rom, root, media, proof_dir):
                 time.sleep(0.5)
             if not re.search(r"Tape Manager", manager, re.IGNORECASE):
                 raise RuntimeError(f"Tape Manager unavailable: {manager!r}")
-            if not re.search(rf"Format\s+{media.suffix[1:]}", manager,
-                             re.IGNORECASE):
+            format_pattern = (r"Format\s+T[Z2]X" if media.suffix == ".tzx"
+                              else r"Format\s+WAV")
+            if not re.search(format_pattern, manager, re.IGNORECASE):
                 raise RuntimeError(f"Tape format absent in manager: {manager!r}")
-            if media.suffix == ".tzx" and not re.search(r"Block\s+1", manager,
-                                                          re.IGNORECASE):
+            if media.suffix == ".tzx" and not re.search(
+                    r"Block\s+\d+\s+\|\s+Standard data", manager,
+                    re.IGNORECASE):
                 raise RuntimeError(f"TZX block absent: {manager!r}")
             if media.suffix == ".wav" and not re.search(r"[Ss]ignal", manager):
                 raise RuntimeError(f"WAV signal view absent: {manager!r}")
