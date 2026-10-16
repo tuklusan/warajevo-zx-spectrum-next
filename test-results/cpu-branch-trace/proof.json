@@ -1,0 +1,1 @@
+{"testId":"cpu-branch-trace","status":"pass","cases":4,"paths":["JR NZ taken","JR NZ not taken","DJNZ taken","DJNZ not taken"]}
