@@ -73,7 +73,20 @@ def main():
                 xdotool("key", "Return")
                 mounted = expect_text(host_window,
                     args.proof.parent / "mounted.png", r"Tape\W+Normal")
-                choose(host_window, 4)
+                geometry = xdotool("getwindowgeometry", "--shell", host_window)
+                match = re.search(r"^WIDTH=(\d+)$", geometry, re.MULTILINE)
+                if match is None:
+                    raise RuntimeError("host window width unavailable")
+                menu_x = int(int(match.group(1)) * 0.39)
+                xdotool("windowfocus", "--sync", host_window)
+                xdotool("mousemove", "--sync", "--window", host_window,
+                        str(menu_x), "42")
+                xdotool("click", "1")
+                xdotool("mousemove", "--sync", "--window", host_window,
+                        str(menu_x), "130")
+                xdotool("click", "--repeat", "3", "5")
+                time.sleep(0.5)
+                xdotool("click", "1")
                 manager_path = args.proof.parent / "manager.png"
                 capture(host_window, manager_path)
                 manager = subprocess.run(["tesseract", str(manager_path),
