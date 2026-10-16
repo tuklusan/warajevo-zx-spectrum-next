@@ -1,0 +1,29 @@
+name: Project-owned CPU 16-bit flag acceptance
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  wide-flags:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure CPU 16-bit flag acceptance
+        run: cmake -S ci/test/cpu-wide-flags -B dist/cpu-wide-flags -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build CPU 16-bit flag acceptance
+        run: cmake --build dist/cpu-wide-flags --target wz_cpu_wide_flags --parallel 2
+      - name: Verify 16-bit edge vectors
+        run: |
+          set -o pipefail
+          dist/cpu-wide-flags/wz_cpu_wide_flags | tee dist/cpu-wide-flags/proof.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-wide-flags-proof
+          path: dist/cpu-wide-flags/proof.json
+          if-no-files-found: error
