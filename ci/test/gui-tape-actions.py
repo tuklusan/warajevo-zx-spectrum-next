@@ -69,6 +69,8 @@ def main():
                 xdotool("key", "ctrl+l")
                 xdotool("type", "--clearmodifiers", str(tape))
                 xdotool("key", "Return")
+                time.sleep(0.5)
+                xdotool("key", "Return")
                 mounted = expect_text(host_window,
                     args.proof.parent / "mounted.png", r"Tape\s*/\s*Normal")
                 choose(host_window, 4)
