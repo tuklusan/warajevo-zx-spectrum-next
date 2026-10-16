@@ -86,6 +86,7 @@ def main():
                         str(menu_x), "130")
                 xdotool("click", "--repeat", "3", "5")
                 time.sleep(0.5)
+                capture(host_window, args.proof.parent / "manager-menu.png")
                 xdotool("click", "1")
                 manager_path = args.proof.parent / "manager.png"
                 capture(host_window, manager_path)
