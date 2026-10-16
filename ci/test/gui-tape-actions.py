@@ -72,10 +72,15 @@ def main():
                 time.sleep(0.5)
                 xdotool("key", "Return")
                 mounted = expect_text(host_window,
-                    args.proof.parent / "mounted.png", r"Tape\s*/\s*Normal")
+                    args.proof.parent / "mounted.png", r"Tape\W+Normal")
                 choose(host_window, 4)
-                manager = expect_text(host_window,
-                    args.proof.parent / "manager.png", r"Tape Manager")
+                manager_path = args.proof.parent / "manager.png"
+                capture(host_window, manager_path)
+                manager = subprocess.run(["tesseract", str(manager_path),
+                    "stdout", "--psm", "11"], check=True, capture_output=True,
+                    text=True).stdout.strip()
+                if not re.search(r"Tape Manager", manager, re.IGNORECASE):
+                    raise RuntimeError(f"Tape Manager unavailable: {manager!r}")
                 choose(host_window, 1)
                 ejected = expect_text(host_window,
                     args.proof.parent / "ejected.png", r"Empty\s*/\s*Normal")
