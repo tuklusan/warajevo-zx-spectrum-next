@@ -16,7 +16,7 @@
       "path": "ci/test/microdrive-ui/microdrive-ui-contract.c"
     },
     {
-      "sha256": "e8360483da6ed6bcfef5a1971ed54f4f66dd2a266e1b6c0e68dbeb9e40a43003",
+      "sha256": "974c589f3d1bf1a748f2f62d681570a954a7d9c1b1e8cd55f09c60f0f9c49680",
       "path": "src/app/wz_sokol_main.c"
     },
     {
