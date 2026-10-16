@@ -1,0 +1,1 @@
+{"testId":"cpu-owned-acceptance","status":"pass","instruction":"LD A,(9000h)","busCycles":4,"traceEvents":11,"masterTicks":26}
