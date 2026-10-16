@@ -64,7 +64,8 @@ def main():
                 initial = expect_text(host_window,
                     args.proof.parent / "initial.png", r"Empty\s*/\s*Normal")
                 choose(host_window, 0)
-                window("Open / Run")
+                dialog = window("Open / Run")
+                xdotool("windowfocus", "--sync", dialog)
                 xdotool("key", "ctrl+l")
                 xdotool("type", "--clearmodifiers", str(tape))
                 xdotool("key", "Return")
