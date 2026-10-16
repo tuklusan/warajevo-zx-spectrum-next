@@ -59,7 +59,7 @@ def main():
                 process = subprocess.Popen([str(args.binary.resolve())],
                     cwd=root, env=environment, stdout=log,
                     stderr=subprocess.STDOUT)
-                host_window = window(helpers["TITLE"])
+                host_window = window("Warajevo ZX Spectrum Next")
                 sock = connect(process)
                 initial = expect_text(host_window,
                     args.proof.parent / "initial.png", r"Empty\s*/\s*Normal")
