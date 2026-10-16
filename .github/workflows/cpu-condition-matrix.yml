@@ -1,0 +1,29 @@
+name: Project-owned CPU condition matrix
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  condition-matrix:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure CPU condition matrix
+        run: cmake -S ci/test/cpu-condition-matrix -B dist/cpu-condition-matrix -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build CPU condition matrix
+        run: cmake --build dist/cpu-condition-matrix --target wz_cpu_condition_matrix --parallel 2
+      - name: Verify branch bus cycles
+        run: |
+          set -o pipefail
+          dist/cpu-condition-matrix/wz_cpu_condition_matrix | tee dist/cpu-condition-matrix/proof.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-condition-matrix-proof
+          path: dist/cpu-condition-matrix/proof.json
+          if-no-files-found: error
