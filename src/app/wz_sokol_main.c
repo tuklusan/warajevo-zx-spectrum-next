@@ -4124,6 +4124,10 @@ static void wz_host_ui_draw_menus(struct nk_context* context, float width)
 
 static void wz_host_ui_draw_toolbar(struct nk_context* context, float width)
 {
+    static const float item_widths[WZ_UI_TOOLBAR_COUNT] = {
+        0.087f, 0.080f, 0.068f, 0.080f, 0.140f, 0.100f,
+        0.100f, 0.080f, 0.090f, 0.090f, 0.085f
+    };
     size_t index;
     const size_t item_count = wz_ui_layout_toolbar_count();
     struct nk_vec2 saved_padding = context->style.window.padding;
@@ -4136,11 +4140,12 @@ static void wz_host_ui_draw_toolbar(struct nk_context* context, float width)
         context->style.window.padding = saved_padding;
         return;
     }
-    nk_layout_row_dynamic(context, WZ_UI_TOOLBAR_HEIGHT - 4.0f,
-                          (int)item_count);
+    nk_layout_row_begin(context, NK_DYNAMIC, WZ_UI_TOOLBAR_HEIGHT - 4.0f,
+                        (int)item_count);
     for (index = 0u; index < item_count; ++index) {
         const wz_ui_toolbar_item_t* item = wz_ui_layout_toolbar_at(index);
         bool enabled = false;
+        nk_layout_row_push(context, item_widths[index]);
         if (item != NULL && strcmp(item->command_id, "machine.speed") == 0) {
             const char* speed_label = wz_ui_layout_speed_label(
                 (size_t)wz_host_session.speed);
@@ -4361,6 +4366,7 @@ static void wz_host_ui_draw_toolbar(struct nk_context* context, float width)
             if (!enabled) nk_widget_disable_end(context);
         }
     }
+    nk_layout_row_end(context);
     nk_end(context);
     context->style.window.padding = saved_padding;
 }
