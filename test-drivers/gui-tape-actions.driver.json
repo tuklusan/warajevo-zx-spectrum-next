@@ -1,0 +1,46 @@
+{
+  "fixtures": [
+    {
+      "path": ".github/workflows/gui-tape-actions.yml",
+      "sha256": "d9aa03010e21cf71e64831f6325208db05ac77dde8095a6372364464ce448d3f"
+    },
+    {
+      "path": "ci/test/gui-tape-actions.py",
+      "sha256": "9302af2a883de849895fdccbe550e9f75c85c7d4355510765c53d6b8a915ab16"
+    },
+    {
+      "path": "ci/test/gui-tape-mode.py",
+      "sha256": "91455a3f21caabdfacfefb98721b02fd033d6ac88fb3b23b5a73e350177758a2"
+    },
+    {
+      "path": "ci/test/gui-screenshot-save.py",
+      "sha256": "b141ac9b4c91e33028291b0312f8fc2ac31f67c161c52cc0eb51a42bc54ff82f"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "917b342f916c0bc9862dfba580531f3d1a9e5bfa6c2e4df1d6736d374bb32088"
+    },
+    {
+      "path": "src/app/wz_ui_layout.c",
+      "sha256": "6c5de7b5b6a20cad20643b1f9007629846bccc0bb49bf7412cad9464ae9be062"
+    },
+    {
+      "path": "src/app/wz_tape_loading_commands.c",
+      "sha256": "b24e2e22bf91780cea306db01a9bf0cf8ac21382aeefd17a90bbea66e57c63dc"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "1dc71a255b61187261ef1b97a3694f780c8c2cb9be08d98e942e98768bec2b29"
+    },
+    {
+      "path": "roms/48.rom",
+      "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"
+    }
+  ],
+  "requiredCases": 4,
+  "testId": "gui-tape-actions",
+  "runnerMatrix": [
+    "ubuntu-24.04"
+  ],
+  "command": "xvfb-run -a python3 ci/test/gui-tape-actions.py --binary dist/gui-tape-actions/product/Warajevo-ZX-Spectrum-Next --rom roms/48.rom --proof dist/gui-tape-actions/proof.json"
+}

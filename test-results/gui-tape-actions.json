@@ -1,0 +1,61 @@
+{
+  "testId": "gui-tape-actions",
+  "status": "pass",
+  "commit": "bf68d31c32e270d7b029ae3793268743b9fa8a7a",
+  "runId": 38912114064,
+  "runner": "Linux",
+  "tapeSha256": "a665e6b115dd56fd3e0c89be631e6eda8e9666b822e0bd7026bf0822c4bbc68f",
+  "ocr": [
+    "Mile Machine Media 1 eww Tools SeEbings Hel p\nOpen “Run Pause Reset 100% Fo Empty / Normal We Load Snapsho Save Snapsho MOY 1 Screenshot Fullscreen Debugger",
+    "File Machine Media 1 eww Tools SeEbings Hel p\nOpen “Run Pause Reset 100% Wo Tape # Normal QW Load Snapsho Save Snapsho MOY 1 Screenshot Fullscreen Debugger",
+    "File\n\nMachine\n\nMedia\n\nview\n\nTools\n\nSettings\n\nHelp\n\nopen / Run\n\nPause\n\nReset\n\n100%\n\nVY Tape / Normal\n\nv\n\nLoad Snapsho\n\nSave Snapsho\n\nMov 4\n\nv\n\nScreenshot\n\nFullscreen\n\nDebugger\n\nTape Manager\n\nClose Tape Manager\n\nSource\n\n/tmp/w2-gui-tape-act ions-zBenspjv/synthetic. tap\n\nFormat\n\nTAP | Loading mode\n\nNormal\n\nTransport\n\nStopped | Signal segment 4 / e114\n\nTape blocks\n\nPrevious blacks\n\nNext blacks\n\nSelected blacks\n\n1\n\nSelect All\n\nClear Selection\n\nSelect\n\n> Block 1 | Data | flag 08\n\nStandard TAP edits are staged until saved\n\nFocused black position (1-based 1\n\nMove Focused Block to Position\n\nImport TAP Blocks:\n\nCopy Selected to TAP\n\n19g\n\nincl\n\nir\n\nByte offset (hex)\n\n08\n\nByte value (hex)\n\n8\n\nOffsets start at the flaa\n\nchecksum is reaenerated\n\n2x Spectrum 48k PAL | 196% | Running | Keyboard UI | Audio On | Tape Stopped | MOV1 Empty | Net None | Tape inserte\n\nControl Port\n\nACTIVE\n\n30740 |\n\nIpv4: UP | Listener\n\nUP | Telnet",
+    "File Machine Media 1 eww Tools SeEbings Hel p\nOpen “Run Pause Reset 100% Fo Empty / Normal We Load Snapsho Save Snapsho MOY 1 Screenshot Fullscreen Debugger\nTape Manager -\n—) eee Tee eke Ae ee eee"
+  ],
+  "screenshotsSha256": {
+    "initial": "247aaef0cf43f6b452e4741125eda42eb41e7de2273ce6e35356984dad663c37",
+    "mounted": "2cd7f70172815f87c0c05f24d0690745364ccd3261a50316a9ecbd1db531c971",
+    "manager": "4a11c056916a15f6dd2cb6d3610ee76c9451abe755fa8881c440da4d497cea6a",
+    "ejected": "4888e4cd611afb82b391443d80f9e698e27fcf76927689a8501eec40c31d505f"
+  },
+  "timestamp": "2026-10-16T14:01:04Z",
+  "fixtures": [
+    {
+      "path": ".github/workflows/gui-tape-actions.yml",
+      "sha256": "d9aa03010e21cf71e64831f6325208db05ac77dde8095a6372364464ce448d3f"
+    },
+    {
+      "path": "ci/test/gui-tape-actions.py",
+      "sha256": "9302af2a883de849895fdccbe550e9f75c85c7d4355510765c53d6b8a915ab16"
+    },
+    {
+      "path": "ci/test/gui-tape-mode.py",
+      "sha256": "91455a3f21caabdfacfefb98721b02fd033d6ac88fb3b23b5a73e350177758a2"
+    },
+    {
+      "path": "ci/test/gui-screenshot-save.py",
+      "sha256": "b141ac9b4c91e33028291b0312f8fc2ac31f67c161c52cc0eb51a42bc54ff82f"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "917b342f916c0bc9862dfba580531f3d1a9e5bfa6c2e4df1d6736d374bb32088"
+    },
+    {
+      "path": "src/app/wz_ui_layout.c",
+      "sha256": "6c5de7b5b6a20cad20643b1f9007629846bccc0bb49bf7412cad9464ae9be062"
+    },
+    {
+      "path": "src/app/wz_tape_loading_commands.c",
+      "sha256": "b24e2e22bf91780cea306db01a9bf0cf8ac21382aeefd17a90bbea66e57c63dc"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "1dc71a255b61187261ef1b97a3694f780c8c2cb9be08d98e942e98768bec2b29"
+    },
+    {
+      "path": "roms/48.rom",
+      "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"
+    }
+  ],
+  "sourceArtifact": "gui-tape-actions-proof",
+  "hostedProofSha256": "6d2e3e14605191a0e6b917d43ef0ae2d617846ea2d9b93d20293fad69aa5cc1b"
+}
