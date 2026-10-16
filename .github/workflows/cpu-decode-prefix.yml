@@ -1,0 +1,29 @@
+name: Project-owned CPU decoder and prefix acceptance
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  decode-prefix:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure CPU decoder/prefix acceptance
+        run: cmake -S ci/test/cpu-decode-prefix -B dist/cpu-decode-prefix -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build CPU decoder/prefix acceptance
+        run: cmake --build dist/cpu-decode-prefix --target wz_cpu_decode_prefix --parallel 2
+      - name: Verify decoder and prefix chains
+        run: |
+          set -o pipefail
+          dist/cpu-decode-prefix/wz_cpu_decode_prefix | tee dist/cpu-decode-prefix/proof.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-decode-prefix-proof
+          path: dist/cpu-decode-prefix/proof.json
+          if-no-files-found: error
