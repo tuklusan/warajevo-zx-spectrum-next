@@ -1,0 +1,29 @@
+name: Project-owned CPU HALT and interrupt acceptance
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  halt-interrupt:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure CPU HALT and interrupt acceptance
+        run: cmake -S ci/test/cpu-halt-interrupt -B dist/cpu-halt-interrupt -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build CPU HALT and interrupt acceptance
+        run: cmake --build dist/cpu-halt-interrupt --target wz_cpu_halt_interrupt --parallel 2
+      - name: Verify HALT and interrupt paths
+        run: |
+          set -o pipefail
+          dist/cpu-halt-interrupt/wz_cpu_halt_interrupt | tee dist/cpu-halt-interrupt/proof.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-halt-interrupt-proof
+          path: dist/cpu-halt-interrupt/proof.json
+          if-no-files-found: error
