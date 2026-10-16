@@ -162,6 +162,7 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     }
     machine->profile = profile;
     wz_z80_state_init(&machine->cpu);
+    machine->z80_prior_q = 0u;
     wz_bus_observer_init(&machine->bus_observer, 0, 0);
     wz_bus_input_init(&machine->bus_input, 0, 0);
     wz_bus_data_source_init(&machine->bus_data_source, 0, 0);

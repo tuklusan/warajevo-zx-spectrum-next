@@ -99,6 +99,8 @@ typedef struct {
 typedef struct wz_machine {
     const wz_machine_profile_t* profile;
     wz_z80_state_t cpu;
+    /* Transient prior-instruction Q while one CPU instruction executes. */
+    wz_byte_t z80_prior_q;
     wz_bus_observer_t bus_observer;
     wz_bus_input_t bus_input;
     wz_bus_data_source_t bus_data_source;

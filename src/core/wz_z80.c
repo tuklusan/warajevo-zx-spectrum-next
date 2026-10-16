@@ -84,7 +84,8 @@ static void wz_z80_trace_instruction(wz_machine_t* machine,
         ((wz_qword_t)machine->cpu.iff2 << 40u) |
         ((wz_qword_t)machine->cpu.interrupt_enable_delay << 48u) |
         ((wz_qword_t)machine->cpu.interrupt_mode << 56u);
-    state_chunks[4] = machine->cpu.halted;
+    state_chunks[4] = (wz_qword_t)machine->cpu.halted |
+        ((wz_qword_t)machine->z80_prior_q << 8u);
     full_sync = !machine->timing_trace->cpu_state_valid ||
         (machine->timing_trace->next_sequence % WZ_TRACE_CPU_SYNC_INTERVAL) == 0u;
     {
@@ -281,6 +282,8 @@ static wz_result_t wz_z80_ed_bus(wz_machine_t* machine,
                                  wz_byte_t t_states);
 static wz_result_t wz_z80_execute_indexed_cb(wz_machine_t* machine,
                                              wz_word_t index);
+static wz_result_t wz_z80_step_impl(wz_machine_t* machine,
+                                    bool prefix_continuation);
 
 size_t wz_z80_primary_opcode_count(void)
 {
@@ -595,6 +598,7 @@ static wz_byte_t wz_z80_execute_inc_dec_value(wz_z80_state_t* state,
         if (value == 0x7fu) flags |= WZ_Z80_FLAG_PV;
     }
     state->main.f = flags;
+    state->q = 1u;
     return result;
 }
 
@@ -658,9 +662,12 @@ static void wz_z80_execute_alu_value(wz_z80_state_t* state,
         state->main.a = result;
     }
     state->main.f = flags;
+    state->q = 1u;
 }
 
-static void wz_z80_execute_special_flags(wz_z80_state_t* state, wz_byte_t opcode)
+static void wz_z80_execute_special_flags(wz_z80_state_t* state,
+                                         wz_byte_t opcode,
+                                         wz_byte_t prior_q)
 {
     wz_byte_t old_a = state->main.a;
     wz_byte_t old_f = state->main.f;
@@ -717,14 +724,17 @@ static void wz_z80_execute_special_flags(wz_z80_state_t* state, wz_byte_t opcode
     case 0x37u:
         state->main.f = (wz_byte_t)((old_f & (WZ_Z80_FLAG_S | WZ_Z80_FLAG_Z | WZ_Z80_FLAG_PV)) |
                                     WZ_Z80_FLAG_C |
-                                    ((old_a | old_f) & (WZ_Z80_FLAG_Y | WZ_Z80_FLAG_X)));
+                                    ((old_a | (prior_q != 0u ? 0u : old_f)) &
+                                     (WZ_Z80_FLAG_Y | WZ_Z80_FLAG_X)));
         break;
     case 0x3fu:
         state->main.f = (wz_byte_t)((old_f & (WZ_Z80_FLAG_S | WZ_Z80_FLAG_Z | WZ_Z80_FLAG_PV)) |
-                                    (old_f & (WZ_Z80_FLAG_Y | WZ_Z80_FLAG_X)) |
+                                    ((old_a | (prior_q != 0u ? 0u : old_f)) &
+                                     (WZ_Z80_FLAG_Y | WZ_Z80_FLAG_X)) |
                                     ((old_f & WZ_Z80_FLAG_C) != 0u ? WZ_Z80_FLAG_H : WZ_Z80_FLAG_C));
         break;
     }
+    state->q = 1u;
 }
 
 static wz_result_t wz_z80_cb_load_target(wz_machine_t* machine,
@@ -807,7 +817,7 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
         case 0x39u: case 0xe1u: case 0xe3u: case 0xe5u: case 0xe9u: case 0xf9u:
             break;
         default:
-            return wz_z80_step(machine);
+            return wz_z80_step_impl(machine, true);
         }
     }
 
@@ -1066,6 +1076,7 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
         machine->cpu.memptr = wz_z80_add16(*index, 1u);
         *index = result;
         machine->cpu.main.f = flags;
+        machine->cpu.q = 1u;
         machine->master_tick += 22u;
         return WZ_RESULT_OK;
     case 0xe9u:
@@ -1207,6 +1218,7 @@ static wz_result_t wz_z80_execute_cb(wz_machine_t* machine,
         if (decode->bit == 7u && result != 0u) {
             machine->cpu.main.f |= WZ_Z80_FLAG_S;
         }
+        machine->cpu.q = 1u;
         machine->master_tick += decode->target == WZ_Z80_TARGET_HL_INDIRECT ? 24u : 16u;
         return WZ_RESULT_OK;
     case WZ_Z80_CB_OP_RES:
@@ -1221,6 +1233,9 @@ static wz_result_t wz_z80_execute_cb(wz_machine_t* machine,
 
     if (wz_z80_cb_store_target(machine, decode, result) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_STATE;
+    }
+    if (decode->operation <= WZ_Z80_CB_OP_SRL) {
+        machine->cpu.q = 1u;
     }
     machine->master_tick += decode->target == WZ_Z80_TARGET_HL_INDIRECT ? 30u : 16u;
     return WZ_RESULT_OK;
@@ -1323,6 +1338,7 @@ static wz_result_t wz_z80_execute_indexed_cb(wz_machine_t* machine,
                        address, 0, 3u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
+        machine->cpu.q = 1u;
         machine->master_tick += 32u;
         return WZ_RESULT_OK;
     case WZ_Z80_CB_OP_RES:
@@ -1347,6 +1363,9 @@ static wz_result_t wz_z80_execute_indexed_cb(wz_machine_t* machine,
             return WZ_RESULT_INVALID_STATE;
         }
         *target = result;
+    }
+    if (decode->operation <= WZ_Z80_CB_OP_SRL) {
+        machine->cpu.q = 1u;
     }
     machine->master_tick += 38u;
     return WZ_RESULT_OK;
@@ -1480,6 +1499,7 @@ static wz_result_t wz_z80_execute_ld_block(wz_machine_t* machine,
         flags |= WZ_Z80_FLAG_PV;
     }
     machine->cpu.main.f = flags;
+    machine->cpu.q = 1u;
 
     if (repeat && count != 0u) {
         machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 0xfffeu);
@@ -1527,6 +1547,7 @@ static wz_result_t wz_z80_execute_cp_block(wz_machine_t* machine,
     flags |= (wz_byte_t)(adjusted & WZ_Z80_FLAG_X);
     flags |= (wz_byte_t)((adjusted & 0x02u) << 4u);
     machine->cpu.main.f = flags;
+    machine->cpu.q = 1u;
 
     if (repeat && count != 0u && result != 0u) {
         machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 0xfffeu);
@@ -1578,6 +1599,7 @@ static wz_result_t wz_z80_execute_in_block(wz_machine_t* machine,
     wz_z80_set_rr(&machine->cpu, 2u, wz_z80_add16(address, decrement ? 0xffffu : 1u));
     sum = (wz_word_t)value + (wz_byte_t)(machine->cpu.main.c + (decrement ? 0xffu : 1u));
     machine->cpu.main.f = wz_z80_block_io_flags(machine->cpu.main.b, value, sum);
+    machine->cpu.q = 1u;
 
     if (repeat && machine->cpu.main.b != 0u) {
         machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 0xfffeu);
@@ -1610,6 +1632,7 @@ static wz_result_t wz_z80_execute_out_block(wz_machine_t* machine,
 
     sum = (wz_word_t)value + machine->cpu.main.l;
     machine->cpu.main.f = wz_z80_block_io_flags(machine->cpu.main.b, value, sum);
+    machine->cpu.q = 1u;
     if (repeat && machine->cpu.main.b != 0u) {
         machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 0xfffeu);
         machine->master_tick += 42u;
@@ -1639,6 +1662,7 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         value = machine->cpu.main.a;
         machine->cpu.main.a = (wz_byte_t)(0u - value);
         machine->cpu.main.f = wz_z80_neg_flags(value, machine->cpu.main.a);
+        machine->cpu.q = 1u;
         machine->master_tick += 16u;
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_IM:
@@ -1659,11 +1683,13 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
     case WZ_Z80_ED_OP_LD_A_I:
         machine->cpu.main.a = machine->cpu.i;
         machine->cpu.main.f = wz_z80_ld_a_ir_flags(machine, machine->cpu.main.a);
+        machine->cpu.q = 1u;
         machine->master_tick += 18u;
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_LD_A_R:
         machine->cpu.main.a = machine->cpu.r;
         machine->cpu.main.f = wz_z80_ld_a_ir_flags(machine, machine->cpu.main.a);
+        machine->cpu.q = 1u;
         machine->master_tick += 18u;
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_IN_R_C:
@@ -1680,6 +1706,7 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
             return WZ_RESULT_INVALID_STATE;
         }
         machine->cpu.main.f = wz_z80_in_flags(machine, value);
+        machine->cpu.q = 1u;
         machine->master_tick += 24u;
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_OUT_C_R:
@@ -1706,6 +1733,7 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         machine->cpu.memptr = wz_z80_add16(hl, 1u);
         wz_z80_set_rr(&machine->cpu, 2u, result16);
         machine->cpu.main.f = wz_z80_add16_flags(hl, pair_value, carry_in, result16);
+        machine->cpu.q = 1u;
         machine->master_tick += 30u;
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_SBC_HL_RR:
@@ -1716,6 +1744,7 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         machine->cpu.memptr = wz_z80_add16(hl, 1u);
         wz_z80_set_rr(&machine->cpu, 2u, result16);
         machine->cpu.main.f = wz_z80_sub16_flags(hl, pair_value, carry_in, result16);
+        machine->cpu.q = 1u;
         machine->master_tick += 30u;
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_RRD:
@@ -1731,6 +1760,7 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         }
         machine->cpu.main.f = (wz_byte_t)((machine->cpu.main.f & WZ_Z80_FLAG_C) |
                                           wz_z80_sz53p_flags(machine->cpu.main.a));
+        machine->cpu.q = 1u;
         machine->cpu.memptr = wz_z80_add16(address, 1u);
         machine->master_tick += 36u;
         return WZ_RESULT_OK;
@@ -1747,6 +1777,7 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         }
         machine->cpu.main.f = (wz_byte_t)((machine->cpu.main.f & WZ_Z80_FLAG_C) |
                                           wz_z80_sz53p_flags(machine->cpu.main.a));
+        machine->cpu.q = 1u;
         machine->cpu.memptr = wz_z80_add16(address, 1u);
         machine->master_tick += 36u;
         return WZ_RESULT_OK;
@@ -1919,6 +1950,7 @@ void wz_z80_state_init(wz_z80_state_t* state)
     state->interrupt_enable_delay = 0u;
     state->interrupt_mode = (wz_byte_t)WZ_Z80_INTERRUPT_MODE_0;
     state->halted = 0u;
+    state->q = 0u;
 }
 
 wz_result_t wz_z80_state_validate(const wz_z80_state_t* state)
@@ -1927,7 +1959,8 @@ wz_result_t wz_z80_state_validate(const wz_z80_state_t* state)
         return WZ_RESULT_INVALID_ARGUMENT;
     }
     if (state->iff1 > 1u || state->iff2 > 1u ||
-        state->interrupt_enable_delay > 1u || state->halted > 1u) {
+        state->interrupt_enable_delay > 1u || state->halted > 1u ||
+        state->q > 1u) {
         return WZ_RESULT_INVALID_STATE;
     }
     if (state->interrupt_mode > (wz_byte_t)WZ_Z80_INTERRUPT_MODE_2) {
@@ -1995,6 +2028,7 @@ static wz_result_t wz_z80_accept_maskable_interrupt_impl(wz_machine_t* machine,
     wz_z80_increment_r(&machine->cpu);
     machine->cpu.iff1 = 0u;
     machine->cpu.iff2 = 0u;
+    machine->cpu.q = 0u;
     wz_z80_exit_halt_for_interrupt(&machine->cpu);
 
     switch ((wz_z80_interrupt_mode_t)machine->cpu.interrupt_mode) {
@@ -2065,6 +2099,7 @@ wz_result_t wz_z80_accept_nmi(wz_machine_t* machine)
     wz_z80_increment_r(&machine->cpu);
     machine->cpu.iff2 = machine->cpu.iff1;
     machine->cpu.iff1 = 0u;
+    machine->cpu.q = 0u;
     machine->cpu.program_counter = 0x0066u;
     machine->cpu.memptr = 0x0066u;
     machine->master_tick += 22u;
@@ -2073,6 +2108,12 @@ wz_result_t wz_z80_accept_nmi(wz_machine_t* machine)
 
 // codeql[cpp/poorly-documented-function]
 wz_result_t wz_z80_step(wz_machine_t* machine)
+{
+    return wz_z80_step_impl(machine, false);
+}
+
+static wz_result_t wz_z80_step_impl(wz_machine_t* machine,
+                                    bool prefix_continuation)
 {
     /* Fetch, decode, and execute one instruction while advancing CPU state. */
     wz_byte_t opcode = 0u;
@@ -2105,6 +2146,11 @@ wz_result_t wz_z80_step(wz_machine_t* machine)
             wz_trace_emit_detail(machine->timing_trace, &breakpoint_event);
         }
         return WZ_RESULT_OK;
+    }
+
+    if (!prefix_continuation) {
+        machine->z80_prior_q = machine->cpu.q;
+        machine->cpu.q = 0u;
     }
 
     /* EI blocks recognition until this following instruction has completed. */
@@ -2413,11 +2459,13 @@ execute_opcode:
         wz_z80_set_rr(&machine->cpu, 2u, sum);
         machine->cpu.main.f = wz_z80_add16_preserved_flags(
             machine->cpu.main.f, left, right, sum);
+        machine->cpu.q = 1u;
         machine->master_tick += 22u;
         return WZ_RESULT_OK;
     }
     case WZ_Z80_PRIMARY_OP_SPECIAL_FLAGS:
-        wz_z80_execute_special_flags(&machine->cpu, opcode);
+        wz_z80_execute_special_flags(&machine->cpu, opcode,
+                                     machine->z80_prior_q);
         machine->master_tick += 8u;
         return WZ_RESULT_OK;
     case WZ_Z80_PRIMARY_OP_POP: {

@@ -205,6 +205,10 @@ static wz_result_t wz_state_write_extension(wz_state_writer_t* writer,
     if (wz_state_write_zxnet(writer, &machine->zxnet) != WZ_RESULT_OK) {
         return WZ_RESULT_SERIALIZATION_FAILURE;
     }
+    /* Extension v4 reserved tail: persist the CPU's prior flag-write Q bit. */
+    if (wz_state_write_u8(writer, machine->cpu.q) != WZ_RESULT_OK) {
+        return WZ_RESULT_SERIALIZATION_FAILURE;
+    }
     if (writer->length - start < WZ_STATE_EXTENSION_CAPACITY) {
         static const wz_byte_t zero_padding[WZ_STATE_EXTENSION_CAPACITY] = {0u};
         const size_t padding = WZ_STATE_EXTENSION_CAPACITY -
@@ -471,6 +475,7 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
     cpu.interrupt_enable_delay = data[41u];
     cpu.interrupt_mode = data[42u];
     cpu.halted = data[43u];
+    cpu.q = 0u;
     if (wz_z80_state_validate(&cpu) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_STATE;
     }
@@ -703,6 +708,11 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
             *wz_machine_microdrive_at(machine, slot) = microdrives[slot];
         }
         machine->zxnet = zxnet;
+        /* Older snapshots keep this reserved extension byte zero. */
+        machine->cpu.q = data[offset++];
+        if (machine->cpu.q > 1u) {
+            return WZ_RESULT_INVALID_STATE;
+        }
     }
     return wz_machine_reset_ula_capture(machine);
 }

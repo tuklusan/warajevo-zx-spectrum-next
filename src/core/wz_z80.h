@@ -47,6 +47,8 @@ typedef struct {
     wz_byte_t interrupt_enable_delay;
     wz_byte_t interrupt_mode;
     wz_byte_t halted;
+    /* One when the preceding instruction wrote F; required by SCF/CCF. */
+    wz_byte_t q;
 } wz_z80_state_t;
 
 typedef enum {
