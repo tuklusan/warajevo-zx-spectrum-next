@@ -5,11 +5,11 @@
   "selectedFixture": "open-run-smoke.tap",
   "selectedSha256": "a665e6b115dd56fd3e0c89be631e6eda8e9666b822e0bd7026bf0822c4bbc68f",
   "desktopScreenshot": "open-run-desktop.png",
-  "desktopScreenshotSha256": "5f55cb9108ef2a7b5f2dc752dffde83196642d1cedcc36b76a575524fea92c6d",
+  "desktopScreenshotSha256": "599b06759cc942597a0762ee15cb459dbead087aad74f80ddbe7e1274c347206",
   "testId": "open-run-ui",
-  "commit": "682a3c825ef34a93f1fa73474b152bc888dbbd8e",
-  "runId": 38360186175,
-  "timestamp": "2026-10-13T07:05:24+00:00",
+  "commit": "3af682bc21b593ffedd62c2041fff754b1b86ac9",
+  "runId": 38835206138,
+  "timestamp": "2026-10-16T01:37:27+00:00",
   "caseCount": 1,
   "fixtures": [
     {
@@ -26,19 +26,19 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "ba7e657fcc808d0ae55308702cb6ccc1dec5610d6c0ba4edbe22126466869dbf"
+      "sha256": "917b342f916c0bc9862dfba580531f3d1a9e5bfa6c2e4df1d6736d374bb32088"
     },
     {
       "path": "src/app/wz_file_dialog.h",
-      "sha256": "6686668d4a0e92030066f7e177824169e09aeb137de4beaf2eb43958f982f41b"
+      "sha256": "e05f07141e924b7968025491fdbefa081bc8e7960c095272df8e4b23b747b74d"
     },
     {
       "path": "src/app/wz_file_dialog_win32.c",
-      "sha256": "897f9c1d6a647f22c0700482f603188fc701ff70ff836ac33f5a3130934abdc9"
+      "sha256": "34f5a0cf135d2a9cdd88184c777aaecb62cff49069d212aacfd12c14c3e09dc9"
     },
     {
       "path": "src/app/wz_file_dialog_macos.m",
-      "sha256": "03046b36b1bff1a6fd5ae4e700bf042c0db66672614db6ebde86ef2c9c854ca3"
+      "sha256": "c4a05398208aefa5a34314001438ff9b04e107ab9124f56a1154353f5936f925"
     },
     {
       "path": "src/app/wz_file_open_run.c",
@@ -70,7 +70,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "ddcb11d8cb9a3034f5ebd8c254b43778b4441ce23ed111606bcb70c41cf76739"
+      "sha256": "7c92695d1282104d62ac3b4c9c929a96a6ed7169533fa3e71ba6f93af1186469"
     },
     {
       "path": "ci/runner-bootstrap/bootstrap-unix.sh",
@@ -102,7 +102,7 @@
     },
     {
       "path": "test-drivers/open-run-ui.driver.json",
-      "sha256": "c1d7201d775b71d1ddadf1a599718635c9a6d87df39471216d4ad138239b6088"
+      "sha256": "0e975ef483bdc3125ccfa184db7110efdc20d6b3d6759c68d3e588c967bc0e14"
     }
   ]
 }
