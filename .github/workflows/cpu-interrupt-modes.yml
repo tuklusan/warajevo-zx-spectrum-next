@@ -1,0 +1,29 @@
+name: Project-owned CPU IM 0 and IM 2 acceptance
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  interrupt-modes:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure CPU interrupt-mode acceptance
+        run: cmake -S ci/test/cpu-interrupt-modes -B dist/cpu-interrupt-modes -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build CPU interrupt-mode acceptance
+        run: cmake --build dist/cpu-interrupt-modes --target wz_cpu_interrupt_modes --parallel 2
+      - name: Verify IM 0 and IM 2
+        run: |
+          set -o pipefail
+          dist/cpu-interrupt-modes/wz_cpu_interrupt_modes | tee dist/cpu-interrupt-modes/proof.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-interrupt-modes-proof
+          path: dist/cpu-interrupt-modes/proof.json
+          if-no-files-found: error
