@@ -1,0 +1,27 @@
+name: Project-owned CPU acceptance
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bus-trace:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure project-owned CPU acceptance
+        run: cmake -S ci/test/cpu-owned-acceptance -B dist/cpu-owned-acceptance -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build project-owned CPU acceptance
+        run: cmake --build dist/cpu-owned-acceptance --target wz_cpu_owned_acceptance --parallel 2
+      - name: Verify bus and timing trace
+        run: dist/cpu-owned-acceptance/wz_cpu_owned_acceptance | tee dist/cpu-owned-acceptance/proof.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-owned-acceptance-proof
+          path: dist/cpu-owned-acceptance/proof.json
+          if-no-files-found: error
