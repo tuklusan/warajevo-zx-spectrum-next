@@ -1,0 +1,54 @@
+{
+  "requiredCases": 1049600,
+  "command": "dist/cpu-alu-flags/wz_cpu_alu_flags",
+  "runnerMatrix": [
+    "ubuntu-24.04"
+  ],
+  "fixtures": [
+    {
+      "sha256": "a1f17323a794120e46a4ea11c5b86a048a100a6eb7583eb8e562f03158b6230a",
+      "path": ".github/workflows/cpu-alu-flags.yml"
+    },
+    {
+      "sha256": "35e3549cf862d14c45563932d8dd275fa5acb2424957a4e2e166a19ecc80bc5e",
+      "path": "ci/test/cpu-alu-flags/CMakeLists.txt"
+    },
+    {
+      "sha256": "3893de9826ae108b4fb920ce044a7e9fa26f167ef1117b638d7bd5227df4a664",
+      "path": "ci/test/cpu-alu-flags/cpu-alu-flags.c"
+    },
+    {
+      "sha256": "317d1cfc71709e40a4b7a82c95d9ab90dd40a42f1f903fc9b3038fdcb6bfd1aa",
+      "path": "tests/cpu-alu-flags.md"
+    },
+    {
+      "sha256": "a84850869148d8f70a2ee5b31570d9d221d7159cbff832982ddbc8dd1f69c47e",
+      "path": "src/core/wz_bus.c"
+    },
+    {
+      "sha256": "0a6019987ae86f7c7293e1f428d086f52684ea5353eadb758c0b2d056677abaa",
+      "path": "src/core/wz_bus.h"
+    },
+    {
+      "sha256": "c7cf9761cc3448474ccce3e88a20a4bc619ae35ee2b8357545debf901a50ba16",
+      "path": "src/core/wz_z80.c"
+    },
+    {
+      "sha256": "c32d23b4a650ae13031f8f61dd41f66cd8ac19136f058cb47502a2e54df5f8cd",
+      "path": "src/core/wz_z80.h"
+    },
+    {
+      "sha256": "1dc71a255b61187261ef1b97a3694f780c8c2cb9be08d98e942e98768bec2b29",
+      "path": "src/core/wz_machine.c"
+    },
+    {
+      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe",
+      "path": "src/core/wz_machine.h"
+    },
+    {
+      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09",
+      "path": "src/core/wz_machine_profile.c"
+    }
+  ],
+  "testId": "cpu-alu-flags"
+}
