@@ -87,6 +87,8 @@ def main():
                 xdotool("click", "--repeat", "3", "5")
                 time.sleep(0.5)
                 capture(host_window, args.proof.parent / "manager-menu.png")
+                xdotool("mousemove", "--sync", "--window", host_window,
+                        str(menu_x), "158")
                 xdotool("click", "1")
                 manager_path = args.proof.parent / "manager.png"
                 capture(host_window, manager_path)
