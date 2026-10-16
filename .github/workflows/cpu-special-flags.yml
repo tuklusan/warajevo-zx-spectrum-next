@@ -1,0 +1,29 @@
+name: Project-owned CPU special-flag acceptance
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  special-flags:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure CPU special-flag acceptance
+        run: cmake -S ci/test/cpu-special-flags -B dist/cpu-special-flags -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build CPU special-flag acceptance
+        run: cmake --build dist/cpu-special-flags --target wz_cpu_special_flags --parallel 2
+      - name: Verify DAA and undocumented SCF/CCF flags
+        run: |
+          set -o pipefail
+          dist/cpu-special-flags/wz_cpu_special_flags | tee dist/cpu-special-flags/proof.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-special-flags-proof
+          path: dist/cpu-special-flags/proof.json
+          if-no-files-found: error
