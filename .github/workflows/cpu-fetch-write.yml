@@ -1,0 +1,29 @@
+name: Project-owned CPU fetch and write acceptance
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fetch-write:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure CPU fetch/write acceptance
+        run: cmake -S ci/test/cpu-fetch-write -B dist/cpu-fetch-write -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build CPU fetch/write acceptance
+        run: cmake --build dist/cpu-fetch-write --target wz_cpu_fetch_write --parallel 2
+      - name: Verify NOP and memory-write cycles
+        run: |
+          set -o pipefail
+          dist/cpu-fetch-write/wz_cpu_fetch_write | tee dist/cpu-fetch-write/proof.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-fetch-write-proof
+          path: dist/cpu-fetch-write/proof.json
+          if-no-files-found: error
