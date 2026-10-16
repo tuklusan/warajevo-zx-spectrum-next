@@ -255,6 +255,7 @@ typedef struct {
     sg_image raster_image;
     sg_view raster_view;
     sg_sampler raster_sampler;
+    struct nk_context* ui_context;
     bool graphics_initialized;
     bool ui_toolkit_initialized;
     bool pacing_initialized;
@@ -6633,6 +6634,7 @@ static void wz_host_render_raster(void)
     float dpi_scale = sapp_dpi_scale();
     struct nk_context* ui_context = wz_host_session.ui_toolkit_initialized ?
         snk_new_frame() : NULL;
+    wz_host_session.ui_context = ui_context;
     wz_host_session.ui_window.layout.fullscreen = sapp_is_fullscreen();
     if (dpi_scale <= 0.0f) dpi_scale = 1.0f;
     wz_host_render_native_ui(ui_context,
@@ -6938,6 +6940,7 @@ static void wz_host_session_shutdown(void)
     }
     if (wz_host_session.graphics_initialized) {
         if (wz_host_session.ui_toolkit_initialized) {
+            wz_host_session.ui_context = NULL;
             snk_shutdown();
             wz_host_session.ui_toolkit_initialized = false;
         }
@@ -7057,93 +7060,26 @@ static void wz_host_release_local_keys(void)
 static void wz_host_input_focus_from_mouse(const sapp_event* event)
 {
     float scale = sapp_dpi_scale();
-    float width;
-    float height;
     float mouse_x;
     float mouse_y;
-    float panel_width;
-    float panel_height;
-    float panel_x;
-    float panel_y;
     bool ui_target;
     if (event == NULL) return;
     if (scale <= 0.0f) scale = 1.0f;
-    width = (float)sapp_width() / scale;
-    height = (float)sapp_height() / scale;
     mouse_x = event->mouse_x / scale;
     mouse_y = event->mouse_y / scale;
     ui_target = mouse_y <=
         WZ_UI_MENU_BAR_HEIGHT + WZ_UI_TOOLBAR_HEIGHT ||
-        mouse_y >= height - 48.0f / scale ||
+        event->mouse_y >= (float)sapp_height() - 48.0f ||
         wz_host_session.help_visible || wz_host_session.about_visible;
-    if (wz_host_session.remote_settings_visible) {
-        panel_width = width >= 440.0f ? 420.0f : width - 16.0f;
-        panel_height = height >= 238.0f ? 190.0f : height - 48.0f;
-        panel_x = width - panel_width - 8.0f;
-        panel_y = height - panel_height - 56.0f;
-        if (mouse_x >= panel_x && mouse_x <= panel_x + panel_width &&
-            mouse_y >= panel_y && mouse_y <= panel_y + panel_height) {
-            ui_target = true;
-        }
-    }
-    if (wz_host_session.audio_settings_visible) {
-        panel_width = width >= 440.0f ? 420.0f : width - 16.0f;
-        panel_height = height >= 232.0f ? 200.0f : height - 32.0f;
-        panel_x = (width - panel_width) * 0.5f;
-        panel_y = (height - panel_height) * 0.5f;
-        if (mouse_x >= panel_x && mouse_x <= panel_x + panel_width &&
-            mouse_y >= panel_y && mouse_y <= panel_y + panel_height) {
-            ui_target = true;
-        }
-    }
-    if (wz_host_session.input_settings_visible) {
-        panel_width = width >= 440.0f ? 420.0f : width - 16.0f;
-        panel_height = height >= 392.0f ? 360.0f : height - 32.0f;
-        panel_x = (width - panel_width) * 0.5f;
-        panel_y = (height - panel_height) * 0.5f;
-        if (mouse_x >= panel_x && mouse_x <= panel_x + panel_width &&
-            mouse_y >= panel_y && mouse_y <= panel_y + panel_height) {
-            ui_target = true;
-        }
-    }
-    if (wz_host_session.rom_settings_visible) {
-        panel_width = width >= 440.0f ? 420.0f : width - 16.0f;
-        panel_height = height >= 392.0f ? 360.0f : height - 32.0f;
-        panel_x = (width - panel_width) * 0.5f;
-        panel_y = (height - panel_height) * 0.5f;
-        if (mouse_x >= panel_x && mouse_x <= panel_x + panel_width &&
-            mouse_y >= panel_y && mouse_y <= panel_y + panel_height) {
-            ui_target = true;
-        }
-    }
-    if (wz_host_session.display_settings_visible) {
-        panel_width = width >= 440.0f ? 420.0f : width - 16.0f;
-        panel_height = height >= 264.0f ? 232.0f : height - 32.0f;
-        panel_x = (width - panel_width) * 0.5f;
-        panel_y = (height - panel_height) * 0.5f;
-        if (mouse_x >= panel_x && mouse_x <= panel_x + panel_width &&
-            mouse_y >= panel_y && mouse_y <= panel_y + panel_height) {
-            ui_target = true;
-        }
-    }
-    if (wz_host_session.microdrive_eject_confirmation_open) {
-        const float modal_width = 420.0f;
-        const float modal_height = 184.0f;
-        const float modal_x = (width - modal_width) * 0.5f;
-        if (mouse_x >= modal_x && mouse_x <= modal_x + modal_width &&
-            mouse_y >= 100.0f && mouse_y <= 100.0f + modal_height) {
-            ui_target = true;
-        }
-    }
-    if (wz_host_session.microdrive_manager_open) {
-        const float manager_width = width >= 980.0f ? 980.0f : width - 16.0f;
-        const float manager_height = height >= 700.0f ? 700.0f : height - 32.0f;
-        const float manager_x = (width - manager_width) * 0.5f;
-        const float manager_y = (height - manager_height) * 0.5f;
-        if (mouse_x >= manager_x && mouse_x <= manager_x + manager_width &&
-            mouse_y >= manager_y && mouse_y <= manager_y + manager_height) {
-            ui_target = true;
-        }
+    if (wz_host_session.ui_context != NULL) {
+        /* Hit-test the actual movable window bounds without changing input. */
+        struct nk_vec2 previous =
+            wz_host_session.ui_context->input.mouse.pos;
+        wz_host_session.ui_context->input.mouse.pos =
+            nk_vec2(mouse_x, mouse_y);
+        ui_target = ui_target ||
+            nk_window_is_any_hovered(wz_host_session.ui_context) != 0;
+        wz_host_session.ui_context->input.mouse.pos = previous;
     }
     if (ui_target) wz_host_release_local_keys();
     (void)wz_input_focus_set_target(&wz_host_session.input_focus,
