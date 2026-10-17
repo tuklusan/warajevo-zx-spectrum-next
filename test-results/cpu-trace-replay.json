@@ -1,0 +1,78 @@
+{
+  "testId": "cpu-trace-replay",
+  "status": "pass",
+  "boundaries": 10,
+  "busEvents": 28,
+  "programBytes": 21,
+  "opcodeBytes": 17,
+  "nmiAccepts": 1,
+  "commit": "8514acad58ff25ad9dba7c58dc4555a954d55a41",
+  "runId": 39003041796,
+  "runner": "Linux",
+  "timestamp": "2026-10-17T04:35:16Z",
+  "cases": 10,
+  "fixtures": [
+    {
+      "sha256": "dcf8b3f185e4f274f78ff0259a4a53526d8b89de7f00fdb5dad2035720a1b244",
+      "path": ".github/workflows/cpu-trace-replay.yml"
+    },
+    {
+      "sha256": "2859501e398aa9d48556e87f79c11c07502db708354a8a91ae8ea2a6439f6a40",
+      "path": "ci/test/cpu-trace-replay/CMakeLists.txt"
+    },
+    {
+      "sha256": "2b49f903479d125935b7eed015940730ddfdf3e27ca1005ed436dae7ff179737",
+      "path": "ci/test/cpu-trace-replay/cpu-trace-replay.c"
+    },
+    {
+      "sha256": "3de9b87c0fcbf0a5634108f4eee297cd8ec6197b7e5009997c83b6c5744fb684",
+      "path": "tests/cpu-trace-replay.md"
+    },
+    {
+      "sha256": "a84850869148d8f70a2ee5b31570d9d221d7159cbff832982ddbc8dd1f69c47e",
+      "path": "src/core/wz_bus.c"
+    },
+    {
+      "sha256": "0a6019987ae86f7c7293e1f428d086f52684ea5353eadb758c0b2d056677abaa",
+      "path": "src/core/wz_bus.h"
+    },
+    {
+      "sha256": "73c05bd1c572d60dc398c065c7ea0441d123ce9f72e8752bfdb4aed43a37e9b2",
+      "path": "src/core/wz_z80.c"
+    },
+    {
+      "sha256": "243ffd6d30e525b8cc5637cf92202ae05302995286ea73923ba0f7612c778f9f",
+      "path": "src/core/wz_z80.h"
+    },
+    {
+      "sha256": "f317165de22d68da5d10ca3f39ddf0d3f4ee65451f064736da323a01b4a7844b",
+      "path": "src/core/wz_trace.c"
+    },
+    {
+      "sha256": "906c7f54ac8a56b6bb8b797d7a471a581c2849e5b2bd1f542bc59dbf39ab7a6c",
+      "path": "src/core/wz_trace.h"
+    },
+    {
+      "sha256": "6cf2f5862becd86879418ee6f0057c3f559e506f03fdec111923d91f7c04d747",
+      "path": "src/diagnostics/wz_trace_file.c"
+    },
+    {
+      "sha256": "5538d5d54e40f029196a5a3275f7c6f4c5d8a542ba000a680379037e3cbb2d0b",
+      "path": "src/diagnostics/wz_trace_file.h"
+    },
+    {
+      "sha256": "24eaac015e950cd317be13ddb79c33ce92a01f106fef3dbfbb7ce433c9557ffc",
+      "path": "src/core/wz_machine.c"
+    },
+    {
+      "sha256": "92649806b076a4542c05d53b1a3e01bbf67ebfe25b76c92a333cf03e27809f4d",
+      "path": "src/core/wz_machine.h"
+    },
+    {
+      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09",
+      "path": "src/core/wz_machine_profile.c"
+    }
+  ],
+  "sourceArtifact": "cpu-trace-replay-proof",
+  "hostedProofSha256": "51d3e81613cbe1ced0840639e9cf048e3cb5751db9566adf06e6a8250013fceb"
+}
