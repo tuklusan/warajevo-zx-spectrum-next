@@ -1,0 +1,29 @@
+name: Project-owned CPU rotate and shift acceptance
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rotate-shift:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure CPU rotate and shift acceptance
+        run: cmake -S ci/test/cpu-rotate-shift -B dist/cpu-rotate-shift -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build CPU rotate and shift acceptance
+        run: cmake --build dist/cpu-rotate-shift --target wz_cpu_rotate_shift --parallel 2
+      - name: Verify all rotate and shift values, carries, and targets
+        run: |
+          set -o pipefail
+          dist/cpu-rotate-shift/wz_cpu_rotate_shift | tee dist/cpu-rotate-shift/proof.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-rotate-shift-proof
+          path: dist/cpu-rotate-shift/proof.json
+          if-no-files-found: error
