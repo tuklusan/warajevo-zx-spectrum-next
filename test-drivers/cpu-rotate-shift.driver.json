@@ -1,0 +1,54 @@
+{
+  "requiredCases": 22528,
+  "command": "dist/cpu-rotate-shift/wz_cpu_rotate_shift",
+  "runnerMatrix": [
+    "ubuntu-24.04"
+  ],
+  "fixtures": [
+    {
+      "sha256": "bf2ac8e7b36494d1b45a840cbc9f3bd596b9d983667d86c890f577a8deaa467a",
+      "path": ".github/workflows/cpu-rotate-shift.yml"
+    },
+    {
+      "sha256": "11e16ced067bf42761e05f1efcb313584a00d153c9938a64fb1435f1b7b0f339",
+      "path": "ci/test/cpu-rotate-shift/CMakeLists.txt"
+    },
+    {
+      "sha256": "b8dbefa443ee413cf9282d4e28a5d82f593877cccd5f4c03c8c113428d51c625",
+      "path": "ci/test/cpu-rotate-shift/cpu-rotate-shift.c"
+    },
+    {
+      "sha256": "a0d4b16da82d6d41792b828bfe30ac1ca0472fa58c53744e08d6704cf62606fa",
+      "path": "tests/cpu-rotate-shift.md"
+    },
+    {
+      "sha256": "a84850869148d8f70a2ee5b31570d9d221d7159cbff832982ddbc8dd1f69c47e",
+      "path": "src/core/wz_bus.c"
+    },
+    {
+      "sha256": "0a6019987ae86f7c7293e1f428d086f52684ea5353eadb758c0b2d056677abaa",
+      "path": "src/core/wz_bus.h"
+    },
+    {
+      "sha256": "32e2c82a4c4b2b0eca4a40cb6b0e059311b61e13cde27f1eb9fa79e8f0f20c5f",
+      "path": "src/core/wz_z80.c"
+    },
+    {
+      "sha256": "243ffd6d30e525b8cc5637cf92202ae05302995286ea73923ba0f7612c778f9f",
+      "path": "src/core/wz_z80.h"
+    },
+    {
+      "sha256": "24eaac015e950cd317be13ddb79c33ce92a01f106fef3dbfbb7ce433c9557ffc",
+      "path": "src/core/wz_machine.c"
+    },
+    {
+      "sha256": "92649806b076a4542c05d53b1a3e01bbf67ebfe25b76c92a333cf03e27809f4d",
+      "path": "src/core/wz_machine.h"
+    },
+    {
+      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09",
+      "path": "src/core/wz_machine_profile.c"
+    }
+  ],
+  "testId": "cpu-rotate-shift"
+}
