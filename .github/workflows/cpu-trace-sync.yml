@@ -1,0 +1,29 @@
+name: Project-owned CPU trace synchronization acceptance
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  trace-sync:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure CPU trace synchronization acceptance
+        run: cmake -S ci/test/cpu-trace-sync -B dist/cpu-trace-sync -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build CPU trace synchronization acceptance
+        run: cmake --build dist/cpu-trace-sync --target wz_cpu_trace_sync --parallel 2
+      - name: Verify periodic state sync through prolonged HALT
+        run: |
+          set -o pipefail
+          dist/cpu-trace-sync/wz_cpu_trace_sync | tee dist/cpu-trace-sync/proof.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-trace-sync-proof
+          path: dist/cpu-trace-sync/proof.json
+          if-no-files-found: error
