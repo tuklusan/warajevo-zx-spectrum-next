@@ -84,7 +84,7 @@
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
+      "sha256": "92649806b076a4542c05d53b1a3e01bbf67ebfe25b76c92a333cf03e27809f4d"
     },
     {
       "path": "src/core/wz_runner.c",

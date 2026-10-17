@@ -17,11 +17,11 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
+      "sha256": "199f3dd0fefb8dc45f5ed2ebb48e5121a6fc54fb47d02f7073cc9bda57f54a9e"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
+      "sha256": "92649806b076a4542c05d53b1a3e01bbf67ebfe25b76c92a333cf03e27809f4d"
     },
     {
       "path": "src/core/wz_bus.c",
@@ -41,11 +41,11 @@
     },
     {
       "path": "src/core/wz_z80.c",
-      "sha256": "4414a17180681cc18c03a3a84c960196c1fa0d7bdfe09f59d0b664919a369195"
+      "sha256": "769fa87248c88f081105ef530078c62ee1fe1739bcc2469982076de0d6ac8106"
     },
     {
       "path": "src/core/wz_z80.h",
-      "sha256": "c32d23b4a650ae13031f8f61dd41f66cd8ac19136f058cb47502a2e54df5f8cd"
+      "sha256": "243ffd6d30e525b8cc5637cf92202ae05302995286ea73923ba0f7612c778f9f"
     },
     {
       "path": ".github/workflows/master-time-contract.yml",
