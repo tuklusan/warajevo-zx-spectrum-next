@@ -124,6 +124,13 @@ jobs:
             Stop-Process -Force -ErrorAction SilentlyContinue
           Get-Process -Name msoobe,UserOOBEBroker,CloudExperienceHostBroker -ErrorAction SilentlyContinue |
             Stop-Process -Force -ErrorAction SilentlyContinue
+          $wslServices = Get-Service -Name WslService,LxssManager -ErrorAction SilentlyContinue
+          if ($wslServices) {
+            $wslServices | Stop-Service -Force -ErrorAction SilentlyContinue
+            $wslServices | Set-Service -StartupType Disabled
+          }
+          Get-Process -Name wsl,WindowsTerminal -ErrorAction SilentlyContinue |
+            Stop-Process -Force -ErrorAction SilentlyContinue
           Start-Sleep -Seconds 2
           $overlay = Get-Process -Name msoobe,UserOOBEBroker,CloudExperienceHostBroker -ErrorAction SilentlyContinue
           if ($overlay) { throw "Windows first-logon overlay remains: $($overlay.Name -join ', ')" }

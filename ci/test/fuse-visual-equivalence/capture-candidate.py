@@ -120,6 +120,23 @@ def window_client_bounds(process):
     raise SystemExit(f"desktop capture is unsupported on {platform.system()}")
 
 
+def windows_crop_owned_by_process(process_id, box):
+    user32 = ctypes.windll.user32
+    user32.WindowFromPoint.argtypes = (wintypes.POINT,)
+    user32.WindowFromPoint.restype = wintypes.HWND
+    user32.GetWindowThreadProcessId.argtypes = (wintypes.HWND,
+                                                ctypes.POINTER(wintypes.DWORD))
+    user32.GetWindowThreadProcessId.restype = wintypes.DWORD
+    center = wintypes.POINT((box[0] + box[2]) // 2,
+                            (box[1] + box[3]) // 2)
+    window = user32.WindowFromPoint(center)
+    owner = wintypes.DWORD()
+    if not window:
+        return False
+    user32.GetWindowThreadProcessId(window, ctypes.byref(owner))
+    return owner.value == process_id
+
+
 def viewport_capture(bounds):
     left, top, width, height = bounds
     viewport_top = 56.0
@@ -172,7 +189,16 @@ def main():
             time.sleep(8)
             if process.poll() is not None:
                 raise SystemExit("production application exited before display capture")
-            image, box = viewport_capture(bounds)
+            for attempt in range(20):
+                bounds = window_client_bounds(process)
+                if bounds is None:
+                    raise SystemExit("production application window disappeared")
+                image, box = viewport_capture(bounds)
+                if os.name != "nt" or windows_crop_owned_by_process(process.pid, box):
+                    break
+                time.sleep(0.5)
+            else:
+                raise SystemExit("production application viewport is obscured by another window")
             if image.width < CANONICAL_SIZE[0] or image.height < CANONICAL_SIZE[1]:
                 raise SystemExit("captured production viewport is below full-frame dimensions")
             variance = sum(ImageStat.Stat(image).var) / 3.0
