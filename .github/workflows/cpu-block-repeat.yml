@@ -1,0 +1,29 @@
+name: Project-owned CPU block repeat trace acceptance
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  block-repeat:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure block repeat trace acceptance
+        run: cmake -S ci/test/cpu-block-repeat -B dist/cpu-block-repeat -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build block repeat trace acceptance
+        run: cmake --build dist/cpu-block-repeat --target wz_cpu_block_repeat --parallel 2
+      - name: Verify repeated and terminating block traces
+        run: |
+          set -o pipefail
+          dist/cpu-block-repeat/wz_cpu_block_repeat | tee dist/cpu-block-repeat/proof.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-block-repeat-proof
+          path: dist/cpu-block-repeat/proof.json
+          if-no-files-found: error
