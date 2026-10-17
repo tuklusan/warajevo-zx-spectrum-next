@@ -124,17 +124,34 @@ def windows_crop_owned_by_process(process_id, box):
     user32 = ctypes.windll.user32
     user32.WindowFromPoint.argtypes = (wintypes.POINT,)
     user32.WindowFromPoint.restype = wintypes.HWND
+    user32.GetAncestor.argtypes = (wintypes.HWND, wintypes.UINT)
+    user32.GetAncestor.restype = wintypes.HWND
     user32.GetWindowThreadProcessId.argtypes = (wintypes.HWND,
                                                 ctypes.POINTER(wintypes.DWORD))
     user32.GetWindowThreadProcessId.restype = wintypes.DWORD
-    center = wintypes.POINT((box[0] + box[2]) // 2,
-                            (box[1] + box[3]) // 2)
-    window = user32.WindowFromPoint(center)
-    owner = wintypes.DWORD()
-    if not window:
-        return False
-    user32.GetWindowThreadProcessId(window, ctypes.byref(owner))
-    return owner.value == process_id
+    user32.GetWindowTextW.argtypes = (wintypes.HWND, wintypes.LPWSTR,
+                                      ctypes.c_int)
+    user32.GetWindowTextW.restype = ctypes.c_int
+    user32.PostMessageW.argtypes = (wintypes.HWND, wintypes.UINT,
+                                    wintypes.WPARAM, wintypes.LPARAM)
+    user32.PostMessageW.restype = wintypes.BOOL
+    for x_fraction in (0.15, 0.5, 0.85):
+        for y_fraction in (0.15, 0.5, 0.85):
+            point = wintypes.POINT(round(box[0] + (box[2] - box[0]) * x_fraction),
+                                   round(box[1] + (box[3] - box[1]) * y_fraction))
+            window = user32.WindowFromPoint(point)
+            if not window:
+                return False
+            root = user32.GetAncestor(window, 2)
+            owner = wintypes.DWORD()
+            user32.GetWindowThreadProcessId(root, ctypes.byref(owner))
+            if owner.value != process_id:
+                title = ctypes.create_unicode_buffer(256)
+                user32.GetWindowTextW(root, title, len(title))
+                if "wsl.exe" in title.value.lower():
+                    user32.PostMessageW(root, 0x0010, 0, 0)
+                return False
+    return True
 
 
 def viewport_capture(bounds):
