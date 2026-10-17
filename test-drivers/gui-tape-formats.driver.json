@@ -28,7 +28,7 @@
       "path": "src/app/wz_sokol_main.c"
     },
     {
-      "sha256": "6c5de7b5b6a20cad20643b1f9007629846bccc0bb49bf7412cad9464ae9be062",
+      "sha256": "6c8aaea15cdd323d0f9a7c28d12e254e2145cbdabf07849f05892dc3807758f0",
       "path": "src/app/wz_ui_layout.c"
     },
     {
@@ -36,7 +36,7 @@
       "path": "src/core/wz_tape.c"
     },
     {
-      "sha256": "bbe18851ffea6041d0b5ca663e1a38db881e5fd9e083ed5c76456d8930df2121",
+      "sha256": "7a08c91c117233f94182465b75ea98964dab4f97a5e9560f3cdc58d67a79a076",
       "path": "src/app/wz_tape_manager.c"
     },
     {

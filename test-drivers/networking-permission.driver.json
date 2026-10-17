@@ -81,7 +81,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "199f3dd0fefb8dc45f5ed2ebb48e5121a6fc54fb47d02f7073cc9bda57f54a9e"
+      "sha256": "24eaac015e950cd317be13ddb79c33ce92a01f106fef3dbfbb7ce433c9557ffc"
     },
     {
       "path": "src/core/wz_microdrive.c",
@@ -125,7 +125,7 @@
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "831c52cb6956749d3bdd4c4a2634cc7f65b73a8c66e9a0900b819bc81263c029"
+      "sha256": "7ec1524e75e469b1b994a0209af86445dd21897cc7470473909fa2ae3a2d962a"
     },
     {
       "path": "src/core/wz_trace.c",
@@ -133,7 +133,7 @@
     },
     {
       "path": "src/core/wz_z80.c",
-      "sha256": "769fa87248c88f081105ef530078c62ee1fe1739bcc2469982076de0d6ac8106"
+      "sha256": "32e2c82a4c4b2b0eca4a40cb6b0e059311b61e13cde27f1eb9fa79e8f0f20c5f"
     }
   ],
   "command": "cmake -S ci/test/networking-permission -B dist/networking-permission -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/networking-permission --config Release --target wz_networking_permission_regression --parallel 2 && dist/networking-permission/wz_networking_permission_regression",
