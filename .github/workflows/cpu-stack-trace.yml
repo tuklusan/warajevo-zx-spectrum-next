@@ -1,0 +1,29 @@
+name: Project-owned CPU stack trace acceptance
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  stack-trace:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure CPU stack trace acceptance
+        run: cmake -S ci/test/cpu-stack-trace -B dist/cpu-stack-trace -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build CPU stack trace acceptance
+        run: cmake --build dist/cpu-stack-trace --target wz_cpu_stack_trace --parallel 2
+      - name: Verify stack bus order and SP transitions
+        run: |
+          set -o pipefail
+          dist/cpu-stack-trace/wz_cpu_stack_trace | tee dist/cpu-stack-trace/proof.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-stack-trace-proof
+          path: dist/cpu-stack-trace/proof.json
+          if-no-files-found: error
