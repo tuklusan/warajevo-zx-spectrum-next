@@ -60,7 +60,7 @@ static bool cb_case(wz_machine_t* machine, unsigned mode, unsigned operation,
                                         (mode == 1u || memory_only ? 6u : 0u));
     const expected_t expected = cb_reference(operation, value, old_carry);
     const wz_master_tick_t before = machine->master_tick;
-    const wz_master_tick_t duration = indexed ? 38u : (mode == 1u ? 30u : 16u);
+    const wz_master_tick_t duration = indexed ? 46u : (mode == 1u ? 30u : 16u);
     const wz_word_t address = indexed ? 0x9001u : 0x9000u;
     machine->cpu.program_counter = 0x8000u;
     machine->cpu.main.f = (wz_byte_t)(0xc4u | old_carry);
