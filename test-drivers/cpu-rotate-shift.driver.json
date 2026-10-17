@@ -30,7 +30,7 @@
       "path": "src/core/wz_bus.h"
     },
     {
-      "sha256": "32e2c82a4c4b2b0eca4a40cb6b0e059311b61e13cde27f1eb9fa79e8f0f20c5f",
+      "sha256": "49852420ee3801cbd81dd4ad0dd1e8f96dccd83c779dd76beb2d2527392ffece",
       "path": "src/core/wz_z80.c"
     },
     {

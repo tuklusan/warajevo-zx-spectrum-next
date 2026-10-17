@@ -38,33 +38,28 @@ static void wz_z80_increment_r(wz_z80_state_t* state)
     state->r = (wz_byte_t)((state->r & 0x80u) | ((state->r + 1u) & 0x7fu));
 }
 
-static void wz_z80_trace_instruction(wz_machine_t* machine,
-                                     wz_word_t pc,
-                                     wz_byte_t opcode)
+static wz_qword_t wz_z80_main_snapshot(const wz_z80_state_t* state)
 {
-    wz_trace_event_t event = {0};
+    return (wz_qword_t)state->main.a |
+        ((wz_qword_t)state->main.f << 8u) |
+        ((wz_qword_t)state->main.b << 16u) |
+        ((wz_qword_t)state->main.c << 24u) |
+        ((wz_qword_t)state->main.d << 32u) |
+        ((wz_qword_t)state->main.e << 40u) |
+        ((wz_qword_t)state->main.h << 48u) |
+        ((wz_qword_t)state->main.l << 56u);
+}
+
+static void wz_z80_trace_cpu_state(wz_machine_t* machine,
+                                   wz_qword_t main_snapshot)
+{
     wz_qword_t state_chunks[5];
     bool full_sync;
 
     if (machine->timing_trace == 0) {
         return;
     }
-    event.kind = WZ_TRACE_CPU_INSTRUCTION;
-    event.master_tick = machine->master_tick;
-    event.program_counter = pc;
-    event.stack_pointer = machine->cpu.stack_pointer;
-    event.value = opcode;
-    event.register_snapshot = (wz_qword_t)machine->cpu.main.a |
-        ((wz_qword_t)machine->cpu.main.f << 8u) |
-        ((wz_qword_t)machine->cpu.main.b << 16u) |
-        ((wz_qword_t)machine->cpu.main.c << 24u) |
-        ((wz_qword_t)machine->cpu.main.d << 32u) |
-        ((wz_qword_t)machine->cpu.main.e << 40u) |
-        ((wz_qword_t)machine->cpu.main.h << 48u) |
-        ((wz_qword_t)machine->cpu.main.l << 56u);
-    wz_trace_emit_detail(machine->timing_trace, &event);
-
-    state_chunks[0] = event.register_snapshot;
+    state_chunks[0] = main_snapshot;
     state_chunks[1] = (wz_qword_t)machine->cpu.alternate.a |
         ((wz_qword_t)machine->cpu.alternate.f << 8u) |
         ((wz_qword_t)machine->cpu.alternate.b << 16u) |
@@ -87,7 +82,7 @@ static void wz_z80_trace_instruction(wz_machine_t* machine,
     state_chunks[4] = (wz_qword_t)machine->cpu.halted |
         ((wz_qword_t)machine->z80_prior_q << 8u);
     full_sync = !machine->timing_trace->cpu_state_valid ||
-        (machine->timing_trace->next_sequence % WZ_TRACE_CPU_SYNC_INTERVAL) == 0u;
+        (machine->timing_trace->cpu_fetch_count % WZ_TRACE_CPU_SYNC_INTERVAL) == 0u;
     {
         wz_trace_event_t sync = {0};
         sync.kind = full_sync ? WZ_TRACE_CPU_STATE_SYNC : WZ_TRACE_CPU_STATE_DELTA;
@@ -102,6 +97,26 @@ static void wz_z80_trace_instruction(wz_machine_t* machine,
         }
         machine->timing_trace->cpu_state_valid = true;
     }
+}
+
+static void wz_z80_trace_instruction(wz_machine_t* machine,
+                                     wz_word_t pc,
+                                     wz_byte_t opcode)
+{
+    wz_trace_event_t event = {0};
+
+    if (machine->timing_trace == 0) {
+        return;
+    }
+    event.kind = WZ_TRACE_CPU_INSTRUCTION;
+    event.master_tick = machine->master_tick;
+    event.program_counter = pc;
+    event.stack_pointer = machine->cpu.stack_pointer;
+    event.value = opcode;
+    event.register_snapshot = wz_z80_main_snapshot(&machine->cpu);
+    wz_trace_emit_detail(machine->timing_trace, &event);
+    ++machine->timing_trace->cpu_fetch_count;
+    wz_z80_trace_cpu_state(machine, event.register_snapshot);
 }
 
 static void wz_z80_trace_interrupt(wz_machine_t* machine, wz_byte_t kind)
@@ -2173,6 +2188,14 @@ static wz_result_t wz_z80_step_impl(wz_machine_t* machine,
             return WZ_RESULT_INVALID_STATE;
         }
         wz_z80_increment_r(&machine->cpu);
+        if (machine->timing_trace != 0) {
+            ++machine->timing_trace->cpu_fetch_count;
+            if ((machine->timing_trace->cpu_fetch_count %
+                 WZ_TRACE_CPU_SYNC_INTERVAL) == 0u) {
+                wz_z80_trace_cpu_state(machine,
+                                       wz_z80_main_snapshot(&machine->cpu));
+            }
+        }
         machine->master_tick += 8u;
         return WZ_RESULT_OK;
     }

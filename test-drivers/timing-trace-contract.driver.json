@@ -39,7 +39,7 @@
     },
     {
       "path": "src/core/wz_trace.h",
-      "sha256": "9730762f41380dc9ef42b8cd1d6ed454dc4d091fa83dd81c9578925f4bbd8466"
+      "sha256": "906c7f54ac8a56b6bb8b797d7a471a581c2849e5b2bd1f542bc59dbf39ab7a6c"
     },
     {
       "path": "src/core/wz_types.h",

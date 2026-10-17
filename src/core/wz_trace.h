@@ -52,6 +52,7 @@ typedef struct {
     wz_trace_emit_fn emit;
     void* context;
     wz_qword_t next_sequence;
+    wz_qword_t cpu_fetch_count;
     wz_qword_t cpu_state_chunks[5];
     bool cpu_state_valid;
 } wz_trace_sink_t;
