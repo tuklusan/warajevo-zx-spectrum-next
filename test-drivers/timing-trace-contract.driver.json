@@ -31,11 +31,11 @@
     },
     {
       "path": "src/diagnostics/wz_trace_file.c",
-      "sha256": "24aa5d6af631abfa220c1c4d43a4bdf4ff1dd27a8b9dab523acffded8a50fd70"
+      "sha256": "6cf2f5862becd86879418ee6f0057c3f559e506f03fdec111923d91f7c04d747"
     },
     {
       "path": "src/diagnostics/wz_trace_file.h",
-      "sha256": "e39f47ab133980a1da378aecc1a0fd87f2c77289b3e29e7dd2c7423250f2119e"
+      "sha256": "5538d5d54e40f029196a5a3275f7c6f4c5d8a542ba000a680379037e3cbb2d0b"
     },
     {
       "path": "src/core/wz_trace.h",

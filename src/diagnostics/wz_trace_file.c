@@ -166,6 +166,13 @@ bool wz_trace_cpu_state_sync_apply(wz_trace_cpu_state_sync_t* sync,
         break;
     default:
         sync->state.halted = (wz_byte_t)event->register_snapshot;
+        sync->prior_q = (wz_byte_t)(event->register_snapshot >> 8u);
+        sync->state.q = (wz_byte_t)(event->register_snapshot >> 16u);
+        if (sync->prior_q > 1u) {
+            sync->has_absolute_state = false;
+            sync->next_chunk = 0u;
+            return false;
+        }
         if (event->kind == WZ_TRACE_CPU_STATE_SYNC) {
             sync->next_chunk = 0u;
             sync->has_absolute_state = wz_z80_state_validate(&sync->state) == WZ_RESULT_OK;

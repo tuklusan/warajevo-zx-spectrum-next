@@ -53,6 +53,7 @@ typedef struct {
     wz_master_tick_t master_tick;
     wz_qword_t last_sequence;
     wz_byte_t next_chunk;
+    wz_byte_t prior_q;
     bool has_absolute_state;
 } wz_trace_cpu_state_sync_t;
 

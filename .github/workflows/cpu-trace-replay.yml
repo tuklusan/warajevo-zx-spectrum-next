@@ -1,0 +1,29 @@
+name: Project-owned CPU trace replay acceptance
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  trace-replay:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure CPU trace replay acceptance
+        run: cmake -S ci/test/cpu-trace-replay -B dist/cpu-trace-replay -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build CPU trace replay acceptance
+        run: cmake --build dist/cpu-trace-replay --target wz_cpu_trace_replay --parallel 2
+      - name: Recover and reconstruct CPU trace
+        run: |
+          set -o pipefail
+          dist/cpu-trace-replay/wz_cpu_trace_replay dist/cpu-trace-replay/replay.wztrace | tee dist/cpu-trace-replay/proof.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-trace-replay-proof
+          path: dist/cpu-trace-replay/proof.json
+          if-no-files-found: error

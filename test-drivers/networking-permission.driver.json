@@ -133,7 +133,7 @@
     },
     {
       "path": "src/core/wz_z80.c",
-      "sha256": "49852420ee3801cbd81dd4ad0dd1e8f96dccd83c779dd76beb2d2527392ffece"
+      "sha256": "73c05bd1c572d60dc398c065c7ea0441d123ce9f72e8752bfdb4aed43a37e9b2"
     }
   ],
   "command": "cmake -S ci/test/networking-permission -B dist/networking-permission -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/networking-permission --config Release --target wz_networking_permission_regression --parallel 2 && dist/networking-permission/wz_networking_permission_regression",

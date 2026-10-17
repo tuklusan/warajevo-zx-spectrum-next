@@ -80,7 +80,8 @@ static void wz_z80_trace_cpu_state(wz_machine_t* machine,
         ((wz_qword_t)machine->cpu.interrupt_enable_delay << 48u) |
         ((wz_qword_t)machine->cpu.interrupt_mode << 56u);
     state_chunks[4] = (wz_qword_t)machine->cpu.halted |
-        ((wz_qword_t)machine->z80_prior_q << 8u);
+        ((wz_qword_t)machine->z80_prior_q << 8u) |
+        ((wz_qword_t)machine->cpu.q << 16u);
     full_sync = !machine->timing_trace->cpu_state_valid ||
         (machine->timing_trace->cpu_fetch_count % WZ_TRACE_CPU_SYNC_INTERVAL) == 0u;
     {
