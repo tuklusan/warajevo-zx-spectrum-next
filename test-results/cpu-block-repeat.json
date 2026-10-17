@@ -1,0 +1,60 @@
+{
+  "testId": "cpu-block-repeat",
+  "status": "pass",
+  "opcodes": 16,
+  "earlyMatchCases": 2,
+  "steps": 26,
+  "commit": "3d300bae858cb8ea8e7916812e0a044c808a3789",
+  "runId": 39001589598,
+  "runner": "Linux",
+  "timestamp": "2026-10-17T04:11:06Z",
+  "cases": 26,
+  "fixtures": [
+    {
+      "sha256": "4f98137ff4ba129f2aee7dd1f1586de4bc336ec65f08d3d7c81c5082bf0e0d4d",
+      "path": ".github/workflows/cpu-block-repeat.yml"
+    },
+    {
+      "sha256": "60837e67208e2963917fb1530d58150b06dd92f833b98732230cd9aec3384ef5",
+      "path": "ci/test/cpu-block-repeat/CMakeLists.txt"
+    },
+    {
+      "sha256": "68fa795804b24cd698452b90e6ec041c9334a5533361760e2a0a3a44e101bfd3",
+      "path": "ci/test/cpu-block-repeat/cpu-block-repeat.c"
+    },
+    {
+      "sha256": "368d916d78ffe32785d310394677de18f8eec6d6bce88f30dd916027f9de4788",
+      "path": "tests/cpu-block-repeat.md"
+    },
+    {
+      "sha256": "a84850869148d8f70a2ee5b31570d9d221d7159cbff832982ddbc8dd1f69c47e",
+      "path": "src/core/wz_bus.c"
+    },
+    {
+      "sha256": "0a6019987ae86f7c7293e1f428d086f52684ea5353eadb758c0b2d056677abaa",
+      "path": "src/core/wz_bus.h"
+    },
+    {
+      "sha256": "32e2c82a4c4b2b0eca4a40cb6b0e059311b61e13cde27f1eb9fa79e8f0f20c5f",
+      "path": "src/core/wz_z80.c"
+    },
+    {
+      "sha256": "243ffd6d30e525b8cc5637cf92202ae05302995286ea73923ba0f7612c778f9f",
+      "path": "src/core/wz_z80.h"
+    },
+    {
+      "sha256": "24eaac015e950cd317be13ddb79c33ce92a01f106fef3dbfbb7ce433c9557ffc",
+      "path": "src/core/wz_machine.c"
+    },
+    {
+      "sha256": "92649806b076a4542c05d53b1a3e01bbf67ebfe25b76c92a333cf03e27809f4d",
+      "path": "src/core/wz_machine.h"
+    },
+    {
+      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09",
+      "path": "src/core/wz_machine_profile.c"
+    }
+  ],
+  "sourceArtifact": "cpu-block-repeat-proof",
+  "hostedProofSha256": "1dbb136fefe7bf45a87d1e707857ba1991057e68c7f7f377fa5538294464960e"
+}
