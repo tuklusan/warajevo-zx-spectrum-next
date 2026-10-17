@@ -1,0 +1,62 @@
+{
+  "requiredCases": 5000,
+  "command": "dist/cpu-trace-sync/wz_cpu_trace_sync",
+  "runnerMatrix": [
+    "ubuntu-24.04"
+  ],
+  "fixtures": [
+    {
+      "sha256": "d4bfe00ae3f03360c077ee82aaf5051f1cb878b0e61c2a9b7c0cd9b81261c29c",
+      "path": ".github/workflows/cpu-trace-sync.yml"
+    },
+    {
+      "sha256": "eeb9bdf58a7f1be86c1eb990a949f2695426875dea74cc381edd3825d8626f24",
+      "path": "ci/test/cpu-trace-sync/CMakeLists.txt"
+    },
+    {
+      "sha256": "b843fe6c5983badc68d7ca999d8493e6a1cc5bd978e76a6a4c6d6b4e812aa871",
+      "path": "ci/test/cpu-trace-sync/cpu-trace-sync.c"
+    },
+    {
+      "sha256": "d42f840626f01ee35c0887b20bf47386dc1a87fc3d2c83a1230c3f342ae835bf",
+      "path": "tests/cpu-trace-sync.md"
+    },
+    {
+      "sha256": "a84850869148d8f70a2ee5b31570d9d221d7159cbff832982ddbc8dd1f69c47e",
+      "path": "src/core/wz_bus.c"
+    },
+    {
+      "sha256": "0a6019987ae86f7c7293e1f428d086f52684ea5353eadb758c0b2d056677abaa",
+      "path": "src/core/wz_bus.h"
+    },
+    {
+      "sha256": "49852420ee3801cbd81dd4ad0dd1e8f96dccd83c779dd76beb2d2527392ffece",
+      "path": "src/core/wz_z80.c"
+    },
+    {
+      "sha256": "243ffd6d30e525b8cc5637cf92202ae05302995286ea73923ba0f7612c778f9f",
+      "path": "src/core/wz_z80.h"
+    },
+    {
+      "sha256": "f317165de22d68da5d10ca3f39ddf0d3f4ee65451f064736da323a01b4a7844b",
+      "path": "src/core/wz_trace.c"
+    },
+    {
+      "sha256": "906c7f54ac8a56b6bb8b797d7a471a581c2849e5b2bd1f542bc59dbf39ab7a6c",
+      "path": "src/core/wz_trace.h"
+    },
+    {
+      "sha256": "24eaac015e950cd317be13ddb79c33ce92a01f106fef3dbfbb7ce433c9557ffc",
+      "path": "src/core/wz_machine.c"
+    },
+    {
+      "sha256": "92649806b076a4542c05d53b1a3e01bbf67ebfe25b76c92a333cf03e27809f4d",
+      "path": "src/core/wz_machine.h"
+    },
+    {
+      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09",
+      "path": "src/core/wz_machine_profile.c"
+    }
+  ],
+  "testId": "cpu-trace-sync"
+}
