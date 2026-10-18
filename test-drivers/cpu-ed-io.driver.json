@@ -1,0 +1,54 @@
+{
+  "requiredCases": 96,
+  "command": "dist/cpu-ed-io/wz_cpu_ed_io",
+  "runnerMatrix": [
+    "ubuntu-24.04"
+  ],
+  "fixtures": [
+    {
+      "sha256": "2cebbcbb0b7aa5bf49feb6e1a07ed8091b7bae33b0e7ef3b71ee9d4c3800ec6f",
+      "path": ".github/workflows/cpu-ed-io.yml"
+    },
+    {
+      "sha256": "57f18a13b49e37ceb510a6ab9a96656ad1cf9c2aaf29e6015c575173fe0a4198",
+      "path": "ci/test/cpu-ed-io/CMakeLists.txt"
+    },
+    {
+      "sha256": "8c70f1d8a39f2e6e0db7ae1f28dc390b9d4547e5cbed6ddcec1f47d708b83eb1",
+      "path": "ci/test/cpu-ed-io/cpu-ed-io.c"
+    },
+    {
+      "sha256": "5e17e2be15dd256c19335c7625c0d31c8aea5058342c927798895a03289aa6c9",
+      "path": "tests/cpu-ed-io.md"
+    },
+    {
+      "sha256": "a84850869148d8f70a2ee5b31570d9d221d7159cbff832982ddbc8dd1f69c47e",
+      "path": "src/core/wz_bus.c"
+    },
+    {
+      "sha256": "0a6019987ae86f7c7293e1f428d086f52684ea5353eadb758c0b2d056677abaa",
+      "path": "src/core/wz_bus.h"
+    },
+    {
+      "sha256": "bbb60e768befd83cb8ba57061640ca8b37fdb96f90b07109cc610f02e4375fbe",
+      "path": "src/core/wz_z80.c"
+    },
+    {
+      "sha256": "243ffd6d30e525b8cc5637cf92202ae05302995286ea73923ba0f7612c778f9f",
+      "path": "src/core/wz_z80.h"
+    },
+    {
+      "sha256": "199f3dd0fefb8dc45f5ed2ebb48e5121a6fc54fb47d02f7073cc9bda57f54a9e",
+      "path": "src/core/wz_machine.c"
+    },
+    {
+      "sha256": "92649806b076a4542c05d53b1a3e01bbf67ebfe25b76c92a333cf03e27809f4d",
+      "path": "src/core/wz_machine.h"
+    },
+    {
+      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09",
+      "path": "src/core/wz_machine_profile.c"
+    }
+  ],
+  "testId": "cpu-ed-io"
+}
