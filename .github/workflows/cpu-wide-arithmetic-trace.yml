@@ -1,0 +1,29 @@
+name: Project-owned 16-bit arithmetic trace
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  wide-arithmetic-trace:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure 16-bit arithmetic trace acceptance
+        run: cmake -S ci/test/cpu-wide-arithmetic-trace -B dist/cpu-wide-arithmetic-trace -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build 16-bit arithmetic trace acceptance
+        run: cmake --build dist/cpu-wide-arithmetic-trace --target wz_cpu_wide_arithmetic_trace --parallel 2
+      - name: Check 16-bit arithmetic state bus and trace
+        run: |
+          set -o pipefail
+          dist/cpu-wide-arithmetic-trace/wz_cpu_wide_arithmetic_trace | tee dist/cpu-wide-arithmetic-trace/proof.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-wide-arithmetic-trace-proof
+          path: dist/cpu-wide-arithmetic-trace/proof.json
+          if-no-files-found: error
