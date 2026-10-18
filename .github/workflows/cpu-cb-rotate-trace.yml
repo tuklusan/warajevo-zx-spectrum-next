@@ -1,0 +1,29 @@
+name: Project-owned CB rotate shift trace
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cb-rotate-trace:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure CB rotate trace acceptance
+        run: cmake -S ci/test/cpu-cb-rotate-trace -B dist/cpu-cb-rotate-trace -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build CB rotate trace acceptance
+        run: cmake --build dist/cpu-cb-rotate-trace --target wz_cpu_cb_rotate_trace --parallel 2
+      - name: Check CB state bus and trace
+        run: |
+          set -o pipefail
+          dist/cpu-cb-rotate-trace/wz_cpu_cb_rotate_trace | tee dist/cpu-cb-rotate-trace/proof.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-cb-rotate-trace-proof
+          path: dist/cpu-cb-rotate-trace/proof.json
+          if-no-files-found: error
