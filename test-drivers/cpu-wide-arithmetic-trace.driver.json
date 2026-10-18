@@ -1,0 +1,54 @@
+{
+  "requiredCases": 360,
+  "command": "dist/cpu-wide-arithmetic-trace/wz_cpu_wide_arithmetic_trace",
+  "runnerMatrix": [
+    "ubuntu-24.04"
+  ],
+  "fixtures": [
+    {
+      "sha256": "dc6e71a64e0ed0b884fb274261e535bbba64eb9d7312c63559effa4d3f4ef402",
+      "path": ".github/workflows/cpu-wide-arithmetic-trace.yml"
+    },
+    {
+      "sha256": "07a841a6663210f3175a7e0b291da8dc5cbf625354f91781f384c92e5a5fb3c4",
+      "path": "ci/test/cpu-wide-arithmetic-trace/CMakeLists.txt"
+    },
+    {
+      "sha256": "7f71fdb78cc89532793e8570151852de672b6276bd38f95d7fa23230531e99d2",
+      "path": "ci/test/cpu-wide-arithmetic-trace/cpu-wide-arithmetic-trace.c"
+    },
+    {
+      "sha256": "33bd260a2305777141a808a506c51dc7e75856eaf497a9250714144dcf61e14c",
+      "path": "tests/cpu-wide-arithmetic-trace.md"
+    },
+    {
+      "sha256": "a84850869148d8f70a2ee5b31570d9d221d7159cbff832982ddbc8dd1f69c47e",
+      "path": "src/core/wz_bus.c"
+    },
+    {
+      "sha256": "0a6019987ae86f7c7293e1f428d086f52684ea5353eadb758c0b2d056677abaa",
+      "path": "src/core/wz_bus.h"
+    },
+    {
+      "sha256": "bbb60e768befd83cb8ba57061640ca8b37fdb96f90b07109cc610f02e4375fbe",
+      "path": "src/core/wz_z80.c"
+    },
+    {
+      "sha256": "243ffd6d30e525b8cc5637cf92202ae05302995286ea73923ba0f7612c778f9f",
+      "path": "src/core/wz_z80.h"
+    },
+    {
+      "sha256": "199f3dd0fefb8dc45f5ed2ebb48e5121a6fc54fb47d02f7073cc9bda57f54a9e",
+      "path": "src/core/wz_machine.c"
+    },
+    {
+      "sha256": "92649806b076a4542c05d53b1a3e01bbf67ebfe25b76c92a333cf03e27809f4d",
+      "path": "src/core/wz_machine.h"
+    },
+    {
+      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09",
+      "path": "src/core/wz_machine_profile.c"
+    }
+  ],
+  "testId": "cpu-wide-arithmetic-trace"
+}
