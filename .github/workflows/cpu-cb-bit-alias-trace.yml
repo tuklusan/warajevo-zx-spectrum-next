@@ -1,0 +1,29 @@
+name: Project-owned CB bit alias trace
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cb-bit-alias-trace:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure CB bit alias acceptance
+        run: cmake -S ci/test/cpu-cb-bit-alias-trace -B dist/cpu-cb-bit-alias-trace -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build CB bit alias acceptance
+        run: cmake --build dist/cpu-cb-bit-alias-trace --target wz_cpu_cb_bit_alias_trace --parallel 2
+      - name: Check CB bit alias state bus and trace
+        run: |
+          set -o pipefail
+          dist/cpu-cb-bit-alias-trace/wz_cpu_cb_bit_alias_trace | tee dist/cpu-cb-bit-alias-trace/proof.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-cb-bit-alias-trace-proof
+          path: dist/cpu-cb-bit-alias-trace/proof.json
+          if-no-files-found: error
