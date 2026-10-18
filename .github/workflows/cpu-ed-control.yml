@@ -1,0 +1,29 @@
+name: Project-owned ED control acceptance
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ed-control:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure ED control acceptance
+        run: cmake -S ci/test/cpu-ed-control -B dist/cpu-ed-control -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build ED control acceptance
+        run: cmake --build dist/cpu-ed-control --target wz_cpu_ed_control --parallel 2
+      - name: Check ED control state bus and trace
+        run: |
+          set -o pipefail
+          dist/cpu-ed-control/wz_cpu_ed_control | tee dist/cpu-ed-control/proof.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-ed-control-proof
+          path: dist/cpu-ed-control/proof.json
+          if-no-files-found: error
