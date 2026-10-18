@@ -1,0 +1,60 @@
+{
+  "testId": "cpu-ed-control",
+  "status": "pass",
+  "cases": 94,
+  "negCases": 56,
+  "imCases": 8,
+  "irCases": 8,
+  "returnCases": 16,
+  "nibbleCases": 6,
+  "commit": "c55b834053a67ed537e40467ba3ccdc2a52b8d60",
+  "runId": 39168273020,
+  "runner": "Linux",
+  "timestamp": "2026-10-18T21:32:29Z",
+  "fixtures": [
+    {
+      "sha256": "42b375db56cc8976f1ae821a44a81aa03ccee5a9686713e765f28dfb88550950",
+      "path": ".github/workflows/cpu-ed-control.yml"
+    },
+    {
+      "sha256": "eb2b4f7e187d87dd0dd945b962c2e2029e0a6eddb6bae3848ec7b66c86a2bd36",
+      "path": "ci/test/cpu-ed-control/CMakeLists.txt"
+    },
+    {
+      "sha256": "e1776489a5e809b630433de4700d54c005a619a787b14a43363ae4a2e1553182",
+      "path": "ci/test/cpu-ed-control/cpu-ed-control.c"
+    },
+    {
+      "sha256": "819aa2ba93e0479a1891c25cbf7a9af2258dac4bb49a83e8489d4631d3d5545a",
+      "path": "tests/cpu-ed-control.md"
+    },
+    {
+      "sha256": "a84850869148d8f70a2ee5b31570d9d221d7159cbff832982ddbc8dd1f69c47e",
+      "path": "src/core/wz_bus.c"
+    },
+    {
+      "sha256": "0a6019987ae86f7c7293e1f428d086f52684ea5353eadb758c0b2d056677abaa",
+      "path": "src/core/wz_bus.h"
+    },
+    {
+      "sha256": "bbb60e768befd83cb8ba57061640ca8b37fdb96f90b07109cc610f02e4375fbe",
+      "path": "src/core/wz_z80.c"
+    },
+    {
+      "sha256": "243ffd6d30e525b8cc5637cf92202ae05302995286ea73923ba0f7612c778f9f",
+      "path": "src/core/wz_z80.h"
+    },
+    {
+      "sha256": "199f3dd0fefb8dc45f5ed2ebb48e5121a6fc54fb47d02f7073cc9bda57f54a9e",
+      "path": "src/core/wz_machine.c"
+    },
+    {
+      "sha256": "92649806b076a4542c05d53b1a3e01bbf67ebfe25b76c92a333cf03e27809f4d",
+      "path": "src/core/wz_machine.h"
+    },
+    {
+      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09",
+      "path": "src/core/wz_machine_profile.c"
+    }
+  ]
+}
