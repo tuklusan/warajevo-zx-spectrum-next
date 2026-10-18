@@ -1,0 +1,54 @@
+{
+  "requiredCases": 5760,
+  "command": "dist/cpu-cb-bit-alias-trace/wz_cpu_cb_bit_alias_trace",
+  "runnerMatrix": [
+    "ubuntu-24.04"
+  ],
+  "fixtures": [
+    {
+      "sha256": "b23cf8101bd8d260705f19c9bed0b18ae0ef53d392c7108a2b7946176e0ffaa6",
+      "path": ".github/workflows/cpu-cb-bit-alias-trace.yml"
+    },
+    {
+      "sha256": "b784ad4cf62cf9bf299f46b99ba1400474a54d5208f690ea962d6e82248917db",
+      "path": "ci/test/cpu-cb-bit-alias-trace/CMakeLists.txt"
+    },
+    {
+      "sha256": "1137599a1d8ab7f44b273e9033708be69325f09653eccf697d2ae27611f0e963",
+      "path": "ci/test/cpu-cb-bit-alias-trace/cpu-cb-bit-alias-trace.c"
+    },
+    {
+      "sha256": "e9dc6920294af5d0029d29b30fae1fd611b6654554cb9942c692b5451b4528dd",
+      "path": "tests/cpu-cb-bit-alias-trace.md"
+    },
+    {
+      "sha256": "a84850869148d8f70a2ee5b31570d9d221d7159cbff832982ddbc8dd1f69c47e",
+      "path": "src/core/wz_bus.c"
+    },
+    {
+      "sha256": "0a6019987ae86f7c7293e1f428d086f52684ea5353eadb758c0b2d056677abaa",
+      "path": "src/core/wz_bus.h"
+    },
+    {
+      "sha256": "bbb60e768befd83cb8ba57061640ca8b37fdb96f90b07109cc610f02e4375fbe",
+      "path": "src/core/wz_z80.c"
+    },
+    {
+      "sha256": "243ffd6d30e525b8cc5637cf92202ae05302995286ea73923ba0f7612c778f9f",
+      "path": "src/core/wz_z80.h"
+    },
+    {
+      "sha256": "199f3dd0fefb8dc45f5ed2ebb48e5121a6fc54fb47d02f7073cc9bda57f54a9e",
+      "path": "src/core/wz_machine.c"
+    },
+    {
+      "sha256": "92649806b076a4542c05d53b1a3e01bbf67ebfe25b76c92a333cf03e27809f4d",
+      "path": "src/core/wz_machine.h"
+    },
+    {
+      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09",
+      "path": "src/core/wz_machine_profile.c"
+    }
+  ],
+  "testId": "cpu-cb-bit-alias-trace"
+}
