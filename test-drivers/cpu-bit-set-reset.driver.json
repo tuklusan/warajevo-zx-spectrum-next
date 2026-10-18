@@ -1,0 +1,54 @@
+{
+  "requiredCases": 61440,
+  "command": "dist/cpu-bit-set-reset/wz_cpu_bit_set_reset",
+  "runnerMatrix": [
+    "ubuntu-24.04"
+  ],
+  "fixtures": [
+    {
+      "sha256": "cbd40104502f1a3a4d31e5a0f96e3e7f646dcb41dd7b0a8276fb9603866b1fe7",
+      "path": ".github/workflows/cpu-bit-set-reset.yml"
+    },
+    {
+      "sha256": "12f682e5993d1db90c1fd20ebe79bdc8067b5577b8f47e6ef26dac5ca553b037",
+      "path": "ci/test/cpu-bit-set-reset/CMakeLists.txt"
+    },
+    {
+      "sha256": "8a8a3f10b4c04dd3c579cd5bd11ee5fe49229d82c3ba4fb1c7f54c74b9b6cd4b",
+      "path": "ci/test/cpu-bit-set-reset/cpu-bit-set-reset.c"
+    },
+    {
+      "sha256": "7a7d7aebed74f3bc508bf9b50e300005423a0d8e0c718034bc93ef91b12448e1",
+      "path": "tests/cpu-bit-set-reset.md"
+    },
+    {
+      "sha256": "a84850869148d8f70a2ee5b31570d9d221d7159cbff832982ddbc8dd1f69c47e",
+      "path": "src/core/wz_bus.c"
+    },
+    {
+      "sha256": "0a6019987ae86f7c7293e1f428d086f52684ea5353eadb758c0b2d056677abaa",
+      "path": "src/core/wz_bus.h"
+    },
+    {
+      "sha256": "bbb60e768befd83cb8ba57061640ca8b37fdb96f90b07109cc610f02e4375fbe",
+      "path": "src/core/wz_z80.c"
+    },
+    {
+      "sha256": "243ffd6d30e525b8cc5637cf92202ae05302995286ea73923ba0f7612c778f9f",
+      "path": "src/core/wz_z80.h"
+    },
+    {
+      "sha256": "199f3dd0fefb8dc45f5ed2ebb48e5121a6fc54fb47d02f7073cc9bda57f54a9e",
+      "path": "src/core/wz_machine.c"
+    },
+    {
+      "sha256": "92649806b076a4542c05d53b1a3e01bbf67ebfe25b76c92a333cf03e27809f4d",
+      "path": "src/core/wz_machine.h"
+    },
+    {
+      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09",
+      "path": "src/core/wz_machine_profile.c"
+    }
+  ],
+  "testId": "cpu-bit-set-reset"
+}
