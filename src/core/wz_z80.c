@@ -463,7 +463,7 @@ wz_z80_ed_opcode_decode_t wz_z80_ed_opcode_decode(wz_byte_t opcode)
         return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_OTDR, 0u,
                               WZ_Z80_OPCODE_IMPLEMENTED);
     default:
-        return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_UNSUPPORTED, 0u,
+        return wz_z80_ed_make(opcode, WZ_Z80_ED_OP_NOP, 0u,
                               WZ_Z80_OPCODE_UNDOCUMENTED);
     }
 }
@@ -1674,6 +1674,9 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
     wz_word_t result16;
 
     switch (decode.operation) {
+    case WZ_Z80_ED_OP_NOP:
+        machine->master_tick += 16u;
+        return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_NEG:
         value = machine->cpu.main.a;
         machine->cpu.main.a = (wz_byte_t)(0u - value);
@@ -2207,7 +2210,9 @@ static wz_result_t wz_z80_step_impl(wz_machine_t* machine,
     }
     machine->cpu.program_counter = wz_z80_add16(pc, 1u);
     wz_z80_increment_r(&machine->cpu);
-    wz_z80_trace_instruction(machine, pc, opcode);
+    if (!prefix_continuation) {
+        wz_z80_trace_instruction(machine, pc, opcode);
+    }
 
 execute_opcode:
     decode = wz_z80_primary_opcode_decode(opcode);

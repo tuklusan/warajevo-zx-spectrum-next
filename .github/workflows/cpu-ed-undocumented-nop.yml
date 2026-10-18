@@ -1,0 +1,29 @@
+name: Project-owned undocumented ED NOP trace
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ed-nop-trace:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure ED NOP acceptance
+        run: cmake -S ci/test/cpu-ed-undocumented-nop -B dist/cpu-ed-undocumented-nop -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build ED NOP acceptance
+        run: cmake --build dist/cpu-ed-undocumented-nop --target wz_cpu_ed_undocumented_nop --parallel 2
+      - name: Check ED NOP state bus and trace
+        run: |
+          set -o pipefail
+          dist/cpu-ed-undocumented-nop/wz_cpu_ed_undocumented_nop | tee dist/cpu-ed-undocumented-nop/proof.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-ed-undocumented-nop-proof
+          path: dist/cpu-ed-undocumented-nop/proof.json
+          if-no-files-found: error

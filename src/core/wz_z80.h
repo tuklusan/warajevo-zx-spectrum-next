@@ -105,7 +105,7 @@ typedef enum {
 } wz_z80_cb_operation_t;
 
 typedef enum {
-    WZ_Z80_ED_OP_UNSUPPORTED = 0,
+    WZ_Z80_ED_OP_NOP = 0,
     WZ_Z80_ED_OP_IN_R_C,
     WZ_Z80_ED_OP_OUT_C_R,
     WZ_Z80_ED_OP_SBC_HL_RR,
