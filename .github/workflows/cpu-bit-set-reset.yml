@@ -1,0 +1,29 @@
+name: Project-owned CPU BIT RES SET acceptance
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bit-set-reset:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure CPU bit acceptance
+        run: cmake -S ci/test/cpu-bit-set-reset -B dist/cpu-bit-set-reset -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build CPU bit acceptance
+        run: cmake --build dist/cpu-bit-set-reset --target wz_cpu_bit_set_reset --parallel 2
+      - name: Check BIT RES SET vectors and bus traces
+        run: |
+          set -o pipefail
+          dist/cpu-bit-set-reset/wz_cpu_bit_set_reset | tee dist/cpu-bit-set-reset/proof.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-bit-set-reset-proof
+          path: dist/cpu-bit-set-reset/proof.json
+          if-no-files-found: error
