@@ -25,5 +25,20 @@ historical run URLs are no longer retrievable.
 | HALT, EI/DI, interrupt entry | [HALT/interrupt](../../tests/cpu-halt-interrupt.md) and [interrupt modes](../../tests/cpu-interrupt-modes.md) check IM 0/1/2, NMI, delayed EI, and exact bus/trace. | Add edge vectors for simultaneous/pending interrupt decisions if not already covered by the machine-level interrupt acceptance. |
 | Trace completeness and retention | [Trace replay](../../tests/cpu-trace-replay.md) reconstructs diverse instruction and NMI state from the production ring; [sync](../../tests/cpu-trace-sync.md) checks prolonged HALT; the 8-frame retention proof is pinned separately. | Recheck the integrated Phase-2 gate after the remaining local vectors pass. |
 
-The next implementation target is the final opcode coverage audit. The Phase-2
-gate remains open.
+## Remaining opcode-family gaps
+
+The decoder identity test visits every primary, CB, and ED entry, while the
+Fuse suite exercises the full published reference set. Neither establishes
+independent project-owned state and exact bus/trace assertions for every
+execution family. The remaining local gaps are:
+
+| Family | Existing independent evidence | Missing local acceptance |
+| --- | --- | --- |
+| Primary and indexed arithmetic | Exhaustive immediate ALU flags, edge 16-bit flags, and 76 memory/indexed ALU and INC/DEC traces. | Register-source ALU forms using IXH/IYH or IXL/IYL; register INC/DEC and 16-bit arithmetic exact traces. |
+| Primary special flags and accumulator rotates | Independent result/flag vectors for DAA, CPL, SCF/CCF, and RLCA/RRCA/RLA/RRA. | Exact bus/trace for these instruction families. |
+| CB and indexed CB | Full rotate/shift values in five target modes; BIT/RES/SET values and exact traces in five target modes. | Rotate/shift exact traces; FD indexed memory-only and alternate register-copy targets for both CB groups. |
+| ED and prefixes | All ED port, transfer, control, and block/repeat execution families have exact-trace samples; decoder statuses cover all ED entries. Seven prefix-chain executions have exact traces. | Explicit execution samples for undocumented ED no-op encodings and ignored DD/FD prefix combinations beyond the seven chain vectors. |
+| Interrupt decisions | HALT, EI delay, DI, IM 0/1/2, and NMI entry have exact traces. | Pending/simultaneous interrupt arbitration edge cases. |
+
+These are acceptance gaps, not claims of product defects. Close them with
+project-owned vectors before declaring Tasks 061–062 complete.
