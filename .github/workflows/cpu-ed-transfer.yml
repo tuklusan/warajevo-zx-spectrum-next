@@ -1,0 +1,29 @@
+name: Project-owned ED 16-bit transfer acceptance
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ed-transfer:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure ED transfer acceptance
+        run: cmake -S ci/test/cpu-ed-transfer -B dist/cpu-ed-transfer -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build ED transfer acceptance
+        run: cmake --build dist/cpu-ed-transfer --target wz_cpu_ed_transfer --parallel 2
+      - name: Check 16-bit memory transfer bus and trace
+        run: |
+          set -o pipefail
+          dist/cpu-ed-transfer/wz_cpu_ed_transfer | tee dist/cpu-ed-transfer/proof.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-ed-transfer-proof
+          path: dist/cpu-ed-transfer/proof.json
+          if-no-files-found: error
