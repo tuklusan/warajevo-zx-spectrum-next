@@ -1,0 +1,54 @@
+{
+  "requiredCases": 80,
+  "command": "dist/cpu-index-half-arithmetic/wz_cpu_index_half_arithmetic",
+  "runnerMatrix": [
+    "ubuntu-24.04"
+  ],
+  "fixtures": [
+    {
+      "sha256": "a99cd2ea37dd2188948948349469db4fc859d5e45f213bbda1895fdf7e9db6ea",
+      "path": ".github/workflows/cpu-index-half-arithmetic.yml"
+    },
+    {
+      "sha256": "0eafb1075261c622f7c92f5071c9fc13778ea35b616b02b46cf2f9adec3e5885",
+      "path": "ci/test/cpu-index-half-arithmetic/CMakeLists.txt"
+    },
+    {
+      "sha256": "deb4874c5d5533d89db10a0b9909b6b5dd539909c2d3542196527e42098bef8c",
+      "path": "ci/test/cpu-index-half-arithmetic/cpu-index-half-arithmetic.c"
+    },
+    {
+      "sha256": "973713e28d407b116d3c524e3c599f25a2ac21fca6a27e701a15df562fe2e05b",
+      "path": "tests/cpu-index-half-arithmetic.md"
+    },
+    {
+      "sha256": "a84850869148d8f70a2ee5b31570d9d221d7159cbff832982ddbc8dd1f69c47e",
+      "path": "src/core/wz_bus.c"
+    },
+    {
+      "sha256": "0a6019987ae86f7c7293e1f428d086f52684ea5353eadb758c0b2d056677abaa",
+      "path": "src/core/wz_bus.h"
+    },
+    {
+      "sha256": "bbb60e768befd83cb8ba57061640ca8b37fdb96f90b07109cc610f02e4375fbe",
+      "path": "src/core/wz_z80.c"
+    },
+    {
+      "sha256": "243ffd6d30e525b8cc5637cf92202ae05302995286ea73923ba0f7612c778f9f",
+      "path": "src/core/wz_z80.h"
+    },
+    {
+      "sha256": "199f3dd0fefb8dc45f5ed2ebb48e5121a6fc54fb47d02f7073cc9bda57f54a9e",
+      "path": "src/core/wz_machine.c"
+    },
+    {
+      "sha256": "92649806b076a4542c05d53b1a3e01bbf67ebfe25b76c92a333cf03e27809f4d",
+      "path": "src/core/wz_machine.h"
+    },
+    {
+      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09",
+      "path": "src/core/wz_machine_profile.c"
+    }
+  ],
+  "testId": "cpu-index-half-arithmetic"
+}
