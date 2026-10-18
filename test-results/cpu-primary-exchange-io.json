@@ -1,0 +1,57 @@
+{
+  "testId": "cpu-primary-exchange-io",
+  "status": "pass",
+  "cases": 16,
+  "exchangeCases": 4,
+  "ioCases": 12,
+  "commit": "dc330cabfcdc02a83359c13a122a890626b9186e",
+  "runId": 39168954138,
+  "runner": "Linux",
+  "timestamp": "2026-10-18T21:41:44Z",
+  "fixtures": [
+    {
+      "sha256": "541e59f53e678d4c3303b18d4bccbd4ad71102c43b424dd80671f950e3033d78",
+      "path": ".github/workflows/cpu-primary-exchange-io.yml"
+    },
+    {
+      "sha256": "c04a3fce21d489d1ef3f8412c7038fe82e9c5a27aeb27b397a5d0e3082b5a8e6",
+      "path": "ci/test/cpu-primary-exchange-io/CMakeLists.txt"
+    },
+    {
+      "sha256": "47b319d31cb122e1d21cc0c32323350f71333f2ea0df8edf604a09e38b971d87",
+      "path": "ci/test/cpu-primary-exchange-io/cpu-primary-exchange-io.c"
+    },
+    {
+      "sha256": "47dfa1d9aeb9e296d2ca75a7ab126efab9ca9321a076754ac80000b4c35ad476",
+      "path": "tests/cpu-primary-exchange-io.md"
+    },
+    {
+      "sha256": "a84850869148d8f70a2ee5b31570d9d221d7159cbff832982ddbc8dd1f69c47e",
+      "path": "src/core/wz_bus.c"
+    },
+    {
+      "sha256": "0a6019987ae86f7c7293e1f428d086f52684ea5353eadb758c0b2d056677abaa",
+      "path": "src/core/wz_bus.h"
+    },
+    {
+      "sha256": "bbb60e768befd83cb8ba57061640ca8b37fdb96f90b07109cc610f02e4375fbe",
+      "path": "src/core/wz_z80.c"
+    },
+    {
+      "sha256": "243ffd6d30e525b8cc5637cf92202ae05302995286ea73923ba0f7612c778f9f",
+      "path": "src/core/wz_z80.h"
+    },
+    {
+      "sha256": "199f3dd0fefb8dc45f5ed2ebb48e5121a6fc54fb47d02f7073cc9bda57f54a9e",
+      "path": "src/core/wz_machine.c"
+    },
+    {
+      "sha256": "92649806b076a4542c05d53b1a3e01bbf67ebfe25b76c92a333cf03e27809f4d",
+      "path": "src/core/wz_machine.h"
+    },
+    {
+      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09",
+      "path": "src/core/wz_machine_profile.c"
+    }
+  ]
+}
