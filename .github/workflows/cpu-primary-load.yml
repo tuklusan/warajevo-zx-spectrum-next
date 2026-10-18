@@ -1,0 +1,29 @@
+name: Project-owned primary load acceptance
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  primary-load:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure primary load acceptance
+        run: cmake -S ci/test/cpu-primary-load -B dist/cpu-primary-load -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build primary load acceptance
+        run: cmake --build dist/cpu-primary-load --target wz_cpu_primary_load --parallel 2
+      - name: Check load matrix state bus and trace
+        run: |
+          set -o pipefail
+          dist/cpu-primary-load/wz_cpu_primary_load | tee dist/cpu-primary-load/proof.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-primary-load-proof
+          path: dist/cpu-primary-load/proof.json
+          if-no-files-found: error
