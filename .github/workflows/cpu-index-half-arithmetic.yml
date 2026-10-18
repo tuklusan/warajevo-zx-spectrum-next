@@ -1,0 +1,29 @@
+name: Project-owned indexed register arithmetic trace
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  index-half-arithmetic:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure indexed register arithmetic acceptance
+        run: cmake -S ci/test/cpu-index-half-arithmetic -B dist/cpu-index-half-arithmetic -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build indexed register arithmetic acceptance
+        run: cmake --build dist/cpu-index-half-arithmetic --target wz_cpu_index_half_arithmetic --parallel 2
+      - name: Check indexed register ALU state bus and trace
+        run: |
+          set -o pipefail
+          dist/cpu-index-half-arithmetic/wz_cpu_index_half_arithmetic | tee dist/cpu-index-half-arithmetic/proof.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-index-half-arithmetic-proof
+          path: dist/cpu-index-half-arithmetic/proof.json
+          if-no-files-found: error
