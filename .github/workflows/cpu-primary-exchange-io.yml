@@ -1,0 +1,29 @@
+name: Project-owned primary exchange and IO acceptance
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  primary-exchange-io:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure exchange and IO acceptance
+        run: cmake -S ci/test/cpu-primary-exchange-io -B dist/cpu-primary-exchange-io -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build exchange and IO acceptance
+        run: cmake --build dist/cpu-primary-exchange-io --target wz_cpu_primary_exchange_io --parallel 2
+      - name: Check exchange and IO state bus and trace
+        run: |
+          set -o pipefail
+          dist/cpu-primary-exchange-io/wz_cpu_primary_exchange_io | tee dist/cpu-primary-exchange-io/proof.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-primary-exchange-io-proof
+          path: dist/cpu-primary-exchange-io/proof.json
+          if-no-files-found: error
