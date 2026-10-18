@@ -1,0 +1,58 @@
+{
+  "testId": "cpu-cb-rotate-trace",
+  "status": "pass",
+  "cases": 1920,
+  "operations": 8,
+  "targets": 8,
+  "modes": 3,
+  "commit": "f152438f7b21acc5953da6edc126ee6b8884bbcf",
+  "runId": 39172099955,
+  "runner": "Linux",
+  "timestamp": "2026-10-18T22:24:56Z",
+  "fixtures": [
+    {
+      "sha256": "27847e7f7a38ff9be235c85574ca89b24a3fe690e193dd1a4628762211f67849",
+      "path": ".github/workflows/cpu-cb-rotate-trace.yml"
+    },
+    {
+      "sha256": "455f98fc5345f74aebc72adb43382ea408682da206b23ebb65942ed4ba87eacd",
+      "path": "ci/test/cpu-cb-rotate-trace/CMakeLists.txt"
+    },
+    {
+      "sha256": "0d629210453433dba80d315f6cef9a0c7539b5d8e57aa69891a2460f7742f171",
+      "path": "ci/test/cpu-cb-rotate-trace/cpu-cb-rotate-trace.c"
+    },
+    {
+      "sha256": "5520125d601a45002b614b39af80d1712b711f14f270b526de34afb862d86910",
+      "path": "tests/cpu-cb-rotate-trace.md"
+    },
+    {
+      "sha256": "a84850869148d8f70a2ee5b31570d9d221d7159cbff832982ddbc8dd1f69c47e",
+      "path": "src/core/wz_bus.c"
+    },
+    {
+      "sha256": "0a6019987ae86f7c7293e1f428d086f52684ea5353eadb758c0b2d056677abaa",
+      "path": "src/core/wz_bus.h"
+    },
+    {
+      "sha256": "bbb60e768befd83cb8ba57061640ca8b37fdb96f90b07109cc610f02e4375fbe",
+      "path": "src/core/wz_z80.c"
+    },
+    {
+      "sha256": "243ffd6d30e525b8cc5637cf92202ae05302995286ea73923ba0f7612c778f9f",
+      "path": "src/core/wz_z80.h"
+    },
+    {
+      "sha256": "199f3dd0fefb8dc45f5ed2ebb48e5121a6fc54fb47d02f7073cc9bda57f54a9e",
+      "path": "src/core/wz_machine.c"
+    },
+    {
+      "sha256": "92649806b076a4542c05d53b1a3e01bbf67ebfe25b76c92a333cf03e27809f4d",
+      "path": "src/core/wz_machine.h"
+    },
+    {
+      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09",
+      "path": "src/core/wz_machine_profile.c"
+    }
+  ]
+}
