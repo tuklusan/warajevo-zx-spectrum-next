@@ -1,0 +1,29 @@
+name: Project-owned ED single-port IO acceptance
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ed-io:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure ED IO acceptance
+        run: cmake -S ci/test/cpu-ed-io -B dist/cpu-ed-io -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build ED IO acceptance
+        run: cmake --build dist/cpu-ed-io --target wz_cpu_ed_io --parallel 2
+      - name: Check IN and OUT registers flags bus and trace
+        run: |
+          set -o pipefail
+          dist/cpu-ed-io/wz_cpu_ed_io | tee dist/cpu-ed-io/proof.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-ed-io-proof
+          path: dist/cpu-ed-io/proof.json
+          if-no-files-found: error
