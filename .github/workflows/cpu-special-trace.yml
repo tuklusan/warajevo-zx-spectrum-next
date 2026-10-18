@@ -1,0 +1,29 @@
+name: Project-owned primary special instruction trace
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  special-trace:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure special instruction acceptance
+        run: cmake -S ci/test/cpu-special-trace -B dist/cpu-special-trace -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build special instruction acceptance
+        run: cmake --build dist/cpu-special-trace --target wz_cpu_special_trace --parallel 2
+      - name: Check special instruction state bus and trace
+        run: |
+          set -o pipefail
+          dist/cpu-special-trace/wz_cpu_special_trace | tee dist/cpu-special-trace/proof.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-special-trace-proof
+          path: dist/cpu-special-trace/proof.json
+          if-no-files-found: error
