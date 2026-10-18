@@ -1,0 +1,29 @@
+name: Project-owned memory and indexed arithmetic trace
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  arithmetic-trace:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure arithmetic trace acceptance
+        run: cmake -S ci/test/cpu-arithmetic-trace -B dist/cpu-arithmetic-trace -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build arithmetic trace acceptance
+        run: cmake --build dist/cpu-arithmetic-trace --target wz_cpu_arithmetic_trace --parallel 2
+      - name: Check memory and indexed ALU state bus and trace
+        run: |
+          set -o pipefail
+          dist/cpu-arithmetic-trace/wz_cpu_arithmetic_trace | tee dist/cpu-arithmetic-trace/proof.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-arithmetic-trace-proof
+          path: dist/cpu-arithmetic-trace/proof.json
+          if-no-files-found: error
