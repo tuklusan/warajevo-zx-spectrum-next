@@ -1,0 +1,57 @@
+{
+  "testId": "cpu-ed-undocumented-nop",
+  "status": "pass",
+  "cases": 712,
+  "opcodes": 178,
+  "prefixModes": 4,
+  "commit": "2a6e8350388dc69a4c757df7a7f833823c37b5b2",
+  "runId": 39172669628,
+  "runner": "Linux",
+  "timestamp": "2026-10-18T22:32:43Z",
+  "fixtures": [
+    {
+      "sha256": "f7b451db5efa8f95bec95ee2571dbb52167cf09bb3562a6733770def53562ea9",
+      "path": ".github/workflows/cpu-ed-undocumented-nop.yml"
+    },
+    {
+      "sha256": "1e01f8ebcf0148173c1ac2c6e6974bf9770fb86b35bff5483e1268d8c93b0ce0",
+      "path": "ci/test/cpu-ed-undocumented-nop/CMakeLists.txt"
+    },
+    {
+      "sha256": "049d609dec8f434056f438a642530faeeaea2a7961d51cc1b9f42756206624bd",
+      "path": "ci/test/cpu-ed-undocumented-nop/cpu-ed-undocumented-nop.c"
+    },
+    {
+      "sha256": "0a09a31d51f96bfd6ac342b33dbed21fc63313cbf76086e7997fff4047c38834",
+      "path": "tests/cpu-ed-undocumented-nop.md"
+    },
+    {
+      "sha256": "a84850869148d8f70a2ee5b31570d9d221d7159cbff832982ddbc8dd1f69c47e",
+      "path": "src/core/wz_bus.c"
+    },
+    {
+      "sha256": "0a6019987ae86f7c7293e1f428d086f52684ea5353eadb758c0b2d056677abaa",
+      "path": "src/core/wz_bus.h"
+    },
+    {
+      "sha256": "9dab57d50df640ce007c9f2ca36f129c5932bbf7fe473b3055030e9a73e29255",
+      "path": "src/core/wz_z80.c"
+    },
+    {
+      "sha256": "8faaa6ca8ecd22b0b48418251256722471cef81537053cbfdd44ee629c293dd5",
+      "path": "src/core/wz_z80.h"
+    },
+    {
+      "sha256": "199f3dd0fefb8dc45f5ed2ebb48e5121a6fc54fb47d02f7073cc9bda57f54a9e",
+      "path": "src/core/wz_machine.c"
+    },
+    {
+      "sha256": "92649806b076a4542c05d53b1a3e01bbf67ebfe25b76c92a333cf03e27809f4d",
+      "path": "src/core/wz_machine.h"
+    },
+    {
+      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09",
+      "path": "src/core/wz_machine_profile.c"
+    }
+  ]
+}
