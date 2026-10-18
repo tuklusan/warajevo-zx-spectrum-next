@@ -1,0 +1,29 @@
+name: Project-owned index register and stack acceptance
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  indexed-state:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure indexed state acceptance
+        run: cmake -S ci/test/cpu-indexed-state -B dist/cpu-indexed-state -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build indexed state acceptance
+        run: cmake --build dist/cpu-indexed-state --target wz_cpu_indexed_state --parallel 2
+      - name: Check indexed register stack branch and bus trace
+        run: |
+          set -o pipefail
+          dist/cpu-indexed-state/wz_cpu_indexed_state | tee dist/cpu-indexed-state/proof.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-indexed-state-proof
+          path: dist/cpu-indexed-state/proof.json
+          if-no-files-found: error
