@@ -1,0 +1,29 @@
+name: Project-owned primary increment decrement trace
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  primary-increment:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure increment decrement acceptance
+        run: cmake -S ci/test/cpu-primary-increment -B dist/cpu-primary-increment -G Ninja -DCMAKE_BUILD_TYPE=Release
+      - name: Build increment decrement acceptance
+        run: cmake --build dist/cpu-primary-increment --target wz_cpu_primary_increment --parallel 2
+      - name: Check state bus and trace
+        run: |
+          set -o pipefail
+          dist/cpu-primary-increment/wz_cpu_primary_increment | tee dist/cpu-primary-increment/proof.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-primary-increment-proof
+          path: dist/cpu-primary-increment/proof.json
+          if-no-files-found: error
