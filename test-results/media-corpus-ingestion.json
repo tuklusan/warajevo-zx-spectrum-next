@@ -1,10 +1,10 @@
 {
   "testId": "media-corpus-ingestion",
   "status": "pass",
-  "commit": "27b26d20e7cb3502314c1b3a765c37183b177ad4",
-  "runId": 36616258713,
+  "commit": "d5e7f96407c4672ee65e45033c2d1c979dde6a3a",
+  "runId": 39342822175,
   "runner": "Linux/X64",
-  "timestamp": "2026-09-29T19:12:53+00:00",
+  "timestamp": "2026-10-19T23:38:55+00:00",
   "caseCount": 21,
   "mediaSummary": {
     "files": 20,
@@ -46,7 +46,7 @@
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "84d9e0b84a02993917b0e74cb9ba0d71158f45223a707d801ce927029ab2b0aa"
+      "sha256": "92649806b076a4542c05d53b1a3e01bbf67ebfe25b76c92a333cf03e27809f4d"
     },
     {
       "path": "src/core/wz_tape.c",
