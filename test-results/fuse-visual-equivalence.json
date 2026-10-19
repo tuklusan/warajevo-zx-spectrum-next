@@ -1,13 +1,13 @@
 {
   "schema": 1,
   "status": "pass",
-  "projectCommit": "0b3a68d99811c11b9134dc7cedbbb843871e907a",
-  "workflowRunId": "39166924979",
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39166924979",
+  "projectCommit": "46353bb5255072355bf94042046fc384e3831d75",
+  "workflowRunId": "39341561983",
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39341561983",
   "fuseRevision": "7edc2418ce11837d9ede799f7e0445440beead1d",
   "romSha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42",
   "reference": {
-    "artifact": "fuse-screen-reference-0b3a68d99811c11b9134dc7cedbbb843871e907a",
+    "artifact": "fuse-screen-reference-46353bb5255072355bf94042046fc384e3831d75",
     "sha256": "d93bbbd59a0a7a675780f198697401b2e2f63b85a6fa2d9469107e7d82b83302",
     "size": [
       320,
@@ -28,7 +28,7 @@
   "platforms": {
     "windows-x64": {
       "status": "pass",
-      "artifact": "fuse-visual-equivalence-windows-x86_64-0b3a68d99811c11b9134dc7cedbbb843871e907a",
+      "artifact": "fuse-visual-equivalence-windows-x86_64-46353bb5255072355bf94042046fc384e3831d75",
       "captureSha256": "2c791d54f7e92c84d24150419b2a83d3dd18fb4f9c9ecb3611e86037b57b68dc",
       "normalizedSha256": "0651359a146523079e090cb8e7331776b42ca8c920e81330bcbcce2bd0e5f03e",
       "mismatchedPixels": 526,
@@ -37,7 +37,7 @@
     },
     "windows-arm64": {
       "status": "pass",
-      "artifact": "fuse-visual-equivalence-windows-arm64-0b3a68d99811c11b9134dc7cedbbb843871e907a",
+      "artifact": "fuse-visual-equivalence-windows-arm64-46353bb5255072355bf94042046fc384e3831d75",
       "captureSha256": "2c791d54f7e92c84d24150419b2a83d3dd18fb4f9c9ecb3611e86037b57b68dc",
       "normalizedSha256": "0651359a146523079e090cb8e7331776b42ca8c920e81330bcbcce2bd0e5f03e",
       "mismatchedPixels": 526,
@@ -46,7 +46,7 @@
     },
     "macos-x64": {
       "status": "pass",
-      "artifact": "fuse-visual-equivalence-macos-x86_64-0b3a68d99811c11b9134dc7cedbbb843871e907a",
+      "artifact": "fuse-visual-equivalence-macos-x86_64-46353bb5255072355bf94042046fc384e3831d75",
       "captureSha256": "26adbf33765354ef0061f32372558de8338be334cd71e6c40165e58470d46028",
       "normalizedSha256": "fb40969d8687844dc1d5c795b1bf12b2cac47718b8928a7dcc4650a7010474a0",
       "mismatchedPixels": 526,
@@ -55,7 +55,7 @@
     },
     "macos-arm64": {
       "status": "pass",
-      "artifact": "fuse-visual-equivalence-macos-arm64-0b3a68d99811c11b9134dc7cedbbb843871e907a",
+      "artifact": "fuse-visual-equivalence-macos-arm64-46353bb5255072355bf94042046fc384e3831d75",
       "captureSha256": "528d86a315efa63a9098ee47996b4a0f37515e1c63113e3101d4ff72d6168bc4",
       "normalizedSha256": "d2a7c4c012810b4e7df624a9b4493a4718a37485893a54b3b064dbae5b5396fa",
       "mismatchedPixels": 526,
@@ -63,5 +63,5 @@
       "meanAbsoluteChannelError": 0.722735
     }
   },
-  "artifactRetentionDays": 30
+  "artifactRetentionDays": 1
 }
