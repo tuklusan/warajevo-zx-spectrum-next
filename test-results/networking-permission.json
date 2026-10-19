@@ -1,10 +1,10 @@
 {
   "testId": "networking-permission",
   "status": "pass",
-  "commit": "31e209c03931b765df5ceac6af3a174f11148aca",
+  "commit": "46353bb5255072355bf94042046fc384e3831d75",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-10-13T07:50:55+00:00",
-  "runId": 38365180523,
+  "timestamp": "2026-10-19T23:24:25+00:00",
+  "runId": 39341204303,
   "runners": [
     {
       "id": "windows-x64",
@@ -54,7 +54,7 @@
     },
     {
       "path": "src/app/wz_command_registry.h",
-      "sha256": "80110080861a05baae47cd6d294315055bb6b1a636c79891b55c56717cb53c94"
+      "sha256": "54cc2e949ff026fa183b0aa30cac9ebad8b431c97b80d966ef0ac1ff35a06087"
     },
     {
       "path": "src/app/wz_networking_commands.c",
@@ -66,7 +66,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "ba7e657fcc808d0ae55308702cb6ccc1dec5610d6c0ba4edbe22126466869dbf"
+      "sha256": "917b342f916c0bc9862dfba580531f3d1a9e5bfa6c2e4df1d6736d374bb32088"
     },
     {
       "path": "src/core/wz_machine_profile.c",
@@ -106,7 +106,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
+      "sha256": "24eaac015e950cd317be13ddb79c33ce92a01f106fef3dbfbb7ce433c9557ffc"
     },
     {
       "path": "src/core/wz_microdrive.c",
@@ -150,15 +150,15 @@
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "d57cd0aaab0ae29e6e056593b9ca574d958523b89ee810335aec88b714338b61"
+      "sha256": "7ec1524e75e469b1b994a0209af86445dd21897cc7470473909fa2ae3a2d962a"
     },
     {
       "path": "src/core/wz_trace.c",
-      "sha256": "d5283eff30dcaadb192ab2465901423abef769976687129c967e521f22bb8dd2"
+      "sha256": "f317165de22d68da5d10ca3f39ddf0d3f4ee65451f064736da323a01b4a7844b"
     },
     {
       "path": "src/core/wz_z80.c",
-      "sha256": "4414a17180681cc18c03a3a84c960196c1fa0d7bdfe09f59d0b664919a369195"
+      "sha256": "a4a33d8eeb01eba32cfea2af38e8d65ab8b89c5e0b8cee7de93ba34781cbec49"
     }
   ]
 }

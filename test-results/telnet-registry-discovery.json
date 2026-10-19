@@ -1,10 +1,10 @@
 {
   "testId": "telnet-registry-discovery",
   "status": "pass",
-  "commit": "56de09d2dd112bf8f232dea597358de6bd5321a7",
+  "commit": "46353bb5255072355bf94042046fc384e3831d75",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-09-28T12:50:45+00:00",
-  "runId": 36422303797,
+  "timestamp": "2026-10-19T23:24:16+00:00",
+  "runId": 39341204395,
   "runners": [
     {
       "id": "windows-x64",
@@ -16,7 +16,7 @@
       "id": "windows-arm64",
       "os": "Windows",
       "architecture": "ARM64",
-      "runnerName": "win11-arm64"
+      "runnerName": "win11-vs2026-arm64"
     },
     {
       "id": "macos-x64",
@@ -82,7 +82,7 @@
     },
     {
       "path": "src/app/wz_command_registry.h",
-      "sha256": "80110080861a05baae47cd6d294315055bb6b1a636c79891b55c56717cb53c94"
+      "sha256": "54cc2e949ff026fa183b0aa30cac9ebad8b431c97b80d966ef0ac1ff35a06087"
     },
     {
       "path": "src/app/wz_host_thread.c",
@@ -94,7 +94,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "3cf10294c51988e45577bc09e9e11b0e9465bf6035e1e376d94e7f115e9e73a6"
+      "sha256": "917b342f916c0bc9862dfba580531f3d1a9e5bfa6c2e4df1d6736d374bb32088"
     },
     {
       "path": "src/app/wz_telnet_alias_response.c",
@@ -106,11 +106,11 @@
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.c",
-      "sha256": "cd94bf55c10f62bb706cbdeacd04f76edb649a6d677416dfdd2960316e4500d8"
+      "sha256": "f9bc61d019c440e04102ea7a2c5af4146f812b9b16cd257d1bc244733b2da0d4"
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.h",
-      "sha256": "d6e7553f89c46a15706508e474beacf8b3cce6ea9ed6be95599ec84bb446eed1"
+      "sha256": "a525163fd16b5113b8166293055c88f46ebf53a373bb24d04254aafc395b7e82"
     },
     {
       "path": "src/app/wz_telnet_status.c",
@@ -122,15 +122,15 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "298943f37fe7df18bba9d16bdc5bbe64168ae4ca27f628f58ce30803735d6131"
+      "sha256": "6c8aaea15cdd323d0f9a7c28d12e254e2145cbdabf07849f05892dc3807758f0"
     },
     {
       "path": "src/app/wz_ui_layout.h",
-      "sha256": "cfe6cf9135dd1ef6771a1513e9dc3f72cd42636f4f005e576017aa745915d2d9"
+      "sha256": "30d784d2ff43fe237251e559cd8bc35d0d51b85c9e80953ba8f9cf6e2052ea7b"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "d3c09a688001e54098b3789349fd2e6ae37119e273c9d229848e32662813b285"
+      "sha256": "7c92695d1282104d62ac3b4c9c929a96a6ed7169533fa3e71ba6f93af1186469"
     },
     {
       "path": "src/core/audio/wz_audio_evidence.c",
@@ -150,11 +150,11 @@
     },
     {
       "path": "src/core/wz_bus.c",
-      "sha256": "cf2a35b00d1edc55fff977402391e4d685bb3b3346640205a9c41340e12df704"
+      "sha256": "a84850869148d8f70a2ee5b31570d9d221d7159cbff832982ddbc8dd1f69c47e"
     },
     {
       "path": "src/core/wz_debugger.c",
-      "sha256": "479b238f1aa668002aba6a4959750296cef553c2d4fe4425b0164b7f08e35eaf"
+      "sha256": "d3c93f73ed001493467c613554bdd142728bdc5c4b0f1f5cdc24068dcebe795a"
     },
     {
       "path": "src/core/wz_kempston.c",
@@ -166,7 +166,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "c6893ae4fe7a4fbcc5cb287238e5a00db3723bd90c52fdcf1fec5b391ff0547e"
+      "sha256": "24eaac015e950cd317be13ddb79c33ce92a01f106fef3dbfbb7ce433c9557ffc"
     },
     {
       "path": "src/core/wz_machine_profile.c",
@@ -190,7 +190,7 @@
     },
     {
       "path": "src/core/wz_runner.c",
-      "sha256": "6225a610d2b752d0edeeb073961bb84ba5c54ae446e58fe08569e68f33cd654d"
+      "sha256": "ded90228d1227ef361170e1bc95d2b98365fa380136fd5269733b6119d8c7b90"
     },
     {
       "path": "src/core/wz_scheduler.c",
@@ -198,19 +198,19 @@
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "32aa7ddaebe10ffc0a4d933162103c59d40280cd4392593d4136f41fba9338a7"
+      "sha256": "7ec1524e75e469b1b994a0209af86445dd21897cc7470473909fa2ae3a2d962a"
     },
     {
       "path": "src/core/wz_tape.c",
-      "sha256": "9691238f861d9c649690a2c3f94e7d9be52118c16d3aa6b3ae9de0ffa6a2fa96"
+      "sha256": "20c4523214f828d5129cbde2fb2c0d077ed15dae0daa923d019d1934b0c33d0b"
     },
     {
       "path": "src/core/wz_trace.c",
-      "sha256": "d5283eff30dcaadb192ab2465901423abef769976687129c967e521f22bb8dd2"
+      "sha256": "f317165de22d68da5d10ca3f39ddf0d3f4ee65451f064736da323a01b4a7844b"
     },
     {
       "path": "src/core/wz_z80.c",
-      "sha256": "4414a17180681cc18c03a3a84c960196c1fa0d7bdfe09f59d0b664919a369195"
+      "sha256": "a4a33d8eeb01eba32cfea2af38e8d65ab8b89c5e0b8cee7de93ba34781cbec49"
     },
     {
       "path": "src/core/wz_zxnet.c",
