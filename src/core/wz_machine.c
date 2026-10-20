@@ -389,6 +389,7 @@ void wz_machine_destroy(wz_machine_t* machine)
         machine->timing_trace = 0;
         machine->has_48k_rom = 0u;
         machine->has_128k_rom = 0u;
+        memset(machine->rom_128k, 0, sizeof(machine->rom_128k));
         memset(machine->rom_128k_identity, 0,
                sizeof(machine->rom_128k_identity));
         machine->has_interface1_rom = 0u;

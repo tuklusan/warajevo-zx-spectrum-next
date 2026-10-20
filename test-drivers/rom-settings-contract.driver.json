@@ -13,11 +13,11 @@
     },
     {
       "path": "ci/test/rom-settings/contract.c",
-      "sha256": "5546ab47e8c0dcda505e903c324a0bc7b3fb05bd3116d264b6a30605c1b69adf"
+      "sha256": "77184e9208ab8ee1fbfa89e7babdf75a7d35df7b1086743d185339a5f0f527cd"
     },
     {
       "path": "src/app/wz_rom_settings.c",
-      "sha256": "1f8017ef13e84edbcaa1b66aaea82d8a305d32fd4f82c5144b3fb0e81d39b86a"
+      "sha256": "21a1cc1419278f102bfb8871085244ad6a2f49c79ef11ca621d622aa1cfb4eef"
     },
     {
       "path": "src/app/wz_rom_settings.h",
@@ -33,7 +33,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "ae62cc9b0c96d1502b94ed29581b2fe0b5f7e4aa1d378a53a2c8bdeb951793f3"
+      "sha256": "878304b76c1d146ed1b8140917db29569dce6f896abaff4546114d3059463a53"
     },
     {
       "path": "src/core/wz_machine.h",
@@ -49,7 +49,7 @@
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "b7ff7bcac245a3a79e4bf54485f4c509f604c463b298d806274669225666c5b4"
+      "sha256": "16d1d1f5ee9c5bcdc4d6266e21a92b604413ee0a738ccbda58164756b3d202de"
     },
     {
       "path": "src/core/wz_state.h",

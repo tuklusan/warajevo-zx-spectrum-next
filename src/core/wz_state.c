@@ -657,6 +657,9 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
         memset(machine->rom_128k_identity, 0,
                sizeof(machine->rom_128k_identity));
         if (extension_version >= 5u) {
+            if (offset > length || length - offset < 17u) {
+                return WZ_RESULT_INVALID_STATE;
+            }
             machine->has_128k_rom = data[offset++];
             machine->rom_128k_identity[0] = wz_state_read_u64(data + offset);
             offset += 8u;

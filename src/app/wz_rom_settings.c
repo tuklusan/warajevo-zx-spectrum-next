@@ -69,7 +69,8 @@ wz_result_t wz_rom_settings_select_128k(wz_rom_settings_t* settings,
                                         size_t bank1_length,
                                         bool license_approved)
 {
-    if (settings == 0 || profile == 0) return WZ_RESULT_INVALID_ARGUMENT;
+    if (settings == 0 || profile == 0 || bank0 == 0 || bank1 == 0)
+        return WZ_RESULT_INVALID_ARGUMENT;
     settings->machine_kind = profile->kind;
     settings->expected_identity = 0u;
     settings->identity = 0u;

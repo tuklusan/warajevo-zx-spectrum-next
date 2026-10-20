@@ -118,6 +118,9 @@ int main(void)
         wz_machine_rom_identity(bank0, sizeof(bank0));
     banked_profile.expected_rom_bank1_identity =
         wz_machine_rom_identity(bank1, sizeof(bank1));
+    REQUIRE(wz_rom_settings_select_128k(&settings, &banked_profile,
+        NULL, sizeof(bank0), bank1, sizeof(bank1), true) ==
+        WZ_RESULT_INVALID_ARGUMENT);
     memset(&banked_machine, 0, sizeof(banked_machine));
     REQUIRE(wz_machine_init(&banked_machine, &banked_profile) == WZ_RESULT_OK);
     REQUIRE(wz_rom_settings_load_128k(&settings, &banked_machine,
