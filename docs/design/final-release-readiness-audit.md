@@ -7,9 +7,12 @@ SANYALnet Labs." See LICENSE for full terms. -->
 
 # Final release-readiness audit
 
-Tasks 454–460 have been audited against the current tracked workflows, source, test ledger, and acceptance inventories. Tasks 454, 456–459 are closed; Tasks 455 and the Task-460 acceptance gate remain open. Task 456 delivery is intentionally unsigned because the project has no Microsoft or Apple signing authority. This is an evidence inventory; wider release readiness remains gated on the other applicable criteria.
-test ledger, and acceptance inventories. Tasks 454 and 457–459 are closed;
-Tasks 455–456 and the Task-460 acceptance gate remain open. This is an evidence inventory, not release approval.
+Tasks 454–460 have been audited against the current tracked workflows, source,
+test ledger, and acceptance inventories. Tasks 454 and 456–459 are closed;
+Tasks 455 and the Task-460 acceptance gate remain open. Task 456 delivery is
+intentionally unsigned because the project has no Microsoft or Apple signing
+authority. Wider release readiness remains gated on the other applicable
+criteria.
 Product builds, emulator tests, media runs, screenshots, and proof generation
 belong on hosted runners under Workflow 05.
 
