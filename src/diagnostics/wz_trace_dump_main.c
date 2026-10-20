@@ -51,6 +51,7 @@ static const char* event_kind_name(wz_trace_event_kind_t kind)
     case WZ_TRACE_BORDER_CHANGE: return "border_change";
     case WZ_TRACE_MIC_CHANGE: return "mic_change";
     case WZ_TRACE_EAR_CHANGE: return "ear_change";
+    case WZ_TRACE_INTERFACE1_IO: return "interface1_io";
     default: return "unknown";
     }
 }
@@ -301,6 +302,23 @@ static bool print_event(const wz_trace_event_t* event, void* context)
     if (event->kind == WZ_TRACE_EAR_CHANGE) {
         if (fprintf(output, "ear_transition from=%u to=%u tick=%" PRIu64 " ",
                     (unsigned)event->auxiliary, (unsigned)event->value,
+                    event->master_tick) < 0 ||
+            !print_timing_position(output, dump->profile, event->master_tick) ||
+            fputc('\n', output) == EOF) {
+            return false;
+        }
+    }
+    if (event->kind == WZ_TRACE_INTERFACE1_IO) {
+        const wz_byte_t motor_shift = (wz_byte_t)event->register_snapshot;
+        const wz_byte_t active_motor = (wz_byte_t)(event->register_snapshot >> 8u);
+        const char* direction = event->cycle == WZ_BUS_IO_READ ? "read" : "write";
+        if (fprintf(output,
+                    "interface1_io direction=%s port=%04x value=%02x"
+                    " control=%02x motor_shift=%02x active_motor=%02x"
+                    " tick=%" PRIu64 " ",
+                    direction, (unsigned)event->address,
+                    (unsigned)event->value, (unsigned)event->auxiliary,
+                    (unsigned)motor_shift, (unsigned)active_motor,
                     event->master_tick) < 0 ||
             !print_timing_position(output, dump->profile, event->master_tick) ||
             fputc('\n', output) == EOF) {

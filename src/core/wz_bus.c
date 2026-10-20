@@ -314,6 +314,26 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
             ((wz_qword_t)machine->cpu.main.h << 48u) |
             ((wz_qword_t)machine->cpu.main.l << 56u);
         wz_trace_emit_detail(machine->timing_trace, &event);
+        if (machine->networking_mode == WZ_NETWORKING_INTERFACE1 &&
+            (request->cycle == WZ_BUS_IO_READ ||
+             request->cycle == WZ_BUS_IO_WRITE) &&
+            (wz_machine_interface1_port_selected(request->address, 0xe7u) ||
+             wz_machine_interface1_port_selected(request->address, 0xefu) ||
+             wz_machine_interface1_port_selected(request->address, 0xf7u))) {
+            wz_trace_event_t interface1_event = {0};
+            interface1_event.kind = WZ_TRACE_INTERFACE1_IO;
+            interface1_event.master_tick = request->master_tick;
+            interface1_event.address = request->address;
+            interface1_event.program_counter = machine->cpu.program_counter;
+            interface1_event.value = request->value;
+            interface1_event.auxiliary = machine->interface1_control_latch;
+            interface1_event.cycle = (wz_byte_t)request->cycle;
+            interface1_event.t_states = request->t_states;
+            interface1_event.register_snapshot =
+                (wz_qword_t)machine->interface1_motor_shift |
+                ((wz_qword_t)machine->interface1_active_motor << 8u);
+            wz_trace_emit_detail(machine->timing_trace, &interface1_event);
+        }
     }
     if (wz_machine_trace_ula_until(machine, request->master_tick, true) !=
         WZ_RESULT_OK) {

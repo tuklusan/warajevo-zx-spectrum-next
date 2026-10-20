@@ -1,0 +1,46 @@
+{
+  "testId": "timing-trace-interface1",
+  "command": "Full native build and integrated CTest: wz_timing_trace_interface1_contract",
+  "requiredCases": 5,
+  "runnerMatrix": [
+    "windows-2025",
+    "ubuntu-24.04",
+    "ubuntu-24.04-arm",
+    "macos-15",
+    "macos-15-intel"
+  ],
+  "fixtures": [
+    {
+      "path": "ci/test/timing-trace-interface1/README.md",
+      "sha256": "1f0fada64763c418518edd97074e39b8fcd68d3928642abf86a9c33c7bb89729"
+    },
+    {
+      "path": "ci/test/timing-trace-interface1/trace-interface1-fixture.c",
+      "sha256": "03604d65da0b75313fbdba966e169eeabc73d57b69d9286f64e3c2aece70f36e"
+    },
+    {
+      "path": "ci/test/timing-trace-interface1/verify.cmake",
+      "sha256": "4d9d66d8480bff40c80a8192bf8f4a19a7e6a3212e6d3b21e92ca6b03152418d"
+    },
+    {
+      "path": "ci/test/timing-trace-interface1/write-proof.py",
+      "sha256": "e984843ce4de2f731fade79f138e3545f7e6fde4921d6a026df543c93d4f5071"
+    },
+    {
+      "path": "src/core/wz_bus.c",
+      "sha256": "1a185602bb9c8a6e25f9d14286a7b5905d7330126373ee7d41fc7e3fc46dfdcc"
+    },
+    {
+      "path": "src/core/wz_trace.h",
+      "sha256": "da4a77e1c387d93a30ad1bff1ba5c24d2d79dec6daf3ced9f471c7e6a4ac7142"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_dump_main.c",
+      "sha256": "16c89efb0fe1c80e54ccd8062f5d2f352a4ad6a171b6f7d364228d2e3e40c637"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "78625efecf0c0584d84d8db2153efb77aab851adb761bb4e7fe52f1b99f7f4a4"
+    }
+  ]
+}
