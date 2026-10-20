@@ -1,11 +1,11 @@
 {
   "testId": "tape-keyboard-load",
   "status": "pass",
-  "commit": "17f22a09c9964031e79dc2680dae1dbbc0b7b58b",
+  "commit": "10814559b19e9d68003bcfe719c4775f5aae4ee3",
   "runner": "Ubuntu 24.04 x86-64 hosted runner",
-  "timestamp": "2026-09-29T02:16:39+00:00",
-  "runId": 36511448563,
-  "observedOutput": "after J: E_LINE=5ccc PC=10af IFF=1 IY=5c3a IM=1 IRQ/ENTRY=16/16 KEYSCAN/LASTK/FLAGWRITE=16/1/1 FLAGVALUE=20 FLAGMEM/EI=20/0c FLAGCLEAR=16/16@0b6e FIRSTCLEAR=10b8:00 CLEAR_ENTRY=1 prev=1634 SP=ff42 RET=0d99 FLAGS=00 LASTK=ef SAMPLE/IFF/ELIGIBLE=32/16/16 IRQ_EI=16 ISR_TICKS=1762-2836 IFF_INST=112388/2138 CLEAR=1@03b5>03b6 EI/DI=17/1 LINE=16/16 IRQWINDOW_IFF/ELIGIBLE=0/0 ULA_PRESSED/ROW_READS=8/16 KPATH_RET/CHECK/EMPTY=1/4719/4719 FLAGSET/Z=1/4718 MODE=00 FLAGS=0c IYFLAGS=0c KSTATE=ff000000ff LASTK=ef keyrow=1f before=15508080 line=ef0d800000000000\nbefore ENTER: E_LINE=5ccc bytes=ef22220d8000000000000000\nafter LOAD: PC=05f4 PROG=5ccb payload=5ccb BASIC=000a1b00 tape-segment=14267 end=0\nafter RUN: PC=61f1 code=f3110060 tape-segment=91431 end=1\nDIZZY4K BASIC and machine-code blocks loaded through the normal ROM path",
+  "timestamp": "2026-10-20T07:51:01+00:00",
+  "runId": 39389223036,
+  "observedOutput": "after J: E_LINE=5ccc PC=1600 IFF=1 IY=5c3a IM=1 IRQ/ENTRY=16/16 KEYSCAN/LASTK/FLAGWRITE=16/1/1 FLAGVALUE=20 FLAGMEM/EI=20/0c FLAGCLEAR=16/16@0b6e FIRSTCLEAR=10b8:00 CLEAR_ENTRY=1 prev=1634 SP=ff42 RET=0d99 FLAGS=00 LASTK=ef SAMPLE/IFF/ELIGIBLE=48/16/16 IRQ_EI=16 ISR_TICKS=1762-2836 IFF_INST=112549/2138 CLEAR=1@03b5>03b6 EI/DI=17/1 LINE=16/16 IRQWINDOW_IFF/ELIGIBLE=0/0 ULA_PRESSED/ROW_READS=8/16 KPATH_RET/CHECK/EMPTY=1/4726/4726 FLAGSET/Z=1/4725 MODE=00 FLAGS=0c IYFLAGS=0c KSTATE=ff000000ff LASTK=ef keyrow=1f before=15508080 line=ef0d800000000000\nbefore ENTER: E_LINE=5ccc bytes=ef22220d8000000000000000\nafter LOAD: PC=05f6 PROG=5ccb payload=5ccb BASIC=000a1b00 tape-segment=14267 end=0\nafter RUN: PC=61f1 code=f3110060 tape-segment=91431 end=1\nDIZZY4K BASIC and machine-code blocks loaded through the normal ROM path",
   "fixtures": [
     {
       "path": ".github/workflows/tape-keyboard-load.yml",
@@ -25,11 +25,11 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "224d130dcd6214b12cda239a157de528a26a7e3c0b4e5bc31348d963d2e92205"
+      "sha256": "360fe71b54c4ac705cd9d8f32d20bc017af7d3e6b59dc36ebf125a377cf62489"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "84d9e0b84a02993917b0e74cb9ba0d71158f45223a707d801ce927029ab2b0aa"
+      "sha256": "e7078ec7aca25b1a0b168fd050fd81506e98f0002433144acb8af38878637864"
     },
     {
       "path": "src/core/wz_keyboard_matrix.c",
@@ -41,11 +41,11 @@
     },
     {
       "path": "src/core/wz_machine_profile.c",
-      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09"
+      "sha256": "912a458de8d9a9d2d89bb57cac896e819d8ce82297a4e2ac707c90be1d4450b5"
     },
     {
       "path": "src/core/wz_machine_profile.h",
-      "sha256": "099be5f41f428466e5da622452abec6e0daf6402abcf4ab2e7d8c2df47457cc4"
+      "sha256": "1b246ec8245bf68400b0f9c5a1e69438264d8c671f23d656d82c87a032c4c700"
     },
     {
       "path": "src/core/wz_runner.c",
@@ -57,7 +57,7 @@
     },
     {
       "path": "src/core/wz_tape.c",
-      "sha256": "5792fabbfc3c6956444c3532097cb0febb1d3497e988fd2a62c9e677ea8aeac3"
+      "sha256": "20c4523214f828d5129cbde2fb2c0d077ed15dae0daa923d019d1934b0c33d0b"
     },
     {
       "path": "src/core/wz_tape.h",
