@@ -1,8 +1,8 @@
 {
   "testId": "private-game-rom-loading-observation",
   "status": "observation",
-  "commit": "e3e45db870587c22b4e5193473b3a5d4c7471f27",
-  "runId": 38650729563,
+  "commit": "cd6fc6b5fff9d265c2eb37bb6d7447c6a5a5b4c2",
+  "runId": 39344848510,
   "runner": "macOS ARM64",
   "mediaClass": "private ZX Spectrum game TAP",
   "romSha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42",
@@ -17,7 +17,7 @@
   ],
   "samples": [
     {
-      "elapsedSeconds": 30.096,
+      "elapsedSeconds": 30.026,
       "frameSha256": "d1706cfc9b9d5cb036c4fdbf78f4e90e59c1e5623b91f37cdfa59f4d6bfe35da",
       "width": 448,
       "height": 312,
@@ -48,7 +48,38 @@
       }
     },
     {
-      "elapsedSeconds": 90.028,
+      "elapsedSeconds": 90.164,
+      "frameSha256": "86242ac65c1842c2f49dc8ef4403da6059e1b7a94931757a05be8f627c8b8afd",
+      "width": 448,
+      "height": 312,
+      "changedPixelsFromBoot": 48088,
+      "changedPercentFromBoot": 34.403617,
+      "meanChannelDifferenceFromBoot": 65.463828,
+      "dominantColors": [
+        {
+          "rgb": "#c0c0c0",
+          "pixels": 91381
+        },
+        {
+          "rgb": "#000000",
+          "pixels": 47104
+        },
+        {
+          "rgb": "#c00000",
+          "pixels": 1291
+        }
+      ],
+      "textSignals": {
+        "romCopyright": false,
+        "loadCommand": false,
+        "tapeError": false,
+        "gameTitle": false,
+        "startPrompt": false,
+        "score": false
+      }
+    },
+    {
+      "elapsedSeconds": 180.012,
       "frameSha256": "d1706cfc9b9d5cb036c4fdbf78f4e90e59c1e5623b91f37cdfa59f4d6bfe35da",
       "width": 448,
       "height": 312,
@@ -79,17 +110,17 @@
       }
     },
     {
-      "elapsedSeconds": 180.143,
-      "frameSha256": "d1706cfc9b9d5cb036c4fdbf78f4e90e59c1e5623b91f37cdfa59f4d6bfe35da",
+      "elapsedSeconds": 240.05,
+      "frameSha256": "86242ac65c1842c2f49dc8ef4403da6059e1b7a94931757a05be8f627c8b8afd",
       "width": 448,
       "height": 312,
-      "changedPixelsFromBoot": 48426,
-      "changedPercentFromBoot": 34.645433,
-      "meanChannelDifferenceFromBoot": 65.773352,
+      "changedPixelsFromBoot": 48088,
+      "changedPercentFromBoot": 34.403617,
+      "meanChannelDifferenceFromBoot": 65.463828,
       "dominantColors": [
         {
           "rgb": "#c0c0c0",
-          "pixels": 91043
+          "pixels": 91381
         },
         {
           "rgb": "#000000",
@@ -97,51 +128,20 @@
         },
         {
           "rgb": "#c00000",
-          "pixels": 1629
+          "pixels": 1291
         }
       ],
       "textSignals": {
         "romCopyright": false,
         "loadCommand": false,
         "tapeError": false,
-        "gameTitle": true,
+        "gameTitle": false,
         "startPrompt": false,
         "score": false
       }
     },
     {
-      "elapsedSeconds": 240.172,
-      "frameSha256": "d1706cfc9b9d5cb036c4fdbf78f4e90e59c1e5623b91f37cdfa59f4d6bfe35da",
-      "width": 448,
-      "height": 312,
-      "changedPixelsFromBoot": 48426,
-      "changedPercentFromBoot": 34.645433,
-      "meanChannelDifferenceFromBoot": 65.773352,
-      "dominantColors": [
-        {
-          "rgb": "#c0c0c0",
-          "pixels": 91043
-        },
-        {
-          "rgb": "#000000",
-          "pixels": 47104
-        },
-        {
-          "rgb": "#c00000",
-          "pixels": 1629
-        }
-      ],
-      "textSignals": {
-        "romCopyright": false,
-        "loadCommand": false,
-        "tapeError": false,
-        "gameTitle": true,
-        "startPrompt": false,
-        "score": false
-      }
-    },
-    {
-      "elapsedSeconds": 300.186,
+      "elapsedSeconds": 300.026,
       "frameSha256": "0b05c9f1f4e1b39d44ce53233712bebc202e6f0c6d94e12decaa7099f3c2f926",
       "width": 448,
       "height": 312,
@@ -219,35 +219,35 @@
     },
     "comparisons": [
       {
-        "elapsedSeconds": 30.096,
+        "elapsedSeconds": 30.026,
         "mismatchPercent": 71.29264,
         "activeScreenMismatchPercent": 20.446777,
         "borderMismatchPercent": 98.870056,
         "meanChannelError": 132.284985
       },
       {
-        "elapsedSeconds": 90.028,
+        "elapsedSeconds": 90.164,
+        "mismatchPercent": 71.29264,
+        "activeScreenMismatchPercent": 20.446777,
+        "borderMismatchPercent": 98.870056,
+        "meanChannelError": 132.517585
+      },
+      {
+        "elapsedSeconds": 180.012,
         "mismatchPercent": 71.29264,
         "activeScreenMismatchPercent": 20.446777,
         "borderMismatchPercent": 98.870056,
         "meanChannelError": 132.284985
       },
       {
-        "elapsedSeconds": 180.143,
+        "elapsedSeconds": 240.05,
         "mismatchPercent": 71.29264,
         "activeScreenMismatchPercent": 20.446777,
         "borderMismatchPercent": 98.870056,
-        "meanChannelError": 132.284985
+        "meanChannelError": 132.517585
       },
       {
-        "elapsedSeconds": 240.172,
-        "mismatchPercent": 71.29264,
-        "activeScreenMismatchPercent": 20.446777,
-        "borderMismatchPercent": 98.870056,
-        "meanChannelError": 132.284985
-      },
-      {
-        "elapsedSeconds": 300.186,
+        "elapsedSeconds": 300.026,
         "mismatchPercent": 77.896062,
         "activeScreenMismatchPercent": 38.452148,
         "borderMismatchPercent": 99.289371,

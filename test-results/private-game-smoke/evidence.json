@@ -1,8 +1,8 @@
 {
   "testId": "private-game-rom-loading-observation",
   "status": "observation",
-  "commit": "6c3418c3e848412bf9e51d0d207195846ec95047",
-  "runId": 38575426948,
+  "commit": "cd6fc6b5fff9d265c2eb37bb6d7447c6a5a5b4c2",
+  "runId": 39343920182,
   "runner": "macOS ARM64",
   "mediaClass": "private ZX Spectrum game TAP",
   "romSha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42",
@@ -17,7 +17,7 @@
   ],
   "samples": [
     {
-      "elapsedSeconds": 30.057,
+      "elapsedSeconds": 30.163,
       "frameSha256": "d1706cfc9b9d5cb036c4fdbf78f4e90e59c1e5623b91f37cdfa59f4d6bfe35da",
       "width": 448,
       "height": 312,
@@ -48,7 +48,7 @@
       }
     },
     {
-      "elapsedSeconds": 90.038,
+      "elapsedSeconds": 90.132,
       "frameSha256": "86242ac65c1842c2f49dc8ef4403da6059e1b7a94931757a05be8f627c8b8afd",
       "width": 448,
       "height": 312,
@@ -79,7 +79,38 @@
       }
     },
     {
-      "elapsedSeconds": 180.156,
+      "elapsedSeconds": 180.062,
+      "frameSha256": "86242ac65c1842c2f49dc8ef4403da6059e1b7a94931757a05be8f627c8b8afd",
+      "width": 448,
+      "height": 312,
+      "changedPixelsFromBoot": 48088,
+      "changedPercentFromBoot": 34.403617,
+      "meanChannelDifferenceFromBoot": 65.463828,
+      "dominantColors": [
+        {
+          "rgb": "#c0c0c0",
+          "pixels": 91381
+        },
+        {
+          "rgb": "#000000",
+          "pixels": 47104
+        },
+        {
+          "rgb": "#c00000",
+          "pixels": 1291
+        }
+      ],
+      "textSignals": {
+        "romCopyright": false,
+        "loadCommand": false,
+        "tapeError": false,
+        "gameTitle": false,
+        "startPrompt": false,
+        "score": false
+      }
+    },
+    {
+      "elapsedSeconds": 240.181,
       "frameSha256": "d1706cfc9b9d5cb036c4fdbf78f4e90e59c1e5623b91f37cdfa59f4d6bfe35da",
       "width": 448,
       "height": 312,
@@ -110,38 +141,7 @@
       }
     },
     {
-      "elapsedSeconds": 240.094,
-      "frameSha256": "d1706cfc9b9d5cb036c4fdbf78f4e90e59c1e5623b91f37cdfa59f4d6bfe35da",
-      "width": 448,
-      "height": 312,
-      "changedPixelsFromBoot": 48426,
-      "changedPercentFromBoot": 34.645433,
-      "meanChannelDifferenceFromBoot": 65.773352,
-      "dominantColors": [
-        {
-          "rgb": "#c0c0c0",
-          "pixels": 91043
-        },
-        {
-          "rgb": "#000000",
-          "pixels": 47104
-        },
-        {
-          "rgb": "#c00000",
-          "pixels": 1629
-        }
-      ],
-      "textSignals": {
-        "romCopyright": false,
-        "loadCommand": false,
-        "tapeError": false,
-        "gameTitle": true,
-        "startPrompt": false,
-        "score": false
-      }
-    },
-    {
-      "elapsedSeconds": 300.046,
+      "elapsedSeconds": 300.116,
       "frameSha256": "0b05c9f1f4e1b39d44ce53233712bebc202e6f0c6d94e12decaa7099f3c2f926",
       "width": 448,
       "height": 312,
