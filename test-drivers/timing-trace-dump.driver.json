@@ -1,7 +1,7 @@
 {
   "testId": "timing-trace-dump",
   "command": "cmake -S ci/test/timing-trace-dump -B dist/timing-trace-dump -DCMAKE_BUILD_TYPE=Debug && cmake --build dist/timing-trace-dump --config Debug --target wz_trace_dump wz_trace_dump_fixture --parallel 2 && ctest --test-dir dist/timing-trace-dump -C Debug --output-on-failure --verbose -R ^wz_trace_dump_cli_contract$",
-  "requiredCases": 10,
+  "requiredCases": 12,
   "runnerMatrix": [
     "windows-2025",
     "windows-11-arm",
@@ -15,23 +15,23 @@
     },
     {
       "path": "ci/test/timing-trace-dump/README.md",
-      "sha256": "0a257476afe322ce4e0520b62b2fb599d38acba7e26d2fc4373603d5bbf4c4c5"
+      "sha256": "14fd082d9e0edbfd61fad1ef7bcf02138914f3d6336aec973b13e2d2a1a03c2a"
     },
     {
       "path": "ci/test/timing-trace-dump/trace-dump-fixture.c",
-      "sha256": "ba8c0eb5e1451b0c126db35a26220bd59ecf57fc9e332359fb86929e3bd91e76"
+      "sha256": "d1b1d497b6d0b5579b37447237ffa047055e7e4a752be68e19e89d819fd92fe1"
     },
     {
       "path": "ci/test/timing-trace-dump/verify.cmake",
-      "sha256": "3d1c186d57eeab68803ad642bbc093dd9c2f9c17e506e70a2276361bef5b192f"
+      "sha256": "b3cfe70f1f0f47a786b92d3daf15d323c9f87e40a777f3696812815634f1ad4c"
     },
     {
       "path": "ci/test/timing-trace-dump/write-proof.py",
-      "sha256": "20effa60a9770f6e6dfd7d30a3eecf7e25397d4c59dcf4820330624bf17a818c"
+      "sha256": "7ac550bd4ac6b52432498629b81faa3f33f3a3247e718bc531e386171b27fd0f"
     },
     {
       "path": "src/diagnostics/wz_trace_dump_main.c",
-      "sha256": "bee6fea121a68e54f5657ac49b1265f1c7c52e5a6368ae23d5207e3274ba05b9"
+      "sha256": "a4b357f2a3ba6506f2d43d2207830b6c71b41ee159ef0de03fe0c6e3f9514777"
     },
     {
       "path": "src/diagnostics/wz_trace_file.c",
@@ -43,7 +43,7 @@
     },
     {
       "path": "src/core/wz_trace.h",
-      "sha256": "1d82e129b50ecd6cdbc8281e32ced9d1740d33417363df9524ec51b644d9fcf2"
+      "sha256": "855d1bd77211a7c3c8e875f3590e5c14fba504a5ca887ed0131a21a16d3b39b1"
     },
     {
       "path": "src/core/wz_z80.h",

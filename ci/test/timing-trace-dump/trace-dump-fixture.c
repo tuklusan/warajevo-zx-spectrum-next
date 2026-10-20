@@ -39,7 +39,8 @@ int main(int argc, char** argv)
     wz_trace_event_t event;
     const wz_dword_t mask = (UINT32_C(1) << WZ_TRACE_CPU_STATE_SYNC) |
         (UINT32_C(1) << WZ_TRACE_CPU_BUS) |
-        (UINT32_C(1) << WZ_TRACE_INTERRUPT);
+        (UINT32_C(1) << WZ_TRACE_INTERRUPT) |
+        (UINT32_C(1) << WZ_TRACE_BORDER_CHANGE);
     if (argc != 2 || wz_trace_file_create(&trace, argv[1], 1u, 0u, 0u, mask) !=
                           WZ_RESULT_OK) {
         fputs("could not create trace fixture\n", stderr);
@@ -79,6 +80,15 @@ int main(int argc, char** argv)
     event.master_tick = 42u;
     event.program_counter = 0x7788u;
     event.auxiliary = WZ_TRACE_INTERRUPT_NMI_ACCEPT;
+    wz_trace_file_emit(&event, &trace);
+
+    memset(&event, 0, sizeof(event));
+    event.kind = WZ_TRACE_BORDER_CHANGE;
+    event.sequence = 8u;
+    event.master_tick = 43u;
+    event.address = 0x00feu;
+    event.value = 3u;
+    event.auxiliary = 1u;
     wz_trace_file_emit(&event, &trace);
 
     if (trace.failed || wz_trace_file_freeze(&trace) != WZ_RESULT_OK) {

@@ -32,7 +32,7 @@ def main() -> None:
     driver = json.loads((root / "test-drivers/timing-trace-bus-context.driver.json")
                         .read_text(encoding="utf-8"))
     output = args.run_log.read_text(encoding="utf-8", errors="replace")
-    marker = "PASS cross-domain trace reconstructs interrupt, CPU, bus, and ULA timing"
+    marker = "PASS timing trace reconstructs interrupt, CPU, bus, ULA, and border timing"
     if marker not in output:
         raise SystemExit("timing trace bus-context success marker is missing")
 

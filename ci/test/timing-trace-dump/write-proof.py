@@ -32,7 +32,7 @@ def main() -> None:
     driver_path = root / "test-drivers/timing-trace-dump.driver.json"
     driver = json.loads(driver_path.read_text(encoding="utf-8"))
     output = args.run_log.read_text(encoding="utf-8", errors="replace")
-    marker = "PASS trace dump fields, same-tick ordering, and reconstructed CPU state"
+    marker = "PASS trace dump fields, same-tick ordering, reconstructed CPU state, and border transitions"
     if marker not in output:
         raise SystemExit("trace-dump CLI success marker is missing")
 

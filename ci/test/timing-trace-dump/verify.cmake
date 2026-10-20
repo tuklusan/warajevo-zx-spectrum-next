@@ -33,7 +33,9 @@ set(expected_output
     "bus_timing source=ula cycle=memory_write contention_delay_tstates=6"
     "sequence=7 tick=42 kind=interrupt(5)"
     "auxiliary=03"
-    "recovered=7")
+    "sequence=8 tick=43 kind=border_change(10)"
+    "border_transition from=1 to=3 tick=43"
+    "recovered=8")
 foreach(expected IN LISTS expected_output)
     string(FIND "${dump_output}${dump_error}" "${expected}" position)
     if(position EQUAL -1)
@@ -43,8 +45,12 @@ endforeach()
 
 string(FIND "${dump_output}" "sequence=6 tick=42" bus_position)
 string(FIND "${dump_output}" "sequence=7 tick=42" interrupt_position)
+string(FIND "${dump_output}" "sequence=8 tick=43" border_position)
 if(bus_position GREATER_EQUAL interrupt_position)
     message(FATAL_ERROR "same-tick trace events were not emitted in sequence order")
 endif()
+if(interrupt_position GREATER_EQUAL border_position)
+    message(FATAL_ERROR "border transition was not recovered after earlier events")
+endif()
 
-message("PASS trace dump fields, same-tick ordering, and reconstructed CPU state")
+message("PASS trace dump fields, same-tick ordering, reconstructed CPU state, and border transitions")

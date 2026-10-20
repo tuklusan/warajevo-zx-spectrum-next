@@ -1,7 +1,7 @@
 {
   "testId": "timing-trace-bus-context",
   "command": "cmake -S src/cmake -B dist/timing-trace-bus-context -DCMAKE_BUILD_TYPE=Release -DWZSN_BUILD_SOKOL_HOST=ON && cmake --build dist/timing-trace-bus-context --clean-first --config Release --parallel 2 && ctest --test-dir dist/timing-trace-bus-context -C Release --output-on-failure --verbose -R ^wz_timing_trace_bus_context$",
-  "requiredCases": 6,
+  "requiredCases": 7,
   "runnerMatrix": [
     "windows-2025",
     "ubuntu-24.04",
@@ -12,11 +12,11 @@
   "fixtures": [
     {
       "path": "ci/test/timing-trace-bus-context/timing-trace-bus-context.c",
-      "sha256": "2cf2b07998181f40beb975da49405b0648f6f0aa76bfba9b6c1d14d9d6c0624e"
+      "sha256": "daccd8a5016af7788ce5ec1bcb615d1f88558f333b3d6efd6574c72785f1ce6a"
     },
     {
       "path": "ci/test/timing-trace-bus-context/write-proof.py",
-      "sha256": "9386847bd9d37c293575b62e34476d21b0f5091292885b08ef758aec8ceed4bf"
+      "sha256": "3d7d271927c14e662acf4ac6eee345626eb5b152cb95bbe8094300ca79aeeac7"
     },
     {
       "path": "src/core/wz_bus.c",
@@ -28,7 +28,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "697b3197a47e62f1cf43f3ae63fb688e5def2df6ae78249cdc2b193034fa9d48"
+      "sha256": "8b30e3febd1756b28d478cdbbc826e7651cef04db71fb14241dd2a2f581973e9"
     },
     {
       "path": "src/core/wz_machine_profile.c",

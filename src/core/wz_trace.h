@@ -31,7 +31,8 @@ typedef enum {
     WZ_TRACE_CPU_STATE_DELTA = 7,
     /* Byte returned by an M1 cycle; pairs with the preceding CPU bus record. */
     WZ_TRACE_CPU_OPCODE_BYTE = 8,
-    WZ_TRACE_ULA_FETCH = 9
+    WZ_TRACE_ULA_FETCH = 9,
+    WZ_TRACE_BORDER_CHANGE = 10
 } wz_trace_event_kind_t;
 
 #define WZ_TRACE_ULA_BITMAP_FETCH 0u

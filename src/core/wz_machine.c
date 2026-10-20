@@ -1318,10 +1318,11 @@ wz_byte_t wz_machine_ula_port_fe_read(const wz_machine_t* machine,
 void wz_machine_ula_port_fe_write(wz_machine_t* machine, wz_word_t address,
                                   wz_byte_t value, wz_master_tick_t master_tick)
 {
-    (void)address;
+    wz_byte_t previous_border_color;
     if (machine == 0) {
         return;
     }
+    previous_border_color = machine->border_color;
     machine->ula_output = (wz_byte_t)(value & 0x1fu);
     machine->ula_output_tick = master_tick;
     wz_beeper_port_fe_write(&machine->beeper, value, master_tick);
@@ -1348,6 +1349,15 @@ void wz_machine_ula_port_fe_write(wz_machine_t* machine, wz_word_t address,
         machine->border_events[index].color = machine->border_color;
     }
     if (machine->timing_trace != 0) {
+        if (previous_border_color != machine->border_color) {
+            wz_trace_event_t border_event = {0};
+            border_event.kind = WZ_TRACE_BORDER_CHANGE;
+            border_event.master_tick = master_tick;
+            border_event.address = address;
+            border_event.value = machine->border_color;
+            border_event.auxiliary = previous_border_color;
+            wz_trace_emit_detail(machine->timing_trace, &border_event);
+        }
         wz_trace_event_t event = {0};
         event.kind = WZ_TRACE_DEVELOPER_MARKER;
         event.master_tick = master_tick;

@@ -19,6 +19,7 @@
 typedef struct {
     wz_trace_cpu_state_sync_t cpu;
     wz_trace_event_t first_bus_event;
+    wz_trace_event_t border_event;
     wz_qword_t line_assert_sequence;
     wz_qword_t interrupt_sample_sequence;
     wz_qword_t interrupt_accept_sequence;
@@ -27,6 +28,7 @@ typedef struct {
     size_t ula_fetch_count;
     size_t cpu_instruction_count;
     bool have_bus_event;
+    bool have_border_event;
     bool have_previous_event;
     bool timeline_ordered;
     bool bus_context_valid;
@@ -54,7 +56,7 @@ static void trace_file_emit_diagnostic(const wz_trace_event_t* event,
     }
 }
 
-static bool recover_cross_domain(const wz_trace_event_t* event, void* opaque)
+static bool recover_timing_trace(const wz_trace_event_t* event, void* opaque)
 {
     recovery_t* recovery = (recovery_t*)opaque;
 
@@ -91,6 +93,9 @@ static bool recover_cross_domain(const wz_trace_event_t* event, void* opaque)
             recovery->cpu.state.main.e == 0x66u &&
             recovery->cpu.state.main.h == 0x77u &&
             recovery->cpu.state.main.l == 0x88u;
+    } else if (event->kind == WZ_TRACE_BORDER_CHANGE) {
+        recovery->border_event = *event;
+        recovery->have_border_event = true;
     } else if (event->kind == WZ_TRACE_CPU_INSTRUCTION) {
         ++recovery->cpu_instruction_count;
     } else if (event->kind == WZ_TRACE_ULA_FETCH) {
@@ -124,6 +129,9 @@ int main(int argc, char** argv)
     trace_file_context_t trace_context = {0};
     recovery_t recovery = {0};
     wz_master_tick_t frame_ticks;
+    wz_master_tick_t border_write_tick;
+    wz_byte_t border_previous_color;
+    wz_byte_t border_new_color;
     wz_result_t recovery_status;
     size_t recovered_count = 0u;
     bool machine_initialized = false;
@@ -163,8 +171,16 @@ int main(int argc, char** argv)
     wz_trace_sink_init(&trace_sink, trace_file_emit_diagnostic, &trace_context);
     wz_machine_set_timing_trace(&machine, &trace_sink);
     if (wz_headless_runner_init(&runner, &machine, NULL) != WZ_RESULT_OK ||
-        wz_headless_runner_execute(&runner, frame_ticks) != WZ_RESULT_OK ||
-        trace_file.failed ||
+        wz_headless_runner_execute(&runner, frame_ticks) != WZ_RESULT_OK) {
+        goto cleanup;
+    }
+    border_write_tick = machine.master_tick;
+    border_previous_color = wz_machine_border_color(&machine);
+    border_new_color = (wz_byte_t)((border_previous_color + 1u) & 0x07u);
+    wz_machine_ula_port_fe_write(&machine, 0x00feu,
+        (wz_byte_t)((machine.ula_output & 0x18u) | border_new_color),
+        border_write_tick);
+    if (trace_file.failed ||
         wz_trace_file_freeze(&trace_file) != WZ_RESULT_OK) {
         goto cleanup;
     }
@@ -173,7 +189,7 @@ int main(int argc, char** argv)
 
     wz_trace_cpu_state_sync_init(&recovery.cpu);
     recovery.timeline_ordered = true;
-    recovery_status = wz_trace_file_recover(argv[1], recover_cross_domain,
+    recovery_status = wz_trace_file_recover(argv[1], recover_timing_trace,
                                             &recovery, &recovered_count);
     if (recovery_status != WZ_RESULT_OK ||
         recovered_count < WZ_ULA_CAPTURE_CELL_COUNT * 2u ||
@@ -182,6 +198,11 @@ int main(int argc, char** argv)
         !recovery.have_bus_event ||
         recovery.first_bus_event.cycle != WZ_BUS_M1_OPCODE_FETCH ||
         recovery.first_bus_event.bus_source != WZ_BUS_SOURCE_MEMORY ||
+        !recovery.have_border_event ||
+        recovery.border_event.master_tick != border_write_tick ||
+        recovery.border_event.address != 0x00feu ||
+        recovery.border_event.auxiliary != border_previous_color ||
+        recovery.border_event.value != border_new_color ||
         recovery.first_bus_event.program_counter != 0x2345u ||
         !recovery.bus_context_valid || !recovery.timeline_ordered ||
         !recovery.interrupt_ordered) {
@@ -198,7 +219,7 @@ int main(int argc, char** argv)
         goto cleanup;
     }
 
-    (void)puts("PASS cross-domain trace reconstructs interrupt, CPU, bus, and ULA timing");
+    (void)puts("PASS timing trace reconstructs interrupt, CPU, bus, ULA, and border timing");
     result = 0;
 
 cleanup:
