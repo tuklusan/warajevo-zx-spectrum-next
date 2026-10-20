@@ -23,7 +23,7 @@
     },
     {
       "path": "ci/test/timing-trace-behavior-contract/timing-trace-behavior-contract.c",
-      "sha256": "57dbd03a8eb02d866676abaf390df26d2fd616deccd15897fbac06cfed97ea98"
+      "sha256": "2e78022ec616d64f5802dfa712c11dc0b7a17e1901b185ee677b5e7d6db569bd"
     },
     {
       "path": "ci/test/timing-trace-behavior-contract/write-proof.py",
