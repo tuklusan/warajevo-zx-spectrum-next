@@ -33,6 +33,27 @@ typedef struct {
     bool interrupt_ordered;
 } recovery_t;
 
+typedef struct {
+    wz_trace_file_t* file;
+    bool reported;
+} trace_file_context_t;
+
+static void trace_file_emit_diagnostic(const wz_trace_event_t* event,
+                                       void* opaque)
+{
+    trace_file_context_t* context = (trace_file_context_t*)opaque;
+    wz_trace_file_emit(event, context->file);
+    if (context->file->failed && !context->reported) {
+        (void)fprintf(stderr, "trace emit failed: kind=%u seq=%llu tick=%llu "
+            "after=%llu/%llu\n", (unsigned)event->kind,
+            (unsigned long long)event->sequence,
+            (unsigned long long)event->master_tick,
+            (unsigned long long)context->file->last_sequence,
+            (unsigned long long)context->file->last_master_tick);
+        context->reported = true;
+    }
+}
+
 static bool recover_cross_domain(const wz_trace_event_t* event, void* opaque)
 {
     recovery_t* recovery = (recovery_t*)opaque;
@@ -100,16 +121,13 @@ int main(int argc, char** argv)
     wz_headless_runner_t runner = {0};
     wz_trace_sink_t trace_sink = {0};
     wz_trace_file_t trace_file = {0};
+    trace_file_context_t trace_context = {0};
     recovery_t recovery = {0};
     wz_master_tick_t frame_ticks;
     wz_result_t recovery_status;
-    wz_result_t runner_status;
-    wz_result_t execution_status;
-    wz_result_t freeze_status;
     size_t recovered_count = 0u;
     bool machine_initialized = false;
     bool trace_created = false;
-    const char* failure_stage = "machine init";
     int result = 1;
 
     if (argc != 2 || argv[1][0] == '\0') return 2;
@@ -134,27 +152,18 @@ int main(int argc, char** argv)
     frame_ticks = (wz_master_tick_t)machine.profile->tstates_per_frame *
         machine.profile->master_ticks_per_cpu_tstate;
 
-    failure_stage = "trace create";
     if (wz_trace_file_create(&trace_file, argv[1], 1u,
             (wz_dword_t)WZ_MACHINE_48K_PAL, 0u, UINT32_MAX) != WZ_RESULT_OK) {
         goto cleanup;
     }
     trace_created = true;
-    wz_trace_sink_init(&trace_sink, wz_trace_file_emit, &trace_file);
+    trace_context.file = &trace_file;
+    wz_trace_sink_init(&trace_sink, trace_file_emit_diagnostic, &trace_context);
     wz_machine_set_timing_trace(&machine, &trace_sink);
-    failure_stage = "frame execution";
-    runner_status = wz_headless_runner_init(&runner, &machine, NULL);
-    execution_status = runner_status == WZ_RESULT_OK ?
-        wz_headless_runner_execute(&runner, frame_ticks) : runner_status;
-    freeze_status = trace_file.failed ? WZ_RESULT_TRACE_FAILURE :
-        wz_trace_file_freeze(&trace_file);
-    if (runner_status != WZ_RESULT_OK || execution_status != WZ_RESULT_OK ||
-        trace_file.failed || freeze_status != WZ_RESULT_OK) {
-        (void)fprintf(stderr, "frame failed: init=%d execute=%d trace=%d "
-            "freeze=%d tick=%llu pc=%04x\n", (int)runner_status,
-            (int)execution_status, trace_file.failed ? 1 : 0,
-            (int)freeze_status, (unsigned long long)machine.master_tick,
-            (unsigned)machine.cpu.program_counter);
+    if (wz_headless_runner_init(&runner, &machine, NULL) != WZ_RESULT_OK ||
+        wz_headless_runner_execute(&runner, frame_ticks) != WZ_RESULT_OK ||
+        trace_file.failed ||
+        wz_trace_file_freeze(&trace_file) != WZ_RESULT_OK) {
         goto cleanup;
     }
     wz_machine_set_timing_trace(&machine, NULL);
@@ -162,7 +171,6 @@ int main(int argc, char** argv)
 
     wz_trace_cpu_state_sync_init(&recovery.cpu);
     recovery.timeline_ordered = true;
-    failure_stage = "trace recovery";
     recovery_status = wz_trace_file_recover(argv[1], recover_cross_domain,
                                             &recovery, &recovered_count);
     if (recovery_status != WZ_RESULT_OK ||
@@ -191,7 +199,6 @@ int main(int argc, char** argv)
     result = 0;
 
 cleanup:
-    if (result != 0) (void)fprintf(stderr, "trace failed at %s\n", failure_stage);
     if (machine_initialized) {
         wz_machine_set_timing_trace(&machine, NULL);
         wz_machine_destroy(&machine);
