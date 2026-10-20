@@ -8,6 +8,7 @@ SANYALnet Labs." See LICENSE for full terms.
 */
 
 #include "app/wz_rom_settings.h"
+#include "core/wz_state.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -25,15 +26,25 @@ int main(void)
     wz_machine_profile_t profile = *wz_machine_profile_48k_pal();
     wz_machine_t machine;
     wz_machine_t unsupported_machine;
+    wz_machine_t banked_machine;
+    wz_machine_profile_t banked_profile = *wz_machine_profile_128k_pal();
     wz_rom_settings_t settings;
     static wz_byte_t image[WZ_48K_ROM_SIZE];
     static wz_byte_t mismatch[WZ_48K_ROM_SIZE];
     static wz_byte_t original_memory[WZ_48K_ROM_SIZE];
+    static wz_byte_t bank0[WZ_48K_ROM_SIZE];
+    static wz_byte_t bank1[WZ_48K_ROM_SIZE];
+    static wz_byte_t serialized[WZ_STATE_MACHINE_LENGTH];
+    wz_state_writer_t writer;
     wz_qword_t identity;
 
     REQUIRE(wz_machine_profile_48k_pal()->expected_rom_identity ==
             UINT64_C(0x0a927c36965e6e82));
     REQUIRE(wz_machine_profile_128k_pal()->expected_rom_identity == 0u);
+    REQUIRE(wz_machine_profile_128k_pal()->expected_rom_bank0_identity ==
+            UINT64_C(0x167a39561d9acbe6));
+    REQUIRE(wz_machine_profile_128k_pal()->expected_rom_bank1_identity ==
+            UINT64_C(0x42501740662a4075));
     for (size_t index = 0u; index < sizeof(image); ++index) {
         image[index] = (wz_byte_t)(index * 37u + 19u);
     }
@@ -98,6 +109,46 @@ int main(void)
     REQUIRE(settings.status == WZ_ROM_SETTINGS_UNAVAILABLE);
     REQUIRE(unsupported_machine.has_48k_rom == 0u);
     wz_machine_destroy(&unsupported_machine);
+
+    for (size_t index = 0u; index < sizeof(bank0); ++index) {
+        bank0[index] = (wz_byte_t)(index * 13u + 7u);
+        bank1[index] = (wz_byte_t)(index * 29u + 3u);
+    }
+    banked_profile.expected_rom_bank0_identity =
+        wz_machine_rom_identity(bank0, sizeof(bank0));
+    banked_profile.expected_rom_bank1_identity =
+        wz_machine_rom_identity(bank1, sizeof(bank1));
+    memset(&banked_machine, 0, sizeof(banked_machine));
+    REQUIRE(wz_machine_init(&banked_machine, &banked_profile) == WZ_RESULT_OK);
+    REQUIRE(wz_rom_settings_load_128k(&settings, &banked_machine,
+        bank0, sizeof(bank0), bank1, sizeof(bank1), true) == WZ_RESULT_OK);
+    REQUIRE(settings.status == WZ_ROM_SETTINGS_READY);
+    REQUIRE(settings.bank_identity[0] == banked_profile.expected_rom_bank0_identity);
+    REQUIRE(settings.bank_identity[1] == banked_profile.expected_rom_bank1_identity);
+    REQUIRE(banked_machine.has_128k_rom != 0u);
+    REQUIRE(banked_machine.rom_128k_identity[0] ==
+            banked_profile.expected_rom_bank0_identity);
+    REQUIRE(banked_machine.rom_128k_identity[1] ==
+            banked_profile.expected_rom_bank1_identity);
+    REQUIRE(wz_machine_memory_read(&banked_machine, 0u) == bank0[0]);
+    wz_state_writer_init(&writer, serialized, sizeof(serialized));
+    REQUIRE(wz_state_serialize_machine(&banked_machine, &writer) ==
+            WZ_RESULT_OK);
+    REQUIRE(serialized[WZ_STATE_MACHINE_MEMORY_OFFSET + 65536u + 4u] == 5u);
+    REQUIRE(serialized[WZ_STATE_MACHINE_MEMORY_OFFSET + 65536u + 20u] == 1u);
+    REQUIRE(wz_machine_128k_paging_write(&banked_machine, 0x7ffdu, 0x10u) ==
+            WZ_RESULT_OK);
+    REQUIRE(wz_machine_memory_read(&banked_machine, 0u) == bank1[0]);
+    REQUIRE(wz_machine_128k_paging_write(&banked_machine, 0x7ffdu, 0u) ==
+            WZ_RESULT_OK);
+    REQUIRE(wz_machine_memory_read(&banked_machine, 0u) == bank0[0]);
+    bank1[0] ^= 0xffu;
+    REQUIRE(wz_rom_settings_load_128k(&settings, &banked_machine,
+        bank0, sizeof(bank0), bank1, sizeof(bank1), true) ==
+        WZ_RESULT_ROM_IDENTITY_MISMATCH);
+    REQUIRE(settings.status == WZ_ROM_SETTINGS_IDENTITY_MISMATCH);
+    REQUIRE(wz_machine_memory_read(&banked_machine, 0u) == bank0[0]);
+    wz_machine_destroy(&banked_machine);
 
     wz_machine_destroy(&machine);
     puts("ROM settings contract passed");

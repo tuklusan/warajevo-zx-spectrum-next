@@ -20,7 +20,7 @@ patent, trademark, and governing-law provisions.
 #define WZ_STATE_VERSION 15u
 #define WZ_STATE_HEADER_LENGTH WZ_STATE_MACHINE_MEMORY_OFFSET
 #define WZ_STATE_EXTENSION_MAGIC UINT32_C(0x4e535a57)
-#define WZ_STATE_EXTENSION_VERSION 4u
+#define WZ_STATE_EXTENSION_VERSION 5u
 #define WZ_STATE_EXTENSION_OFFSET (WZ_STATE_HEADER_LENGTH + 65536u)
 
 static wz_result_t wz_state_write(wz_state_writer_t* writer,
@@ -175,6 +175,8 @@ static wz_result_t wz_state_write_extension(wz_state_writer_t* writer,
                                              const wz_machine_t* machine)
 {
     size_t start;
+    const wz_word_t extension_version = machine != 0 &&
+        machine->has_128k_rom != 0u ? 5u : 4u;
 
     if (writer == 0 || machine == 0) {
         return WZ_RESULT_INVALID_ARGUMENT;
@@ -184,16 +186,40 @@ static wz_result_t wz_state_write_extension(wz_state_writer_t* writer,
         machine->ay.noise_input_clock_phase >= WZ_AY_NOISE_INPUT_CLOCK_DIVIDER) {
         return WZ_RESULT_INVALID_STATE;
     }
+    if (machine->has_128k_rom > 1u ||
+        (machine->has_128k_rom == 0u &&
+         (machine->rom_128k_identity[0] != 0u ||
+          machine->rom_128k_identity[1] != 0u)) ||
+        (machine->has_128k_rom != 0u &&
+         (machine->profile->kind != WZ_MACHINE_128K_PAL ||
+          machine->rom_128k_identity[0] !=
+              machine->profile->expected_rom_bank0_identity ||
+          machine->rom_128k_identity[1] !=
+              machine->profile->expected_rom_bank1_identity ||
+          wz_machine_rom_identity(machine->rom_128k, WZ_48K_ROM_SIZE) !=
+              machine->rom_128k_identity[0] ||
+          wz_machine_rom_identity(machine->rom_128k + WZ_48K_ROM_SIZE,
+              WZ_48K_ROM_SIZE) != machine->rom_128k_identity[1]))) {
+        return WZ_RESULT_INVALID_STATE;
+    }
     if (wz_state_write_u32(writer, WZ_STATE_EXTENSION_MAGIC) != WZ_RESULT_OK ||
-        wz_state_write_u16(writer, WZ_STATE_EXTENSION_VERSION) != WZ_RESULT_OK ||
+        wz_state_write_u16(writer, extension_version) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, machine->ay.tone_input_clock_phase) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, machine->ay.noise_input_clock_phase) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, machine->ay.envelope_input_clock_phase) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, machine->has_interface1_rom) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, (wz_byte_t)machine->interface1_rom_variant) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, machine->interface1_rom_page) != WZ_RESULT_OK ||
-        wz_state_write_u64(writer, machine->interface1_rom_identity) != WZ_RESULT_OK ||
-        wz_state_write_mdr(writer, &machine->microdrive) != WZ_RESULT_OK) {
+        wz_state_write_u64(writer, machine->interface1_rom_identity) != WZ_RESULT_OK) {
+        return WZ_RESULT_SERIALIZATION_FAILURE;
+    }
+    if (extension_version >= 5u &&
+        (wz_state_write_u8(writer, machine->has_128k_rom) != WZ_RESULT_OK ||
+         wz_state_write_u64(writer, machine->rom_128k_identity[0]) != WZ_RESULT_OK ||
+         wz_state_write_u64(writer, machine->rom_128k_identity[1]) != WZ_RESULT_OK)) {
+        return WZ_RESULT_SERIALIZATION_FAILURE;
+    }
+    if (wz_state_write_mdr(writer, &machine->microdrive) != WZ_RESULT_OK) {
         return WZ_RESULT_SERIALIZATION_FAILURE;
     }
     for (size_t slot = 1u; slot < WZ_MACHINE_MICRODRIVE_COUNT; ++slot) {
@@ -591,13 +617,18 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
         wz_byte_t image_present;
         wz_byte_t read_ready;
         wz_word_t extension_version;
+        const wz_byte_t loaded_128k_rom = machine->has_128k_rom;
+        const wz_qword_t loaded_128k_identity0 =
+            machine->rom_128k_identity[0];
+        const wz_qword_t loaded_128k_identity1 =
+            machine->rom_128k_identity[1];
 
         if (wz_state_read_u32(data + offset) != WZ_STATE_EXTENSION_MAGIC) {
             return WZ_RESULT_INVALID_STATE;
         }
         offset += 4u;
         extension_version = wz_read_le16(data + offset);
-        if (extension_version != 3u &&
+        if (extension_version != 3u && extension_version != 4u &&
             extension_version != WZ_STATE_EXTENSION_VERSION) {
             return WZ_RESULT_INVALID_STATE;
         }
@@ -620,6 +651,44 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
             (machine->has_interface1_rom == 0u && machine->interface1_rom_identity != 0u) ||
             (machine->has_interface1_rom != 0u && machine->interface1_rom_identity == 0u)) {
             return WZ_RESULT_INVALID_STATE;
+        }
+
+        machine->has_128k_rom = 0u;
+        memset(machine->rom_128k_identity, 0,
+               sizeof(machine->rom_128k_identity));
+        if (extension_version >= 5u) {
+            machine->has_128k_rom = data[offset++];
+            machine->rom_128k_identity[0] = wz_state_read_u64(data + offset);
+            offset += 8u;
+            machine->rom_128k_identity[1] = wz_state_read_u64(data + offset);
+            offset += 8u;
+            if (machine->has_128k_rom > 1u ||
+                (machine->has_128k_rom == 0u &&
+                 (machine->rom_128k_identity[0] != 0u ||
+                  machine->rom_128k_identity[1] != 0u)) ||
+                (machine->has_128k_rom != 0u &&
+                 (profile->kind != WZ_MACHINE_128K_PAL ||
+                  machine->rom_128k_identity[0] !=
+                      profile->expected_rom_bank0_identity ||
+                  machine->rom_128k_identity[1] !=
+                      profile->expected_rom_bank1_identity ||
+                  loaded_128k_rom == 0u ||
+                  loaded_128k_identity0 != machine->rom_128k_identity[0] ||
+                  loaded_128k_identity1 != machine->rom_128k_identity[1] ||
+                  wz_machine_rom_identity(machine->rom_128k,
+                      WZ_48K_ROM_SIZE) != loaded_128k_identity0 ||
+                  wz_machine_rom_identity(machine->rom_128k + WZ_48K_ROM_SIZE,
+                      WZ_48K_ROM_SIZE) != loaded_128k_identity1))) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+            if (machine->has_128k_rom == 0u) {
+                memset(machine->rom_128k_identity, 0,
+                       sizeof(machine->rom_128k_identity));
+            }
+        } else {
+            machine->has_128k_rom = 0u;
+            memset(machine->rom_128k_identity, 0,
+                   sizeof(machine->rom_128k_identity));
         }
 
         for (size_t slot = 0u; slot < WZ_MACHINE_MICRODRIVE_COUNT; ++slot) {

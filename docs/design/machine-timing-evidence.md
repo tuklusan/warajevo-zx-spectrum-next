@@ -82,15 +82,16 @@ Hashes identify the approved development/test ROM bytes without embedding them
 in a new public proof or final application package. Hashes do not grant
 redistribution rights.
 
-| Profile / ROM bank | Bytes | SHA-256 | Source |
+| Profile / ROM bank | Bytes | SHA-256 | Runtime FNV-1a 64 identity | Source |
 |---|---:|---|---|
-| 48K ROM | 16,384 | `d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42` | `roms/48.rom`; matches Fuse revision `7edc2418ce11837d9ede799f7e0445440beead1d` |
-| 128K ROM 0 | 16,384 | `3ba308f23b9471d13d9ba30c23030059a9ce5d4b317b85b86274b132651d1425` | Fuse revision `7edc2418ce11837d9ede799f7e0445440beead1d`, `roms/128-0.rom` |
-| 128K ROM 1 | 16,384 | `8d93c3342321e9d1e51d60afcd7d15f6a7afd978c231b43435a7c0757c60b9a3` | Fuse revision `7edc2418ce11837d9ede799f7e0445440beead1d`, `roms/128-1.rom` |
+| 48K ROM | 16,384 | `d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42` | `0x0a927c36965e6e82` | `roms/48.rom`; matches Fuse revision `7edc2418ce11837d9ede799f7e0445440beead1d` |
+| 128K ROM 0 | 16,384 | `3ba308f23b9471d13d9ba30c23030059a9ce5d4b317b85b86274b132651d1425` | `0x167a39561d9acbe6` | Fuse revision `7edc2418ce11837d9ede799f7e0445440beead1d`, `roms/128-0.rom` |
+| 128K ROM 1 | 16,384 | `8d93c3342321e9d1e51d60afcd7d15f6a7afd978c231b43435a7c0757c60b9a3` | `0x42501740662a4075` | Fuse revision `7edc2418ce11837d9ede799f7e0445440beead1d`, `roms/128-1.rom` |
 
 The ROM distribution notice is `roms/README.copyright`; final public packages
-remain ROM-free. The current core ROM loader and `expected_rom_identity`
-represent one 16K image, so the pair of base-128K ROM banks is hashed here but
-is not yet loadable or verified as a pair through the production ROM-settings
-workflow. Architecture completion remains open until that dual-bank contract
-is implemented and exercised with the external ROM pair.
+remain ROM-free. The production loader verifies two external 16K images as a
+pair and selects the visible bank using the 128K paging register. ROM bytes
+remain user supplied and are never copied into proof or package files. Local
+machine states record firmware identities and require the same external ROM
+pair to be loaded before restoring that state; hosted proof uses synthetic
+bank images and publishes no ROM bytes.

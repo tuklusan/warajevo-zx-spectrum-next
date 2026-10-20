@@ -27,7 +27,9 @@ static const wz_machine_profile_t wz_profile_48k = {
     32u,
     4u,
     1u,
-    UINT64_C(0x0a927c36965e6e82)
+    UINT64_C(0x0a927c36965e6e82),
+    0u,
+    0u
 };
 
 static const wz_machine_profile_t wz_profile_128k = {
@@ -49,7 +51,9 @@ static const wz_machine_profile_t wz_profile_128k = {
     32u,
     4u,
     1u,
-    0u
+    0u,
+    UINT64_C(0x167a39561d9acbe6),
+    UINT64_C(0x42501740662a4075)
 };
 
 const wz_machine_profile_t* wz_machine_profile_48k_pal(void)

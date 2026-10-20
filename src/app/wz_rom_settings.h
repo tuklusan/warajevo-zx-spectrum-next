@@ -31,6 +31,8 @@ typedef struct {
     wz_qword_t expected_identity;
     /* Identity of the selected candidate, including rejected candidates. */
     wz_qword_t identity;
+    wz_qword_t expected_bank_identity[WZ_128K_ROM_BANK_COUNT];
+    wz_qword_t bank_identity[WZ_128K_ROM_BANK_COUNT];
     wz_rom_settings_status_t status;
 } wz_rom_settings_t;
 
@@ -46,6 +48,20 @@ wz_result_t wz_rom_settings_load(wz_rom_settings_t* settings,
                                  size_t length,
                                  /* Caller-confirmed rights for these bytes. */
                                  bool license_approved);
+wz_result_t wz_rom_settings_select_128k(wz_rom_settings_t* settings,
+                                        const wz_machine_profile_t* profile,
+                                        const wz_byte_t* bank0,
+                                        size_t bank0_length,
+                                        const wz_byte_t* bank1,
+                                        size_t bank1_length,
+                                        bool license_approved);
+wz_result_t wz_rom_settings_load_128k(wz_rom_settings_t* settings,
+                                      wz_machine_t* machine,
+                                      const wz_byte_t* bank0,
+                                      size_t bank0_length,
+                                      const wz_byte_t* bank1,
+                                      size_t bank1_length,
+                                      bool license_approved);
 wz_machine_kind_t wz_rom_settings_machine_kind(
     const wz_rom_settings_t* settings);
 wz_qword_t wz_rom_settings_identity(const wz_rom_settings_t* settings);

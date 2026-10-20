@@ -26,6 +26,8 @@
 #include "core/wz_zxnet.h"
 
 #define WZ_48K_ROM_SIZE 16384u
+#define WZ_128K_ROM_BANK_COUNT 2u
+#define WZ_128K_ROM_SIZE (WZ_128K_ROM_BANK_COUNT * WZ_48K_ROM_SIZE)
 #define WZ_INTERFACE1_ROM_SIZE 16384u
 #define WZ_48K_RAM_SIZE 49152u
 #define WZ_128K_RAM_BANK_COUNT 8u
@@ -114,6 +116,9 @@ typedef struct wz_machine {
     wz_byte_t debugger_undo_valid;
     wz_byte_t memory[65536u];
     wz_byte_t has_48k_rom;
+    wz_byte_t rom_128k[WZ_128K_ROM_SIZE];
+    wz_byte_t has_128k_rom;
+    wz_qword_t rom_128k_identity[WZ_128K_ROM_BANK_COUNT];
     wz_byte_t interface1_rom[WZ_INTERFACE1_ROM_SIZE];
     wz_byte_t has_interface1_rom;
     wz_interface1_rom_variant_t interface1_rom_variant;
@@ -249,6 +254,11 @@ wz_byte_t wz_machine_contention_delay(const wz_machine_t* machine,
 wz_result_t wz_machine_load_48k_rom(wz_machine_t* machine,
                                     const wz_byte_t* bytes,
                                     size_t length);
+wz_result_t wz_machine_load_128k_roms(wz_machine_t* machine,
+                                      const wz_byte_t* bank0,
+                                      size_t bank0_length,
+                                      const wz_byte_t* bank1,
+                                      size_t bank1_length);
 wz_result_t wz_machine_load_interface1_rom(wz_machine_t* machine,
                                            const wz_byte_t* bytes,
                                            size_t length,

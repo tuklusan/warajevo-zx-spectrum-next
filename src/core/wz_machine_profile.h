@@ -36,6 +36,8 @@ typedef struct {
     wz_dword_t ula_fetch_interval_tstates;
     wz_dword_t ula_attribute_offset_tstates;
     wz_qword_t expected_rom_identity;
+    wz_qword_t expected_rom_bank0_identity;
+    wz_qword_t expected_rom_bank1_identity;
 } wz_machine_profile_t;
 
 const wz_machine_profile_t* wz_machine_profile_48k_pal(void);

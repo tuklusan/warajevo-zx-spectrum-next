@@ -138,6 +138,9 @@ typedef struct {
     wz_byte_t model_48k_rom[WZ_48K_ROM_SIZE];
     wz_qword_t model_48k_rom_identity;
     bool has_model_48k_rom;
+    wz_byte_t model_128k_rom[WZ_128K_ROM_SIZE];
+    wz_qword_t model_128k_rom_identity[WZ_128K_ROM_BANK_COUNT];
+    bool has_model_128k_rom;
     wz_sokol_audio_t audio;
     wz_host_pacing_t pacing;
     wz_speed_policy_t speed;
@@ -2505,14 +2508,38 @@ static wz_result_t wz_host_command_model_set(
         session->model_48k_rom_identity = session->machine.rom_identity;
         session->has_model_48k_rom = true;
     }
+    if (profile->kind == WZ_MACHINE_48K_PAL &&
+        session->machine.profile->kind == WZ_MACHINE_128K_PAL &&
+        session->machine.has_128k_rom != 0u) {
+        memcpy(session->model_128k_rom, session->machine.rom_128k,
+               sizeof(session->model_128k_rom));
+        memcpy(session->model_128k_rom_identity,
+               session->machine.rom_128k_identity,
+               sizeof(session->model_128k_rom_identity));
+        session->has_model_128k_rom = true;
+    }
     if (wz_machine_reconfigure_profile(&session->machine, profile) !=
         WZ_RESULT_OK) {
         result->reason = "model-change-failed";
         return WZ_RESULT_INVALID_STATE;
     }
     if (profile->kind == WZ_MACHINE_128K_PAL) {
-        (void)wz_rom_settings_select(&session->rom_settings, profile, NULL,
-                                     0u, true);
+        if (session->has_model_128k_rom &&
+            session->model_128k_rom_identity[0] ==
+                profile->expected_rom_bank0_identity &&
+            session->model_128k_rom_identity[1] ==
+                profile->expected_rom_bank1_identity) {
+            if (wz_rom_settings_load_128k(&session->rom_settings,
+                    &session->machine, session->model_128k_rom,
+                    WZ_48K_ROM_SIZE,
+                    session->model_128k_rom + WZ_48K_ROM_SIZE,
+                    WZ_48K_ROM_SIZE, true) != WZ_RESULT_OK) {
+                result->reason = "model-rom-restore-failed";
+                return WZ_RESULT_INVALID_STATE;
+            }
+        } else {
+            wz_rom_settings_init(&session->rom_settings);
+        }
     } else if (session->has_model_48k_rom &&
                session->model_48k_rom_identity ==
                    profile->expected_rom_identity) {
@@ -3041,6 +3068,73 @@ static wz_result_t wz_host_rom_settings_choose(
     if (profile == NULL) {
         result->reason = "machine-profile-unavailable";
         return WZ_RESULT_INVALID_PROFILE;
+    }
+    if (profile->kind == WZ_MACHINE_128K_PAL) {
+        wz_byte_t *bank0 = NULL;
+        wz_byte_t *bank1 = NULL;
+        size_t bank0_length = 0u;
+        size_t bank1_length = 0u;
+        char bank0_path[4096];
+        char bank1_path[4096];
+
+        if (!session->rom_license_approved) {
+            (void)wz_rom_settings_select_128k(&session->rom_settings, profile,
+                NULL, 0u, NULL, 0u, false);
+            result->reason = "rom-license-confirmation-required";
+            message = wz_host_rom_settings_status_text(
+                session->rom_settings.status);
+            load_result = WZ_RESULT_INVALID_STATE;
+        } else {
+            dialog_result = wz_file_dialog_open(bank0_path,
+                                                 sizeof(bank0_path));
+            if (dialog_result == WZ_FILE_DIALOG_CANCELLED) {
+                (void)snprintf(result->message, sizeof(result->message),
+                               "ROM selection cancelled");
+                session->rom_settings_message[0] = '\0';
+                return WZ_RESULT_OK;
+            }
+            if (dialog_result != WZ_FILE_DIALOG_SELECTED ||
+                !wz_host_read_file_limited(bank0_path, &bank0,
+                    &bank0_length, WZ_48K_ROM_SIZE)) {
+                result->reason = "rom-bank0-selection-or-read-failed";
+                message = "128K ROM bank 0 could not be selected or read.";
+                load_result = WZ_RESULT_INVALID_STATE;
+            } else {
+                dialog_result = wz_file_dialog_open(bank1_path,
+                                                     sizeof(bank1_path));
+                if (dialog_result == WZ_FILE_DIALOG_CANCELLED) {
+                    free(bank0);
+                    (void)snprintf(result->message, sizeof(result->message),
+                                   "ROM selection cancelled");
+                    session->rom_settings_message[0] = '\0';
+                    return WZ_RESULT_OK;
+                }
+                if (dialog_result != WZ_FILE_DIALOG_SELECTED ||
+                    !wz_host_read_file_limited(bank1_path, &bank1,
+                        &bank1_length, WZ_48K_ROM_SIZE)) {
+                    result->reason = "rom-bank1-selection-or-read-failed";
+                    message = "128K ROM bank 1 could not be selected or read.";
+                    load_result = WZ_RESULT_INVALID_STATE;
+                } else {
+                    load_result = wz_rom_settings_load_128k(
+                        &session->rom_settings, &session->machine,
+                        bank0, bank0_length, bank1, bank1_length, true);
+                    if (load_result == WZ_RESULT_OK) {
+                        message = "Both 128K ROM banks verified and loaded. Use Reset to boot.";
+                    } else {
+                        result->reason = "rom-bank-identity-mismatch";
+                        message = wz_host_rom_settings_status_text(
+                            session->rom_settings.status);
+                    }
+                }
+            }
+        }
+        free(bank0);
+        free(bank1);
+        (void)snprintf(result->message, sizeof(result->message), "%s", message);
+        (void)snprintf(session->rom_settings_message,
+            sizeof(session->rom_settings_message), "%s", message);
+        return load_result;
     }
     if (profile->expected_rom_identity == 0u) {
         (void)wz_rom_settings_select(&session->rom_settings, profile,
@@ -6388,7 +6482,12 @@ static void wz_host_ui_draw_rom_settings(struct nk_context* context,
         return;
     }
 
-    if (profile->expected_rom_identity == 0u) {
+    if (profile->kind == WZ_MACHINE_128K_PAL) {
+        (void)snprintf(expected_label, sizeof(expected_label),
+            "Required ROM banks: %016llX / %016llX",
+            (unsigned long long)profile->expected_rom_bank0_identity,
+            (unsigned long long)profile->expected_rom_bank1_identity);
+    } else if (profile->expected_rom_identity == 0u) {
         (void)snprintf(expected_label, sizeof(expected_label),
                        "Required ROM identity: unavailable");
     } else {
@@ -6396,7 +6495,13 @@ static void wz_host_ui_draw_rom_settings(struct nk_context* context,
                        "Required ROM identity: 0x%016llX",
                        (unsigned long long)profile->expected_rom_identity);
     }
-    if (wz_host_session.machine.has_48k_rom != 0u) {
+    if (profile->kind == WZ_MACHINE_128K_PAL &&
+        wz_host_session.machine.has_128k_rom != 0u) {
+        (void)snprintf(loaded_label, sizeof(loaded_label),
+            "Loaded ROM banks: %016llX / %016llX",
+            (unsigned long long)wz_host_session.machine.rom_128k_identity[0],
+            (unsigned long long)wz_host_session.machine.rom_128k_identity[1]);
+    } else if (wz_host_session.machine.has_48k_rom != 0u) {
         (void)snprintf(loaded_label, sizeof(loaded_label),
                        "Loaded core ROM identity: 0x%016llX",
                        (unsigned long long)wz_host_session.machine.rom_identity);
@@ -6408,6 +6513,12 @@ static void wz_host_ui_draw_rom_settings(struct nk_context* context,
         (void)snprintf(candidate_label, sizeof(candidate_label),
                        "Selected candidate identity: 0x%016llX",
                        (unsigned long long)wz_host_session.rom_settings.identity);
+    } else if (wz_host_session.rom_settings.bank_identity[0] != 0u ||
+               wz_host_session.rom_settings.bank_identity[1] != 0u) {
+        (void)snprintf(candidate_label, sizeof(candidate_label),
+            "Selected banks: %016llX / %016llX",
+            (unsigned long long)wz_host_session.rom_settings.bank_identity[0],
+            (unsigned long long)wz_host_session.rom_settings.bank_identity[1]);
     } else {
         (void)snprintf(candidate_label, sizeof(candidate_label),
                        "Selected candidate identity: none");
@@ -6429,7 +6540,9 @@ static void wz_host_ui_draw_rom_settings(struct nk_context* context,
     nk_layout_row_dynamic(context, 36.0f, 1);
     nk_label_wrap(context,
         wz_host_rom_settings_status_text(wz_host_session.rom_settings.status));
-    if (profile->expected_rom_identity != 0u) {
+    if (profile->expected_rom_identity != 0u ||
+        (profile->expected_rom_bank0_identity != 0u &&
+         profile->expected_rom_bank1_identity != 0u)) {
         license_approved = wz_host_session.rom_license_approved
             ? nk_true : nk_false;
         nk_layout_row_dynamic(context, 34.0f, 1);
@@ -6442,7 +6555,14 @@ static void wz_host_ui_draw_rom_settings(struct nk_context* context,
             if (wz_host_session.rom_license_approved &&
                 wz_host_session.rom_settings.status ==
                     WZ_ROM_SETTINGS_LICENSE_REQUIRED) {
-                if (wz_host_session.machine.has_48k_rom != 0u &&
+                if (profile->kind == WZ_MACHINE_128K_PAL &&
+                    wz_host_session.machine.has_128k_rom != 0u) {
+                    (void)wz_rom_settings_select_128k(
+                        &wz_host_session.rom_settings, profile,
+                        wz_host_session.machine.rom_128k, WZ_48K_ROM_SIZE,
+                        wz_host_session.machine.rom_128k + WZ_48K_ROM_SIZE,
+                        WZ_48K_ROM_SIZE, true);
+                } else if (wz_host_session.machine.has_48k_rom != 0u &&
                     wz_host_session.machine.rom_identity ==
                         profile->expected_rom_identity) {
                     (void)wz_rom_settings_select(

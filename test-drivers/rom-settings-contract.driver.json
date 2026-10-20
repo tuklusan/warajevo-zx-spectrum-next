@@ -13,39 +13,47 @@
     },
     {
       "path": "ci/test/rom-settings/contract.c",
-      "sha256": "fd85f526d595254a9ecb94d5c9a4227932db43707e516cdb3adfaf85dc6c360b"
+      "sha256": "5546ab47e8c0dcda505e903c324a0bc7b3fb05bd3116d264b6a30605c1b69adf"
     },
     {
       "path": "src/app/wz_rom_settings.c",
-      "sha256": "994b1adc805838998b182a193506462a9165359b0e86315b342ceb32d95752f3"
+      "sha256": "1f8017ef13e84edbcaa1b66aaea82d8a305d32fd4f82c5144b3fb0e81d39b86a"
     },
     {
       "path": "src/app/wz_rom_settings.h",
-      "sha256": "30eab69df6a396832f44d3bc34bf8f29adde294e7665642fa55fa0f17a52d0fa"
+      "sha256": "b0ad0c5b67c499658e0d6608a01d1de632ac87d772c300d08abe47d10d68df32"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "99527a814d61116d0c0ce593a4bba65e4b86273559204d7c173a2d892bdd8c27"
+      "sha256": "7c13e1e3b23c45bf2d3df2e1a2960acfabf4174bef95cd08b9599150ef4ce7f1"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "7c92695d1282104d62ac3b4c9c929a96a6ed7169533fa3e71ba6f93af1186469"
+      "sha256": "c4b038801b872b3e7149a7504e2086be805506f714e6c7f18b1a8c5ab2aaae45"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "24eaac015e950cd317be13ddb79c33ce92a01f106fef3dbfbb7ce433c9557ffc"
+      "sha256": "ae62cc9b0c96d1502b94ed29581b2fe0b5f7e4aa1d378a53a2c8bdeb951793f3"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "92649806b076a4542c05d53b1a3e01bbf67ebfe25b76c92a333cf03e27809f4d"
+      "sha256": "e7078ec7aca25b1a0b168fd050fd81506e98f0002433144acb8af38878637864"
     },
     {
       "path": "src/core/wz_machine_profile.c",
-      "sha256": "625e1583cbb59eebf67a58bc842913e6bd417a3f4eed975adce4fa34283fcfa5"
+      "sha256": "912a458de8d9a9d2d89bb57cac896e819d8ce82297a4e2ac707c90be1d4450b5"
     },
     {
       "path": "src/core/wz_machine_profile.h",
-      "sha256": "099be5f41f428466e5da622452abec6e0daf6402abcf4ab2e7d8c2df47457cc4"
+      "sha256": "1b246ec8245bf68400b0f9c5a1e69438264d8c671f23d656d82c87a032c4c700"
+    },
+    {
+      "path": "src/core/wz_state.c",
+      "sha256": "b7ff7bcac245a3a79e4bf54485f4c509f604c463b298d806274669225666c5b4"
+    },
+    {
+      "path": "src/core/wz_state.h",
+      "sha256": "46ec8063cc5976b743d53a23b64c34c84583878c9793434d3622c8f8a38f9aa3"
     }
   ]
 }

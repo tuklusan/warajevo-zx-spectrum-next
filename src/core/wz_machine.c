@@ -172,6 +172,9 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     machine->debugger_breakpoint_hit = 0u;
     machine->debugger_breakpoint_address = 0u;
     machine->has_48k_rom = 0u;
+    machine->has_128k_rom = 0u;
+    memset(machine->rom_128k, 0, sizeof(machine->rom_128k));
+    memset(machine->rom_128k_identity, 0, sizeof(machine->rom_128k_identity));
     machine->has_interface1_rom = 0u;
     machine->interface1_rom_variant = WZ_INTERFACE1_ROM_NEW;
     machine->interface1_rom_page = 0u;
@@ -246,6 +249,11 @@ wz_result_t wz_machine_reset(wz_machine_t* machine)
                WZ_128K_RAM_BANK_COUNT * WZ_128K_RAM_BANK_SIZE);
     }
     replacement.has_48k_rom = machine->has_48k_rom;
+    replacement.has_128k_rom = machine->has_128k_rom;
+    memcpy(replacement.rom_128k, machine->rom_128k,
+           sizeof(replacement.rom_128k));
+    memcpy(replacement.rom_128k_identity, machine->rom_128k_identity,
+           sizeof(replacement.rom_128k_identity));
     replacement.has_interface1_rom = machine->has_interface1_rom;
     memcpy(replacement.interface1_rom, machine->interface1_rom,
            sizeof(replacement.interface1_rom));
@@ -339,6 +347,17 @@ wz_result_t wz_machine_reconfigure_profile(
         replacement->has_48k_rom = 1u;
         replacement->rom_identity = machine->rom_identity;
     }
+    if (machine->has_128k_rom != 0u &&
+        profile->expected_rom_bank0_identity != 0u &&
+        profile->expected_rom_bank1_identity != 0u &&
+        machine->rom_128k_identity[0] == profile->expected_rom_bank0_identity &&
+        machine->rom_128k_identity[1] == profile->expected_rom_bank1_identity) {
+        memcpy(replacement->rom_128k, machine->rom_128k,
+               sizeof(replacement->rom_128k));
+        memcpy(replacement->rom_128k_identity, machine->rom_128k_identity,
+               sizeof(replacement->rom_128k_identity));
+        replacement->has_128k_rom = 1u;
+    }
     if (machine->has_interface1_rom != 0u) {
         memcpy(replacement->interface1_rom, machine->interface1_rom,
                sizeof(replacement->interface1_rom));
@@ -369,6 +388,9 @@ void wz_machine_destroy(wz_machine_t* machine)
         wz_bus_data_source_init(&machine->bus_data_source, 0, 0);
         machine->timing_trace = 0;
         machine->has_48k_rom = 0u;
+        machine->has_128k_rom = 0u;
+        memset(machine->rom_128k_identity, 0,
+               sizeof(machine->rom_128k_identity));
         machine->has_interface1_rom = 0u;
         machine->interface1_rom_variant = WZ_INTERFACE1_ROM_NEW;
         machine->interface1_rom_page = 0u;
@@ -898,6 +920,40 @@ wz_result_t wz_machine_load_48k_rom(wz_machine_t* machine,
     return WZ_RESULT_OK;
 }
 
+wz_result_t wz_machine_load_128k_roms(wz_machine_t* machine,
+                                      const wz_byte_t* bank0,
+                                      size_t bank0_length,
+                                      const wz_byte_t* bank1,
+                                      size_t bank1_length)
+{
+    wz_qword_t id0;
+    wz_qword_t id1;
+    const wz_machine_profile_t* profile;
+
+    if (machine == 0 || bank0 == 0 || bank1 == 0 ||
+        bank0_length != WZ_48K_ROM_SIZE || bank1_length != WZ_48K_ROM_SIZE) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    profile = machine->profile;
+    if (profile == 0 || profile->kind != WZ_MACHINE_128K_PAL ||
+        profile->expected_rom_bank0_identity == 0u ||
+        profile->expected_rom_bank1_identity == 0u) {
+        return WZ_RESULT_INVALID_PROFILE;
+    }
+    id0 = wz_machine_rom_identity(bank0, bank0_length);
+    id1 = wz_machine_rom_identity(bank1, bank1_length);
+    if (id0 != profile->expected_rom_bank0_identity ||
+        id1 != profile->expected_rom_bank1_identity) {
+        return WZ_RESULT_ROM_IDENTITY_MISMATCH;
+    }
+    memcpy(machine->rom_128k, bank0, bank0_length);
+    memcpy(machine->rom_128k + WZ_48K_ROM_SIZE, bank1, bank1_length);
+    machine->rom_128k_identity[0] = id0;
+    machine->rom_128k_identity[1] = id1;
+    machine->has_128k_rom = 1u;
+    return WZ_RESULT_OK;
+}
+
 wz_result_t wz_machine_load_interface1_rom(wz_machine_t* machine,
                                            const wz_byte_t* bytes,
                                            size_t length,
@@ -1076,6 +1132,10 @@ wz_byte_t wz_machine_memory_read(const wz_machine_t* machine, wz_word_t address)
         return machine->interface1_rom[address];
     }
     if (machine->profile != 0 && machine->profile->kind == WZ_MACHINE_128K_PAL) {
+        if (address < 0x4000u && machine->has_128k_rom != 0u) {
+            const size_t bank = (size_t)wz_machine_128k_rom_bank(machine);
+            return machine->rom_128k[bank * WZ_48K_ROM_SIZE + address];
+        }
         if (address >= 0xc000u) {
             return machine->ram_128k[(machine->paging_7ffd & 0x07u) *
                                      WZ_128K_RAM_BANK_SIZE + address - 0xc000u];
