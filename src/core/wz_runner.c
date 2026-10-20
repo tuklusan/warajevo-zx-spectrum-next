@@ -9,6 +9,7 @@
 #include "core/wz_runner.h"
 
 #include "core/wz_z80.h"
+#include "core/wz_machine_internal.h"
 
 wz_result_t wz_headless_runner_init(wz_headless_runner_t* runner,
                                      wz_machine_t* machine,
@@ -34,10 +35,7 @@ wz_result_t wz_headless_runner_advance(wz_headless_runner_t* runner,
     }
     wz_machine_update_interrupt_line(runner->machine);
     for (wz_master_tick_t offset = 0u; offset < ticks; ++offset) {
-        if (wz_machine_advance_tape(runner->machine, 1u) != WZ_RESULT_OK) {
-            return WZ_RESULT_INVALID_STATE;
-        }
-        ++runner->machine->master_tick;
+        wz_machine_advance_master_ticks(runner->machine, 1u);
         if (wz_ay_advance_master_ticks(&runner->machine->ay, 1u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
@@ -81,8 +79,7 @@ wz_result_t wz_headless_runner_execute(wz_headless_runner_t* runner,
         elapsed = runner->machine->master_tick - before;
         if (elapsed == 0u) return WZ_RESULT_INVALID_STATE;
         for (wz_master_tick_t offset = 0u; offset < elapsed; ++offset) {
-            if (wz_machine_advance_tape(runner->machine, 1u) != WZ_RESULT_OK ||
-                wz_ay_advance_master_ticks(&runner->machine->ay, 1u) != WZ_RESULT_OK) {
+            if (wz_ay_advance_master_ticks(&runner->machine->ay, 1u) != WZ_RESULT_OK) {
                 return WZ_RESULT_INVALID_STATE;
             }
             wz_machine_update_interrupt_line(runner->machine);

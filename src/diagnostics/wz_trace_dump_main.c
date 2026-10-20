@@ -50,6 +50,7 @@ static const char* event_kind_name(wz_trace_event_kind_t kind)
     case WZ_TRACE_ULA_FETCH: return "ula_fetch";
     case WZ_TRACE_BORDER_CHANGE: return "border_change";
     case WZ_TRACE_MIC_CHANGE: return "mic_change";
+    case WZ_TRACE_EAR_CHANGE: return "ear_change";
     default: return "unknown";
     }
 }
@@ -292,6 +293,15 @@ static bool print_event(const wz_trace_event_t* event, void* context)
                     "mic_transition port=%04x from=%u to=%u tick=%" PRIu64 " ",
                     (unsigned)event->address, (unsigned)event->auxiliary,
                     (unsigned)event->value, event->master_tick) < 0 ||
+            !print_timing_position(output, dump->profile, event->master_tick) ||
+            fputc('\n', output) == EOF) {
+            return false;
+        }
+    }
+    if (event->kind == WZ_TRACE_EAR_CHANGE) {
+        if (fprintf(output, "ear_transition from=%u to=%u tick=%" PRIu64 " ",
+                    (unsigned)event->auxiliary, (unsigned)event->value,
+                    event->master_tick) < 0 ||
             !print_timing_position(output, dump->profile, event->master_tick) ||
             fputc('\n', output) == EOF) {
             return false;

@@ -143,7 +143,7 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
                                                    request->t_states);
     request->contention_delay = contention_delay;
     if (contention_delay != 0u) {
-        machine->master_tick += (wz_master_tick_t)contention_delay * 2u;
+        wz_machine_advance_master_ticks(machine, (wz_master_tick_t)contention_delay * 2u);
         request->master_tick += (wz_master_tick_t)contention_delay * 2u;
     }
 

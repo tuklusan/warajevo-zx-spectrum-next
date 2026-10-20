@@ -805,7 +805,7 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
     wz_dword_t wide;
     size_t prefix_count = 1u;
 
-    machine->master_tick += 8u;
+    wz_machine_advance_master_ticks(machine, 8u);
     while (machine->memory[machine->cpu.program_counter] == 0xddu ||
            machine->memory[machine->cpu.program_counter] == 0xfdu) {
         wz_byte_t prefix = 0u;
@@ -816,7 +816,7 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
         }
         machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
         wz_z80_increment_r(&machine->cpu);
-        machine->master_tick += 8u;
+        wz_machine_advance_master_ticks(machine, 8u);
         active_prefix = prefix;
         prefix_count += 1u;
     }
@@ -878,7 +878,7 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
             }
         }
         wz_z80_execute_alu_value(&machine->cpu, (wz_byte_t)((opcode >> 3u) & 0x07u), value);
-        machine->master_tick += source == WZ_Z80_TARGET_HL_INDIRECT ? 30u : 8u;
+        wz_machine_advance_master_ticks(machine, source == WZ_Z80_TARGET_HL_INDIRECT ? 30u : 8u);
         return WZ_RESULT_OK;
     }
 
@@ -917,7 +917,7 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
                 return WZ_RESULT_INVALID_STATE;
             }
         }
-        machine->master_tick += 30u;
+        wz_machine_advance_master_ticks(machine, 30u);
         return WZ_RESULT_OK;
     }
 
@@ -949,7 +949,7 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
             }
             *register_value = value;
         }
-        machine->master_tick += 8u;
+        wz_machine_advance_master_ticks(machine, 8u);
         return WZ_RESULT_OK;
     }
 
@@ -967,7 +967,7 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
         } else {
             *index = (wz_word_t)((*index & 0xff00u) | value);
         }
-        machine->master_tick += 8u;
+        wz_machine_advance_master_ticks(machine, 8u);
         return WZ_RESULT_OK;
     case 0x26u:
     case 0x2eu:
@@ -981,7 +981,7 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
         } else {
             *index = (wz_word_t)((*index & 0xff00u) | value);
         }
-        machine->master_tick += 14u;
+        wz_machine_advance_master_ticks(machine, 14u);
         return WZ_RESULT_OK;
     case 0x34u:
     case 0x35u:
@@ -1005,7 +1005,7 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
                        address, &value, 3u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
-        machine->master_tick += 38u;
+        wz_machine_advance_master_ticks(machine, 38u);
         return WZ_RESULT_OK;
     case 0x36u:
         if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,
@@ -1024,7 +1024,7 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
                        address, &value, 3u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
-        machine->master_tick += 30u;
+        wz_machine_advance_master_ticks(machine, 30u);
         return WZ_RESULT_OK;
     case 0x21u:
         if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,
@@ -1038,7 +1038,7 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
         }
         machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
         *index = (wz_word_t)low | ((wz_word_t)high << 8u);
-        machine->master_tick += 20u;
+        wz_machine_advance_master_ticks(machine, 20u);
         return WZ_RESULT_OK;
     case 0x22u:
     case 0x2au:
@@ -1074,15 +1074,15 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
             }
             *index = (wz_word_t)low | ((wz_word_t)high << 8u);
         }
-        machine->master_tick += 32u;
+        wz_machine_advance_master_ticks(machine, 32u);
         return WZ_RESULT_OK;
     case 0x23u:
         *index = wz_z80_add16(*index, 1u);
-        machine->master_tick += 12u;
+        wz_machine_advance_master_ticks(machine, 12u);
         return WZ_RESULT_OK;
     case 0x2bu:
         *index = wz_z80_add16(*index, 0xffffu);
-        machine->master_tick += 12u;
+        wz_machine_advance_master_ticks(machine, 12u);
         return WZ_RESULT_OK;
     case 0x09u:
     case 0x19u:
@@ -1105,21 +1105,21 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
         *index = result;
         machine->cpu.main.f = flags;
         machine->cpu.q = 1u;
-        machine->master_tick += 22u;
+        wz_machine_advance_master_ticks(machine, 22u);
         return WZ_RESULT_OK;
     case 0xe9u:
         machine->cpu.program_counter = *index;
-        machine->master_tick += 8u;
+        wz_machine_advance_master_ticks(machine, 8u);
         return WZ_RESULT_OK;
     case 0xe3u:
         if (wz_z80_exchange_stack_pair(machine, index) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
-        machine->master_tick += 38u;
+        wz_machine_advance_master_ticks(machine, 38u);
         return WZ_RESULT_OK;
     case 0xf9u:
         machine->cpu.stack_pointer = *index;
-        machine->master_tick += 12u;
+        wz_machine_advance_master_ticks(machine, 12u);
         return WZ_RESULT_OK;
     case 0xe1u:
         if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,
@@ -1133,7 +1133,7 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
         }
         machine->cpu.stack_pointer = wz_z80_add16(machine->cpu.stack_pointer, 1u);
         *index = (wz_word_t)low | ((wz_word_t)high << 8u);
-        machine->master_tick += 20u;
+        wz_machine_advance_master_ticks(machine, 20u);
         return WZ_RESULT_OK;
     case 0xe5u:
         if (wz_z80_bus(machine, WZ_BUS_INTERNAL, 8u,
@@ -1152,7 +1152,7 @@ static wz_result_t wz_z80_execute_index_prefix(wz_machine_t* machine,
                        machine->cpu.stack_pointer, &value, 3u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
-        machine->master_tick += 22u;
+        wz_machine_advance_master_ticks(machine, 22u);
         return WZ_RESULT_OK;
     default:
         return WZ_RESULT_UNSUPPORTED_OPERATION;
@@ -1247,7 +1247,8 @@ static wz_result_t wz_z80_execute_cb(wz_machine_t* machine,
             machine->cpu.main.f |= WZ_Z80_FLAG_S;
         }
         machine->cpu.q = 1u;
-        machine->master_tick += decode->target == WZ_Z80_TARGET_HL_INDIRECT ? 24u : 16u;
+        wz_machine_advance_master_ticks(
+            machine, decode->target == WZ_Z80_TARGET_HL_INDIRECT ? 24u : 16u);
         return WZ_RESULT_OK;
     case WZ_Z80_CB_OP_RES:
         result = (wz_byte_t)(value & (wz_byte_t)~(wz_byte_t)(1u << decode->bit));
@@ -1265,7 +1266,8 @@ static wz_result_t wz_z80_execute_cb(wz_machine_t* machine,
     if (decode->operation <= WZ_Z80_CB_OP_SRL) {
         machine->cpu.q = 1u;
     }
-    machine->master_tick += decode->target == WZ_Z80_TARGET_HL_INDIRECT ? 30u : 16u;
+    wz_machine_advance_master_ticks(
+        machine, decode->target == WZ_Z80_TARGET_HL_INDIRECT ? 30u : 16u);
     return WZ_RESULT_OK;
 }
 
@@ -1367,7 +1369,7 @@ static wz_result_t wz_z80_execute_indexed_cb(wz_machine_t* machine,
             return WZ_RESULT_INVALID_STATE;
         }
         machine->cpu.q = 1u;
-        machine->master_tick += 32u;
+        wz_machine_advance_master_ticks(machine, 32u);
         return WZ_RESULT_OK;
     case WZ_Z80_CB_OP_RES:
         result = (wz_byte_t)(value & (wz_byte_t)~(wz_byte_t)(1u << decode->bit));
@@ -1395,7 +1397,7 @@ static wz_result_t wz_z80_execute_indexed_cb(wz_machine_t* machine,
     if (decode->operation <= WZ_Z80_CB_OP_SRL) {
         machine->cpu.q = 1u;
     }
-    machine->master_tick += 38u;
+    wz_machine_advance_master_ticks(machine, 38u);
     return WZ_RESULT_OK;
 }
 
@@ -1532,9 +1534,9 @@ static wz_result_t wz_z80_execute_ld_block(wz_machine_t* machine,
     if (repeat && count != 0u) {
         machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 0xfffeu);
         machine->cpu.memptr = wz_z80_add16(machine->cpu.program_counter, 1u);
-        machine->master_tick += 42u;
+        wz_machine_advance_master_ticks(machine, 42u);
     } else {
-        machine->master_tick += 32u;
+        wz_machine_advance_master_ticks(machine, 32u);
     }
     return WZ_RESULT_OK;
 }
@@ -1580,10 +1582,10 @@ static wz_result_t wz_z80_execute_cp_block(wz_machine_t* machine,
     if (repeat && count != 0u && result != 0u) {
         machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 0xfffeu);
         machine->cpu.memptr = wz_z80_add16(machine->cpu.program_counter, 1u);
-        machine->master_tick += 42u;
+        wz_machine_advance_master_ticks(machine, 42u);
     } else {
         machine->cpu.memptr = wz_z80_add16(machine->cpu.memptr, decrement ? 0xffffu : 1u);
-        machine->master_tick += 32u;
+        wz_machine_advance_master_ticks(machine, 32u);
     }
     return WZ_RESULT_OK;
 }
@@ -1631,9 +1633,9 @@ static wz_result_t wz_z80_execute_in_block(wz_machine_t* machine,
 
     if (repeat && machine->cpu.main.b != 0u) {
         machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 0xfffeu);
-        machine->master_tick += 42u;
+        wz_machine_advance_master_ticks(machine, 42u);
     } else {
-        machine->master_tick += 32u;
+        wz_machine_advance_master_ticks(machine, 32u);
     }
     return WZ_RESULT_OK;
 }
@@ -1663,9 +1665,9 @@ static wz_result_t wz_z80_execute_out_block(wz_machine_t* machine,
     machine->cpu.q = 1u;
     if (repeat && machine->cpu.main.b != 0u) {
         machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 0xfffeu);
-        machine->master_tick += 42u;
+        wz_machine_advance_master_ticks(machine, 42u);
     } else {
-        machine->master_tick += 32u;
+        wz_machine_advance_master_ticks(machine, 32u);
     }
     return WZ_RESULT_OK;
 }
@@ -1687,41 +1689,41 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
 
     switch (decode.operation) {
     case WZ_Z80_ED_OP_NOP:
-        machine->master_tick += 16u;
+        wz_machine_advance_master_ticks(machine, 16u);
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_NEG:
         value = machine->cpu.main.a;
         machine->cpu.main.a = (wz_byte_t)(0u - value);
         machine->cpu.main.f = wz_z80_neg_flags(value, machine->cpu.main.a);
         machine->cpu.q = 1u;
-        machine->master_tick += 16u;
+        wz_machine_advance_master_ticks(machine, 16u);
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_IM:
         if (decode.operand > (wz_byte_t)WZ_Z80_INTERRUPT_MODE_2) {
             return WZ_RESULT_INVALID_STATE;
         }
         machine->cpu.interrupt_mode = decode.operand;
-        machine->master_tick += 16u;
+        wz_machine_advance_master_ticks(machine, 16u);
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_LD_I_A:
         machine->cpu.i = machine->cpu.main.a;
-        machine->master_tick += 18u;
+        wz_machine_advance_master_ticks(machine, 18u);
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_LD_R_A:
         machine->cpu.r = machine->cpu.main.a;
-        machine->master_tick += 18u;
+        wz_machine_advance_master_ticks(machine, 18u);
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_LD_A_I:
         machine->cpu.main.a = machine->cpu.i;
         machine->cpu.main.f = wz_z80_ld_a_ir_flags(machine, machine->cpu.main.a);
         machine->cpu.q = 1u;
-        machine->master_tick += 18u;
+        wz_machine_advance_master_ticks(machine, 18u);
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_LD_A_R:
         machine->cpu.main.a = machine->cpu.r;
         machine->cpu.main.f = wz_z80_ld_a_ir_flags(machine, machine->cpu.main.a);
         machine->cpu.q = 1u;
-        machine->master_tick += 18u;
+        wz_machine_advance_master_ticks(machine, 18u);
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_IN_R_C:
         address = wz_z80_get_rr(&machine->cpu, 0u);
@@ -1738,7 +1740,7 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         }
         machine->cpu.main.f = wz_z80_in_flags(machine, value);
         machine->cpu.q = 1u;
-        machine->master_tick += 24u;
+        wz_machine_advance_master_ticks(machine, 24u);
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_OUT_C_R:
         address = wz_z80_get_rr(&machine->cpu, 0u);
@@ -1754,7 +1756,7 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         if (wz_z80_ed_bus(machine, WZ_BUS_IO_WRITE, 8u, address, &value, 4u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
-        machine->master_tick += 24u;
+        wz_machine_advance_master_ticks(machine, 24u);
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_ADC_HL_RR:
         hl = wz_z80_hl(&machine->cpu);
@@ -1765,7 +1767,7 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         wz_z80_set_rr(&machine->cpu, 2u, result16);
         machine->cpu.main.f = wz_z80_add16_flags(hl, pair_value, carry_in, result16);
         machine->cpu.q = 1u;
-        machine->master_tick += 30u;
+        wz_machine_advance_master_ticks(machine, 30u);
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_SBC_HL_RR:
         hl = wz_z80_hl(&machine->cpu);
@@ -1776,7 +1778,7 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         wz_z80_set_rr(&machine->cpu, 2u, result16);
         machine->cpu.main.f = wz_z80_sub16_flags(hl, pair_value, carry_in, result16);
         machine->cpu.q = 1u;
-        machine->master_tick += 30u;
+        wz_machine_advance_master_ticks(machine, 30u);
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_RRD:
         address = wz_z80_hl(&machine->cpu);
@@ -1793,7 +1795,7 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
                                           wz_z80_sz53p_flags(machine->cpu.main.a));
         machine->cpu.q = 1u;
         machine->cpu.memptr = wz_z80_add16(address, 1u);
-        machine->master_tick += 36u;
+        wz_machine_advance_master_ticks(machine, 36u);
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_RLD:
         address = wz_z80_hl(&machine->cpu);
@@ -1810,7 +1812,7 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
                                           wz_z80_sz53p_flags(machine->cpu.main.a));
         machine->cpu.q = 1u;
         machine->cpu.memptr = wz_z80_add16(address, 1u);
-        machine->master_tick += 36u;
+        wz_machine_advance_master_ticks(machine, 36u);
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_LDI:
         return wz_z80_execute_ld_block(machine, false, false);
@@ -1859,7 +1861,7 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         machine->cpu.program_counter = (wz_word_t)low | ((wz_word_t)high << 8u);
         machine->cpu.memptr = machine->cpu.program_counter;
         machine->cpu.iff1 = machine->cpu.iff2;
-        machine->master_tick += 28u;
+        wz_machine_advance_master_ticks(machine, 28u);
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_LD_NN_RR:
         if (wz_z80_ed_bus(machine, WZ_BUS_MEMORY_READ, 8u,
@@ -1884,7 +1886,7 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
                        wz_z80_add16(address, 1u), &value, 3u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
-        machine->master_tick += 40u;
+        wz_machine_advance_master_ticks(machine, 40u);
         return WZ_RESULT_OK;
     case WZ_Z80_ED_OP_LD_RR_NN:
         if (wz_z80_ed_bus(machine, WZ_BUS_MEMORY_READ, 8u,
@@ -1908,7 +1910,7 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         }
         wz_z80_set_rr(&machine->cpu, decode.operand,
                       (wz_word_t)low | ((wz_word_t)high << 8u));
-        machine->master_tick += 40u;
+        wz_machine_advance_master_ticks(machine, 40u);
         return WZ_RESULT_OK;
     default:
         return WZ_RESULT_UNSUPPORTED_OPERATION;
@@ -2068,7 +2070,7 @@ static wz_result_t wz_z80_accept_maskable_interrupt_impl(wz_machine_t* machine,
         machine->im0_injected_opcode = vector;
         machine->im0_injected_opcode_pending = 1u;
         /* An acknowledge takes seven T states rather than an M1's four. */
-        machine->master_tick += 6u;
+        wz_machine_advance_master_ticks(machine, 6u);
         return wz_z80_step(machine);
     case WZ_Z80_INTERRUPT_MODE_1:
         if (wz_z80_push_interrupt_pc(machine, 14u) != WZ_RESULT_OK) {
@@ -2076,7 +2078,7 @@ static wz_result_t wz_z80_accept_maskable_interrupt_impl(wz_machine_t* machine,
         }
         machine->cpu.program_counter = 0x0038u;
         machine->cpu.memptr = 0x0038u;
-        machine->master_tick += 26u;
+        wz_machine_advance_master_ticks(machine, 26u);
         return WZ_RESULT_OK;
     case WZ_Z80_INTERRUPT_MODE_2:
         address = (wz_word_t)((wz_word_t)machine->cpu.i << 8u) | vector;
@@ -2089,7 +2091,7 @@ static wz_result_t wz_z80_accept_maskable_interrupt_impl(wz_machine_t* machine,
         }
         machine->cpu.program_counter = (wz_word_t)low | ((wz_word_t)high << 8u);
         machine->cpu.memptr = machine->cpu.program_counter;
-        machine->master_tick += 38u;
+        wz_machine_advance_master_ticks(machine, 38u);
         return WZ_RESULT_OK;
     default:
         return WZ_RESULT_INVALID_STATE;
@@ -2133,7 +2135,7 @@ wz_result_t wz_z80_accept_nmi(wz_machine_t* machine)
     machine->cpu.q = 0u;
     machine->cpu.program_counter = 0x0066u;
     machine->cpu.memptr = 0x0066u;
-    machine->master_tick += 22u;
+    wz_machine_advance_master_ticks(machine, 22u);
     return WZ_RESULT_OK;
 }
 
@@ -2213,7 +2215,7 @@ static wz_result_t wz_z80_step_impl(wz_machine_t* machine,
                     machine->master_tick);
             }
         }
-        machine->master_tick += 8u;
+        wz_machine_advance_master_ticks(machine, 8u);
         return WZ_RESULT_OK;
     }
 
@@ -2233,7 +2235,7 @@ execute_opcode:
     case WZ_Z80_PRIMARY_OP_NOP:
         /* Reimplementation of the Z80 NOP behavior; no assembly is translated.
            Warajevo 2.50 Z80.ASM:NOP_ is recorded in the migration ledger. */
-        machine->master_tick += 8u;
+        wz_machine_advance_master_ticks(machine, 8u);
         return WZ_RESULT_OK;
     case WZ_Z80_PRIMARY_OP_LD_A_N:
         if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,
@@ -2242,7 +2244,7 @@ execute_opcode:
         }
         machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
         machine->cpu.main.a = value;
-        machine->master_tick += 14u;
+        wz_machine_advance_master_ticks(machine, 14u);
         return WZ_RESULT_OK;
     case WZ_Z80_PRIMARY_OP_LD_NN_A:
         if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,
@@ -2262,7 +2264,7 @@ execute_opcode:
         if (wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 20u, address, &value, 3u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
-        machine->master_tick += 26u;
+        wz_machine_advance_master_ticks(machine, 26u);
         return WZ_RESULT_OK;
     case WZ_Z80_PRIMARY_OP_OUT_N_A:
         if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,
@@ -2277,7 +2279,7 @@ execute_opcode:
         if (wz_z80_bus(machine, WZ_BUS_IO_WRITE, 14u, address, &value, 4u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
-        machine->master_tick += 22u;
+        wz_machine_advance_master_ticks(machine, 22u);
         return WZ_RESULT_OK;
     case WZ_Z80_PRIMARY_OP_EXX: {
         wz_byte_t b = machine->cpu.main.b;
@@ -2299,7 +2301,7 @@ execute_opcode:
         machine->cpu.alternate.e = e;
         machine->cpu.alternate.h = h;
         machine->cpu.alternate.l = l;
-        machine->master_tick += 8u;
+        wz_machine_advance_master_ticks(machine, 8u);
         return WZ_RESULT_OK;
     }
     case WZ_Z80_PRIMARY_OP_EX_DE_HL: {
@@ -2309,7 +2311,7 @@ execute_opcode:
         machine->cpu.main.e = machine->cpu.main.l;
         machine->cpu.main.h = d;
         machine->cpu.main.l = e;
-        machine->master_tick += 8u;
+        wz_machine_advance_master_ticks(machine, 8u);
         return WZ_RESULT_OK;
     }
     case WZ_Z80_PRIMARY_OP_IN_A_N:
@@ -2325,7 +2327,7 @@ execute_opcode:
             return WZ_RESULT_INVALID_STATE;
         }
         machine->cpu.main.a = value;
-        machine->master_tick += 22u;
+        wz_machine_advance_master_ticks(machine, 22u);
         return WZ_RESULT_OK;
     case WZ_Z80_PRIMARY_OP_EX_SP_RR: {
         wz_word_t hl = wz_z80_hl(&machine->cpu);
@@ -2334,7 +2336,7 @@ execute_opcode:
         }
         machine->cpu.main.h = (wz_byte_t)(hl >> 8u);
         machine->cpu.main.l = (wz_byte_t)(hl & 0xffu);
-        machine->master_tick += 38u;
+        wz_machine_advance_master_ticks(machine, 38u);
         return WZ_RESULT_OK;
     }
     case WZ_Z80_PRIMARY_OP_LOAD: {
@@ -2363,8 +2365,8 @@ execute_opcode:
                 if (reg == 0) return WZ_RESULT_INVALID_STATE;
                 *reg = value;
             }
-            machine->master_tick += (source == WZ_Z80_TARGET_HL_INDIRECT ||
-                                     target == WZ_Z80_TARGET_HL_INDIRECT) ? 14u : 8u;
+            wz_machine_advance_master_ticks(machine, (source == WZ_Z80_TARGET_HL_INDIRECT ||
+                                     target == WZ_Z80_TARGET_HL_INDIRECT) ? 14u : 8u);
             return WZ_RESULT_OK;
         }
         if ((opcode & 0x07u) == 0x06u) {
@@ -2378,12 +2380,12 @@ execute_opcode:
                                wz_z80_hl(&machine->cpu), &value, 3u) != WZ_RESULT_OK) {
                     return WZ_RESULT_INVALID_STATE;
                 }
-                machine->master_tick += 20u;
+                wz_machine_advance_master_ticks(machine, 20u);
             } else {
                 reg = wz_z80_target_register(&machine->cpu, target);
                 if (reg == 0) return WZ_RESULT_INVALID_STATE;
                 *reg = value;
-                machine->master_tick += 14u;
+                wz_machine_advance_master_ticks(machine, 14u);
             }
             return WZ_RESULT_OK;
         }
@@ -2397,7 +2399,7 @@ execute_opcode:
             machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 2u);
             wz_z80_set_rr(&machine->cpu, (wz_byte_t)(opcode >> 4u),
                           (wz_word_t)low | ((wz_word_t)high << 8u));
-            machine->master_tick += 20u;
+            wz_machine_advance_master_ticks(machine, 20u);
             return WZ_RESULT_OK;
         }
         if ((opcode & 0x0fu) == 0x03u || (opcode & 0x0fu) == 0x0bu) {
@@ -2405,7 +2407,7 @@ execute_opcode:
             wz_word_t pair_value = wz_z80_get_rr(&machine->cpu, pair);
             wz_z80_set_rr(&machine->cpu, pair, wz_z80_add16(pair_value,
                           (opcode & 0x08u) != 0u ? 0xffffu : 1u));
-            machine->master_tick += 12u;
+            wz_machine_advance_master_ticks(machine, 12u);
             return WZ_RESULT_OK;
         }
         if (opcode == 0x08u) {
@@ -2415,7 +2417,7 @@ execute_opcode:
             machine->cpu.main.f = machine->cpu.alternate.f;
             machine->cpu.alternate.a = a;
             machine->cpu.alternate.f = f;
-            machine->master_tick += 8u;
+            wz_machine_advance_master_ticks(machine, 8u);
             return WZ_RESULT_OK;
         }
         if (opcode == 0x02u || opcode == 0x12u || opcode == 0x0au || opcode == 0x1au) {
@@ -2433,7 +2435,7 @@ execute_opcode:
                 machine->cpu.memptr = wz_z80_add16(address, 1u);
                 machine->cpu.main.a = value;
             }
-            machine->master_tick += 14u;
+            wz_machine_advance_master_ticks(machine, 14u);
             return WZ_RESULT_OK;
         }
         if (opcode == 0x22u || opcode == 0x2au || opcode == 0x3au) {
@@ -2449,18 +2451,18 @@ execute_opcode:
                 if (wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 20u, address, &value, 3u) != WZ_RESULT_OK) return WZ_RESULT_INVALID_STATE;
                 value = machine->cpu.main.h;
                 if (wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 26u, wz_z80_add16(address, 1u), &value, 3u) != WZ_RESULT_OK) return WZ_RESULT_INVALID_STATE;
-                machine->master_tick += 32u;
+                wz_machine_advance_master_ticks(machine, 32u);
                 return WZ_RESULT_OK;
             }
             if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 20u, address, &low, 3u) != WZ_RESULT_OK) return WZ_RESULT_INVALID_STATE;
             if (opcode == 0x3au) {
                 machine->cpu.main.a = low;
-                machine->master_tick += 26u;
+                wz_machine_advance_master_ticks(machine, 26u);
                 return WZ_RESULT_OK;
             }
             if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 26u, wz_z80_add16(address, 1u), &high, 3u) != WZ_RESULT_OK) return WZ_RESULT_INVALID_STATE;
             wz_z80_set_rr(&machine->cpu, 2u, (wz_word_t)low | ((wz_word_t)high << 8u));
-            machine->master_tick += 32u;
+            wz_machine_advance_master_ticks(machine, 32u);
             return WZ_RESULT_OK;
         }
         return WZ_RESULT_UNSUPPORTED_OPERATION;
@@ -2476,12 +2478,12 @@ execute_opcode:
                                wz_z80_hl(&machine->cpu), &value, 3u) != WZ_RESULT_OK) {
                     return WZ_RESULT_INVALID_STATE;
                 }
-                machine->master_tick += 14u;
+                wz_machine_advance_master_ticks(machine, 14u);
             } else {
                 wz_byte_t* source = wz_z80_target_register(&machine->cpu, target);
                 if (source == 0) return WZ_RESULT_INVALID_STATE;
                 value = *source;
-                machine->master_tick += 8u;
+                wz_machine_advance_master_ticks(machine, 8u);
             }
         } else {
             operation = (wz_byte_t)((opcode >> 3u) & 0x07u);
@@ -2490,7 +2492,7 @@ execute_opcode:
                 return WZ_RESULT_INVALID_STATE;
             }
             machine->cpu.program_counter = wz_z80_add16(machine->cpu.program_counter, 1u);
-            machine->master_tick += 14u;
+            wz_machine_advance_master_ticks(machine, 14u);
         }
         wz_z80_execute_alu_value(&machine->cpu, operation, value);
         return WZ_RESULT_OK;
@@ -2504,13 +2506,13 @@ execute_opcode:
         machine->cpu.main.f = wz_z80_add16_preserved_flags(
             machine->cpu.main.f, left, right, sum);
         machine->cpu.q = 1u;
-        machine->master_tick += 22u;
+        wz_machine_advance_master_ticks(machine, 22u);
         return WZ_RESULT_OK;
     }
     case WZ_Z80_PRIMARY_OP_SPECIAL_FLAGS:
         wz_z80_execute_special_flags(&machine->cpu, opcode,
                                      machine->z80_prior_q);
-        machine->master_tick += 8u;
+        wz_machine_advance_master_ticks(machine, 8u);
         return WZ_RESULT_OK;
     case WZ_Z80_PRIMARY_OP_POP: {
         wz_byte_t pair = (wz_byte_t)((opcode >> 4u) & 0x03u);
@@ -2526,7 +2528,7 @@ execute_opcode:
         machine->cpu.stack_pointer = wz_z80_add16(machine->cpu.stack_pointer, 1u);
         wz_z80_set_stack_pair(&machine->cpu, pair,
                               (wz_word_t)low | ((wz_word_t)high << 8u));
-        machine->master_tick += 20u;
+        wz_machine_advance_master_ticks(machine, 20u);
         return WZ_RESULT_OK;
     }
     case WZ_Z80_PRIMARY_OP_PUSH: {
@@ -2548,7 +2550,7 @@ execute_opcode:
                        machine->cpu.stack_pointer, &value, 3u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
-        machine->master_tick += 22u;
+        wz_machine_advance_master_ticks(machine, 22u);
         return WZ_RESULT_OK;
     }
     case WZ_Z80_PRIMARY_OP_RET: {
@@ -2561,7 +2563,7 @@ execute_opcode:
             }
             if (!wz_z80_condition_met(&machine->cpu,
                                       (wz_byte_t)((opcode >> 3u) & 0x07u))) {
-                machine->master_tick += 10u;
+                wz_machine_advance_master_ticks(machine, 10u);
                 return WZ_RESULT_OK;
             }
         }
@@ -2577,7 +2579,7 @@ execute_opcode:
         machine->cpu.stack_pointer = wz_z80_add16(machine->cpu.stack_pointer, 1u);
         machine->cpu.program_counter = (wz_word_t)low | ((wz_word_t)high << 8u);
         machine->cpu.memptr = machine->cpu.program_counter;
-        machine->master_tick += conditional ? 22u : 20u;
+        wz_machine_advance_master_ticks(machine, conditional ? 22u : 20u);
         return WZ_RESULT_OK;
     }
     case WZ_Z80_PRIMARY_OP_CALL: {
@@ -2596,7 +2598,7 @@ execute_opcode:
         machine->cpu.memptr = address;
         if (conditional && !wz_z80_condition_met(
                 &machine->cpu, (wz_byte_t)((opcode >> 3u) & 0x07u))) {
-            machine->master_tick += 20u;
+            wz_machine_advance_master_ticks(machine, 20u);
             return WZ_RESULT_OK;
         }
         if (wz_z80_bus(machine, WZ_BUS_INTERNAL, 20u,
@@ -2616,7 +2618,7 @@ execute_opcode:
             return WZ_RESULT_INVALID_STATE;
         }
         machine->cpu.program_counter = address;
-        machine->master_tick += 34u;
+        wz_machine_advance_master_ticks(machine, 34u);
         return WZ_RESULT_OK;
     }
     case WZ_Z80_PRIMARY_OP_RST:
@@ -2639,12 +2641,12 @@ execute_opcode:
         }
         machine->cpu.program_counter = address;
         machine->cpu.memptr = address;
-        machine->master_tick += 22u;
+        wz_machine_advance_master_ticks(machine, 22u);
         return WZ_RESULT_OK;
     case WZ_Z80_PRIMARY_OP_BRANCH:
         if (opcode == 0xe9u) {
             machine->cpu.program_counter = wz_z80_hl(&machine->cpu);
-            machine->master_tick += 8u;
+            wz_machine_advance_master_ticks(machine, 8u);
             return WZ_RESULT_OK;
         }
         if (opcode >= 0xc2u) {
@@ -2665,7 +2667,7 @@ execute_opcode:
             if (taken) {
                 machine->cpu.program_counter = address;
             }
-            machine->master_tick += 20u;
+            wz_machine_advance_master_ticks(machine, 20u);
             return WZ_RESULT_OK;
         }
         if (opcode == 0x10u) {
@@ -2681,7 +2683,7 @@ execute_opcode:
                 }
                 machine->cpu.program_counter = wz_z80_add16(
                     machine->cpu.program_counter, 1u);
-                machine->master_tick += 16u;
+                wz_machine_advance_master_ticks(machine, 16u);
                 return WZ_RESULT_OK;
             }
             if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 10u,
@@ -2704,7 +2706,7 @@ execute_opcode:
                 }
                 machine->cpu.program_counter = wz_z80_add16(
                     machine->cpu.program_counter, 1u);
-                machine->master_tick += 14u;
+                wz_machine_advance_master_ticks(machine, 14u);
                 return WZ_RESULT_OK;
             }
             if (wz_z80_bus(machine, WZ_BUS_MEMORY_READ, 8u,
@@ -2722,7 +2724,7 @@ execute_opcode:
                               (wz_word_t)(int16_t)(int8_t)value);
         machine->cpu.program_counter = address;
         machine->cpu.memptr = address;
-        machine->master_tick += opcode == 0x10u ? 26u : 24u;
+        wz_machine_advance_master_ticks(machine, opcode == 0x10u ? 26u : 24u);
         return WZ_RESULT_OK;
     case WZ_Z80_PRIMARY_OP_INC_DEC: {
         wz_byte_t target = (wz_byte_t)((opcode >> 3u) & 0x07u);
@@ -2741,7 +2743,7 @@ execute_opcode:
                            address, &value, 3u) != WZ_RESULT_OK) {
                 return WZ_RESULT_INVALID_STATE;
             }
-            machine->master_tick += 22u;
+            wz_machine_advance_master_ticks(machine, 22u);
             return WZ_RESULT_OK;
         }
         target_register = wz_z80_target_register(&machine->cpu, target);
@@ -2750,29 +2752,29 @@ execute_opcode:
         }
         *target_register = wz_z80_execute_inc_dec_value(
             &machine->cpu, *target_register, decrement);
-        machine->master_tick += 8u;
+        wz_machine_advance_master_ticks(machine, 8u);
         return WZ_RESULT_OK;
     }
     case WZ_Z80_PRIMARY_OP_HALT:
         machine->cpu.halted = 1u;
         machine->cpu.program_counter = pc;
-        machine->master_tick += 8u;
+        wz_machine_advance_master_ticks(machine, 8u);
         return WZ_RESULT_OK;
     case WZ_Z80_PRIMARY_OP_DI:
         machine->cpu.iff1 = 0u;
         machine->cpu.iff2 = 0u;
         machine->cpu.interrupt_enable_delay = 0u;
-        machine->master_tick += 8u;
+        wz_machine_advance_master_ticks(machine, 8u);
         return WZ_RESULT_OK;
     case WZ_Z80_PRIMARY_OP_EI:
         machine->cpu.iff1 = 1u;
         machine->cpu.iff2 = 1u;
         machine->cpu.interrupt_enable_delay = 1u;
-        machine->master_tick += 8u;
+        wz_machine_advance_master_ticks(machine, 8u);
         return WZ_RESULT_OK;
     case WZ_Z80_PRIMARY_OP_LD_SP_RR:
         machine->cpu.stack_pointer = wz_z80_hl(&machine->cpu);
-        machine->master_tick += 12u;
+        wz_machine_advance_master_ticks(machine, 12u);
         return WZ_RESULT_OK;
     case WZ_Z80_PRIMARY_OP_PREFIX_CB:
         if (wz_z80_bus(machine, WZ_BUS_M1_OPCODE_FETCH, 8u,

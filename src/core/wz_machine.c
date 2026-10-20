@@ -503,19 +503,40 @@ wz_result_t wz_machine_rewind_tape(wz_machine_t* machine)
     return wz_tape_state_rewind(&machine->tape_state);
 }
 
-wz_result_t wz_machine_advance_tape(wz_machine_t* machine,
-                                    wz_master_tick_t ticks)
+void wz_machine_advance_tape_ticks_slow(wz_machine_t* machine,
+                                        wz_master_tick_t ticks)
 {
-    if (machine == 0) {
-        return WZ_RESULT_INVALID_ARGUMENT;
+    if (machine == 0 || ticks == 0u) {
+        return;
     }
-    if (machine->networking_mode == WZ_NETWORKING_EAR_MIC) {
-        return WZ_RESULT_OK;
+
+    if (machine->timing_trace == 0) {
+        machine->master_tick += ticks;
+        (void)wz_tape_state_advance(&machine->tape_state, ticks);
+        return;
     }
-    if (!machine->tape_mounted) {
-        return WZ_RESULT_OK;
+
+    while (ticks != 0u) {
+        const wz_byte_t previous_ear =
+            wz_tape_state_ear_level(&machine->tape_state);
+        wz_trace_event_t event = {0};
+
+        ++machine->master_tick;
+        (void)wz_tape_state_advance(&machine->tape_state, 1u);
+        --ticks;
+
+        event.kind = WZ_TRACE_EAR_CHANGE;
+        event.master_tick = machine->master_tick;
+        event.value = wz_tape_state_ear_level(&machine->tape_state);
+        event.auxiliary = previous_ear;
+        if (event.value != previous_ear) {
+            wz_trace_emit_detail(machine->timing_trace, &event);
+        }
+        if (!machine->tape_state.motor_on || machine->tape_state.at_end) {
+            machine->master_tick += ticks;
+            return;
+        }
     }
-    return wz_tape_state_advance(&machine->tape_state, ticks);
 }
 
 wz_result_t wz_machine_set_tape_loading_mode(wz_machine_t* machine,

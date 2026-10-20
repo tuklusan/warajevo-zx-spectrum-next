@@ -11,6 +11,24 @@
 
 #include "core/wz_machine.h"
 
+void wz_machine_advance_tape_ticks_slow(wz_machine_t* machine,
+                                        wz_master_tick_t ticks);
+
+static inline void wz_machine_advance_master_ticks(
+    wz_machine_t* machine, wz_master_tick_t ticks)
+{
+    if (machine == 0) {
+        return;
+    }
+    if (!machine->tape_mounted || !machine->tape_state.motor_on ||
+        machine->tape_state.at_end ||
+        machine->networking_mode == WZ_NETWORKING_EAR_MIC) {
+        machine->master_tick += ticks;
+    } else {
+        wz_machine_advance_tape_ticks_slow(machine, ticks);
+    }
+}
+
 wz_result_t wz_machine_memory_write_at_tick_deferred(
     wz_machine_t* machine, wz_word_t address, wz_byte_t value,
     wz_master_tick_t master_tick);

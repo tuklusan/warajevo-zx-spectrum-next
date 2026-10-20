@@ -213,8 +213,6 @@ wz_result_t wz_machine_mount_tape(wz_machine_t* machine,
 wz_result_t wz_machine_unmount_tape(wz_machine_t* machine);
 wz_result_t wz_machine_set_tape_motor(wz_machine_t* machine, bool motor_on);
 wz_result_t wz_machine_rewind_tape(wz_machine_t* machine);
-wz_result_t wz_machine_advance_tape(wz_machine_t* machine,
-                                    wz_master_tick_t ticks);
 wz_result_t wz_machine_set_tape_loading_mode(wz_machine_t* machine,
                                               wz_tape_loading_mode_t mode);
 wz_tape_loading_mode_t wz_machine_tape_loading_mode(const wz_machine_t* machine);

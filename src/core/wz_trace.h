@@ -33,7 +33,8 @@ typedef enum {
     WZ_TRACE_CPU_OPCODE_BYTE = 8,
     WZ_TRACE_ULA_FETCH = 9,
     WZ_TRACE_BORDER_CHANGE = 10,
-    WZ_TRACE_MIC_CHANGE = 11
+    WZ_TRACE_MIC_CHANGE = 11,
+    WZ_TRACE_EAR_CHANGE = 12
 } wz_trace_event_kind_t;
 
 #define WZ_TRACE_ULA_BITMAP_FETCH 0u

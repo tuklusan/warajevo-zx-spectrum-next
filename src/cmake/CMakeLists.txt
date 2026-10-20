@@ -151,6 +151,16 @@ set_target_properties(wz_timing_trace_mic_fixture PROPERTIES
     C_EXTENSIONS OFF)
 
 add_executable(
+    wz_timing_trace_ear_fixture
+    ${WZSN_REPO_ROOT}/ci/test/timing-trace-ear/trace-ear-fixture.c)
+target_include_directories(wz_timing_trace_ear_fixture PRIVATE "${WZSN_SOURCE_ROOT}")
+target_link_libraries(wz_timing_trace_ear_fixture PRIVATE wz_core wz_diagnostics wz_warnings)
+set_target_properties(wz_timing_trace_ear_fixture PROPERTIES
+    C_STANDARD 11
+    C_STANDARD_REQUIRED ON
+    C_EXTENSIONS OFF)
+
+add_executable(
     wz_timing_trace_recovery_fixture
     ${WZSN_REPO_ROOT}/ci/test/timing-trace-recovery/trace-recovery-fixture.c)
 target_include_directories(wz_timing_trace_recovery_fixture PRIVATE "${WZSN_SOURCE_ROOT}")
@@ -566,6 +576,17 @@ add_test(NAME wz_timing_trace_mic_contract
 set_tests_properties(wz_timing_trace_mic_contract PROPERTIES
     PASS_REGULAR_EXPRESSION
         "PASS trace records MIC line transitions at the ULA write tick")
+set(WZSN_TRACE_EAR_OUTPUT "${WZSN_ULA_128K_TRACE_OUTPUT}/timing-trace-ear")
+file(MAKE_DIRECTORY "${WZSN_TRACE_EAR_OUTPUT}")
+add_test(NAME wz_timing_trace_ear_contract
+    COMMAND "${CMAKE_COMMAND}"
+        "-DTRACE_FIXTURE=$<TARGET_FILE:wz_timing_trace_ear_fixture>"
+        "-DTRACE_DUMPER=$<TARGET_FILE:wz_trace_dump>"
+        "-DTRACE_PATH=${WZSN_TRACE_EAR_OUTPUT}/ear-edges.wztrace"
+        -P "${WZSN_REPO_ROOT}/ci/test/timing-trace-ear/verify.cmake")
+set_tests_properties(wz_timing_trace_ear_contract PROPERTIES
+    PASS_REGULAR_EXPRESSION
+        "PASS tape EAR transitions follow CPU master-tick advancement")
 set(WZSN_TRACE_RECOVERY_OUTPUT "${WZSN_ULA_128K_TRACE_OUTPUT}/timing-trace-recovery")
 file(MAKE_DIRECTORY "${WZSN_TRACE_RECOVERY_OUTPUT}")
 add_test(NAME wz_timing_trace_recovery_contract
