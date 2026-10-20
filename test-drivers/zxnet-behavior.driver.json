@@ -1,0 +1,46 @@
+{
+  "testId": "zxnet-behavior",
+  "command": "Full native build and integrated CTest: wz_zxnet_behavior_contract",
+  "requiredCases": 8,
+  "runnerMatrix": [
+    "windows-2025",
+    "ubuntu-24.04",
+    "ubuntu-24.04-arm",
+    "macos-15",
+    "macos-15-intel"
+  ],
+  "fixtures": [
+    {
+      "path": "ci/test/zxnet-behavior/README.md",
+      "sha256": "073c8522a96e991f524d32e4b45aabe32d1ad62956376537a3694cf4a96ef98e"
+    },
+    {
+      "path": "ci/test/zxnet-behavior/zxnet-behavior-fixture.c",
+      "sha256": "f98ec1dbbfec817bfb987cffb1535a3bd52d794b5263abc445517129be4bd1c0"
+    },
+    {
+      "path": "ci/test/zxnet-behavior/write-proof.py",
+      "sha256": "2c9444ede00016e881189ed1a524bd8157e52f574b53d7cbebdf280883586f41"
+    },
+    {
+      "path": "src/core/wz_zxnet.h",
+      "sha256": "3f8e58593ca15fc173531d1174b19c4bea95fd8123bf1855b34148d79b73d495"
+    },
+    {
+      "path": "src/core/wz_zxnet.c",
+      "sha256": "9b74d445a10dcd9669c72c858bf5c2c87b57998bf370322f0608367bd6d2ddda"
+    },
+    {
+      "path": "src/core/wz_trace.h",
+      "sha256": "3c4b63a79f9094517eae4ae09bb5a98f06bc5e5af991d5cd7b08f5a80b1d5d6b"
+    },
+    {
+      "path": "src/core/wz_types.h",
+      "sha256": "b989adaa74e4ac0ec7e753da23a3fd16a3c02561744cca893fcd66f7c077c409"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "81a8a07f90a5db1dba85be8fcd4dcb25494cd9c7faee3a165a992f5f9e80b3d1"
+    }
+  ]
+}

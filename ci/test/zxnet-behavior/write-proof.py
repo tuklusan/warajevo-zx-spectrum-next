@@ -1,0 +1,112 @@
+#!/usr/bin/env python3
+# Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+# This file is governed by the SANYALnet Labs Non-Commercial License in the
+# root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
+# for AI/ML model training are prohibited unless separately authorized.
+# Attribution is required: "Based on original work by Supratim Sanyal of
+# SANYALnet Labs." See LICENSE for full terms.
+
+"""Validate five native ZX Net behavior runs and pin exact-source fixtures."""
+
+import argparse
+import hashlib
+import json
+import re
+import subprocess
+from datetime import datetime, timezone
+from pathlib import Path, PurePosixPath
+
+
+def git_bytes(commit: str, path: str) -> bytes:
+    allowed_roots = ("test-drivers/", "ci/test/zxnet-behavior/",
+                     "src/core/", "src/cmake/")
+    relative = PurePosixPath(path)
+    if (not path.startswith(allowed_roots) or
+            re.fullmatch(r"[A-Za-z0-9._/-]+", path) is None or
+            relative.is_absolute() or ".." in relative.parts):
+        raise SystemExit(f"unsafe fixture path: {path}")
+    listing = subprocess.check_output(
+        ["git", "ls-tree", "-r", "--full-tree", commit, "--", path],
+        text=True, stderr=subprocess.PIPE)
+    matches = []
+    for line in listing.splitlines():
+        metadata, separator, listed_path = line.partition("\t")
+        fields = metadata.split()
+        if separator and listed_path == path and len(fields) == 3:
+            mode, kind, object_id = fields
+            if kind == "blob" and re.fullmatch(r"[0-9a-f]{40}", object_id):
+                matches.append(object_id)
+    if len(matches) != 1:
+        raise SystemExit(f"fixture is missing or ambiguous at {commit}: {path}")
+    return subprocess.check_output(["git", "cat-file", "blob", matches[0]],
+                                   stderr=subprocess.PIPE)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--commit", required=True)
+    parser.add_argument("--run-id", required=True, type=int)
+    parser.add_argument("--run-log", required=True, type=Path)
+    parser.add_argument("--proof", required=True, type=Path)
+    args = parser.parse_args()
+    if re.fullmatch(r"[0-9a-f]{40}", args.commit) is None:
+        raise SystemExit("commit must be a full lowercase SHA-1 object ID")
+
+    driver = json.loads(git_bytes(
+        args.commit, "test-drivers/zxnet-behavior.driver.json"))
+    output = args.run_log.read_text(encoding="utf-8-sig", errors="replace")
+    marker = "PASS ZX Net block loopback and transfer state behavior"
+    if marker not in output:
+        raise SystemExit("ZX Net behavior success marker is missing")
+
+    fixtures = []
+    for item in driver["fixtures"]:
+        relative = PurePosixPath(item["path"])
+        if relative.is_absolute() or ".." in relative.parts:
+            raise SystemExit(f"unsafe fixture path: {item['path']}")
+        digest = hashlib.sha256(
+            git_bytes(args.commit, relative.as_posix())).hexdigest()
+        if digest != item["sha256"]:
+            raise SystemExit(f"fixture hash mismatch: {item['path']}")
+        fixtures.append({"path": item["path"], "sha256": digest})
+
+    run = json.loads(subprocess.check_output(
+        ["gh", "run", "view", str(args.run_id), "--json", "jobs"], text=True))
+    platforms = ["Windows x64", "Linux x64", "Linux ARM64",
+                 "macOS ARM64", "macOS Intel"]
+    results = []
+    for platform in platforms:
+        name = f"Full build / {platform}"
+        job = next((entry for entry in run["jobs"]
+                    if entry["name"] == name), None)
+        section = "\n".join(line for line in output.splitlines()
+                              if line.startswith(name + "\t"))
+        if (job is None or job["conclusion"] != "success" or
+                marker not in section or "100% tests passed" not in section):
+            raise SystemExit(f"runner evidence missing: {platform}")
+        results.append({"runner": platform, "status": "pass",
+                        "caseCount": driver["requiredCases"],
+                        "jobId": job["databaseId"],
+                        "timestamp": job["completedAt"]})
+
+    proof = {
+        "testId": driver["testId"], "status": "pass", "commit": args.commit,
+        "runId": args.run_id, "runner": "; ".join(platforms),
+        "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "caseCount": driver["requiredCases"] * len(results),
+        "caseCountPerRunner": driver["requiredCases"],
+        "observedOutput": marker,
+        "workflowRun": (
+            "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/"
+            f"{args.run_id}"),
+        "runnerResults": results,
+        "nativeBuildConfiguration": "Release; WZSN_BUILD_SOKOL_HOST=ON",
+        "ctest": "all integrated CTests passed on each native runner",
+        "fixtures": fixtures,
+    }
+    args.proof.parent.mkdir(parents=True, exist_ok=True)
+    args.proof.write_text(json.dumps(proof, indent=2) + "\n", encoding="utf-8")
+
+
+if __name__ == "__main__":
+    main()

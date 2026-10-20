@@ -181,6 +181,16 @@ set_target_properties(wz_timing_trace_zxnet_fixture PROPERTIES
     C_EXTENSIONS OFF)
 
 add_executable(
+    wz_zxnet_behavior_fixture
+    ${WZSN_REPO_ROOT}/ci/test/zxnet-behavior/zxnet-behavior-fixture.c)
+target_include_directories(wz_zxnet_behavior_fixture PRIVATE "${WZSN_SOURCE_ROOT}")
+target_link_libraries(wz_zxnet_behavior_fixture PRIVATE wz_core wz_warnings)
+set_target_properties(wz_zxnet_behavior_fixture PROPERTIES
+    C_STANDARD 11
+    C_STANDARD_REQUIRED ON
+    C_EXTENSIONS OFF)
+
+add_executable(
     wz_timing_trace_recovery_fixture
     ${WZSN_REPO_ROOT}/ci/test/timing-trace-recovery/trace-recovery-fixture.c)
 target_include_directories(wz_timing_trace_recovery_fixture PRIVATE "${WZSN_SOURCE_ROOT}")
@@ -629,6 +639,11 @@ add_test(NAME wz_timing_trace_zxnet_contract
 set_tests_properties(wz_timing_trace_zxnet_contract PROPERTIES
     PASS_REGULAR_EXPRESSION
         "PASS ZX Net block, state, read/write progress, and commit trace exact master ticks")
+add_test(NAME wz_zxnet_behavior_contract
+    COMMAND "$<TARGET_FILE:wz_zxnet_behavior_fixture>")
+set_tests_properties(wz_zxnet_behavior_contract PROPERTIES
+    PASS_REGULAR_EXPRESSION
+        "PASS ZX Net block loopback and transfer state behavior")
 set(WZSN_TRACE_RECOVERY_OUTPUT "${WZSN_ULA_128K_TRACE_OUTPUT}/timing-trace-recovery")
 file(MAKE_DIRECTORY "${WZSN_TRACE_RECOVERY_OUTPUT}")
 add_test(NAME wz_timing_trace_recovery_contract
