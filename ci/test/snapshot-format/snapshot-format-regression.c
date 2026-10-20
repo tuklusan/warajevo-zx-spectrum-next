@@ -17,6 +17,9 @@
 #define PAGE_SIZE 16384u
 #define PAGE_RECORD_SIZE (3u + PAGE_SIZE)
 #define SNAPSHOT_SIZE (V3_HEADER_SIZE + 8u * PAGE_RECORD_SIZE)
+#define COMPRESSED_PAGE_SIZE (65u * 4u)
+#define COMPRESSED_SNAPSHOT_SIZE \
+    (V3_HEADER_SIZE + 3u + COMPRESSED_PAGE_SIZE + 7u * PAGE_RECORD_SIZE)
 
 static void write_u16(wz_byte_t* data, size_t offset, wz_word_t value)
 {
@@ -45,6 +48,37 @@ static int make_v3_128k(wz_byte_t* data)
     return 1;
 }
 
+static size_t make_v3_128k_compressed(wz_byte_t* data)
+{
+    size_t offset = V3_HEADER_SIZE;
+
+    if (data == NULL) return 0u;
+    memset(data, 0, SNAPSHOT_SIZE);
+    write_u16(data, 30u, 54u);
+    write_u16(data, 32u, 0x8123u);
+    data[34u] = 4u;
+    data[35u] = 0x25u;
+    data[37u] = 0x5au;
+    data[53u] = 9u;
+    write_u16(data, offset, (wz_word_t)COMPRESSED_PAGE_SIZE);
+    data[offset + 2u] = 3u;
+    for (size_t run = 0u; run < 65u; ++run) {
+        const size_t encoded = offset + 3u + run * 4u;
+        data[encoded] = 0xedu;
+        data[encoded + 1u] = 0xedu;
+        data[encoded + 2u] = (wz_byte_t)(run == 64u ? 64u : 255u);
+        data[encoded + 3u] = 0x5au;
+    }
+    offset += 3u + COMPRESSED_PAGE_SIZE;
+    for (size_t page = 1u; page < 8u; ++page) {
+        write_u16(data, offset, 0xffffu);
+        data[offset + 2u] = (wz_byte_t)(page + 3u);
+        memset(data + offset + 3u, (int)(0x30u + page), PAGE_SIZE);
+        offset += PAGE_RECORD_SIZE;
+    }
+    return offset;
+}
+
 static int check_v3_128k_load(void)
 {
     wz_byte_t* input = (wz_byte_t*)malloc(SNAPSHOT_SIZE);
@@ -70,6 +104,12 @@ static int check_v3_128k_load(void)
     for (size_t index = 0u; index < 16u; ++index) {
         if (machine.ay.registers[index] != (wz_byte_t)(index + 1u)) goto done;
     }
+    if (make_v3_128k_compressed(input) != COMPRESSED_SNAPSHOT_SIZE ||
+        wz_state_load_z80_v3_128k(&machine, input,
+                                  COMPRESSED_SNAPSHOT_SIZE) != WZ_RESULT_OK ||
+        machine.ram_128k[0u] != 0x5au ||
+        machine.ram_128k[PAGE_SIZE - 1u] != 0x5au ||
+        machine.ram_128k[PAGE_SIZE] != 0x31u) goto done;
     passed = 1;
 done:
     wz_machine_destroy(&machine);
@@ -107,10 +147,10 @@ done:
 int main(void)
 {
     if (!check_v3_128k_load()) {
-        fputs("FAIL Z80 v3 base-128K page, paging, and AY load\n", stderr);
+        fputs("FAIL Z80 v3 raw/RLE base-128K page, paging, and AY load\n", stderr);
         return EXIT_FAILURE;
     }
-    puts("PASS Z80 v3 base-128K page, paging, and AY load");
+    puts("PASS Z80 v3 raw/RLE base-128K page, paging, and AY load");
     if (!check_v3_unsupported_mode_and_incomplete_pages()) {
         fputs("FAIL Z80 v3 rejects unsupported modes and incomplete page sets\n",
               stderr);
