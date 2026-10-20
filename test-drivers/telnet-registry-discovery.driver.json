@@ -35,7 +35,7 @@
     },
     {
       "path": "ci/test/application-command-boundary/write-proof.py",
-      "sha256": "c338ce7f08b87a3e4e898c06a167609fd1d6593e8782382d26d9254b39e266a0"
+      "sha256": "a89d1a10e9e1a3dc6466dc0d21e8860b6c8392802fc0e428091307d1bc03c979"
     },
     {
       "path": "ci/test/telnet-registry-discovery/CMakeLists.txt",
