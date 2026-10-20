@@ -1,0 +1,76 @@
+{
+  "testId": "linux-release-packages",
+  "status": "pass",
+  "commit": "130616193c50ff27c8d0636ca05ab9e79d723b02",
+  "runner": "Ubuntu 24.04 x86_64 and AArch64 hosted runners",
+  "timestamp": "2026-10-20T06:17:29Z",
+  "runId": 39379327636,
+  "packages": [
+    {
+      "platform": "linux-x86_64",
+      "architecture": "x86_64",
+      "archive": "Warajevo-ZX-Spectrum-Next-linux-x86_64.tar.gz",
+      "archiveSha256": "f0591ca6c77fa1216702fe8c396afaf2ed77403d74e48e2b68623c0d730b4fff",
+      "binarySha256": "243975de73fb8ad8049d214a4c8d8bb58520173eb08a2862f27a20eedd28c310",
+      "members": [
+        "Warajevo-ZX-Spectrum-Next/Warajevo-ZX-Spectrum-Next",
+        "Warajevo-ZX-Spectrum-Next/README.md",
+        "Warajevo-ZX-Spectrum-Next/LICENSE",
+        "Warajevo-ZX-Spectrum-Next/THIRD-PARTY-NOTICES.md"
+      ],
+      "signed": false,
+      "notarized": false,
+      "runtimeAudit": {
+        "status": "pass",
+        "runnerId": "linux-x64",
+        "architecture": "x86_64",
+        "binarySha256": "243975de73fb8ad8049d214a4c8d8bb58520173eb08a2862f27a20eedd28c310",
+        "dependencyCount": 71
+      }
+    },
+    {
+      "platform": "linux-aarch64",
+      "architecture": "aarch64",
+      "archive": "Warajevo-ZX-Spectrum-Next-linux-aarch64.tar.gz",
+      "archiveSha256": "cb5e9ffd81e454457c601ba3c2bcd577517134105d8071fb01a8d3b2c31bc7f0",
+      "binarySha256": "2a25322f8694ff89082f58280bb34962c8b313febfc4e4ff83c50bb0db62352a",
+      "members": [
+        "Warajevo-ZX-Spectrum-Next/Warajevo-ZX-Spectrum-Next",
+        "Warajevo-ZX-Spectrum-Next/README.md",
+        "Warajevo-ZX-Spectrum-Next/LICENSE",
+        "Warajevo-ZX-Spectrum-Next/THIRD-PARTY-NOTICES.md"
+      ],
+      "signed": false,
+      "notarized": false,
+      "runtimeAudit": {
+        "status": "pass",
+        "runnerId": "linux-arm64",
+        "architecture": "aarch64",
+        "binarySha256": "2a25322f8694ff89082f58280bb34962c8b313febfc4e4ff83c50bb0db62352a",
+        "dependencyCount": 71
+      }
+    }
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/linux-release-packages.yml",
+      "sha256": "09844e17ed285e0c0e462da609d3c544e96d6b76c5bc81bf6ab825b6858706a5"
+    },
+    {
+      "path": "ci/build/package-linux.py",
+      "sha256": "04f384f4620504e28c1bad18c1426349a792f6c1fa628519d51bf0debca17ae1"
+    },
+    {
+      "path": "ci/test/runtime-dependencies/inspect_runtime.py",
+      "sha256": "83ca1a7134797de11725812b07c2ab0cebf2693a70c5c1961ebb5c3750c2d635"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "c4b038801b872b3e7149a7504e2086be805506f714e6c7f18b1a8c5ab2aaae45"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "f8162dbbb1609f9e2296c208ffd7714938fba6a0421778bcc882cc4ca6c6abe2"
+    }
+  ]
+}
