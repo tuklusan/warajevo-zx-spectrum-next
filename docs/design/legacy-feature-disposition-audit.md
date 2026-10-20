@@ -7,7 +7,7 @@ SANYALnet Labs." See LICENSE for full terms. -->
 
 # Legacy feature disposition audit
 
-Task 452 audit is complete. Section 2.5 contains 32 explicit dispositions: 20 REQUIRED and 12 deferred/replaced/non-initial. Every REQUIRED row is mapped to its phase implementation area or source and current proof gap. 11 have limited runner evidence; 9 lack criterion-level pinned proof. Source presence alone is not acceptance evidence. The four-runner model-switch regression verifies 128K fixed and paged RAM behavior plus normalized Kempston input and direct port reads (run `36563713245`; [proof](../../test-results/model-switch.json)).
+Task 452 audit is complete. Section 2.5 contains 32 explicit dispositions: 20 REQUIRED and 12 deferred/replaced/non-initial. Every REQUIRED row is mapped to its phase implementation area or source and current proof gap. 12 have limited runner evidence; 8 lack criterion-level pinned proof. Source presence alone is not acceptance evidence. The four-runner model-switch regression verifies 128K fixed and paged RAM behavior plus normalized Kempston input and direct port reads (run `36563713245`; [proof](../../test-results/model-switch.json)).
 
 All deferred/replaced/non-initial rows remain scoped as stated in Section 2.5 and are not promoted into initial release blockers. Historical UI replacements are reconciled separately under task 453. Architecture-#3 implementation remains out of scope.
 
@@ -33,7 +33,7 @@ All deferred/replaced/non-initial rows remain scoped as stated in Section 2.5 an
 | Snapshots: Z80 | REQUIRED | OPEN | src/core/wz_state.c | Format implementation is present; Z80 variant/load-save compatibility fixtures and pinned results are missing. |
 | Interface 1 | REQUIRED | OPEN | src/core/wz_machine.c; src/core/wz_bus.c | Machine/bus code is present; ROM paging/latch/reference tests are missing. |
 | Microdrive / MDR | REQUIRED | OPEN | src/core/wz_microdrive.c | Implementation is present; MDR parsing, read/write, motor timing, and flush regressions are missing. |
-| Original Sinclair/ZX Net behavior | REQUIRED | OPEN | src/core/wz_zxnet.c | Device implementation is present; deterministic loopback/reference proof is missing. |
+| Original Sinclair/ZX Net behavior | REQUIRED | PARTIAL | src/core/wz_zxnet.c | The exact-source five-runner block-loopback contract passed eight assertions per runner in run `39517679760` at source `7f10b95b85148571eeb102246f5aac2288ac3677` ([proof](../../test-results/zxnet-behavior.json)). It checks all 256 receive bytes, framing rotation, busy/free countdowns, accepted/rejected claims, a 256-byte transmit payload, failed-callback preservation/retry, and readback of the committed block. Independent hardware/ROM-reference comparison and Interface-1 serial signal integration remain open. |
 | ZX Printer | REQUIRED legacy peripheral | OPEN | src/core/wz_printer.c; src/app/wz_printer_manager.c | Implementation and manager exist; peripheral timing and required legacy workflows lack pinned regression proof. |
 | Built-in monitor/debugger | REQUIRED legacy workflow | OPEN | src/core/wz_debugger.c; src/app/wz_debugger_window.c | Debugger APIs/window exist; function-level legacy inventory and workflow regression proofs are incomplete. |
 | Runtime speed control | REQUIRED, redesigned as host pacing | PARTIAL | src/app/wz_host_pacing.c; src/app/wz_speed_policy.c | Runner demo selects 800%; pacing and cassette wall-clock multiplier equivalence are not asserted (run `35890238325`). |
