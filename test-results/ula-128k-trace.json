@@ -1,0 +1,72 @@
+{
+  "testId": "ula-128k-trace",
+  "status": "pass",
+  "commit": "2301ca32b2443a59e1ddcf03b76be4842c5fce26",
+  "runId": 39477966209,
+  "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
+  "timestamp": "2026-10-20T18:50:33+00:00",
+  "caseCount": 6,
+  "observedOutput": "PASS 128K PAL full-frame ULA trace follows screen-bank paging",
+  "fixtures": [
+    {
+      "path": "ci/test/ula-128k-trace/CMakeLists.txt",
+      "sha256": "35d94f89c16b21155b29800d0d182e67c0e1535fa717caf1e87afc9fc56f547a"
+    },
+    {
+      "path": "ci/test/ula-128k-trace/ula-128k-trace-fixture.c",
+      "sha256": "c683fe6bef0f0082505949ac2e4d31a8001831f2806cd953b63e3435a028fe0d"
+    },
+    {
+      "path": "ci/test/ula-128k-trace/verify-128k.cmake",
+      "sha256": "f3e3c72a4ab9536c2455ed838af7c2bd0715a32679000262210f7c85d652a1eb"
+    },
+    {
+      "path": "ci/test/ula-128k-trace/write-proof.py",
+      "sha256": "a088a89060f1eac63b58148c6959d7e68920362c61c4df8470ddcbe2381591cf"
+    },
+    {
+      "path": "src/core/wz_bus.c",
+      "sha256": "0d889d43bec6613d99fad000b05cf692af84c8ad1796ef288db1c472a9121677"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "697b3197a47e62f1cf43f3ae63fb688e5def2df6ae78249cdc2b193034fa9d48"
+    },
+    {
+      "path": "src/core/wz_machine_internal.h",
+      "sha256": "77f348ef6c5aeb91ef8c9254fe1794e868f38d54021a513d1a7de50e3dc571ec"
+    },
+    {
+      "path": "src/core/wz_machine_profile.c",
+      "sha256": "912a458de8d9a9d2d89bb57cac896e819d8ce82297a4e2ac707c90be1d4450b5"
+    },
+    {
+      "path": "src/core/wz_machine_profile.h",
+      "sha256": "1b246ec8245bf68400b0f9c5a1e69438264d8c671f23d656d82c87a032c4c700"
+    },
+    {
+      "path": "src/core/wz_trace.h",
+      "sha256": "b59ae872c3cb1d87819674c90f100f1162abbffeb7f80cd7f7c32c15747e8d5e"
+    },
+    {
+      "path": "src/core/wz_types.h",
+      "sha256": "b989adaa74e4ac0ec7e753da23a3fd16a3c02561744cca893fcd66f7c077c409"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_dump_main.c",
+      "sha256": "d1823f4ebccceb73a6fff1559e7b23833267196ec042506dd6f49fe453c39012"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.c",
+      "sha256": "b7330439a1c72044e0f1c891a8595df2476c5e42f3c6617da529d782ed4b6ea4"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.h",
+      "sha256": "fc2f50a1f31e002a2190bfd82bb675fd8329327306209eb3d22afa02d3083e39"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "67fe718b50b840fe7fdc47904a1a3f2e5f2993ee101a613673091bc1606c6c75"
+    }
+  ]
+}
