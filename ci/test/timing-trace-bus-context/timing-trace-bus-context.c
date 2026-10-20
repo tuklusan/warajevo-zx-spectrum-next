@@ -157,6 +157,15 @@ int main(int argc, char** argv)
         recovery.first_bus_event.program_counter != 0x2345u ||
         !recovery.bus_context_valid || !recovery.timeline_ordered ||
         !recovery.interrupt_ordered) {
+        (void)fprintf(stderr, "trace failed: events=%zu ula=%zu cpu=%zu bus=%d "
+            "cycle=%u pc=%04x context=%d order=%d interrupt=%d\n",
+            recovered_count, recovery.ula_fetch_count,
+            recovery.cpu_instruction_count, recovery.have_bus_event ? 1 : 0,
+            recovery.first_bus_event.cycle,
+            (unsigned)recovery.first_bus_event.program_counter,
+            recovery.bus_context_valid ? 1 : 0,
+            recovery.timeline_ordered ? 1 : 0,
+            recovery.interrupt_ordered ? 1 : 0);
         goto cleanup;
     }
 

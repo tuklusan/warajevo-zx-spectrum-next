@@ -12,7 +12,7 @@
   "fixtures": [
     {
       "path": "ci/test/timing-trace-bus-context/timing-trace-bus-context.c",
-      "sha256": "d9b70777df42559a067bc7a0d87faa08e42f8edf0ea3f222f16eb7ff918dbc0d"
+      "sha256": "81ffbe7c120e2ec263dd105fc9234d59c18578816f455ccf115f2197da08621b"
     },
     {
       "path": "ci/test/timing-trace-bus-context/write-proof.py",
