@@ -31,6 +31,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #endif
 #define WZ_TRACE_PATH_MAX PATH_MAX
 #endif
+#include "core/wz_bus.h"
+#include "core/wz_machine_profile.h"
 #include "diagnostics/wz_trace_file.h"
 
 static const char* event_kind_name(wz_trace_event_kind_t kind)
@@ -51,8 +53,117 @@ static const char* event_kind_name(wz_trace_event_kind_t kind)
 
 typedef struct {
     wz_trace_cpu_state_sync_t cpu_state;
+    const wz_machine_profile_t* profile;
     FILE* output;
 } dump_context_t;
+
+typedef struct {
+    wz_qword_t frame;
+    wz_dword_t line;
+    wz_dword_t line_tstate;
+    wz_dword_t master_phase;
+    wz_dword_t ula_row;
+    wz_dword_t ula_cell;
+    wz_dword_t ula_offset;
+    wz_byte_t ula_fetch_kind;
+    wz_byte_t ula_active;
+} trace_timing_position_t;
+
+static const char* bus_cycle_name(wz_byte_t cycle)
+{
+    switch ((wz_bus_cycle_t)cycle) {
+    case WZ_BUS_M1_OPCODE_FETCH: return "m1_opcode_fetch";
+    case WZ_BUS_MEMORY_READ: return "memory_read";
+    case WZ_BUS_MEMORY_WRITE: return "memory_write";
+    case WZ_BUS_IO_READ: return "io_read";
+    case WZ_BUS_IO_WRITE: return "io_write";
+    case WZ_BUS_INTERRUPT_ACKNOWLEDGE: return "interrupt_acknowledge";
+    case WZ_BUS_INTERNAL: return "internal";
+    default: return "unknown";
+    }
+}
+
+static bool timing_position(const wz_machine_profile_t* profile,
+                            wz_master_tick_t master_tick,
+                            trace_timing_position_t* position)
+{
+    wz_qword_t frame_ticks;
+    wz_qword_t frame_tick;
+    wz_qword_t frame_tstate;
+
+    if (profile == NULL || position == NULL ||
+        profile->tstates_per_line == 0u ||
+        profile->master_ticks_per_cpu_tstate == 0u ||
+        profile->tstates_per_frame == 0u ||
+        profile->ula_fetch_interval_tstates == 0u) {
+        return false;
+    }
+    frame_ticks = (wz_qword_t)profile->tstates_per_frame *
+        profile->master_ticks_per_cpu_tstate;
+    if (frame_ticks == 0u) return false;
+
+    position->frame = master_tick / frame_ticks;
+    frame_tick = master_tick % frame_ticks;
+    frame_tstate = frame_tick / profile->master_ticks_per_cpu_tstate;
+    position->line = (wz_dword_t)(frame_tstate / profile->tstates_per_line);
+    position->line_tstate =
+        (wz_dword_t)(frame_tstate % profile->tstates_per_line);
+    position->master_phase =
+        (wz_dword_t)(frame_tick % profile->master_ticks_per_cpu_tstate);
+    position->ula_fetch_kind = 0u;
+    position->ula_active = 0u;
+
+    if (profile->ula_fetch_interval_tstates != 0u &&
+        frame_tstate >= profile->ula_fetch_start_tstate) {
+        const wz_qword_t fetch_offset =
+            frame_tstate - profile->ula_fetch_start_tstate;
+        const wz_dword_t row = (wz_dword_t)(fetch_offset /
+            profile->tstates_per_line);
+        const wz_dword_t within_line = (wz_dword_t)(fetch_offset %
+            profile->tstates_per_line);
+        const wz_dword_t cell = within_line /
+            profile->ula_fetch_interval_tstates;
+        const wz_dword_t offset = within_line %
+            profile->ula_fetch_interval_tstates;
+        if (row < profile->ula_fetch_line_count &&
+            cell < profile->ula_fetches_per_line) {
+            position->ula_active = 1u;
+            position->ula_row = row;
+            position->ula_cell = cell;
+            position->ula_offset = offset;
+            if (offset == 0u) position->ula_fetch_kind = 1u;
+            else if (offset == profile->ula_attribute_offset_tstates)
+                position->ula_fetch_kind = 2u;
+        }
+    }
+    return true;
+}
+
+static bool print_timing_position(FILE* output,
+                                  const wz_machine_profile_t* profile,
+                                  wz_master_tick_t tick)
+{
+    trace_timing_position_t position;
+    const char* fetch = "active";
+    if (!timing_position(profile, tick, &position)) return false;
+    if (position.ula_fetch_kind == 1u) fetch = "bitmap";
+    else if (position.ula_fetch_kind == 2u) fetch = "attribute";
+    if (fprintf(output,
+                "frame=%" PRIu64 " line=%u line_tstate=%u phase=%u",
+                position.frame, (unsigned)position.line,
+                (unsigned)position.line_tstate,
+                (unsigned)position.master_phase) < 0) return false;
+    if (position.ula_active != 0u) {
+        if (fprintf(output,
+                    " ula=%s,row=%u,cell=%u,offset=%u", fetch,
+                    (unsigned)position.ula_row,
+                    (unsigned)position.ula_cell,
+                    (unsigned)position.ula_offset) < 0) return false;
+    } else if (fputs(" ula=off", output) == EOF) {
+        return false;
+    }
+    return true;
+}
 
 static void print_register_bank(FILE* output, const char* prefix,
                                 const wz_z80_register_bank_t* bank)
@@ -110,6 +221,24 @@ static bool print_event(const wz_trace_event_t* event, void* context)
         print_cpu_state(output, &dump->cpu_state);
         return !ferror(output);
     }
+    if (event->kind == WZ_TRACE_CPU_BUS) {
+        const wz_qword_t contention_ticks =
+            (wz_qword_t)event->auxiliary *
+            dump->profile->master_ticks_per_cpu_tstate;
+        const wz_master_tick_t request_tick = event->master_tick >= contention_ticks ?
+            event->master_tick - contention_ticks : event->master_tick;
+        if (fprintf(output,
+                    "bus_timing cycle=%s contention_delay_tstates=%u"
+                    " requested_tick=%" PRIu64 " requested_",
+                    bus_cycle_name(event->cycle), (unsigned)event->auxiliary,
+                    request_tick) < 0 ||
+            !print_timing_position(output, dump->profile, request_tick) ||
+            fprintf(output, " bus_tick=%" PRIu64 " bus_", event->master_tick) < 0 ||
+            !print_timing_position(output, dump->profile, event->master_tick) ||
+            fputc('\n', output) == EOF) {
+            return false;
+        }
+    }
     return true;
 }
 
@@ -118,6 +247,7 @@ int main(int argc, char** argv)
     char canonical_path[WZ_TRACE_PATH_MAX];
     size_t recovered = 0u;
     dump_context_t dump;
+    wz_trace_file_metadata_t metadata;
     wz_result_t result;
     if (argc != 2) {
         fputs("usage: wz_trace_dump TRACE_FILE\n", stderr);
@@ -132,6 +262,20 @@ int main(int argc, char** argv)
         return 1;
     }
     memset(&dump, 0, sizeof(dump));
+    memset(&metadata, 0, sizeof(metadata));
+    result = wz_trace_file_read_metadata(canonical_path, &metadata);
+    if (result != WZ_RESULT_OK) {
+        fprintf(stderr, "trace metadata could not be read (%d)\n", (int)result);
+        return 1;
+    }
+    if (metadata.profile_kind == (wz_dword_t)WZ_MACHINE_48K_PAL) {
+        dump.profile = wz_machine_profile_48k_pal();
+    } else if (metadata.profile_kind == (wz_dword_t)WZ_MACHINE_128K_PAL) {
+        dump.profile = wz_machine_profile_128k_pal();
+    } else {
+        fputs("trace contains an unsupported machine profile\n", stderr);
+        return 1;
+    }
     wz_trace_cpu_state_sync_init(&dump.cpu_state);
     dump.output = stdout;
     result = wz_trace_file_recover(canonical_path, print_event, &dump, &recovered);

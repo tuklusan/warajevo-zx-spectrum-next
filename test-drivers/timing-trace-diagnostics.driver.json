@@ -1,0 +1,89 @@
+{
+  "testId": "timing-trace-diagnostics",
+  "command": "cmake -S ci/test/timing-trace-diagnostics -B dist/timing-trace-diagnostics -DCMAKE_BUILD_TYPE=Debug && cmake --build dist/timing-trace-diagnostics --config Debug --target wz_trace_dump wz_trace_diagnostics_fixture --parallel 2 && ctest --test-dir dist/timing-trace-diagnostics -C Debug --output-on-failure --verbose -R ^wz_trace_diagnostics_contract$",
+  "requiredCases": 6,
+  "runnerMatrix": [
+    "windows-2025",
+    "windows-11-arm",
+    "macos-15-intel",
+    "macos-15"
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/timing-trace-diagnostics.yml",
+      "sha256": "107bbf56466cfdca6d25cb4fac3a63bcf7645142cc5d8f945157907d565b6c4f"
+    },
+    {
+      "path": "ci/test/timing-trace-diagnostics/CMakeLists.txt",
+      "sha256": "a82265d20f20a3c1e0e8849c1c6a0d90c9163077c9c03be57477c11f978bd811"
+    },
+    {
+      "path": "ci/test/timing-trace-diagnostics/README.md",
+      "sha256": "439805a5faf49d9f18cb1ebe843ef29f8f5b19cdfdbb415eb3d459c16e30c946"
+    },
+    {
+      "path": "ci/test/timing-trace-diagnostics/timing-trace-diagnostics.md",
+      "sha256": "5433c6ade695d1f83d1b0433f1d61d5710c0f7218e942709c8c166156e262ef9"
+    },
+    {
+      "path": "ci/test/timing-trace-diagnostics/trace-diagnostics-fixture.c",
+      "sha256": "7b1fdd47ed77f4d88ead610932f303019fb5db20c052f43d1e54a958c351ee02"
+    },
+    {
+      "path": "ci/test/timing-trace-diagnostics/verify-diagnostics.cmake",
+      "sha256": "3e7f67950450d8de817b654813972c4916dda30232ca2c83831919ee44b703b9"
+    },
+    {
+      "path": "ci/test/timing-trace-diagnostics/write-proof.py",
+      "sha256": "f2075ac1fef4e14a8641fbea5b917df512d1db3e69736406acf54b9ab1ffa956"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_dump_main.c",
+      "sha256": "507cc25974424411a526270aa31c7a8031c044809745a948e5e35793a0d61a5e"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.c",
+      "sha256": "4228da8ab1c9f4e758f60336559ec6a9018bd6b7cb9c20b1e0ae090fb345ea5c"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.h",
+      "sha256": "fc2f50a1f31e002a2190bfd82bb675fd8329327306209eb3d22afa02d3083e39"
+    },
+    {
+      "path": "src/core/wz_bus.c",
+      "sha256": "a84850869148d8f70a2ee5b31570d9d221d7159cbff832982ddbc8dd1f69c47e"
+    },
+    {
+      "path": "src/core/wz_bus.h",
+      "sha256": "0a6019987ae86f7c7293e1f428d086f52684ea5353eadb758c0b2d056677abaa"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "360fe71b54c4ac705cd9d8f32d20bc017af7d3e6b59dc36ebf125a377cf62489"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "e7078ec7aca25b1a0b168fd050fd81506e98f0002433144acb8af38878637864"
+    },
+    {
+      "path": "src/core/wz_machine_profile.c",
+      "sha256": "912a458de8d9a9d2d89bb57cac896e819d8ce82297a4e2ac707c90be1d4450b5"
+    },
+    {
+      "path": "src/core/wz_machine_profile.h",
+      "sha256": "1b246ec8245bf68400b0f9c5a1e69438264d8c671f23d656d82c87a032c4c700"
+    },
+    {
+      "path": "src/core/wz_types.h",
+      "sha256": "b989adaa74e4ac0ec7e753da23a3fd16a3c02561744cca893fcd66f7c077c409"
+    },
+    {
+      "path": "src/core/wz_z80.h",
+      "sha256": "8faaa6ca8ecd22b0b48418251256722471cef81537053cbfdd44ee629c293dd5"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "77384e43c0307b13c68cd6d7993e0af25457c4f2d203b0e18f191adba0c063b3"
+    }
+  ]
+}

@@ -33,6 +33,10 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #define WZ_TRACE_FORMAT_VERSION 5u
 #define WZ_TRACE_COMMIT UINT32_C(0x57415a43)
 
+#if WZ_TRACE_HEADER_SIZE < 112u
+#error WZ_TRACE_HEADER_SIZE must include all fixed metadata fields
+#endif
+
 static void put32(wz_byte_t* p, wz_dword_t v)
 {
     for (size_t i = 0u; i < 4u; ++i) p[i] = (wz_byte_t)(v >> (8u * i));
@@ -284,6 +288,46 @@ void wz_trace_file_emit(const wz_trace_event_t* e,void* context)
 
 wz_result_t wz_trace_file_freeze(wz_trace_file_t* t){if(!t||!t->file)return WZ_RESULT_INVALID_ARGUMENT;t->frozen=true;return write_header(t)?WZ_RESULT_OK:WZ_RESULT_TRACE_FAILURE;}
 void wz_trace_file_close(wz_trace_file_t* t){if(t&&t->file){fclose(t->file);t->file=0;}}
+
+wz_result_t wz_trace_file_read_metadata(const char* path,
+                                        wz_trace_file_metadata_t* metadata)
+{
+    FILE* file;
+    wz_byte_t header[WZ_TRACE_HEADER_SIZE];
+    long file_size;
+    wz_result_t result = WZ_RESULT_TRACE_FAILURE;
+
+    if (path == NULL || metadata == NULL) return WZ_RESULT_INVALID_ARGUMENT;
+    file = fopen(path, "rb");
+    if (file == NULL) return WZ_RESULT_TRACE_FAILURE;
+    if (fseek(file, 0L, SEEK_END) != 0 ||
+        (file_size = ftell(file)) < 0 ||
+        (wz_qword_t)file_size != WZ_TRACE_FILE_SIZE ||
+        fseek(file, 0L, SEEK_SET) != 0 ||
+        fread(header, 1u, sizeof(header), file) != sizeof(header) ||
+        sizeof(header) < 112u ||
+        memcmp(header, "WZSNTRC", 7u) != 0 ||
+        get32(header + 8u) != WZ_TRACE_FORMAT_VERSION ||
+        get32(header + 12u) != WZ_TRACE_HEADER_SIZE ||
+        get32(header + 16u) != WZ_TRACE_RECORD_SIZE ||
+        get32(header + 20u) != WZ_TRACE_FILE_SIZE ||
+        get32(header + 88u) != WZ_TRACE_RECORD_SIZE ||
+        get32(header + 92u) != WZ_TRACE_RECORD_SIZE) {
+        goto cleanup;
+    }
+
+    metadata->session_id = get64(header + 24u);
+    metadata->profile_kind = get32(header + 32u);
+    metadata->event_mask = get32(header + 36u);
+    metadata->record_count = get64(header + 104u);
+    metadata->rom_identity = get64(header + 80u);
+    metadata->frozen = header[72] != 0u;
+    result = WZ_RESULT_OK;
+
+cleanup:
+    fclose(file);
+    return result;
+}
 
 wz_result_t wz_trace_file_recover(const char* path,wz_trace_recover_fn fn,void* context,size_t* count)
 {

@@ -47,6 +47,16 @@ typedef struct {
 
 typedef bool (*wz_trace_recover_fn)(const wz_trace_event_t* event, void* context);
 
+/* Decoded in-memory values; this structure is not a serialized file layout. */
+typedef struct {
+    wz_qword_t session_id;
+    wz_qword_t rom_identity;
+    wz_qword_t record_count;
+    wz_dword_t profile_kind;
+    wz_dword_t event_mask;
+    bool frozen;
+} wz_trace_file_metadata_t;
+
 /* Assembles the five adjacent CPU synchronization chunks into one Z80 state. */
 typedef struct {
     wz_z80_state_t state;
@@ -68,6 +78,8 @@ wz_result_t wz_trace_file_freeze(wz_trace_file_t* trace);
 void wz_trace_file_close(wz_trace_file_t* trace);
 wz_result_t wz_trace_file_recover(const char* path, wz_trace_recover_fn recover,
                                   void* context, size_t* recovered_count);
+wz_result_t wz_trace_file_read_metadata(const char* path,
+                                        wz_trace_file_metadata_t* metadata);
 void wz_trace_cpu_state_sync_init(wz_trace_cpu_state_sync_t* sync);
 bool wz_trace_cpu_state_sync_apply(wz_trace_cpu_state_sync_t* sync,
                                    const wz_trace_event_t* event);
