@@ -1,10 +1,10 @@
 {
   "testId": "canonical-core-regression",
   "status": "pass",
-  "commit": "68ebac2f17b587006db2ff2c9694da867f846c58",
+  "commit": "a0a084e17eeb1d96702a5944fc4066b7a5f87652",
   "runner": "Linux/X64",
-  "timestamp": "2026-10-13T07:47:01+00:00",
-  "runId": "38364840875",
+  "timestamp": "2026-10-20T01:58:26+00:00",
+  "runId": "39356169994",
   "compiler": {
     "requested": "gcc",
     "id": "GNU",

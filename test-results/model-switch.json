@@ -1,10 +1,10 @@
 {
   "testId": "model-switch",
   "status": "pass",
-  "commit": "68b222176734b0951d0fa7e7915c2389eedc31bd",
+  "commit": "a0a084e17eeb1d96702a5944fc4066b7a5f87652",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-10-12T22:47:57+00:00",
-  "runId": 38318124963,
+  "timestamp": "2026-10-20T02:04:56+00:00",
+  "runId": 39356169893,
   "runners": [
     {
       "id": "windows-x64",
@@ -58,7 +58,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "b171289db934e9bc02d943b3e77a06f0af43a32fae3a073f025c707dac6d56b3"
+      "sha256": "99527a814d61116d0c0ce593a4bba65e4b86273559204d7c173a2d892bdd8c27"
     },
     {
       "path": "src/app/wz_telnet_alias_response.c",
@@ -70,19 +70,19 @@
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.c",
-      "sha256": "240c70171a4ea43836a83198f7935560e03391f60bc3528ba95d16e323e08f3b"
+      "sha256": "f9bc61d019c440e04102ea7a2c5af4146f812b9b16cd257d1bc244733b2da0d4"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
+      "sha256": "24eaac015e950cd317be13ddb79c33ce92a01f106fef3dbfbb7ce433c9557ffc"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
+      "sha256": "92649806b076a4542c05d53b1a3e01bbf67ebfe25b76c92a333cf03e27809f4d"
     },
     {
       "path": "src/core/wz_machine_profile.c",
-      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09"
+      "sha256": "625e1583cbb59eebf67a58bc842913e6bd417a3f4eed975adce4fa34283fcfa5"
     },
     {
       "path": "ci/test/model-switch/telnet-model-switch.py",
@@ -118,7 +118,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "af1a055ba24a42e870645a1b7389cffcf449028e8dd2f3344881282db94f51f4"
+      "sha256": "7c92695d1282104d62ac3b4c9c929a96a6ed7169533fa3e71ba6f93af1186469"
     },
     {
       "path": "test-media/DIZZY4K.TAP",
