@@ -1,10 +1,10 @@
 {
   "testId": "rom-settings-contract",
   "status": "pass",
-  "commit": "68b222176734b0951d0fa7e7915c2389eedc31bd",
+  "commit": "fcc576b00654e01539251f24553a0ac5cd2c0db1",
   "runner": "Linux/x86_64",
-  "timestamp": "2026-10-12T22:42:03.351144+00:00",
-  "runId": 38318122070,
+  "timestamp": "2026-10-20T02:47:07.378534+00:00",
+  "runId": 39360651484,
   "fixtures": [
     {
       "path": ".github/workflows/rom-settings-contract.yml",
@@ -16,39 +16,47 @@
     },
     {
       "path": "ci/test/rom-settings/contract.c",
-      "sha256": "fd85f526d595254a9ecb94d5c9a4227932db43707e516cdb3adfaf85dc6c360b"
+      "sha256": "77184e9208ab8ee1fbfa89e7babdf75a7d35df7b1086743d185339a5f0f527cd"
     },
     {
       "path": "src/app/wz_rom_settings.c",
-      "sha256": "994b1adc805838998b182a193506462a9165359b0e86315b342ceb32d95752f3"
+      "sha256": "21a1cc1419278f102bfb8871085244ad6a2f49c79ef11ca621d622aa1cfb4eef"
     },
     {
       "path": "src/app/wz_rom_settings.h",
-      "sha256": "30eab69df6a396832f44d3bc34bf8f29adde294e7665642fa55fa0f17a52d0fa"
+      "sha256": "b0ad0c5b67c499658e0d6608a01d1de632ac87d772c300d08abe47d10d68df32"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "b171289db934e9bc02d943b3e77a06f0af43a32fae3a073f025c707dac6d56b3"
+      "sha256": "7c13e1e3b23c45bf2d3df2e1a2960acfabf4174bef95cd08b9599150ef4ce7f1"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "af1a055ba24a42e870645a1b7389cffcf449028e8dd2f3344881282db94f51f4"
+      "sha256": "7c92695d1282104d62ac3b4c9c929a96a6ed7169533fa3e71ba6f93af1186469"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
+      "sha256": "360fe71b54c4ac705cd9d8f32d20bc017af7d3e6b59dc36ebf125a377cf62489"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
+      "sha256": "e7078ec7aca25b1a0b168fd050fd81506e98f0002433144acb8af38878637864"
     },
     {
       "path": "src/core/wz_machine_profile.c",
-      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09"
+      "sha256": "912a458de8d9a9d2d89bb57cac896e819d8ce82297a4e2ac707c90be1d4450b5"
     },
     {
       "path": "src/core/wz_machine_profile.h",
-      "sha256": "099be5f41f428466e5da622452abec6e0daf6402abcf4ab2e7d8c2df47457cc4"
+      "sha256": "1b246ec8245bf68400b0f9c5a1e69438264d8c671f23d656d82c87a032c4c700"
+    },
+    {
+      "path": "src/core/wz_state.c",
+      "sha256": "a14842db3e5b28ff63f729e61611e62ede5bd06abf028cb2ed6180c4aa3ad341"
+    },
+    {
+      "path": "src/core/wz_state.h",
+      "sha256": "46ec8063cc5976b743d53a23b64c34c84583878c9793434d3622c8f8a38f9aa3"
     }
   ]
 }

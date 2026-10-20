@@ -394,50 +394,56 @@ int main(void)
         {"snapshot_serialization", "snapshots", WZ_SNAPSHOT_WRITES, 0.0, 0.0, 0u},
         {"ui_presentation", "frames", WZ_UI_FRAMES, 0.0, 0.0, 0u},
     };
-    raster_context_t raster;
-    tape_context_t tape;
+    raster_context_t* raster = NULL;
+    tape_context_t* tape = NULL;
     wz_ay_t ay;
-    snapshot_context_t snapshot;
-    ui_context_t ui;
-    bool initialized = false;
+    snapshot_context_t* snapshot = NULL;
+    ui_context_t* ui = NULL;
+    bool raster_machine_initialized = false;
+    bool snapshot_machine_initialized = false;
     int result = 1;
 
-    memset(&raster, 0, sizeof(raster));
-    memset(&tape, 0, sizeof(tape));
-    memset(&snapshot, 0, sizeof(snapshot));
-    memset(&ui, 0, sizeof(ui));
-
-    raster.pixels = (wz_byte_t*)malloc(
-        WZ_RASTER_CANONICAL_WIDTH * WZ_RASTER_CANONICAL_HEIGHT);
-    tape.segments = (wz_tape_segment_t*)malloc(
-        sizeof(*tape.segments) * WZ_TAPE_SEGMENT_COUNT);
-    snapshot.bytes = (wz_byte_t*)malloc(WZ_STATE_MACHINE_LENGTH);
-    snapshot.expected = (wz_byte_t*)malloc(WZ_STATE_MACHINE_LENGTH);
-    ui.source_pixels = (wz_byte_t*)malloc(
-        WZ_RASTER_CANONICAL_WIDTH * WZ_RASTER_CANONICAL_HEIGHT);
-    ui.snapshot_pixels = (wz_byte_t*)malloc(
-        WZ_RASTER_CANONICAL_WIDTH * WZ_RASTER_CANONICAL_HEIGHT);
-    if (raster.pixels == NULL || tape.segments == NULL ||
-        snapshot.bytes == NULL || snapshot.expected == NULL ||
-        ui.source_pixels == NULL || ui.snapshot_pixels == NULL ||
-        !init_machine(&raster.machine) || !init_machine(&snapshot.machine)) {
+    raster = (raster_context_t*)calloc(1u, sizeof(*raster));
+    tape = (tape_context_t*)calloc(1u, sizeof(*tape));
+    snapshot = (snapshot_context_t*)calloc(1u, sizeof(*snapshot));
+    ui = (ui_context_t*)calloc(1u, sizeof(*ui));
+    if (raster == NULL || tape == NULL || snapshot == NULL || ui == NULL) {
         goto cleanup;
     }
-    initialized = true;
-    prepare_raster_machine(&raster.machine);
-    if (wz_raster_buffer_init(&raster.raster, WZ_RASTER_CANONICAL_WIDTH,
-                              WZ_RASTER_CANONICAL_HEIGHT, raster.pixels,
+
+    raster->pixels = (wz_byte_t*)malloc(
+        WZ_RASTER_CANONICAL_WIDTH * WZ_RASTER_CANONICAL_HEIGHT);
+    tape->segments = (wz_tape_segment_t*)malloc(
+        sizeof(*tape->segments) * WZ_TAPE_SEGMENT_COUNT);
+    snapshot->bytes = (wz_byte_t*)malloc(WZ_STATE_MACHINE_LENGTH);
+    snapshot->expected = (wz_byte_t*)malloc(WZ_STATE_MACHINE_LENGTH);
+    ui->source_pixels = (wz_byte_t*)malloc(
+        WZ_RASTER_CANONICAL_WIDTH * WZ_RASTER_CANONICAL_HEIGHT);
+    ui->snapshot_pixels = (wz_byte_t*)malloc(
+        WZ_RASTER_CANONICAL_WIDTH * WZ_RASTER_CANONICAL_HEIGHT);
+    if (raster->pixels == NULL || tape->segments == NULL ||
+        snapshot->bytes == NULL || snapshot->expected == NULL ||
+        ui->source_pixels == NULL || ui->snapshot_pixels == NULL) {
+        goto cleanup;
+    }
+    if (!init_machine(&raster->machine)) goto cleanup;
+    raster_machine_initialized = true;
+    if (!init_machine(&snapshot->machine)) goto cleanup;
+    snapshot_machine_initialized = true;
+    prepare_raster_machine(&raster->machine);
+    if (wz_raster_buffer_init(&raster->raster, WZ_RASTER_CANONICAL_WIDTH,
+                              WZ_RASTER_CANONICAL_HEIGHT, raster->pixels,
                               WZ_RASTER_CANONICAL_WIDTH *
                                   WZ_RASTER_CANONICAL_HEIGHT) != WZ_RESULT_OK) {
         goto cleanup;
     }
 
     for (size_t index = 0u; index < WZ_TAPE_SEGMENT_COUNT; ++index) {
-        tape.segments[index].duration = 8u + (wz_master_tick_t)(index % 57u);
-        tape.segments[index].ear_level = (wz_byte_t)((index / 3u) & 1u);
-        tape.segments[index].motor_stop_after = 0u;
+        tape->segments[index].duration = 8u + (wz_master_tick_t)(index % 57u);
+        tape->segments[index].ear_level = (wz_byte_t)((index / 3u) & 1u);
+        tape->segments[index].motor_stop_after = 0u;
     }
-    if (wz_tape_mount(&tape.tape, tape.segments, WZ_TAPE_SEGMENT_COUNT) !=
+    if (wz_tape_mount(&tape->tape, tape->segments, WZ_TAPE_SEGMENT_COUNT) !=
         WZ_RESULT_OK) {
         goto cleanup;
     }
@@ -455,11 +461,11 @@ int main(void)
     }
 
     if (!run_metric(&metrics[0], cpu_run, NULL) ||
-        !run_metric(&metrics[1], raster_run, &raster) ||
+        !run_metric(&metrics[1], raster_run, raster) ||
         !run_metric(&metrics[2], audio_run, &ay) ||
-        !run_metric(&metrics[3], tape_run, &tape) ||
-        !run_metric(&metrics[4], snapshot_run, &snapshot) ||
-        !run_metric(&metrics[5], ui_run, &ui)) {
+        !run_metric(&metrics[3], tape_run, tape) ||
+        !run_metric(&metrics[4], snapshot_run, snapshot) ||
+        !run_metric(&metrics[5], ui_run, ui)) {
         fprintf(stderr, "Performance workload failed or was nondeterministic.\n");
         goto cleanup;
     }
@@ -486,15 +492,21 @@ int main(void)
     result = 0;
 
 cleanup:
-    if (initialized) {
-        destroy_machine(&snapshot.machine);
-        destroy_machine(&raster.machine);
+    if (snapshot_machine_initialized) destroy_machine(&snapshot->machine);
+    if (raster_machine_initialized) destroy_machine(&raster->machine);
+    if (raster != NULL) free(raster->pixels);
+    if (tape != NULL) free(tape->segments);
+    if (snapshot != NULL) {
+        free(snapshot->bytes);
+        free(snapshot->expected);
     }
-    free(raster.pixels);
-    free(tape.segments);
-    free(snapshot.bytes);
-    free(snapshot.expected);
-    free(ui.source_pixels);
-    free(ui.snapshot_pixels);
+    if (ui != NULL) {
+        free(ui->source_pixels);
+        free(ui->snapshot_pixels);
+    }
+    free(raster);
+    free(tape);
+    free(snapshot);
+    free(ui);
     return result;
 }
