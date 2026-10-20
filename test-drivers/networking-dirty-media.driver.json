@@ -23,7 +23,7 @@
     { "path": "src/app/wz_speed_policy.c", "sha256": "cb9d2d0befc0becaa81558d794a257f399c4a46e1c1a0bdb19c4893d8f547183" },
     { "path": "src/app/wz_ui_layout.c", "sha256": "6c8aaea15cdd323d0f9a7c28d12e254e2145cbdabf07849f05892dc3807758f0" },
     { "path": "src/app/wz_ui_layout.h", "sha256": "30d784d2ff43fe237251e559cd8bc35d0d51b85c9e80953ba8f9cf6e2052ea7b" },
-    { "path": "src/core/wz_machine.c", "sha256": "3dde8982c3de2cb227676310b55e7ba040205be3fd278706aab6336e254c85bc" },
+    { "path": "src/core/wz_machine.c", "sha256": "7aaad028f4974b0ceafbddfc97282416d3623572a29673706902c257f2e8d909" },
     { "path": "src/core/wz_machine.h", "sha256": "e7078ec7aca25b1a0b168fd050fd81506e98f0002433144acb8af38878637864" },
     { "path": "src/core/wz_microdrive.c", "sha256": "0d80d9a9144cdc39f5df0b8a9abb8e5e21bc71cfeb92f13ee2f7f34e532bc522" },
     { "path": "src/core/wz_microdrive.h", "sha256": "fa4e47c5efc658d533e14b6bf571712447771951202b66eb8575c6869f60a90c" }
