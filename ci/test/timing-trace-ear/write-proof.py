@@ -44,8 +44,18 @@ def main() -> None:
         relative = PurePosixPath(item["path"])
         if relative.is_absolute() or ".." in relative.parts:
             raise SystemExit(f"unsafe fixture path: {item['path']}")
-        digest = hashlib.sha256(git_bytes(args.commit, relative.as_posix())).hexdigest()
-        if digest != item["sha256"]:
+        fixture_bytes = git_bytes(args.commit, relative.as_posix())
+        digest = hashlib.sha256(fixture_bytes).hexdigest()
+        checkout_digest = hashlib.sha256(Path(relative.as_posix()).read_bytes()).hexdigest()
+        checkout_is_clean = subprocess.run(
+            ["git", "diff", "--quiet", args.commit, "--", relative.as_posix()],
+            check=False,
+        ).returncode == 0
+        # The driver may hash Windows checkout bytes (including mixed legacy
+        # line endings); require Git to confirm that checkout maps to this blob.
+        if item["sha256"] != digest and not (
+            item["sha256"] == checkout_digest and checkout_is_clean
+        ):
             raise SystemExit(f"fixture hash mismatch: {item['path']}")
         fixtures.append({"path": item["path"], "sha256": digest})
 

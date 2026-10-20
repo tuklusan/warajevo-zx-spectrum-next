@@ -1,0 +1,105 @@
+{
+  "testId": "timing-trace-ear",
+  "status": "pass",
+  "commit": "933841c2381f5ed6b8cc600a2ea36d5992ac903c",
+  "runId": 39504644349,
+  "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
+  "timestamp": "2026-10-20T22:01:43+00:00",
+  "caseCount": 15,
+  "caseCountPerRunner": 3,
+  "observedOutput": "PASS tape EAR transitions follow CPU master-tick advancement",
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39504644349",
+  "runnerResults": [
+    {
+      "runner": "Windows x64",
+      "status": "pass",
+      "caseCount": 3,
+      "jobId": 118910412681,
+      "timestamp": "2026-10-20T22:00:06Z"
+    },
+    {
+      "runner": "Linux x64",
+      "status": "pass",
+      "caseCount": 3,
+      "jobId": 118910412592,
+      "timestamp": "2026-10-20T21:59:54Z"
+    },
+    {
+      "runner": "Linux ARM64",
+      "status": "pass",
+      "caseCount": 3,
+      "jobId": 118910412478,
+      "timestamp": "2026-10-20T22:00:12Z"
+    },
+    {
+      "runner": "macOS ARM64",
+      "status": "pass",
+      "caseCount": 3,
+      "jobId": 118910413480,
+      "timestamp": "2026-10-20T21:59:34Z"
+    },
+    {
+      "runner": "macOS Intel",
+      "status": "pass",
+      "caseCount": 3,
+      "jobId": 118910412304,
+      "timestamp": "2026-10-20T22:00:27Z"
+    }
+  ],
+  "nativeBuildConfiguration": "Release; WZSN_BUILD_SOKOL_HOST=ON",
+  "ctest": "all integrated CTests passed on each native runner",
+  "fixtures": [
+    {
+      "path": "ci/test/timing-trace-ear/README.md",
+      "sha256": "81ebcb13bc3f7785675ed27a80003867fb4237d2459ce270e5ed343f018221ee"
+    },
+    {
+      "path": "ci/test/timing-trace-ear/trace-ear-fixture.c",
+      "sha256": "8f022fecea9a4e543fc2e238ddd33a06f51eaa4ddd1d3cdaeaeda0177678fa62"
+    },
+    {
+      "path": "ci/test/timing-trace-ear/verify.cmake",
+      "sha256": "f3f13dd2692d29289cee734d2f674b3c2824f13fcd1cda3b83b67d8532a2ea52"
+    },
+    {
+      "path": "ci/test/timing-trace-ear/write-proof.py",
+      "sha256": "2b5227e0e62c6ffed1ade2bb1822c54000c012264707aa64d86d494ee5176106"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "8171c28679c071738ebddd41fc5c32e92b61f9765c72f936d74899034e876671"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "e7078ec7aca25b1a0b168fd050fd81506e98f0002433144acb8af38878637864"
+    },
+    {
+      "path": "src/core/wz_machine_internal.h",
+      "sha256": "14945d2a044ccc0b3d95bbfd852ddbcda7a3b48dee2ef0bbd8ac1a50f7853a14"
+    },
+    {
+      "path": "src/core/wz_runner.c",
+      "sha256": "6f2ce044d99216e9d57c5706463a09ecca4a5c60151b6b047d99eb15de57a324"
+    },
+    {
+      "path": "src/core/wz_z80.c",
+      "sha256": "03633386ae04475b557d9dec713d021e3a89149e44088dd769fb725fb393502a"
+    },
+    {
+      "path": "src/core/wz_bus.c",
+      "sha256": "00bf1ac46349fac57e144fef15c22379fc7a20824d9060a9b2d43098c0ec4300"
+    },
+    {
+      "path": "src/core/wz_trace.h",
+      "sha256": "4b7748695b69ea1633d6ad4973186d0e3bbc08e3253c0107c63114beefd41606"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_dump_main.c",
+      "sha256": "228c3767b8b7a21ca9d6aa280bc91c456e7c9fd5fc58024fd998dd6cf25bd625"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "2f12c769dc33eab43c50971fc56ae357c01e2463f90b0f688a067f02a63e9a74"
+    }
+  ]
+}
