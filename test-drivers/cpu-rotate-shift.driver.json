@@ -22,11 +22,11 @@
       "path": "tests/cpu-rotate-shift.md"
     },
     {
-      "sha256": "0d889d43bec6613d99fad000b05cf692af84c8ad1796ef288db1c472a9121677",
+      "sha256": "721ddc6d42da1662c686bbc31b2ac7f2bb4499e7f23e56f4c75fc9a2545fb8dc",
       "path": "src/core/wz_bus.c"
     },
     {
-      "sha256": "0a6019987ae86f7c7293e1f428d086f52684ea5353eadb758c0b2d056677abaa",
+      "sha256": "e406a5e0f69c289cfb6986d9db0da2a0af29aee3c0652435ec643b2577c2a605",
       "path": "src/core/wz_bus.h"
     },
     {

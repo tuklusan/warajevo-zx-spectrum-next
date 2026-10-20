@@ -30,6 +30,7 @@ set(expected_output
     "IX=1122 IY=3344 SP=5566 PC=7788 MEMPTR=99aa I=bb R=cc IFF1=1 IFF2=0 EI_DELAY=1 IM=2 HALTED=0 Q=01"
     "sequence=6 tick=42 kind=cpu_bus(4) address=4000 pc=7788"
     "payload=000000000000beef value=a5 auxiliary=06 cycle=02 t_states=3"
+    "bus_timing source=ula cycle=memory_write contention_delay_tstates=6"
     "sequence=7 tick=42 kind=interrupt(5)"
     "auxiliary=03"
     "recovered=7")

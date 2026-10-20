@@ -19,11 +19,11 @@
     },
     {
       "path": "ci/test/timing-trace-dump/trace-dump-fixture.c",
-      "sha256": "e9d4c8e7389de057a9f572ffa435aa910461c11094055c6012ffe96124669ff0"
+      "sha256": "ba8c0eb5e1451b0c126db35a26220bd59ecf57fc9e332359fb86929e3bd91e76"
     },
     {
       "path": "ci/test/timing-trace-dump/verify.cmake",
-      "sha256": "c0ed5d51263950822e9a46bdf6c91e3b6d7f7e07c596521982810b0c07e60031"
+      "sha256": "3d1c186d57eeab68803ad642bbc093dd9c2f9c17e506e70a2276361bef5b192f"
     },
     {
       "path": "ci/test/timing-trace-dump/write-proof.py",
@@ -31,11 +31,11 @@
     },
     {
       "path": "src/diagnostics/wz_trace_dump_main.c",
-      "sha256": "d1823f4ebccceb73a6fff1559e7b23833267196ec042506dd6f49fe453c39012"
+      "sha256": "bee6fea121a68e54f5657ac49b1265f1c7c52e5a6368ae23d5207e3274ba05b9"
     },
     {
       "path": "src/diagnostics/wz_trace_file.c",
-      "sha256": "b7330439a1c72044e0f1c891a8595df2476c5e42f3c6617da529d782ed4b6ea4"
+      "sha256": "aee458f31b0d9528d602d18a45fcc60ae5e54757e2aa4f6da6669228d96cd84b"
     },
     {
       "path": "src/diagnostics/wz_trace_file.h",
@@ -43,7 +43,7 @@
     },
     {
       "path": "src/core/wz_trace.h",
-      "sha256": "b59ae872c3cb1d87819674c90f100f1162abbffeb7f80cd7f7c32c15747e8d5e"
+      "sha256": "1d82e129b50ecd6cdbc8281e32ced9d1740d33417363df9524ec51b644d9fcf2"
     },
     {
       "path": "src/core/wz_z80.h",

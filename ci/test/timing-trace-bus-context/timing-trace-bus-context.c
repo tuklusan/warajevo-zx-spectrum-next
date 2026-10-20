@@ -181,6 +181,7 @@ int main(int argc, char** argv)
         recovery.cpu_instruction_count == 0u ||
         !recovery.have_bus_event ||
         recovery.first_bus_event.cycle != WZ_BUS_M1_OPCODE_FETCH ||
+        recovery.first_bus_event.bus_source != WZ_BUS_SOURCE_MEMORY ||
         recovery.first_bus_event.program_counter != 0x2345u ||
         !recovery.bus_context_valid || !recovery.timeline_ordered ||
         !recovery.interrupt_ordered) {

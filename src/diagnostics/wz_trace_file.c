@@ -30,12 +30,19 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include <stdlib.h>
 #include <string.h>
 
-#define WZ_TRACE_FORMAT_VERSION 5u
+#define WZ_TRACE_FORMAT_VERSION 6u
+#define WZ_TRACE_FORMAT_VERSION_PREVIOUS 5u
 #define WZ_TRACE_COMMIT UINT32_C(0x57415a43)
 
 #if WZ_TRACE_HEADER_SIZE < 112u
 #error WZ_TRACE_HEADER_SIZE must include all fixed metadata fields
 #endif
+
+static bool supported_trace_format_version(wz_dword_t version)
+{
+    return version == WZ_TRACE_FORMAT_VERSION ||
+        version == WZ_TRACE_FORMAT_VERSION_PREVIOUS;
+}
 
 static void put32(wz_byte_t* p, wz_dword_t v)
 {
@@ -260,7 +267,18 @@ void wz_trace_file_emit(const wz_trace_event_t* e,void* context)
         put64(r+12u, e->register_snapshot);
     } else {
         put16(r+12u,e->address); put16(r+14u,e->program_counter);
-        r[16]=e->value; r[17]=e->auxiliary;
+        r[16]=e->value;
+        if (e->kind == WZ_TRACE_CPU_BUS) {
+            if ((unsigned)e->bus_source > (unsigned)WZ_BUS_SOURCE_PRINTER ||
+                e->auxiliary > 31u) {
+                t->failed = true;
+                return;
+            }
+            r[17] = (wz_byte_t)(((wz_byte_t)e->bus_source << 5u) |
+                                e->auxiliary);
+        } else {
+            r[17]=e->auxiliary;
+        }
         put16(r+18u,(wz_word_t)e->register_snapshot);
     }
     put32(r+WZ_TRACE_COMMIT_OFFSET,WZ_TRACE_COMMIT);
@@ -307,7 +325,7 @@ wz_result_t wz_trace_file_read_metadata(const char* path,
         fread(header, 1u, sizeof(header), file) != sizeof(header) ||
         sizeof(header) < 112u ||
         memcmp(header, "WZSNTRC", 7u) != 0 ||
-        get32(header + 8u) != WZ_TRACE_FORMAT_VERSION ||
+        !supported_trace_format_version(get32(header + 8u)) ||
         get32(header + 12u) != WZ_TRACE_HEADER_SIZE ||
         get32(header + 16u) != WZ_TRACE_RECORD_SIZE ||
         get32(header + 20u) != WZ_TRACE_FILE_SIZE ||
@@ -344,6 +362,7 @@ wz_result_t wz_trace_file_recover(const char* path,wz_trace_recover_fn fn,void* 
     wz_qword_t sequence;
     wz_qword_t last_tick;
     size_t recovered = 0u;
+    wz_dword_t format_version;
     long file_size;
     wz_result_t result = WZ_RESULT_INVALID_STATE;
 
@@ -355,12 +374,13 @@ wz_result_t wz_trace_file_recover(const char* path,wz_trace_recover_fn fn,void* 
         (wz_qword_t)file_size != WZ_TRACE_FILE_SIZE || fseek(f, 0L, SEEK_SET) != 0 ||
         fread(header, 1u, sizeof(header), f) != sizeof(header) ||
         memcmp(header, "WZSNTRC", 7u) != 0 ||
-        get32(header + 8u) != WZ_TRACE_FORMAT_VERSION ||
+        !supported_trace_format_version(get32(header + 8u)) ||
         get32(header + 12u) != WZ_TRACE_HEADER_SIZE ||
         get32(header + 16u) != WZ_TRACE_RECORD_SIZE ||
         get32(header + 20u) != WZ_TRACE_FILE_SIZE ||
         get32(header + 88u) != WZ_TRACE_RECORD_SIZE ||
         get32(header + 92u) != WZ_TRACE_RECORD_SIZE) goto cleanup;
+    format_version = get32(header + 8u);
 
     next_slot = get64(header + 40u);
     first_sequence = get64(header + 56u);
@@ -440,7 +460,14 @@ wz_result_t wz_trace_file_recover(const char* path,wz_trace_recover_fn fn,void* 
             event.address = get16(record + 12u);
             event.program_counter = get16(record + 14u);
             event.value = record[16];
-            event.auxiliary = record[17];
+            event.bus_source = WZ_BUS_SOURCE_UNKNOWN;
+            if (event.kind == WZ_TRACE_CPU_BUS &&
+                format_version >= WZ_TRACE_FORMAT_VERSION) {
+                event.bus_source = (wz_bus_source_t)(record[17] >> 5u);
+                event.auxiliary = record[17] & 0x1fu;
+            } else {
+                event.auxiliary = record[17];
+            }
             event.register_snapshot = get16(record + 18u);
         }
         recovered++;

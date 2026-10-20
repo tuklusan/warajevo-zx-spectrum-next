@@ -35,7 +35,8 @@ typedef enum {
     WZ_BUS_SOURCE_INPUT,
     WZ_BUS_SOURCE_FALLBACK,
     WZ_BUS_SOURCE_AY,
-    WZ_BUS_SOURCE_PRINTER
+    WZ_BUS_SOURCE_PRINTER,
+    WZ_BUS_SOURCE_UNKNOWN = 0xff
 } wz_bus_source_t;
 
 typedef struct {

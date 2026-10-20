@@ -302,6 +302,7 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
         event.cycle = (wz_byte_t)request->cycle;
         event.t_states = request->t_states;
         event.auxiliary = request->contention_delay;
+        event.bus_source = request->source;
         event.program_counter = machine->cpu.program_counter;
         event.stack_pointer = machine->cpu.stack_pointer;
         event.register_snapshot = (wz_qword_t)machine->cpu.main.a |

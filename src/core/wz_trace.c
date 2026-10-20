@@ -37,6 +37,7 @@ void wz_trace_emit(wz_trace_sink_t* sink,
     event.auxiliary = 0u;
     event.cycle = 0u;
     event.t_states = 0u;
+    event.bus_source = WZ_BUS_SOURCE_UNKNOWN;
     wz_trace_emit_detail(sink, &event);
 }
 

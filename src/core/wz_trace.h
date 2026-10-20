@@ -10,6 +10,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #define WZ_CORE_WZ_TRACE_H
 
 #include "core/wz_types.h"
+#include "core/wz_bus.h"
 
 #define WZ_TRACE_CPU_SYNC_INTERVAL 4096u
 #define WZ_TRACE_INTERRUPT_MASKABLE_SAMPLE 1u
@@ -48,6 +49,7 @@ typedef struct {
     wz_byte_t auxiliary;
     wz_byte_t cycle;
     wz_byte_t t_states;
+    wz_bus_source_t bus_source;
 } wz_trace_event_t;
 
 typedef void (*wz_trace_emit_fn)(const wz_trace_event_t* event, void* context);

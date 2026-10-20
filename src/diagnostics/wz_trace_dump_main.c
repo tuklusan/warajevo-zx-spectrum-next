@@ -84,6 +84,21 @@ static const char* bus_cycle_name(wz_byte_t cycle)
     }
 }
 
+static const char* bus_source_name(wz_bus_source_t source)
+{
+    switch (source) {
+    case WZ_BUS_SOURCE_NONE: return "none";
+    case WZ_BUS_SOURCE_MEMORY: return "memory";
+    case WZ_BUS_SOURCE_ULA: return "ula";
+    case WZ_BUS_SOURCE_DATA_SOURCE: return "data_source";
+    case WZ_BUS_SOURCE_INPUT: return "input";
+    case WZ_BUS_SOURCE_FALLBACK: return "fallback";
+    case WZ_BUS_SOURCE_AY: return "ay";
+    case WZ_BUS_SOURCE_PRINTER: return "printer";
+    default: return "unknown";
+    }
+}
+
 static bool timing_position(const wz_machine_profile_t* profile,
                             wz_master_tick_t master_tick,
                             trace_timing_position_t* position)
@@ -229,8 +244,9 @@ static bool print_event(const wz_trace_event_t* event, void* context)
         const wz_master_tick_t request_tick = event->master_tick >= contention_ticks ?
             event->master_tick - contention_ticks : event->master_tick;
         if (fprintf(output,
-                    "bus_timing cycle=%s contention_delay_tstates=%u"
+                    "bus_timing source=%s cycle=%s contention_delay_tstates=%u"
                     " requested_tick=%" PRIu64 " requested_",
+                    bus_source_name(event->bus_source),
                     bus_cycle_name(event->cycle), (unsigned)event->auxiliary,
                     request_tick) < 0 ||
             !print_timing_position(output, dump->profile, request_tick) ||

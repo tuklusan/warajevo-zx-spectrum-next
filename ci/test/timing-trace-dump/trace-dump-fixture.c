@@ -61,6 +61,7 @@ int main(int argc, char** argv)
 
     memset(&event, 0, sizeof(event));
     event.kind = WZ_TRACE_CPU_BUS;
+    event.bus_source = WZ_BUS_SOURCE_ULA;
     event.sequence = 6u;
     event.master_tick = 42u;
     event.address = 0x4000u;

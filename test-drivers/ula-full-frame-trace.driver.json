@@ -27,7 +27,7 @@
     },
     {
       "path": "src/core/wz_bus.c",
-      "sha256": "0d889d43bec6613d99fad000b05cf692af84c8ad1796ef288db1c472a9121677"
+      "sha256": "721ddc6d42da1662c686bbc31b2ac7f2bb4499e7f23e56f4c75fc9a2545fb8dc"
     },
     {
       "path": "src/core/wz_machine.c",
@@ -39,11 +39,11 @@
     },
     {
       "path": "src/diagnostics/wz_trace_dump_main.c",
-      "sha256": "d1823f4ebccceb73a6fff1559e7b23833267196ec042506dd6f49fe453c39012"
+      "sha256": "bee6fea121a68e54f5657ac49b1265f1c7c52e5a6368ae23d5207e3274ba05b9"
     },
     {
       "path": "src/diagnostics/wz_trace_file.c",
-      "sha256": "b7330439a1c72044e0f1c891a8595df2476c5e42f3c6617da529d782ed4b6ea4"
+      "sha256": "aee458f31b0d9528d602d18a45fcc60ae5e54757e2aa4f6da6669228d96cd84b"
     },
     {
       "path": "src/core/wz_machine_profile.c",
@@ -55,7 +55,7 @@
     },
     {
       "path": "src/core/wz_trace.h",
-      "sha256": "b59ae872c3cb1d87819674c90f100f1162abbffeb7f80cd7f7c32c15747e8d5e"
+      "sha256": "1d82e129b50ecd6cdbc8281e32ced9d1740d33417363df9524ec51b644d9fcf2"
     },
     {
       "path": "src/diagnostics/wz_trace_file.h",

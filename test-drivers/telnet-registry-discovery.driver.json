@@ -119,7 +119,7 @@
     },
     {
       "path": "src/core/wz_bus.c",
-      "sha256": "0d889d43bec6613d99fad000b05cf692af84c8ad1796ef288db1c472a9121677"
+      "sha256": "721ddc6d42da1662c686bbc31b2ac7f2bb4499e7f23e56f4c75fc9a2545fb8dc"
     },
     {
       "path": "src/core/wz_debugger.c",
@@ -175,7 +175,7 @@
     },
     {
       "path": "src/core/wz_trace.c",
-      "sha256": "f317165de22d68da5d10ca3f39ddf0d3f4ee65451f064736da323a01b4a7844b"
+      "sha256": "3fdf48dff0880d5e1b212631b5a648d0755651d4ae8adc06bc7da79c829fb734"
     },
     {
       "path": "src/core/wz_z80.c",
