@@ -51,15 +51,15 @@ purging them.
 Every project commit is made directly on local `main`, and every push updates
 remote `main`; no other branch or pull request is used. Exactly one GitHub
 workflow runs on source pushes: `cr-build-gate.yml`, filtered to production
-`.c`, `.h`, and `.m` files under `src/`, plus build definitions under
-`src/cmake/`. It clean-builds the application and
-runs the integrated CTest suite on Windows x64, Linux x64/ARM64, and macOS
-x64/ARM64. The GUI host is enabled so each runner builds the full application.
-Documentation, tests, traces, results, workflow edits, and
-administrative records alone start no hosted runner. Workflows retained in the
-repository are manually dispatched on `main` when needed. Pull-request triggers
-are prohibited. Do not add branch protection that requires a pull request or
-prevents authorized direct updates to `main`.
+`.c`, `.h`, and `.m` files under `src/`, build definitions under `src/cmake/`,
+and compiled test sources/build definitions under `ci/test/` and `tests/`. It
+clean-builds the application and runs the integrated CTest suite on Windows
+x64, Linux x64/ARM64, and macOS x64/ARM64. The GUI host is enabled so each
+runner builds the full application. Documentation, test descriptions, traces,
+results, workflow edits, and administrative records alone start no hosted
+runner. Workflows retained in the repository are manually dispatched on `main`
+when needed. Pull-request triggers are prohibited. Do not add branch protection
+that requires a pull request or prevents authorized direct updates to `main`.
 
 The pre-commit hook checks every pathname in the complete staged index,
 including directory components, for forbidden terms case-insensitively before

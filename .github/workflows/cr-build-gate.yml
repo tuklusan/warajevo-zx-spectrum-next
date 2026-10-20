@@ -8,6 +8,12 @@ on:
       - 'src/**/*.h'
       - 'src/**/*.m'
       - 'src/cmake/**'
+      - 'ci/test/**/*.c'
+      - 'ci/test/**/*.h'
+      - 'ci/test/**/CMakeLists.txt'
+      - 'ci/test/**/*.cmake'
+      - 'tests/**/*.c'
+      - 'tests/**/*.h'
   workflow_dispatch:
 
 permissions:

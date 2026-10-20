@@ -130,6 +130,16 @@ target_link_libraries(wz_headless PRIVATE wz_core)
 add_executable(wz_trace_dump ${WZSN_SOURCE_ROOT}/diagnostics/wz_trace_dump_main.c)
 target_link_libraries(wz_trace_dump PRIVATE wz_diagnostics)
 
+add_executable(
+    wz_ula_128k_trace_fixture
+    ${WZSN_REPO_ROOT}/ci/test/ula-128k-trace/ula-128k-trace-fixture.c)
+target_include_directories(wz_ula_128k_trace_fixture PRIVATE "${WZSN_SOURCE_ROOT}")
+target_link_libraries(wz_ula_128k_trace_fixture PRIVATE wz_core wz_diagnostics wz_warnings)
+set_target_properties(wz_ula_128k_trace_fixture PROPERTIES
+    C_STANDARD 11
+    C_STANDARD_REQUIRED ON
+    C_EXTENSIONS OFF)
+
 if(WZSN_FUSE_Z80_TEST_INPUT AND WZSN_FUSE_Z80_TEST_EXPECTED)
     add_executable(wz_tests ${WZSN_TEST_ROOT}/fuse-z80-conformance.c)
     target_link_libraries(wz_tests PRIVATE wz_core wz_warnings)
@@ -307,6 +317,17 @@ add_executable(wz_screen_inspection_tests ${WZSN_TEST_ROOT}/wz_screen_inspection
 target_link_libraries(wz_screen_inspection_tests PRIVATE wz_core)
 
 enable_testing()
+set(WZSN_ULA_128K_TRACE_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/test-output")
+file(MAKE_DIRECTORY "${WZSN_ULA_128K_TRACE_OUTPUT}")
+add_test(NAME wz_ula_128k_trace_contract
+    COMMAND "${CMAKE_COMMAND}"
+        "-DTRACE_FIXTURE=$<TARGET_FILE:wz_ula_128k_trace_fixture>"
+        "-DTRACE_DUMPER=$<TARGET_FILE:wz_trace_dump>"
+        "-DTRACE_PATH=${WZSN_ULA_128K_TRACE_OUTPUT}/ula-128k.wztrace"
+        -P "${WZSN_REPO_ROOT}/ci/test/ula-128k-trace/verify-128k.cmake")
+set_tests_properties(wz_ula_128k_trace_contract PROPERTIES
+    PASS_REGULAR_EXPRESSION
+        "PASS 128K PAL full-frame ULA trace follows screen-bank paging")
 if(EXISTS "${WZSN_TEST_ROOT}/wz_tests_placeholder.c")
     add_test(NAME wz_tests_placeholder COMMAND wz_tests)
 endif()

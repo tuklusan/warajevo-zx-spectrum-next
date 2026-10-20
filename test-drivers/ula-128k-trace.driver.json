@@ -4,7 +4,8 @@
   "requiredCases": 6,
   "runnerMatrix": [
     "windows-2025",
-    "windows-11-arm",
+    "ubuntu-24.04",
+    "ubuntu-24.04-arm",
     "macos-15-intel",
     "macos-15"
   ],
@@ -67,7 +68,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "77384e43c0307b13c68cd6d7993e0af25457c4f2d203b0e18f191adba0c063b3"
+      "sha256": "86c58084b7ceb195e6e7f3ef89f4c0f3f648aded1d936e973ae4a688b9fd62e5"
     }
   ]
 }
