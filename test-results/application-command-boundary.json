@@ -1,10 +1,10 @@
 {
   "testId": "application-command-boundary",
   "status": "pass",
-  "commit": "89f0f82a3b49e83b35e86daf87ad40b2b6226747",
+  "commit": "4eff3f0aaeebf7d29eda5714480326b1fd5de312",
   "runner": "Windows x64/ARM64 and macOS Intel/ARM64 hosted matrix",
-  "timestamp": "2026-09-28T14:26:43+00:00",
-  "caseCount": 8,
+  "timestamp": "2026-10-20T06:37:15+00:00",
+  "caseCount": 9,
   "runners": [
     {
       "id": "windows-x64",
@@ -16,7 +16,7 @@
       "id": "windows-arm64",
       "os": "Windows",
       "architecture": "ARM64",
-      "runnerName": "win11-arm64"
+      "runnerName": "win11-vs2026-arm64"
     },
     {
       "id": "macos-intel",
@@ -34,15 +34,15 @@
   "fixtures": [
     {
       "path": ".github/workflows/application-command-boundary.yml",
-      "sha256": "cb824b17c60fe7a183b70290c56622ac99521ba6e36ad4d74512bbb70d77dae4"
+      "sha256": "ce4784fec3bd2cf347a18428adaf911532b8c772b1438b4c6637455eea1ba1a2"
     },
     {
       "path": "ci/test/application-command-boundary/CMakeLists.txt",
-      "sha256": "67875d643da89a4712c0d9ce2bdf3c14ebca0cd864e49e24de32c250902a8e52"
+      "sha256": "b9ecc99611f6ce4e96302a8cceece0537a6178e7b0bd7fb25a7d2a27ccb99c20"
     },
     {
       "path": "ci/test/application-command-boundary/README.md",
-      "sha256": "2a8fdaefb88401e701dc06829d5290461a708dca34bc6a04b1e1748a7f2bba05"
+      "sha256": "35e0cad5449adcee87a7636d03e66eb2e3df98c431569411e6856abe5f634839"
     },
     {
       "path": "ci/test/application-command-boundary/alias-response-regression.c",
@@ -54,7 +54,7 @@
     },
     {
       "path": "ci/test/application-command-boundary/write-proof.py",
-      "sha256": "c338ce7f08b87a3e4e898c06a167609fd1d6593e8782382d26d9254b39e266a0"
+      "sha256": "a89d1a10e9e1a3dc6466dc0d21e8860b6c8392802fc0e428091307d1bc03c979"
     },
     {
       "path": "src/app/wz_command_registry.c",
@@ -62,7 +62,7 @@
     },
     {
       "path": "src/app/wz_command_registry.h",
-      "sha256": "80110080861a05baae47cd6d294315055bb6b1a636c79891b55c56717cb53c94"
+      "sha256": "54cc2e949ff026fa183b0aa30cac9ebad8b431c97b80d966ef0ac1ff35a06087"
     },
     {
       "path": "src/app/wz_host_thread.c",
@@ -74,7 +74,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "cfc90743b387ad47e4032b16ab2cb575a6ca5521a88fc78e25d9c5f59b9800e8"
+      "sha256": "7c13e1e3b23c45bf2d3df2e1a2960acfabf4174bef95cd08b9599150ef4ce7f1"
     },
     {
       "path": "src/app/wz_telnet_alias_response.c",
@@ -86,11 +86,11 @@
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.c",
-      "sha256": "cd94bf55c10f62bb706cbdeacd04f76edb649a6d677416dfdd2960316e4500d8"
+      "sha256": "f9bc61d019c440e04102ea7a2c5af4146f812b9b16cd257d1bc244733b2da0d4"
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.h",
-      "sha256": "d6e7553f89c46a15706508e474beacf8b3cce6ea9ed6be95599ec84bb446eed1"
+      "sha256": "a525163fd16b5113b8166293055c88f46ebf53a373bb24d04254aafc395b7e82"
     },
     {
       "path": "src/app/wz_telnet_status.c",
@@ -102,15 +102,15 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "298943f37fe7df18bba9d16bdc5bbe64168ae4ca27f628f58ce30803735d6131"
+      "sha256": "6c8aaea15cdd323d0f9a7c28d12e254e2145cbdabf07849f05892dc3807758f0"
     },
     {
       "path": "src/app/wz_ui_layout.h",
-      "sha256": "cfe6cf9135dd1ef6771a1513e9dc3f72cd42636f4f005e576017aa745915d2d9"
+      "sha256": "30d784d2ff43fe237251e559cd8bc35d0d51b85c9e80953ba8f9cf6e2052ea7b"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "d3c09a688001e54098b3789349fd2e6ae37119e273c9d229848e32662813b285"
+      "sha256": "7c92695d1282104d62ac3b4c9c929a96a6ed7169533fa3e71ba6f93af1186469"
     },
     {
       "path": "src/core/audio/wz_audio_evidence.c",
@@ -130,11 +130,11 @@
     },
     {
       "path": "src/core/wz_bus.c",
-      "sha256": "cf2a35b00d1edc55fff977402391e4d685bb3b3346640205a9c41340e12df704"
+      "sha256": "a84850869148d8f70a2ee5b31570d9d221d7159cbff832982ddbc8dd1f69c47e"
     },
     {
       "path": "src/core/wz_debugger.c",
-      "sha256": "479b238f1aa668002aba6a4959750296cef553c2d4fe4425b0164b7f08e35eaf"
+      "sha256": "d3c93f73ed001493467c613554bdd142728bdc5c4b0f1f5cdc24068dcebe795a"
     },
     {
       "path": "src/core/wz_kempston.c",
@@ -146,11 +146,11 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "c6893ae4fe7a4fbcc5cb287238e5a00db3723bd90c52fdcf1fec5b391ff0547e"
+      "sha256": "360fe71b54c4ac705cd9d8f32d20bc017af7d3e6b59dc36ebf125a377cf62489"
     },
     {
       "path": "src/core/wz_machine_profile.c",
-      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09"
+      "sha256": "912a458de8d9a9d2d89bb57cac896e819d8ce82297a4e2ac707c90be1d4450b5"
     },
     {
       "path": "src/core/wz_microdrive.c",
@@ -170,7 +170,7 @@
     },
     {
       "path": "src/core/wz_runner.c",
-      "sha256": "6225a610d2b752d0edeeb073961bb84ba5c54ae446e58fe08569e68f33cd654d"
+      "sha256": "ded90228d1227ef361170e1bc95d2b98365fa380136fd5269733b6119d8c7b90"
     },
     {
       "path": "src/core/wz_scheduler.c",
@@ -178,19 +178,19 @@
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "32aa7ddaebe10ffc0a4d933162103c59d40280cd4392593d4136f41fba9338a7"
+      "sha256": "a14842db3e5b28ff63f729e61611e62ede5bd06abf028cb2ed6180c4aa3ad341"
     },
     {
       "path": "src/core/wz_tape.c",
-      "sha256": "9691238f861d9c649690a2c3f94e7d9be52118c16d3aa6b3ae9de0ffa6a2fa96"
+      "sha256": "20c4523214f828d5129cbde2fb2c0d077ed15dae0daa923d019d1934b0c33d0b"
     },
     {
       "path": "src/core/wz_trace.c",
-      "sha256": "d5283eff30dcaadb192ab2465901423abef769976687129c967e521f22bb8dd2"
+      "sha256": "f317165de22d68da5d10ca3f39ddf0d3f4ee65451f064736da323a01b4a7844b"
     },
     {
       "path": "src/core/wz_z80.c",
-      "sha256": "4414a17180681cc18c03a3a84c960196c1fa0d7bdfe09f59d0b664919a369195"
+      "sha256": "fa32e1faa87785cfbb128966541e1066c7eafadba76c01f10fa6703e2fc8095a"
     },
     {
       "path": "src/core/wz_zxnet.c",
@@ -198,11 +198,19 @@
     },
     {
       "path": "tests/application-command-boundary.c",
-      "sha256": "6cf3a1ec3996d671685282809f2ce4fd2d7fd44802092424e880b92938298bb3"
+      "sha256": "f30410b09e1ae325edf73c73b4ed8434d7ea209dacdcc9bb6bfe511caf6ee8d1"
     },
     {
       "path": "tests/application-command-boundary.md",
-      "sha256": "51e351ed2fc47dd4fcab19a1b1e48620d5e8e59a35a1adc2c5336ad184681503"
+      "sha256": "4a88bf009f691098755993c37e309c584b91b94a74e9f752dd8e67375163a2ed"
+    },
+    {
+      "path": "src/app/wz_recent_files.c",
+      "sha256": "61b41cd67048462ec1fb6f656aa5e8d4ffefca9745e2d4361b060ae7be4af34a"
+    },
+    {
+      "path": "src/app/wz_recent_files.h",
+      "sha256": "d031e7637864c0a85e17e549411b98d425014afd3c807ef17d9b58f50598c282"
     }
   ]
 }
