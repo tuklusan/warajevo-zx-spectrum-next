@@ -40,7 +40,7 @@
     },
     {
       "path": "src/core/wz_runner.c",
-      "sha256": "ded90228d1227ef361170e1bc95d2b98365fa380136fd5269733b6119d8c7b90"
+      "sha256": "4f7506a18abe3167e33c0c7c1358d516dd796e32fd7e1543f671a47ef6814825"
     },
     {
       "path": "src/core/wz_runner.h",

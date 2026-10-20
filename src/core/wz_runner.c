@@ -86,9 +86,10 @@ wz_result_t wz_headless_runner_execute(wz_headless_runner_t* runner,
                 return WZ_RESULT_INVALID_STATE;
             }
             wz_machine_update_interrupt_line(runner->machine);
-            wz_trace_emit(runner->trace_sink, WZ_TRACE_MASTER_TICK_ADVANCED,
-                          before + offset + 1u);
         }
+        /* The CPU step already emitted events through its final master tick. */
+        wz_trace_emit(runner->trace_sink, WZ_TRACE_MASTER_TICK_ADVANCED,
+                      runner->machine->master_tick);
     }
     return WZ_RESULT_OK;
 }
