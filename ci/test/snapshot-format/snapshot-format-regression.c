@@ -14,12 +14,14 @@
 #include "core/wz_state.h"
 
 #define V3_HEADER_SIZE 86u
+#define V2_HEADER_SIZE 55u
 #define PAGE_SIZE 16384u
 #define PAGE_RECORD_SIZE (3u + PAGE_SIZE)
 #define SNAPSHOT_SIZE (V3_HEADER_SIZE + 8u * PAGE_RECORD_SIZE)
 #define COMPRESSED_PAGE_SIZE (65u * 4u)
 #define COMPRESSED_SNAPSHOT_SIZE \
     (V3_HEADER_SIZE + 3u + COMPRESSED_PAGE_SIZE + 7u * PAGE_RECORD_SIZE)
+#define V2_SNAPSHOT_SIZE (V2_HEADER_SIZE + 8u * PAGE_RECORD_SIZE)
 
 static void write_u16(wz_byte_t* data, size_t offset, wz_word_t value)
 {
@@ -77,6 +79,58 @@ static size_t make_v3_128k_compressed(wz_byte_t* data)
         offset += PAGE_RECORD_SIZE;
     }
     return offset;
+}
+
+static int make_v2_128k(wz_byte_t* data)
+{
+    if (data == NULL) return 0;
+    memset(data, 0, V2_SNAPSHOT_SIZE);
+    write_u16(data, 30u, 23u);
+    write_u16(data, 32u, 0x8123u);
+    data[34u] = 4u;
+    data[35u] = 0x25u;
+    for (size_t index = 0u; index < 16u; ++index) {
+        data[37u + index] = (wz_byte_t)(index + 1u);
+    }
+    data[53u] = 9u;
+    for (size_t page = 0u; page < 8u; ++page) {
+        const size_t offset = V2_HEADER_SIZE + page * PAGE_RECORD_SIZE;
+        write_u16(data, offset, 0xffffu);
+        data[offset + 2u] = (wz_byte_t)(page + 3u);
+        memset(data + offset + 3u, (int)(0x30u + page), PAGE_SIZE);
+    }
+    return 1;
+}
+
+static int check_v2_128k_load(void)
+{
+    wz_byte_t* input = (wz_byte_t*)malloc(V2_SNAPSHOT_SIZE);
+    wz_machine_t* machine = (wz_machine_t*)calloc(1u, sizeof(*machine));
+    int passed = 0;
+
+    if (machine == NULL || !make_v2_128k(input) ||
+        wz_machine_init(machine, wz_machine_profile_128k_pal()) !=
+            WZ_RESULT_OK ||
+        wz_state_load_z80_v2_128k(machine, input, V2_SNAPSHOT_SIZE) !=
+            WZ_RESULT_OK) goto done;
+    if (machine->profile->kind != WZ_MACHINE_128K_PAL ||
+        machine->cpu.program_counter != 0x8123u ||
+        machine->paging_7ffd != 0x25u || machine->ay.selected_register != 9u) {
+        goto done;
+    }
+    for (size_t page = 0u; page < 8u; ++page) {
+        if (machine->ram_128k[page * PAGE_SIZE] != (wz_byte_t)(0x30u + page) ||
+            machine->ram_128k[(page + 1u) * PAGE_SIZE - 1u] !=
+                (wz_byte_t)(0x30u + page)) goto done;
+    }
+    passed = 1;
+done:
+    if (machine != NULL) {
+        wz_machine_destroy(machine);
+        free(machine);
+    }
+    free(input);
+    return passed;
 }
 
 static int check_v3_128k_load(void)
@@ -146,6 +200,11 @@ done:
 
 int main(void)
 {
+    if (!check_v2_128k_load()) {
+        fputs("FAIL Z80 v2 base-128K page and paging load\n", stderr);
+        return EXIT_FAILURE;
+    }
+    puts("PASS Z80 v2 base-128K page and paging load");
     if (!check_v3_128k_load()) {
         fputs("FAIL Z80 v3 raw/RLE base-128K page, paging, and AY load\n", stderr);
         return EXIT_FAILURE;

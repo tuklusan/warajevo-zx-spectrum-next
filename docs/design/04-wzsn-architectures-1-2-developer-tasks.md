@@ -235,7 +235,7 @@ Debug application startup/shutdown now attaches, freezes, and closes a per-proce
 173. [P8][Core §§25.1] Implement SNA 128K loading/saving scaffolding so the parser can represent paging state, with full behavior validated after Phase 9.
 174. [P8][Core §§25.1] Implement Z80 v1-class loading.
 175. [P8][Core §§25.1] Implement Z80 v2-class loading and the canonical initial v2-class writer.
-176. [P8][Core §§25.1][PARTIAL; base 128K missing] The 48K Z80 v3 reader exists. Implement and verify hardware mode 4 with all eight 16K pages (IDs 3–10), paging state, and AY state per [media-format-support.md](../../design/media-format-support.md); keep other hardware modes controlled-unsupported and do not make v3 the default writer.
+176. [P8][Core §§25.1][COMPLETE] Z80 v3-class loading supports 48K through the temporary snapshot path and base 128K through a transactional live-machine candidate. Hardware mode 4 loads page IDs 3–10, paging and AY state; raw/RLE page decoding, unsupported modes, incomplete pages, and atomic failure are covered by current-source regression run `39351228623`. Other hardware modes remain controlled-unsupported; v3 is not the default writer.
 177. [P8][Core §§25.2] Implement atomic snapshot commit: validate structure/ranges/model/state first, then replace live machine in one controlled step.
 178. [P8][Core §§24.1,25] Serialize/validate `networking_mode` in WZSN-native state so illegal Interface-1/Ear+Mic combinations cannot exist.
 179. [P8][Core §§25] Add controlled errors when historical formats cannot represent active WZSN-specific deterministic state rather than silently discarding it.
