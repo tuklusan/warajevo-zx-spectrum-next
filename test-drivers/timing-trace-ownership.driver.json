@@ -27,7 +27,7 @@
     },
     {
       "path": "ci/test/timing-trace-ownership/trace-owner-fixture.c",
-      "sha256": "e7921b43310368bf377c5cb952fdfdd4f7242449bd43134bae41acd2767ec7cd"
+      "sha256": "202a74d6cd96088819343d215189c1f1816f2ca87f11c6b07dd94c054f57f442"
     },
     {
       "path": "ci/test/timing-trace-ownership/verify-ownership.py",

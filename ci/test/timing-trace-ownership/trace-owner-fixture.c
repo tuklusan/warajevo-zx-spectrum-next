@@ -69,8 +69,8 @@ int main(int argc, char** argv)
     wz_trace_event_t event = {0};
     char* end = NULL;
     unsigned long long session;
-    int result = 1;
-    int owns_file = 0;
+    int exit_code = 1;
+    const char* outcome = "DENIED";
 
     if (argc != 6) return 2;
     errno = 0;
@@ -83,7 +83,7 @@ int main(int argc, char** argv)
                              1u, 2u,
                              UINT32_C(1) << WZ_TRACE_DEVELOPER_MARKER) ==
         WZ_RESULT_OK) {
-        owns_file = 1;
+        outcome = "OWNER";
         event.kind = WZ_TRACE_DEVELOPER_MARKER;
         event.sequence = 0u;
         event.master_tick = (wz_master_tick_t)session;
@@ -91,21 +91,17 @@ int main(int argc, char** argv)
         wz_trace_file_emit(&event, &trace);
         if (trace.failed || trace.record_count != 1u ||
             wz_trace_file_freeze(&trace) != WZ_RESULT_OK) {
+            exit_code = 4;
             (void)write_result(argv[4], "ERROR");
-            if (trace.file != NULL) wz_trace_file_close(&trace);
-            return 4;
+            goto cleanup;
         }
     }
 
-    if (!write_result(argv[4], owns_file ? "OWNER" : "DENIED")) {
-        if (trace.file != NULL) wz_trace_file_close(&trace);
-        return 5;
-    }
-    if (owns_file && !wait_for_path(argv[3], 30000u)) {
-        if (trace.file != NULL) wz_trace_file_close(&trace);
-        return 6;
-    }
+    if (!write_result(argv[4], outcome)) goto cleanup;
+    if (trace.file != NULL && !wait_for_path(argv[3], 30000u)) goto cleanup;
+    exit_code = 0;
+
+cleanup:
     if (trace.file != NULL) wz_trace_file_close(&trace);
-    result = 0;
-    return result;
+    return exit_code;
 }
