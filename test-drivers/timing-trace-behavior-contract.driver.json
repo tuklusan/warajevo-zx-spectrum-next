@@ -1,0 +1,73 @@
+{
+  "testId": "timing-trace-behavior-contract",
+  "command": "cmake -S ci/test/timing-trace-behavior-contract -B dist/timing-trace-behavior-contract -DCMAKE_BUILD_TYPE=Debug && cmake --build dist/timing-trace-behavior-contract --config Debug --target wz_timing_trace_behavior_contract --parallel 2 && ctest --test-dir dist/timing-trace-behavior-contract -C Debug --output-on-failure --verbose -R '^wz_timing_trace_behavior_contract$'",
+  "requiredCases": 12,
+  "runnerMatrix": [
+    "windows-2025",
+    "windows-11-arm",
+    "macos-15-intel",
+    "macos-15"
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/timing-trace-behavior-contract.yml",
+      "sha256": "b85361970a7c58fa5d2a42aef0be06b81163afa8ffdc3be334b3edd66c11f24f"
+    },
+    {
+      "path": "ci/test/timing-trace-behavior-contract/CMakeLists.txt",
+      "sha256": "a0068f10c5c4d395f2c4147896d6903e21fae9e6558beb308dffbafa74adb173"
+    },
+    {
+      "path": "ci/test/timing-trace-behavior-contract/README.md",
+      "sha256": "86501e4eb06132e7cfb0d4825f622498348127d5bfe3e3e8dd71c6d91d849c1e"
+    },
+    {
+      "path": "ci/test/timing-trace-behavior-contract/timing-trace-behavior-contract.c",
+      "sha256": "1db403073d9540c5251075524aaafcd3f189da07655ff15e4c9fb8a2d3d300ff"
+    },
+    {
+      "path": "ci/test/timing-trace-behavior-contract/write-proof.py",
+      "sha256": "913cf05135875989c33aa59aaf6407c1ea99aae9f91aff58aa7a08e3c25f213a"
+    },
+    {
+      "path": "roms/48.rom",
+      "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "c4b038801b872b3e7149a7504e2086be805506f714e6c7f18b1a8c5ab2aaae45"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "878304b76c1d146ed1b8140917db29569dce6f896abaff4546114d3059463a53"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "e7078ec7aca25b1a0b168fd050fd81506e98f0002433144acb8af38878637864"
+    },
+    {
+      "path": "src/core/wz_state.c",
+      "sha256": "16d1d1f5ee9c5bcdc4d6266e21a92b604413ee0a738ccbda58164756b3d202de"
+    },
+    {
+      "path": "src/core/wz_state.h",
+      "sha256": "46ec8063cc5976b743d53a23b64c34c84583878c9793434d3622c8f8a38f9aa3"
+    },
+    {
+      "path": "src/core/wz_trace.h",
+      "sha256": "906c7f54ac8a56b6bb8b797d7a471a581c2849e5b2bd1f542bc59dbf39ab7a6c"
+    },
+    {
+      "path": "src/core/wz_z80.c",
+      "sha256": "9dab57d50df640ce007c9f2ca36f129c5932bbf7fe473b3055030e9a73e29255"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.c",
+      "sha256": "10ea8809d2726628dfc0bf2f7473ab2f60a244b877896c0ce4e959f7ce436dc2"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.h",
+      "sha256": "5538d5d54e40f029196a5a3275f7c6f4c5d8a542ba000a680379037e3cbb2d0b"
+    }
+  ]
+}
