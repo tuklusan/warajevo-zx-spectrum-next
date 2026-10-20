@@ -1215,10 +1215,9 @@ wz_byte_t wz_machine_128k_rom_bank(const wz_machine_t* machine)
     return machine == 0 ? 0u : (wz_byte_t)((machine->paging_7ffd >> 4u) & 1u);
 }
 
-wz_result_t wz_machine_memory_write_at_tick(wz_machine_t* machine,
-                                            wz_word_t address,
-                                            wz_byte_t value,
-                                            wz_master_tick_t master_tick)
+static wz_result_t wz_machine_memory_write_at_tick_impl(
+    wz_machine_t* machine, wz_word_t address, wz_byte_t value,
+    wz_master_tick_t master_tick, bool defer_inclusive_ula_fetch)
 {
     wz_result_t result;
 
@@ -1238,9 +1237,11 @@ wz_result_t wz_machine_memory_write_at_tick(wz_machine_t* machine,
         }
         wz_machine_memory_write_raw(machine, address, value);
         /* CPU writes become visible before a same-tick ULA fetch. */
-        result = wz_machine_ula_capture_until(machine, master_tick, true);
-        if (result != WZ_RESULT_OK) {
-            return result;
+        if (!defer_inclusive_ula_fetch) {
+            result = wz_machine_ula_capture_until(machine, master_tick, true);
+            if (result != WZ_RESULT_OK) {
+                return result;
+            }
         }
         machine->ula_capture_last_tick = master_tick;
         machine->ula_capture_has_last_tick = 1u;
@@ -1248,6 +1249,36 @@ wz_result_t wz_machine_memory_write_at_tick(wz_machine_t* machine,
     }
     wz_machine_memory_write_raw(machine, address, value);
     return WZ_RESULT_OK;
+}
+
+wz_result_t wz_machine_memory_write_at_tick(wz_machine_t* machine,
+                                            wz_word_t address,
+                                            wz_byte_t value,
+                                            wz_master_tick_t master_tick)
+{
+    return wz_machine_memory_write_at_tick_impl(machine, address, value,
+                                                master_tick, false);
+}
+
+wz_result_t wz_machine_memory_write_at_tick_deferred(
+    wz_machine_t* machine, wz_word_t address, wz_byte_t value,
+    wz_master_tick_t master_tick)
+{
+    return wz_machine_memory_write_at_tick_impl(machine, address, value,
+                                                master_tick, true);
+}
+
+wz_result_t wz_machine_trace_ula_until(wz_machine_t* machine,
+                                      wz_master_tick_t master_tick,
+                                      bool inclusive)
+{
+    if (machine == 0 || machine->profile == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (machine->timing_trace == 0) {
+        return WZ_RESULT_OK;
+    }
+    return wz_machine_ula_capture_until(machine, master_tick, inclusive);
 }
 
 bool wz_machine_ula_port_fe_selected(wz_word_t address)

@@ -16,6 +16,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "core/wz_bus.h"
 
 #include "core/wz_machine.h"
+#include "core/wz_machine_internal.h"
 
 void wz_bus_request_init(wz_bus_request_t* request,
                          wz_bus_cycle_t cycle,
@@ -146,6 +147,11 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
         request->master_tick += (wz_master_tick_t)contention_delay * 2u;
     }
 
+    if (wz_machine_trace_ula_until(machine, request->master_tick, false) !=
+        WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+
     if ((request->cycle == WZ_BUS_M1_OPCODE_FETCH ||
          request->cycle == WZ_BUS_MEMORY_READ ||
          request->cycle == WZ_BUS_IO_READ ||
@@ -161,9 +167,12 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
         request->source = WZ_BUS_SOURCE_MEMORY;
         break;
     case WZ_BUS_MEMORY_WRITE:
-        if (wz_machine_memory_write_at_tick(machine, request->address,
-                                            request->value,
-                                            request->master_tick) != WZ_RESULT_OK) {
+        if ((machine->timing_trace != 0 ?
+                wz_machine_memory_write_at_tick_deferred(
+                    machine, request->address, request->value,
+                    request->master_tick) :
+                wz_machine_memory_write_at_tick(machine, request->address,
+                    request->value, request->master_tick)) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
         request->source = WZ_BUS_SOURCE_MEMORY;
@@ -292,6 +301,10 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
         event.t_states = request->t_states;
         event.auxiliary = request->contention_delay;
         wz_trace_emit_detail(machine->timing_trace, &event);
+    }
+    if (wz_machine_trace_ula_until(machine, request->master_tick, true) !=
+        WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
     }
     return WZ_RESULT_OK;
 }

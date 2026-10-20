@@ -1,0 +1,73 @@
+{
+  "testId": "ula-full-frame-trace",
+  "command": "cmake -S ci/test/ula-full-frame-trace -B dist/ula-full-frame-trace -DCMAKE_BUILD_TYPE=Debug && cmake --build dist/ula-full-frame-trace --config Debug --target wz_trace_dump wz_ula_full_frame_trace_fixture --parallel 2 && ctest --test-dir dist/ula-full-frame-trace -C Debug --output-on-failure --verbose -R ^wz_ula_full_frame_trace_contract$",
+  "requiredCases": 6,
+  "runnerMatrix": [
+    "windows-2025",
+    "windows-11-arm",
+    "macos-15-intel",
+    "macos-15"
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/ula-full-frame-trace-contract.yml",
+      "sha256": "3a04d99e3f06bef00ce485c8c0800da2ae0839b27e11be6f29c6010368abc855"
+    },
+    {
+      "path": "ci/test/ula-full-frame-trace/CMakeLists.txt",
+      "sha256": "baba4646f6fc241fdde5a2d6820bdefdedf4a2344592aaacf57bb73a2fba7c08"
+    },
+    {
+      "path": "ci/test/ula-full-frame-trace/ula-full-frame-trace-fixture.c",
+      "sha256": "6c0e524628714a9c43fb1358422ed4c7a97526a30da5f607abb316321534cd79"
+    },
+    {
+      "path": "ci/test/ula-full-frame-trace/verify-full-frame.cmake",
+      "sha256": "23267a1351a366b02d1b1f38d42b7076651b6a3399c3f6188edea1c52b036240"
+    },
+    {
+      "path": "ci/test/ula-full-frame-trace/write-proof.py",
+      "sha256": "682e308746ec05ee0b564d6cda0db4bcacfbe617bab84f7fb8fa61d143f1444a"
+    },
+    {
+      "path": "src/core/wz_bus.c",
+      "sha256": "0d889d43bec6613d99fad000b05cf692af84c8ad1796ef288db1c472a9121677"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "f27a2ce4cf89581c684689b35e8a0427a0d0665bad2984525b1659335117fbea"
+    },
+    {
+      "path": "src/core/wz_machine_internal.h",
+      "sha256": "77f348ef6c5aeb91ef8c9254fe1794e868f38d54021a513d1a7de50e3dc571ec"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_dump_main.c",
+      "sha256": "d1823f4ebccceb73a6fff1559e7b23833267196ec042506dd6f49fe453c39012"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.c",
+      "sha256": "4228da8ab1c9f4e758f60336559ec6a9018bd6b7cb9c20b1e0ae090fb345ea5c"
+    },
+    {
+      "path": "src/core/wz_machine_profile.c",
+      "sha256": "912a458de8d9a9d2d89bb57cac896e819d8ce82297a4e2ac707c90be1d4450b5"
+    },
+    {
+      "path": "src/core/wz_machine_profile.h",
+      "sha256": "1b246ec8245bf68400b0f9c5a1e69438264d8c671f23d656d82c87a032c4c700"
+    },
+    {
+      "path": "src/core/wz_trace.h",
+      "sha256": "b59ae872c3cb1d87819674c90f100f1162abbffeb7f80cd7f7c32c15747e8d5e"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.h",
+      "sha256": "fc2f50a1f31e002a2190bfd82bb675fd8329327306209eb3d22afa02d3083e39"
+    },
+    {
+      "path": "src/core/wz_z80.h",
+      "sha256": "8faaa6ca8ecd22b0b48418251256722471cef81537053cbfdd44ee629c293dd5"
+    }
+  ]
+}
