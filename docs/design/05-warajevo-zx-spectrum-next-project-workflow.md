@@ -41,6 +41,13 @@ for that commit before marking its change record ready to close. Automated
 review and test output are evidence; the responsible developer makes the final
 adjudication.
 
+After all required evidence for a push has been checked and pinned in tracked
+`test-results/` records, delete the completed GitHub Actions run history,
+artifacts, and caches. Do not retain successful runs or hosted artifacts as
+evidence; tracked proof records are authoritative. Wait until all relevant
+workflows have finished and all required proof has been downloaded before
+purging them.
+
 Every project commit is made directly on local `main`, and every push updates
 remote `main`; no other branch or pull request is used. Every push-triggered
 GitHub workflow is scoped to `main`. The pre-commit hook checks every pathname

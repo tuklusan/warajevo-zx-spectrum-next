@@ -1,10 +1,10 @@
 {
   "testId": "timing-trace-retention",
   "status": "pass",
-  "commit": "6b486a29bf0a38467facfca389f69c48d3ade137",
-  "runId": 39366510114,
+  "commit": "778526e4c36bda2c5a0d038be2d3857b8a47ea01",
+  "runId": 39376314590,
   "runner": "GitHub Actions Ubuntu 24.04 x86-64",
-  "timestamp": "2026-10-20T03:52:10+00:00",
+  "timestamp": "2026-10-20T05:42:38+00:00",
   "requestedFrames": 8,
   "frameTicks": 139776,
   "machineTicks": 1118232,
@@ -51,7 +51,7 @@
     },
     {
       "path": "src/core/wz_z80.c",
-      "sha256": "a4a33d8eeb01eba32cfea2af38e8d65ab8b89c5e0b8cee7de93ba34781cbec49"
+      "sha256": "fa32e1faa87785cfbb128966541e1066c7eafadba76c01f10fa6703e2fc8095a"
     },
     {
       "path": "src/core/wz_z80.h",

@@ -13,3 +13,4 @@ complete profile frames, writes through the production 16 MiB trace ring, then
 recovers records from that file and verifies the retained timestamp span covers
 eight complete frames. The aggregate proof excludes ROM bytes, memory contents,
 and trace records.
+	est-results/timing-trace-retention.json pins the latest current-source proof: hosted run 39376314590 on commit 778526e4c36bda2c5a0d038be2d3857b8a47ea01.
