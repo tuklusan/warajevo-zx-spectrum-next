@@ -46,6 +46,7 @@ int main(int argc, char** argv)
     unsigned writer;
     unsigned iterations;
     unsigned iteration;
+    unsigned successful_writes = 0u;
     int exclusive;
     int result = 2;
 
@@ -68,7 +69,11 @@ int main(int argc, char** argv)
         written = exclusive ?
             wz_host_output_write_exclusive(argv[2], payload, PAYLOAD_SIZE) :
             wz_host_output_write_atomic(argv[2], payload, PAYLOAD_SIZE);
-        if (written) continue;
+        if (written) {
+            ++successful_writes;
+            if (exclusive) break;
+            continue;
+        }
 #if defined(_WIN32)
         (void)fprintf(stderr, "writer=%u iteration=%u winerr=%lu\n", writer,
                       iteration, (unsigned long)GetLastError());
@@ -76,9 +81,12 @@ int main(int argc, char** argv)
         (void)fprintf(stderr, "writer=%u iteration=%u errno=%d\n", writer,
                       iteration, errno);
 #endif
-        result = exclusive ? 3 : 4;
-        break;
+        if (exclusive) {
+            result = 3;
+            break;
+        }
     }
+    if (!exclusive && successful_writes == 0u) result = 4;
     free(payload);
     return result;
 }

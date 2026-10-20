@@ -27,7 +27,7 @@
     },
     {
       "path": "ci/test/host-output-atomic/worker.c",
-      "sha256": "c83d3bc97a078a7a7c43d29600d76bc0539cb022079df26ed521add6e48ad55e"
+      "sha256": "ead95b750f5102a8dac12b8746de89fd7cefa37bd06281f89f2b26f8a5ebbd64"
     },
     {
       "path": "ci/test/host-output-atomic/write-proof.py",
