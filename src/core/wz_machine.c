@@ -1279,7 +1279,7 @@ wz_result_t wz_machine_trace_ula_until(wz_machine_t* machine,
         return WZ_RESULT_OK;
     }
     if (machine->profile == 0) {
-        return WZ_RESULT_INVALID_STATE;
+        return WZ_RESULT_INVALID_PROFILE;
     }
     return wz_machine_ula_capture_until(machine, master_tick, inclusive);
 }
