@@ -102,6 +102,7 @@ int main(int argc, char** argv)
     wz_trace_file_t trace_file = {0};
     recovery_t recovery = {0};
     wz_master_tick_t frame_ticks;
+    wz_result_t recovery_status;
     size_t recovered_count = 0u;
     bool machine_initialized = false;
     bool trace_created = false;
@@ -147,8 +148,9 @@ int main(int argc, char** argv)
 
     wz_trace_cpu_state_sync_init(&recovery.cpu);
     recovery.timeline_ordered = true;
-    if (wz_trace_file_recover(argv[1], recover_cross_domain, &recovery,
-                              &recovered_count) != WZ_RESULT_OK ||
+    recovery_status = wz_trace_file_recover(argv[1], recover_cross_domain,
+                                            &recovery, &recovered_count);
+    if (recovery_status != WZ_RESULT_OK ||
         recovered_count < WZ_ULA_CAPTURE_CELL_COUNT * 2u ||
         recovery.ula_fetch_count != WZ_ULA_CAPTURE_CELL_COUNT * 2u ||
         recovery.cpu_instruction_count == 0u ||
@@ -157,8 +159,9 @@ int main(int argc, char** argv)
         recovery.first_bus_event.program_counter != 0x2345u ||
         !recovery.bus_context_valid || !recovery.timeline_ordered ||
         !recovery.interrupt_ordered) {
-        (void)fprintf(stderr, "trace failed: events=%zu ula=%zu cpu=%zu bus=%d "
-            "cycle=%u pc=%04x context=%d order=%d interrupt=%d\n",
+        (void)fprintf(stderr, "trace failed: result=%d events=%zu ula=%zu "
+            "cpu=%zu bus=%d cycle=%u pc=%04x context=%d order=%d int=%d\n",
+            (int)recovery_status,
             recovered_count, recovery.ula_fetch_count,
             recovery.cpu_instruction_count, recovery.have_bus_event ? 1 : 0,
             recovery.first_bus_event.cycle,
