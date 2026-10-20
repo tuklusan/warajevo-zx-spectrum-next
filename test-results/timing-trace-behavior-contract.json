@@ -1,0 +1,98 @@
+{
+  "testId": "timing-trace-behavior-contract",
+  "status": "pass",
+  "commit": "2d1f131dd9c7d0079f38a940162a8d53f3100a24",
+  "runId": 39368904224,
+  "timestamp": "2026-10-20T04:19:11+00:00",
+  "observedOutput": "PASS timing trace state neutrality, deterministic ordering, wrap, freeze, enable/disable, and file failure",
+  "fixtures": [
+    {
+      "path": ".github/workflows/timing-trace-behavior-contract.yml",
+      "sha256": "ee14867df7b01864a29948d8717b77a977caef63db949306c4526f447bb72723"
+    },
+    {
+      "path": "ci/test/timing-trace-behavior-contract/CMakeLists.txt",
+      "sha256": "50447b18e27bc8abbae97e9d5122a0e319941b36755417c71f325fe14c0192e8"
+    },
+    {
+      "path": "ci/test/timing-trace-behavior-contract/README.md",
+      "sha256": "20315059dbd4545ad1efc087d4ad0d3de8f0e5f6d30e21b731df60a8e81082e2"
+    },
+    {
+      "path": "ci/test/timing-trace-behavior-contract/timing-trace-behavior-contract.c",
+      "sha256": "2e78022ec616d64f5802dfa712c11dc0b7a17e1901b185ee677b5e7d6db569bd"
+    },
+    {
+      "path": "ci/test/timing-trace-behavior-contract/write-proof.py",
+      "sha256": "0cb6ee7f739887898e924a1fddb45a2c81da959d2504bb45e9dfeeaa61edc57e"
+    },
+    {
+      "path": "roms/48.rom",
+      "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "7c92695d1282104d62ac3b4c9c929a96a6ed7169533fa3e71ba6f93af1186469"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "360fe71b54c4ac705cd9d8f32d20bc017af7d3e6b59dc36ebf125a377cf62489"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "e7078ec7aca25b1a0b168fd050fd81506e98f0002433144acb8af38878637864"
+    },
+    {
+      "path": "src/core/wz_state.c",
+      "sha256": "a14842db3e5b28ff63f729e61611e62ede5bd06abf028cb2ed6180c4aa3ad341"
+    },
+    {
+      "path": "src/core/wz_state.h",
+      "sha256": "46ec8063cc5976b743d53a23b64c34c84583878c9793434d3622c8f8a38f9aa3"
+    },
+    {
+      "path": "src/core/wz_trace.h",
+      "sha256": "906c7f54ac8a56b6bb8b797d7a471a581c2849e5b2bd1f542bc59dbf39ab7a6c"
+    },
+    {
+      "path": "src/core/wz_z80.c",
+      "sha256": "a4a33d8eeb01eba32cfea2af38e8d65ab8b89c5e0b8cee7de93ba34781cbec49"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.c",
+      "sha256": "6cf2f5862becd86879418ee6f0057c3f559e506f03fdec111923d91f7c04d747"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.h",
+      "sha256": "5538d5d54e40f029196a5a3275f7c6f4c5d8a542ba000a680379037e3cbb2d0b"
+    }
+  ],
+  "runner": "Windows x64, Windows ARM64, macOS x64, and macOS ARM64 hosted runners",
+  "caseCount": 48,
+  "runnerResults": [
+    {
+      "runner": "GitHub Actions 1000112152/macOS/ARM64",
+      "status": "pass",
+      "caseCount": 12,
+      "timestamp": "2026-10-20T04:19:11+00:00"
+    },
+    {
+      "runner": "GitHub Actions 1000112154/macOS/X64",
+      "status": "pass",
+      "caseCount": 12,
+      "timestamp": "2026-10-20T04:19:15+00:00"
+    },
+    {
+      "runner": "GitHub Actions 1000112150/Windows/ARM64",
+      "status": "pass",
+      "caseCount": 12,
+      "timestamp": "2026-10-20T04:19:57+00:00"
+    },
+    {
+      "runner": "GitHub Actions 1000112159/Windows/X64",
+      "status": "pass",
+      "caseCount": 12,
+      "timestamp": "2026-10-20T04:19:31+00:00"
+    }
+  ]
+}
