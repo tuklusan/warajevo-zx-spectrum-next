@@ -1,10 +1,10 @@
 {
   "testId": "timing-trace-retention",
   "status": "pass",
-  "commit": "46353bb5255072355bf94042046fc384e3831d75",
-  "runId": 39341204213,
+  "commit": "6b486a29bf0a38467facfca389f69c48d3ade137",
+  "runId": 39366510114,
   "runner": "GitHub Actions Ubuntu 24.04 x86-64",
-  "timestamp": "2026-10-19T23:23:07+00:00",
+  "timestamp": "2026-10-20T03:52:10+00:00",
   "requestedFrames": 8,
   "frameTicks": 139776,
   "machineTicks": 1118232,
@@ -39,15 +39,15 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "24eaac015e950cd317be13ddb79c33ce92a01f106fef3dbfbb7ce433c9557ffc"
+      "sha256": "360fe71b54c4ac705cd9d8f32d20bc017af7d3e6b59dc36ebf125a377cf62489"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "92649806b076a4542c05d53b1a3e01bbf67ebfe25b76c92a333cf03e27809f4d"
+      "sha256": "e7078ec7aca25b1a0b168fd050fd81506e98f0002433144acb8af38878637864"
     },
     {
       "path": "src/core/wz_machine_profile.c",
-      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09"
+      "sha256": "912a458de8d9a9d2d89bb57cac896e819d8ce82297a4e2ac707c90be1d4450b5"
     },
     {
       "path": "src/core/wz_z80.c",

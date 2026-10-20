@@ -1,36 +1,36 @@
 {
   "testId": "timing-trace-file-contract",
   "status": "pass",
-  "commit": "c824f48d8b8d56b4aaa4bb86a0b79418474b63da",
-  "runId": 36807193567,
+  "commit": "6b486a29bf0a38467facfca389f69c48d3ade137",
+  "runId": 39366510122,
   "runner": "Windows x64, Windows ARM64, macOS x64, and macOS ARM64 hosted runners",
-  "timestamp": "2026-10-01T02:46:18+00:00",
+  "timestamp": "2026-10-19T23:53:01-04:00",
   "caseCount": 28,
   "observedOutput": "PASS timing trace isolation, fixed size, sparse wrap, freeze, and crash-tail recovery",
   "runnerResults": [
     {
-      "runner": "GitHub Actions 1000085468/macOS/X64",
+      "runner": "GitHub Actions 1000112040/macOS/ARM64",
       "status": "pass",
       "caseCount": 7,
-      "timestamp": "2026-10-01T02:44:22+00:00"
+      "timestamp": "2026-10-19T23:52:12-04:00"
     },
     {
-      "runner": "GitHub Actions 1000085473/Windows/ARM64",
+      "runner": "GitHub Actions 1000112039/macOS/X64",
       "status": "pass",
       "caseCount": 7,
-      "timestamp": "2026-10-01T02:45:35+00:00"
+      "timestamp": "2026-10-19T23:52:38-04:00"
     },
     {
-      "runner": "GitHub Actions 1000085475/macOS/ARM64",
+      "runner": "GitHub Actions 1000112041/Windows/ARM64",
       "status": "pass",
       "caseCount": 7,
-      "timestamp": "2026-10-01T02:45:23+00:00"
+      "timestamp": "2026-10-19T23:53:01-04:00"
     },
     {
-      "runner": "GitHub Actions 1000085480/Windows/X64",
+      "runner": "GitHub Actions 1000112043/Windows/X64",
       "status": "pass",
       "caseCount": 7,
-      "timestamp": "2026-10-01T02:46:18+00:00"
+      "timestamp": "2026-10-19T23:52:36-04:00"
     }
   ],
   "fixtures": [
@@ -56,15 +56,15 @@
     },
     {
       "path": "src/diagnostics/wz_trace_file.c",
-      "sha256": "24aa5d6af631abfa220c1c4d43a4bdf4ff1dd27a8b9dab523acffded8a50fd70"
+      "sha256": "6cf2f5862becd86879418ee6f0057c3f559e506f03fdec111923d91f7c04d747"
     },
     {
       "path": "src/diagnostics/wz_trace_file.h",
-      "sha256": "e39f47ab133980a1da378aecc1a0fd87f2c77289b3e29e7dd2c7423250f2119e"
+      "sha256": "5538d5d54e40f029196a5a3275f7c6f4c5d8a542ba000a680379037e3cbb2d0b"
     },
     {
       "path": "src/core/wz_trace.h",
-      "sha256": "9730762f41380dc9ef42b8cd1d6ed454dc4d091fa83dd81c9578925f4bbd8466"
+      "sha256": "906c7f54ac8a56b6bb8b797d7a471a581c2849e5b2bd1f542bc59dbf39ab7a6c"
     },
     {
       "path": "src/core/wz_types.h",
@@ -72,7 +72,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "9ecafdaf9f137684e77a3b722e7d1dd289ba9e8b3333af1244844e2d604436c0"
+      "sha256": "7c92695d1282104d62ac3b4c9c929a96a6ed7169533fa3e71ba6f93af1186469"
     }
   ]
 }
