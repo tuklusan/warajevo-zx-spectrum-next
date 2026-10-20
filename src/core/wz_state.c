@@ -1543,7 +1543,7 @@ static wz_result_t wz_z80_v3_map_header(wz_machine_t* machine,
             }
         }
     } else {
-        if (data[53u] > 15u || data[54u] != 0u) {
+        if (header_length < 55u || data[53u] > 15u || data[54u] != 0u) {
             return WZ_RESULT_PARSE_ERROR;
         }
         for (size_t index = 55u; index < header_length; ++index) {
