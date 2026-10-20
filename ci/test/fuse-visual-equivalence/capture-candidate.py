@@ -144,7 +144,7 @@ def windows_crop_obstruction(process_id, box):
                                    round(box[1] + (box[3] - box[1]) * y_fraction))
             window = user32.WindowFromPoint(point)
             if not window:
-                return None
+                continue
             root = user32.GetAncestor(window, 2)
             owner = wintypes.DWORD()
             user32.GetWindowThreadProcessId(root, ctypes.byref(owner))
