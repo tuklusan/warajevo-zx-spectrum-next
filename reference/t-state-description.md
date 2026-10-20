@@ -64,9 +64,13 @@ The initial 48K PAL contract is:
 | Active bitmap height | 192 lines |
 | Frame rate | approximately 50 Hz; freeze from evidence |
 
-The 128K PAL placeholder profile in the architecture is 228 T-states per line,
-311 lines per frame, and 70,908 T-states per frame. These values are not a
-substitute for the required 128K evidence freeze.
+The base 128K PAL profile uses a nominal CPU frequency of 3,546,900 Hz, 228
+T-states per line, 311 lines per frame, and 70,908 T-states per frame. Its
+published timing reference also places the first contention slot at T-state
+14,361 and notes a one-T-state-later hardware timing variant. With two master
+ticks per CPU T-state, its master frequency is 7,093,800 Hz. These are the
+frozen nominal profile values; the source and remaining validation limits are
+recorded in [machine-timing-evidence.md](../docs/design/machine-timing-evidence.md).
 
 For an integral profile ratio:
 

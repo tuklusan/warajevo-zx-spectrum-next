@@ -33,7 +33,7 @@ static const wz_machine_profile_t wz_profile_48k = {
 static const wz_machine_profile_t wz_profile_128k = {
     WZ_MACHINE_128K_PAL,
     "ZX Spectrum 128K PAL",
-    7000000u,
+    7093800u,
     1u,
     2u,
     228u,

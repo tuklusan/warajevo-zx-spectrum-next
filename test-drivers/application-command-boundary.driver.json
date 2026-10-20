@@ -127,7 +127,7 @@
     },
     {
       "path": "src/core/wz_machine_profile.c",
-      "sha256": "d9cac65c6e4125ac78bb8c7c57309c659791f377f14a92a93161e15ba3611f09"
+      "sha256": "625e1583cbb59eebf67a58bc842913e6bd417a3f4eed975adce4fa34283fcfa5"
     },
     {
       "path": "src/core/wz_microdrive.c",

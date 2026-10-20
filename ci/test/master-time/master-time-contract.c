@@ -144,8 +144,24 @@ static bool check_profile(const wz_machine_profile_t* profile)
 
 int main(void)
 {
-    if (!check_profile(wz_machine_profile_48k_pal()) ||
-        !check_profile(wz_machine_profile_128k_pal())) {
+    const wz_machine_profile_t* profile_48k =
+        wz_machine_profile_48k_pal();
+    const wz_machine_profile_t* profile_128k =
+        wz_machine_profile_128k_pal();
+
+    if (profile_48k->master_hz_num != UINT64_C(7000000) ||
+        profile_48k->master_hz_den != 1u ||
+        profile_48k->master_ticks_per_cpu_tstate != 2u ||
+        profile_48k->tstates_per_line != 224u ||
+        profile_48k->lines_per_frame != 312u ||
+        profile_48k->tstates_per_frame != 69888u ||
+        profile_128k->master_hz_num != UINT64_C(7093800) ||
+        profile_128k->master_hz_den != 1u ||
+        profile_128k->master_ticks_per_cpu_tstate != 2u ||
+        profile_128k->tstates_per_line != 228u ||
+        profile_128k->lines_per_frame != 311u ||
+        profile_128k->tstates_per_frame != 70908u ||
+        !check_profile(profile_48k) || !check_profile(profile_128k)) {
         fputs("Master-time contract failed.\n", stderr);
         return 1;
     }
