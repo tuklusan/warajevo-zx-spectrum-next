@@ -1,0 +1,85 @@
+{
+  "testId": "timing-trace-interface1",
+  "status": "pass",
+  "commit": "b6ff1b2c9a125dc93fb6271900c16ff9f2c4c7e3",
+  "runId": 39508974703,
+  "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
+  "timestamp": "2026-10-20T22:36:31+00:00",
+  "caseCount": 25,
+  "caseCountPerRunner": 5,
+  "observedOutput": "PASS Interface 1, Microdrive, and ZX Net port accesses retain exact ticks and latch context",
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39508974703",
+  "runnerResults": [
+    {
+      "runner": "Windows x64",
+      "status": "pass",
+      "caseCount": 5,
+      "jobId": 118924926128,
+      "timestamp": "2026-10-20T22:35:05Z"
+    },
+    {
+      "runner": "Linux x64",
+      "status": "pass",
+      "caseCount": 5,
+      "jobId": 118924926311,
+      "timestamp": "2026-10-20T22:34:16Z"
+    },
+    {
+      "runner": "Linux ARM64",
+      "status": "pass",
+      "caseCount": 5,
+      "jobId": 118924926510,
+      "timestamp": "2026-10-20T22:34:36Z"
+    },
+    {
+      "runner": "macOS ARM64",
+      "status": "pass",
+      "caseCount": 5,
+      "jobId": 118924926621,
+      "timestamp": "2026-10-20T22:34:13Z"
+    },
+    {
+      "runner": "macOS Intel",
+      "status": "pass",
+      "caseCount": 5,
+      "jobId": 118924926412,
+      "timestamp": "2026-10-20T22:35:15Z"
+    }
+  ],
+  "nativeBuildConfiguration": "Release; WZSN_BUILD_SOKOL_HOST=ON",
+  "ctest": "all integrated CTests passed on each native runner",
+  "fixtures": [
+    {
+      "path": "ci/test/timing-trace-interface1/README.md",
+      "sha256": "1f0fada64763c418518edd97074e39b8fcd68d3928642abf86a9c33c7bb89729"
+    },
+    {
+      "path": "ci/test/timing-trace-interface1/trace-interface1-fixture.c",
+      "sha256": "03604d65da0b75313fbdba966e169eeabc73d57b69d9286f64e3c2aece70f36e"
+    },
+    {
+      "path": "ci/test/timing-trace-interface1/verify.cmake",
+      "sha256": "4d9d66d8480bff40c80a8192bf8f4a19a7e6a3212e6d3b21e92ca6b03152418d"
+    },
+    {
+      "path": "ci/test/timing-trace-interface1/write-proof.py",
+      "sha256": "e984843ce4de2f731fade79f138e3545f7e6fde4921d6a026df543c93d4f5071"
+    },
+    {
+      "path": "src/core/wz_bus.c",
+      "sha256": "1a185602bb9c8a6e25f9d14286a7b5905d7330126373ee7d41fc7e3fc46dfdcc"
+    },
+    {
+      "path": "src/core/wz_trace.h",
+      "sha256": "da4a77e1c387d93a30ad1bff1ba5c24d2d79dec6daf3ced9f471c7e6a4ac7142"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_dump_main.c",
+      "sha256": "16c89efb0fe1c80e54ccd8062f5d2f352a4ad6a171b6f7d364228d2e3e40c637"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "8396fb90fa06e873d75c3f1a2db25296a47df056c6f3bf67241a30f631e222b9"
+    }
+  ]
+}
