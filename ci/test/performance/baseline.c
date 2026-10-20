@@ -492,8 +492,12 @@ int main(void)
     result = 0;
 
 cleanup:
-    if (snapshot_machine_initialized) destroy_machine(&snapshot->machine);
-    if (raster_machine_initialized) destroy_machine(&raster->machine);
+    if (snapshot != NULL && snapshot_machine_initialized) {
+        destroy_machine(&snapshot->machine);
+    }
+    if (raster != NULL && raster_machine_initialized) {
+        destroy_machine(&raster->machine);
+    }
     if (raster != NULL) free(raster->pixels);
     if (tape != NULL) free(tape->segments);
     if (snapshot != NULL) {
