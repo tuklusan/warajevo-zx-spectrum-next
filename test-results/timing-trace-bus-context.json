@@ -1,20 +1,20 @@
 {
   "testId": "timing-trace-bus-context",
   "status": "pass",
-  "commit": "e3c0a65bccf1a816a09cd2dde03a197b88c1ca06",
-  "runId": 39493371411,
+  "commit": "9127987f01024e2a9c13543860a288c91f10bfef",
+  "runId": 39497058804,
   "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
-  "timestamp": "2026-10-20T20:38:41+00:00",
-  "caseCount": 6,
-  "observedOutput": "PASS cross-domain trace reconstructs interrupt, CPU, bus, and ULA timing",
+  "timestamp": "2026-10-20T21:04:24+00:00",
+  "caseCount": 7,
+  "observedOutput": "PASS timing trace reconstructs interrupt, CPU, bus, ULA, and border timing",
   "fixtures": [
     {
       "path": "ci/test/timing-trace-bus-context/timing-trace-bus-context.c",
-      "sha256": "2cf2b07998181f40beb975da49405b0648f6f0aa76bfba9b6c1d14d9d6c0624e"
+      "sha256": "daccd8a5016af7788ce5ec1bcb615d1f88558f333b3d6efd6574c72785f1ce6a"
     },
     {
       "path": "ci/test/timing-trace-bus-context/write-proof.py",
-      "sha256": "9386847bd9d37c293575b62e34476d21b0f5091292885b08ef758aec8ceed4bf"
+      "sha256": "c7329dea4bc7e5e45b11655107815e276eb6228c7abb3a367b6f2fd1161269b0"
     },
     {
       "path": "src/core/wz_bus.c",
@@ -26,7 +26,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "697b3197a47e62f1cf43f3ae63fb688e5def2df6ae78249cdc2b193034fa9d48"
+      "sha256": "8b30e3febd1756b28d478cdbbc826e7651cef04db71fb14241dd2a2f581973e9"
     },
     {
       "path": "src/core/wz_machine_profile.c",
@@ -54,7 +54,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "0d9d6a30371ea221eaea1cc035fd95c026328e70990bd7f02df69b176ba488eb"
+      "sha256": "f150b14da20934c90d4b1e4f18499028939ef32bd647f44b43f0ab0d26e9e6f7"
     }
   ]
 }

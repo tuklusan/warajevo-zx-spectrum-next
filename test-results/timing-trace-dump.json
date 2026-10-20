@@ -1,44 +1,40 @@
 {
   "testId": "timing-trace-dump",
   "status": "pass",
-  "commit": "aed1b0a32e42a178d79d7617c8eba7400e3890b0",
-  "runId": 39412731110,
-  "runner": "Windows x64, Windows ARM64, macOS x64, and macOS ARM64 hosted runners",
-  "timestamp": "2026-10-20T11:08:58+00:00",
-  "caseCount": 40,
-  "observedOutput": "PASS trace dump fields, same-tick ordering, and reconstructed CPU state",
+  "commit": "9127987f01024e2a9c13543860a288c91f10bfef",
+  "runId": 39497058804,
+  "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
+  "timestamp": "2026-10-20T21:04:25+00:00",
+  "caseCount": 12,
+  "observedOutput": "PASS trace dump fields, same-tick ordering, reconstructed CPU state, and border transitions",
   "fixtures": [
-    {
-      "path": ".github/workflows/timing-trace-dump.yml",
-      "sha256": "6f288712828a141d2be5c28a453b6a7aa361953e254cf26f2f4cd62da94765f6"
-    },
     {
       "path": "ci/test/timing-trace-dump/CMakeLists.txt",
       "sha256": "bea7cfec8ceb30d68c04f52c7c3d92caf91bd7b53e70395e37a94ff0d860c9ca"
     },
     {
       "path": "ci/test/timing-trace-dump/README.md",
-      "sha256": "0a257476afe322ce4e0520b62b2fb599d38acba7e26d2fc4373603d5bbf4c4c5"
+      "sha256": "14fd082d9e0edbfd61fad1ef7bcf02138914f3d6336aec973b13e2d2a1a03c2a"
     },
     {
       "path": "ci/test/timing-trace-dump/trace-dump-fixture.c",
-      "sha256": "e9d4c8e7389de057a9f572ffa435aa910461c11094055c6012ffe96124669ff0"
+      "sha256": "d1b1d497b6d0b5579b37447237ffa047055e7e4a752be68e19e89d819fd92fe1"
     },
     {
       "path": "ci/test/timing-trace-dump/verify.cmake",
-      "sha256": "c0ed5d51263950822e9a46bdf6c91e3b6d7f7e07c596521982810b0c07e60031"
+      "sha256": "95cbbbac84d82028847c8de1e6f071b99311e49f8dd0e548acbac8aa73908ea7"
     },
     {
       "path": "ci/test/timing-trace-dump/write-proof.py",
-      "sha256": "20effa60a9770f6e6dfd7d30a3eecf7e25397d4c59dcf4820330624bf17a818c"
+      "sha256": "024689b9f9740701fae86295d4a87ca1bfc5c0f59a0069e0c037149d1bad2975"
     },
     {
       "path": "src/diagnostics/wz_trace_dump_main.c",
-      "sha256": "507cc25974424411a526270aa31c7a8031c044809745a948e5e35793a0d61a5e"
+      "sha256": "c80277e741bd9c1d8013525b9202fac034353a86ef197e16341a9785704d1322"
     },
     {
       "path": "src/diagnostics/wz_trace_file.c",
-      "sha256": "b7330439a1c72044e0f1c891a8595df2476c5e42f3c6617da529d782ed4b6ea4"
+      "sha256": "aee458f31b0d9528d602d18a45fcc60ae5e54757e2aa4f6da6669228d96cd84b"
     },
     {
       "path": "src/diagnostics/wz_trace_file.h",
@@ -46,7 +42,7 @@
     },
     {
       "path": "src/core/wz_trace.h",
-      "sha256": "906c7f54ac8a56b6bb8b797d7a471a581c2849e5b2bd1f542bc59dbf39ab7a6c"
+      "sha256": "855d1bd77211a7c3c8e875f3590e5c14fba504a5ca887ed0131a21a16d3b39b1"
     },
     {
       "path": "src/core/wz_z80.h",
@@ -58,34 +54,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "77384e43c0307b13c68cd6d7993e0af25457c4f2d203b0e18f191adba0c063b3"
-    }
-  ],
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39412731110",
-  "runnerResults": [
-    {
-      "runner": "GitHub Actions 1000113429/Windows/ARM64",
-      "status": "pass",
-      "caseCount": 10,
-      "timestamp": "2026-10-20T11:08:58+00:00"
-    },
-    {
-      "runner": "GitHub Actions 1000113435/macOS/ARM64",
-      "status": "pass",
-      "caseCount": 10,
-      "timestamp": "2026-10-20T11:08:02+00:00"
-    },
-    {
-      "runner": "GitHub Actions 1000113442/Windows/X64",
-      "status": "pass",
-      "caseCount": 10,
-      "timestamp": "2026-10-20T11:08:15+00:00"
-    },
-    {
-      "runner": "GitHub Actions 1000113450/macOS/X64",
-      "status": "pass",
-      "caseCount": 10,
-      "timestamp": "2026-10-20T11:08:18+00:00"
+      "sha256": "f150b14da20934c90d4b1e4f18499028939ef32bd647f44b43f0ab0d26e9e6f7"
     }
   ]
 }
