@@ -103,6 +103,9 @@ int main(int argc, char** argv)
     recovery_t recovery = {0};
     wz_master_tick_t frame_ticks;
     wz_result_t recovery_status;
+    wz_result_t runner_status;
+    wz_result_t execution_status;
+    wz_result_t freeze_status;
     size_t recovered_count = 0u;
     bool machine_initialized = false;
     bool trace_created = false;
@@ -140,10 +143,18 @@ int main(int argc, char** argv)
     wz_trace_sink_init(&trace_sink, wz_trace_file_emit, &trace_file);
     wz_machine_set_timing_trace(&machine, &trace_sink);
     failure_stage = "frame execution";
-    if (wz_headless_runner_init(&runner, &machine, NULL) != WZ_RESULT_OK ||
-        wz_headless_runner_execute(&runner, frame_ticks) != WZ_RESULT_OK ||
-        trace_file.failed ||
-        wz_trace_file_freeze(&trace_file) != WZ_RESULT_OK) {
+    runner_status = wz_headless_runner_init(&runner, &machine, NULL);
+    execution_status = runner_status == WZ_RESULT_OK ?
+        wz_headless_runner_execute(&runner, frame_ticks) : runner_status;
+    freeze_status = trace_file.failed ? WZ_RESULT_TRACE_FAILURE :
+        wz_trace_file_freeze(&trace_file);
+    if (runner_status != WZ_RESULT_OK || execution_status != WZ_RESULT_OK ||
+        trace_file.failed || freeze_status != WZ_RESULT_OK) {
+        (void)fprintf(stderr, "frame failed: init=%d execute=%d trace=%d "
+            "freeze=%d tick=%llu pc=%04x\n", (int)runner_status,
+            (int)execution_status, trace_file.failed ? 1 : 0,
+            (int)freeze_status, (unsigned long long)machine.master_tick,
+            (unsigned)machine.cpu.program_counter);
         goto cleanup;
     }
     wz_machine_set_timing_trace(&machine, NULL);
