@@ -1,10 +1,11 @@
 {
   "testId": "timing-trace-ownership",
   "status": "pass",
-  "commit": "e1298788dd3ecd6bced155db5ed0b702266764e7",
-  "runId": 39407686373,
-  "timestamp": "2026-10-20T10:25:34+00:00",
-  "caseCount": 11,
+  "commit": "aed1b0a32e42a178d79d7617c8eba7400e3890b0",
+  "runId": 39412731254,
+  "runner": "Windows x64, Windows ARM64, macOS x64, and macOS ARM64 hosted runners",
+  "timestamp": "2026-10-20T11:09:57+00:00",
+  "caseCount": 44,
   "observedOutput": "PASS one of eight concurrent processes exclusively owned and froze the shared trace path",
   "fixtures": [
     {
@@ -37,11 +38,11 @@
     },
     {
       "path": "src/diagnostics/wz_trace_file.c",
-      "sha256": "6cf2f5862becd86879418ee6f0057c3f559e506f03fdec111923d91f7c04d747"
+      "sha256": "b7330439a1c72044e0f1c891a8595df2476c5e42f3c6617da529d782ed4b6ea4"
     },
     {
       "path": "src/diagnostics/wz_trace_file.h",
-      "sha256": "5538d5d54e40f029196a5a3275f7c6f4c5d8a542ba000a680379037e3cbb2d0b"
+      "sha256": "fc2f50a1f31e002a2190bfd82bb675fd8329327306209eb3d22afa02d3083e39"
     },
     {
       "path": "src/core/wz_trace.h",
@@ -56,33 +57,31 @@
       "sha256": "77384e43c0307b13c68cd6d7993e0af25457c4f2d203b0e18f191adba0c063b3"
     }
   ],
-  "runner": "Windows x64, Windows ARM64, macOS x64, and macOS ARM64 hosted runners",
-  "workflowRunId": 39407686373,
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39407686373",
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39412731254",
   "runnerResults": [
     {
-      "runner": "GitHub Actions 1000113339/Windows/ARM64",
+      "runner": "GitHub Actions 1000113428/Windows/ARM64",
       "status": "pass",
       "caseCount": 11,
-      "timestamp": "2026-10-20T10:25:34+00:00"
+      "timestamp": "2026-10-20T11:09:02+00:00"
     },
     {
-      "runner": "GitHub Actions 1000113340/Windows/X64",
+      "runner": "GitHub Actions 1000113434/macOS/ARM64",
       "status": "pass",
       "caseCount": 11,
-      "timestamp": "2026-10-20T10:25:03+00:00"
+      "timestamp": "2026-10-20T11:07:55+00:00"
     },
     {
-      "runner": "GitHub Actions 1000113341/macOS/ARM64",
+      "runner": "GitHub Actions 1000113441/Windows/X64",
       "status": "pass",
       "caseCount": 11,
-      "timestamp": "2026-10-20T10:24:40+00:00"
+      "timestamp": "2026-10-20T11:09:57+00:00"
     },
     {
-      "runner": "GitHub Actions 1000113354/macOS/X64",
+      "runner": "GitHub Actions 1000113451/macOS/X64",
       "status": "pass",
       "caseCount": 11,
-      "timestamp": "2026-10-20T10:25:09+00:00"
+      "timestamp": "2026-10-20T11:08:43+00:00"
     }
   ]
 }

@@ -1,38 +1,12 @@
 {
   "testId": "timing-trace-dump",
   "status": "pass",
-  "commit": "be188928ad42f1b69c3563dd1fccf7e8f1d47dae",
-  "runId": 39403187596,
+  "commit": "aed1b0a32e42a178d79d7617c8eba7400e3890b0",
+  "runId": 39412731110,
   "runner": "Windows x64, Windows ARM64, macOS x64, and macOS ARM64 hosted runners",
-  "timestamp": "2026-10-20T09:49:00+00:00",
+  "timestamp": "2026-10-20T11:08:58+00:00",
   "caseCount": 40,
   "observedOutput": "PASS trace dump fields, same-tick ordering, and reconstructed CPU state",
-  "runnerResults": [
-    {
-      "runner": "GitHub Actions 1000113275/Windows/ARM64",
-      "status": "pass",
-      "caseCount": 10,
-      "timestamp": "2026-10-20T09:48:08+00:00"
-    },
-    {
-      "runner": "GitHub Actions 1000113279/macOS/X64",
-      "status": "pass",
-      "caseCount": 10,
-      "timestamp": "2026-10-20T09:47:23+00:00"
-    },
-    {
-      "runner": "GitHub Actions 1000113284/Windows/X64",
-      "status": "pass",
-      "caseCount": 10,
-      "timestamp": "2026-10-20T09:47:39+00:00"
-    },
-    {
-      "runner": "GitHub Actions 1000113288/macOS/ARM64",
-      "status": "pass",
-      "caseCount": 10,
-      "timestamp": "2026-10-20T09:47:42+00:00"
-    }
-  ],
   "fixtures": [
     {
       "path": ".github/workflows/timing-trace-dump.yml",
@@ -60,15 +34,15 @@
     },
     {
       "path": "src/diagnostics/wz_trace_dump_main.c",
-      "sha256": "31448dd0ab69d2eea1445fca67b537bb28879f67146c5c3a10b30e79230fe10f"
+      "sha256": "507cc25974424411a526270aa31c7a8031c044809745a948e5e35793a0d61a5e"
     },
     {
       "path": "src/diagnostics/wz_trace_file.c",
-      "sha256": "6cf2f5862becd86879418ee6f0057c3f559e506f03fdec111923d91f7c04d747"
+      "sha256": "b7330439a1c72044e0f1c891a8595df2476c5e42f3c6617da529d782ed4b6ea4"
     },
     {
       "path": "src/diagnostics/wz_trace_file.h",
-      "sha256": "5538d5d54e40f029196a5a3275f7c6f4c5d8a542ba000a680379037e3cbb2d0b"
+      "sha256": "fc2f50a1f31e002a2190bfd82bb675fd8329327306209eb3d22afa02d3083e39"
     },
     {
       "path": "src/core/wz_trace.h",
@@ -85,6 +59,33 @@
     {
       "path": "src/cmake/CMakeLists.txt",
       "sha256": "77384e43c0307b13c68cd6d7993e0af25457c4f2d203b0e18f191adba0c063b3"
+    }
+  ],
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39412731110",
+  "runnerResults": [
+    {
+      "runner": "GitHub Actions 1000113429/Windows/ARM64",
+      "status": "pass",
+      "caseCount": 10,
+      "timestamp": "2026-10-20T11:08:58+00:00"
+    },
+    {
+      "runner": "GitHub Actions 1000113435/macOS/ARM64",
+      "status": "pass",
+      "caseCount": 10,
+      "timestamp": "2026-10-20T11:08:02+00:00"
+    },
+    {
+      "runner": "GitHub Actions 1000113442/Windows/X64",
+      "status": "pass",
+      "caseCount": 10,
+      "timestamp": "2026-10-20T11:08:15+00:00"
+    },
+    {
+      "runner": "GitHub Actions 1000113450/macOS/X64",
+      "status": "pass",
+      "caseCount": 10,
+      "timestamp": "2026-10-20T11:08:18+00:00"
     }
   ]
 }

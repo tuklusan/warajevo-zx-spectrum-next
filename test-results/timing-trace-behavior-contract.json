@@ -1,9 +1,11 @@
 {
   "testId": "timing-trace-behavior-contract",
   "status": "pass",
-  "commit": "2d1f131dd9c7d0079f38a940162a8d53f3100a24",
-  "runId": 39368904224,
-  "timestamp": "2026-10-20T04:19:11+00:00",
+  "commit": "aed1b0a32e42a178d79d7617c8eba7400e3890b0",
+  "runId": 39412731007,
+  "runner": "Windows x64, Windows ARM64, macOS x64, and macOS ARM64 hosted runners",
+  "timestamp": "2026-10-20T11:08:52+00:00",
+  "caseCount": 48,
   "observedOutput": "PASS timing trace state neutrality, deterministic ordering, wrap, freeze, enable/disable, and file failure",
   "fixtures": [
     {
@@ -32,7 +34,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "7c92695d1282104d62ac3b4c9c929a96a6ed7169533fa3e71ba6f93af1186469"
+      "sha256": "77384e43c0307b13c68cd6d7993e0af25457c4f2d203b0e18f191adba0c063b3"
     },
     {
       "path": "src/core/wz_machine.c",
@@ -56,43 +58,42 @@
     },
     {
       "path": "src/core/wz_z80.c",
-      "sha256": "a4a33d8eeb01eba32cfea2af38e8d65ab8b89c5e0b8cee7de93ba34781cbec49"
+      "sha256": "fa32e1faa87785cfbb128966541e1066c7eafadba76c01f10fa6703e2fc8095a"
     },
     {
       "path": "src/diagnostics/wz_trace_file.c",
-      "sha256": "6cf2f5862becd86879418ee6f0057c3f559e506f03fdec111923d91f7c04d747"
+      "sha256": "b7330439a1c72044e0f1c891a8595df2476c5e42f3c6617da529d782ed4b6ea4"
     },
     {
       "path": "src/diagnostics/wz_trace_file.h",
-      "sha256": "5538d5d54e40f029196a5a3275f7c6f4c5d8a542ba000a680379037e3cbb2d0b"
+      "sha256": "fc2f50a1f31e002a2190bfd82bb675fd8329327306209eb3d22afa02d3083e39"
     }
   ],
-  "runner": "Windows x64, Windows ARM64, macOS x64, and macOS ARM64 hosted runners",
-  "caseCount": 48,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39412731007",
   "runnerResults": [
     {
-      "runner": "GitHub Actions 1000112152/macOS/ARM64",
+      "runner": "GitHub Actions 1000113432/Windows/ARM64",
       "status": "pass",
       "caseCount": 12,
-      "timestamp": "2026-10-20T04:19:11+00:00"
+      "timestamp": "2026-10-20T11:08:42+00:00"
     },
     {
-      "runner": "GitHub Actions 1000112154/macOS/X64",
+      "runner": "GitHub Actions 1000113444/Windows/X64",
       "status": "pass",
       "caseCount": 12,
-      "timestamp": "2026-10-20T04:19:15+00:00"
+      "timestamp": "2026-10-20T11:08:17+00:00"
     },
     {
-      "runner": "GitHub Actions 1000112150/Windows/ARM64",
+      "runner": "GitHub Actions 1000113452/macOS/X64",
       "status": "pass",
       "caseCount": 12,
-      "timestamp": "2026-10-20T04:19:57+00:00"
+      "timestamp": "2026-10-20T11:08:52+00:00"
     },
     {
-      "runner": "GitHub Actions 1000112159/Windows/X64",
+      "runner": "GitHub Actions 1000113453/macOS/ARM64",
       "status": "pass",
       "caseCount": 12,
-      "timestamp": "2026-10-20T04:19:31+00:00"
+      "timestamp": "2026-10-20T11:08:41+00:00"
     }
   ]
 }
