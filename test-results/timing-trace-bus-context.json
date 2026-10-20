@@ -1,16 +1,16 @@
 {
   "testId": "timing-trace-bus-context",
   "status": "pass",
-  "commit": "2f4e20194cff6db28582dcd577b9b3dd45b975bc",
-  "runId": 39491515992,
+  "commit": "e3c0a65bccf1a816a09cd2dde03a197b88c1ca06",
+  "runId": 39493371411,
   "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
-  "timestamp": "2026-10-20T20:25:06+00:00",
+  "timestamp": "2026-10-20T20:38:41+00:00",
   "caseCount": 6,
   "observedOutput": "PASS cross-domain trace reconstructs interrupt, CPU, bus, and ULA timing",
   "fixtures": [
     {
       "path": "ci/test/timing-trace-bus-context/timing-trace-bus-context.c",
-      "sha256": "2e7d87ff5d79a1cb978dc006c6031569f61c2e404e3fac31549d687d7180161f"
+      "sha256": "2cf2b07998181f40beb975da49405b0648f6f0aa76bfba9b6c1d14d9d6c0624e"
     },
     {
       "path": "ci/test/timing-trace-bus-context/write-proof.py",
@@ -18,7 +18,7 @@
     },
     {
       "path": "src/core/wz_bus.c",
-      "sha256": "e6c2c2298d35f011dcbce4f378a7d91698715ccbf0a5973541aaa58e89538d0e"
+      "sha256": "721ddc6d42da1662c686bbc31b2ac7f2bb4499e7f23e56f4c75fc9a2545fb8dc"
     },
     {
       "path": "src/core/wz_machine_internal.h",
@@ -46,7 +46,7 @@
     },
     {
       "path": "src/diagnostics/wz_trace_file.c",
-      "sha256": "b7330439a1c72044e0f1c891a8595df2476c5e42f3c6617da529d782ed4b6ea4"
+      "sha256": "aee458f31b0d9528d602d18a45fcc60ae5e54757e2aa4f6da6669228d96cd84b"
     },
     {
       "path": "src/diagnostics/wz_trace_file.h",
