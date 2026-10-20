@@ -1,0 +1,65 @@
+{
+  "testId": "timing-trace-dump",
+  "command": "cmake -S ci/test/timing-trace-dump -B dist/timing-trace-dump -DCMAKE_BUILD_TYPE=Debug && cmake --build dist/timing-trace-dump --config Debug --target wz_trace_dump wz_trace_dump_fixture --parallel 2 && ctest --test-dir dist/timing-trace-dump -C Debug --output-on-failure --verbose -R ^wz_trace_dump_cli_contract$",
+  "requiredCases": 10,
+  "runnerMatrix": [
+    "windows-2025",
+    "windows-11-arm",
+    "macos-15-intel",
+    "macos-15"
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/timing-trace-dump.yml",
+      "sha256": "6f288712828a141d2be5c28a453b6a7aa361953e254cf26f2f4cd62da94765f6"
+    },
+    {
+      "path": "ci/test/timing-trace-dump/CMakeLists.txt",
+      "sha256": "bea7cfec8ceb30d68c04f52c7c3d92caf91bd7b53e70395e37a94ff0d860c9ca"
+    },
+    {
+      "path": "ci/test/timing-trace-dump/README.md",
+      "sha256": "0a257476afe322ce4e0520b62b2fb599d38acba7e26d2fc4373603d5bbf4c4c5"
+    },
+    {
+      "path": "ci/test/timing-trace-dump/trace-dump-fixture.c",
+      "sha256": "e9d4c8e7389de057a9f572ffa435aa910461c11094055c6012ffe96124669ff0"
+    },
+    {
+      "path": "ci/test/timing-trace-dump/verify.cmake",
+      "sha256": "c0ed5d51263950822e9a46bdf6c91e3b6d7f7e07c596521982810b0c07e60031"
+    },
+    {
+      "path": "ci/test/timing-trace-dump/write-proof.py",
+      "sha256": "20effa60a9770f6e6dfd7d30a3eecf7e25397d4c59dcf4820330624bf17a818c"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_dump_main.c",
+      "sha256": "31448dd0ab69d2eea1445fca67b537bb28879f67146c5c3a10b30e79230fe10f"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.c",
+      "sha256": "10ea8809d2726628dfc0bf2f7473ab2f60a244b877896c0ce4e959f7ce436dc2"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.h",
+      "sha256": "5538d5d54e40f029196a5a3275f7c6f4c5d8a542ba000a680379037e3cbb2d0b"
+    },
+    {
+      "path": "src/core/wz_trace.h",
+      "sha256": "906c7f54ac8a56b6bb8b797d7a471a581c2849e5b2bd1f542bc59dbf39ab7a6c"
+    },
+    {
+      "path": "src/core/wz_z80.h",
+      "sha256": "8faaa6ca8ecd22b0b48418251256722471cef81537053cbfdd44ee629c293dd5"
+    },
+    {
+      "path": "src/core/wz_types.h",
+      "sha256": "b989adaa74e4ac0ec7e753da23a3fd16a3c02561744cca893fcd66f7c077c409"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "bb817e61ac7ae12f896a65c48db995da23756320c294656d05fb78d9d3fb654f"
+    }
+  ]
+}
