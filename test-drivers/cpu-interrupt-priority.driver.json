@@ -1,0 +1,75 @@
+{
+  "testId": "cpu-interrupt-priority",
+  "requiredCases": 1,
+  "command": "cmake -S ci/test/cpu-interrupt-priority -B dist/cpu-interrupt-priority -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/cpu-interrupt-priority --target wz_cpu_interrupt_priority --parallel 2 && ctest --test-dir dist/cpu-interrupt-priority -C Release --output-on-failure --verbose -R '^wz_cpu_interrupt_priority$'",
+  "runnerMatrix": [
+    "ubuntu-24.04"
+  ],
+  "expectedOutput": "PASS NMI priority, rejected maskable sample, RETN restore, and pending IRQ acceptance",
+  "fixtures": [
+    {
+      "path": ".github/workflows/cpu-interrupt-priority.yml",
+      "sha256": "34d99bba2e5a39239653a0b1abb2014f5a9fe70c0c416830195e06afb8d29ae0"
+    },
+    {
+      "path": "ci/test/cpu-interrupt-priority/CMakeLists.txt",
+      "sha256": "fdf117659814ac582e41d1a25730a7f80d495e9704c46d9856c335b657790864"
+    },
+    {
+      "path": "ci/test/cpu-interrupt-priority/README.md",
+      "sha256": "f467dcf9bdfbd83d9f0fa6acefad1e6387b636c1c901265aa3a82c5664d1d271"
+    },
+    {
+      "path": "ci/test/cpu-interrupt-priority/cpu-interrupt-priority.c",
+      "sha256": "b6ec5a4572ac57754de375e1ab3b57b93b9a65156cd60129efa690ba62303f36"
+    },
+    {
+      "path": "ci/test/cpu-interrupt-priority/write-proof.py",
+      "sha256": "cbfe1f974ad0e5ee091bb414b402b1a9da9edfb6dd1e80d69304ac84e8b4dbd7"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "c4b038801b872b3e7149a7504e2086be805506f714e6c7f18b1a8c5ab2aaae45"
+    },
+    {
+      "path": "src/core/wz_bus.c",
+      "sha256": "a84850869148d8f70a2ee5b31570d9d221d7159cbff832982ddbc8dd1f69c47e"
+    },
+    {
+      "path": "src/core/wz_bus.h",
+      "sha256": "0a6019987ae86f7c7293e1f428d086f52684ea5353eadb758c0b2d056677abaa"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "878304b76c1d146ed1b8140917db29569dce6f896abaff4546114d3059463a53"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "e7078ec7aca25b1a0b168fd050fd81506e98f0002433144acb8af38878637864"
+    },
+    {
+      "path": "src/core/wz_machine_profile.c",
+      "sha256": "912a458de8d9a9d2d89bb57cac896e819d8ce82297a4e2ac707c90be1d4450b5"
+    },
+    {
+      "path": "src/core/wz_machine_profile.h",
+      "sha256": "1b246ec8245bf68400b0f9c5a1e69438264d8c671f23d656d82c87a032c4c700"
+    },
+    {
+      "path": "src/core/wz_trace.c",
+      "sha256": "f317165de22d68da5d10ca3f39ddf0d3f4ee65451f064736da323a01b4a7844b"
+    },
+    {
+      "path": "src/core/wz_trace.h",
+      "sha256": "906c7f54ac8a56b6bb8b797d7a471a581c2849e5b2bd1f542bc59dbf39ab7a6c"
+    },
+    {
+      "path": "src/core/wz_z80.c",
+      "sha256": "9dab57d50df640ce007c9f2ca36f129c5932bbf7fe473b3055030e9a73e29255"
+    },
+    {
+      "path": "src/core/wz_z80.h",
+      "sha256": "8faaa6ca8ecd22b0b48418251256722471cef81537053cbfdd44ee629c293dd5"
+    }
+  ]
+}

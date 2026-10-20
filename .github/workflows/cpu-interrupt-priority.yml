@@ -1,0 +1,55 @@
+name: Project-owned CPU interrupt-priority acceptance
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  interrupt-priority:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Configure CPU interrupt-priority contract
+        run: >-
+          cmake -S ci/test/cpu-interrupt-priority
+          -B dist/cpu-interrupt-priority -G Ninja
+          -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build CPU interrupt-priority contract
+        run: >-
+          cmake --build dist/cpu-interrupt-priority
+          --target wz_cpu_interrupt_priority --parallel 2
+
+      - name: Run CPU interrupt-priority contract
+        run: >-
+          ctest --test-dir dist/cpu-interrupt-priority -C Release
+          --output-on-failure --verbose
+          -R '^wz_cpu_interrupt_priority$'
+
+      - name: Write pinned hosted proof
+        shell: bash
+        env:
+          PROJECT_COMMIT: ${{ github.sha }}
+          PROJECT_RUN_ID: ${{ github.run_id }}
+          RUNNER_NAME: ${{ runner.os }}/${{ runner.arch }}
+        run: |
+          python3 ci/test/cpu-interrupt-priority/write-proof.py \
+            --commit "$PROJECT_COMMIT" \
+            --run-id "$PROJECT_RUN_ID" \
+            --runner "$RUNNER_NAME" \
+            --run-log dist/cpu-interrupt-priority/Testing/Temporary/LastTest.log \
+            --proof dist/cpu-interrupt-priority/cpu-interrupt-priority.json
+
+      - name: Upload pinned CPU interrupt-priority proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: cpu-interrupt-priority-${{ github.sha }}
+          path: dist/cpu-interrupt-priority/cpu-interrupt-priority.json
+          if-no-files-found: error
