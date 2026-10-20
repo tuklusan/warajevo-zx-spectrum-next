@@ -540,6 +540,10 @@ endif()
 add_custom_target(wz_gui_stub)
 
 if(WZSN_BUILD_SOKOL_HOST)
+    if(APPLE)
+        enable_language(OBJC)
+    endif()
+
     include(FetchContent)
     FetchContent_Declare(
         sokol

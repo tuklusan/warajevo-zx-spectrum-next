@@ -1,4 +1,4 @@
-name: CR clean-build gate
+name: Full native build and test
 
 on:
   push:
@@ -7,6 +7,7 @@ on:
       - 'src/**/*.c'
       - 'src/**/*.h'
       - 'src/**/*.m'
+      - 'src/cmake/**'
   workflow_dispatch:
 
 permissions:
@@ -14,58 +15,58 @@ permissions:
 
 jobs:
   clean-build:
-    name: Clean build / ${{ matrix.name }}
+    name: Full build / ${{ matrix.name }}
     if: github.ref == 'refs/heads/main'
     runs-on: ${{ matrix.label }}
     strategy:
       fail-fast: false
       matrix:
         include:
-          - name: Windows Intel
+          - name: Windows x64
             label: windows-2025
-          - name: Windows ARM64
-            label: windows-11-arm
-          - name: macOS Intel
-            label: macos-15-intel
+            architecture: X64
+          - name: Linux x64
+            label: ubuntu-24.04
+            architecture: X64
+          - name: Linux ARM64
+            label: ubuntu-24.04-arm
+            architecture: ARM64
           - name: macOS ARM64
             label: macos-15
+            architecture: ARM64
+          - name: macOS Intel
+            label: macos-15-intel
+            architecture: X64
 
     steps:
-      - name: Check out CR revision
+      - name: Check out source
         uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
 
-      - name: Require a declared build entry point
+      - name: Verify native runner architecture
         shell: bash
         run: |
-          if [ ! -f src/cmake/CMakeLists.txt ] && ! find . -type f \( -name '*.sln' -o -name '*.vcxproj' -o -name 'Makefile' -o -name 'pyproject.toml' \) -print -quit | grep -q .; then
-            echo 'CR build gate failed: no supported product build entry point is present.' >&2
-            echo 'Add the intended product build definition before closing CRs.' >&2
+          if [[ "$RUNNER_ARCH" != "${{ matrix.architecture }}" ]]; then
+            echo "Expected ${{ matrix.architecture }}, got $RUNNER_ARCH" >&2
             exit 1
           fi
 
-      - name: Clean CMake configure and build
-        if: hashFiles('src/cmake/CMakeLists.txt') != ''
+      - name: Install Linux desktop build dependencies
+        if: runner.os == 'Linux'
         shell: bash
         run: |
-          cmake -S src/cmake -B dist/cr-gate-${{ matrix.label }} -DCMAKE_BUILD_TYPE=Release
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends \
+            libasound2-dev \
+            libgl1-mesa-dev \
+            libgtk-3-dev \
+            libxcursor-dev \
+            libxi-dev \
+            libx11-dev \
+            pkg-config
+
+      - name: Clean CMake configure and build
+        shell: bash
+        run: |
+          cmake -S src/cmake -B dist/cr-gate-${{ matrix.label }} -DCMAKE_BUILD_TYPE=Release -DWZSN_BUILD_SOKOL_HOST=ON
           cmake --build dist/cr-gate-${{ matrix.label }} --clean-first --config Release --parallel 2
           ctest --test-dir dist/cr-gate-${{ matrix.label }} -C Release --output-on-failure
-
-      - name: Build declared repository-root Visual Studio solution
-        if: runner.os == 'Windows' && hashFiles('*.sln') != ''
-        shell: pwsh
-        run: |
-          $solution = Get-ChildItem -Path . -File -Filter *.sln | Select-Object -First 1
-          if ($null -eq $solution) {
-            throw 'The repository-root solution declared at workflow evaluation was not found.'
-          }
-          msbuild $solution.FullName /m /t:Rebuild /p:Configuration=Release
-
-      - name: Build declared Python project
-        if: hashFiles('pyproject.toml') != ''
-        shell: bash
-        run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install .

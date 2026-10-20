@@ -51,9 +51,11 @@ purging them.
 Every project commit is made directly on local `main`, and every push updates
 remote `main`; no other branch or pull request is used. Exactly one GitHub
 workflow runs on source pushes: `cr-build-gate.yml`, filtered to production
-`.c`, `.h`, and `.m` files under `src/`. It clean-builds the application and
-runs the integrated CTest suite on the maintained Windows and macOS x64 and
-ARM64 targets. Documentation, tests, traces, results, workflow edits, and
+`.c`, `.h`, and `.m` files under `src/`, plus build definitions under
+`src/cmake/`. It clean-builds the application and
+runs the integrated CTest suite on Windows x64, Linux x64/ARM64, and macOS
+x64/ARM64. The GUI host is enabled so each runner builds the full application.
+Documentation, tests, traces, results, workflow edits, and
 administrative records alone start no hosted runner. Workflows retained in the
 repository are manually dispatched on `main` when needed. Pull-request triggers
 are prohibited. Do not add branch protection that requires a pull request or
@@ -136,12 +138,14 @@ The retained source-push build gate uses these hosted runner families:
 
 | Platform | Workflow label |
 |---|---|
-| Windows Intel | `windows-2025` |
-| Windows ARM64 | `windows-11-arm` |
-| macOS Intel | `macos-15-intel` |
+| Windows x64 | `windows-2025` |
+| Linux x64 | `ubuntu-24.04` |
+| Linux ARM64 | `ubuntu-24.04-arm` |
 | macOS ARM64 | `macos-15` |
+| macOS Intel | `macos-15-intel` |
 
-The build gate performs a clean Release build and runs CTest on each target.
+The build gate enables the GUI host, performs a clean Release build, and runs
+CTest on each target.
 Hosted runner VMs are ephemeral.
 
 Runner bootstrap fixtures are kept in the visible `ci/runner-bootstrap/`
@@ -167,11 +171,8 @@ new manifest record. No local installation substitutes for runner bootstrap.
 ## 6. Change-record clean-build gate
 
 `cr-build-gate.yml` is the source-push build and test check before a change
-record is closed. It runs a clean Release build and CTest on all four runner
-targets. It also supports declared entry points such as
-`src/cmake/CMakeLists.txt`, a repository-root Visual Studio solution, or a
-Python project. The CMake build is the current product entry point. Generated
-build-tree solutions are not treated as separate project entry points. The
+record is closed. It enables `WZSN_BUILD_SOKOL_HOST`, then performs a clean
+Release build and CTest on all five supported OS/architecture targets. The
 build and all execution happen on hosted runners, not on the developer
 workstation.
 
