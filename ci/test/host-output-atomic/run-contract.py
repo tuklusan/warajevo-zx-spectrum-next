@@ -102,7 +102,9 @@ def main() -> int:
                                       ATOMIC_ITERATIONS)
         atomic_codes = [code for code, _, _ in results]
         if any(code not in (0, 4) for code in atomic_codes) or 0 not in atomic_codes:
-            raise RuntimeError(f"atomic writer outcomes were {atomic_codes}")
+            failures = [error.decode(errors="replace") for code, _, error in results
+                        if code != 0 and error]
+            raise RuntimeError(f"atomic writer outcomes were {atomic_codes}: {failures}")
         if atomic_path.read_bytes() not in {
                 payload(writer, iteration) for writer in range(WRITERS)
                 for iteration in range(ATOMIC_ITERATIONS)}:

@@ -23,11 +23,11 @@
     },
     {
       "path": "ci/test/host-output-atomic/run-contract.py",
-      "sha256": "5a712317721955018b3db690fb42999ea5e28e6c0dae0ae2024432322b83033b"
+      "sha256": "e663f7e7c12bdb76af4d5a5b1dfb4f9947abbdc6f81e412b3910ff1ed42f2408"
     },
     {
       "path": "ci/test/host-output-atomic/worker.c",
-      "sha256": "b2d158468b3c124de2c50a89b88e6c68c0e3cadcd67d762c778a3ca3731de5ec"
+      "sha256": "c83d3bc97a078a7a7c43d29600d76bc0539cb022079df26ed521add6e48ad55e"
     },
     {
       "path": "ci/test/host-output-atomic/write-proof.py",

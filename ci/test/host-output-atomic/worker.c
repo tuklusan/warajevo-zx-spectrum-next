@@ -13,6 +13,12 @@
 
 #include "app/wz_host_output.h"
 
+#if defined(_WIN32)
+#include <windows.h>
+#else
+#include <errno.h>
+#endif
+
 #define PAYLOAD_SIZE (128u * 1024u)
 
 static void make_payload(unsigned writer, unsigned iteration,
@@ -63,6 +69,13 @@ int main(int argc, char** argv)
             wz_host_output_write_exclusive(argv[2], payload, PAYLOAD_SIZE) :
             wz_host_output_write_atomic(argv[2], payload, PAYLOAD_SIZE);
         if (written) continue;
+#if defined(_WIN32)
+        (void)fprintf(stderr, "writer=%u iteration=%u winerr=%lu\n", writer,
+                      iteration, (unsigned long)GetLastError());
+#else
+        (void)fprintf(stderr, "writer=%u iteration=%u errno=%d\n", writer,
+                      iteration, errno);
+#endif
         result = exclusive ? 3 : 4;
         break;
     }
