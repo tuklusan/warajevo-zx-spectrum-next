@@ -1620,6 +1620,7 @@ static wz_result_t wz_machine_ula_capture_until(wz_machine_t* machine,
         wz_ula_frame_capture_t* capture;
         wz_ula_cell_capture_t* cell_capture;
         wz_word_t address;
+        wz_byte_t fetched_value;
         wz_result_t result;
 
         if ((wz_qword_t)machine->ula_capture_event_index >= events_per_frame) {
@@ -1665,13 +1666,25 @@ static wz_result_t wz_machine_ula_capture_until(wz_machine_t* machine,
             (size_t)row * WZ_ULA_CAPTURE_CELLS_PER_LINE + cell];
         if (attribute) {
             address = (wz_word_t)(0x5800u + (row / 8u) * 32u + cell);
-            cell_capture->attribute = wz_machine_ula_memory_read(machine,
-                                                                  address);
+            fetched_value = wz_machine_ula_memory_read(machine, address);
+            cell_capture->attribute = fetched_value;
             cell_capture->fetched |= 0x02u;
         } else {
             address = wz_ula_bitmap_address(row, cell);
-            cell_capture->bitmap = wz_machine_ula_memory_read(machine, address);
+            fetched_value = wz_machine_ula_memory_read(machine, address);
+            cell_capture->bitmap = fetched_value;
             cell_capture->fetched |= 0x01u;
+        }
+        if (machine->timing_trace != 0) {
+            wz_trace_event_t event = {0};
+            event.kind = WZ_TRACE_ULA_FETCH;
+            event.master_tick = event_tick;
+            event.address = address;
+            event.value = fetched_value;
+            event.auxiliary = attribute ? WZ_TRACE_ULA_ATTRIBUTE_FETCH :
+                                          WZ_TRACE_ULA_BITMAP_FETCH;
+            event.register_snapshot = ((wz_qword_t)row << 8u) | cell;
+            wz_trace_emit_detail(machine->timing_trace, &event);
         }
         ++machine->ula_capture_event_index;
     }

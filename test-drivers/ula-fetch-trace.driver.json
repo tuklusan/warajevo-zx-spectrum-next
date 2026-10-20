@@ -1,0 +1,93 @@
+{
+  "testId": "ula-fetch-trace",
+  "command": "cmake -S ci/test/ula-fetch-trace -B dist/ula-fetch-trace -DCMAKE_BUILD_TYPE=Debug && cmake --build dist/ula-fetch-trace --config Debug --target wz_trace_dump wz_ula_fetch_trace_fixture --parallel 2 && ctest --test-dir dist/ula-fetch-trace -C Debug --output-on-failure --verbose -R ^wz_ula_fetch_trace_contract$",
+  "requiredCases": 7,
+  "runnerMatrix": [
+    "windows-2025",
+    "windows-11-arm",
+    "macos-15-intel",
+    "macos-15"
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/ula-fetch-trace-contract.yml",
+      "sha256": "71a999204229c7a409bb381448c32a127087940648654feb9e37cb766047d163"
+    },
+    {
+      "path": "ci/test/ula-fetch-trace/CMakeLists.txt",
+      "sha256": "15bf10a028cd1a3f308638be00812addc7739c68d7250c1bc8d793b2a8fe5aa5"
+    },
+    {
+      "path": "ci/test/ula-fetch-trace/README.md",
+      "sha256": "a1e39a09bafb63564188712c622d676143e7aa1ba2edb9431ff81cfca2af9884"
+    },
+    {
+      "path": "ci/test/ula-fetch-trace/ula-fetch-trace.md",
+      "sha256": "54043d85e26895b08de100ff7148392f253ea5edba71083b8bd9b04e02e3a180"
+    },
+    {
+      "path": "ci/test/ula-fetch-trace/ula-fetch-trace-fixture.c",
+      "sha256": "d87b164ddecddcf957276f8d6a4da21b11b3241f5b069d41ac697b3541dc2399"
+    },
+    {
+      "path": "ci/test/ula-fetch-trace/verify-ula-fetch.cmake",
+      "sha256": "bfe98a7f926dfe7aa99a9ad46ad1f49c4ce799bc10a5d9e53d28716b4c8d309c"
+    },
+    {
+      "path": "ci/test/ula-fetch-trace/write-proof.py",
+      "sha256": "ce49ddadf09ca7ceb0bafbc7643e0930e9a8c2478218bc2d6e28811dee1fc1be"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "48748bed3b12999e8b4bb98cdc0d22fb3e9b616375a8c3f5402338ad2e4ef410"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "e7078ec7aca25b1a0b168fd050fd81506e98f0002433144acb8af38878637864"
+    },
+    {
+      "path": "src/core/wz_machine_profile.c",
+      "sha256": "912a458de8d9a9d2d89bb57cac896e819d8ce82297a4e2ac707c90be1d4450b5"
+    },
+    {
+      "path": "src/core/wz_machine_profile.h",
+      "sha256": "1b246ec8245bf68400b0f9c5a1e69438264d8c671f23d656d82c87a032c4c700"
+    },
+    {
+      "path": "src/core/wz_trace.h",
+      "sha256": "b59ae872c3cb1d87819674c90f100f1162abbffeb7f80cd7f7c32c15747e8d5e"
+    },
+    {
+      "path": "src/core/wz_types.h",
+      "sha256": "b989adaa74e4ac0ec7e753da23a3fd16a3c02561744cca893fcd66f7c077c409"
+    },
+    {
+      "path": "src/core/wz_bus.c",
+      "sha256": "a84850869148d8f70a2ee5b31570d9d221d7159cbff832982ddbc8dd1f69c47e"
+    },
+    {
+      "path": "src/core/wz_bus.h",
+      "sha256": "0a6019987ae86f7c7293e1f428d086f52684ea5353eadb758c0b2d056677abaa"
+    },
+    {
+      "path": "src/core/wz_z80.h",
+      "sha256": "8faaa6ca8ecd22b0b48418251256722471cef81537053cbfdd44ee629c293dd5"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_dump_main.c",
+      "sha256": "d1823f4ebccceb73a6fff1559e7b23833267196ec042506dd6f49fe453c39012"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.c",
+      "sha256": "b7330439a1c72044e0f1c891a8595df2476c5e42f3c6617da529d782ed4b6ea4"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.h",
+      "sha256": "fc2f50a1f31e002a2190bfd82bb675fd8329327306209eb3d22afa02d3083e39"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "77384e43c0307b13c68cd6d7993e0af25457c4f2d203b0e18f191adba0c063b3"
+    }
+  ]
+}

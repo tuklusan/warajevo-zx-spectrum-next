@@ -47,6 +47,7 @@ static const char* event_kind_name(wz_trace_event_kind_t kind)
     case WZ_TRACE_CPU_STATE_SYNC: return "cpu_state_sync";
     case WZ_TRACE_CPU_STATE_DELTA: return "cpu_state_delta";
     case WZ_TRACE_CPU_OPCODE_BYTE: return "cpu_opcode_byte";
+    case WZ_TRACE_ULA_FETCH: return "ula_fetch";
     default: return "unknown";
     }
 }
@@ -235,6 +236,25 @@ static bool print_event(const wz_trace_event_t* event, void* context)
             !print_timing_position(output, dump->profile, request_tick) ||
             fprintf(output, " bus_tick=%" PRIu64 " bus_", event->master_tick) < 0 ||
             !print_timing_position(output, dump->profile, event->master_tick) ||
+            fputc('\n', output) == EOF) {
+            return false;
+        }
+    }
+    if (event->kind == WZ_TRACE_ULA_FETCH) {
+        const char* fetch_kind = event->auxiliary ==
+            WZ_TRACE_ULA_ATTRIBUTE_FETCH ? "attribute" : "bitmap";
+        const wz_dword_t row =
+            (wz_dword_t)((event->register_snapshot >> 8u) & 0xffu);
+        const wz_dword_t cell =
+            (wz_dword_t)(event->register_snapshot & 0xffu);
+        if (fprintf(output,
+                    "ula_fetch kind=%s row=%u cell=%u address=%04x"
+                    " value=%02x tick=%" PRIu64 " ",
+                    fetch_kind, (unsigned)row, (unsigned)cell,
+                    (unsigned)event->address, (unsigned)event->value,
+                    event->master_tick) < 0 ||
+            !print_timing_position(output, dump->profile,
+                                   event->master_tick) ||
             fputc('\n', output) == EOF) {
             return false;
         }
