@@ -38,7 +38,7 @@
       "path": "src/core/wz_z80.h"
     },
     {
-      "sha256": "878304b76c1d146ed1b8140917db29569dce6f896abaff4546114d3059463a53",
+      "sha256": "360fe71b54c4ac705cd9d8f32d20bc017af7d3e6b59dc36ebf125a377cf62489",
       "path": "src/core/wz_machine.c"
     },
     {
