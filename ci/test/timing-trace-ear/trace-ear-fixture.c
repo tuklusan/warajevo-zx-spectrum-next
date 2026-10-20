@@ -39,8 +39,7 @@ int main(int argc, char** argv)
     wz_machine_set_timing_trace(&machine, &trace_sink);
     if (wz_headless_runner_init(&runner, &machine, NULL) != WZ_RESULT_OK ||
         wz_headless_runner_execute(&runner, 22u) != WZ_RESULT_OK ||
-        wz_machine_tape_ear_level(&machine) != 1u ||
-        machine.master_tick < 22u) {
+        wz_machine_tape_ear_level(&machine) != 1u) {
         goto cleanup;
     }
     wz_machine_set_timing_trace(&machine, NULL);

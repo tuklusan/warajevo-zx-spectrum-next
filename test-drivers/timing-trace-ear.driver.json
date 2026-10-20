@@ -16,7 +16,7 @@
     },
     {
       "path": "ci/test/timing-trace-ear/trace-ear-fixture.c",
-      "sha256": "312a8e9a3da717073f1f17fc6b8f85f2418013fb7c4062e6e09be951b51a039a"
+      "sha256": "8f022fecea9a4e543fc2e238ddd33a06f51eaa4ddd1d3cdaeaeda0177678fa62"
     },
     {
       "path": "ci/test/timing-trace-ear/verify.cmake",
@@ -28,11 +28,11 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "ad37b2f2a95bee5ff9419f6026be9f28ddfc35b4e6b705b839cf0fd12095bcf8"
+      "sha256": "3b626242a5cb1de64c12e87f1f2c63a98c2a115e1f5e1bace7135530b415afe5"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "c1a8e56e289591c34f2c6018475f2cd41d094abd87a8ea160a62e95d0e979af5"
+      "sha256": "e7078ec7aca25b1a0b168fd050fd81506e98f0002433144acb8af38878637864"
     },
     {
       "path": "src/core/wz_machine_internal.h",

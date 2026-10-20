@@ -14,6 +14,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 */
 
 #include "core/wz_machine.h"
+#include "core/wz_machine_internal.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -537,6 +538,24 @@ void wz_machine_advance_tape_ticks_slow(wz_machine_t* machine,
             return;
         }
     }
+}
+
+wz_result_t wz_machine_advance_tape(wz_machine_t* machine,
+                                    wz_master_tick_t ticks)
+{
+    if (machine == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (machine->networking_mode == WZ_NETWORKING_EAR_MIC ||
+        !machine->tape_mounted || !machine->tape_state.motor_on ||
+        machine->tape_state.at_end) {
+        return WZ_RESULT_OK;
+    }
+    if (ticks > UINT64_MAX - machine->master_tick) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    wz_machine_advance_master_ticks(machine, ticks);
+    return WZ_RESULT_OK;
 }
 
 wz_result_t wz_machine_set_tape_loading_mode(wz_machine_t* machine,
