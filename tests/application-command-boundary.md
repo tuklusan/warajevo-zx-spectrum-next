@@ -7,7 +7,7 @@ SANYALnet Labs." See LICENSE for full terms. -->
 
 # Application command boundary acceptance
 
-`application-command-boundary.c` verifies six requirements with the application
+`application-command-boundary.c` verifies seven requirements with the application
 command registry and an initialized canonical 48K machine:
 
 1. The application-test projection invokes the registered reset handler.
@@ -19,6 +19,8 @@ command registry and an initialized canonical 48K machine:
 5. The Telnet `DO machine.reset` projection invokes the same handler.
 6. A worker thread cannot rebind the finalized registry or execute the handler;
    dispatch returns `wrong-thread` and leaves machine state unchanged.
+7. `MENU TREE` emits the frozen record fields, denies local-only commands, and
+   never exposes paths held by the local Recent-files list.
 
 Run through the hosted matrix with:
 

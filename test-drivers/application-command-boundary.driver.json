@@ -1,7 +1,7 @@
 {
   "testId": "application-command-boundary",
   "command": "cmake -S ci/test/application-command-boundary -B dist/application-command-boundary -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/application-command-boundary --config Release --target wz_application_command_boundary wz_telnet_status_regression wz_telnet_alias_response_regression --parallel 2 && dist/application-command-boundary/wz_application_command_boundary && dist/application-command-boundary/wz_telnet_status_regression && dist/application-command-boundary/wz_telnet_alias_response_regression",
-  "requiredCases": 8,
+  "requiredCases": 9,
   "runnerMatrix": [
     "windows-2025",
     "windows-11-arm",
@@ -11,19 +11,19 @@
   "fixtures": [
     {
       "path": ".github/workflows/application-command-boundary.yml",
-      "sha256": "cb824b17c60fe7a183b70290c56622ac99521ba6e36ad4d74512bbb70d77dae4"
+      "sha256": "258f2124f4c0767496eaf1b87707d4c6c7fdf7fd237cf8cd1daf23d6cfb4bd74"
     },
     {
       "path": "ci/test/application-command-boundary/CMakeLists.txt",
-      "sha256": "67875d643da89a4712c0d9ce2bdf3c14ebca0cd864e49e24de32c250902a8e52"
+      "sha256": "d64cfa0cd6e83ab57478c8927b81ba84630c212ea94c3632d9daa66622e601a5"
     },
     {
       "path": "ci/test/application-command-boundary/README.md",
-      "sha256": "2a8fdaefb88401e701dc06829d5290461a708dca34bc6a04b1e1748a7f2bba05"
+      "sha256": "db4d44e052a504d8fd7360c7a94d02155f48b5ee10ac3883bf2029bdf32923d4"
     },
     {
       "path": "ci/test/application-command-boundary/alias-response-regression.c",
-      "sha256": "115a647a6af932ac531c8a6a6026f65a474cec062569450dfec5f9c510bccd20"
+      "sha256": "1439080c534299d19e6be5ba3f44bfa28f8df4e802ac5ba1070a6d1150c60d2e"
     },
     {
       "path": "ci/test/application-command-boundary/status-projection-regression.c",
@@ -31,23 +31,23 @@
     },
     {
       "path": "ci/test/application-command-boundary/write-proof.py",
-      "sha256": "c338ce7f08b87a3e4e898c06a167609fd1d6593e8782382d26d9254b39e266a0"
+      "sha256": "0247aebb88ac1478cbfb14118036c6ef5ede332db7b13c3a3a539a999b35fd28"
     },
     {
       "path": "src/app/wz_command_registry.c",
-      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
+      "sha256": "707bd4c4c9d0e12db0135ef857d3c7de8a5d6e7d717d790d09f3080bb90c9607"
     },
     {
       "path": "src/app/wz_command_registry.h",
-      "sha256": "54cc2e949ff026fa183b0aa30cac9ebad8b431c97b80d966ef0ac1ff35a06087"
+      "sha256": "4b8530859e953c5876d41792f6221a00a7facc14658c05f28076cda926c9bf04"
     },
     {
       "path": "src/app/wz_host_thread.c",
-      "sha256": "6f8cbe0e171adfe7b9f42d9517e31d72f7917048339ff8941d5bccadfa305151"
+      "sha256": "bd46ced2af90907b222a43fcaef3bfe8943b6ca32fd4831fbaca82483ec264c5"
     },
     {
       "path": "src/app/wz_host_thread.h",
-      "sha256": "bd4e189a40c8f9ad31f014dc12afc3c67b7a4bd5580df262b0cf92db8fbe8471"
+      "sha256": "2fa71a370c5b0597e25f8e4ecbc8457e7e9b2d3b62cd48af2eb6111053283805"
     },
     {
       "path": "src/app/wz_sokol_main.c",
@@ -79,15 +79,15 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "6c8aaea15cdd323d0f9a7c28d12e254e2145cbdabf07849f05892dc3807758f0"
+      "sha256": "6c5de7b5b6a20cad20643b1f9007629846bccc0bb49bf7412cad9464ae9be062"
     },
     {
       "path": "src/app/wz_ui_layout.h",
-      "sha256": "30d784d2ff43fe237251e559cd8bc35d0d51b85c9e80953ba8f9cf6e2052ea7b"
+      "sha256": "0ef859ac915722f0ea2e2e6d66b8cda00c78577ad14029966c98ebb324abd8ac"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "7c92695d1282104d62ac3b4c9c929a96a6ed7169533fa3e71ba6f93af1186469"
+      "sha256": "c4b038801b872b3e7149a7504e2086be805506f714e6c7f18b1a8c5ab2aaae45"
     },
     {
       "path": "src/core/audio/wz_audio_evidence.c",
@@ -123,7 +123,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "360fe71b54c4ac705cd9d8f32d20bc017af7d3e6b59dc36ebf125a377cf62489"
+      "sha256": "878304b76c1d146ed1b8140917db29569dce6f896abaff4546114d3059463a53"
     },
     {
       "path": "src/core/wz_machine_profile.c",
@@ -155,7 +155,7 @@
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "a14842db3e5b28ff63f729e61611e62ede5bd06abf028cb2ed6180c4aa3ad341"
+      "sha256": "16d1d1f5ee9c5bcdc4d6266e21a92b604413ee0a738ccbda58164756b3d202de"
     },
     {
       "path": "src/core/wz_tape.c",
@@ -167,7 +167,7 @@
     },
     {
       "path": "src/core/wz_z80.c",
-      "sha256": "a4a33d8eeb01eba32cfea2af38e8d65ab8b89c5e0b8cee7de93ba34781cbec49"
+      "sha256": "65e55a63ed9ea21e55d9db501f7353c3dbeaecafddc43fda5b71f75578d2e543"
     },
     {
       "path": "src/core/wz_zxnet.c",
@@ -175,11 +175,19 @@
     },
     {
       "path": "tests/application-command-boundary.c",
-      "sha256": "6cf3a1ec3996d671685282809f2ce4fd2d7fd44802092424e880b92938298bb3"
+      "sha256": "231eb80838cd4a25699413e590b7b639380b09967de3d1cff8e5e83ba69b36c5"
     },
     {
       "path": "tests/application-command-boundary.md",
-      "sha256": "51e351ed2fc47dd4fcab19a1b1e48620d5e8e59a35a1adc2c5336ad184681503"
+      "sha256": "5b0f81118a3576623ba759711ed17a23da93aa836844ab9b60c938969c7d33a3"
+    },
+    {
+      "path": "src/app/wz_recent_files.c",
+      "sha256": "61b41cd67048462ec1fb6f656aa5e8d4ffefca9745e2d4361b060ae7be4af34a"
+    },
+    {
+      "path": "src/app/wz_recent_files.h",
+      "sha256": "d031e7637864c0a85e17e549411b98d425014afd3c807ef17d9b58f50598c282"
     }
   ]
 }

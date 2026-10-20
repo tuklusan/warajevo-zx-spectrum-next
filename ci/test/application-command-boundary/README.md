@@ -7,7 +7,7 @@ SANYALnet Labs." See LICENSE for full terms. -->
 
 # Application command boundary acceptance
 
-`tests/application-command-boundary.c` verifies eight requirements with the
+`tests/application-command-boundary.c` runs nine acceptance cases with the
 command registry and an initialized canonical 48K machine:
 
 1. The application-test projection invokes the registered reset handler.

@@ -43,6 +43,7 @@ add_executable(wz_application_command_boundary
     "${SOURCE_ROOT}/app/wz_host_thread.c"
     "${SOURCE_ROOT}/app/wz_ui_layout.c"
     "${SOURCE_ROOT}/app/wz_telnet_keyboard_command.c"
+    "${SOURCE_ROOT}/app/wz_recent_files.c"
     "${SOURCE_ROOT}/app/wz_telnet_keymap.c"
     "${SOURCE_ROOT}/app/wz_host_output.c"
     "${SOURCE_ROOT}/app/wz_screenshot_service.c"

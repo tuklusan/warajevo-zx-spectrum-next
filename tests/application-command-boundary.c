@@ -10,6 +10,7 @@ SANYALnet Labs." See LICENSE for full terms.
 #include "app/wz_command_registry.h"
 #include "app/wz_ui_layout.h"
 #include "app/wz_telnet_keyboard_command.h"
+#include "app/wz_recent_files.h"
 #include "core/wz_machine.h"
 #include "core/wz_state.h"
 
@@ -125,13 +126,17 @@ int main(void)
     };
     wz_command_metadata_t renamed_reset;
     const wz_command_metadata_t* found_command;
+    wz_recent_files_t recent_files;
+    wz_recent_files_remote_projection_t recent_projection;
     test_machine_t machine = {0u};
     worker_context_t worker;
-    char output[128];
+    char output[4096];
     size_t output_length = 0u;
     size_t toolbar_index = 0u;
     size_t menu_index = 0u;
     size_t menu_command_index = 0u;
+    static const char private_recent_path[] = "C:\\Users\\private\\secret.tap";
+    static const char second_recent_path[] = "/home/private/secret.tzx";
 #if defined(_WIN32)
     HANDLE thread;
     DWORD wait_result;
@@ -160,6 +165,29 @@ int main(void)
         wz_command_registry_finalize(&registry) != WZ_RESULT_OK) {
         return fail_with_machine(&canonical_machine,
                                  "registry uniqueness, setup, and owner binding");
+    }
+
+    wz_recent_files_init(&recent_files);
+    if (!wz_recent_files_add(&recent_files, private_recent_path) ||
+        !wz_recent_files_add(&recent_files, second_recent_path)) {
+        return fail_with_machine(&canonical_machine,
+                                 "private recent-file setup");
+    }
+    wz_recent_files_remote_projection(&recent_files, &recent_projection);
+    if (wz_recent_files_count(&recent_files) != 2u ||
+        recent_projection.group_id == NULL ||
+        strcmp(recent_projection.group_id, "file.recent") != 0 ||
+        recent_projection.dynamic_entry_count != 0u ||
+        !wz_telnet_menu_tree_format(&registry, output, sizeof(output),
+                                    &output_length) ||
+        output_length == 0u || strstr(output, "END\r\n") == NULL ||
+        strstr(output, "TYPE=COMMAND") == NULL ||
+        strstr(output, "STATE=ENABLED") == NULL ||
+        strstr(output, "REMOTE=DENIED CLASS=LOCAL_ONLY") == NULL ||
+        strstr(output, private_recent_path) != NULL ||
+        strstr(output, second_recent_path) != NULL) {
+        return fail_with_machine(&canonical_machine,
+                                 "MENU TREE format or recent-path privacy");
     }
 
     renamed_reset = reset;
@@ -270,6 +298,6 @@ int main(void)
     }
 
     wz_machine_destroy(&canonical_machine);
-    puts("PASS application-command-boundary cases=8");
+    puts("PASS application-command-boundary cases=9");
     return 0;
 }

@@ -8,6 +8,7 @@ on:
       - 'src/app/wz_host_thread.*'
       - 'src/app/wz_ui_layout.*'
       - 'src/app/wz_telnet_keyboard_command.*'
+      - 'src/app/wz_recent_files.*'
       - 'src/app/wz_telnet_status.*'
       - 'src/app/wz_telnet_alias_response.*'
       - 'src/app/wz_telnet_keymap.*'
