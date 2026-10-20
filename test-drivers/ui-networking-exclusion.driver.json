@@ -48,11 +48,11 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "24eaac015e950cd317be13ddb79c33ce92a01f106fef3dbfbb7ce433c9557ffc"
+      "sha256": "878304b76c1d146ed1b8140917db29569dce6f896abaff4546114d3059463a53"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "92649806b076a4542c05d53b1a3e01bbf67ebfe25b76c92a333cf03e27809f4d"
+      "sha256": "e7078ec7aca25b1a0b168fd050fd81506e98f0002433144acb8af38878637864"
     }
   ]
 }

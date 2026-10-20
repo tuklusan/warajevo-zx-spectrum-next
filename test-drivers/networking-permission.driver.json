@@ -41,11 +41,11 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "99527a814d61116d0c0ce593a4bba65e4b86273559204d7c173a2d892bdd8c27"
+      "sha256": "7c13e1e3b23c45bf2d3df2e1a2960acfabf4174bef95cd08b9599150ef4ce7f1"
     },
     {
       "path": "src/core/wz_machine_profile.c",
-      "sha256": "625e1583cbb59eebf67a58bc842913e6bd417a3f4eed975adce4fa34283fcfa5"
+      "sha256": "912a458de8d9a9d2d89bb57cac896e819d8ce82297a4e2ac707c90be1d4450b5"
     },
     {
       "path": "src/core/wz_keyboard_matrix.c",
@@ -81,7 +81,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "24eaac015e950cd317be13ddb79c33ce92a01f106fef3dbfbb7ce433c9557ffc"
+      "sha256": "878304b76c1d146ed1b8140917db29569dce6f896abaff4546114d3059463a53"
     },
     {
       "path": "src/core/wz_microdrive.c",
@@ -125,7 +125,7 @@
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "f507533df4eb3984feaaddd73deff45d76c86990e53c5c1c89c61401dd1a6b8c"
+      "sha256": "16d1d1f5ee9c5bcdc4d6266e21a92b604413ee0a738ccbda58164756b3d202de"
     },
     {
       "path": "src/core/wz_trace.c",
