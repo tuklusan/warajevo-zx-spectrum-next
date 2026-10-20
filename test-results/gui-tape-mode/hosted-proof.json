@@ -1,8 +1,8 @@
 {
   "testId": "gui-tape-mode",
   "status": "pass",
-  "commit": "0fb05cea8f60252e3bdfe39d0c75a268157e9e55",
-  "runId": 38837326057,
+  "commit": "791c3bad2ded2cef8efa903bd249e28cf090d926",
+  "runId": 39390197165,
   "runner": "Linux",
   "initialMode": "Normal",
   "selectedMode": "Instant",

@@ -1,23 +1,23 @@
 {
   "testId": "gui-tape-mode",
   "status": "pass",
-  "commit": "0fb05cea8f60252e3bdfe39d0c75a268157e9e55",
-  "runId": 38837326057,
+  "commit": "791c3bad2ded2cef8efa903bd249e28cf090d926",
+  "runId": 39390197165,
   "runner": "Linux",
+  "timestamp": "2026-10-20T07:59:23Z",
   "initialMode": "Normal",
   "selectedMode": "Instant",
   "restoredMode": "Normal",
   "ocr": [
-    "Mile Machine Media 1 eww Tools SeEbings Hel p\nOpen \u201cRun Pause Reset 100% Fo Empty / Normal We Load Snapsho Save Snapsho MOY 1 Screenshot Fullscreen Debugger",
-    "File Machine Media 1 eww Tools SeEbings Hel p\nOpen \u201cRun Pause Reset 100% Wo Empty / Instant FW Load Snapsho Save Snapsho MOY 1 Screenshot Fullscreen Debugger",
-    "File Machine Media 1 eww Tools SeEbings Hel p\nOpen \u201cRun Pause Reset 100% Fo Empty / Normal We Load Snapsho Save Snapsho MOY 1 Screenshot Fullscreen Debugger"
+    "Mile Machine Media 1 eww Tools SeEbings Hel p\nOpen “Run Pause Reset 100% Fo Empty / Normal We Load Snapsho Save Snapsho MOY 1 Screenshot Fullscreen Debugger",
+    "File Machine Media 1 eww Tools SeEbings Hel p\nOpen “Run Pause Reset 100% Wo Empty / Instant FW Load Snapsho Save Snapsho MOY 1 Screenshot Fullscreen Debugger",
+    "File Machine Media 1 eww Tools SeEbings Hel p\nOpen “Run Pause Reset 100% Fo Empty / Normal We Load Snapsho Save Snapsho MOY 1 Screenshot Fullscreen Debugger"
   ],
   "screenshotsSha256": {
     "normal-initial": "247aaef0cf43f6b452e4741125eda42eb41e7de2273ce6e35356984dad663c37",
     "instant-selected": "21c8ce83573fa876539747d0fcfc94a8cdeeacc4f836f65784da603220eeaa8d",
     "normal-restored": "002e94eff15ac3d5225fb9503820a050f0f6240b8991eecc395e6dc9147bf3fd"
   },
-  "timestamp": "2026-10-16T01:52:28Z",
   "fixtures": [
     {
       "path": ".github/workflows/gui-tape-mode.yml",
@@ -33,11 +33,11 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "917b342f916c0bc9862dfba580531f3d1a9e5bfa6c2e4df1d6736d374bb32088"
+      "sha256": "7c13e1e3b23c45bf2d3df2e1a2960acfabf4174bef95cd08b9599150ef4ce7f1"
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "6c8aaea15cdd323d0f9a7c28d12e254e2145cbdabf07849f05892dc3807758f0"
+      "sha256": "6c5de7b5b6a20cad20643b1f9007629846bccc0bb49bf7412cad9464ae9be062"
     },
     {
       "path": "src/app/wz_tape_loading_commands.c",
@@ -45,7 +45,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
+      "sha256": "878304b76c1d146ed1b8140917db29569dce6f896abaff4546114d3059463a53"
     },
     {
       "path": "roms/48.rom",
@@ -53,5 +53,5 @@
     }
   ],
   "sourceArtifact": "gui-tape-mode-proof",
-  "hostedProofSha256": "efaab0d342e1c770762ee144b0bce3de979aeec12779bed86a29b1e51e22ffc0"
+  "hostedProofSha256": "d2c28df6e027ca608f9e6aa653234f678209851d2e331095895e7d28b5946df6"
 }
