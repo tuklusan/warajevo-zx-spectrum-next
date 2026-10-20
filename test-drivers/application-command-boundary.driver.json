@@ -11,19 +11,19 @@
   "fixtures": [
     {
       "path": ".github/workflows/application-command-boundary.yml",
-      "sha256": "258f2124f4c0767496eaf1b87707d4c6c7fdf7fd237cf8cd1daf23d6cfb4bd74"
+      "sha256": "ce4784fec3bd2cf347a18428adaf911532b8c772b1438b4c6637455eea1ba1a2"
     },
     {
       "path": "ci/test/application-command-boundary/CMakeLists.txt",
-      "sha256": "d64cfa0cd6e83ab57478c8927b81ba84630c212ea94c3632d9daa66622e601a5"
+      "sha256": "b9ecc99611f6ce4e96302a8cceece0537a6178e7b0bd7fb25a7d2a27ccb99c20"
     },
     {
       "path": "ci/test/application-command-boundary/README.md",
-      "sha256": "db4d44e052a504d8fd7360c7a94d02155f48b5ee10ac3883bf2029bdf32923d4"
+      "sha256": "35e0cad5449adcee87a7636d03e66eb2e3df98c431569411e6856abe5f634839"
     },
     {
       "path": "ci/test/application-command-boundary/alias-response-regression.c",
-      "sha256": "1439080c534299d19e6be5ba3f44bfa28f8df4e802ac5ba1070a6d1150c60d2e"
+      "sha256": "115a647a6af932ac531c8a6a6026f65a474cec062569450dfec5f9c510bccd20"
     },
     {
       "path": "ci/test/application-command-boundary/status-projection-regression.c",
@@ -31,23 +31,23 @@
     },
     {
       "path": "ci/test/application-command-boundary/write-proof.py",
-      "sha256": "0247aebb88ac1478cbfb14118036c6ef5ede332db7b13c3a3a539a999b35fd28"
+      "sha256": "a89d1a10e9e1a3dc6466dc0d21e8860b6c8392802fc0e428091307d1bc03c979"
     },
     {
       "path": "src/app/wz_command_registry.c",
-      "sha256": "707bd4c4c9d0e12db0135ef857d3c7de8a5d6e7d717d790d09f3080bb90c9607"
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
     },
     {
       "path": "src/app/wz_command_registry.h",
-      "sha256": "4b8530859e953c5876d41792f6221a00a7facc14658c05f28076cda926c9bf04"
+      "sha256": "54cc2e949ff026fa183b0aa30cac9ebad8b431c97b80d966ef0ac1ff35a06087"
     },
     {
       "path": "src/app/wz_host_thread.c",
-      "sha256": "bd46ced2af90907b222a43fcaef3bfe8943b6ca32fd4831fbaca82483ec264c5"
+      "sha256": "6f8cbe0e171adfe7b9f42d9517e31d72f7917048339ff8941d5bccadfa305151"
     },
     {
       "path": "src/app/wz_host_thread.h",
-      "sha256": "2fa71a370c5b0597e25f8e4ecbc8457e7e9b2d3b62cd48af2eb6111053283805"
+      "sha256": "bd4e189a40c8f9ad31f014dc12afc3c67b7a4bd5580df262b0cf92db8fbe8471"
     },
     {
       "path": "src/app/wz_sokol_main.c",
@@ -79,15 +79,15 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "6c5de7b5b6a20cad20643b1f9007629846bccc0bb49bf7412cad9464ae9be062"
+      "sha256": "6c8aaea15cdd323d0f9a7c28d12e254e2145cbdabf07849f05892dc3807758f0"
     },
     {
       "path": "src/app/wz_ui_layout.h",
-      "sha256": "0ef859ac915722f0ea2e2e6d66b8cda00c78577ad14029966c98ebb324abd8ac"
+      "sha256": "30d784d2ff43fe237251e559cd8bc35d0d51b85c9e80953ba8f9cf6e2052ea7b"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "c4b038801b872b3e7149a7504e2086be805506f714e6c7f18b1a8c5ab2aaae45"
+      "sha256": "7c92695d1282104d62ac3b4c9c929a96a6ed7169533fa3e71ba6f93af1186469"
     },
     {
       "path": "src/core/audio/wz_audio_evidence.c",
@@ -123,7 +123,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "878304b76c1d146ed1b8140917db29569dce6f896abaff4546114d3059463a53"
+      "sha256": "360fe71b54c4ac705cd9d8f32d20bc017af7d3e6b59dc36ebf125a377cf62489"
     },
     {
       "path": "src/core/wz_machine_profile.c",
@@ -155,7 +155,7 @@
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "16d1d1f5ee9c5bcdc4d6266e21a92b604413ee0a738ccbda58164756b3d202de"
+      "sha256": "a14842db3e5b28ff63f729e61611e62ede5bd06abf028cb2ed6180c4aa3ad341"
     },
     {
       "path": "src/core/wz_tape.c",
@@ -167,7 +167,7 @@
     },
     {
       "path": "src/core/wz_z80.c",
-      "sha256": "65e55a63ed9ea21e55d9db501f7353c3dbeaecafddc43fda5b71f75578d2e543"
+      "sha256": "fa32e1faa87785cfbb128966541e1066c7eafadba76c01f10fa6703e2fc8095a"
     },
     {
       "path": "src/core/wz_zxnet.c",
@@ -175,11 +175,11 @@
     },
     {
       "path": "tests/application-command-boundary.c",
-      "sha256": "231eb80838cd4a25699413e590b7b639380b09967de3d1cff8e5e83ba69b36c5"
+      "sha256": "094bd09e8805e287103969b6e80e3c40616c604ccbc3d744aaea68631b0a0157"
     },
     {
       "path": "tests/application-command-boundary.md",
-      "sha256": "5b0f81118a3576623ba759711ed17a23da93aa836844ab9b60c938969c7d33a3"
+      "sha256": "4a88bf009f691098755993c37e309c584b91b94a74e9f752dd8e67375163a2ed"
     },
     {
       "path": "src/app/wz_recent_files.c",
