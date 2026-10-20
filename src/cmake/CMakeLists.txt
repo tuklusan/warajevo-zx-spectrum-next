@@ -141,6 +141,26 @@ set_target_properties(wz_timing_trace_dump_fixture PROPERTIES
     C_EXTENSIONS OFF)
 
 add_executable(
+    wz_timing_trace_recovery_fixture
+    ${WZSN_REPO_ROOT}/ci/test/timing-trace-recovery/trace-recovery-fixture.c)
+target_include_directories(wz_timing_trace_recovery_fixture PRIVATE "${WZSN_SOURCE_ROOT}")
+target_link_libraries(wz_timing_trace_recovery_fixture PRIVATE wz_diagnostics wz_warnings)
+set_target_properties(wz_timing_trace_recovery_fixture PROPERTIES
+    C_STANDARD 11
+    C_STANDARD_REQUIRED ON
+    C_EXTENSIONS OFF)
+
+add_executable(
+    wz_timing_trace_owner_fixture
+    ${WZSN_REPO_ROOT}/ci/test/timing-trace-ownership/trace-owner-fixture.c)
+target_include_directories(wz_timing_trace_owner_fixture PRIVATE "${WZSN_SOURCE_ROOT}")
+target_link_libraries(wz_timing_trace_owner_fixture PRIVATE wz_diagnostics wz_warnings)
+set_target_properties(wz_timing_trace_owner_fixture PROPERTIES
+    C_STANDARD 11
+    C_STANDARD_REQUIRED ON
+    C_EXTENSIONS OFF)
+
+add_executable(
     wz_ula_128k_trace_fixture
     ${WZSN_REPO_ROOT}/ci/test/ula-128k-trace/ula-128k-trace-fixture.c)
 target_include_directories(wz_ula_128k_trace_fixture PRIVATE "${WZSN_SOURCE_ROOT}")
@@ -511,6 +531,27 @@ add_test(NAME wz_timing_trace_dump_contract
         "-DTRACE_DUMPER=$<TARGET_FILE:wz_trace_dump>"
         "-DTRACE_PATH=${WZSN_ULA_128K_TRACE_OUTPUT}/timing-trace-dump.wztrace"
         -P "${WZSN_REPO_ROOT}/ci/test/timing-trace-dump/verify.cmake")
+set(WZSN_TRACE_RECOVERY_OUTPUT "${WZSN_ULA_128K_TRACE_OUTPUT}/timing-trace-recovery")
+file(MAKE_DIRECTORY "${WZSN_TRACE_RECOVERY_OUTPUT}")
+add_test(NAME wz_timing_trace_recovery_contract
+    COMMAND "${CMAKE_COMMAND}"
+        "-DTRACE_FIXTURE=$<TARGET_FILE:wz_timing_trace_recovery_fixture>"
+        "-DTRACE_DUMPER=$<TARGET_FILE:wz_trace_dump>"
+        "-DTRACE_DIRECTORY=${WZSN_TRACE_RECOVERY_OUTPUT}"
+        -P "${WZSN_REPO_ROOT}/ci/test/timing-trace-recovery/verify-recovery.cmake")
+set_tests_properties(wz_timing_trace_recovery_contract PROPERTIES
+    PASS_REGULAR_EXPRESSION
+        "PASS standalone trace dump recovers circular wrap, sequence rollover, and torn append")
+find_package(Python3 COMPONENTS Interpreter REQUIRED)
+set(WZSN_TRACE_OWNERSHIP_OUTPUT "${WZSN_ULA_128K_TRACE_OUTPUT}/timing-trace-ownership")
+add_test(NAME wz_timing_trace_process_ownership
+    COMMAND "${Python3_EXECUTABLE}"
+        "${WZSN_REPO_ROOT}/ci/test/timing-trace-ownership/verify-ownership.py"
+        --fixture "$<TARGET_FILE:wz_timing_trace_owner_fixture>"
+        --workdir "${WZSN_TRACE_OWNERSHIP_OUTPUT}")
+set_tests_properties(wz_timing_trace_process_ownership PROPERTIES
+    PASS_REGULAR_EXPRESSION
+        "PASS one of eight concurrent processes exclusively owned and froze the shared trace path")
 add_test(NAME wz_timing_trace_bus_context
     COMMAND wz_timing_trace_bus_context
         "${WZSN_ULA_128K_TRACE_OUTPUT}/timing-trace-bus-context.wztrace")
