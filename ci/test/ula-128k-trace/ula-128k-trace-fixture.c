@@ -56,12 +56,6 @@ static void record_trace(const wz_trace_event_t* event, void* context)
                 (attribute ? 0x15u : 0x5bu);
             if (event->address != expected_address ||
                 event->value != expected_value) {
-                (void)fprintf(stderr,
-                    "fetch tick=%llu row=%u cell=%u kind=%u address=%04x value=%02x expected=%04x/%02x\n",
-                    (unsigned long long)event->master_tick, (unsigned)row,
-                    (unsigned)cell, (unsigned)event->auxiliary,
-                    (unsigned)event->address, (unsigned)event->value,
-                    (unsigned)expected_address, (unsigned)expected_value);
                 check->values_valid = false;
             }
             ++check->target_events;
