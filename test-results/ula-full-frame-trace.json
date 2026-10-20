@@ -1,0 +1,100 @@
+{
+  "testId": "ula-full-frame-trace",
+  "status": "pass",
+  "commit": "f1e94d05de71a0c207108255b67d916da7a3af5a",
+  "runId": 39427379654,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39427379654",
+  "timestamp": "2026-10-20T13:06:39+00:00",
+  "runner": "Windows x64, Windows ARM64, macOS Intel, and macOS ARM64 hosted runners",
+  "caseCountPerRunner": 6,
+  "totalCaseCount": 24,
+  "observedOutput": "PASS complete 48K PAL frame has all timed ULA fetches and same-tick bus ordering",
+  "runnerResults": [
+    {
+      "runner": "GitHub Actions 1000114169/Windows/ARM64",
+      "status": "pass",
+      "caseCount": 6,
+      "timestamp": "2026-10-20T13:06:25+00:00"
+    },
+    {
+      "runner": "GitHub Actions 1000114171/Windows/X64",
+      "status": "pass",
+      "caseCount": 6,
+      "timestamp": "2026-10-20T13:06:39+00:00"
+    },
+    {
+      "runner": "GitHub Actions 1000114173/macOS/X64",
+      "status": "pass",
+      "caseCount": 6,
+      "timestamp": "2026-10-20T13:05:36+00:00"
+    },
+    {
+      "runner": "GitHub Actions 1000114183/macOS/ARM64",
+      "status": "pass",
+      "caseCount": 6,
+      "timestamp": "2026-10-20T13:05:32+00:00"
+    }
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/ula-full-frame-trace-contract.yml",
+      "sha256": "3a04d99e3f06bef00ce485c8c0800da2ae0839b27e11be6f29c6010368abc855"
+    },
+    {
+      "path": "ci/test/ula-full-frame-trace/CMakeLists.txt",
+      "sha256": "baba4646f6fc241fdde5a2d6820bdefdedf4a2344592aaacf57bb73a2fba7c08"
+    },
+    {
+      "path": "ci/test/ula-full-frame-trace/ula-full-frame-trace-fixture.c",
+      "sha256": "c63f2969bb56cc816754282a85485d036e099f06203fda77acc86d0cb00c06b0"
+    },
+    {
+      "path": "ci/test/ula-full-frame-trace/verify-full-frame.cmake",
+      "sha256": "8bb27857fba3abe0006e492789e709d91271de0753de663b46b76cc65a9a0ad1"
+    },
+    {
+      "path": "ci/test/ula-full-frame-trace/write-proof.py",
+      "sha256": "3f8ffaf287df787dcbfe1d7a5126b9b6ef174a57692d88c81b4bf922cea5803b"
+    },
+    {
+      "path": "src/core/wz_bus.c",
+      "sha256": "0d889d43bec6613d99fad000b05cf692af84c8ad1796ef288db1c472a9121677"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "7aaad028f4974b0ceafbddfc97282416d3623572a29673706902c257f2e8d909"
+    },
+    {
+      "path": "src/core/wz_machine_internal.h",
+      "sha256": "77f348ef6c5aeb91ef8c9254fe1794e868f38d54021a513d1a7de50e3dc571ec"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_dump_main.c",
+      "sha256": "d1823f4ebccceb73a6fff1559e7b23833267196ec042506dd6f49fe453c39012"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.c",
+      "sha256": "b7330439a1c72044e0f1c891a8595df2476c5e42f3c6617da529d782ed4b6ea4"
+    },
+    {
+      "path": "src/core/wz_machine_profile.c",
+      "sha256": "912a458de8d9a9d2d89bb57cac896e819d8ce82297a4e2ac707c90be1d4450b5"
+    },
+    {
+      "path": "src/core/wz_machine_profile.h",
+      "sha256": "1b246ec8245bf68400b0f9c5a1e69438264d8c671f23d656d82c87a032c4c700"
+    },
+    {
+      "path": "src/core/wz_trace.h",
+      "sha256": "b59ae872c3cb1d87819674c90f100f1162abbffeb7f80cd7f7c32c15747e8d5e"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.h",
+      "sha256": "fc2f50a1f31e002a2190bfd82bb675fd8329327306209eb3d22afa02d3083e39"
+    },
+    {
+      "path": "src/core/wz_z80.h",
+      "sha256": "8faaa6ca8ecd22b0b48418251256722471cef81537053cbfdd44ee629c293dd5"
+    }
+  ]
+}
