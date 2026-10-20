@@ -149,7 +149,8 @@ int main(void)
     const wz_machine_profile_t* profile_128k =
         wz_machine_profile_128k_pal();
 
-    if (profile_48k->master_hz_num != UINT64_C(7000000) ||
+    if (profile_48k == NULL || profile_128k == NULL ||
+        profile_48k->master_hz_num != UINT64_C(7000000) ||
         profile_48k->master_hz_den != 1u ||
         profile_48k->master_ticks_per_cpu_tstate != 2u ||
         profile_48k->tstates_per_line != 224u ||
