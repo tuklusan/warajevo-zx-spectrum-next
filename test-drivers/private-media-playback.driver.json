@@ -17,7 +17,7 @@
     },
     {
       "path": "docs/design/private-media-playback-test.md",
-      "sha256": "de59a8511da7ca25775687155802efbb9726a39f313753c6f0973d15ed80f15a"
+      "sha256": "b2310831a742220a0b28757b85c9dec06773bab28bb27101b09ee1397933290a"
     },
     {
       "path": "src/core/wz_machine.c",

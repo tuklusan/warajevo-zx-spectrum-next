@@ -16,6 +16,8 @@ and playback state then consume the full segment timeline. The test reports
 aggregate counts and hashes only its public harness/source fixtures. Media
 paths, names, hashes, and bytes are not emitted in logs or proof artifacts.
 
+The exact-source four-runner proof is [private-media-playback.json](../../test-results/private-media-playback.json), run `39479300890` at commit `53fca3ca37de89cc6d6985b483377cc8a350b698`.
+
 This exercises tape transport playback, not ROM-driven loading or gameplay.
 The separate DIZZY4K normal-ROM contract and Fuse parser comparison remain
 distinct evidence; this is not physical hardware validation.

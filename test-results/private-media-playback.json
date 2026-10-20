@@ -1,10 +1,10 @@
 {
   "testId": "private-media-playback",
   "status": "pass",
-  "commit": "d5e7f96407c4672ee65e45033c2d1c979dde6a3a",
-  "runId": 39342819178,
-  "runner": "Linux/X64",
-  "timestamp": "2026-10-19T23:38:48+00:00",
+  "commit": "53fca3ca37de89cc6d6985b483377cc8a350b698",
+  "runId": 39479300890,
+  "runner": "Linux x64; Linux ARM64; macOS Intel; macOS ARM64",
+  "timestamp": "2026-10-20T18:59:35+00:00",
   "caseCount": 20,
   "playbackSummary": {
     "failures": 0,
@@ -17,10 +17,6 @@
     "ticks": 40296178498
   },
   "fixtures": [
-    {
-      "path": ".github/workflows/private-media-playback.yml",
-      "sha256": "7a13f7f033a2021f50907c54dc07b2bf4bafa6fabd07df447b78e2546c6e5838"
-    },
     {
       "path": "ci/test/private-media-playback/CMakeLists.txt",
       "sha256": "b6c61c6d6b23f1c6048da5dd1314189755df7c294758198e3144274b8e0a9064"
@@ -35,15 +31,15 @@
     },
     {
       "path": "docs/design/private-media-playback-test.md",
-      "sha256": "563062baf5ecf6fd68d026bc0b25d6427f9436d71d301c46d647f7eaeca8cc3a"
+      "sha256": "dec90653f6873f973c0d245846324c1e604237e7b84fe48ba8be319adc5e1083"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "24eaac015e950cd317be13ddb79c33ce92a01f106fef3dbfbb7ce433c9557ffc"
+      "sha256": "4c87c91fb2e2ef72d8fb81d53e0d476e0939b960d37b03f0d28a347097e8414a"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "92649806b076a4542c05d53b1a3e01bbf67ebfe25b76c92a333cf03e27809f4d"
+      "sha256": "e7078ec7aca25b1a0b168fd050fd81506e98f0002433144acb8af38878637864"
     },
     {
       "path": "src/core/wz_tape.c",
@@ -52,6 +48,14 @@
     {
       "path": "src/core/wz_tape.h",
       "sha256": "d483f3f99bcfa26590bf259114193d2314dd2af2720316bf66021462f5c31fd6"
+    },
+    {
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "8c475b087a4f2cf4f67bf7532527d1a2fd0de9b285bb1f74539037b9c434f894"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "bfe8b8077fa09157b3b9370c8e6916d7f257a53af8e9475a1a298bc62a277a39"
     }
   ]
 }
