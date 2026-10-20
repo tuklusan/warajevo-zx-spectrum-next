@@ -1,0 +1,95 @@
+{
+  "testId": "networking-dirty-media",
+  "status": "pass",
+  "commit": "3cdee4d491d0c3d5099f51639191bc72531695cd",
+  "runId": 39388401909,
+  "runner": "Linux/X64",
+  "timestamp": "2026-10-20T07:43:45+00:00",
+  "caseCount": 42,
+  "fixtures": [
+    {
+      "path": ".github/workflows/networking-dirty-media.yml",
+      "sha256": "86a315d505236ac322e997454193d99426bcf16a31a7ad6347078f097a4adcf7"
+    },
+    {
+      "path": "ci/test/networking-dirty-media/CMakeLists.txt",
+      "sha256": "5b0f488164698575a7e1b41e53e681abfdd19529ad2c7a41bae6dabaa0abe730"
+    },
+    {
+      "path": "ci/test/networking-dirty-media/networking-dirty-media-contract.c",
+      "sha256": "ae3ce57dd731d42cd5c42b41ed6a54c6400824dffb7ac65335bc01f4c40c787d"
+    },
+    {
+      "path": "ci/test/networking-dirty-media/write-proof.py",
+      "sha256": "30cef9be804553e386d57e014f12d68eaf1086a2982daeeb4ebf8a4557dbcad0"
+    },
+    {
+      "path": "docs/design/01-warajevo-zx-spectrum-next-architecture.md",
+      "sha256": "dc5cf052d8ad6e6df51e81a5a1156fa6d7c874881bd6a7617b4115029cf0d990"
+    },
+    {
+      "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
+      "sha256": "dc47afb96f2c0566788d59ef74a691c33a8943e1c4e199c96c74d07739e68b31"
+    },
+    {
+      "path": "src/app/wz_command_registry.c",
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
+    },
+    {
+      "path": "src/app/wz_command_registry.h",
+      "sha256": "54cc2e949ff026fa183b0aa30cac9ebad8b431c97b80d966ef0ac1ff35a06087"
+    },
+    {
+      "path": "src/app/wz_host_audio_policy.c",
+      "sha256": "24ed4f2318ba10bb2cb9ec48b5ae9bf854ecdef71687f2bd6908bb9bb9b17bce"
+    },
+    {
+      "path": "src/app/wz_host_thread.c",
+      "sha256": "6f8cbe0e171adfe7b9f42d9517e31d72f7917048339ff8941d5bccadfa305151"
+    },
+    {
+      "path": "src/app/wz_microdrive_eject_workflow.c",
+      "sha256": "c1db9feadf120808bc6c6ec5793b40f129d3972035d10a19085a966fa5b7b005"
+    },
+    {
+      "path": "src/app/wz_microdrive_eject_workflow.h",
+      "sha256": "224c0b0abe528070566e61833a43897daaabc242039ebb8e967b329edd2f743d"
+    },
+    {
+      "path": "src/app/wz_networking_commands.c",
+      "sha256": "e8ae3db57a941288103f501744bd0eb054c072b41ec960dde31e16085c65b0a5"
+    },
+    {
+      "path": "src/app/wz_networking_commands.h",
+      "sha256": "4ed126aa9388bee42619642f70bb0f28b54afabeac4e955ece9413e6f9772049"
+    },
+    {
+      "path": "src/app/wz_speed_policy.c",
+      "sha256": "cb9d2d0befc0becaa81558d794a257f399c4a46e1c1a0bdb19c4893d8f547183"
+    },
+    {
+      "path": "src/app/wz_ui_layout.c",
+      "sha256": "6c8aaea15cdd323d0f9a7c28d12e254e2145cbdabf07849f05892dc3807758f0"
+    },
+    {
+      "path": "src/app/wz_ui_layout.h",
+      "sha256": "30d784d2ff43fe237251e559cd8bc35d0d51b85c9e80953ba8f9cf6e2052ea7b"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "360fe71b54c4ac705cd9d8f32d20bc017af7d3e6b59dc36ebf125a377cf62489"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "e7078ec7aca25b1a0b168fd050fd81506e98f0002433144acb8af38878637864"
+    },
+    {
+      "path": "src/core/wz_microdrive.c",
+      "sha256": "0d80d9a9144cdc39f5df0b8a9abb8e5e21bc71cfeb92f13ee2f7f34e532bc522"
+    },
+    {
+      "path": "src/core/wz_microdrive.h",
+      "sha256": "fa4e47c5efc658d533e14b6bf571712447771951202b66eb8575c6869f60a90c"
+    }
+  ]
+}
