@@ -14,7 +14,7 @@
     },
     {
       "path": "ci/build/desktop-package-README.md",
-      "sha256": "a4e7c57f51920da1877fedb641c44322ff03ca2555d246ea792e09413e92b968"
+      "sha256": "5a7d9797b12b94ca01afbab5416116641fe8519d94f41c6940f1fc2ea7a3d634"
     },
     {
       "path": "ci/build/package-desktop.py",
