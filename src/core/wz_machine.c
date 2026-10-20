@@ -378,6 +378,7 @@ wz_result_t wz_machine_reconfigure_profile(
     *machine = *replacement;
     free(replacement);
     machine->tape_state.tape = &machine->tape;
+    wz_zxnet_set_master_tick(&machine->zxnet, machine->master_tick);
     return WZ_RESULT_OK;
 }
 
@@ -429,10 +430,12 @@ void wz_machine_destroy(wz_machine_t* machine)
         }
         wz_printer_init(&machine->printer);
         wz_zxnet_init(&machine->zxnet);
+        wz_zxnet_set_timing_trace(&machine->zxnet, machine->timing_trace);
         machine->ula_output = 0u;
         machine->maskable_interrupt_line_low = 0u;
         machine->rom_identity = 0u;
         machine->master_tick = 0u;
+        wz_zxnet_set_master_tick(&machine->zxnet, machine->master_tick);
         machine->ula_output_tick = 0u;
         machine->border_color = 0u;
         machine->border_event_base_color = 0u;
@@ -449,6 +452,8 @@ void wz_machine_set_timing_trace(wz_machine_t* machine, wz_trace_sink_t* trace)
 {
     if (machine != 0) {
         machine->timing_trace = trace;
+        wz_zxnet_set_timing_trace(&machine->zxnet, trace);
+        wz_zxnet_set_master_tick(&machine->zxnet, machine->master_tick);
     }
 }
 

@@ -12,6 +12,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include <stdbool.h>
 #include <stddef.h>
 
+#include "core/wz_trace.h"
 #include "core/wz_types.h"
 
 #define WZ_ZXNET_DATA_CAPACITY 256u
@@ -54,6 +55,9 @@ typedef struct {
     wz_zxnet_snapshot_t state;
     wz_zxnet_write_callback_t write_callback;
     void* write_context;
+    /* Diagnostic runtime fields; excluded from canonical state. */
+    wz_trace_sink_t* timing_trace;
+    wz_master_tick_t master_tick;
 } wz_zxnet_t;
 
 void wz_zxnet_init(wz_zxnet_t* network);
@@ -72,5 +76,9 @@ wz_result_t wz_zxnet_finish_write(wz_zxnet_t* network);
 void wz_zxnet_set_write_callback(wz_zxnet_t* network,
                                  wz_zxnet_write_callback_t callback,
                                  void* context);
+void wz_zxnet_set_timing_trace(wz_zxnet_t* network,
+                               wz_trace_sink_t* trace);
+void wz_zxnet_set_master_tick(wz_zxnet_t* network,
+                              wz_master_tick_t master_tick);
 
 #endif

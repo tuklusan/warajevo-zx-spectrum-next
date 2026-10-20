@@ -27,6 +27,9 @@ static inline void wz_machine_advance_master_ticks(
     } else {
         wz_machine_advance_tape_ticks_slow(machine, ticks);
     }
+    if (machine->timing_trace != 0) {
+        wz_zxnet_set_master_tick(&machine->zxnet, machine->master_tick);
+    }
 }
 
 wz_result_t wz_machine_memory_write_at_tick_deferred(

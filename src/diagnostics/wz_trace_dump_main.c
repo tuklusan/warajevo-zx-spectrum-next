@@ -33,6 +33,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #endif
 #include "core/wz_bus.h"
 #include "core/wz_machine_profile.h"
+#include "core/wz_zxnet.h"
 #include "diagnostics/wz_trace_file.h"
 
 static const char* event_kind_name(wz_trace_event_kind_t kind)
@@ -52,6 +53,34 @@ static const char* event_kind_name(wz_trace_event_kind_t kind)
     case WZ_TRACE_MIC_CHANGE: return "mic_change";
     case WZ_TRACE_EAR_CHANGE: return "ear_change";
     case WZ_TRACE_INTERFACE1_IO: return "interface1_io";
+    case WZ_TRACE_ZXNET_EVENT: return "zxnet_event";
+    default: return "unknown";
+    }
+}
+
+static const char* zxnet_state_name(wz_byte_t state)
+{
+    switch ((wz_zxnet_state_t)state) {
+    case WZ_ZXNET_CLAIM: return "CLAIM";
+    case WZ_ZXNET_IDLE: return "IDLE";
+    case WZ_ZXNET_BUSY: return "BUSY";
+    case WZ_ZXNET_FREE: return "FREE";
+    case WZ_ZXNET_COLLREAD: return "COLLREAD";
+    case WZ_ZXNET_COLLWRITE: return "COLLWRITE";
+    default: return "UNKNOWN";
+    }
+}
+
+static const char* zxnet_action_name(wz_byte_t action)
+{
+    switch (action) {
+    case WZ_TRACE_ZXNET_BLOCK_QUEUED: return "block_queued";
+    case WZ_TRACE_ZXNET_READ_STARTED: return "read_started";
+    case WZ_TRACE_ZXNET_CLAIM_STARTED: return "claim_started";
+    case WZ_TRACE_ZXNET_CLAIM_RESOLVED: return "claim_resolved";
+    case WZ_TRACE_ZXNET_READ_PROGRESS: return "read_progress";
+    case WZ_TRACE_ZXNET_WRITE_PROGRESS: return "write_progress";
+    case WZ_TRACE_ZXNET_WRITE_COMMITTED: return "write_committed";
     default: return "unknown";
     }
 }
@@ -320,6 +349,23 @@ static bool print_event(const wz_trace_event_t* event, void* context)
                     (unsigned)event->value, (unsigned)event->auxiliary,
                     (unsigned)motor_shift, (unsigned)active_motor,
                     event->master_tick) < 0 ||
+            !print_timing_position(output, dump->profile, event->master_tick) ||
+            fputc('\n', output) == EOF) {
+            return false;
+        }
+    }
+    if (event->kind == WZ_TRACE_ZXNET_EVENT) {
+        if (fprintf(output,
+                    "zxnet_event action=%s state=%s->%s"
+                    " block=%04x->%04x position=%u bit_count=%u"
+                    " tick=%" PRIu64 " ",
+                    zxnet_action_name(event->cycle),
+                    zxnet_state_name(event->value),
+                    zxnet_state_name(event->auxiliary),
+                    (unsigned)event->address,
+                    (unsigned)event->program_counter,
+                    (unsigned)(event->register_snapshot & UINT16_MAX),
+                    (unsigned)event->t_states, event->master_tick) < 0 ||
             !print_timing_position(output, dump->profile, event->master_tick) ||
             fputc('\n', output) == EOF) {
             return false;

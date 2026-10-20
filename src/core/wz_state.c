@@ -780,6 +780,8 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
             *wz_machine_microdrive_at(machine, slot) = microdrives[slot];
         }
         machine->zxnet = zxnet;
+        wz_zxnet_set_timing_trace(&machine->zxnet, machine->timing_trace);
+        wz_zxnet_set_master_tick(&machine->zxnet, machine->master_tick);
         /* Older snapshots keep this reserved extension byte zero. */
         machine->cpu.q = data[offset++];
         if (machine->cpu.q > 1u) {
