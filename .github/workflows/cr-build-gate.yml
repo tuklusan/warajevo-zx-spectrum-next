@@ -37,12 +37,12 @@ jobs:
             label: ubuntu-24.04
             architecture: X64
             performance_runner: Linux-ubuntu-24.04
-            performance_baseline: ''
+            performance_baseline: linux-x64
           - name: Linux ARM64
             label: ubuntu-24.04-arm
             architecture: ARM64
             performance_runner: Linux-ubuntu-24.04-arm
-            performance_baseline: ''
+            performance_baseline: linux-arm64
           - name: macOS ARM64
             label: macos-15
             architecture: ARM64
@@ -110,11 +110,6 @@ jobs:
             executable="$build_dir/wz_performance_baseline"
           fi
           "$executable" | tee "$build_dir/current.json"
-          if [[ -n "${{ matrix.performance_baseline }}" ]]; then
-            python ci/test/performance/compare.py \
-              "$build_dir/current.json" \
-              "ci/test/performance/baselines/${{ matrix.performance_baseline }}.json"
-          else
-            python -c 'import json,sys; current=json.load(open(sys.argv[1])); baseline=json.load(open("ci/test/performance/baselines/windows-x64.json")); expected={item["name"]:item["fingerprint"] for item in baseline["metrics"]}; actual={item["name"]:item["fingerprint"] for item in current["metrics"]}; assert actual == expected, "deterministic workload fingerprints differ from frozen baseline"; print("PASS all six deterministic workload fingerprints")' \
-              "$build_dir/current.json"
-          fi
+          python ci/test/performance/compare.py \
+            "$build_dir/current.json" \
+            "ci/test/performance/baselines/${{ matrix.performance_baseline }}.json"

@@ -19,14 +19,12 @@ The pre-optimization records were produced on the four pinned hosted runner
 families at commit `574714b6be131e086f117676159efca4eb58a273` (run
 `35886051010`). After the first accepted raster optimization, the current
 records in `baselines/` were captured at `350181913777165a4a52fb47318b1b54269101f7`
-(run `35888370795`). The original records remain in Git history. The main-branch
-full native build workflow runs these workloads on the same five native runners
-as the product build. Windows x64 and both macOS runners reject a fingerprint
-change or a throughput decrease greater than 40% against their pinned runner
-baseline. Linux x64 and ARM64 compare deterministic fingerprints against the
-frozen Windows reference and report runner-specific throughput; no historical
-Linux throughput baseline is pinned. The 40% allowance absorbs normal hosted
-runner variance; it is not a target for accepted optimizations.
+(run `35888370795`). The main-branch full native build workflow runs these
+workloads on the same five native runners as the product build and compares
+each runner against its own pinned baseline. Linux x64 and ARM64 baselines were
+initialized from the current-source measurements in run `39506023731`; no
+earlier Linux throughput reference was available. The 40% allowance absorbs
+normal hosted-runner variance; it is not a target for accepted optimizations.
 
 When accepting an optimization, compare against the existing records first.
 Update the affected runner baselines only after the optimization has passing
@@ -44,5 +42,9 @@ ARM and both Mac runner families after the serializer optimization. Three
 macOS Intel measurements in run `36820851431` also showed repeatable slowdowns
 across the unchanged raster, audio, tape, and UI workloads; their median rates
 are now the runner's reference profile. This is a runner-profile inference;
-the historical measurements remain available in Git history. The Windows x64
-throughput profile remains unchanged. The new four-runner gate is pending.
+the Windows x64 throughput profile remains unchanged. The five-target Phase-16
+regression step is integrated into the main full-build gate. Linux x64 and
+ARM64 throughput baselines are initialized from the successful measurements in
+run `39506023731` at source `60a9c799bb67384f853a637a9e196d4a9879a79b`; raw
+records are pinned in `test-results/performance-current/` and
+`test-results/phase16-performance-current.json`.

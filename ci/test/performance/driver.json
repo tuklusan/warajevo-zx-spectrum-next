@@ -1,6 +1,6 @@
 {
   "testId": "phase16-performance-baseline",
-  "command": "The main-branch Full native build and test workflow runs all six deterministic Release workloads on each of its five native runners. Windows x64 and both macOS runners compare fingerprints and throughput against their pinned runner baselines; Linux x64 and ARM64 compare all fingerprints and record current throughput.",
+  "command": "The main-branch Full native build and test workflow runs all six deterministic Release workloads on each of its five native runners and compares fingerprints and throughput against each runner's pinned baseline.",
   "runnerMatrix": [
     "Windows-windows-x64",
     "Linux-ubuntu-24.04",
@@ -11,7 +11,7 @@
   "fixtures": [
     {
       "path": "ci/test/performance/README.md",
-      "sha256": "b9843733518e46920b439f6c95b1f31dd69f15f7c0534869edb62d04690ab79c"
+      "sha256": "b953712f5d04aedf3ed661d2bfbea85e0c5018648b869ac023817cac7087f195"
     },
     {
       "path": "ci/test/performance/baseline.c",
@@ -28,6 +28,14 @@
     {
       "path": "ci/test/performance/baselines/windows-x64.json",
       "sha256": "178f6158b8194ceb6dd6f60bec668f9641518d230d240d12ca7ac8c4ad82fdf6"
+    },
+    {
+      "path": "ci/test/performance/baselines/linux-x64.json",
+      "sha256": "8c11d388a47b0ff0417b43d42e138122dd1d97770fa464d6510aa28366af6368"
+    },
+    {
+      "path": "ci/test/performance/baselines/linux-arm64.json",
+      "sha256": "f392c004994c018a09dfbadfd663ba0cb2516ee9af0941041b6fb3e1a420c6f7"
     },
     {
       "path": "ci/test/performance/baselines/macos-x64.json",
