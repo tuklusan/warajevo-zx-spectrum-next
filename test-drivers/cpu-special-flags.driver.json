@@ -46,7 +46,7 @@
       "path": "src/core/wz_machine.h"
     },
     {
-      "sha256": "7ec1524e75e469b1b994a0209af86445dd21897cc7470473909fa2ae3a2d962a",
+      "sha256": "c2c287cae3c9719549781ecf77813400ddbdda89aaf3f1866eb7ea0d66312cdf",
       "path": "src/core/wz_state.c"
     },
     {
