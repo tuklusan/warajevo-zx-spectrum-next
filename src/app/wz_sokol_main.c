@@ -1229,6 +1229,13 @@ static bool wz_host_load_external_snapshot(wz_host_session_t* session,
                data[34u] == 4u && session->machine.profile != NULL &&
                session->machine.profile->kind == WZ_MACHINE_128K_PAL) {
         result = wz_state_load_z80_v2_128k(&session->machine, data, length);
+    } else if (wz_host_extension_is(path, ".z80") &&
+               length >= WZ_Z80_V3_HEADER_LENGTH && data[6u] == 0u &&
+               (wz_read_le16(data + 30u) == 54u ||
+                wz_read_le16(data + 30u) == 55u) && data[34u] == 4u &&
+               session->machine.profile != NULL &&
+               session->machine.profile->kind == WZ_MACHINE_128K_PAL) {
+        result = wz_state_load_z80_v3_128k(&session->machine, data, length);
     } else if (wz_host_extension_is(path, ".sna") &&
                length == WZ_SNA_48K_LENGTH) {
         wz_snapshot_state_init(&snapshot);

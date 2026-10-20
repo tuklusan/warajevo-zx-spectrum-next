@@ -1614,8 +1614,13 @@ wz_result_t wz_snapshot_state_load_z80_v3(wz_snapshot_state_t* snapshot,
          wz_read_le16(data + 30u) != 55u)) {
         return WZ_RESULT_PARSE_ERROR;
     }
+    /* A snapshot_state has no banked-RAM payload; use the transactional
+       machine loader for 128K so all eight banks remain representable. */
+    if (data[34u] == 4u) {
+        return WZ_RESULT_UNSUPPORTED_OPERATION;
+    }
     header_length = 32u + (size_t)wz_read_le16(data + 30u);
-    is_128k = data[34u] == 4u ? 1u : 0u;
+    is_128k = 0u;
     if (length < header_length ||
         wz_machine_init(&candidate, is_128k != 0u ?
                         wz_machine_profile_128k_pal() :
@@ -1698,6 +1703,95 @@ wz_result_t wz_snapshot_state_load_z80_v3(wz_snapshot_state_t* snapshot,
         wz_machine_destroy(&candidate);
         return WZ_RESULT_PARSE_ERROR;
     }
+    wz_machine_destroy(&candidate);
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_state_load_z80_v3_128k(wz_machine_t* machine,
+                                     const wz_byte_t* data,
+                                     size_t length)
+{
+    static wz_machine_t candidate;
+    wz_byte_t seen_pages[WZ_Z80_128K_PAGE_COUNT] = {0u};
+    size_t header_length;
+    size_t offset;
+
+    if (machine == 0 || data == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (machine->profile == 0 ||
+        machine->profile->kind != WZ_MACHINE_128K_PAL ||
+        machine->ram_128k == 0) {
+        return WZ_RESULT_UNSUPPORTED_OPERATION;
+    }
+    if (length < WZ_Z80_V3_HEADER_LENGTH || data[6u] != 0u ||
+        (wz_read_le16(data + 30u) != 54u &&
+         wz_read_le16(data + 30u) != 55u) || data[34u] != 4u) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    header_length = 32u + (size_t)wz_read_le16(data + 30u);
+    if (length < header_length ||
+        wz_machine_init(&candidate, wz_machine_profile_128k_pal()) !=
+            WZ_RESULT_OK ||
+        wz_z80_v3_map_header(&candidate, data, header_length) != WZ_RESULT_OK) {
+        wz_machine_destroy(&candidate);
+        return WZ_RESULT_PARSE_ERROR;
+    }
+
+    offset = header_length;
+    while (offset < length) {
+        wz_word_t block_length;
+        wz_byte_t page_number;
+        size_t page_index;
+        wz_byte_t* destination;
+
+        if (length - offset < 3u) {
+            wz_machine_destroy(&candidate);
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        block_length = wz_read_le16(data + offset);
+        page_number = data[offset + 2u];
+        if (page_number < 3u || page_number > 10u) {
+            wz_machine_destroy(&candidate);
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        page_index = (size_t)(page_number - 3u);
+        destination = candidate.ram_128k +
+                      page_index * WZ_128K_RAM_BANK_SIZE;
+        if (seen_pages[page_index] != 0u ||
+            (block_length != WZ_Z80_V2_UNCOMPRESSED_PAGE_LENGTH &&
+             block_length == 0u) ||
+            (block_length == WZ_Z80_V2_UNCOMPRESSED_PAGE_LENGTH &&
+             length - offset - 3u < WZ_Z80_V2_PAGE_SIZE) ||
+            (block_length != WZ_Z80_V2_UNCOMPRESSED_PAGE_LENGTH &&
+             (size_t)block_length > length - offset - 3u)) {
+            wz_machine_destroy(&candidate);
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        if (block_length == WZ_Z80_V2_UNCOMPRESSED_PAGE_LENGTH) {
+            memcpy(destination, data + offset + 3u, WZ_Z80_V2_PAGE_SIZE);
+            offset += 3u + WZ_Z80_V2_PAGE_SIZE;
+        } else {
+            if (wz_z80_v2_decode_page(destination, data + offset + 3u,
+                                      (size_t)block_length) != WZ_RESULT_OK) {
+                wz_machine_destroy(&candidate);
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            offset += 3u + (size_t)block_length;
+        }
+        seen_pages[page_index] = 1u;
+    }
+    if (offset != length) {
+        wz_machine_destroy(&candidate);
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    for (size_t page = 0u; page < WZ_Z80_128K_PAGE_COUNT; ++page) {
+        if (seen_pages[page] == 0u) {
+            wz_machine_destroy(&candidate);
+            return WZ_RESULT_PARSE_ERROR;
+        }
+    }
+    wz_sna_128k_apply_candidate(machine, &candidate);
     wz_machine_destroy(&candidate);
     return WZ_RESULT_OK;
 }

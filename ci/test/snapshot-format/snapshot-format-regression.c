@@ -48,21 +48,15 @@ static int make_v3_128k(wz_byte_t* data)
 static int check_v3_128k_load(void)
 {
     wz_byte_t* input = (wz_byte_t*)malloc(SNAPSHOT_SIZE);
-    wz_snapshot_state_t* snapshot =
-        (wz_snapshot_state_t*)malloc(sizeof(*snapshot));
     wz_machine_t machine;
     int passed = 0;
 
     memset(&machine, 0, sizeof(machine));
-    if (snapshot == NULL || !make_v3_128k(input)) goto done;
-    wz_snapshot_state_init(snapshot);
-    if (wz_snapshot_state_load_z80_v3(snapshot, input, SNAPSHOT_SIZE) !=
-        WZ_RESULT_OK ||
+    if (!make_v3_128k(input) ||
         wz_machine_init(&machine, wz_machine_profile_128k_pal()) !=
-        WZ_RESULT_OK ||
-        wz_state_deserialize_machine(&machine, wz_snapshot_state_data(snapshot),
-                                     wz_snapshot_state_length(snapshot)) !=
-        WZ_RESULT_OK) goto done;
+            WZ_RESULT_OK ||
+        wz_state_load_z80_v3_128k(&machine, input, SNAPSHOT_SIZE) !=
+            WZ_RESULT_OK) goto done;
     if (machine.profile->kind != WZ_MACHINE_128K_PAL ||
         machine.cpu.program_counter != 0x8123u ||
         machine.paging_7ffd != 0x25u || machine.ay.selected_register != 9u) {
@@ -79,7 +73,6 @@ static int check_v3_128k_load(void)
     passed = 1;
 done:
     wz_machine_destroy(&machine);
-    free(snapshot);
     free(input);
     return passed;
 }
@@ -87,25 +80,26 @@ done:
 static int check_v3_unsupported_mode_and_incomplete_pages(void)
 {
     wz_byte_t* input = (wz_byte_t*)malloc(SNAPSHOT_SIZE);
-    wz_snapshot_state_t* snapshot =
-        (wz_snapshot_state_t*)malloc(sizeof(*snapshot));
+    wz_machine_t machine;
     int passed = 0;
 
-    if (snapshot == NULL || !make_v3_128k(input)) goto done;
-    wz_snapshot_state_init(snapshot);
+    memset(&machine, 0, sizeof(machine));
+    if (!make_v3_128k(input) ||
+        wz_machine_init(&machine, wz_machine_profile_128k_pal()) !=
+            WZ_RESULT_OK) goto done;
+    machine.ram_128k[0u] = 0xa5u;
     input[34u] = 3u;
-    if (wz_snapshot_state_load_z80_v3(snapshot, input, SNAPSHOT_SIZE) !=
-        WZ_RESULT_PARSE_ERROR || wz_snapshot_state_length(snapshot) != 0u) {
+    if (wz_state_load_z80_v3_128k(&machine, input, SNAPSHOT_SIZE) !=
+        WZ_RESULT_PARSE_ERROR || machine.ram_128k[0u] != 0xa5u) {
         goto done;
     }
     if (!make_v3_128k(input)) goto done;
-    wz_snapshot_state_init(snapshot);
-    if (wz_snapshot_state_load_z80_v3(snapshot, input,
+    if (wz_state_load_z80_v3_128k(&machine, input,
             SNAPSHOT_SIZE - PAGE_RECORD_SIZE) != WZ_RESULT_PARSE_ERROR ||
-        wz_snapshot_state_length(snapshot) != 0u) goto done;
+        machine.ram_128k[0u] != 0xa5u) goto done;
     passed = 1;
 done:
-    free(snapshot);
+    wz_machine_destroy(&machine);
     free(input);
     return passed;
 }
