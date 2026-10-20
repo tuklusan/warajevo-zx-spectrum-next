@@ -500,7 +500,7 @@ add_test(NAME wz_timing_trace_bus_context
         "${WZSN_ULA_128K_TRACE_OUTPUT}/timing-trace-bus-context.wztrace")
 set_tests_properties(wz_timing_trace_bus_context PROPERTIES
     PASS_REGULAR_EXPRESSION
-        "PASS cross-domain trace reconstructs interrupt, CPU, bus, and ULA timing")
+        "PASS timing trace reconstructs interrupt, CPU, bus, ULA, and border timing")
 if(UNIX)
     add_test(NAME wz_private_media_playback
         COMMAND wz_private_media_playback "${WZSN_REPO_ROOT}/test-media")

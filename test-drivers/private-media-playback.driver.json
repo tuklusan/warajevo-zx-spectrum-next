@@ -41,7 +41,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "bfe8b8077fa09157b3b9370c8e6916d7f257a53af8e9475a1a298bc62a277a39"
+      "sha256": "6e463703671f9d5ec9a3a469d2ba546f3c81f6f952a848b0f5cdb2c326cdba85"
     }
   ],
   "runnerMatrix": [

@@ -31,7 +31,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "77384e43c0307b13c68cd6d7993e0af25457c4f2d203b0e18f191adba0c063b3"
+      "sha256": "6e463703671f9d5ec9a3a469d2ba546f3c81f6f952a848b0f5cdb2c326cdba85"
     },
     {
       "path": "src/core/wz_machine.c",
