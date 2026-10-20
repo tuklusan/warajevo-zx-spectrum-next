@@ -1319,10 +1319,15 @@ void wz_machine_ula_port_fe_write(wz_machine_t* machine, wz_word_t address,
                                   wz_byte_t value, wz_master_tick_t master_tick)
 {
     wz_byte_t previous_border_color;
+    wz_byte_t previous_mic_level;
     if (machine == 0) {
         return;
     }
     previous_border_color = machine->border_color;
+    previous_mic_level = 0u;
+    if (machine->timing_trace != 0) {
+        previous_mic_level = wz_beeper_mic_level(&machine->beeper);
+    }
     machine->ula_output = (wz_byte_t)(value & 0x1fu);
     machine->ula_output_tick = master_tick;
     wz_beeper_port_fe_write(&machine->beeper, value, master_tick);
@@ -1349,6 +1354,7 @@ void wz_machine_ula_port_fe_write(wz_machine_t* machine, wz_word_t address,
         machine->border_events[index].color = machine->border_color;
     }
     if (machine->timing_trace != 0) {
+        wz_byte_t mic_level = wz_beeper_mic_level(&machine->beeper);
         if (previous_border_color != machine->border_color) {
             wz_trace_event_t border_event = {0};
             border_event.kind = WZ_TRACE_BORDER_CHANGE;
@@ -1357,6 +1363,15 @@ void wz_machine_ula_port_fe_write(wz_machine_t* machine, wz_word_t address,
             border_event.value = machine->border_color;
             border_event.auxiliary = previous_border_color;
             wz_trace_emit_detail(machine->timing_trace, &border_event);
+        }
+        if (previous_mic_level != mic_level) {
+            wz_trace_event_t mic_event = {0};
+            mic_event.kind = WZ_TRACE_MIC_CHANGE;
+            mic_event.master_tick = master_tick;
+            mic_event.address = address;
+            mic_event.value = mic_level;
+            mic_event.auxiliary = previous_mic_level;
+            wz_trace_emit_detail(machine->timing_trace, &mic_event);
         }
         wz_trace_event_t event = {0};
         event.kind = WZ_TRACE_DEVELOPER_MARKER;

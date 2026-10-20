@@ -1,0 +1,46 @@
+{
+  "testId": "timing-trace-mic",
+  "command": "Integrated CTest: wz_timing_trace_mic_contract",
+  "requiredCases": 3,
+  "runnerMatrix": [
+    "windows-2025",
+    "ubuntu-24.04",
+    "ubuntu-24.04-arm",
+    "macos-15",
+    "macos-15-intel"
+  ],
+  "fixtures": [
+    {
+      "path": "ci/test/timing-trace-mic/README.md",
+      "sha256": "691d9ec95dd73483a6d996210e8f9fe8bdc1136ace002a38cb2ef46fae1e1257"
+    },
+    {
+      "path": "ci/test/timing-trace-mic/trace-mic-fixture.c",
+      "sha256": "d79b18446f29c8eeae78d7d53e4cc84b8ee9ea53a06b0938dc5d162a696027e9"
+    },
+    {
+      "path": "ci/test/timing-trace-mic/verify.cmake",
+      "sha256": "3fd1b15f59108a824500de82ad138945f9d43ae57099c9c0612b45919ae8ded2"
+    },
+    {
+      "path": "ci/test/timing-trace-mic/write-proof.py",
+      "sha256": "a5d9287288b3902000e2bcc7402d8f2f274eb316acda2f7234f0a3c3998ee57e"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "ebf4de40c8d43f185e12c831ca9f513a2c8145b53ed183669455fc970bbb6894"
+    },
+    {
+      "path": "src/core/wz_trace.h",
+      "sha256": "f64dd9d97c616cb09389f2935ae7cc60ed247c77b0dba523a361b098f289f01f"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_dump_main.c",
+      "sha256": "32a1a929e438f16d20ffeec3dbd53b2326d90a0fbd9e7c51b2f49fbf548051c6"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "98b373d6acf8d6144f61aed644b17684feaff8acfa14d226059da6c3772e99a8"
+    }
+  ]
+}
