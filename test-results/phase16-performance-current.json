@@ -1,91 +1,14 @@
 {
-  "testId": "phase16-performance-baseline",
+  "timestamp": "2026-10-20T23:52:55Z",
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39517679760",
+  "runId": 39517679760,
   "status": "pass",
-  "commit": "b4ea7fdcbbf808aac35c1e61447fd6449b52943f",
-  "runId": 39506587064,
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39506587064",
-  "timestamp": "2026-10-20T22:16:04+00:00",
-  "runnerResults": [
-    {
-      "runner": "Linux-ubuntu-24.04",
-      "status": "pass",
-      "jobId": 118916925873,
-      "timestamp": "2026-10-20T22:15:13Z",
-      "ctest": "12/12 passed",
-      "performanceRecord": "test-results/performance-current/linux-x64.json",
-      "metricCount": 6,
-      "comparison": {
-        "status": "pass",
-        "baseline": "ci/test/performance/baselines/linux-x64.json",
-        "gate": "all fingerprints match; no throughput regression exceeded 40%",
-        "largestSlowdownPercent": 0.19
-      }
-    },
-    {
-      "runner": "Linux-ubuntu-24.04-arm",
-      "status": "pass",
-      "jobId": 118916925787,
-      "timestamp": "2026-10-20T22:15:42Z",
-      "ctest": "12/12 passed",
-      "performanceRecord": "test-results/performance-current/linux-arm64.json",
-      "metricCount": 6,
-      "comparison": {
-        "status": "pass",
-        "baseline": "ci/test/performance/baselines/linux-arm64.json",
-        "gate": "all fingerprints match; no throughput regression exceeded 40%",
-        "largestSlowdownPercent": 1.25
-      }
-    },
-    {
-      "runner": "Windows-windows-x64",
-      "status": "pass",
-      "jobId": 118916925427,
-      "timestamp": "2026-10-20T22:15:38Z",
-      "ctest": "12/12 passed",
-      "performanceRecord": "test-results/performance-current/windows-x64.json",
-      "metricCount": 6,
-      "comparison": {
-        "status": "pass",
-        "baseline": "ci/test/performance/baselines/windows-x64.json",
-        "gate": "all fingerprints match; no throughput regression exceeded 40%",
-        "largestSlowdownPercent": 11.76
-      }
-    },
-    {
-      "runner": "macOS-macos-arm64",
-      "status": "pass",
-      "jobId": 118916925788,
-      "timestamp": "2026-10-20T22:14:54Z",
-      "ctest": "12/12 passed",
-      "performanceRecord": "test-results/performance-current/macos-arm64.json",
-      "metricCount": 6,
-      "comparison": {
-        "status": "pass",
-        "baseline": "ci/test/performance/baselines/macos-arm64.json",
-        "gate": "all fingerprints match; no throughput regression exceeded 40%",
-        "largestSlowdownPercent": 28.68
-      }
-    },
-    {
-      "runner": "macOS-macos-x64",
-      "status": "pass",
-      "jobId": 118916925955,
-      "timestamp": "2026-10-20T22:15:18Z",
-      "ctest": "12/12 passed",
-      "performanceRecord": "test-results/performance-current/macos-x64.json",
-      "metricCount": 6,
-      "comparison": {
-        "status": "pass",
-        "baseline": "ci/test/performance/baselines/macos-x64.json",
-        "gate": "all fingerprints match; no throughput regression exceeded 40%",
-        "largestSlowdownPercent": 0
-      }
-    }
-  ],
+  "commit": "7f10b95b85148571eeb102246f5aac2288ac3677",
+  "testId": "phase16-performance-baseline",
   "fixtures": [
     {
       "path": "ci/test/performance/README.md",
-      "sha256": "b953712f5d04aedf3ed661d2bfbea85e0c5018648b869ac023817cac7087f195"
+      "sha256": "a9aaadd1b3965b6656703b9fd6df2b1dea35feff2753fa2f1b81128acce40ba6"
     },
     {
       "path": "ci/test/performance/baseline.c",
@@ -101,23 +24,95 @@
     },
     {
       "path": "ci/test/performance/baselines/windows-x64.json",
-      "sha256": "178f6158b8194ceb6dd6f60bec668f9641518d230d240d12ca7ac8c4ad82fdf6"
+      "sha256": "79605542cc4fc6d3677d1433d6bf9b76058123b809a3b1d5029ed7887c20f132"
     },
     {
       "path": "ci/test/performance/baselines/linux-x64.json",
-      "sha256": "8c11d388a47b0ff0417b43d42e138122dd1d97770fa464d6510aa28366af6368"
+      "sha256": "4e1170f2d30c6b19aab2e31a6a953f1fe43ccef6ae014a2ff2a7877cbdb345c7"
     },
     {
       "path": "ci/test/performance/baselines/linux-arm64.json",
-      "sha256": "f392c004994c018a09dfbadfd663ba0cb2516ee9af0941041b6fb3e1a420c6f7"
+      "sha256": "6d1730178d9c60ffa728ef3f1b2f3e9b4fd8d344b603810459d645a2a67f0e65"
     },
     {
       "path": "ci/test/performance/baselines/macos-x64.json",
-      "sha256": "ad1b4ccf29c2180de8ecbc7b010cc12abf8d376c5474dfa28a011cc67c1d1069"
+      "sha256": "03ae191601785ce073e9a5c62d61ee77981210e5cd4dae4a31c30d52d7c49551"
     },
     {
       "path": "ci/test/performance/baselines/macos-arm64.json",
-      "sha256": "6a0125ada5673a331351fc71514595b588e332ea763d4d55786d89039f0b6a46"
+      "sha256": "f74ac1c86a173a7cb87a117973434c65fd273835b873fbd92286d29350a53113"
+    }
+  ],
+  "runnerResults": [
+    {
+      "ctest": "15/15 passed",
+      "comparison": {
+        "gate": "all fingerprints match; no throughput regression exceeded 40%",
+        "baseline": "ci/test/performance/baselines/windows-x64.json",
+        "status": "pass",
+        "largestSlowdownPercent": 0.0
+      },
+      "runner": "Windows-windows-x64",
+      "performanceRecord": "test-results/performance-current/windows-x64.json",
+      "timestamp": "2026-10-20T23:52:15Z",
+      "status": "pass",
+      "metricCount": 6
+    },
+    {
+      "ctest": "15/15 passed",
+      "comparison": {
+        "gate": "all fingerprints match; no throughput regression exceeded 40%",
+        "baseline": "ci/test/performance/baselines/linux-x64.json",
+        "status": "pass",
+        "largestSlowdownPercent": 5.83
+      },
+      "runner": "Linux-ubuntu-24.04",
+      "performanceRecord": "test-results/performance-current/linux-x64.json",
+      "timestamp": "2026-10-20T23:52:28Z",
+      "status": "pass",
+      "metricCount": 6
+    },
+    {
+      "ctest": "15/15 passed",
+      "comparison": {
+        "gate": "all fingerprints match; no throughput regression exceeded 40%",
+        "baseline": "ci/test/performance/baselines/linux-arm64.json",
+        "status": "pass",
+        "largestSlowdownPercent": 0.19
+      },
+      "runner": "Linux-ubuntu-24.04-arm",
+      "performanceRecord": "test-results/performance-current/linux-arm64.json",
+      "timestamp": "2026-10-20T23:52:33Z",
+      "status": "pass",
+      "metricCount": 6
+    },
+    {
+      "ctest": "15/15 passed",
+      "comparison": {
+        "gate": "all fingerprints match; no throughput regression exceeded 40%",
+        "baseline": "ci/test/performance/baselines/macos-arm64.json",
+        "status": "pass",
+        "largestSlowdownPercent": 12.85
+      },
+      "runner": "macOS-macos-arm64",
+      "performanceRecord": "test-results/performance-current/macos-arm64.json",
+      "timestamp": "2026-10-20T23:51:55Z",
+      "status": "pass",
+      "metricCount": 6
+    },
+    {
+      "ctest": "15/15 passed",
+      "comparison": {
+        "gate": "all fingerprints match; no throughput regression exceeded 40%",
+        "baseline": "ci/test/performance/baselines/macos-x64.json",
+        "status": "pass",
+        "largestSlowdownPercent": 29.27
+      },
+      "runner": "macOS-macos-x64",
+      "performanceRecord": "test-results/performance-current/macos-x64.json",
+      "timestamp": "2026-10-20T23:52:55Z",
+      "status": "pass",
+      "metricCount": 6
     }
   ]
 }
