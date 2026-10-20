@@ -32,7 +32,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "878304b76c1d146ed1b8140917db29569dce6f896abaff4546114d3059463a53"
+      "sha256": "48748bed3b12999e8b4bb98cdc0d22fb3e9b616375a8c3f5402338ad2e4ef410"
     },
     {
       "path": "roms/48.rom",

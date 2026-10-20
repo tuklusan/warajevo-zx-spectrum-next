@@ -39,7 +39,7 @@
     },
     {
       "path": "src/diagnostics/wz_trace_dump_main.c",
-      "sha256": "507cc25974424411a526270aa31c7a8031c044809745a948e5e35793a0d61a5e"
+      "sha256": "d1823f4ebccceb73a6fff1559e7b23833267196ec042506dd6f49fe453c39012"
     },
     {
       "path": "src/diagnostics/wz_trace_file.c",
@@ -59,7 +59,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "360fe71b54c4ac705cd9d8f32d20bc017af7d3e6b59dc36ebf125a377cf62489"
+      "sha256": "48748bed3b12999e8b4bb98cdc0d22fb3e9b616375a8c3f5402338ad2e4ef410"
     },
     {
       "path": "src/core/wz_machine.h",

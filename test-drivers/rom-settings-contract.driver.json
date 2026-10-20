@@ -33,7 +33,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "360fe71b54c4ac705cd9d8f32d20bc017af7d3e6b59dc36ebf125a377cf62489"
+      "sha256": "48748bed3b12999e8b4bb98cdc0d22fb3e9b616375a8c3f5402338ad2e4ef410"
     },
     {
       "path": "src/core/wz_machine.h",
