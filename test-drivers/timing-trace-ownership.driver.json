@@ -31,7 +31,7 @@
     },
     {
       "path": "ci/test/timing-trace-ownership/verify-ownership.py",
-      "sha256": "de1c4b04f52f91532fcb0cdc4786d31a31ba1fdae55c20276602b2c1f62aa759"
+      "sha256": "b6e8e57bc2f0327e84dbf713ad569e49274125eb49f341464c838761346a70cc"
     },
     {
       "path": "ci/test/timing-trace-ownership/write-proof.py",

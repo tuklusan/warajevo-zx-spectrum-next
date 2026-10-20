@@ -15,6 +15,13 @@ import time
 from pathlib import Path
 
 
+def result_is_ready(path: Path) -> bool:
+    try:
+        return path.stat().st_size > 0
+    except OSError:
+        return False
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--fixture", required=True, type=Path)
@@ -45,7 +52,7 @@ def main() -> None:
         start_path.touch()
         deadline = time.monotonic() + 30
         while time.monotonic() < deadline:
-            if all(result_path.exists() and result_path.stat().st_size > 0
+            if all(result_is_ready(result_path)
                    for _, result_path, _ in workers):
                 break
             if any(process.poll() not in (None, 0)
