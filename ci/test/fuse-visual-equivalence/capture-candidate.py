@@ -120,7 +120,7 @@ def window_client_bounds(process):
     raise SystemExit(f"desktop capture is unsupported on {platform.system()}")
 
 
-def windows_crop_owned_by_process(process_id, box):
+def windows_crop_obstruction(process_id, box):
     user32 = ctypes.windll.user32
     user32.WindowFromPoint.argtypes = (wintypes.POINT,)
     user32.WindowFromPoint.restype = wintypes.HWND
@@ -132,6 +132,9 @@ def windows_crop_owned_by_process(process_id, box):
     user32.GetWindowTextW.argtypes = (wintypes.HWND, wintypes.LPWSTR,
                                       ctypes.c_int)
     user32.GetWindowTextW.restype = ctypes.c_int
+    user32.GetClassNameW.argtypes = (wintypes.HWND, wintypes.LPWSTR,
+                                     ctypes.c_int)
+    user32.GetClassNameW.restype = ctypes.c_int
     user32.PostMessageW.argtypes = (wintypes.HWND, wintypes.UINT,
                                     wintypes.WPARAM, wintypes.LPARAM)
     user32.PostMessageW.restype = wintypes.BOOL
@@ -148,10 +151,16 @@ def windows_crop_owned_by_process(process_id, box):
             if owner.value != process_id:
                 title = ctypes.create_unicode_buffer(256)
                 user32.GetWindowTextW(root, title, len(title))
+                window_class = ctypes.create_unicode_buffer(256)
+                user32.GetClassNameW(root, window_class, len(window_class))
+                obstruction = (
+                    f"pid={owner.value}, title={title.value!r}, "
+                    f"class={window_class.value!r}, point=({point.x},{point.y})"
+                )
                 if "wsl.exe" in title.value.lower():
                     user32.PostMessageW(root, 0x0010, 0, 0)
-                return False
-    return True
+                return obstruction
+    return None
 
 
 def viewport_capture(bounds):
@@ -206,16 +215,24 @@ def main():
             time.sleep(8)
             if process.poll() is not None:
                 raise SystemExit("production application exited before display capture")
+            obstruction = None
             for attempt in range(20):
                 bounds = window_client_bounds(process)
                 if bounds is None:
                     raise SystemExit("production application window disappeared")
                 image, box = viewport_capture(bounds)
-                if os.name != "nt" or windows_crop_owned_by_process(process.pid, box):
+                if os.name != "nt":
+                    break
+                obstruction = windows_crop_obstruction(process.pid, box)
+                if obstruction is None:
                     break
                 time.sleep(0.5)
             else:
-                raise SystemExit("production application viewport is obscured by another window")
+                image.save(output / "application-obscured.png")
+                raise SystemExit(
+                    "production application viewport is obscured by another window: "
+                    f"{obstruction}"
+                )
             if image.width < CANONICAL_SIZE[0] or image.height < CANONICAL_SIZE[1]:
                 raise SystemExit("captured production viewport is below full-frame dimensions")
             variance = sum(ImageStat.Stat(image).var) / 3.0
