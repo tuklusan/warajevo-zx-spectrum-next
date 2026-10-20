@@ -16,7 +16,7 @@
     },
     {
       "path": "ci/test/ula-128k-trace/ula-128k-trace-fixture.c",
-      "sha256": "e16f4fc2aa6674e73e8c20097db97b3f6c2c922faafd83a51dc92fe35f01f6ee"
+      "sha256": "b411b35143eb2746048d5debbc2132e8433185259cb9134634a1656801a41bc7"
     },
     {
       "path": "ci/test/ula-128k-trace/verify-128k.cmake",
