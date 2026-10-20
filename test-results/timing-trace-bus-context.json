@@ -1,0 +1,28 @@
+{
+  "testId": "timing-trace-bus-context",
+  "status": "pass",
+  "commit": "a25db1498855baf989855f72abd0852876f462ca",
+  "runId": 39480880034,
+  "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
+  "timestamp": "2026-10-20T19:10:14+00:00",
+  "caseCount": 1,
+  "observedOutput": "PASS trace bus records CPU context",
+  "fixtures": [
+    {
+      "path": "ci/test/timing-trace-bus-context/timing-trace-bus-context.c",
+      "sha256": "ce904e658a795313c3e7e0c132a4ac592e6dad8f7e37773f08f2468055b3eab7"
+    },
+    {
+      "path": "ci/test/timing-trace-bus-context/write-proof.py",
+      "sha256": "7cfd2ac5c4637b794a0b8e4965abf1f4dc0ae2865e1ca5b3b7710d2b4c6a6950"
+    },
+    {
+      "path": "src/core/wz_bus.c",
+      "sha256": "e0a2e42b49653968f9bcfdb7b385d81d48bea6bc4cfda0db567fcbe5ddd3780a"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "2ba309893db4fa28b4646c859fedc4365a0acac4be76fd951e702f3ab9046e51"
+    }
+  ]
+}
