@@ -131,6 +131,16 @@ add_executable(wz_trace_dump ${WZSN_SOURCE_ROOT}/diagnostics/wz_trace_dump_main.
 target_link_libraries(wz_trace_dump PRIVATE wz_diagnostics)
 
 add_executable(
+    wz_timing_trace_dump_fixture
+    ${WZSN_REPO_ROOT}/ci/test/timing-trace-dump/trace-dump-fixture.c)
+target_include_directories(wz_timing_trace_dump_fixture PRIVATE "${WZSN_SOURCE_ROOT}")
+target_link_libraries(wz_timing_trace_dump_fixture PRIVATE wz_diagnostics wz_warnings)
+set_target_properties(wz_timing_trace_dump_fixture PROPERTIES
+    C_STANDARD 11
+    C_STANDARD_REQUIRED ON
+    C_EXTENSIONS OFF)
+
+add_executable(
     wz_ula_128k_trace_fixture
     ${WZSN_REPO_ROOT}/ci/test/ula-128k-trace/ula-128k-trace-fixture.c)
 target_include_directories(wz_ula_128k_trace_fixture PRIVATE "${WZSN_SOURCE_ROOT}")
@@ -495,6 +505,12 @@ add_test(NAME wz_ula_128k_trace_contract
 set_tests_properties(wz_ula_128k_trace_contract PROPERTIES
     PASS_REGULAR_EXPRESSION
         "PASS 128K PAL full-frame ULA trace follows screen-bank paging")
+add_test(NAME wz_timing_trace_dump_contract
+    COMMAND "${CMAKE_COMMAND}"
+        "-DTRACE_FIXTURE=$<TARGET_FILE:wz_timing_trace_dump_fixture>"
+        "-DTRACE_DUMPER=$<TARGET_FILE:wz_trace_dump>"
+        "-DTRACE_PATH=${WZSN_ULA_128K_TRACE_OUTPUT}/timing-trace-dump.wztrace"
+        -P "${WZSN_REPO_ROOT}/ci/test/timing-trace-dump/verify.cmake")
 add_test(NAME wz_timing_trace_bus_context
     COMMAND wz_timing_trace_bus_context
         "${WZSN_ULA_128K_TRACE_OUTPUT}/timing-trace-bus-context.wztrace")
