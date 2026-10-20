@@ -15,6 +15,7 @@ five delivered native targets. The current proof is
 [`ula-128k-trace.json`](../test-results/ula-128k-trace.json), from run
 `39477966209` at commit `2301ca32b2443a59e1ddcf03b76be4842c5fce26`.
 
-This contract covers the 128K ULA full-frame trace; it does not by itself
-establish arbitrary cross-domain failure reconstruction or real-hardware
-correlation.
+This contract covers the 128K ULA full-frame trace. It does not by itself
+prove the broader §44.2 event coverage for CPU state, bus activity, contention,
+interrupt decisions, and their causal ordering. It also does not establish
+real-hardware correlation.
