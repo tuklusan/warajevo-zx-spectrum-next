@@ -20,11 +20,11 @@
     },
     {
       "path": "src/core/wz_bus.c",
-      "sha256": "803e3fda314e7c5bdc1388389463032fc1802ca044093e52ae627fdde00faa5f"
+      "sha256": "e6c2c2298d35f011dcbce4f378a7d91698715ccbf0a5973541aaa58e89538d0e"
     },
     {
       "path": "src/core/wz_machine_internal.h",
-      "sha256": "16f92f6c7955f4cce9ca23b82754c25dcc2a29399c673f7ef1d410f2067659d8"
+      "sha256": "09b4b9e134d38686575b9a5170744473dab18011ca5223fd6f341e61a5efeba2"
     },
     {
       "path": "src/core/wz_machine.c",
@@ -36,7 +36,7 @@
     },
     {
       "path": "src/core/wz_z80.c",
-      "sha256": "603bd5d549da7f36a534e7119fc4c442f854555fadd01f2ed31cc000d23c9941"
+      "sha256": "4a45a99caad1f0b916713dc432ffff12275c9348bcecf4ce742bc4fe31d3f7a8"
     },
     {
       "path": "src/core/wz_runner.c",

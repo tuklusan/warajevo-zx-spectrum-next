@@ -17,6 +17,7 @@ wz_result_t wz_machine_memory_write_at_tick_deferred(
 wz_result_t wz_machine_trace_ula_until(wz_machine_t* machine,
                                       wz_master_tick_t master_tick,
                                       bool inclusive);
-void wz_z80_trace_bus_context(wz_machine_t* machine);
+void wz_z80_trace_bus_context(wz_machine_t* machine,
+                              wz_master_tick_t master_tick);
 
 #endif

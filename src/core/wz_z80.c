@@ -52,7 +52,8 @@ static wz_qword_t wz_z80_main_snapshot(const wz_z80_state_t* state)
 }
 
 static void wz_z80_trace_cpu_state(wz_machine_t* machine,
-                                   wz_qword_t main_snapshot)
+                                   wz_qword_t main_snapshot,
+                                   wz_master_tick_t master_tick)
 {
     wz_qword_t state_chunks[5];
     bool full_sync;
@@ -88,7 +89,7 @@ static void wz_z80_trace_cpu_state(wz_machine_t* machine,
     {
         wz_trace_event_t sync = {0};
         sync.kind = full_sync ? WZ_TRACE_CPU_STATE_SYNC : WZ_TRACE_CPU_STATE_DELTA;
-        sync.master_tick = machine->master_tick;
+        sync.master_tick = master_tick;
         for (wz_byte_t chunk = 0u; chunk < 5u; ++chunk) {
             if (full_sync || state_chunks[chunk] != machine->timing_trace->cpu_state_chunks[chunk]) {
                 sync.cycle = chunk;
@@ -101,10 +102,12 @@ static void wz_z80_trace_cpu_state(wz_machine_t* machine,
     }
 }
 
-void wz_z80_trace_bus_context(wz_machine_t* machine)
+void wz_z80_trace_bus_context(wz_machine_t* machine,
+                              wz_master_tick_t master_tick)
 {
     if (machine != 0 && machine->timing_trace != 0) {
-        wz_z80_trace_cpu_state(machine, wz_z80_main_snapshot(&machine->cpu));
+        wz_z80_trace_cpu_state(machine, wz_z80_main_snapshot(&machine->cpu),
+                               master_tick);
     }
 }
 
@@ -125,7 +128,8 @@ static void wz_z80_trace_instruction(wz_machine_t* machine,
     event.register_snapshot = wz_z80_main_snapshot(&machine->cpu);
     wz_trace_emit_detail(machine->timing_trace, &event);
     ++machine->timing_trace->cpu_fetch_count;
-    wz_z80_trace_cpu_state(machine, event.register_snapshot);
+    wz_z80_trace_cpu_state(machine, event.register_snapshot,
+                           event.master_tick);
 }
 
 static void wz_z80_trace_interrupt(wz_machine_t* machine, wz_byte_t kind)
@@ -2205,7 +2209,8 @@ static wz_result_t wz_z80_step_impl(wz_machine_t* machine,
             if ((machine->timing_trace->cpu_fetch_count %
                  WZ_TRACE_CPU_SYNC_INTERVAL) == 0u) {
                 wz_z80_trace_cpu_state(machine,
-                                       wz_z80_main_snapshot(&machine->cpu));
+                    wz_z80_main_snapshot(&machine->cpu),
+                    machine->master_tick);
             }
         }
         machine->master_tick += 8u;

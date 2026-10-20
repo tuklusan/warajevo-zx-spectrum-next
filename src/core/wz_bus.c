@@ -294,7 +294,7 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
     if (machine->timing_trace != 0) {
         wz_trace_event_t event = {0};
         /* Keep the binary trace CPU state synchronized before this access. */
-        wz_z80_trace_bus_context(machine);
+        wz_z80_trace_bus_context(machine, request->master_tick);
         event.kind = WZ_TRACE_CPU_BUS;
         event.master_tick = request->master_tick;
         event.address = request->address;
