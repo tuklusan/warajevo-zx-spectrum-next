@@ -75,4 +75,4 @@ jobs:
         run: |
           cmake -S src/cmake -B dist/cr-gate-${{ matrix.label }} -DCMAKE_BUILD_TYPE=Release -DWZSN_BUILD_SOKOL_HOST=ON
           cmake --build dist/cr-gate-${{ matrix.label }} --clean-first --config Release --parallel 2
-          ctest --test-dir dist/cr-gate-${{ matrix.label }} -C Release --output-on-failure
+          ctest --test-dir dist/cr-gate-${{ matrix.label }} -C Release --output-on-failure --verbose

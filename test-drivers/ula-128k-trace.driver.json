@@ -1,13 +1,13 @@
 {
   "testId": "ula-128k-trace",
-  "command": "cmake -S ci/test/ula-128k-trace -B dist/ula-128k-trace -DCMAKE_BUILD_TYPE=Debug && cmake --build dist/ula-128k-trace --config Debug --target wz_trace_dump wz_ula_128k_trace_fixture --parallel 2 && ctest --test-dir dist/ula-128k-trace -C Debug --output-on-failure --verbose -R ^wz_ula_128k_trace_contract$",
+  "command": "cmake -S src/cmake -B dist/ula-128k-trace -DCMAKE_BUILD_TYPE=Release -DWZSN_BUILD_SOKOL_HOST=ON && cmake --build dist/ula-128k-trace --clean-first --config Release --parallel 2 && ctest --test-dir dist/ula-128k-trace -C Release --output-on-failure --verbose -R ^wz_ula_128k_trace_contract$",
   "requiredCases": 6,
   "runnerMatrix": [
     "windows-2025",
     "ubuntu-24.04",
     "ubuntu-24.04-arm",
-    "macos-15-intel",
-    "macos-15"
+    "macos-15",
+    "macos-15-intel"
   ],
   "fixtures": [
     {
@@ -16,11 +16,11 @@
     },
     {
       "path": "ci/test/ula-128k-trace/ula-128k-trace-fixture.c",
-      "sha256": "b411b35143eb2746048d5debbc2132e8433185259cb9134634a1656801a41bc7"
+      "sha256": "c683fe6bef0f0082505949ac2e4d31a8001831f2806cd953b63e3435a028fe0d"
     },
     {
       "path": "ci/test/ula-128k-trace/verify-128k.cmake",
-      "sha256": "cf00ffbd8f621440fd9187f684cc5a4e82880d37e92ac9fe1d791c72f39edb5c"
+      "sha256": "f3e3c72a4ab9536c2455ed838af7c2bd0715a32679000262210f7c85d652a1eb"
     },
     {
       "path": "ci/test/ula-128k-trace/write-proof.py",
@@ -68,7 +68,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "c74341174e9a3c3ffd7a672d3eef1217f634d8637fb99a56e71836186c87db29"
+      "sha256": "67fe718b50b840fe7fdc47904a1a3f2e5f2993ee101a613673091bc1606c6c75"
     }
   ]
 }
