@@ -1,0 +1,53 @@
+{
+  "testId": "host-output-atomic-contract",
+  "command": "cmake -S ci/test/host-output-atomic -B dist/host-output-atomic -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/host-output-atomic --config Release --target wz_host_output_writer --parallel 2 && python ci/test/host-output-atomic/run-contract.py dist/host-output-atomic/wz_host_output_writer dist/host-output-atomic/output",
+  "requiredCases": 3,
+  "runnerMatrix": [
+    "windows-2025",
+    "windows-11-arm",
+    "macos-15-intel",
+    "macos-15"
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/host-output-atomic-contract.yml",
+      "sha256": "aef9f0982ca583fd8e130860cee1a2804e3da31b3d6b4faf1780f91e906fb4c3"
+    },
+    {
+      "path": "ci/test/host-output-atomic/CMakeLists.txt",
+      "sha256": "155b99982ea2ced281abae48ed5efbea8f91c05a016a1e7fcb58a640c52605af"
+    },
+    {
+      "path": "ci/test/host-output-atomic/README.md",
+      "sha256": "a8c70eb5054fd54da4b0afb7942ae6812c3c2d2dd40acc241d137652fcd011b4"
+    },
+    {
+      "path": "ci/test/host-output-atomic/run-contract.py",
+      "sha256": "6403ed1eb380fb0114ae8af068225211e90fac57915f4c376500ed3df15e20c6"
+    },
+    {
+      "path": "ci/test/host-output-atomic/worker.c",
+      "sha256": "b2d158468b3c124de2c50a89b88e6c68c0e3cadcd67d762c778a3ca3731de5ec"
+    },
+    {
+      "path": "ci/test/host-output-atomic/write-proof.py",
+      "sha256": "8f402fe64fd537acefd3118616199294753e441487555c0d748807ccc151ef81"
+    },
+    {
+      "path": "src/app/wz_host_output.c",
+      "sha256": "423a559f3d07b01c8b8ecf9d2e5f128fe3d94dd248b0be25ea5493b2d33d2b9c"
+    },
+    {
+      "path": "src/app/wz_host_output.h",
+      "sha256": "0c415f0029214f54d2a92dd9aa46bfc53d1801dee71c7eeb9acd8bd65a104895"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "7c13e1e3b23c45bf2d3df2e1a2960acfabf4174bef95cd08b9599150ef4ce7f1"
+    },
+    {
+      "path": "src/app/wz_telnet_keyboard_command.c",
+      "sha256": "f9bc61d019c440e04102ea7a2c5af4146f812b9b16cd257d1bc244733b2da0d4"
+    }
+  ]
+}

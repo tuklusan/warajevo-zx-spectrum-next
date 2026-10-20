@@ -1,0 +1,107 @@
+name: Concurrent managed-output contract
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/app/wz_host_output.*'
+      - 'src/app/wz_host_output_utf8.*'
+      - 'src/app/wz_sokol_main.c'
+      - 'src/app/wz_telnet_keyboard_command.*'
+      - 'ci/test/host-output-atomic/**'
+      - 'tests/host-output-atomic-contract.md'
+      - 'test-drivers/host-output-atomic-contract.driver.json'
+      - '.github/workflows/host-output-atomic-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  host-output:
+    if: github.ref == 'refs/heads/main'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - id: windows-x64
+            runner: windows-2025
+          - id: windows-arm64
+            runner: windows-11-arm
+          - id: macos-intel
+            runner: macos-15-intel
+          - id: macos-arm64
+            runner: macos-15
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - name: Check out exact main commit
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Build production host-output primitive
+        shell: bash
+        run: |
+          cmake -S ci/test/host-output-atomic -B dist/host-output-atomic -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build dist/host-output-atomic --config Release --target wz_host_output_writer --parallel 2
+      - name: Run concurrent output contract
+        shell: bash
+        run: python ci/test/host-output-atomic/run-contract.py dist/host-output-atomic/wz_host_output_writer dist/host-output-atomic/output | tee dist/host-output-atomic-run.log
+      - name: Save runner record
+        shell: bash
+        env:
+          MATRIX_ID: ${{ matrix.id }}
+        run: |
+          set -euo pipefail
+          mkdir -p "dist/host-output-atomic-artifacts/$MATRIX_ID"
+          cp dist/host-output-atomic-run.log "dist/host-output-atomic-artifacts/$MATRIX_ID/run.log"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          row = {"label": os.environ["MATRIX_ID"], "os": os.environ["RUNNER_OS"], "architecture": os.environ["RUNNER_ARCH"], "runnerName": os.environ.get("ImageOS", "hosted runner")}
+          Path(f"dist/host-output-atomic-artifacts/{row['label']}/runner.json").write_text(json.dumps(row, indent=2) + "\n", encoding="utf-8")
+          PY
+      - name: Upload runner results
+        uses: actions/upload-artifact@v4
+        with:
+          name: host-output-atomic-raw-${{ matrix.id }}
+          path: dist/host-output-atomic-artifacts/
+          if-no-files-found: error
+
+  proof:
+    if: github.ref == 'refs/heads/main'
+    needs: host-output
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact main commit
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+      - name: Download runner results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: host-output-atomic-raw-*
+          path: dist/host-output-atomic-artifacts
+          merge-multiple: true
+      - name: Write pinned proof
+        shell: bash
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          python3 ci/test/host-output-atomic/write-proof.py \
+            --project-commit "$GITHUB_SHA" \
+            --run-id "$GITHUB_RUN_ID" \
+            --artifact-root dist/host-output-atomic-artifacts \
+            --proof-out dist/host-output-atomic-contract.json
+      - name: Upload proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: host-output-atomic-proof-${{ github.sha }}
+          path: dist/host-output-atomic-contract.json
+          if-no-files-found: error
