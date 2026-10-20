@@ -129,12 +129,19 @@ int main(int argc, char** argv)
         bool switch_to_5 = tick == next_attribute_tick;
         if (request_at(&machine, tick, switch_to_7 || switch_to_5,
                        switch_to_7 ? 0x08u : 0u) != WZ_RESULT_OK) {
+            (void)fprintf(stderr, "bus request failed at tick %llu\n",
+                          (unsigned long long)tick);
             goto cleanup;
         }
     }
     if (trace.failed || trace.record_count != 12288u ||
         check.target_events != 4u || !check.values_valid ||
         check.same_tick_pairs == 0u || check.ordering_failure) {
+        (void)fprintf(stderr,
+            "trace=%llu targets=%u values=%u same_tick=%u ordering=%u\n",
+            (unsigned long long)trace.record_count, check.target_events,
+            check.values_valid ? 1u : 0u, check.same_tick_pairs,
+            check.ordering_failure ? 1u : 0u);
         goto cleanup;
     }
     wz_machine_set_timing_trace(&machine, NULL);
