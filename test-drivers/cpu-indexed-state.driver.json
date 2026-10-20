@@ -22,7 +22,7 @@
       "path": "tests/cpu-indexed-state.md"
     },
     {
-      "sha256": "a84850869148d8f70a2ee5b31570d9d221d7159cbff832982ddbc8dd1f69c47e",
+      "sha256": "0d889d43bec6613d99fad000b05cf692af84c8ad1796ef288db1c472a9121677",
       "path": "src/core/wz_bus.c"
     },
     {
