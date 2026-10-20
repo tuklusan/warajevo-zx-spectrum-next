@@ -45,7 +45,8 @@ def main() -> None:
         start_path.touch()
         deadline = time.monotonic() + 30
         while time.monotonic() < deadline:
-            if all(result_path.exists() for _, result_path, _ in workers):
+            if all(result_path.exists() and result_path.stat().st_size > 0
+                   for _, result_path, _ in workers):
                 break
             if any(process.poll() not in (None, 0)
                    for _, _, process in workers):

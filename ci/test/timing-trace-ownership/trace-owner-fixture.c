@@ -47,12 +47,20 @@ static int wait_for_path(const char* path, unsigned int timeout_ms)
 
 static int write_result(const char* path, const char* result)
 {
-    FILE* file = fopen(path, "wb");
+    char temporary_path[1024];
+    int written;
+    FILE* file;
     int ok;
+    if (path == NULL || result == NULL) return 0;
+    written = snprintf(temporary_path, sizeof(temporary_path), "%s.tmp", path);
+    if (written <= 0 || (size_t)written >= sizeof(temporary_path)) return 0;
+    file = fopen(temporary_path, "wb");
     if (file == NULL) return 0;
     ok = fprintf(file, "%s\n", result) > 0;
     if (fclose(file) != 0) ok = 0;
-    return ok;
+    if (ok && rename(temporary_path, path) == 0) return 1;
+    (void)remove(temporary_path);
+    return 0;
 }
 
 int main(int argc, char** argv)

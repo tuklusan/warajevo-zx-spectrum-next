@@ -27,11 +27,11 @@
     },
     {
       "path": "ci/test/timing-trace-ownership/trace-owner-fixture.c",
-      "sha256": "4cafee9ab735e659e2024e5ef68dc0c87fca51d07e0314b3d259776e04beca68"
+      "sha256": "e7921b43310368bf377c5cb952fdfdd4f7242449bd43134bae41acd2767ec7cd"
     },
     {
       "path": "ci/test/timing-trace-ownership/verify-ownership.py",
-      "sha256": "599bb976f2e51c51044767be5be95ddbef30b3242b7782572a9dfe7a64a95d3c"
+      "sha256": "de1c4b04f52f91532fcb0cdc4786d31a31ba1fdae55c20276602b2c1f62aa759"
     },
     {
       "path": "ci/test/timing-trace-ownership/write-proof.py",
