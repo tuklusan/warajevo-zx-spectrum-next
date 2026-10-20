@@ -195,11 +195,11 @@
     },
     {
       "path": "tests/application-command-boundary.c",
-      "sha256": "6cf3a1ec3996d671685282809f2ce4fd2d7fd44802092424e880b92938298bb3"
+      "sha256": "f30410b09e1ae325edf73c73b4ed8434d7ea209dacdcc9bb6bfe511caf6ee8d1"
     },
     {
       "path": "tests/application-command-boundary.md",
-      "sha256": "51e351ed2fc47dd4fcab19a1b1e48620d5e8e59a35a1adc2c5336ad184681503"
+      "sha256": "4a88bf009f691098755993c37e309c584b91b94a74e9f752dd8e67375163a2ed"
     }
   ],
   "matrixWorkflow": ".github/workflows/telnet-registry-discovery.yml"
