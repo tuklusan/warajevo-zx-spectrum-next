@@ -21,6 +21,7 @@ typedef struct {
     bool have_bus;
     bool have_ula;
     bool ordering_failure;
+    unsigned same_tick_pairs;
 } trace_check_t;
 
 static void record_trace(const wz_trace_event_t* event, void* context)
@@ -37,6 +38,9 @@ static void record_trace(const wz_trace_event_t* event, void* context)
         if (check->have_bus && check->last_bus_tick == event->master_tick &&
             check->last_bus_sequence >= event->sequence) {
             check->ordering_failure = true;
+        } else if (check->have_bus &&
+                   check->last_bus_tick == event->master_tick) {
+            ++check->same_tick_pairs;
         }
         check->last_ula_tick = event->master_tick;
         check->have_ula = true;
@@ -72,7 +76,7 @@ int main(int argc, char** argv)
         if (wz_z80_step(&machine) != WZ_RESULT_OK) goto cleanup;
     }
     if (trace.failed || trace.record_count != 12288u ||
-        check.ordering_failure) goto cleanup;
+        check.ordering_failure || check.same_tick_pairs == 0u) goto cleanup;
     wz_machine_set_timing_trace(&machine, NULL);
     if (wz_trace_file_freeze(&trace) != WZ_RESULT_OK) goto cleanup;
     result = 0;

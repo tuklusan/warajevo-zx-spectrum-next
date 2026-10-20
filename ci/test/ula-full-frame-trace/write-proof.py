@@ -32,7 +32,7 @@ def main() -> None:
     driver = json.loads((root / "test-drivers/ula-full-frame-trace.driver.json")
                         .read_text(encoding="utf-8"))
     output = args.run_log.read_text(encoding="utf-8", errors="replace")
-    marker = "PASS complete 48K PAL frame has all timed ULA fetches"
+    marker = "PASS complete 48K PAL frame has all timed ULA fetches and same-tick bus ordering"
     if marker not in output:
         raise SystemExit("full-frame trace success marker is missing")
 

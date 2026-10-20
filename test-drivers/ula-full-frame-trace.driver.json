@@ -19,15 +19,15 @@
     },
     {
       "path": "ci/test/ula-full-frame-trace/ula-full-frame-trace-fixture.c",
-      "sha256": "8c86412c8a3857c92662ba13b9d7fa5f35757ae19917f94d3321e10b2e56f8ab"
+      "sha256": "c63f2969bb56cc816754282a85485d036e099f06203fda77acc86d0cb00c06b0"
     },
     {
       "path": "ci/test/ula-full-frame-trace/verify-full-frame.cmake",
-      "sha256": "23267a1351a366b02d1b1f38d42b7076651b6a3399c3f6188edea1c52b036240"
+      "sha256": "8bb27857fba3abe0006e492789e709d91271de0753de663b46b76cc65a9a0ad1"
     },
     {
       "path": "ci/test/ula-full-frame-trace/write-proof.py",
-      "sha256": "cdf66f1c1eb0a950cba4644c5570081b375c793d7384660afc946f83d0d17bd0"
+      "sha256": "3f8ffaf287df787dcbfe1d7a5126b9b6ef174a57692d88c81b4bf922cea5803b"
     },
     {
       "path": "src/core/wz_bus.c",
