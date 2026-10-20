@@ -11,7 +11,7 @@
   "fixtures": [
     {
       "path": "ci/test/performance/README.md",
-      "sha256": "b953712f5d04aedf3ed661d2bfbea85e0c5018648b869ac023817cac7087f195"
+      "sha256": "e55a4a500b892d761c0719faa6b31a72a27b7ac08685242cd6da8bbda2c9e34c"
     },
     {
       "path": "ci/test/performance/baseline.c",

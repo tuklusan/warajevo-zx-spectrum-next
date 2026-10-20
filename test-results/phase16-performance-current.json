@@ -1,0 +1,123 @@
+{
+  "testId": "phase16-performance-baseline",
+  "status": "pass",
+  "commit": "b4ea7fdcbbf808aac35c1e61447fd6449b52943f",
+  "runId": 39506587064,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39506587064",
+  "timestamp": "2026-10-20T22:16:04+00:00",
+  "runnerResults": [
+    {
+      "runner": "Linux-ubuntu-24.04",
+      "status": "pass",
+      "jobId": 118916925873,
+      "timestamp": "2026-10-20T22:15:13Z",
+      "ctest": "12/12 passed",
+      "performanceRecord": "test-results/performance-current/linux-x64.json",
+      "metricCount": 6,
+      "comparison": {
+        "status": "pass",
+        "baseline": "ci/test/performance/baselines/linux-x64.json",
+        "gate": "all fingerprints match; no throughput regression exceeded 40%",
+        "largestSlowdownPercent": 0.19
+      }
+    },
+    {
+      "runner": "Linux-ubuntu-24.04-arm",
+      "status": "pass",
+      "jobId": 118916925787,
+      "timestamp": "2026-10-20T22:15:42Z",
+      "ctest": "12/12 passed",
+      "performanceRecord": "test-results/performance-current/linux-arm64.json",
+      "metricCount": 6,
+      "comparison": {
+        "status": "pass",
+        "baseline": "ci/test/performance/baselines/linux-arm64.json",
+        "gate": "all fingerprints match; no throughput regression exceeded 40%",
+        "largestSlowdownPercent": 1.25
+      }
+    },
+    {
+      "runner": "Windows-windows-x64",
+      "status": "pass",
+      "jobId": 118916925427,
+      "timestamp": "2026-10-20T22:15:38Z",
+      "ctest": "12/12 passed",
+      "performanceRecord": "test-results/performance-current/windows-x64.json",
+      "metricCount": 6,
+      "comparison": {
+        "status": "pass",
+        "baseline": "ci/test/performance/baselines/windows-x64.json",
+        "gate": "all fingerprints match; no throughput regression exceeded 40%",
+        "largestSlowdownPercent": 11.76
+      }
+    },
+    {
+      "runner": "macOS-macos-arm64",
+      "status": "pass",
+      "jobId": 118916925788,
+      "timestamp": "2026-10-20T22:14:54Z",
+      "ctest": "12/12 passed",
+      "performanceRecord": "test-results/performance-current/macos-arm64.json",
+      "metricCount": 6,
+      "comparison": {
+        "status": "pass",
+        "baseline": "ci/test/performance/baselines/macos-arm64.json",
+        "gate": "all fingerprints match; no throughput regression exceeded 40%",
+        "largestSlowdownPercent": 28.68
+      }
+    },
+    {
+      "runner": "macOS-macos-x64",
+      "status": "pass",
+      "jobId": 118916925955,
+      "timestamp": "2026-10-20T22:15:18Z",
+      "ctest": "12/12 passed",
+      "performanceRecord": "test-results/performance-current/macos-x64.json",
+      "metricCount": 6,
+      "comparison": {
+        "status": "pass",
+        "baseline": "ci/test/performance/baselines/macos-x64.json",
+        "gate": "all fingerprints match; no throughput regression exceeded 40%",
+        "largestSlowdownPercent": 0
+      }
+    }
+  ],
+  "fixtures": [
+    {
+      "path": "ci/test/performance/README.md",
+      "sha256": "b953712f5d04aedf3ed661d2bfbea85e0c5018648b869ac023817cac7087f195"
+    },
+    {
+      "path": "ci/test/performance/baseline.c",
+      "sha256": "717a58a112206148740d77f5c03049916c20d6653e36d264ef57dacb3a968c21"
+    },
+    {
+      "path": "ci/test/performance/CMakeLists.txt",
+      "sha256": "00e55369533639d8e25f77cfd67eb51d6c66356086ea7803d4ba8e477b3101e7"
+    },
+    {
+      "path": "ci/test/performance/compare.py",
+      "sha256": "b7317caff4efa4f1ab982078f1ee8e5694fae2245f881736ec4a2179ef873b4b"
+    },
+    {
+      "path": "ci/test/performance/baselines/windows-x64.json",
+      "sha256": "178f6158b8194ceb6dd6f60bec668f9641518d230d240d12ca7ac8c4ad82fdf6"
+    },
+    {
+      "path": "ci/test/performance/baselines/linux-x64.json",
+      "sha256": "8c11d388a47b0ff0417b43d42e138122dd1d97770fa464d6510aa28366af6368"
+    },
+    {
+      "path": "ci/test/performance/baselines/linux-arm64.json",
+      "sha256": "f392c004994c018a09dfbadfd663ba0cb2516ee9af0941041b6fb3e1a420c6f7"
+    },
+    {
+      "path": "ci/test/performance/baselines/macos-x64.json",
+      "sha256": "ad1b4ccf29c2180de8ecbc7b010cc12abf8d376c5474dfa28a011cc67c1d1069"
+    },
+    {
+      "path": "ci/test/performance/baselines/macos-arm64.json",
+      "sha256": "6a0125ada5673a331351fc71514595b588e332ea763d4d55786d89039f0b6a46"
+    }
+  ]
+}

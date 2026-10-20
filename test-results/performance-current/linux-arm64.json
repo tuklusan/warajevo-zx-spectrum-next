@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "status": "pass",
+  "commit": "b4ea7fdcbbf808aac35c1e61447fd6449b52943f",
+  "runner": "Linux-ubuntu-24.04-arm",
+  "architecture": "ARM64",
+  "timestamp": "2026-10-20T22:15:36Z",
+  "compiler": "GNU 13.3.0",
+  "metrics": [
+    {
+      "name": "cpu_execution",
+      "unit": "instructions",
+      "operations": "250005",
+      "median_cpu_seconds": 0.009736,
+      "operations_per_second": 25678410.025,
+      "fingerprint": "f49f759382ec8a34"
+    },
+    {
+      "name": "raster_generation",
+      "unit": "frames",
+      "operations": "384",
+      "median_cpu_seconds": 0.026775,
+      "operations_per_second": 14341.737,
+      "fingerprint": "d3d8bb78938b5fb1"
+    },
+    {
+      "name": "audio_mixing",
+      "unit": "samples",
+      "operations": "2000000",
+      "median_cpu_seconds": 0.026616,
+      "operations_per_second": 75142771.265,
+      "fingerprint": "56e7cab2bab26d0d"
+    },
+    {
+      "name": "tape_playback",
+      "unit": "master_ticks",
+      "operations": "4000000",
+      "median_cpu_seconds": 0.007921,
+      "operations_per_second": 504986744.098,
+      "fingerprint": "40000000001db212"
+    },
+    {
+      "name": "snapshot_serialization",
+      "unit": "snapshots",
+      "operations": "8192",
+      "median_cpu_seconds": 0.012437,
+      "operations_per_second": 658679.746,
+      "fingerprint": "7254cf8df4a13bdb"
+    },
+    {
+      "name": "ui_presentation",
+      "unit": "frames",
+      "operations": "512",
+      "median_cpu_seconds": 0.023116,
+      "operations_per_second": 22149.161,
+      "fingerprint": "6b9c6deb0ca3fbc9"
+    }
+  ]
+}

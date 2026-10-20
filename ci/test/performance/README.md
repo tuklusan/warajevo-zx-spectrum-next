@@ -42,9 +42,12 @@ ARM and both Mac runner families after the serializer optimization. Three
 macOS Intel measurements in run `36820851431` also showed repeatable slowdowns
 across the unchanged raster, audio, tape, and UI workloads; their median rates
 are now the runner's reference profile. This is a runner-profile inference;
-the Windows x64 throughput profile remains unchanged. The five-target Phase-16
-regression step is integrated into the main full-build gate. Linux x64 and
-ARM64 throughput baselines are initialized from the successful measurements in
-run `39506023731` at source `60a9c799bb67384f853a637a9e196d4a9879a79b`; raw
-records are pinned in `test-results/performance-current/` and
+the Windows x64 throughput profile remains unchanged. Linux x64 and ARM64
+throughput baselines were initialized from the successful measurements in run
+`39506023731` at source `60a9c799bb67384f853a637a9e196d4a9879a79b`. The
+integrated five-target Phase-16 gate passed all 30 fingerprint and throughput
+comparisons in run `39506587064` at source
+`b4ea7fdcbbf808aac35c1e61447fd6449b52943f`; the largest slowdown was 28.7% on
+macOS ARM64 CPU execution, within the 40% gate. Current raw records are pinned
+in `test-results/performance-current/` and
 `test-results/phase16-performance-current.json`.
