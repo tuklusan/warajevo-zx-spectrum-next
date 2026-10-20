@@ -15,27 +15,27 @@
     },
     {
       "path": "ci/test/timing-trace-recovery/CMakeLists.txt",
-      "sha256": "a9711f5d82018d8d5eeaa0517761030573d277d5c9ee530a844b7a580a46b2a5"
+      "sha256": "08662b76511bf04cf1f3c22583d9832624ab81beeb86813efe12bf56a523a1dd"
     },
     {
       "path": "ci/test/timing-trace-recovery/README.md",
-      "sha256": "7bdbec3e3f8761e48f7dfc6548d7a0443b53f720fce3b54315bea08df03e8205"
+      "sha256": "01e4b42438e62754371df5b11a2b1ba3e439f38480470e47ac725f3088a4b904"
     },
     {
       "path": "ci/test/timing-trace-recovery/timing-trace-recovery.md",
-      "sha256": "42053c3c301d3d766f280d98a30356908e32d3037480b5ba08cd2f6ddfa22fe8"
+      "sha256": "77315e87253e2a8d2264171d177c303499c844e0e06159bbbe2ecbf68b1a4a93"
     },
     {
       "path": "ci/test/timing-trace-recovery/trace-recovery-fixture.c",
-      "sha256": "b4c2455d6d8353e74416cb37f51b63bc65297f8026ea63bbd47910020e815c61"
+      "sha256": "e340956cdd4bb06c25e924805ba68f285273c650a0c0030c6102c1610eccf41c"
     },
     {
       "path": "ci/test/timing-trace-recovery/verify-recovery.cmake",
-      "sha256": "79d6809768cff95d6fe38de7d92ebb74852df27756aec90d21d89be90eaf2f1e"
+      "sha256": "d72362de96ce12461e6e1fc1fb1213e296a1d9efe48f5bf6aba59b7c98297eaf"
     },
     {
       "path": "ci/test/timing-trace-recovery/write-proof.py",
-      "sha256": "bce6c429c850aa7c9a36c6c264e75a0773fd4051dc3fb93ea77792f09a3258a9"
+      "sha256": "eff5da71a18bb6123111434a9cfbcd1b5a2c7360967f71addfb55c763e434078"
     },
     {
       "path": "src/diagnostics/wz_trace_dump_main.c",

@@ -7,6 +7,7 @@ SANYALnet Labs." See LICENSE for full terms. -->
 
 # Timing trace standalone recovery
 
-The production CLI is tested against an un-frozen trace crossing the low
-32-bit sequence boundary and a trace containing a partial, uncommitted append.
-The committed records must remain readable and ordered.
+The production CLI is tested against a three-slot ring that crosses the low
+32-bit sequence boundary, wraps circular slots, and closes without a freeze.
+A second trace contains a partial, uncommitted append beyond the committed
+record count. The committed records must remain readable and ordered.

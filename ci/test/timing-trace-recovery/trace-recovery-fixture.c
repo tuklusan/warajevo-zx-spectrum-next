@@ -80,9 +80,11 @@ int main(int argc, char** argv)
     REQUIRE(wz_trace_file_create(&wrapped, wrapped_path, 1u,
             (wz_dword_t)WZ_MACHINE_48K_PAL, 0u,
             UINT32_C(1) << WZ_TRACE_DEVELOPER_MARKER) == WZ_RESULT_OK);
-    emit_marker(&wrapped, UINT64_C(0xfffffffe), 1000u, 1u);
-    emit_marker(&wrapped, UINT64_C(0xffffffff), 1005u, 2u);
-    emit_marker(&wrapped, UINT64_C(0x100000000), 1011u, 3u);
+    emit_marker(&wrapped, UINT64_C(0xfffffffd), 1000u, 1u);
+    emit_marker(&wrapped, UINT64_C(0xfffffffe), 1002u, 2u);
+    emit_marker(&wrapped, UINT64_C(0xffffffff), 1005u, 3u);
+    emit_marker(&wrapped, UINT64_C(0x100000000), 1011u, 4u);
+    emit_marker(&wrapped, UINT64_C(0x100000001), 1018u, 5u);
     REQUIRE(!wrapped.failed && wrapped.record_count == 3u);
     wz_trace_file_close(&wrapped);
 

@@ -23,9 +23,9 @@ if(NOT wrapped_result STREQUAL "0")
 endif()
 
 set(wrapped_fragments
-    "sequence=4294967294 tick=1000"
     "sequence=4294967295 tick=1005"
-    "sequence=4294967296 tick=1011")
+    "sequence=4294967296 tick=1011"
+    "sequence=4294967297 tick=1018")
 foreach(fragment IN LISTS wrapped_fragments)
     string(FIND "${wrapped_output}" "${fragment}" match_index)
     if(match_index EQUAL -1)
@@ -54,4 +54,4 @@ if(NOT abrupt_error MATCHES "recovered=2")
     message(FATAL_ERROR "abrupt trace recovery count is wrong: ${abrupt_error}")
 endif()
 
-message(STATUS "PASS standalone trace dump recovers un-frozen wrapped sequence and ignores torn append")
+message(STATUS "PASS standalone trace dump recovers circular wrap, sequence rollover, and torn append")

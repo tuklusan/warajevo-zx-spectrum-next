@@ -32,7 +32,7 @@ def main() -> None:
     driver = json.loads((root / "test-drivers/timing-trace-recovery.driver.json")
                         .read_text(encoding="utf-8"))
     output = args.run_log.read_text(encoding="utf-8", errors="replace")
-    marker = "PASS standalone trace dump recovers un-frozen wrapped sequence and ignores torn append"
+    marker = "PASS standalone trace dump recovers circular wrap, sequence rollover, and torn append"
     if marker not in output:
         raise SystemExit("standalone trace-recovery success marker is missing")
 

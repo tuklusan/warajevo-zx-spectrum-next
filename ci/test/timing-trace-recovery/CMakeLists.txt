@@ -11,6 +11,8 @@ project(WZTimingTraceRecoveryContract LANGUAGES C)
 set(WZSN_BUILD_SOKOL_HOST OFF CACHE BOOL "Build the opt-in Sokol host shell." FORCE)
 get_filename_component(WZSN_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../.." ABSOLUTE)
 add_subdirectory("${WZSN_ROOT}/src/cmake" "${CMAKE_CURRENT_BINARY_DIR}/product")
+target_compile_definitions(wz_diagnostics PRIVATE
+    WZ_TRACE_FILE_TEST_SLOT_COUNT=3)
 
 add_executable(wz_trace_recovery_fixture trace-recovery-fixture.c)
 target_include_directories(wz_trace_recovery_fixture PRIVATE "${WZSN_ROOT}/src")

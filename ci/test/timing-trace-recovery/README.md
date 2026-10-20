@@ -9,4 +9,5 @@ SANYALnet Labs." See LICENSE for full terms. -->
 
 This hosted contract builds the production trace dumper, then opens production
 trace files after an un-frozen close. It checks low-sequence rollover and an
-incomplete append left beyond the committed record count.
+incomplete append left beyond the committed record count. A three-slot test
+ring forces the CLI to recover after actual circular-slot wrap.
