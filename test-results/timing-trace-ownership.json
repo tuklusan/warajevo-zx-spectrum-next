@@ -1,17 +1,13 @@
 {
   "testId": "timing-trace-ownership",
   "status": "pass",
-  "commit": "aed1b0a32e42a178d79d7617c8eba7400e3890b0",
-  "runId": 39412731254,
-  "runner": "Windows x64, Windows ARM64, macOS x64, and macOS ARM64 hosted runners",
-  "timestamp": "2026-10-20T11:09:57+00:00",
-  "caseCount": 44,
+  "commit": "c9a6b51c2c318bcf50d8e8f41d94bcabdf6eb609",
+  "runId": 39498581756,
+  "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
+  "timestamp": "2026-10-20T21:15:59+00:00",
+  "caseCount": 55,
   "observedOutput": "PASS one of eight concurrent processes exclusively owned and froze the shared trace path",
   "fixtures": [
-    {
-      "path": ".github/workflows/timing-trace-ownership.yml",
-      "sha256": "730903720681ee89927ed7456d20851eaacab315597609a381684bde2b0dcc14"
-    },
     {
       "path": "ci/test/timing-trace-ownership/CMakeLists.txt",
       "sha256": "1ae8719de7bd68a453615ceb0f842b53cac269bae883e64f0f57f750c253e1f6"
@@ -38,7 +34,7 @@
     },
     {
       "path": "src/diagnostics/wz_trace_file.c",
-      "sha256": "b7330439a1c72044e0f1c891a8595df2476c5e42f3c6617da529d782ed4b6ea4"
+      "sha256": "aee458f31b0d9528d602d18a45fcc60ae5e54757e2aa4f6da6669228d96cd84b"
     },
     {
       "path": "src/diagnostics/wz_trace_file.h",
@@ -46,7 +42,7 @@
     },
     {
       "path": "src/core/wz_trace.h",
-      "sha256": "906c7f54ac8a56b6bb8b797d7a471a581c2849e5b2bd1f542bc59dbf39ab7a6c"
+      "sha256": "855d1bd77211a7c3c8e875f3590e5c14fba504a5ca887ed0131a21a16d3b39b1"
     },
     {
       "path": "src/core/wz_types.h",
@@ -54,34 +50,48 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "77384e43c0307b13c68cd6d7993e0af25457c4f2d203b0e18f191adba0c063b3"
+      "sha256": "d0ce01fc9ca9a5e182e29320c8193781c3791d0ba01e32d8ab24e5a08cd8fdee"
     }
   ],
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39412731254",
+  "caseCountPerRunner": 11,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39498581756",
   "runnerResults": [
     {
-      "runner": "GitHub Actions 1000113428/Windows/ARM64",
+      "runner": "Windows x64",
       "status": "pass",
       "caseCount": 11,
-      "timestamp": "2026-10-20T11:09:02+00:00"
+      "jobId": 118889943557,
+      "timestamp": "2026-10-20T21:14:40Z"
     },
     {
-      "runner": "GitHub Actions 1000113434/macOS/ARM64",
+      "runner": "Linux x64",
       "status": "pass",
       "caseCount": 11,
-      "timestamp": "2026-10-20T11:07:55+00:00"
+      "jobId": 118889943630,
+      "timestamp": "2026-10-20T21:14:17Z"
     },
     {
-      "runner": "GitHub Actions 1000113441/Windows/X64",
+      "runner": "Linux ARM64",
       "status": "pass",
       "caseCount": 11,
-      "timestamp": "2026-10-20T11:09:57+00:00"
+      "jobId": 118889943720,
+      "timestamp": "2026-10-20T21:14:29Z"
     },
     {
-      "runner": "GitHub Actions 1000113451/macOS/X64",
+      "runner": "macOS ARM64",
       "status": "pass",
       "caseCount": 11,
-      "timestamp": "2026-10-20T11:08:43+00:00"
+      "jobId": 118889944023,
+      "timestamp": "2026-10-20T21:13:50Z"
+    },
+    {
+      "runner": "macOS Intel",
+      "status": "pass",
+      "caseCount": 11,
+      "jobId": 118889943806,
+      "timestamp": "2026-10-20T21:14:13Z"
     }
-  ]
+  ],
+  "nativeBuildConfiguration": "Release; WZSN_BUILD_SOKOL_HOST=ON",
+  "ctest": "10/10 passed on each native runner"
 }
