@@ -300,6 +300,16 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
         event.cycle = (wz_byte_t)request->cycle;
         event.t_states = request->t_states;
         event.auxiliary = request->contention_delay;
+        event.program_counter = machine->cpu.program_counter;
+        event.stack_pointer = machine->cpu.stack_pointer;
+        event.register_snapshot = (wz_qword_t)machine->cpu.main.a |
+            ((wz_qword_t)machine->cpu.main.f << 8u) |
+            ((wz_qword_t)machine->cpu.main.b << 16u) |
+            ((wz_qword_t)machine->cpu.main.c << 24u) |
+            ((wz_qword_t)machine->cpu.main.d << 32u) |
+            ((wz_qword_t)machine->cpu.main.e << 40u) |
+            ((wz_qword_t)machine->cpu.main.h << 48u) |
+            ((wz_qword_t)machine->cpu.main.l << 56u);
         wz_trace_emit_detail(machine->timing_trace, &event);
     }
     if (wz_machine_trace_ula_until(machine, request->master_tick, true) !=
