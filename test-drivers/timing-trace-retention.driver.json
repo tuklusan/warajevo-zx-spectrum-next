@@ -41,7 +41,7 @@
     },
     {
       "path": "src/core/wz_z80.c",
-      "sha256": "a4a33d8eeb01eba32cfea2af38e8d65ab8b89c5e0b8cee7de93ba34781cbec49"
+      "sha256": "65e55a63ed9ea21e55d9db501f7353c3dbeaecafddc43fda5b71f75578d2e543"
     },
     {
       "path": "src/core/wz_z80.h",
