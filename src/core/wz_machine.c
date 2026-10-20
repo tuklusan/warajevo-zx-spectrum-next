@@ -139,7 +139,8 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     if (profile == 0) {
         return WZ_RESULT_INVALID_PROFILE;
     }
-    if (profile->kind == WZ_MACHINE_48K_PAL &&
+    if ((profile->kind == WZ_MACHINE_48K_PAL ||
+         profile->kind == WZ_MACHINE_128K_PAL) &&
         (profile->ula_fetch_line_count > WZ_ULA_CAPTURE_LINE_COUNT ||
          profile->ula_fetches_per_line > WZ_ULA_CAPTURE_CELLS_PER_LINE)) {
         return WZ_RESULT_INVALID_PROFILE;
@@ -153,10 +154,14 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
         if (machine->ram_128k == 0) {
             return WZ_RESULT_OUT_OF_MEMORY;
         }
-    } else if (profile->kind == WZ_MACHINE_48K_PAL) {
+    }
+    if (profile->kind == WZ_MACHINE_48K_PAL ||
+        profile->kind == WZ_MACHINE_128K_PAL) {
         machine->ula_frame_captures = (wz_ula_frame_capture_t*)calloc(
             2u, sizeof(*machine->ula_frame_captures));
         if (machine->ula_frame_captures == 0) {
+            free(machine->ram_128k);
+            machine->ram_128k = 0;
             return WZ_RESULT_OUT_OF_MEMORY;
         }
     }
@@ -1225,7 +1230,9 @@ static wz_result_t wz_machine_memory_write_at_tick_impl(
         return WZ_RESULT_INVALID_ARGUMENT;
     }
     if (machine->profile != 0 &&
-        machine->profile->kind == WZ_MACHINE_48K_PAL &&
+        (machine->profile->kind == WZ_MACHINE_48K_PAL ||
+         (machine->profile->kind == WZ_MACHINE_128K_PAL &&
+          machine->timing_trace != 0)) &&
         address >= 0x4000u && address < 0x5b00u) {
         if (machine->ula_capture_has_last_tick != 0u &&
             master_tick < machine->ula_capture_last_tick) {
@@ -1598,7 +1605,8 @@ static wz_result_t wz_machine_ula_capture_until(wz_machine_t* machine,
         return WZ_RESULT_INVALID_ARGUMENT;
     }
     profile = machine->profile;
-    if (profile->kind != WZ_MACHINE_48K_PAL) {
+    if (profile->kind != WZ_MACHINE_48K_PAL &&
+        profile->kind != WZ_MACHINE_128K_PAL) {
         return WZ_RESULT_OK;
     }
     if (machine->ula_frame_captures == 0) {

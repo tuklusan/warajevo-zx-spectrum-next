@@ -1,0 +1,77 @@
+{
+  "testId": "ula-128k-trace",
+  "command": "cmake -S ci/test/ula-128k-trace -B dist/ula-128k-trace -DCMAKE_BUILD_TYPE=Debug && cmake --build dist/ula-128k-trace --config Debug --target wz_trace_dump wz_ula_128k_trace_fixture --parallel 2 && ctest --test-dir dist/ula-128k-trace -C Debug --output-on-failure --verbose -R ^wz_ula_128k_trace_contract$",
+  "requiredCases": 6,
+  "runnerMatrix": [
+    "windows-2025",
+    "windows-11-arm",
+    "macos-15-intel",
+    "macos-15"
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/ula-128k-trace-contract.yml",
+      "sha256": "d9b19cdaa157db2bff75ed591abd68edd21cbffce4ec4b57ab7e4be43a346939"
+    },
+    {
+      "path": "ci/test/ula-128k-trace/CMakeLists.txt",
+      "sha256": "35d94f89c16b21155b29800d0d182e67c0e1535fa717caf1e87afc9fc56f547a"
+    },
+    {
+      "path": "ci/test/ula-128k-trace/ula-128k-trace-fixture.c",
+      "sha256": "7774fb2c6fbf036e88d1aa0d6a1fdf1f2b235be40437341b1f77a9283350389e"
+    },
+    {
+      "path": "ci/test/ula-128k-trace/verify-128k.cmake",
+      "sha256": "cf00ffbd8f621440fd9187f684cc5a4e82880d37e92ac9fe1d791c72f39edb5c"
+    },
+    {
+      "path": "ci/test/ula-128k-trace/write-proof.py",
+      "sha256": "0339533aeac978becc5264d5e1b1d8b498e70ae1c5ba3786650ee31ebb68455e"
+    },
+    {
+      "path": "src/core/wz_bus.c",
+      "sha256": "0d889d43bec6613d99fad000b05cf692af84c8ad1796ef288db1c472a9121677"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "697b3197a47e62f1cf43f3ae63fb688e5def2df6ae78249cdc2b193034fa9d48"
+    },
+    {
+      "path": "src/core/wz_machine_internal.h",
+      "sha256": "77f348ef6c5aeb91ef8c9254fe1794e868f38d54021a513d1a7de50e3dc571ec"
+    },
+    {
+      "path": "src/core/wz_machine_profile.c",
+      "sha256": "912a458de8d9a9d2d89bb57cac896e819d8ce82297a4e2ac707c90be1d4450b5"
+    },
+    {
+      "path": "src/core/wz_machine_profile.h",
+      "sha256": "1b246ec8245bf68400b0f9c5a1e69438264d8c671f23d656d82c87a032c4c700"
+    },
+    {
+      "path": "src/core/wz_trace.h",
+      "sha256": "b59ae872c3cb1d87819674c90f100f1162abbffeb7f80cd7f7c32c15747e8d5e"
+    },
+    {
+      "path": "src/core/wz_types.h",
+      "sha256": "b989adaa74e4ac0ec7e753da23a3fd16a3c02561744cca893fcd66f7c077c409"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_dump_main.c",
+      "sha256": "d1823f4ebccceb73a6fff1559e7b23833267196ec042506dd6f49fe453c39012"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.c",
+      "sha256": "b7330439a1c72044e0f1c891a8595df2476c5e42f3c6617da529d782ed4b6ea4"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.h",
+      "sha256": "fc2f50a1f31e002a2190bfd82bb675fd8329327306209eb3d22afa02d3083e39"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "77384e43c0307b13c68cd6d7993e0af25457c4f2d203b0e18f191adba0c063b3"
+    }
+  ]
+}
