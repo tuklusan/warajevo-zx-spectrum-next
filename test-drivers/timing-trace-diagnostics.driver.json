@@ -43,7 +43,7 @@
     },
     {
       "path": "src/diagnostics/wz_trace_file.c",
-      "sha256": "4228da8ab1c9f4e758f60336559ec6a9018bd6b7cb9c20b1e0ae090fb345ea5c"
+      "sha256": "b7330439a1c72044e0f1c891a8595df2476c5e42f3c6617da529d782ed4b6ea4"
     },
     {
       "path": "src/diagnostics/wz_trace_file.h",
