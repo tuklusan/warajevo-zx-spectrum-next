@@ -16,7 +16,7 @@
     },
     {
       "path": "ci/test/timing-trace-bus-context/write-proof.py",
-      "sha256": "3d7d271927c14e662acf4ac6eee345626eb5b152cb95bbe8094300ca79aeeac7"
+      "sha256": "c7329dea4bc7e5e45b11655107815e276eb6228c7abb3a367b6f2fd1161269b0"
     },
     {
       "path": "src/core/wz_bus.c",

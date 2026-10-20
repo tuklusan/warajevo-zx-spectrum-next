@@ -34,7 +34,7 @@ set(expected_output
     "sequence=7 tick=42 kind=interrupt(5)"
     "auxiliary=03"
     "sequence=8 tick=43 kind=border_change(10)"
-    "border_transition from=1 to=3 tick=43"
+    "border_transition port=00fe from=1 to=3 tick=43"
     "recovered=8")
 foreach(expected IN LISTS expected_output)
     string(FIND "${dump_output}${dump_error}" "${expected}" position)

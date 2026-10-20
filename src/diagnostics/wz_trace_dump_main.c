@@ -277,9 +277,10 @@ static bool print_event(const wz_trace_event_t* event, void* context)
         }
     }
     if (event->kind == WZ_TRACE_BORDER_CHANGE) {
-        if (fprintf(output, "border_transition from=%u to=%u tick=%" PRIu64 " ",
-                    (unsigned)event->auxiliary, (unsigned)event->value,
-                    event->master_tick) < 0 ||
+        if (fprintf(output,
+                    "border_transition port=%04x from=%u to=%u tick=%" PRIu64 " ",
+                    (unsigned)event->address, (unsigned)event->auxiliary,
+                    (unsigned)event->value, event->master_tick) < 0 ||
             !print_timing_position(output, dump->profile, event->master_tick) ||
             fputc('\n', output) == EOF) {
             return false;

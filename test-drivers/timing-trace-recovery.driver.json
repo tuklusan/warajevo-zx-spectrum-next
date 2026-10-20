@@ -35,7 +35,7 @@
     },
     {
       "path": "src/diagnostics/wz_trace_dump_main.c",
-      "sha256": "a4b357f2a3ba6506f2d43d2207830b6c71b41ee159ef0de03fe0c6e3f9514777"
+      "sha256": "c80277e741bd9c1d8013525b9202fac034353a86ef197e16341a9785704d1322"
     },
     {
       "path": "src/diagnostics/wz_trace_file.c",

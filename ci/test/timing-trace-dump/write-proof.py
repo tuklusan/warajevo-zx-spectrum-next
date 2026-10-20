@@ -29,8 +29,10 @@ def main() -> None:
         raise SystemExit("commit must be a full lowercase SHA-1 object ID")
 
     root = Path.cwd()
-    driver_path = root / "test-drivers/timing-trace-dump.driver.json"
-    driver = json.loads(driver_path.read_text(encoding="utf-8"))
+    driver_bytes = subprocess.check_output(
+        ["git", "show", f"{args.commit}:test-drivers/timing-trace-dump.driver.json"],
+        cwd=root, stderr=subprocess.PIPE)
+    driver = json.loads(driver_bytes)
     output = args.run_log.read_text(encoding="utf-8", errors="replace")
     marker = "PASS trace dump fields, same-tick ordering, reconstructed CPU state, and border transitions"
     if marker not in output:

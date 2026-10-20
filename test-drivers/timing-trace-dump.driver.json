@@ -23,15 +23,15 @@
     },
     {
       "path": "ci/test/timing-trace-dump/verify.cmake",
-      "sha256": "b3cfe70f1f0f47a786b92d3daf15d323c9f87e40a777f3696812815634f1ad4c"
+      "sha256": "95cbbbac84d82028847c8de1e6f071b99311e49f8dd0e548acbac8aa73908ea7"
     },
     {
       "path": "ci/test/timing-trace-dump/write-proof.py",
-      "sha256": "7ac550bd4ac6b52432498629b81faa3f33f3a3247e718bc531e386171b27fd0f"
+      "sha256": "024689b9f9740701fae86295d4a87ca1bfc5c0f59a0069e0c037149d1bad2975"
     },
     {
       "path": "src/diagnostics/wz_trace_dump_main.c",
-      "sha256": "a4b357f2a3ba6506f2d43d2207830b6c71b41ee159ef0de03fe0c6e3f9514777"
+      "sha256": "c80277e741bd9c1d8013525b9202fac034353a86ef197e16341a9785704d1322"
     },
     {
       "path": "src/diagnostics/wz_trace_file.c",
