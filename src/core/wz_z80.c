@@ -17,6 +17,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "core/wz_bus.h"
 #include "core/wz_machine.h"
+#include "core/wz_machine_internal.h"
 
 #define WZ_Z80_FLAG_C 0x01u
 #define WZ_Z80_FLAG_N 0x02u
@@ -97,6 +98,13 @@ static void wz_z80_trace_cpu_state(wz_machine_t* machine,
             machine->timing_trace->cpu_state_chunks[chunk] = state_chunks[chunk];
         }
         machine->timing_trace->cpu_state_valid = true;
+    }
+}
+
+void wz_z80_trace_bus_context(wz_machine_t* machine)
+{
+    if (machine != 0 && machine->timing_trace != 0) {
+        wz_z80_trace_cpu_state(machine, wz_z80_main_snapshot(&machine->cpu));
     }
 }
 

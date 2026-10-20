@@ -9,7 +9,8 @@ SANYALnet Labs." See LICENSE for full terms. -->
 
 The hosted full Release build compiles the Sokol application and runs this
 CTest on Windows x64, Linux x64/ARM64, and macOS Intel/ARM64. The test submits
-a real production bus read while timing tracing is attached, then verifies
-that its trace record preserves the active PC, SP, main register bank, bus
-address, and returned memory value. The result is pinned in
+a real production bus read while timing tracing is attached, then writes and
+recovers the binary trace file. It verifies that synchronized CPU state can be
+reconstructed at the bus record and that PC, bus address, and returned memory
+value survive serialization. The result is pinned in
 [`timing-trace-bus-context.json`](../test-results/timing-trace-bus-context.json).

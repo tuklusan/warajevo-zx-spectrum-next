@@ -144,7 +144,7 @@ add_executable(
     wz_timing_trace_bus_context
     ${WZSN_REPO_ROOT}/ci/test/timing-trace-bus-context/timing-trace-bus-context.c)
 target_include_directories(wz_timing_trace_bus_context PRIVATE "${WZSN_SOURCE_ROOT}")
-target_link_libraries(wz_timing_trace_bus_context PRIVATE wz_core wz_warnings)
+target_link_libraries(wz_timing_trace_bus_context PRIVATE wz_diagnostics wz_warnings)
 set_target_properties(wz_timing_trace_bus_context PROPERTIES
     C_STANDARD 11
     C_STANDARD_REQUIRED ON
@@ -495,9 +495,12 @@ add_test(NAME wz_ula_128k_trace_contract
 set_tests_properties(wz_ula_128k_trace_contract PROPERTIES
     PASS_REGULAR_EXPRESSION
         "PASS 128K PAL full-frame ULA trace follows screen-bank paging")
-add_test(NAME wz_timing_trace_bus_context COMMAND wz_timing_trace_bus_context)
+add_test(NAME wz_timing_trace_bus_context
+    COMMAND wz_timing_trace_bus_context
+        "${WZSN_ULA_128K_TRACE_OUTPUT}/timing-trace-bus-context.wztrace")
 set_tests_properties(wz_timing_trace_bus_context PROPERTIES
-    PASS_REGULAR_EXPRESSION "PASS trace bus records CPU context")
+    PASS_REGULAR_EXPRESSION
+        "PASS trace file reconstructs CPU context at a bus event")
 if(UNIX)
     add_test(NAME wz_private_media_playback
         COMMAND wz_private_media_playback "${WZSN_REPO_ROOT}/test-media")

@@ -12,19 +12,35 @@
   "fixtures": [
     {
       "path": "ci/test/timing-trace-bus-context/timing-trace-bus-context.c",
-      "sha256": "ce904e658a795313c3e7e0c132a4ac592e6dad8f7e37773f08f2468055b3eab7"
+      "sha256": "c9c73161c396f3d1edfaef728f872bdc4fba1d1de666b8b71985065986bcf62a"
     },
     {
       "path": "ci/test/timing-trace-bus-context/write-proof.py",
-      "sha256": "7cfd2ac5c4637b794a0b8e4965abf1f4dc0ae2865e1ca5b3b7710d2b4c6a6950"
+      "sha256": "8ea985d5b106cdde4490081122a2179599ac13ebba825ed509e257dd390f38b9"
     },
     {
       "path": "src/core/wz_bus.c",
-      "sha256": "e0a2e42b49653968f9bcfdb7b385d81d48bea6bc4cfda0db567fcbe5ddd3780a"
+      "sha256": "803e3fda314e7c5bdc1388389463032fc1802ca044093e52ae627fdde00faa5f"
+    },
+    {
+      "path": "src/core/wz_machine_internal.h",
+      "sha256": "16f92f6c7955f4cce9ca23b82754c25dcc2a29399c673f7ef1d410f2067659d8"
+    },
+    {
+      "path": "src/core/wz_z80.c",
+      "sha256": "603bd5d549da7f36a534e7119fc4c442f854555fadd01f2ed31cc000d23c9941"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.c",
+      "sha256": "b7330439a1c72044e0f1c891a8595df2476c5e42f3c6617da529d782ed4b6ea4"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.h",
+      "sha256": "fc2f50a1f31e002a2190bfd82bb675fd8329327306209eb3d22afa02d3083e39"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "2ba309893db4fa28b4646c859fedc4365a0acac4be76fd951e702f3ab9046e51"
+      "sha256": "e56545f0da4a55a1e92a4545f8583a84c30172deb4403567baef423ce59d43e9"
     }
   ]
 }
