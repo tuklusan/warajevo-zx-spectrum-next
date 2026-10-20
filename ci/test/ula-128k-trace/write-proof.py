@@ -44,7 +44,7 @@ def main() -> None:
                 relative.is_absolute() or ".." in relative.parts):
             raise SystemExit(f"unsafe fixture path: {path}")
         committed = subprocess.check_output(
-            ["git", "show", f"{args.commit}:{path}"],
+            ["git", "cat-file", "blob", f"{args.commit}:{path}"],
             cwd=root, stderr=subprocess.PIPE)
         digest = hashlib.sha256(committed).hexdigest()
         if digest != item["sha256"]:

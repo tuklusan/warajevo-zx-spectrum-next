@@ -27,7 +27,7 @@
     },
     {
       "path": "ci/test/ula-128k-trace/write-proof.py",
-      "sha256": "0339533aeac978becc5264d5e1b1d8b498e70ae1c5ba3786650ee31ebb68455e"
+      "sha256": "a088a89060f1eac63b58148c6959d7e68920362c61c4df8470ddcbe2381591cf"
     },
     {
       "path": "src/core/wz_bus.c",
