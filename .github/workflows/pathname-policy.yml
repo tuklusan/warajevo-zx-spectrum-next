@@ -4,12 +4,12 @@ on:
   # Run after every direct update to the sole project branch.
   push:
     branches: [main]
-
-permissions:
     paths:
       - 'src/**/*.c'
       - 'src/**/*.h'
       - 'src/**/*.m'
+
+permissions:
   contents: read
 
 jobs:
