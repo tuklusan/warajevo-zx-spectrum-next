@@ -1,10 +1,10 @@
 {
   "testId": "ui-networking-mode",
   "status": "pass",
-  "commit": "380f7d5b4dc33cc94479c009cc06038a2976fe52",
-  "runId": 39385889095,
+  "commit": "f6595997d2cf8f44275d7e8263b7275b3ee867b8",
+  "runId": 39386702812,
   "runner": "Linux/X64",
-  "timestamp": "2026-10-20T07:20:57+00:00",
+  "timestamp": "2026-10-20T07:28:27+00:00",
   "caseCount": 16,
   "fixtures": [
     {
