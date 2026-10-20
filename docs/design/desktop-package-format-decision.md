@@ -28,11 +28,12 @@ Third-party notices are generated from the pinned Nuklear license and pinned
 Sokol helper notice. Each archive's member inventory and executable format and
 architecture are checked before upload.
 
-The macOS archive is an unsigned build artifact. It is not a public release;
-normal public GUI distribution still requires the project's authorized Apple
-signing and notarization process. No signing identity or notarization
-credentials are available to this workflow. The initial format does not
-include `.msi`, `.pkg`, `.dmg`, or package-manager installers.
+The Windows and macOS archives are delivered unsigned. The project has no
+authorized Microsoft or Apple signing authority, and no signing credentials
+are configured. macOS packages are not notarized. This is the project's
+approved unsigned delivery state; do not block delivery waiting for signing
+authority. Users may see operating-system trust warnings. The initial format
+does not include `.msi`, `.pkg`, `.dmg`, or package-manager installers.
 
 ## Basis
 
@@ -50,5 +51,6 @@ package audit passed in run `36462115153` at source
 `be2ad86aa34d2d2ffbb05f338c1bdee112956aff`: Windows x86-64 and macOS Intel
 and Apple Silicon archives passed their inventory, executable-architecture,
 checksum, license/notice, media-exclusion, and runtime-dependency checks. The
-macOS archives are unsigned and not notarized; Task 456 remains partial until
-the authorized public-release signing/notarization process is available.
+Windows and macOS archives are deliberately delivered unsigned because
+the project has no Microsoft or Apple signing authority; macOS archives are
+also not notarized. Task 456 accepts the unsigned package delivery and audit.

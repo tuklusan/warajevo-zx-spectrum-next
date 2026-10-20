@@ -14,8 +14,9 @@ separate written authorization.
 ## Start
 
 On Windows, run `Warajevo-ZX-Spectrum-Next.exe`. On macOS, open
-`Warajevo ZX Spectrum Next.app`. This initial macOS package is unsigned and
-not notarized; it is a hosted audit artifact, not a public release.
+`Warajevo ZX Spectrum Next.app`. Windows and macOS packages are unsigned
+because the project has no signing authority; the macOS package is also not
+notarized. The operating system may display a trust warning.
 
 Supply compatible Spectrum ROM firmware through the application's supported
 ROM selection flow. Firmware is not included. Tape and Microdrive images are
