@@ -9,8 +9,8 @@ SANYALnet Labs." See LICENSE for full terms. -->
 
 This hosted regression compares identical 48K PAL machines with tracing off,
 enabled, and toggled. It requires identical canonical state hashes, verifies
-enabling/disabling does not mutate state, confirms a trace-file creation error
-does not mutate or stop the machine, and compares the ordered event digest from
-two independent runs. Together with the file contract, it covers trace
-isolation, ordering, wrap, freeze, and recovery without putting trace contents
-in the proof artifact.
+enabling/disabling, ring wrap, and freeze do not mutate state, confirms a
+trace-file creation error does not mutate or stop the machine, and compares the
+ordered event digest from two independent runs. Together with the file
+contract, it covers trace isolation, ordering, wrap, freeze, and recovery
+without putting trace contents in the proof artifact.

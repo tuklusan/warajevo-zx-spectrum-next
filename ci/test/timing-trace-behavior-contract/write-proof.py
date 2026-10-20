@@ -32,7 +32,7 @@ def main() -> None:
     driver = json.loads((root / "test-drivers/timing-trace-behavior-contract.driver.json")
                         .read_text(encoding="utf-8"))
     output = args.run_log.read_text(encoding="utf-8", errors="replace")
-    marker = "PASS timing trace state neutrality, deterministic ordering, enable/disable, and file failure"
+    marker = "PASS timing trace state neutrality, deterministic ordering, wrap, freeze, enable/disable, and file failure"
     if marker not in output:
         raise SystemExit("trace behavior success marker is missing")
 

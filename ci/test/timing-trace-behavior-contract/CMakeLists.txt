@@ -17,6 +17,8 @@ add_executable(wz_timing_trace_behavior_contract
     "${WZSN_ROOT}/src/diagnostics/wz_trace_file.c")
 target_include_directories(wz_timing_trace_behavior_contract PRIVATE
     "${WZSN_ROOT}/src")
+target_compile_definitions(wz_timing_trace_behavior_contract PRIVATE
+    WZ_TRACE_FILE_TEST_SLOT_COUNT=3)
 set_target_properties(wz_timing_trace_behavior_contract PROPERTIES
     C_STANDARD 11
     C_STANDARD_REQUIRED ON

@@ -15,19 +15,19 @@
     },
     {
       "path": "ci/test/timing-trace-behavior-contract/CMakeLists.txt",
-      "sha256": "a0068f10c5c4d395f2c4147896d6903e21fae9e6558beb308dffbafa74adb173"
+      "sha256": "50447b18e27bc8abbae97e9d5122a0e319941b36755417c71f325fe14c0192e8"
     },
     {
       "path": "ci/test/timing-trace-behavior-contract/README.md",
-      "sha256": "86501e4eb06132e7cfb0d4825f622498348127d5bfe3e3e8dd71c6d91d849c1e"
+      "sha256": "20315059dbd4545ad1efc087d4ad0d3de8f0e5f6d30e21b731df60a8e81082e2"
     },
     {
       "path": "ci/test/timing-trace-behavior-contract/timing-trace-behavior-contract.c",
-      "sha256": "1db403073d9540c5251075524aaafcd3f189da07655ff15e4c9fb8a2d3d300ff"
+      "sha256": "57dbd03a8eb02d866676abaf390df26d2fd616deccd15897fbac06cfed97ea98"
     },
     {
       "path": "ci/test/timing-trace-behavior-contract/write-proof.py",
-      "sha256": "913cf05135875989c33aa59aaf6407c1ea99aae9f91aff58aa7a08e3c25f213a"
+      "sha256": "0cb6ee7f739887898e924a1fddb45a2c81da959d2504bb45e9dfeeaa61edc57e"
     },
     {
       "path": "roms/48.rom",
