@@ -63,7 +63,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "cdadc4c924592c835dcc17ef5ec943c3b0d062747bc7d5fd1de892f7d17c16b8"
+      "sha256": "a8baaee370a721aadb1abe2d6ae7b9cc580803400874d4eacfd724f1e1641840"
     },
     {
       "path": "ci/runner-bootstrap/bootstrap-unix.sh",

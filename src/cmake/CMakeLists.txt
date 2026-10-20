@@ -144,7 +144,21 @@ add_executable(
     wz_timing_trace_recovery_fixture
     ${WZSN_REPO_ROOT}/ci/test/timing-trace-recovery/trace-recovery-fixture.c)
 target_include_directories(wz_timing_trace_recovery_fixture PRIVATE "${WZSN_SOURCE_ROOT}")
-target_link_libraries(wz_timing_trace_recovery_fixture PRIVATE wz_diagnostics wz_warnings)
+add_library(wz_timing_trace_recovery_diagnostics STATIC
+    ${WZSN_SOURCE_ROOT}/diagnostics/wz_trace_file.c)
+target_include_directories(wz_timing_trace_recovery_diagnostics PUBLIC "${WZSN_SOURCE_ROOT}")
+target_compile_definitions(wz_timing_trace_recovery_diagnostics PRIVATE
+    WZ_TRACE_FILE_TEST_SLOT_COUNT=3)
+target_link_libraries(wz_timing_trace_recovery_diagnostics PUBLIC wz_core wz_warnings)
+if(WIN32)
+    target_link_libraries(wz_timing_trace_recovery_diagnostics PUBLIC ws2_32)
+endif()
+add_executable(wz_timing_trace_recovery_dump
+    ${WZSN_SOURCE_ROOT}/diagnostics/wz_trace_dump_main.c)
+target_link_libraries(wz_timing_trace_recovery_dump PRIVATE
+    wz_timing_trace_recovery_diagnostics)
+target_link_libraries(wz_timing_trace_recovery_fixture PRIVATE
+    wz_timing_trace_recovery_diagnostics wz_warnings)
 set_target_properties(wz_timing_trace_recovery_fixture PROPERTIES
     C_STANDARD 11
     C_STANDARD_REQUIRED ON
@@ -536,7 +550,7 @@ file(MAKE_DIRECTORY "${WZSN_TRACE_RECOVERY_OUTPUT}")
 add_test(NAME wz_timing_trace_recovery_contract
     COMMAND "${CMAKE_COMMAND}"
         "-DTRACE_FIXTURE=$<TARGET_FILE:wz_timing_trace_recovery_fixture>"
-        "-DTRACE_DUMPER=$<TARGET_FILE:wz_trace_dump>"
+        "-DTRACE_DUMPER=$<TARGET_FILE:wz_timing_trace_recovery_dump>"
         "-DTRACE_DIRECTORY=${WZSN_TRACE_RECOVERY_OUTPUT}"
         -P "${WZSN_REPO_ROOT}/ci/test/timing-trace-recovery/verify-recovery.cmake")
 set_tests_properties(wz_timing_trace_recovery_contract PROPERTIES
