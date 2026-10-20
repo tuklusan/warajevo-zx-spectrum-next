@@ -72,7 +72,8 @@ static wz_result_t request_at(wz_machine_t* machine, wz_master_tick_t tick,
     wz_bus_request_t request;
     wz_bus_request_init(&request,
         page_write ? WZ_BUS_IO_WRITE : WZ_BUS_INTERNAL,
-        tick, page_write ? 0x7ffdu : 0u, page_value, 1u);
+        /* A0 is ignored by the paging decode; the even alias has no wait. */
+        tick, page_write ? 0x7ffcu : 0u, page_value, 1u);
     return wz_machine_bus_request(machine, &request);
 }
 
