@@ -39,7 +39,7 @@
     },
     {
       "path": "src/diagnostics/wz_trace_file.c",
-      "sha256": "10ea8809d2726628dfc0bf2f7473ab2f60a244b877896c0ce4e959f7ce436dc2"
+      "sha256": "6cf2f5862becd86879418ee6f0057c3f559e506f03fdec111923d91f7c04d747"
     },
     {
       "path": "src/diagnostics/wz_trace_file.h",
@@ -59,7 +59,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "bb817e61ac7ae12f896a65c48db995da23756320c294656d05fb78d9d3fb654f"
+      "sha256": "77384e43c0307b13c68cd6d7993e0af25457c4f2d203b0e18f191adba0c063b3"
     }
   ]
 }
