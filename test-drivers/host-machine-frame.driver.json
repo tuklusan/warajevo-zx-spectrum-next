@@ -7,10 +7,6 @@
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/host-machine-frame-regression.yml",
-      "sha256": "e323433bc8de17b45688fb95adcb6b2d244307759e4ea8ba3d98cfffc169a862"
-    },
-    {
       "path": "ci/test/host-frame-audio/frame-audio-regression.c",
       "sha256": "78cc9a37f671cc51850d7e9fd4dea5e340900d47977ffbf569373a0a6390f1ec"
     },

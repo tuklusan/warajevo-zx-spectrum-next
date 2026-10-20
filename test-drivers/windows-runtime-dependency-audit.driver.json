@@ -7,10 +7,6 @@
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/windows-runtime-dependency-audit.yml",
-      "sha256": "45502fe04bcaf6f185c5418fe2011fd44f023d7842cd6eb319dc87160760a210"
-    },
-    {
       "path": "ci/test/windows-runtime-dependencies/inspect_pe.py",
       "sha256": "75072af6c4c79d1f4f6ea44f3d304c0b6abec415f3db6815fc11c3c8a3b33a77"
     },

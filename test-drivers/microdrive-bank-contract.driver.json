@@ -1,7 +1,6 @@
 {
   "testId": "microdrive-bank-contract",
   "command": "cmake -S ci/test/microdrive-bank -B dist/microdrive-bank -DCMAKE_BUILD_TYPE=Release && cmake --build dist/microdrive-bank --config Release --target wz_microdrive_bank_contract --parallel 2 && ctest --test-dir dist/microdrive-bank -C Release -R '^wz_microdrive_bank_contract$' --output-on-failure",
-  "workflow": ".github/workflows/microdrive-bank-contract.yml",
   "fixtures": [
     {
       "path": "ci/test/microdrive-bank/microdrive-bank-contract.c",
@@ -38,10 +37,6 @@
     {
       "path": "src/cmake/CMakeLists.txt",
       "sha256": "77384e43c0307b13c68cd6d7993e0af25457c4f2d203b0e18f191adba0c063b3"
-    },
-    {
-      "path": ".github/workflows/microdrive-bank-contract.yml",
-      "sha256": "ab6cc2371b7e0b905bf8dd5d2e4ac1457023a32585fbb57a3b822d3dd699dcd8"
     }
   ]
 }

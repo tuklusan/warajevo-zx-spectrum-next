@@ -1,12 +1,7 @@
 {
   "testId": "microdrive-ui-contract",
   "command": "cmake -S ci/test/microdrive-ui -B dist/microdrive-ui -DCMAKE_BUILD_TYPE=Release && cmake --build dist/microdrive-ui --config Release --target wz_microdrive_ui_contract --parallel 2 && ctest --test-dir dist/microdrive-ui -C Release -R '^wz_microdrive_ui_contract$' --output-on-failure",
-  "workflow": ".github/workflows/microdrive-ui-contract.yml",
   "fixtures": [
-    {
-      "sha256": "bbbe8c6a700c32030c58dfbe30d8d2139dec345ea069a6b6a38493b045f061a1",
-      "path": ".github/workflows/microdrive-ui-contract.yml"
-    },
     {
       "sha256": "a0cdcd930519a350a7e3017a8990b67d5d94e45ef55bfc8e27330a87bf5d4a1a",
       "path": "ci/test/microdrive-ui/CMakeLists.txt"

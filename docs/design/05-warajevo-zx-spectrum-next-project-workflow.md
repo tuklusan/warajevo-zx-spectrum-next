@@ -54,17 +54,16 @@ workflow runs on source pushes: `cr-build-gate.yml`, filtered to production
 `.c`, `.h`, and `.m` files under `src/`. It clean-builds the application and
 runs the integrated CTest suite on the maintained Windows and macOS x64 and
 ARM64 targets. Documentation, tests, traces, results, workflow edits, and
-administrative records alone start no hosted runner. Focused contract,
-reference, media, and release workflows remain manually dispatchable on `main`
-when their specialized evidence is needed. Pull-request triggers are
-prohibited. Do not add branch protection that requires a pull request or
+administrative records alone start no hosted runner. Workflows retained in the
+repository are manually dispatched on `main` when needed. Pull-request triggers
+are prohibited. Do not add branch protection that requires a pull request or
 prevents authorized direct updates to `main`.
 
 The pre-commit hook checks every pathname in the complete staged index,
 including directory components, for forbidden terms case-insensitively before
 creating a commit. The pre-push gate repeats the check against the complete
-prospective tree before contacting GitHub. The hosted pathname workflow is a
-manual audit; the mandatory local pathname checks cover every direct push.
+prospective tree before contacting GitHub. No hosted pathname workflow is
+maintained; the mandatory local pathname checks cover every direct push.
 Git metadata and the fixed `main` ref are not repository pathnames. No other
 branch or pull request is part of this workflow.
 
@@ -73,13 +72,10 @@ must be committed and pushed directly to `main`. The pre-commit check rejects
 the complete staged tree before creating a commit; the pre-push check rejects
 the complete prospective tree before contacting GitHub. GitHub's repository
 ruleset API does not accept a file-path restriction for a branch-targeted rule,
-and push rulesets are limited to private or internal repositories. Therefore,
-the hosted pathname workflow is an after-push audit for this public repository,
-not a pre-receipt blocker. When it runs, it validates the exact pushed commit
-and fails on a violation. If that audit fails, remove the offending path in the
-next direct commit and wait for the pathname check to pass before continuing.
-Do not add a pull-request requirement or claim that GitHub blocks a
-noncompliant direct push before receipt.
+and push rulesets are limited to private or internal repositories. No hosted
+pathname audit is maintained for this public repository. Do not add a
+pull-request requirement or claim that GitHub blocks a noncompliant direct push
+before receipt.
 
 ## 3. Local pathname and pre-push gates
 
@@ -132,11 +128,11 @@ test-results/<base>.json
 The driver identifies the test command and every fixture path/hash. The proof
 must report `status: "pass"` and pin the tested commit, runner, timestamp, and
 fixture SHA-256 hashes. Missing, mismatched, or non-passing records reject the
-ledger. The validator runs locally and in `test-ledger-gate.yml`.
+ledger. The validator runs locally as part of the mandatory pre-push gate.
 
-## 5. Runner workflow
+## 5. Hosted runner targets
 
-`runner-matrix.yml` exercises these pinned hosted runner families:
+The retained source-push build gate uses these hosted runner families:
 
 | Platform | Workflow label |
 |---|---|
@@ -145,10 +141,8 @@ ledger. The validator runs locally and in `test-ledger-gate.yml`.
 | macOS Intel | `macos-15-intel` |
 | macOS ARM64 | `macos-15` |
 
-The workflow records the requested label, actual runner name, architecture, and
-image. It uses architecture-specific bootstrap caches keyed by runner family
-and project build inputs, bootstrapping on cache misses. Hosted runner VMs are
-ephemeral; cached bootstrap artifacts are not persistent runner identities.
+The build gate performs a clean Release build and runs CTest on each target.
+Hosted runner VMs are ephemeral.
 
 Runner bootstrap fixtures are kept in the visible `ci/runner-bootstrap/`
 directory:
@@ -172,13 +166,14 @@ new manifest record. No local installation substitutes for runner bootstrap.
 
 ## 6. Change-record clean-build gate
 
-`cr-build-gate.yml` is the required clean-build check before a change record is
-closed. It runs a clean Release build on all four runner families and accepts
-declared build entry points such as `src/cmake/CMakeLists.txt`, a repository-root
-Visual Studio solution, or a Python project. The CMake build is the current
-product entry point. Generated build-tree solutions are not treated as separate
-project entry points. The build and all execution happen on hosted runners, not
-on the developer workstation.
+`cr-build-gate.yml` is the source-push build and test check before a change
+record is closed. It runs a clean Release build and CTest on all four runner
+targets. It also supports declared entry points such as
+`src/cmake/CMakeLists.txt`, a repository-root Visual Studio solution, or a
+Python project. The CMake build is the current product entry point. Generated
+build-tree solutions are not treated as separate project entry points. The
+build and all execution happen on hosted runners, not on the developer
+workstation.
 
 Required CI checks apply to the exact commit pushed to `main`; there is no merge
 or PR stage.
@@ -212,10 +207,12 @@ cover active pixels and border orientation, report pixel mismatch metrics, and
 retain both images as runner artifacts. A rotated, mirrored, cropped, blank, or
 otherwise materially different display fails the gate. Changes to raster
 generation, texture upload, presentation transforms, palette, or display
-cropping must run this gate before delivery. Fuse evidence is a software
-emulator comparison only. Until a reproducible hosted comparison passes on all
-supported host backends, Spectrum video delivery remains blocked; in-memory
-raster tests alone do not satisfy this gate.
+cropping must pass this gate before delivery. The dedicated hosted Fuse
+equivalence workflow was retired with the focused workflows; the delivery gate
+remains mandatory, so Spectrum video delivery is blocked until an executable
+hosted comparison path is available and passes on all supported backends.
+Fuse evidence is a software-emulator comparison only; in-memory raster tests
+alone do not satisfy this gate.
 
 The CPU, bus, ULA, raster, ROM-loader, and tape timing contract is in
 `reference/t-state-description.md`.

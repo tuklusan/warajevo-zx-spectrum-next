@@ -10,10 +10,6 @@
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/keyboard-core-boundary.yml",
-      "sha256": "9750e4485460699b4feb22c1722d4225047e984e59450dcc54092c9c86f869ef"
-    },
-    {
       "path": "ci/test/keyboard-core-boundary/CMakeLists.txt",
       "sha256": "25c4f401693ea27171ec8fa5024811c5e2330cef40d8a6a61f76b0d6dde3b472"
     },

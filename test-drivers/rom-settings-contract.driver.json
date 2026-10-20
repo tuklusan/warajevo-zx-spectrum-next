@@ -1,12 +1,7 @@
 {
   "testId": "rom-settings-contract",
   "command": "cmake -S ci/test/rom-settings -B dist/rom-settings -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/rom-settings --config Release --target rom_settings_contract --parallel 2 && ctest --test-dir dist/rom-settings -C Release -R '^rom_settings_contract$' --output-on-failure",
-  "workflow": ".github/workflows/rom-settings-contract.yml",
   "fixtures": [
-    {
-      "path": ".github/workflows/rom-settings-contract.yml",
-      "sha256": "1ee94d97d111f3098d83fd57bf63abd14d09f02b745faec7a0e59c5bfeff5fda"
-    },
     {
       "path": "ci/test/rom-settings/CMakeLists.txt",
       "sha256": "5d285152b8b99806f300ce414e40fc13f2098696988a465522ffe153b869685d"

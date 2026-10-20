@@ -1,12 +1,7 @@
 {
   "testId": "microdrive-sectors-contract",
   "command": "cmake -S ci/test/microdrive-sectors -B dist/microdrive-sectors -DCMAKE_BUILD_TYPE=Release && cmake --build dist/microdrive-sectors --config Release --target wz_microdrive_sectors_contract --parallel 2 && ctest --test-dir dist/microdrive-sectors -C Release -R '^wz_microdrive_sectors_contract$' --output-on-failure",
-  "workflow": ".github/workflows/microdrive-sectors-contract.yml",
   "fixtures": [
-    {
-      "path": ".github/workflows/microdrive-sectors-contract.yml",
-      "sha256": "7ba18515c708e261781ac40edc862489587f70203d8a9ca4b78e060d3b35b102"
-    },
     {
       "path": "ci/test/microdrive-sectors/CMakeLists.txt",
       "sha256": "eeeef9e9b14feab298b3ca0d678a3da4e669141c0bf4152c534dfb3cfad3a21d"

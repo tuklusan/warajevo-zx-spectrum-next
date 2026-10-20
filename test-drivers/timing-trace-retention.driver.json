@@ -4,10 +4,6 @@
   "requiredFrames": 8,
   "fixtures": [
     {
-      "path": ".github/workflows/timing-trace-retention.yml",
-      "sha256": "d093516c795e7138642a95bf0e70d36dae65e118ebd24b4eab38ab2b06bdf44d"
-    },
-    {
       "path": "ci/test/timing-trace-retention/CMakeLists.txt",
       "sha256": "cf974d34703fef2fa895dcf474a24309d2da75719643aa5dcf13310b5674113f"
     },

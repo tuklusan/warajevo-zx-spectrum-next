@@ -51,7 +51,6 @@ PROJECT_FILES = (
     "ci/test/multi-instance/README.md",
     "tests/multi-instance-stress.md",
     "test-drivers/multi-instance-stress.driver.json",
-    ".github/workflows/multi-instance-stress.yml",
 )
 EXPECTED_CASES = 5
 

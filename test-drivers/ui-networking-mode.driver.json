@@ -7,10 +7,6 @@
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/ui-networking-mode.yml",
-      "sha256": "c0ea6ec113837632af0e840c0d6b4bebda7005a9801eda3017f9b8d9ff4121cb"
-    },
-    {
       "path": "ci/test/ui-networking-mode/CMakeLists.txt",
       "sha256": "fc444a9d9e9d5d158b6fccf29cef8d9a5a73ec92ef18eef051618ec2e056b35d"
     },

@@ -16,7 +16,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 FIXTURES = (
-    ".github/workflows/keyboard-core-boundary.yml",
     "ci/test/keyboard-core-boundary/CMakeLists.txt",
     "ci/test/keyboard-core-boundary/keyboard-core-boundary.c",
     "ci/test/keyboard-core-boundary/write-proof.py",

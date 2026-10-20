@@ -1,7 +1,6 @@
 {
   "testId": "cassette-speed-contract",
   "command": "cmake -S ci/test/cassette-speed-contract -B dist/cassette-speed-contract -DCMAKE_BUILD_TYPE=Release && cmake --build dist/cassette-speed-contract --config Release --target wz_cassette_speed_contract --parallel 2 && ctest --test-dir dist/cassette-speed-contract -C Release -R '^wz_cassette_speed_contract$' --output-on-failure",
-  "workflow": ".github/workflows/cassette-speed-contract.yml",
   "fixtures": [
     {
       "path": "ci/test/cassette-speed-contract/cassette-speed-contract.c",

@@ -7,10 +7,6 @@
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/snapshot-inspector-regression.yml",
-      "sha256": "e98223846018912ad5d3a0e98e82c8c2f2c9159e35e8f828f93473ac3b305bb4"
-    },
-    {
       "path": "ci/test/snapshot-inspector/CMakeLists.txt",
       "sha256": "68131523e1c1ef0da3d14dc64d966936b9394b610301c9dd70203fac3edc70f4"
     },

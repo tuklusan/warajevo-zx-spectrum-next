@@ -1,7 +1,6 @@
 {
   "testId": "microdrive-state-canonical",
   "command": "cmake -S ci/test/microdrive-state-canonical -B dist/microdrive-state-canonical -DCMAKE_BUILD_TYPE=Release && cmake --build dist/microdrive-state-canonical --config Release --target wz_microdrive_state_canonical_contract --parallel 2 && ctest --test-dir dist/microdrive-state-canonical -C Release -R '^wz_microdrive_state_canonical_contract$' --output-on-failure",
-  "workflow": ".github/workflows/microdrive-state-canonical.yml",
   "requiredCases": 2,
   "runnerMatrix": [
     "ubuntu-24.04"
@@ -14,10 +13,6 @@
     {
       "path": "ci/test/microdrive-state-canonical/CMakeLists.txt",
       "sha256": "9c182b34d8cc315f3a0b579b91730751a07306906d960fdee4f1372232311b8c"
-    },
-    {
-      "path": ".github/workflows/microdrive-state-canonical.yml",
-      "sha256": "2f6ce4232eefa39d96d54e1632c9d74530f890eb180c48199ed2b28b29b14ecf"
     },
     {
       "path": "src/core/wz_state.c",

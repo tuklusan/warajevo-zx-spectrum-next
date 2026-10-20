@@ -8,10 +8,6 @@
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/multi-instance-linux-contract.yml",
-      "sha256": "53cc1d5a1a2c6621b425706dd55a7da29993c076ff6e517d49cfbd235d008e96"
-    },
-    {
       "path": "ci/test/multi-instance/CMakeLists.txt",
       "sha256": "22d988789ef67d53753f0bb5673c19f2e73f45bcb11f4895652253fcf752a753"
     },

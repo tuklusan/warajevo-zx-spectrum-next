@@ -1,7 +1,6 @@
 {
   "testId": "master-time-contract",
   "command": "cmake -S ci/test/master-time -B dist/master-time -DCMAKE_BUILD_TYPE=Release && cmake --build dist/master-time --config Release --target wz_master_time_contract --parallel 2 && ctest --test-dir dist/master-time -C Release -R '^wz_master_time_contract$' --output-on-failure",
-  "workflow": ".github/workflows/master-time-contract.yml",
   "fixtures": [
     {
       "path": "ci/test/master-time/master-time-contract.c",
@@ -46,10 +45,6 @@
     {
       "path": "src/core/wz_z80.h",
       "sha256": "8faaa6ca8ecd22b0b48418251256722471cef81537053cbfdd44ee629c293dd5"
-    },
-    {
-      "path": ".github/workflows/master-time-contract.yml",
-      "sha256": "6344b0578d9060af2cee0e22ad0ce4f66cfdacbfe6567f435f9bea5845a3b9bd"
     }
   ]
 }

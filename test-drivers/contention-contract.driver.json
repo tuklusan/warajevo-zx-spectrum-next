@@ -1,7 +1,6 @@
 {
   "testId": "contention-contract",
   "command": "cmake -S ci/test/contention-contract -B dist/contention-contract -DCMAKE_BUILD_TYPE=Release && cmake --build dist/contention-contract --config Release --target wz_contention_contract --parallel 2 && ctest --test-dir dist/contention-contract -C Release -R '^wz_contention_contract$' --output-on-failure",
-  "workflow": ".github/workflows/contention-contract.yml",
   "fixtures": [
     {
       "path": "ci/test/contention-contract/contention-contract.c",
@@ -34,10 +33,6 @@
     {
       "path": "src/core/wz_machine_profile.h",
       "sha256": "1b246ec8245bf68400b0f9c5a1e69438264d8c671f23d656d82c87a032c4c700"
-    },
-    {
-      "path": ".github/workflows/contention-contract.yml",
-      "sha256": "8a3f05634b36050de898e8e87b39086b03810bf941d865175301f96cc0f36bb5"
     },
     {
       "path": "reference/t-state-description.md",

@@ -9,10 +9,6 @@
   "fuseReference": "Ubuntu 24.04 libspectrum-dev 1.5.0-4build2",
   "fixtures": [
     {
-      "path": ".github/workflows/media-corpus-ingestion.yml",
-      "sha256": "6e2b98fa367851e11713524573ec513daaff7bc15c1bc322d2c781af251a1bdb"
-    },
-    {
       "path": "ci/test/media-corpus-ingestion/CMakeLists.txt",
       "sha256": "700f145faab8bbe4872af16cf03cc21df0a747ef46410a529be54995d6ac0b55"
     },

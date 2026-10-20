@@ -10,10 +10,6 @@
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/telnet-client-gate-regression.yml",
-      "sha256": "da7bd25f412ef149ecfb2dc28ceac9d931993df59d7c2541087ee43da96f95cc"
-    },
-    {
       "path": "ci/test/telnet-client-gate/CMakeLists.txt",
       "sha256": "614136cf19fcdc9cb5d663943775b64f626708bb7d7b0b1e9c31fca25b48178d"
     },

@@ -10,10 +10,6 @@
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/timing-trace-contract.yml",
-      "sha256": "694a92c2025acd3526551ec4c34d8a5985e399fb3d810c11b7eb90185fda7fc5"
-    },
-    {
       "path": "ci/test/timing-trace-contract/CMakeLists.txt",
       "sha256": "cc1f362258ef7c798a125217a0d549ca16fd14367b1314b6ae03b659aa51e404"
     },

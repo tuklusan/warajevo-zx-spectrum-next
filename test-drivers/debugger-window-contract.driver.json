@@ -7,10 +7,6 @@
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/debugger-window-contract.yml",
-      "sha256": "7ab0a5d237ed95a0cefcbd596364b3b6d08c2084b65bac02601e99b278b23b49"
-    },
-    {
       "path": "ci/test/debugger-window-contract/CMakeLists.txt",
       "sha256": "93d9e45d9aa1f5d35061336ca6efa5027214634d35c357dc7eb75800dd9b067a"
     },

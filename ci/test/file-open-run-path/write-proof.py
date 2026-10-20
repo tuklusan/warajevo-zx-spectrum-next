@@ -16,7 +16,6 @@ from pathlib import Path
 
 
 FIXTURES = (
-    ".github/workflows/file-open-run-path-contract.yml",
     "ci/test/file-open-run-path/CMakeLists.txt",
     "ci/test/file-open-run-path/file-open-run-path-contract.c",
     "ci/test/file-open-run-path/write-proof.py",

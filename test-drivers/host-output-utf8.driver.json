@@ -1,12 +1,7 @@
 {
   "testId": "host-output-utf8",
   "command": "cmake -S ci/test/host-output-utf8 -B dist/host-output-utf8 -DCMAKE_BUILD_TYPE=Release && cmake --build dist/host-output-utf8 --config Release --target wz_host_output_utf8_tests --parallel 2 && ctest --test-dir dist/host-output-utf8 -C Release -R ^wz_host_output_utf8_tests$ --output-on-failure",
-  "workflow": ".github/workflows/host-output-utf8.yml",
   "fixtures": [
-    {
-      "path": ".github/workflows/host-output-utf8.yml",
-      "sha256": "87dffbc0a24821ee755b3ad547d2b6e8c1bbc91f40f8615f709ea2da5b652d32"
-    },
     {
       "path": "ci/test/host-output-utf8/CMakeLists.txt",
       "sha256": "89cd52fc86f159bd37af5c92aca32709c1f4a0b5aa2612d2bc980b9d09ae002b"

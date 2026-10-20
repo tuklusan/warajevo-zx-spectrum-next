@@ -1,7 +1,6 @@
 {
   "testId": "tape-selection-contract",
   "command": "cmake -S ci/test/tape-selection-contract -B dist/tape-selection-contract -DCMAKE_BUILD_TYPE=Release && cmake --build dist/tape-selection-contract --config Release --target wz_tape_selection_contract --parallel 2 && ctest --test-dir dist/tape-selection-contract -C Release -R '^wz_tape_selection_contract$' --output-on-failure",
-  "workflow": ".github/workflows/tape-selection-contract.yml",
   "fixtures": [
     {
       "path": "ci/test/tape-selection-contract/tape-selection-contract.c",
@@ -26,10 +25,6 @@
     {
       "path": "src/cmake/CMakeLists.txt",
       "sha256": "77384e43c0307b13c68cd6d7993e0af25457c4f2d203b0e18f191adba0c063b3"
-    },
-    {
-      "path": ".github/workflows/tape-selection-contract.yml",
-      "sha256": "c74d52b5bd20a3da40c7d58e79ce199716385eba5314ec19d5af66e8327cdbce"
     }
   ]
 }

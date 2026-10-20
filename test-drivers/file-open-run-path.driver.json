@@ -10,10 +10,6 @@
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/file-open-run-path-contract.yml",
-      "sha256": "58b5cfc5cd2f85068fe82c7af002b1d93d38678e9299d332144cc57d6830cffb"
-    },
-    {
       "path": "ci/test/file-open-run-path/CMakeLists.txt",
       "sha256": "f823c04e5b20822d71f1a5c6afd2b5c1f550d132908d3e0d823a9b09c10b069e"
     },

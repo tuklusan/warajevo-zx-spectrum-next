@@ -1,7 +1,6 @@
 {
   "testId": "canonical-core-regression",
   "command": "cmake -S ci/test/core-regression -B dist/core-regression -DCMAKE_BUILD_TYPE=Release && cmake --build dist/core-regression --config Release --target wz_core_regression wz_reset_retention_regression --parallel 2 && ./dist/core-regression/wz_core_regression && ./dist/core-regression/wz_reset_retention_regression",
-  "matrixWorkflow": ".github/workflows/compiler-matrix-regression.yml",
   "compilerMatrix": [
     "Windows x86-64 / MSVC",
     "Windows x86-64 / clang-cl",

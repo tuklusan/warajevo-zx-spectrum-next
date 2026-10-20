@@ -1,12 +1,7 @@
 {
   "testId": "wz-compatibility-tools",
   "command": "cmake -S ci/test/compatibility-tools -B dist/compatibility-tools -DCMAKE_BUILD_TYPE=Release && cmake --build dist/compatibility-tools --config Release --target wz_compatibility_tools_contract --parallel 2 && ctest --test-dir dist/compatibility-tools -C Release -R '^wz_compatibility_tools_contract$' --output-on-failure",
-  "workflow": ".github/workflows/compatibility-tools-contract.yml",
   "fixtures": [
-    {
-      "path": ".github/workflows/compatibility-tools-contract.yml",
-      "sha256": "6415bfeedc26f52c4520dc9447201a16c1e737acf025e214e4a839e2c8b11258"
-    },
     {
       "path": "ci/test/compatibility-tools/CMakeLists.txt",
       "sha256": "be5a96d5925713538292660a0b086ebad64e6ded1596d10f6c6273d6f1bb99bb"

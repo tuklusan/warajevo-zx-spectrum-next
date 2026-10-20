@@ -10,10 +10,6 @@
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/timing-trace-recovery.yml",
-      "sha256": "53ed4f3b99957927bd9560f1800c29638786dd15d3fed53bf0059109a8ba0437"
-    },
-    {
       "path": "ci/test/timing-trace-recovery/CMakeLists.txt",
       "sha256": "08662b76511bf04cf1f3c22583d9832624ab81beeb86813efe12bf56a523a1dd"
     },

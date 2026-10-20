@@ -1,12 +1,7 @@
 {
   "testId": "host-display-settings",
   "command": "cmake -S ci/test/host-display-settings -B dist/host-display-settings -DCMAKE_BUILD_TYPE=Release && cmake --build dist/host-display-settings --config Release --target host_display_settings_contract --parallel 2 && ctest --test-dir dist/host-display-settings -C Release -R '^host_display_settings_contract$' --output-on-failure",
-  "workflow": ".github/workflows/host-display-settings-contract.yml",
   "fixtures": [
-    {
-      "path": ".github/workflows/host-display-settings-contract.yml",
-      "sha256": "3f248e6763ff0d4a43f5faf93f6908a03cb55425250c0d3bff213e3ac241ce90"
-    },
     {
       "path": "ci/test/host-display-settings/CMakeLists.txt",
       "sha256": "0c3f7fb5d22e16406ae2e760fcb019ef5433b16eecd58922ebfd7e8810b0ea29"

@@ -10,10 +10,6 @@
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/native-runtime-dependency-audit.yml",
-      "sha256": "a2e05f977feced073c6efee0fafbe2b84dc774410a16100feeccaf7e6785c0c6"
-    },
-    {
       "path": "ci/test/runtime-dependencies/README.md",
       "sha256": "6c6615467d8c3ff84eb660cbb5ee9b6a1cfc44f16589a95e9664f09af69ddde3"
     },

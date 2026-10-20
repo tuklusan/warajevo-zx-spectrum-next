@@ -8,10 +8,6 @@
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/networking-permission-regression.yml",
-      "sha256": "a408fd9d06191ff83f0b632dd80771d75d5470846974c795e9276239170f335b"
-    },
-    {
       "path": "ci/test/networking-permission/CMakeLists.txt",
       "sha256": "c28586e3fe5ede8dae60353d91cd8310d77e535381cd9fedfcb1b58a49bbbc78"
     },

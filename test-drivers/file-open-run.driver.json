@@ -7,10 +7,6 @@
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/file-open-run-regression.yml",
-      "sha256": "501d7be5c03696c98ed04e2009ee4093cb32875aa490babea7069ba211d6cfd4"
-    },
-    {
       "path": "ci/test/file-open-run/write-proof.py",
       "sha256": "5938d60b7022d46278aa0e837f19943d47bb631b8296f52ca92d763d113b642c"
     },

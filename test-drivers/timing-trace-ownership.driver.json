@@ -10,10 +10,6 @@
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/timing-trace-ownership.yml",
-      "sha256": "828dd6dd39f5e0ed3c4f942df0fcf230b5c70220368df864babf3e5ff6a6826f"
-    },
-    {
       "path": "ci/test/timing-trace-ownership/CMakeLists.txt",
       "sha256": "1ae8719de7bd68a453615ceb0f842b53cac269bae883e64f0f57f750c253e1f6"
     },

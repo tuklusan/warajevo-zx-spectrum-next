@@ -10,10 +10,6 @@
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/telnet-key-press.yml",
-      "sha256": "49583a0afc77f17a99c72b0864070e2e252c8df0306d776bd38ddbc1512f481a"
-    },
-    {
       "path": "ci/test/telnet-key-press/CMakeLists.txt",
       "sha256": "8f7d9ac255fe847a7616e8cf91c3fa1068d161d537cf23a6c133aca582343769"
     },

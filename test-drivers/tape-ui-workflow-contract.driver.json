@@ -1,7 +1,6 @@
 {
   "testId": "tape-ui-workflow-contract",
   "command": "cmake -S ci/test/tape-ui-workflow-contract -B dist/tape-ui-workflow-contract -DCMAKE_BUILD_TYPE=Release && cmake --build dist/tape-ui-workflow-contract --config Release --target wz_tape_ui_workflow_contract --parallel 2 && ctest --test-dir dist/tape-ui-workflow-contract -C Release -R '^wz_tape_ui_workflow_contract$' --output-on-failure",
-  "workflow": ".github/workflows/tape-ui-workflow-contract.yml",
   "fixtures": [
     {
       "path": "ci/test/tape-ui-workflow-contract/CMakeLists.txt",

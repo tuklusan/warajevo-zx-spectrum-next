@@ -1,7 +1,6 @@
 {
   "testId": "raster-effects-contract",
   "command": "cmake -S ci/test/raster-effects-contract -B dist/raster-effects-contract -DCMAKE_BUILD_TYPE=Release && cmake --build dist/raster-effects-contract --config Release --target wz_raster_effects_contract --parallel 2 && ctest --test-dir dist/raster-effects-contract -C Release -R '^wz_raster_effects_contract$' --output-on-failure",
-  "workflow": ".github/workflows/raster-effects-contract.yml",
   "fixtures": [
     {
       "path": "ci/test/raster-effects-contract/raster-effects-contract.c",

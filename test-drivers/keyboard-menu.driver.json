@@ -6,10 +6,6 @@
   "requiredCases": 86,
   "fixtures": [
     {
-      "sha256": "97bb714fe812ebc43ff2f6442bdc57f3d28851dc87bdc64fe972114f98a7c8ff",
-      "path": ".github/workflows/keyboard-menu.yml"
-    },
-    {
       "sha256": "d761b87e6378e307d6581a7189066a825b5ec8949f4dce42e016386c33b10fb3",
       "path": "ci/test/keyboard-menu/CMakeLists.txt"
     },

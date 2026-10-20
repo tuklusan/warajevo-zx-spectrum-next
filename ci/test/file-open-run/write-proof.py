@@ -16,7 +16,6 @@ from pathlib import Path
 
 
 FIXTURES = (
-    ".github/workflows/file-open-run-regression.yml",
     "ci/test/file-open-run/write-proof.py",
     "ci/test/file-open-run/wz_file_open_run_tests.c",
     "src/app/wz_file_open_run.c",

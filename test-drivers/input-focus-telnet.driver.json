@@ -10,10 +10,6 @@
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/input-focus-telnet.yml",
-      "sha256": "6e0a73747805df29da88fd6812a2859a25b857d67baffe0434b00a9a80b4c4aa"
-    },
-    {
       "path": "ci/test/input-focus-telnet/CMakeLists.txt",
       "sha256": "1242a36e8e5d0c898d6d941d3128034ee8e4adac44c892291e701e5a77c09c70"
     },

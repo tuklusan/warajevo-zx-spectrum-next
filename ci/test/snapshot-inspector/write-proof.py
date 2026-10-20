@@ -15,7 +15,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 FIXTURES = (
-    ".github/workflows/snapshot-inspector-regression.yml",
     "ci/test/snapshot-inspector/CMakeLists.txt",
     "ci/test/snapshot-inspector/write-proof.py",
     "src/app/wz_snapshot_inspector.c",

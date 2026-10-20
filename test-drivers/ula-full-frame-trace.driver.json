@@ -10,10 +10,6 @@
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/ula-full-frame-trace-contract.yml",
-      "sha256": "a60041eeb71f8ae9b1fe8ea48ca08cadf6814d7dc197daa148f6f9d4eb194929"
-    },
-    {
       "path": "ci/test/ula-full-frame-trace/CMakeLists.txt",
       "sha256": "baba4646f6fc241fdde5a2d6820bdefdedf4a2344592aaacf57bb73a2fba7c08"
     },

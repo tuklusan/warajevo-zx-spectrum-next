@@ -1,7 +1,6 @@
 {
   "testId": "tape-save-transaction-contract",
   "command": "cmake -S ci/test/tape-save-transaction-contract -B dist/tape-save-transaction-contract -DCMAKE_BUILD_TYPE=Release && cmake --build dist/tape-save-transaction-contract --config Release --target wz_tape_save_transaction_contract --parallel 2 && ctest --test-dir dist/tape-save-transaction-contract -C Release -R '^wz_tape_save_transaction_contract$' --output-on-failure",
-  "workflow": ".github/workflows/tape-save-transaction-contract.yml",
   "fixtures": [
     {
       "path": "ci/test/tape-save-transaction-contract/tape-save-transaction-contract.c",
@@ -42,10 +41,6 @@
     {
       "path": "src/core/wz_tape.h",
       "sha256": "d483f3f99bcfa26590bf259114193d2314dd2af2720316bf66021462f5c31fd6"
-    },
-    {
-      "path": ".github/workflows/tape-save-transaction-contract.yml",
-      "sha256": "3ba30196a98d5a1964b6a26eae2caa831b144ff3e4a23de46481a40a635d59e9"
     }
   ]
 }

@@ -4,10 +4,6 @@
   "requiredMediaFiles": 20,
   "fixtures": [
     {
-      "path": ".github/workflows/private-media-playback.yml",
-      "sha256": "6aac624b420d81ee7af0a643a7c689fdb92fccdb438ce9bc2439a86141c641dc"
-    },
-    {
       "path": "ci/test/private-media-playback/CMakeLists.txt",
       "sha256": "b6c61c6d6b23f1c6048da5dd1314189755df7c294758198e3144274b8e0a9064"
     },

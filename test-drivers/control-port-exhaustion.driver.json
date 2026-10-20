@@ -7,10 +7,6 @@
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/control-port-exhaustion.yml",
-      "sha256": "1250b1282dd7d98bb7e41843fa16fbc247576adb1eef2e56a36c38ffe792fb1c"
-    },
-    {
       "path": "ci/test/control-port-exhaustion/CMakeLists.txt",
       "sha256": "7c57fd15631250ad554fe87e41d460aaf2eea54478b37abe3651dd925cc34881"
     },

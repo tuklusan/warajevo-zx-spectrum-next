@@ -1,12 +1,7 @@
 {
   "testId": "microdrive-manager-contract",
   "command": "cmake -S ci/test/microdrive-manager -B dist/microdrive-manager -DCMAKE_BUILD_TYPE=Release && cmake --build dist/microdrive-manager --config Release --target wz_microdrive_manager_contract --parallel 2 && ctest --test-dir dist/microdrive-manager -C Release -R '^wz_microdrive_manager_contract$' --output-on-failure",
-  "workflow": ".github/workflows/microdrive-manager-contract.yml",
   "fixtures": [
-    {
-      "path": ".github/workflows/microdrive-manager-contract.yml",
-      "sha256": "afe94945618fdfcc215f6dde297001d64f28e71dfe75ff15d4e56c0ac41f242e"
-    },
     {
       "path": "ci/test/microdrive-manager/CMakeLists.txt",
       "sha256": "7c3df1ec7be712f74ef961bebc4042892847345d3e3d2035f8637e4d4a4748f6"

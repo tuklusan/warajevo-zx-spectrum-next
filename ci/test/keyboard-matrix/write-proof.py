@@ -15,7 +15,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 FIXTURES = (
-    ".github/workflows/keyboard-matrix-contract.yml",
     "ci/test/keyboard-matrix/CMakeLists.txt",
     "ci/test/keyboard-matrix/keyboard-matrix-contract.c",
     "ci/test/keyboard-matrix/write-proof.py",

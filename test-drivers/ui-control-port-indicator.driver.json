@@ -7,10 +7,6 @@
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/ui-control-port-indicator.yml",
-      "sha256": "21f117c21f3b73dfabd0f6abea1d61c3d0d137243113d3f5d18e552e6235784e"
-    },
-    {
       "path": "ci/test/ui-control-port-indicator/CMakeLists.txt",
       "sha256": "b4fe0033c5cc5481938d1dbd57a156b674c905b7ff777e6c28c1f8f5af27d164"
     },

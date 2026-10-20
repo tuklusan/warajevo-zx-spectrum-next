@@ -11,10 +11,6 @@
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/multi-instance-stress.yml",
-      "sha256": "478d34d9b315e6dfdc764aac670e637b7e392f6f7177dc7e78a13717d9476af3"
-    },
-    {
       "path": "ci/test/multi-instance/CMakeLists.txt",
       "sha256": "22d988789ef67d53753f0bb5673c19f2e73f45bcb11f4895652253fcf752a753"
     },

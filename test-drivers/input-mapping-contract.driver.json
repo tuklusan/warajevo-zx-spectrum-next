@@ -1,12 +1,7 @@
 {
   "testId": "input-mapping-contract",
   "command": "cmake -S ci/test/input-mapping -B dist/input-mapping -DCMAKE_BUILD_TYPE=Release && cmake --build dist/input-mapping --config Release --target input_mapping_contract --parallel 2 && ctest --test-dir dist/input-mapping -C Release -R '^input_mapping_contract$' --output-on-failure",
-  "workflow": ".github/workflows/input-mapping-contract.yml",
   "fixtures": [
-    {
-      "path": ".github/workflows/input-mapping-contract.yml",
-      "sha256": "853dfb14d8cf3ea3cf77595bebf67eed3ae1749d87ed8a0c3d848edcf7f273d7"
-    },
     {
       "path": "ci/test/input-mapping/CMakeLists.txt",
       "sha256": "7a3028bdb60d4baca0e714d1c8194efa8efbff85b1c0b84fcc1eaaef294a8e5a"

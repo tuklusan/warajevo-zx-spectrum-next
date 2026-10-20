@@ -15,7 +15,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 FIXTURES = (
-    ".github/workflows/debugger-window-contract.yml",
     "ci/test/debugger-window-contract/CMakeLists.txt",
     "ci/test/debugger-window-contract/write-proof.py",
     "ci/test/debugger-window-contract/debugger-window-contract.c",

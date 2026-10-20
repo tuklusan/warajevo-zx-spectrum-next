@@ -15,7 +15,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 FIXTURES = (
-    ".github/workflows/ui-networking-reconfiguration.yml",
     "ci/test/ui-networking-reconfiguration/CMakeLists.txt",
     "ci/test/ui-networking-reconfiguration/ui-networking-reconfiguration-contract.c",
     "ci/test/ui-networking-reconfiguration/write-proof.py",

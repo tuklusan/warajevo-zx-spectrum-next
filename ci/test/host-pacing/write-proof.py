@@ -16,7 +16,6 @@ from pathlib import Path
 
 
 FIXTURES = (
-    ".github/workflows/host-pacing-regression.yml",
     "ci/test/host-pacing/pacing-regression.c",
     "ci/test/host-pacing/write-proof.py",
     "src/app/wz_host_pacing.c",

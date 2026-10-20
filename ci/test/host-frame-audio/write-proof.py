@@ -16,7 +16,6 @@ from pathlib import Path
 
 
 FIXTURES = (
-    ".github/workflows/host-machine-frame-regression.yml",
     "ci/test/host-frame-audio/frame-audio-regression.c",
     "ci/test/host-frame-audio/write-proof.py",
     "ci/test/audio-delivery/sokol_audio_stub/sokol_audio.h",

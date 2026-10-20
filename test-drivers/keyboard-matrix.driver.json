@@ -7,10 +7,6 @@
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/keyboard-matrix-contract.yml",
-      "sha256": "235c5ecec42ee1693434850f27a02433b8cf0ce70a287c77e05a85e7a11e89e4"
-    },
-    {
       "path": "ci/test/keyboard-matrix/CMakeLists.txt",
       "sha256": "cbc504cffe5c505d4715850ceafffc636db313dc9767e3afbc44ec4108a4efda"
     },

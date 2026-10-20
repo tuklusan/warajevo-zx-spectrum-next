@@ -15,7 +15,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 FIXTURES = (
-    ".github/workflows/tape-loading-equivalence.yml",
     "ci/test/tape-loading-equivalence/CMakeLists.txt",
     "ci/test/tape-loading-equivalence/tape-loading-equivalence.c",
     "ci/test/tape-loading-equivalence/write-proof.py",

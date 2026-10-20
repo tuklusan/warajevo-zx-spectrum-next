@@ -1,12 +1,7 @@
 {
   "testId": "host-audio-settings",
   "command": "cmake -S ci/test/host-audio-settings -B dist/host-audio-settings -DCMAKE_BUILD_TYPE=Release && cmake --build dist/host-audio-settings --config Release --target host_audio_settings_contract --parallel 2 && ctest --test-dir dist/host-audio-settings -C Release -R '^host_audio_settings_contract$' --output-on-failure",
-  "workflow": ".github/workflows/host-audio-settings-contract.yml",
   "fixtures": [
-    {
-      "path": ".github/workflows/host-audio-settings-contract.yml",
-      "sha256": "da2a50d04c740a65a497cdd3c71f519bbd9828ea77b9fd47777a46ef3e34e98b"
-    },
     {
       "path": "ci/test/host-audio-settings/CMakeLists.txt",
       "sha256": "6b53a7c28e1ce65193537bdfece68ba37840b7d4dca7c71398f5afe71e3e866a"

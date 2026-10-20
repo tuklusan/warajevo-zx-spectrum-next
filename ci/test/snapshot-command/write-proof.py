@@ -16,7 +16,6 @@ from pathlib import Path
 
 
 FIXTURES = (
-    ".github/workflows/snapshot-command-regression.yml",
     "ci/test/snapshot-command/CMakeLists.txt",
     "ci/test/snapshot-command/snapshot-command-contract.c",
     "ci/test/snapshot-command/write-proof.py",

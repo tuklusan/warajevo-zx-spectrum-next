@@ -38,7 +38,6 @@ PROJECT_FILES = (
     "src/cmake/CMakeLists.txt",
     "ci/test/fuse-z80/CMakeLists.txt",
     "ci/test/fuse-z80/driver.json",
-    ".github/workflows/fuse-z80-regression.yml",
     "ci/test/fuse-z80/write-proof.py",
     "tests/fuse-z80-conformance.md",
     "test-drivers/fuse-z80-conformance.driver.json",
