@@ -106,6 +106,7 @@ int main(int argc, char** argv)
     size_t recovered_count = 0u;
     bool machine_initialized = false;
     bool trace_created = false;
+    const char* failure_stage = "machine init";
     int result = 1;
 
     if (argc != 2 || argv[1][0] == '\0') return 2;
@@ -130,6 +131,7 @@ int main(int argc, char** argv)
     frame_ticks = (wz_master_tick_t)machine.profile->tstates_per_frame *
         machine.profile->master_ticks_per_cpu_tstate;
 
+    failure_stage = "trace create";
     if (wz_trace_file_create(&trace_file, argv[1], 1u,
             (wz_dword_t)WZ_MACHINE_48K_PAL, 0u, UINT32_MAX) != WZ_RESULT_OK) {
         goto cleanup;
@@ -137,6 +139,7 @@ int main(int argc, char** argv)
     trace_created = true;
     wz_trace_sink_init(&trace_sink, wz_trace_file_emit, &trace_file);
     wz_machine_set_timing_trace(&machine, &trace_sink);
+    failure_stage = "frame execution";
     if (wz_headless_runner_init(&runner, &machine, NULL) != WZ_RESULT_OK ||
         wz_headless_runner_execute(&runner, frame_ticks) != WZ_RESULT_OK ||
         trace_file.failed ||
@@ -148,6 +151,7 @@ int main(int argc, char** argv)
 
     wz_trace_cpu_state_sync_init(&recovery.cpu);
     recovery.timeline_ordered = true;
+    failure_stage = "trace recovery";
     recovery_status = wz_trace_file_recover(argv[1], recover_cross_domain,
                                             &recovery, &recovered_count);
     if (recovery_status != WZ_RESULT_OK ||
@@ -176,6 +180,7 @@ int main(int argc, char** argv)
     result = 0;
 
 cleanup:
+    if (result != 0) (void)fprintf(stderr, "trace failed at %s\n", failure_stage);
     if (machine_initialized) {
         wz_machine_set_timing_trace(&machine, NULL);
         wz_machine_destroy(&machine);
