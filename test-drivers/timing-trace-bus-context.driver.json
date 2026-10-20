@@ -1,7 +1,7 @@
 {
   "testId": "timing-trace-bus-context",
   "command": "cmake -S src/cmake -B dist/timing-trace-bus-context -DCMAKE_BUILD_TYPE=Release -DWZSN_BUILD_SOKOL_HOST=ON && cmake --build dist/timing-trace-bus-context --clean-first --config Release --parallel 2 && ctest --test-dir dist/timing-trace-bus-context -C Release --output-on-failure --verbose -R ^wz_timing_trace_bus_context$",
-  "requiredCases": 1,
+  "requiredCases": 6,
   "runnerMatrix": [
     "windows-2025",
     "ubuntu-24.04",
@@ -12,11 +12,11 @@
   "fixtures": [
     {
       "path": "ci/test/timing-trace-bus-context/timing-trace-bus-context.c",
-      "sha256": "c9c73161c396f3d1edfaef728f872bdc4fba1d1de666b8b71985065986bcf62a"
+      "sha256": "d9b70777df42559a067bc7a0d87faa08e42f8edf0ea3f222f16eb7ff918dbc0d"
     },
     {
       "path": "ci/test/timing-trace-bus-context/write-proof.py",
-      "sha256": "8ea985d5b106cdde4490081122a2179599ac13ebba825ed509e257dd390f38b9"
+      "sha256": "9386847bd9d37c293575b62e34476d21b0f5091292885b08ef758aec8ceed4bf"
     },
     {
       "path": "src/core/wz_bus.c",
@@ -27,8 +27,24 @@
       "sha256": "16f92f6c7955f4cce9ca23b82754c25dcc2a29399c673f7ef1d410f2067659d8"
     },
     {
+      "path": "src/core/wz_machine.c",
+      "sha256": "697b3197a47e62f1cf43f3ae63fb688e5def2df6ae78249cdc2b193034fa9d48"
+    },
+    {
+      "path": "src/core/wz_machine_profile.c",
+      "sha256": "912a458de8d9a9d2d89bb57cac896e819d8ce82297a4e2ac707c90be1d4450b5"
+    },
+    {
       "path": "src/core/wz_z80.c",
       "sha256": "603bd5d549da7f36a534e7119fc4c442f854555fadd01f2ed31cc000d23c9941"
+    },
+    {
+      "path": "src/core/wz_runner.c",
+      "sha256": "ded90228d1227ef361170e1bc95d2b98365fa380136fd5269733b6119d8c7b90"
+    },
+    {
+      "path": "src/core/wz_runner.h",
+      "sha256": "b34e16b1c9ef80588bc6a563ce2b77099bdceb899ace0e5254a0a9669b5f6e51"
     },
     {
       "path": "src/diagnostics/wz_trace_file.c",
@@ -40,7 +56,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "e56545f0da4a55a1e92a4545f8583a84c30172deb4403567baef423ce59d43e9"
+      "sha256": "0d9d6a30371ea221eaea1cc035fd95c026328e70990bd7f02df69b176ba488eb"
     }
   ]
 }
