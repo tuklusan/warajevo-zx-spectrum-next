@@ -1,10 +1,10 @@
 {
   "testId": "native-runtime-dependency-audit",
   "status": "pass",
-  "commit": "c517c60783409bcea052adbd967ff70ae992ae84",
-  "runId": 36426614355,
+  "commit": "b19ad4c24c09fa64076550fdc16b1b99f1080e8c",
+  "runId": 39373390857,
   "runner": "Linux x86-64/AArch64 and macOS x86-64/Apple Silicon hosted matrix",
-  "timestamp": "2026-09-28T13:13:24+00:00",
+  "timestamp": "2026-10-20T05:11:41+00:00",
   "caseCount": 4,
   "runners": [
     {
@@ -12,7 +12,7 @@
       "os": "Linux",
       "architecture": "aarch64",
       "binary": "Warajevo-ZX-Spectrum-Next",
-      "binarySha256": "78d4988456255c0b4e55e95d675b088e632253755186a1f40f658620096b5380",
+      "binarySha256": "2a25322f8694ff89082f58280bb34962c8b313febfc4e4ff83c50bb0db62352a",
       "dependencies": [
         {
           "name": "ld-linux-aarch64.so.1",
@@ -305,7 +305,7 @@
       "os": "Linux",
       "architecture": "x86_64",
       "binary": "Warajevo-ZX-Spectrum-Next",
-      "binarySha256": "dd7abe03dd0b006e527dc4fc5379dfc161f3e362e11172cb2ff456ee8fec1cd8",
+      "binarySha256": "243975de73fb8ad8049d214a4c8d8bb58520173eb08a2862f27a20eedd28c310",
       "dependencies": [
         {
           "name": "ld-linux-x86-64.so.2",
@@ -598,7 +598,7 @@
       "os": "Darwin",
       "architecture": "arm64",
       "binary": "Warajevo-ZX-Spectrum-Next",
-      "binarySha256": "6cfb639a2dd82c936414cdf157f2e6ced4f51182ac583e4b52c6ae36d547178c",
+      "binarySha256": "a333e3011ccd9685d29c08ca8c09b5cfcfc766b0a49b7acd87df33b7d5b7db6a",
       "dependencies": [
         {
           "name": "AppKit",
@@ -655,7 +655,7 @@
       "os": "Darwin",
       "architecture": "x86_64",
       "binary": "Warajevo-ZX-Spectrum-Next",
-      "binarySha256": "994fd00bcf946d3069dd51d3007dcf40137ad44bd7a62a2e9aba611006579d3d",
+      "binarySha256": "bbe0e58c651246a1129c622f0dd45884ab7c74142fd85d10fc88b050ba18b391",
       "dependencies": [
         {
           "name": "AppKit",
@@ -727,7 +727,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "d3c09a688001e54098b3789349fd2e6ae37119e273c9d229848e32662813b285"
+      "sha256": "7c92695d1282104d62ac3b4c9c929a96a6ed7169533fa3e71ba6f93af1186469"
     }
   ]
 }
