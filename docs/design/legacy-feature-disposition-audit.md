@@ -45,3 +45,32 @@ All deferred/replaced/non-initial rows remain scoped as stated in Section 2.5 an
 | Historical database/shell/help system | REPLACE with modern UI where functionality is retained | SCOPED | — | §2.5 disposition is explicit; keep outside initial implementation/test closure. |
 | Historical file-conversion utilities | LATER utility work unless required by a media test | SCOPED | — | §2.5 disposition is explicit; keep outside initial implementation/test closure. |
 | DOS/BIOS/video/sound host mechanisms | REPLACE; never compatibility targets themselves | SCOPED | — | §2.5 disposition is explicit; keep outside initial implementation/test closure. |
+
+
+## Backlog crosswalk for Core criterion 54
+
+The frozen machine scope and every legacy disposition are represented in the
+ordered Phase 0–16 backlog in [04-wzsn-architectures-1-2-developer-tasks.md](04-wzsn-architectures-1-2-developer-tasks.md):
+
+| Architecture requirement | Backlog phase |
+| --- | --- |
+| ZX Spectrum 48K PAL certification | Phase 4 and Gate 4A; regression work continues in Phase 14 |
+| ZX Spectrum 128K PAL certification | Phase 9 |
+| Z80 documented and undocumented instructions | Phase 2 |
+| ULA, border, contention, floating bus | Phases 3–4 and Gate 4A |
+| Keyboard matrix and Kempston | Phase 5; UI mapping in Phase 12 |
+| Beeper | Phase 6 |
+| AY-3-8912 | Phase 9 |
+| Standard TAP, Warajevo native TAP, TZX, WAV | Phase 7; file workflows in Phase 12D |
+| SNA and Z80 snapshots | Phase 8; file workflows in Phase 12C |
+| Interface 1, Microdrive, original ZX Net | Phase 10 |
+| ZX Printer and monitor/debugger | Phase 11; manager UI in Phase 12E |
+| Runtime speed control | Phase 5; optimization/regression checks in Phase 16 |
+| Historical replacements retained by modern UI | Phases 12A–12G |
+
+The audit table above accounts for all 20 REQUIRED Section 2.5 rows and all 12
+LATER, REPLACE, NOT-required, or future-scope rows. Every REQUIRED row has a
+named implementation area and its remaining acceptance evidence is itemized
+in that row. Deferred rows remain explicitly scoped and are not promoted into
+the initial milestone. There is no umbrella "remaining compatibility" backlog
+item. Architecture-#3 routed MIC/EAR implementation remains excluded.
