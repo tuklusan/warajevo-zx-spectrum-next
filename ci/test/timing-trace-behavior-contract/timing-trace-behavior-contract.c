@@ -146,6 +146,7 @@ int main(int argc, char** argv)
     wz_qword_t failed_hash;
     wz_qword_t baseline_mid_hash;
     wz_qword_t file_mid_hash;
+    wz_qword_t file_final_hash;
     wz_qword_t before_freeze_hash;
     wz_qword_t after_freeze_hash;
     wz_qword_t before_toggle_hash;
@@ -249,10 +250,10 @@ int main(int argc, char** argv)
     REQUIRE(machine_hash(traced_a, &traced_a_hash));
     REQUIRE(machine_hash(traced_b, &traced_b_hash));
     REQUIRE(machine_hash(failed_machine, &failed_hash));
-    REQUIRE(machine_hash(file_traced, &file_mid_hash));
+    REQUIRE(machine_hash(file_traced, &file_final_hash));
     REQUIRE(baseline_hash == toggled_hash && baseline_hash == traced_a_hash &&
             baseline_hash == traced_b_hash && baseline_hash == failed_hash &&
-            baseline_hash == file_mid_hash);
+            baseline_hash == file_final_hash);
 
     (void)puts("PASS timing trace state neutrality, deterministic ordering, wrap, freeze, enable/disable, and file failure");
     result = 0;
