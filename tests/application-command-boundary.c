@@ -181,9 +181,12 @@ int main(void)
         !wz_telnet_menu_tree_format(&registry, output, sizeof(output),
                                     &output_length) ||
         output_length == 0u || strstr(output, "END\r\n") == NULL ||
-        strstr(output, "TYPE=COMMAND") == NULL ||
-        strstr(output, "STATE=ENABLED") == NULL ||
-        strstr(output, "REMOTE=DENIED CLASS=LOCAL_ONLY") == NULL ||
+        strstr(output,
+               "ITEM file PARENT=ROOT TYPE=MENU STATE=ENABLED REMOTE=ALLOWED CLASS=REMOTE_SAFE LABEL=\"File\"\r\n") == NULL ||
+        strstr(output,
+               "ITEM machine.reset PARENT=machine TYPE=COMMAND STATE=ENABLED REMOTE=ALLOWED CLASS=REMOTE_SAFE LABEL=\"Reset\"\r\n") == NULL ||
+        strstr(output,
+               "ITEM view.status_panel.toggle PARENT=view TYPE=COMMAND STATE=ENABLED REMOTE=DENIED CLASS=LOCAL_ONLY LABEL=\"Toggle Status Panel\"\r\n") == NULL ||
         strstr(output, private_recent_path) != NULL ||
         strstr(output, second_recent_path) != NULL) {
         return fail_with_machine(&canonical_machine,

@@ -175,7 +175,7 @@
     },
     {
       "path": "tests/application-command-boundary.c",
-      "sha256": "094bd09e8805e287103969b6e80e3c40616c604ccbc3d744aaea68631b0a0157"
+      "sha256": "f30410b09e1ae325edf73c73b4ed8434d7ea209dacdcc9bb6bfe511caf6ee8d1"
     },
     {
       "path": "tests/application-command-boundary.md",
