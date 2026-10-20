@@ -1,35 +1,121 @@
 {
   "testId": "keyboard-core-boundary",
   "status": "pass",
-  "commit": "5adbb6b4985ec19fc78f4b22f020ba187a5f11ff",
-  "runId": 39393277555,
+  "commit": "88fed6a1b248337d7e907a45196c1f4957bd9f69",
+  "runId": 39395319811,
   "runner": "Windows/macOS x64 and ARM64",
-  "timestamp": "2026-10-20T08:29:55+00:00",
+  "timestamp": "2026-10-20T08:46:56+00:00",
   "caseCount": 68,
   "runners": [
-    {"id": "macos-arm64", "status": "pass", "commit": "5adbb6b4985ec19fc78f4b22f020ba187a5f11ff", "os": "macOS", "architecture": "ARM64", "runnerName": "macos15", "assertions": 17},
-    {"id": "macos-x64", "status": "pass", "commit": "5adbb6b4985ec19fc78f4b22f020ba187a5f11ff", "os": "macOS", "architecture": "X64", "runnerName": "macos15", "assertions": 17},
-    {"id": "windows-arm64", "status": "pass", "commit": "5adbb6b4985ec19fc78f4b22f020ba187a5f11ff", "os": "Windows", "architecture": "ARM64", "runnerName": "win11-vs2026-arm64", "assertions": 17},
-    {"id": "windows-x64", "status": "pass", "commit": "5adbb6b4985ec19fc78f4b22f020ba187a5f11ff", "os": "Windows", "architecture": "X64", "runnerName": "win25-vs2026", "assertions": 17}
+    {
+      "id": "macos-arm64",
+      "status": "pass",
+      "commit": "88fed6a1b248337d7e907a45196c1f4957bd9f69",
+      "os": "macOS",
+      "architecture": "ARM64",
+      "runnerName": "macos15",
+      "assertions": 17
+    },
+    {
+      "id": "macos-x64",
+      "status": "pass",
+      "commit": "88fed6a1b248337d7e907a45196c1f4957bd9f69",
+      "os": "macOS",
+      "architecture": "X64",
+      "runnerName": "macos15",
+      "assertions": 17
+    },
+    {
+      "id": "windows-arm64",
+      "status": "pass",
+      "commit": "88fed6a1b248337d7e907a45196c1f4957bd9f69",
+      "os": "Windows",
+      "architecture": "ARM64",
+      "runnerName": "win11-vs2026-arm64",
+      "assertions": 17
+    },
+    {
+      "id": "windows-x64",
+      "status": "pass",
+      "commit": "88fed6a1b248337d7e907a45196c1f4957bd9f69",
+      "os": "Windows",
+      "architecture": "X64",
+      "runnerName": "win25-vs2026",
+      "assertions": 17
+    }
   ],
   "fixtures": [
-    {"path": ".github/workflows/keyboard-core-boundary.yml", "sha256": "974e9331531d8f28e39dba04578d78e082e5483501dedd243f14cc1b52bb2771"},
-    {"path": "ci/test/keyboard-core-boundary/CMakeLists.txt", "sha256": "25c4f401693ea27171ec8fa5024811c5e2330cef40d8a6a61f76b0d6dde3b472"},
-    {"path": "ci/test/keyboard-core-boundary/keyboard-core-boundary.c", "sha256": "80413223f540e5032b9bab19dc7fd6a7a4936b8358109d21a0ec8074bbad9c44"},
-    {"path": "ci/test/keyboard-core-boundary/write-proof.py", "sha256": "a2c5f2b20b1336669448e1dbf03b1f594f588df1cff5b5f7a54c908ff9f2b785"},
-    {"path": "src/app/wz_input_arbiter.c", "sha256": "52bc39d6c9d5326e76d695f4f4a725f410e02cb9852a48a5f13b266ce2523bcb"},
-    {"path": "src/app/wz_input_arbiter.h", "sha256": "d16b682056e7bf3864c46083407eaca716956ae137e23ab83d51190afc1dffcd"},
-    {"path": "src/app/wz_input_event.h", "sha256": "a5d0239f02f62c0eadf7fca03524b1ffc01bcdea987c7a9ea89d92658eeab382"},
-    {"path": "src/app/wz_input_projection.c", "sha256": "5f118c8dd21d5ee713e10a754388b3bc8ed66b29b91388f2bb019f67d20c9a93"},
-    {"path": "src/app/wz_input_projection.h", "sha256": "c63f9e197869f1aab365c01862b1b56de997b82cfe78bcfbd3a8c128b3badad4"},
-    {"path": "src/app/wz_sokol_main.c", "sha256": "f795dce0dfe0ec8a0e2b9db43a47007bcf739873d2e5238571be50edbcffbc85"},
-    {"path": "src/app/wz_telnet_input.c", "sha256": "e682ff54b87756ba572c84e5f48d7673df5957501da89656db39386d7ae64b0c"},
-    {"path": "src/app/wz_telnet_input.h", "sha256": "e826751e33025bb69dd7199929ecb64a974598ae2ddc2cec208f5c34b030a4bc"},
-    {"path": "src/app/wz_input_timing.h", "sha256": "e0bd8f702f7ba78e0408887fce53c82f08dda1fde6319b30dba72b00174f0d83"},
-    {"path": "src/core/wz_keyboard_matrix.c", "sha256": "68deeb821563f28e5af3e0872765fedd5ae7e24a0491c011c24ebb9d4abbd575"},
-    {"path": "src/core/wz_keyboard_matrix.h", "sha256": "85282af5969a6212c528cb92edafd7d3fbf71375bbb4be1bad5cd9622e1cf976"},
-    {"path": "src/core/wz_machine.c", "sha256": "360fe71b54c4ac705cd9d8f32d20bc017af7d3e6b59dc36ebf125a377cf62489"},
-    {"path": "src/core/wz_machine.h", "sha256": "e7078ec7aca25b1a0b168fd050fd81506e98f0002433144acb8af38878637864"},
-    {"path": "src/cmake/CMakeLists.txt", "sha256": "77384e43c0307b13c68cd6d7993e0af25457c4f2d203b0e18f191adba0c063b3"}
+    {
+      "path": ".github/workflows/keyboard-core-boundary.yml",
+      "sha256": "974e9331531d8f28e39dba04578d78e082e5483501dedd243f14cc1b52bb2771"
+    },
+    {
+      "path": "ci/test/keyboard-core-boundary/CMakeLists.txt",
+      "sha256": "25c4f401693ea27171ec8fa5024811c5e2330cef40d8a6a61f76b0d6dde3b472"
+    },
+    {
+      "path": "ci/test/keyboard-core-boundary/keyboard-core-boundary.c",
+      "sha256": "80413223f540e5032b9bab19dc7fd6a7a4936b8358109d21a0ec8074bbad9c44"
+    },
+    {
+      "path": "ci/test/keyboard-core-boundary/write-proof.py",
+      "sha256": "a2c5f2b20b1336669448e1dbf03b1f594f588df1cff5b5f7a54c908ff9f2b785"
+    },
+    {
+      "path": "src/app/wz_input_arbiter.c",
+      "sha256": "52bc39d6c9d5326e76d695f4f4a725f410e02cb9852a48a5f13b266ce2523bcb"
+    },
+    {
+      "path": "src/app/wz_input_arbiter.h",
+      "sha256": "d16b682056e7bf3864c46083407eaca716956ae137e23ab83d51190afc1dffcd"
+    },
+    {
+      "path": "src/app/wz_input_event.h",
+      "sha256": "a5d0239f02f62c0eadf7fca03524b1ffc01bcdea987c7a9ea89d92658eeab382"
+    },
+    {
+      "path": "src/app/wz_input_projection.c",
+      "sha256": "5f118c8dd21d5ee713e10a754388b3bc8ed66b29b91388f2bb019f67d20c9a93"
+    },
+    {
+      "path": "src/app/wz_input_projection.h",
+      "sha256": "c63f9e197869f1aab365c01862b1b56de997b82cfe78bcfbd3a8c128b3badad4"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "f795dce0dfe0ec8a0e2b9db43a47007bcf739873d2e5238571be50edbcffbc85"
+    },
+    {
+      "path": "src/app/wz_telnet_input.c",
+      "sha256": "e682ff54b87756ba572c84e5f48d7673df5957501da89656db39386d7ae64b0c"
+    },
+    {
+      "path": "src/app/wz_telnet_input.h",
+      "sha256": "e826751e33025bb69dd7199929ecb64a974598ae2ddc2cec208f5c34b030a4bc"
+    },
+    {
+      "path": "src/app/wz_input_timing.h",
+      "sha256": "e0bd8f702f7ba78e0408887fce53c82f08dda1fde6319b30dba72b00174f0d83"
+    },
+    {
+      "path": "src/core/wz_keyboard_matrix.c",
+      "sha256": "68deeb821563f28e5af3e0872765fedd5ae7e24a0491c011c24ebb9d4abbd575"
+    },
+    {
+      "path": "src/core/wz_keyboard_matrix.h",
+      "sha256": "85282af5969a6212c528cb92edafd7d3fbf71375bbb4be1bad5cd9622e1cf976"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "360fe71b54c4ac705cd9d8f32d20bc017af7d3e6b59dc36ebf125a377cf62489"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "e7078ec7aca25b1a0b168fd050fd81506e98f0002433144acb8af38878637864"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "77384e43c0307b13c68cd6d7993e0af25457c4f2d203b0e18f191adba0c063b3"
+    }
   ]
 }

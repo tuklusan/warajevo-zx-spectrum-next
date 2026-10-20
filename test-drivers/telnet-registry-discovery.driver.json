@@ -19,7 +19,7 @@
     },
     {
       "path": "ci/test/application-command-boundary/CMakeLists.txt",
-      "sha256": "67875d643da89a4712c0d9ce2bdf3c14ebca0cd864e49e24de32c250902a8e52"
+      "sha256": "b9ecc99611f6ce4e96302a8cceece0537a6178e7b0bd7fb25a7d2a27ccb99c20"
     },
     {
       "path": "ci/test/application-command-boundary/README.md",
@@ -187,7 +187,7 @@
     },
     {
       "path": "src/core/wz_z80.c",
-      "sha256": "a4a33d8eeb01eba32cfea2af38e8d65ab8b89c5e0b8cee7de93ba34781cbec49"
+      "sha256": "fa32e1faa87785cfbb128966541e1066c7eafadba76c01f10fa6703e2fc8095a"
     },
     {
       "path": "src/core/wz_zxnet.c",
