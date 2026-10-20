@@ -140,6 +140,13 @@ set_target_properties(wz_ula_128k_trace_fixture PROPERTIES
     C_STANDARD_REQUIRED ON
     C_EXTENSIONS OFF)
 
+if(UNIX)
+    add_executable(
+        wz_private_media_playback
+        ${WZSN_REPO_ROOT}/ci/test/private-media-playback/private-media-playback.c)
+    target_link_libraries(wz_private_media_playback PRIVATE wz_core wz_warnings)
+endif()
+
 if(WZSN_FUSE_Z80_TEST_INPUT AND WZSN_FUSE_Z80_TEST_EXPECTED)
     add_executable(wz_tests ${WZSN_TEST_ROOT}/fuse-z80-conformance.c)
     target_link_libraries(wz_tests PRIVATE wz_core wz_warnings)
@@ -478,6 +485,12 @@ add_test(NAME wz_ula_128k_trace_contract
 set_tests_properties(wz_ula_128k_trace_contract PROPERTIES
     PASS_REGULAR_EXPRESSION
         "PASS 128K PAL full-frame ULA trace follows screen-bank paging")
+if(UNIX)
+    add_test(NAME wz_private_media_playback
+        COMMAND wz_private_media_playback "${WZSN_REPO_ROOT}/test-media")
+    set_tests_properties(wz_private_media_playback PROPERTIES
+        PASS_REGULAR_EXPRESSION "\"status\":\"pass\"")
+endif()
 add_executable(
     wz_file_open_run_tests
     ${WZSN_REPO_ROOT}/ci/test/file-open-run/wz_file_open_run_tests.c

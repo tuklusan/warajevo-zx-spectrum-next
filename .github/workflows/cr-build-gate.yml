@@ -48,6 +48,11 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v5
 
+      - name: Fetch private media for playback regression
+        if: runner.os != 'Windows'
+        shell: bash
+        run: git lfs pull --include='test-media/**'
+
       - name: Verify native runner architecture
         shell: bash
         run: |

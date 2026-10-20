@@ -7,8 +7,10 @@ SANYALnet Labs." See LICENSE for full terms. -->
 
 # Hosted private-media playback
 
-The hosted Linux contract checks every authorized TAP/TZX input in the
-temporary runner checkout. Production parsers expand each file to canonical
+The hosted Linux and macOS contract checks every authorized TAP/TZX input in
+temporary native runner checkouts on x64 and ARM64. The build workflow pulls
+only `test-media/**` on those POSIX runners; Windows does not run this POSIX
+playback fixture. Production parsers expand each file to canonical
 master-tick EAR segments; the production machine mount, transport, motor-stop,
 and playback state then consume the full segment timeline. The test reports
 aggregate counts and hashes only its public harness/source fixtures. Media

@@ -1,6 +1,6 @@
 {
   "testId": "private-media-playback",
-  "command": "cmake -S ci/test/private-media-playback -B dist/private-media-playback -G Ninja -DCMAKE_BUILD_TYPE=Release && cmake --build dist/private-media-playback --target wz_private_media_playback && dist/private-media-playback/wz_private_media_playback test-media",
+  "command": "git lfs pull --include='test-media/**' && cmake -S src/cmake -B dist/private-media-playback -DCMAKE_BUILD_TYPE=Release -DWZSN_BUILD_SOKOL_HOST=ON && cmake --build dist/private-media-playback --clean-first --config Release --target wz_private_media_playback --parallel 2 && ctest --test-dir dist/private-media-playback -C Release --output-on-failure --verbose -R ^wz_private_media_playback$",
   "requiredMediaFiles": 20,
   "fixtures": [
     {
@@ -17,11 +17,11 @@
     },
     {
       "path": "docs/design/private-media-playback-test.md",
-      "sha256": "563062baf5ecf6fd68d026bc0b25d6427f9436d71d301c46d647f7eaeca8cc3a"
+      "sha256": "de59a8511da7ca25775687155802efbb9726a39f313753c6f0973d15ed80f15a"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "697b3197a47e62f1cf43f3ae63fb688e5def2df6ae78249cdc2b193034fa9d48"
+      "sha256": "4c87c91fb2e2ef72d8fb81d53e0d476e0939b960d37b03f0d28a347097e8414a"
     },
     {
       "path": "src/core/wz_machine.h",
@@ -34,6 +34,20 @@
     {
       "path": "src/core/wz_tape.h",
       "sha256": "d483f3f99bcfa26590bf259114193d2314dd2af2720316bf66021462f5c31fd6"
+    },
+    {
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "8c475b087a4f2cf4f67bf7532527d1a2fd0de9b285bb1f74539037b9c434f894"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "bfe8b8077fa09157b3b9370c8e6916d7f257a53af8e9475a1a298bc62a277a39"
     }
+  ],
+  "runnerMatrix": [
+    "ubuntu-24.04",
+    "ubuntu-24.04-arm",
+    "macos-15-intel",
+    "macos-15"
   ]
 }
