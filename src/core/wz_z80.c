@@ -2218,6 +2218,8 @@ execute_opcode:
     decode = wz_z80_primary_opcode_decode(opcode);
     switch (decode->operation) {
     case WZ_Z80_PRIMARY_OP_NOP:
+        /* Reimplementation of the Z80 NOP behavior; no assembly is translated.
+           Warajevo 2.50 Z80.ASM:NOP_ is recorded in the migration ledger. */
         machine->master_tick += 8u;
         return WZ_RESULT_OK;
     case WZ_Z80_PRIMARY_OP_LD_A_N:
