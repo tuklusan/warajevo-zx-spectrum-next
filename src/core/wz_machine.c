@@ -1272,11 +1272,14 @@ wz_result_t wz_machine_trace_ula_until(wz_machine_t* machine,
                                       wz_master_tick_t master_tick,
                                       bool inclusive)
 {
-    if (machine == 0 || machine->profile == 0) {
+    if (machine == 0) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
     if (machine->timing_trace == 0) {
         return WZ_RESULT_OK;
+    }
+    if (machine->profile == 0) {
+        return WZ_RESULT_INVALID_STATE;
     }
     return wz_machine_ula_capture_until(machine, master_tick, inclusive);
 }

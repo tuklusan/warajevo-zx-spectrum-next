@@ -7,6 +7,7 @@
  */
 
 #include <stdio.h>
+#include <stdbool.h>
 
 #include "core/wz_machine.h"
 #include "core/wz_machine_profile.h"

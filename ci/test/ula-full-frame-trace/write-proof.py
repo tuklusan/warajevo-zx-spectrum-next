@@ -38,16 +38,18 @@ def main() -> None:
 
     fixtures = []
     for item in driver["fixtures"]:
-        relative = PurePosixPath(item["path"])
-        if relative.is_absolute() or ".." in relative.parts:
+        path = item["path"]
+        relative = PurePosixPath(path)
+        if (re.fullmatch(r"[A-Za-z0-9._/-]+", path) is None or
+                relative.is_absolute() or ".." in relative.parts):
             raise SystemExit(f"unsafe fixture path: {item['path']}")
         committed = subprocess.check_output(
-            ["git", "show", f"{args.commit}:{relative.as_posix()}"],
+            ["git", "show", f"{args.commit}:{path}"],
             cwd=root, stderr=subprocess.PIPE)
         digest = hashlib.sha256(committed).hexdigest()
         if digest != item["sha256"]:
             raise SystemExit(f"fixture hash mismatch: {item['path']}")
-        fixtures.append({"path": item["path"], "sha256": digest})
+        fixtures.append({"path": path, "sha256": digest})
 
     proof = {
         "testId": driver["testId"],

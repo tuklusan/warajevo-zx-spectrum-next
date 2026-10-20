@@ -19,7 +19,7 @@
     },
     {
       "path": "ci/test/ula-full-frame-trace/ula-full-frame-trace-fixture.c",
-      "sha256": "6c0e524628714a9c43fb1358422ed4c7a97526a30da5f607abb316321534cd79"
+      "sha256": "8c86412c8a3857c92662ba13b9d7fa5f35757ae19917f94d3321e10b2e56f8ab"
     },
     {
       "path": "ci/test/ula-full-frame-trace/verify-full-frame.cmake",
@@ -27,7 +27,7 @@
     },
     {
       "path": "ci/test/ula-full-frame-trace/write-proof.py",
-      "sha256": "682e308746ec05ee0b564d6cda0db4bcacfbe617bab84f7fb8fa61d143f1444a"
+      "sha256": "cdf66f1c1eb0a950cba4644c5570081b375c793d7384660afc946f83d0d17bd0"
     },
     {
       "path": "src/core/wz_bus.c",
@@ -35,7 +35,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "f27a2ce4cf89581c684689b35e8a0427a0d0665bad2984525b1659335117fbea"
+      "sha256": "4fc977e040429b0141a0f9549a4cceaa1a68a3c764dbe782d11340aa70c05371"
     },
     {
       "path": "src/core/wz_machine_internal.h",
