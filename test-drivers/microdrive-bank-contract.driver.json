@@ -25,7 +25,7 @@
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "c2c287cae3c9719549781ecf77813400ddbdda89aaf3f1866eb7ea0d66312cdf"
+      "sha256": "f507533df4eb3984feaaddd73deff45d76c86990e53c5c1c89c61401dd1a6b8c"
     },
     {
       "path": "src/core/wz_state.h",
