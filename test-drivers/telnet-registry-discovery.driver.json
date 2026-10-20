@@ -23,7 +23,7 @@
     },
     {
       "path": "ci/test/application-command-boundary/README.md",
-      "sha256": "2a8fdaefb88401e701dc06829d5290461a708dca34bc6a04b1e1748a7f2bba05"
+      "sha256": "35e0cad5449adcee87a7636d03e66eb2e3df98c431569411e6856abe5f634839"
     },
     {
       "path": "ci/test/application-command-boundary/alias-response-regression.c",
