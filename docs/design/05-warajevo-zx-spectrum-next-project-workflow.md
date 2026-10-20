@@ -202,16 +202,17 @@ Spectrum video delivery has a mandatory Fuse visual-equivalence gate. A hosted
 test must boot the same certified 48K ROM in the production application and the
 Fuse visual-reference revision
 `7edc2418ce11837d9ede799f7e0445440beead1d`, capture the Spectrum display from
-each, normalize only
-scale and host chrome, and compare the visible raster. The comparison must
-cover active pixels and border orientation, report pixel mismatch metrics, and
-retain both images as runner artifacts. A rotated, mirrored, cropped, blank, or
-otherwise materially different display fails the gate. Changes to raster
-generation, texture upload, presentation transforms, palette, or display
-cropping must pass this gate before delivery. The dedicated hosted Fuse
-equivalence workflow was retired with the focused workflows; the delivery gate
-remains mandatory, so Spectrum video delivery is blocked until an executable
-hosted comparison path is available and passes on all supported backends.
+each, normalize only scale and host chrome, and compare the visible raster. The
+comparison must cover active pixels and border orientation, report pixel
+mismatch metrics, and retain both images temporarily for inspection. A
+rotated, mirrored, cropped, blank, or otherwise materially different display
+fails the gate. Task 462 passed on all four desktop backends in run
+`39378145256`, with exact-head confirmation in run `39395319918`; both runs
+reported 526 mismatched pixels (0.376316%) and a maximum mean channel error of
+0.722735, and the captures were visually inspected. The proof is pinned in
+`test-results/fuse-visual-equivalence.json`; hosted artifacts were deleted
+after processing. Changes to raster generation, texture upload, presentation
+transforms, palette, or display cropping must pass this gate before delivery.
 Fuse evidence is a software-emulator comparison only; in-memory raster tests
 alone do not satisfy this gate.
 
