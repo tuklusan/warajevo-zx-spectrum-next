@@ -110,16 +110,8 @@ jobs:
           Get-Process -Name wsl,WindowsTerminal -ErrorAction SilentlyContinue |
             Stop-Process -Force -ErrorAction SilentlyContinue
           $keyboard = New-Object -ComObject WScript.Shell
-          1..5 | ForEach-Object {
-            $keyboard.SendKeys('{ENTER}')
-            Start-Sleep -Seconds 2
-            Get-Process -Name wsl,WindowsTerminal -ErrorAction SilentlyContinue |
-              Stop-Process -Force -ErrorAction SilentlyContinue
-          }
-          Get-Process -Name wsl,WindowsTerminal -ErrorAction SilentlyContinue |
-            Stop-Process -Force -ErrorAction SilentlyContinue
           $keyboard.SendKeys('{ESC}')
-          Start-Sleep -Seconds 1
+          Start-Sleep -Seconds 2
           Get-Process -Name wsl,WindowsTerminal -ErrorAction SilentlyContinue |
             Stop-Process -Force -ErrorAction SilentlyContinue
           Get-Process -Name msoobe,UserOOBEBroker,CloudExperienceHostBroker -ErrorAction SilentlyContinue |
@@ -134,6 +126,9 @@ jobs:
           Start-Sleep -Seconds 2
           $overlay = Get-Process -Name msoobe,UserOOBEBroker,CloudExperienceHostBroker -ErrorAction SilentlyContinue
           if ($overlay) { throw "Windows first-logon overlay remains: $($overlay.Name -join ', ')" }
+          $wslWindow = Get-Process -Name wsl,WindowsTerminal -ErrorAction SilentlyContinue |
+            Where-Object { $_.MainWindowHandle -ne 0 }
+          if ($wslWindow) { throw "WSL setup window remains: $($wslWindow.Name -join ', ')" }
       - name: Download pinned Fuse display
         uses: actions/download-artifact@v4
         with:
