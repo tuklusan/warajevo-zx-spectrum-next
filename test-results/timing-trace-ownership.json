@@ -1,0 +1,88 @@
+{
+  "testId": "timing-trace-ownership",
+  "status": "pass",
+  "commit": "e1298788dd3ecd6bced155db5ed0b702266764e7",
+  "runId": 39407686373,
+  "timestamp": "2026-10-20T10:25:34+00:00",
+  "caseCount": 11,
+  "observedOutput": "PASS one of eight concurrent processes exclusively owned and froze the shared trace path",
+  "fixtures": [
+    {
+      "path": ".github/workflows/timing-trace-ownership.yml",
+      "sha256": "730903720681ee89927ed7456d20851eaacab315597609a381684bde2b0dcc14"
+    },
+    {
+      "path": "ci/test/timing-trace-ownership/CMakeLists.txt",
+      "sha256": "1ae8719de7bd68a453615ceb0f842b53cac269bae883e64f0f57f750c253e1f6"
+    },
+    {
+      "path": "ci/test/timing-trace-ownership/README.md",
+      "sha256": "31c8d5ef60e099a4609e079fdcf40c292cfe21410293211ae7630d5cd39c7239"
+    },
+    {
+      "path": "ci/test/timing-trace-ownership/timing-trace-ownership.md",
+      "sha256": "79a1616ee58df480cf8f417cc7a73a4ba6b01ac58064c5e8ea8ac7263bd774af"
+    },
+    {
+      "path": "ci/test/timing-trace-ownership/trace-owner-fixture.c",
+      "sha256": "202a74d6cd96088819343d215189c1f1816f2ca87f11c6b07dd94c054f57f442"
+    },
+    {
+      "path": "ci/test/timing-trace-ownership/verify-ownership.py",
+      "sha256": "b6e8e57bc2f0327e84dbf713ad569e49274125eb49f341464c838761346a70cc"
+    },
+    {
+      "path": "ci/test/timing-trace-ownership/write-proof.py",
+      "sha256": "edab795f1175f09b6b77b3138ef194fec6d09fccbd75975b25337613170041f8"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.c",
+      "sha256": "6cf2f5862becd86879418ee6f0057c3f559e506f03fdec111923d91f7c04d747"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.h",
+      "sha256": "5538d5d54e40f029196a5a3275f7c6f4c5d8a542ba000a680379037e3cbb2d0b"
+    },
+    {
+      "path": "src/core/wz_trace.h",
+      "sha256": "906c7f54ac8a56b6bb8b797d7a471a581c2849e5b2bd1f542bc59dbf39ab7a6c"
+    },
+    {
+      "path": "src/core/wz_types.h",
+      "sha256": "b989adaa74e4ac0ec7e753da23a3fd16a3c02561744cca893fcd66f7c077c409"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "77384e43c0307b13c68cd6d7993e0af25457c4f2d203b0e18f191adba0c063b3"
+    }
+  ],
+  "runner": "Windows x64, Windows ARM64, macOS x64, and macOS ARM64 hosted runners",
+  "workflowRunId": 39407686373,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39407686373",
+  "runnerResults": [
+    {
+      "runner": "GitHub Actions 1000113339/Windows/ARM64",
+      "status": "pass",
+      "caseCount": 11,
+      "timestamp": "2026-10-20T10:25:34+00:00"
+    },
+    {
+      "runner": "GitHub Actions 1000113340/Windows/X64",
+      "status": "pass",
+      "caseCount": 11,
+      "timestamp": "2026-10-20T10:25:03+00:00"
+    },
+    {
+      "runner": "GitHub Actions 1000113341/macOS/ARM64",
+      "status": "pass",
+      "caseCount": 11,
+      "timestamp": "2026-10-20T10:24:40+00:00"
+    },
+    {
+      "runner": "GitHub Actions 1000113354/macOS/X64",
+      "status": "pass",
+      "caseCount": 11,
+      "timestamp": "2026-10-20T10:25:09+00:00"
+    }
+  ]
+}

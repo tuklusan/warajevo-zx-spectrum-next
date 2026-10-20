@@ -30,3 +30,6 @@ Task 461 is not ready to create or announce an
 implementation-complete candidate until every applicable item above is closed.
 Task 462 is closed: exact-head Fuse visual equivalence passed all four desktop backends in run `39378145256` at `c2c3368991a4c818a29e04cb9a10af36c75e480b`. The certified ROM, Fuse revision, 526-pixel mismatch count (0.376316%), and maximum mean channel error (0.722735) are pinned in [fuse-visual-equivalence.json](../../test-results/fuse-visual-equivalence.json); the tracked per-runner captures and difference images were visually inspected. Task 461 remains open because other applicable implementation and release-readiness criteria remain incomplete.
 
+
+
+Trace process ownership addendum: hosted run `39407686373` at source `e1298788dd3ecd6bced155db5ed0b702266764e7` passed the eight-process exclusive-owner race on all four desktop runners; proof: [timing-trace-ownership.json](../../test-results/timing-trace-ownership.json). Separate-process trace ownership is now evidenced; ULA/contention reconstruction and wrapped/abrupt CLI recovery remain open under Task 455.
