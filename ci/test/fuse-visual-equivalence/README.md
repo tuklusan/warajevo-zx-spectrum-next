@@ -29,9 +29,10 @@ The comparator rejects blank captures and undersized active-area crops, but
 cannot determine whether a sufficiently large caller-selected application crop
 omitted some border. The comparator does not treat the application's
 pre-presentation raster as a display capture. The hosted delivery gate passed
-all four supported backends in run `38367375863`; the pinned metrics and
-capture hashes are recorded in
-[`test-results/fuse-visual-equivalence.json`](../../../test-results/fuse-visual-equivalence.json).
+all four supported backends in exact-head run `39378145256` on
+`c2c3368991a4c818a29e04cb9a10af36c75e480b`; metrics, hashes, and reviewed PNGs are pinned in
+[`test-results/fuse-visual-equivalence.json`](../../../test-results/fuse-visual-equivalence.json)
+and `test-results/fuse-visual-equivalence/`. GitHub artifacts were deleted after processing.
 
 Pillow is required. The hosted runner should install it with its system Python
 package manager before invoking the comparator.

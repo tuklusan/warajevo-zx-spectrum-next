@@ -1,18 +1,21 @@
 {
   "schema": 1,
   "status": "pass",
-  "projectCommit": "500a7cbd44c3d2ae3374bfbbfbdaaed7ab4d21e7",
-  "workflowRunId": "39365677443",
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39365677443",
+  "projectCommit": "c2c3368991a4c818a29e04cb9a10af36c75e480b",
+  "workflowRunId": 39378145256,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39378145256",
   "fuseRevision": "7edc2418ce11837d9ede799f7e0445440beead1d",
   "romSha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42",
   "reference": {
-    "artifact": "fuse-screen-reference-500a7cbd44c3d2ae3374bfbbfbdaaed7ab4d21e7",
+    "artifact": "fuse-screen-reference-c2c3368991a4c818a29e04cb9a10af36c75e480b",
     "sha256": "d93bbbd59a0a7a675780f198697401b2e2f63b85a6fa2d9469107e7d82b83302",
     "size": [
       320,
       240
-    ]
+    ],
+    "normalizedSha256": "e6a6bfc584742ff0e5c8ed38c0436b57d0a8461ea5ab5249fea8c86e8f1391ee",
+    "evidenceFile": "test-results/fuse-visual-equivalence/reference-fuse.png",
+    "normalizedEvidenceFile": "test-results/fuse-visual-equivalence/reference-normalized.png"
   },
   "comparison": {
     "size": [
@@ -28,40 +31,60 @@
   "platforms": {
     "windows-x64": {
       "status": "pass",
-      "artifact": "fuse-visual-equivalence-windows-x86_64-500a7cbd44c3d2ae3374bfbbfbdaaed7ab4d21e7",
+      "artifact": "fuse-visual-equivalence-windows-x86_64-c2c3368991a4c818a29e04cb9a10af36c75e480b",
       "captureSha256": "2c791d54f7e92c84d24150419b2a83d3dd18fb4f9c9ecb3611e86037b57b68dc",
       "normalizedSha256": "0651359a146523079e090cb8e7331776b42ca8c920e81330bcbcce2bd0e5f03e",
       "mismatchedPixels": 526,
       "mismatchPercent": 0.376316,
-      "meanAbsoluteChannelError": 0.722527
+      "meanAbsoluteChannelError": 0.722527,
+      "evidenceFiles": {
+        "capture": "test-results/fuse-visual-equivalence/application-windows-x64-capture.png",
+        "normalized": "test-results/fuse-visual-equivalence/application-windows-x64-normalized.png",
+        "difference": "test-results/fuse-visual-equivalence/difference-windows-x64.png"
+      }
     },
     "windows-arm64": {
       "status": "pass",
-      "artifact": "fuse-visual-equivalence-windows-arm64-500a7cbd44c3d2ae3374bfbbfbdaaed7ab4d21e7",
+      "artifact": "fuse-visual-equivalence-windows-arm64-c2c3368991a4c818a29e04cb9a10af36c75e480b",
       "captureSha256": "2c791d54f7e92c84d24150419b2a83d3dd18fb4f9c9ecb3611e86037b57b68dc",
       "normalizedSha256": "0651359a146523079e090cb8e7331776b42ca8c920e81330bcbcce2bd0e5f03e",
       "mismatchedPixels": 526,
       "mismatchPercent": 0.376316,
-      "meanAbsoluteChannelError": 0.722527
+      "meanAbsoluteChannelError": 0.722527,
+      "evidenceFiles": {
+        "capture": "test-results/fuse-visual-equivalence/application-windows-arm64-capture.png",
+        "normalized": "test-results/fuse-visual-equivalence/application-windows-arm64-normalized.png",
+        "difference": "test-results/fuse-visual-equivalence/difference-windows-arm64.png"
+      }
     },
     "macos-x64": {
       "status": "pass",
-      "artifact": "fuse-visual-equivalence-macos-x86_64-500a7cbd44c3d2ae3374bfbbfbdaaed7ab4d21e7",
+      "artifact": "fuse-visual-equivalence-macos-x86_64-c2c3368991a4c818a29e04cb9a10af36c75e480b",
       "captureSha256": "26adbf33765354ef0061f32372558de8338be334cd71e6c40165e58470d46028",
       "normalizedSha256": "fb40969d8687844dc1d5c795b1bf12b2cac47718b8928a7dcc4650a7010474a0",
       "mismatchedPixels": 526,
       "mismatchPercent": 0.376316,
-      "meanAbsoluteChannelError": 0.722527
+      "meanAbsoluteChannelError": 0.722527,
+      "evidenceFiles": {
+        "capture": "test-results/fuse-visual-equivalence/application-macos-x64-capture.png",
+        "normalized": "test-results/fuse-visual-equivalence/application-macos-x64-normalized.png",
+        "difference": "test-results/fuse-visual-equivalence/difference-macos-x64.png"
+      }
     },
     "macos-arm64": {
       "status": "pass",
-      "artifact": "fuse-visual-equivalence-macos-arm64-500a7cbd44c3d2ae3374bfbbfbdaaed7ab4d21e7",
+      "artifact": "fuse-visual-equivalence-macos-arm64-c2c3368991a4c818a29e04cb9a10af36c75e480b",
       "captureSha256": "528d86a315efa63a9098ee47996b4a0f37515e1c63113e3101d4ff72d6168bc4",
       "normalizedSha256": "d2a7c4c012810b4e7df624a9b4493a4718a37485893a54b3b064dbae5b5396fa",
       "mismatchedPixels": 526,
       "mismatchPercent": 0.376316,
-      "meanAbsoluteChannelError": 0.722735
+      "meanAbsoluteChannelError": 0.722735,
+      "evidenceFiles": {
+        "capture": "test-results/fuse-visual-equivalence/application-macos-arm64-capture.png",
+        "normalized": "test-results/fuse-visual-equivalence/application-macos-arm64-normalized.png",
+        "difference": "test-results/fuse-visual-equivalence/difference-macos-arm64.png"
+      }
     }
   },
-  "artifactRetentionDays": 1
+  "capturesVisuallyInspected": true
 }
