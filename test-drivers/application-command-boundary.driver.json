@@ -167,7 +167,7 @@
     },
     {
       "path": "src/core/wz_z80.c",
-      "sha256": "73c05bd1c572d60dc398c065c7ea0441d123ce9f72e8752bfdb4aed43a37e9b2"
+      "sha256": "a4a33d8eeb01eba32cfea2af38e8d65ab8b89c5e0b8cee7de93ba34781cbec49"
     },
     {
       "path": "src/core/wz_zxnet.c",

@@ -12,7 +12,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/fuse-visual-reference.yml",
-      "sha256": "b1790ebdd99392bc118bd60ee995a17221c2888847b37bbc41c8201a01158fe2"
+      "sha256": "f232ac33fc85975389eb19cc2fe4e4eb336410d2c9f253b86b949cdf9e0b9f7c"
     },
     {
       "path": "ci/test/fuse-visual-equivalence/capture-reference.sh",
@@ -24,7 +24,7 @@
     },
     {
       "path": "ci/test/fuse-visual-equivalence/capture-candidate.py",
-      "sha256": "1e219007d736d4ad0b55d04d23fba2d05e5a9e2050dba6a88f707fe6e48602e2"
+      "sha256": "ab2d53bd060ec8bb004d4cec1420669683617d2b46abf4637d9046e52b438d05"
     },
     {
       "path": "ci/test/fuse-visual-equivalence/compare.py",
