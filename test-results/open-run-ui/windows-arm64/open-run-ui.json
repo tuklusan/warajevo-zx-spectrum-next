@@ -5,11 +5,11 @@
   "selectedFixture": "open-run-smoke.tap",
   "selectedSha256": "a665e6b115dd56fd3e0c89be631e6eda8e9666b822e0bd7026bf0822c4bbc68f",
   "desktopScreenshot": "open-run-desktop.png",
-  "desktopScreenshotSha256": "599b06759cc942597a0762ee15cb459dbead087aad74f80ddbe7e1274c347206",
+  "desktopScreenshotSha256": "2927f6d8e8e624e14c8491d49eb3b9abcda8ae7491b229b5c612f2eb350d4099",
   "testId": "open-run-ui",
-  "commit": "3af682bc21b593ffedd62c2041fff754b1b86ac9",
-  "runId": 38835206138,
-  "timestamp": "2026-10-16T01:37:27+00:00",
+  "commit": "a1ea592a5be54a45a9a94ac23e5753da0be3094c",
+  "runId": 39377276900,
+  "timestamp": "2026-10-20T05:56:15+00:00",
   "caseCount": 1,
   "fixtures": [
     {
@@ -26,7 +26,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "917b342f916c0bc9862dfba580531f3d1a9e5bfa6c2e4df1d6736d374bb32088"
+      "sha256": "7c13e1e3b23c45bf2d3df2e1a2960acfabf4174bef95cd08b9599150ef4ce7f1"
     },
     {
       "path": "src/app/wz_file_dialog.h",
@@ -62,11 +62,11 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "c7373e40dbc60220d087e3b600bd5aeea658064aa9bfda3d2afa0373228e6329"
+      "sha256": "360fe71b54c4ac705cd9d8f32d20bc017af7d3e6b59dc36ebf125a377cf62489"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "2999ad7fcaba64b4a09eccae548bef867521668bdd053489eccc4905889fccbe"
+      "sha256": "e7078ec7aca25b1a0b168fd050fd81506e98f0002433144acb8af38878637864"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
@@ -102,7 +102,7 @@
     },
     {
       "path": "test-drivers/open-run-ui.driver.json",
-      "sha256": "0e975ef483bdc3125ccfa184db7110efdc20d6b3d6759c68d3e588c967bc0e14"
+      "sha256": "47053f920e6119c4d06b36036ac80775af1716af8010ae7bd4910e231832360b"
     }
   ]
 }
