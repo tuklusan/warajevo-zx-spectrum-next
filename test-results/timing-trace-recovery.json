@@ -1,0 +1,116 @@
+{
+  "testId": "timing-trace-recovery",
+  "status": "pass",
+  "commit": "78f646c69d3111f605bf44f8a4ba70303f5047a8",
+  "runId": 39415682541,
+  "runner": "Windows x64, Windows ARM64, macOS x64, and macOS ARM64 hosted runners",
+  "timestamp": "2026-10-20T11:33:40+00:00",
+  "caseCount": 28,
+  "observedOutput": "PASS standalone trace dump recovers circular wrap, sequence rollover, and torn append",
+  "fixtures": [
+    {
+      "path": ".github/workflows/timing-trace-recovery.yml",
+      "sha256": "e07f7be8afd9df77199c1d92abe5e1d88052a64e29d899e80151a5db6baf2373"
+    },
+    {
+      "path": "ci/test/timing-trace-recovery/CMakeLists.txt",
+      "sha256": "08662b76511bf04cf1f3c22583d9832624ab81beeb86813efe12bf56a523a1dd"
+    },
+    {
+      "path": "ci/test/timing-trace-recovery/README.md",
+      "sha256": "01e4b42438e62754371df5b11a2b1ba3e439f38480470e47ac725f3088a4b904"
+    },
+    {
+      "path": "ci/test/timing-trace-recovery/timing-trace-recovery.md",
+      "sha256": "77315e87253e2a8d2264171d177c303499c844e0e06159bbbe2ecbf68b1a4a93"
+    },
+    {
+      "path": "ci/test/timing-trace-recovery/trace-recovery-fixture.c",
+      "sha256": "e340956cdd4bb06c25e924805ba68f285273c650a0c0030c6102c1610eccf41c"
+    },
+    {
+      "path": "ci/test/timing-trace-recovery/verify-recovery.cmake",
+      "sha256": "d72362de96ce12461e6e1fc1fb1213e296a1d9efe48f5bf6aba59b7c98297eaf"
+    },
+    {
+      "path": "ci/test/timing-trace-recovery/write-proof.py",
+      "sha256": "eff5da71a18bb6123111434a9cfbcd1b5a2c7360967f71addfb55c763e434078"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_dump_main.c",
+      "sha256": "507cc25974424411a526270aa31c7a8031c044809745a948e5e35793a0d61a5e"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.c",
+      "sha256": "b7330439a1c72044e0f1c891a8595df2476c5e42f3c6617da529d782ed4b6ea4"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.h",
+      "sha256": "fc2f50a1f31e002a2190bfd82bb675fd8329327306209eb3d22afa02d3083e39"
+    },
+    {
+      "path": "src/core/wz_bus.c",
+      "sha256": "a84850869148d8f70a2ee5b31570d9d221d7159cbff832982ddbc8dd1f69c47e"
+    },
+    {
+      "path": "src/core/wz_bus.h",
+      "sha256": "0a6019987ae86f7c7293e1f428d086f52684ea5353eadb758c0b2d056677abaa"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "360fe71b54c4ac705cd9d8f32d20bc017af7d3e6b59dc36ebf125a377cf62489"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "e7078ec7aca25b1a0b168fd050fd81506e98f0002433144acb8af38878637864"
+    },
+    {
+      "path": "src/core/wz_machine_profile.c",
+      "sha256": "912a458de8d9a9d2d89bb57cac896e819d8ce82297a4e2ac707c90be1d4450b5"
+    },
+    {
+      "path": "src/core/wz_machine_profile.h",
+      "sha256": "1b246ec8245bf68400b0f9c5a1e69438264d8c671f23d656d82c87a032c4c700"
+    },
+    {
+      "path": "src/core/wz_types.h",
+      "sha256": "b989adaa74e4ac0ec7e753da23a3fd16a3c02561744cca893fcd66f7c077c409"
+    },
+    {
+      "path": "src/core/wz_z80.h",
+      "sha256": "8faaa6ca8ecd22b0b48418251256722471cef81537053cbfdd44ee629c293dd5"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "77384e43c0307b13c68cd6d7993e0af25457c4f2d203b0e18f191adba0c063b3"
+    }
+  ],
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39415682541",
+  "caseCountPerRunner": 7,
+  "runnerResults": [
+    {
+      "runner": "GitHub Actions 1000113502/Windows/ARM64",
+      "status": "pass",
+      "caseCount": 7,
+      "timestamp": "2026-10-20T11:33:40+00:00"
+    },
+    {
+      "runner": "GitHub Actions 1000113505/macOS/ARM64",
+      "status": "pass",
+      "caseCount": 7,
+      "timestamp": "2026-10-20T11:32:52+00:00"
+    },
+    {
+      "runner": "GitHub Actions 1000113509/Windows/X64",
+      "status": "pass",
+      "caseCount": 7,
+      "timestamp": "2026-10-20T11:33:14+00:00"
+    },
+    {
+      "runner": "GitHub Actions 1000113513/macOS/X64",
+      "status": "pass",
+      "caseCount": 7,
+      "timestamp": "2026-10-20T11:32:49+00:00"
+    }
+  ]
+}
