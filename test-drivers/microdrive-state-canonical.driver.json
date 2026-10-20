@@ -17,7 +17,7 @@
     },
     {
       "path": ".github/workflows/microdrive-state-canonical.yml",
-      "sha256": "f9796a710719f9bc08ddceac70c8eb0ccc2ad5a8546bee143f062f1cdebdcd84"
+      "sha256": "2f6ce4232eefa39d96d54e1632c9d74530f890eb180c48199ed2b28b29b14ecf"
     },
     {
       "path": "src/core/wz_state.c",

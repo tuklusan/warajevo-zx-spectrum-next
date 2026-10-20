@@ -6,7 +6,7 @@
     "ubuntu-24.04"
   ],
   "fixtures": [
-    { "path": ".github/workflows/networking-dirty-media.yml", "sha256": "86a315d505236ac322e997454193d99426bcf16a31a7ad6347078f097a4adcf7" },
+    { "path": ".github/workflows/networking-dirty-media.yml", "sha256": "d1587803b952060213dbd6f42eb416fc2308d750c1f383b2ebfa68b3de90df9d" },
     { "path": "ci/test/networking-dirty-media/CMakeLists.txt", "sha256": "5b0f488164698575a7e1b41e53e681abfdd19529ad2c7a41bae6dabaa0abe730" },
     { "path": "ci/test/networking-dirty-media/networking-dirty-media-contract.c", "sha256": "ae3ce57dd731d42cd5c42b41ed6a54c6400824dffb7ac65335bc01f4c40c787d" },
     { "path": "ci/test/networking-dirty-media/write-proof.py", "sha256": "30cef9be804553e386d57e014f12d68eaf1086a2982daeeb4ebf8a4557dbcad0" },

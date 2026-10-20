@@ -4,10 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/file-open-run-path-contract.yml'
-      - 'ci/test/file-open-run-path/**'
-      - 'src/app/wz_file_open_run.*'
-      - 'test-drivers/file-open-run-path.driver.json'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

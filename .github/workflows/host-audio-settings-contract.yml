@@ -4,14 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/app/wz_host_audio_policy.*'
-      - 'src/app/wz_speed_policy.*'
-      - 'src/app/wz_host_config.*'
-      - 'src/app/wz_ui_layout.*'
-      - 'src/app/wz_sokol_main.c'
-      - 'ci/test/host-audio-settings/**'
-      - 'test-drivers/host-audio-settings.driver.json'
-      - '.github/workflows/host-audio-settings-contract.yml'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

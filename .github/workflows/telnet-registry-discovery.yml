@@ -4,17 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/telnet-registry-discovery.yml'
-      - 'ci/test/telnet-registry-discovery/**'
-      - 'src/app/wz_command_registry.*'
-      - 'src/app/wz_host_thread.*'
-      - 'src/app/wz_host_output.*'
-      - 'src/app/wz_screenshot_service.*'
-      - 'src/app/wz_speed_policy.*'
-      - 'src/app/wz_telnet_keyboard_command.*'
-      - 'src/app/wz_telnet_keymap.*'
-      - 'src/core/**'
-      - 'test-drivers/telnet-registry-discovery.driver.json'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

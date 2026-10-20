@@ -11,15 +11,9 @@ on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/media-corpus-ingestion.yml'
-      - 'ci/test/media-corpus-ingestion/**'
-      - 'tests/media-corpus-ingestion.c'
-      - 'src/core/wz_tape.*'
-      - 'src/core/wz_machine.*'
-      - 'test-media/**'
-      - 'test-drivers/media-corpus-ingestion.driver.json'
-      - 'docs/design/media-corpus-ingestion-test.md'
-      - 'docs/design/01-warajevo-zx-spectrum-next-architecture.md'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

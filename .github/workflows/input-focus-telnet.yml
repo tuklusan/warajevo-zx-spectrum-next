@@ -4,12 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/input-focus-telnet.yml'
-      - 'ci/test/input-focus-telnet/**'
-      - 'src/app/wz_input_arbiter.*'
-      - 'src/app/wz_input_focus.*'
-      - 'src/app/wz_telnet_input.*'
-      - 'test-drivers/input-focus-telnet.driver.json'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

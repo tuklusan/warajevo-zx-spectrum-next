@@ -11,7 +11,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/ui-remote-status.yml",
-      "sha256": "840c482fc747a625d945652d5edcb22fcf348b0c9204d658437bd6b5bdba1e93"
+      "sha256": "9071a0f42c10eab0da3e82e4f361889d06748aac4d225a95f4c7e89f5599ad0e"
     },
     {
       "path": "ci/test/ui-remote-status/CMakeLists.txt",

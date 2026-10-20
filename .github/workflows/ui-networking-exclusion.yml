@@ -11,14 +11,9 @@ on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/ui-networking-exclusion.yml'
-      - 'ci/test/ui-networking-exclusion/**'
-      - 'test-drivers/ui-networking-exclusion.driver.json'
-      - 'src/app/wz_command_registry.*'
-      - 'src/app/wz_networking_commands.*'
-      - 'src/app/wz_ui_layout.*'
-      - 'src/core/wz_machine.*'
-      - 'docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

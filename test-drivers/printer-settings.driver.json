@@ -8,7 +8,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/printer-settings.yml",
-      "sha256": "00bf292c149e1fbb0fd938bfb905655db1f263aeca0b25de223bf0c85e7c0530"
+      "sha256": "dd0ddd5cb4deb1b3bc42ba28ac89d7f91dc7c75b81d05e87c4a5257091363ec9"
     },
     {
       "path": "ci/test/printer-settings/CMakeLists.txt",

@@ -11,11 +11,9 @@ on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/keyboard-matrix-contract.yml'
-      - 'ci/test/keyboard-matrix/**'
-      - 'test-drivers/keyboard-matrix.driver.json'
-      - 'src/core/wz_keyboard_matrix.c'
-      - 'src/core/wz_keyboard_matrix.h'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

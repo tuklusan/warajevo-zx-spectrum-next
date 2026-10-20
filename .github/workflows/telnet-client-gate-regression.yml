@@ -10,14 +10,9 @@ on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/telnet-client-gate-regression.yml'
-      - 'ci/test/telnet-client-gate/**'
-      - 'src/app/wz_control_port.*'
-      - 'src/app/wz_host_socket.*'
-      - 'src/app/wz_telnet_client.*'
-      - 'src/app/wz_telnet_input.*'
-      - 'src/app/wz_input_arbiter.*'
-      - 'test-drivers/telnet-client-gate.driver.json'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 permissions:
   contents: read

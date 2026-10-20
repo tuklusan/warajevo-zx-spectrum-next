@@ -4,22 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/multi-instance-linux-contract.yml'
-      - 'ci/test/multi-instance/**'
-      - 'src/app/wz_command_registry.*'
-      - 'src/app/wz_control_port.*'
-      - 'src/app/wz_host_config.*'
-      - 'src/app/wz_host_media_ownership.*'
-      - 'src/app/wz_host_output.*'
-      - 'src/app/wz_host_socket.*'
-      - 'src/app/wz_host_thread.*'
-      - 'src/app/wz_screenshot_service.*'
-      - 'src/app/wz_telnet_keyboard_command.*'
-      - 'src/app/wz_telnet_keymap.*'
-      - 'src/core/wz_presentation_snapshot.*'
-      - 'src/cmake/CMakeLists.txt'
-      - 'tests/multi-instance-stress.c'
-      - 'test-drivers/multi-instance-linux.driver.json'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

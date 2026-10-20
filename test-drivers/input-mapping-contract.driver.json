@@ -5,7 +5,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/input-mapping-contract.yml",
-      "sha256": "d2f94eef17ac2eb27977477df0ed1734dd427c4eab2bfbc4adea1e563688e293"
+      "sha256": "853dfb14d8cf3ea3cf77595bebf67eed3ae1749d87ed8a0c3d848edcf7f273d7"
     },
     {
       "path": "ci/test/input-mapping/CMakeLists.txt",

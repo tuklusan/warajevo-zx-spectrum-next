@@ -4,15 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/app/wz_file_dialog_win32.c'
-      - 'src/app/wz_file_dialog_macos.m'
-      - 'ci/test/tape-native-dialog-desktop/**'
-      - 'test-drivers/tape-native-dialog-desktop.driver.json'
-      - '.github/workflows/tape-native-dialog-desktop.yml'
-      - 'src/core/wz_machine.c'
-      - 'src/core/wz_machine.h'
-      - 'src/core/wz_tape.c'
-      - 'src/core/wz_tape.h'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

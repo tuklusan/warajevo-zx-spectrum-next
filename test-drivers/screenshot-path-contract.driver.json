@@ -8,7 +8,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/screenshot-path-contract.yml",
-      "sha256": "3910f7f8023ad50ef758148948542a48eaff1a2265c1b3cb5723b159e028395b"
+      "sha256": "41193190130895e3b6fdafee893ce0a59906d354b3aaa2762c92824807e174f4"
     },
     {
       "path": "ci/test/screenshot-path-contract/CMakeLists.txt",

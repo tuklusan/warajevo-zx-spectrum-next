@@ -4,26 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/app/wz_host_output.c'
-      - 'src/app/wz_host_output.h'
-      - 'src/app/wz_screenshot_service.c'
-      - 'src/app/wz_screenshot_service.h'
-      - 'src/app/wz_telnet_keyboard_command.c'
-      - 'src/app/wz_telnet_keyboard_command.h'
-      - 'src/app/wz_command_registry.c'
-      - 'src/app/wz_command_registry.h'
-      - 'src/app/wz_host_thread.c'
-      - 'src/app/wz_host_thread.h'
-      - 'src/app/wz_telnet_keymap.c'
-      - 'src/app/wz_telnet_keymap.h'
-      - 'src/core/wz_raster.c'
-      - 'src/core/wz_raster.h'
-      - 'src/core/wz_presentation_snapshot.c'
-      - 'src/core/wz_presentation_snapshot.h'
-      - 'src/cmake/**'
-      - 'ci/test/screenshot-path-contract/**'
-      - 'test-drivers/screenshot-path-contract.driver.json'
-      - '.github/workflows/screenshot-path-contract.yml'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

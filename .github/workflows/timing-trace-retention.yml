@@ -11,16 +11,9 @@ on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/timing-trace-retention.yml'
-      - 'ci/test/timing-trace-retention/**'
-      - 'roms/48.rom'
-      - 'src/core/wz_machine.*'
-      - 'src/core/wz_machine_profile.*'
-      - 'src/core/wz_trace.*'
-      - 'src/core/wz_z80.*'
-      - 'src/diagnostics/wz_trace_file.*'
-      - 'test-drivers/timing-trace-retention.driver.json'
-      - 'tests/timing-trace-retention.md'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

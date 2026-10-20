@@ -11,20 +11,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'roms/48.rom'
-      - 'src/core/wz_machine.c'
-      - 'src/core/wz_machine.h'
-      - 'src/core/wz_state.c'
-      - 'src/core/wz_state.h'
-      - 'src/core/wz_trace.h'
-      - 'src/core/wz_z80.c'
-      - 'src/diagnostics/wz_trace_file.c'
-      - 'src/diagnostics/wz_trace_file.h'
-      - 'src/cmake/CMakeLists.txt'
-      - 'ci/test/timing-trace-behavior-contract/**'
-      - 'test-drivers/timing-trace-behavior-contract.driver.json'
-      - 'tests/timing-trace-behavior-contract.md'
-      - '.github/workflows/timing-trace-behavior-contract.yml'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

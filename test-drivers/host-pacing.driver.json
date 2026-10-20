@@ -8,7 +8,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/host-pacing-regression.yml",
-      "sha256": "e1afb846ac814875b9f857d67f2a4718e2c5adf869462d083a2552573c1fd4a0"
+      "sha256": "32cb7a7fce2fd9a9d7e0e7743c0ade7f37564b354c9d9715b9de1701979b0f26"
     },
     {
       "path": "ci/test/host-pacing/pacing-regression.c",

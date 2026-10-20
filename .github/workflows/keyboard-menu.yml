@@ -11,16 +11,9 @@ on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/keyboard-menu.yml'
-      - 'ci/test/keyboard-menu/**'
-      - 'test-drivers/keyboard-menu.driver.json'
-      - 'docs/design/keyboard-menu-contract.md'
-      - 'src/app/wz_ui_keyboard_menu.*'
-      - 'src/app/wz_input_focus.*'
-      - 'src/app/wz_input_arbiter.*'
-      - 'src/app/wz_sokol_main.c'
-      - 'src/cmake/CMakeLists.txt'
-      - 'docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

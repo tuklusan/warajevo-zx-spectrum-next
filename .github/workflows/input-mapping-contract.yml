@@ -11,14 +11,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/app/wz_keyboard_mapping.*'
-      - 'src/app/wz_kempston_mapping.*'
-      - 'src/app/wz_sokol_main.c'
-      - 'src/cmake/CMakeLists.txt'
-      - 'src/core/wz_kempston.*'
-      - 'ci/test/input-mapping/**'
-      - 'test-drivers/input-mapping-contract.driver.json'
-      - '.github/workflows/input-mapping-contract.yml'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

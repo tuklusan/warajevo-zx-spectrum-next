@@ -11,12 +11,9 @@ on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/input-dialog-focus.yml'
-      - 'ci/test/input-dialog-focus/**'
-      - 'test-drivers/input-dialog-focus.driver.json'
-      - 'src/app/wz_input_arbiter.*'
-      - 'src/app/wz_input_focus.*'
-      - 'src/app/wz_sokol_main.c'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

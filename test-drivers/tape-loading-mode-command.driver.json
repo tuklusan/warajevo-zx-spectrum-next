@@ -57,7 +57,7 @@
     },
     {
       "path": ".github/workflows/tape-loading-mode-command.yml",
-      "sha256": "9e7933a3ee53dfe289f07110d9a8a76d4ba45d0c101cb01cfaa830835179bac5"
+      "sha256": "14fe5f81d9eabc1638f89d907c2dbd35f1370c31cea3f55638c4084337bcc7c8"
     },
     {
       "path": "src/app/wz_sokol_main.c",

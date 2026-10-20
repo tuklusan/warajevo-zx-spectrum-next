@@ -4,14 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/app/wz_file_dialog.*'
-      - 'src/app/wz_snapshot_save_workflow.*'
-      - 'src/app/wz_file_open_run.*'
-      - 'src/app/wz_sokol_main.c'
-      - 'src/core/wz_state.*'
-      - 'ci/test/snapshot-command/**'
-      - 'test-drivers/snapshot-command.driver.json'
-      - '.github/workflows/snapshot-command-regression.yml'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

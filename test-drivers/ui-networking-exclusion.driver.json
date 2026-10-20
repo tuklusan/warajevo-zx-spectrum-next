@@ -8,7 +8,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/ui-networking-exclusion.yml",
-      "sha256": "da80a657512d70d0a38c2a8820e55b7274a9fb23800a99e7beb219f3ebd11ffb"
+      "sha256": "824c948581ff17a660242215fba7645e6c9a755999bdd3c67650300e042602d4"
     },
     {
       "path": "ci/test/ui-networking-exclusion/CMakeLists.txt",

@@ -11,7 +11,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/timing-trace-dump.yml",
-      "sha256": "6f288712828a141d2be5c28a453b6a7aa361953e254cf26f2f4cd62da94765f6"
+      "sha256": "0fa855bb01d5bef7faba37e3bab84080e852aba34388194e05596194d146dacd"
     },
     {
       "path": "ci/test/timing-trace-dump/CMakeLists.txt",

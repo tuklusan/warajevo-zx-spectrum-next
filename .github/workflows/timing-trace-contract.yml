@@ -4,14 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/diagnostics/wz_trace_file.c'
-      - 'src/diagnostics/wz_trace_file.h'
-      - 'src/core/wz_trace.h'
-      - 'src/core/wz_types.h'
-      - 'src/cmake/CMakeLists.txt'
-      - 'ci/test/timing-trace-contract/**'
-      - 'test-drivers/timing-trace-contract.driver.json'
-      - '.github/workflows/timing-trace-contract.yml'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

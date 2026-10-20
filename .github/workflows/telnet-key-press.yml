@@ -4,11 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/telnet-key-press.yml'
-      - 'ci/test/telnet-key-press/**'
-      - 'src/app/wz_input_arbiter.*'
-      - 'src/app/wz_telnet_key_press.*'
-      - 'test-drivers/telnet-key-press.driver.json'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

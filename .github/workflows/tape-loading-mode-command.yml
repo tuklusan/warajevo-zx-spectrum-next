@@ -4,16 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/app/wz_tape_loading_commands.*'
-      - 'src/app/wz_tape_media_commands.*'
-      - 'src/cmake/CMakeLists.txt'
-      - 'src/app/wz_command_registry.*'
-      - 'src/core/wz_machine.*'
-      - 'src/core/wz_machine_profile.*'
-      - 'src/app/wz_host_thread.*'
-      - 'ci/test/tape-loading-mode-command/**'
-      - 'test-drivers/tape-loading-mode-command.driver.json'
-      - '.github/workflows/tape-loading-mode-command.yml'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

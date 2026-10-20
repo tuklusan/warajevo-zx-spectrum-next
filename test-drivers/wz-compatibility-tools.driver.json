@@ -5,7 +5,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/compatibility-tools-contract.yml",
-      "sha256": "77b3e1352de9b8e3cc831bb473216fadfbadf44a9e17144f236f6ea03021fc89"
+      "sha256": "6415bfeedc26f52c4520dc9447201a16c1e737acf025e214e4a839e2c8b11258"
     },
     {
       "path": "ci/test/compatibility-tools/CMakeLists.txt",

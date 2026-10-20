@@ -4,15 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/app/wz_host_config.*'
-      - 'src/app/wz_host_presentation.*'
-      - 'src/app/wz_host_scaling.*'
-      - 'src/app/wz_sokol_main.c'
-      - 'src/cmake/CMakeLists.txt'
-      - 'ci/test/host-display-settings/contract.c'
-      - 'ci/test/host-display-settings/**'
-      - 'test-drivers/host-display-settings.driver.json'
-      - '.github/workflows/host-display-settings-contract.yml'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

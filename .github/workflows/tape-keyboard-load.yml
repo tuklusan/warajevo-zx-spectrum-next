@@ -4,17 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/core/wz_machine.c'
-      - 'src/core/wz_machine.h'
-      - 'src/core/wz_keyboard_matrix.c'
-      - 'src/core/wz_runner.c'
-      - 'src/core/wz_tape.c'
-      - 'src/core/wz_tape.h'
-      - 'ci/test/tape-keyboard-load/**'
-      - 'roms/48.rom'
-      - 'test-media/DIZZY4K.TAP'
-      - 'test-drivers/tape-keyboard-load.driver.json'
-      - '.github/workflows/tape-keyboard-load.yml'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

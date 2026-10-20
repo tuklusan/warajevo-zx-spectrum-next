@@ -8,7 +8,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/tape-keyboard-load.yml",
-      "sha256": "a82d2d61bb65815ff797496d9356194552765d62f9db5dd6a04f2f948331f7ea"
+      "sha256": "bf7d963d35a25172d614c7c1cc3f5cef23b3327894402a53bee132002f6c52ef"
     },
     {
       "path": "ci/test/tape-keyboard-load/CMakeLists.txt",

@@ -5,7 +5,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/host-display-settings-contract.yml",
-      "sha256": "ac97cd7997d4a6420b5b21cf19e9a5fc9580ed7f007ae13edb4f47f87c4b943c"
+      "sha256": "3f248e6763ff0d4a43f5faf93f6908a03cb55425250c0d3bff213e3ac241ce90"
     },
     {
       "path": "ci/test/host-display-settings/CMakeLists.txt",

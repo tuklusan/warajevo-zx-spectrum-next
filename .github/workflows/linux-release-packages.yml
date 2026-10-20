@@ -4,14 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/app/**'
-      - 'src/core/**'
-      - 'src/cmake/CMakeLists.txt'
-      - 'ci/build/**'
-      - 'design/dependencies/nuklear-pin.md'
-      - 'docs/design/linux-package-format-decision.md'
-      - 'LICENSE'
-      - '.github/workflows/linux-release-packages.yml'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

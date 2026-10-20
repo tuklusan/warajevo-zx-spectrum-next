@@ -4,20 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/keyboard-core-boundary.yml'
-      - 'ci/test/keyboard-core-boundary/**'
-      - 'src/app/wz_input_arbiter.*'
-      - 'src/app/wz_input_event.h'
-      - 'src/app/wz_input_projection.*'
-      - 'src/app/wz_input_timing.h'
-      - 'src/app/wz_sokol_main.c'
-      - 'src/app/wz_telnet_input.*'
-      - 'src/core/wz_input_types.h'
-      - 'src/core/wz_keyboard_matrix.*'
-      - 'src/core/wz_machine.*'
-      - 'src/cmake/CMakeLists.txt'
-      - 'test-drivers/keyboard-core-boundary.driver.json'
-      - 'tests/keyboard-core-boundary.md'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
     inputs:
       ref:

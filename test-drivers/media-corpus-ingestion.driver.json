@@ -10,7 +10,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/media-corpus-ingestion.yml",
-      "sha256": "09af0a8d908eb9bb1b0455d7d674619253459f6ec582b499c5a7c3173d28b5a7"
+      "sha256": "6e2b98fa367851e11713524573ec513daaff7bc15c1bc322d2c781af251a1bdb"
     },
     {
       "path": "ci/test/media-corpus-ingestion/CMakeLists.txt",

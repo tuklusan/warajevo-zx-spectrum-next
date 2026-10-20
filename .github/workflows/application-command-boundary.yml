@@ -4,27 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/app/wz_command_registry.*'
-      - 'src/app/wz_host_thread.*'
-      - 'src/app/wz_ui_layout.*'
-      - 'src/app/wz_telnet_keyboard_command.*'
-      - 'src/app/wz_recent_files.*'
-      - 'src/app/wz_telnet_status.*'
-      - 'src/app/wz_telnet_alias_response.*'
-      - 'src/app/wz_telnet_keymap.*'
-      - 'src/app/wz_host_output.*'
-      - 'src/app/wz_screenshot_service.*'
-      - 'src/app/wz_host_audio_policy.*'
-      - 'src/app/wz_speed_policy.*'
-      - 'src/app/wz_sokol_main.c'
-      - 'src/core/wz_keyboard_matrix.*'
-      - 'src/core/wz_presentation_snapshot.*'
-      - 'src/core/wz_raster.*'
-      - 'ci/test/application-command-boundary/**'
-      - 'tests/application-command-boundary.*'
-      - 'src/cmake/CMakeLists.txt'
-      - 'test-drivers/application-command-boundary.driver.json'
-      - '.github/workflows/application-command-boundary.yml'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

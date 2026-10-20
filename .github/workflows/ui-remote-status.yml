@@ -4,12 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/ui-remote-status.yml'
-      - 'ci/test/ui-remote-status/**'
-      - 'src/app/wz_ui_layout.*'
-      - 'src/app/wz_sokol_main.c'
-      - 'src/cmake/CMakeLists.txt'
-      - 'test-drivers/ui-remote-status.driver.json'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

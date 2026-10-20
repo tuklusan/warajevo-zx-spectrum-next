@@ -4,7 +4,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/model-switch-regression.yml",
-      "sha256": "f6e56f158d6e4be22ed52165d8454f798067f79b613d50cb4d2e76d8259cf794"
+      "sha256": "0bc0ec8458d359b81da8f363d6a03ac9372c25bdbdd53b0b0cae25c783e10176"
     },
     {
       "path": "ci/test/model-switch/CMakeLists.txt",

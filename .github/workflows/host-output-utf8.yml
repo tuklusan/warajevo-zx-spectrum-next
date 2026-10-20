@@ -4,13 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/app/wz_host_output_utf8.*'
-      - 'src/app/wz_sokol_main.c'
-      - 'src/app/wz_host_output.*'
-      - 'src/cmake/CMakeLists.txt'
-      - 'ci/test/host-output-utf8/**'
-      - 'test-drivers/host-output-utf8.driver.json'
-      - '.github/workflows/host-output-utf8.yml'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

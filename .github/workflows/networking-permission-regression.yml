@@ -4,13 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/networking-permission-regression.yml'
-      - 'ci/test/networking-permission/**'
-      - 'src/app/wz_command_registry.*'
-      - 'src/app/wz_networking_commands.*'
-      - 'src/app/wz_sokol_main.c'
-      - 'src/core/**'
-      - 'test-drivers/networking-permission.driver.json'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

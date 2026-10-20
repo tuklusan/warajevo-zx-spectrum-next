@@ -11,7 +11,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/application-command-boundary.yml",
-      "sha256": "ce4784fec3bd2cf347a18428adaf911532b8c772b1438b4c6637455eea1ba1a2"
+      "sha256": "d3e1be6f069817c1f4e1226b2f8f70da4bf8458649d8e7078ad1f44d4d43c7ee"
     },
     {
       "path": "ci/test/application-command-boundary/CMakeLists.txt",

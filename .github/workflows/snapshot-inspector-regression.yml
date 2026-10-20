@@ -4,13 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/snapshot-inspector-regression.yml'
-      - 'ci/test/snapshot-inspector/**'
-      - 'src/app/wz_snapshot_inspector.*'
-      - 'src/core/wz_debugger.*'
-      - 'src/cmake/CMakeLists.txt'
-      - 'test-drivers/snapshot-inspector.driver.json'
-      - 'ci/test/snapshot-inspector/snapshot-inspector-contract.c'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

@@ -8,7 +8,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/input-dialog-focus.yml",
-      "sha256": "90afb4ff9a78c1a1522645bd524466df1f5f8715c1493969a9d283155cd38fe0"
+      "sha256": "92a03c45c38356f62e9d468f7db22c5e225e9ac8e17f32c9930a816726f37069"
     },
     {
       "path": "ci/test/input-dialog-focus/CMakeLists.txt",

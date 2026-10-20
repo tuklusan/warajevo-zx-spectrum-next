@@ -5,7 +5,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/microdrive-sectors-contract.yml",
-      "sha256": "4c8ea61f428328b7eaa67875233d0b8b57778b685e1fbaa11ea1c28b41816f11"
+      "sha256": "7ba18515c708e261781ac40edc862489587f70203d8a9ca4b78e060d3b35b102"
     },
     {
       "path": "ci/test/microdrive-sectors/CMakeLists.txt",

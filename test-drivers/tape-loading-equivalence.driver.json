@@ -8,7 +8,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/tape-loading-equivalence.yml",
-      "sha256": "b05408496e4ef8576e5981a7489838c3497eb3b1cad52e419cba73f185109757"
+      "sha256": "1a617128acfd3b528b6b523badb9b99aa066e73e8eea92eea49b1dd9ad2853ff"
     },
     {
       "path": "ci/test/tape-loading-equivalence/CMakeLists.txt",

@@ -45,7 +45,7 @@
     },
     {
       "path": ".github/workflows/tape-save-transaction-contract.yml",
-      "sha256": "d5a55d4e18feef9e18e6bdb734e9826f4dfddf648f497e95dbc972b4d383144a"
+      "sha256": "3ba30196a98d5a1964b6a26eae2caa831b144ff3e4a23de46481a40a635d59e9"
     }
   ]
 }

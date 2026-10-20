@@ -4,11 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/app/wz_file_open_run.*'
-      - 'src/cmake/CMakeLists.txt'
-      - 'ci/test/file-open-run/**'
-      - 'test-drivers/file-open-run.driver.json'
-      - '.github/workflows/file-open-run-regression.yml'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

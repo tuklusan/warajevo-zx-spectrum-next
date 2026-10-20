@@ -4,12 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/core/**'
-      - 'src/cmake/CMakeLists.txt'
-      - 'ci/test/core-regression/**'
-      - 'tests/canonical-core-regression.c'
-      - 'test-drivers/canonical-core-regression.driver.json'
-      - '.github/workflows/canonical-core-regression.yml'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

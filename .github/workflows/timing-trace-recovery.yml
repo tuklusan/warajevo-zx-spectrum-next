@@ -4,21 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/diagnostics/wz_trace_dump_main.c'
-      - 'src/diagnostics/wz_trace_file.c'
-      - 'src/diagnostics/wz_trace_file.h'
-      - 'src/core/wz_bus.c'
-      - 'src/core/wz_bus.h'
-      - 'src/core/wz_machine.c'
-      - 'src/core/wz_machine.h'
-      - 'src/core/wz_machine_profile.c'
-      - 'src/core/wz_machine_profile.h'
-      - 'src/core/wz_types.h'
-      - 'src/core/wz_z80.h'
-      - 'src/cmake/CMakeLists.txt'
-      - 'ci/test/timing-trace-recovery/**'
-      - 'test-drivers/timing-trace-recovery.driver.json'
-      - '.github/workflows/timing-trace-recovery.yml'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

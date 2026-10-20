@@ -4,11 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/ui-command-equivalence.yml'
-      - 'ci/test/ui-command-equivalence/**'
-      - 'src/app/wz_ui_layout.*'
-      - 'src/app/wz_sokol_main.c'
-      - 'test-drivers/ui-command-equivalence.driver.json'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

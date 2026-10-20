@@ -4,18 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/app/**'
-      - 'src/core/**'
-      - 'src/cmake/CMakeLists.txt'
-      - 'ci/build/**'
-      - 'ci/test/runtime-dependencies/**'
-      - 'ci/test/windows-runtime-dependencies/**'
-      - 'design/dependencies/nuklear-pin.md'
-      - 'docs/design/desktop-package-format-decision.md'
-      - 'LICENSE'
-      - '.github/workflows/desktop-release-packages.yml'
-      - 'test-drivers/desktop-packages.driver.json'
-      - 'test-drivers/windows-runtime-dependency-audit.driver.json'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

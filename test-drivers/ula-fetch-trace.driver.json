@@ -11,7 +11,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/ula-fetch-trace-contract.yml",
-      "sha256": "71a999204229c7a409bb381448c32a127087940648654feb9e37cb766047d163"
+      "sha256": "deec0c0365f09e46ae9b73d1b4277742c502b774527f765c85a383c84f5b4344"
     },
     {
       "path": "ci/test/ula-fetch-trace/CMakeLists.txt",

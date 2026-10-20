@@ -4,12 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/app/wz_microdrive_manager.*'
-      - 'src/app/wz_sokol_main.c'
-      - 'src/cmake/CMakeLists.txt'
-      - 'ci/test/microdrive-sectors/**'
-      - 'test-drivers/microdrive-sectors-contract.driver.json'
-      - '.github/workflows/microdrive-sectors-contract.yml'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

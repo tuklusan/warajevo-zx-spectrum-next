@@ -5,7 +5,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/rom-settings-contract.yml",
-      "sha256": "5fdb6838f68c44ed5fe7f9366967f0b84bbc6b14c7f8265a43e28b1c28140965"
+      "sha256": "1ee94d97d111f3098d83fd57bf63abd14d09f02b745faec7a0e59c5bfeff5fda"
     },
     {
       "path": "ci/test/rom-settings/CMakeLists.txt",

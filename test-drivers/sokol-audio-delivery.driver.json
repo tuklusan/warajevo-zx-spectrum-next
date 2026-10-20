@@ -2,7 +2,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/audio-delivery-regression.yml",
-      "sha256": "d3787d282f86acdabe59c7ca84ee9ae7bd072bc99e8f5ecbd3f15fe0b64964e8"
+      "sha256": "9ad96bac283abd9c029cfe772992df91f7acf4fe4958d88374c440b6fc17bd32"
     },
     {
       "path": "ci/test/audio-delivery/sokol-audio-delivery-regression.c",

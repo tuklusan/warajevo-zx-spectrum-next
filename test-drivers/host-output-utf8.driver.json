@@ -5,7 +5,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/host-output-utf8.yml",
-      "sha256": "60450f2a778897404f065ded6d9c829aecd1b2334ec82588b14f966ec8a79d40"
+      "sha256": "87dffbc0a24821ee755b3ad547d2b6e8c1bbc91f40f8615f709ea2da5b652d32"
     },
     {
       "path": "ci/test/host-output-utf8/CMakeLists.txt",

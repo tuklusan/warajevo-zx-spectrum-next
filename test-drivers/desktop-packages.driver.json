@@ -10,7 +10,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/desktop-release-packages.yml",
-      "sha256": "cc79da8726c834ebe129e75818fd39db02c51e243daed6e7d58690aabe921d0a"
+      "sha256": "f19a1efeb193473145ffc8db29477e49584afff90aeb250ddaae47682b21382b"
     },
     {
       "path": "ci/build/desktop-package-README.md",

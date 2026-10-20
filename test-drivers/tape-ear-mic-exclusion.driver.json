@@ -8,7 +8,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/tape-ear-mic-exclusion.yml",
-      "sha256": "a4ff887552f5487ff58674ff2436a18077167d29621254c2fbda5e9e62133220"
+      "sha256": "7dcae54a5b7abc0b4dabfad4d9026666c48996c2c4ded844d1b1fe75cc7af064"
     },
     {
       "path": "ci/test/tape-ear-mic-exclusion/CMakeLists.txt",

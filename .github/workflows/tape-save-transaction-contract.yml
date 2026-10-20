@@ -4,12 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/app/wz_tape_save_transaction.*'
-      - 'src/app/wz_sokol_main.c'
-      - 'src/cmake/CMakeLists.txt'
-      - 'ci/test/tape-save-transaction-contract/**'
-      - 'test-drivers/tape-save-transaction-contract.driver.json'
-      - '.github/workflows/tape-save-transaction-contract.yml'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

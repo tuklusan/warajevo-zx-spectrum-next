@@ -4,10 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/core/**'
-      - 'ci/test/master-time/**'
-      - 'test-drivers/master-time-contract.driver.json'
-      - '.github/workflows/master-time-contract.yml'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

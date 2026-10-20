@@ -4,12 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/core/**'
-      - 'src/app/wz_host_pacing.*'
-      - 'src/app/wz_speed_policy.*'
-      - 'ci/test/cassette-speed-contract/**'
-      - 'test-drivers/cassette-speed-contract.driver.json'
-      - '.github/workflows/cassette-speed-contract.yml'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

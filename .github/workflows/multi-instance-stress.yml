@@ -4,23 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/app/wz_control_port.*'
-      - 'src/app/wz_host_config.*'
-      - 'src/app/wz_host_media_ownership.*'
-      - 'src/app/wz_host_output.*'
-      - 'src/app/wz_host_socket.*'
-      - 'src/app/wz_telnet_keyboard_command.*'
-      - 'src/app/wz_command_registry.*'
-      - 'src/app/wz_host_thread.*'
-      - 'src/app/wz_telnet_keymap.*'
-      - 'src/app/wz_screenshot_service.*'
-      - 'src/core/wz_presentation_snapshot.*'
-      - 'src/cmake/CMakeLists.txt'
-      - 'ci/test/multi-instance/**'
-      - 'tests/multi-instance-stress.c'
-      - 'tests/multi-instance-stress.md'
-      - 'test-drivers/multi-instance-stress.driver.json'
-      - '.github/workflows/multi-instance-stress.yml'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

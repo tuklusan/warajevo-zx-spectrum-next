@@ -11,11 +11,9 @@ on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/tape-ear-mic-exclusion.yml'
-      - 'ci/test/tape-ear-mic-exclusion/**'
-      - 'test-drivers/tape-ear-mic-exclusion.driver.json'
-      - 'src/core/wz_machine.*'
-      - 'src/core/wz_tape.*'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

@@ -4,13 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/app/wz_tape_insert_action.*'
-      - 'src/app/wz_tape_media_commands.*'
-      - 'src/app/wz_sokol_main.c'
-      - 'src/cmake/CMakeLists.txt'
-      - 'ci/test/tape-ui-workflow-contract/**'
-      - 'test-drivers/tape-ui-workflow-contract.driver.json'
-      - '.github/workflows/tape-ui-workflow-contract.yml'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

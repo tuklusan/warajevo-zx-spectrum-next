@@ -12,7 +12,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/fuse-visual-reference.yml",
-      "sha256": "743f3cdad91151364483dfb7b59a642f1c3edcd264b0907858c1e62915ad7ca0"
+      "sha256": "e8329ea722180e0351a4a76d88610a835919c49572c04710786812448a9af062"
     },
     {
       "path": "ci/test/fuse-visual-equivalence/capture-reference.sh",

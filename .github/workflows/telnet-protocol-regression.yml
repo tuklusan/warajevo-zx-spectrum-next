@@ -10,10 +10,9 @@ on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/telnet-protocol-regression.yml'
-      - 'ci/test/telnet-protocol/**'
-      - 'src/app/wz_telnet_*.c'
-      - 'src/app/wz_telnet_*.h'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 permissions:
   contents: read

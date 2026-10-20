@@ -50,15 +50,24 @@ purging them.
 
 Every project commit is made directly on local `main`, and every push updates
 remote `main`; no other branch or pull request is used. Every push-triggered
-GitHub workflow is scoped to `main`. The pre-commit hook checks every pathname
-in the complete staged index, including directory components, for forbidden
-terms case-insensitively before creating a commit. The pre-push gate repeats
-the check against the complete prospective tree before contacting GitHub. The
-GitHub workflow audits every tracked pathname at the exact pushed commit.
+GitHub workflow is scoped to `main` and filtered to production source files
+under `src/` with `.c`, `.h`, or `.m` extensions. A push with no change to one
+of those files starts no hosted runner, including pushes containing only
+documentation, test harnesses, trace data, test results, workflow files, or
+other administrative records. Source changes trigger the configured build
+and test workflows so the resulting binaries are exercised. Manual dispatch
+remains available for focused checks on `main`; pull-request triggers are
+prohibited. Do not add branch protection that requires a pull request or
+prevents authorized direct updates to `main`.
+
+The pre-commit hook checks every pathname in the complete staged index,
+including directory components, for forbidden terms case-insensitively before
+creating a commit. The pre-push gate repeats the check against the complete
+prospective tree before contacting GitHub. The hosted pathname workflow uses
+the source-only push filter, so the mandatory local pathname checks cover every
+push while the hosted audit covers source-triggered commits and manual runs.
 Git metadata and the fixed `main` ref are not repository pathnames. No other
-branch or pull request is part of this workflow. Manual dispatch jobs require
-`main`; pull-request triggers are prohibited. Do not add branch protection
-that requires a pull request or prevents authorized direct updates to `main`.
+branch or pull request is part of this workflow.
 
 The local pre-commit and pre-push pathname checks are mandatory because work
 must be committed and pushed directly to `main`. The pre-commit check rejects
@@ -67,11 +76,11 @@ the complete prospective tree before contacting GitHub. GitHub's repository
 ruleset API does not accept a file-path restriction for a branch-targeted rule,
 and push rulesets are limited to private or internal repositories. Therefore,
 the hosted pathname workflow is an after-push audit for this public repository,
-not a pre-receipt blocker. It validates the exact pushed commit and fails on a
-violation. If that audit fails, remove the offending path in the next direct
-commit and wait for the pathname check to pass before continuing. Do not add a
-pull-request requirement or claim that GitHub blocks a noncompliant direct
-push before receipt.
+not a pre-receipt blocker. When it runs, it validates the exact pushed commit
+and fails on a violation. If that audit fails, remove the offending path in the
+next direct commit and wait for the pathname check to pass before continuing.
+Do not add a pull-request requirement or claim that GitHub blocks a
+noncompliant direct push before receipt.
 
 ## 3. Local pathname and pre-push gates
 

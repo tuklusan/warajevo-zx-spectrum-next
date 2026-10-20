@@ -11,7 +11,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/ui-command-equivalence.yml",
-      "sha256": "35209193e222181df89d26b0e384a6e8cc86914538d2051201447ec51b6aaf9b"
+      "sha256": "5e3a16c5aa527d4a614264e22d68abed8d6e7023d758fae9baee7d85c877899d"
     },
     {
       "path": "ci/test/ui-command-equivalence/CMakeLists.txt",

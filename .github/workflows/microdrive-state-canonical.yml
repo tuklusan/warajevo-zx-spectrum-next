@@ -4,13 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/microdrive-state-canonical.yml'
-      - 'ci/test/microdrive-state-canonical/**'
-      - 'src/core/wz_state.*'
-      - 'src/core/wz_machine.*'
-      - 'src/core/wz_microdrive.*'
-      - 'src/cmake/CMakeLists.txt'
-      - 'test-drivers/microdrive-state-canonical.driver.json'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

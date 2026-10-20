@@ -29,7 +29,7 @@
     },
     {
       "path": ".github/workflows/tape-selection-contract.yml",
-      "sha256": "548fee61b16e080cb211fdc97ce63376dce755768a296c1f8e9d0a3a2b323be9"
+      "sha256": "c74d52b5bd20a3da40c7d58e79ce199716385eba5314ec19d5af66e8327cdbce"
     }
   ]
 }

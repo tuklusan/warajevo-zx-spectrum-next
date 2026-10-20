@@ -37,7 +37,7 @@
     },
     {
       "path": ".github/workflows/contention-contract.yml",
-      "sha256": "de49596de04a56817a8bb26d5a58986c065c5404c0aed44f9b2a62ae8beb6483"
+      "sha256": "8a3f05634b36050de898e8e87b39086b03810bf941d865175301f96cc0f36bb5"
     },
     {
       "path": "reference/t-state-description.md",

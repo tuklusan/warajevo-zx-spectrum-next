@@ -11,11 +11,11 @@
   "fixtures": [
     {
       "path": ".github/workflows/application-command-boundary.yml",
-      "sha256": "ce4784fec3bd2cf347a18428adaf911532b8c772b1438b4c6637455eea1ba1a2"
+      "sha256": "d3e1be6f069817c1f4e1226b2f8f70da4bf8458649d8e7078ad1f44d4d43c7ee"
     },
     {
       "path": ".github/workflows/telnet-registry-discovery.yml",
-      "sha256": "cca35fe39fa65a5690b94cb3b932bed3b23ab6795839a3ceefb8bc1e9e8a521f"
+      "sha256": "15b0a26c7c5dd574e9259e1056aa3cec23a796fbc31e200b4114d5c8f2599776"
     },
     {
       "path": "ci/test/application-command-boundary/CMakeLists.txt",

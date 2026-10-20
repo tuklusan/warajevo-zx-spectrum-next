@@ -4,14 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/fuse-visual-reference.yml'
-      - 'ci/test/fuse-visual-equivalence/**'
-      - 'src/app/**'
-      - 'src/core/**'
-      - 'src/cmake/**'
-      - 'ci/runner-bootstrap/**'
-      - 'roms/48.rom'
-      - 'test-drivers/fuse-visual-reference.driver.json'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

@@ -11,7 +11,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/host-output-atomic-contract.yml",
-      "sha256": "aef9f0982ca583fd8e130860cee1a2804e3da31b3d6b4faf1780f91e906fb4c3"
+      "sha256": "93012f82ab33f0cb7c80f38c33f0ebeaa31bba85d10fc08d093d6d2c62ca0db2"
     },
     {
       "path": "ci/test/host-output-atomic/CMakeLists.txt",

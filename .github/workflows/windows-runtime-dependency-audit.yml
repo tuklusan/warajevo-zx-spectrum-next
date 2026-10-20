@@ -4,13 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/app/**'
-      - 'src/core/**'
-      - 'src/cmake/CMakeLists.txt'
-      - 'ci/test/windows-runtime-dependencies/**'
-      - 'ci/test/windows-runtime-dependencies/README.md'
-      - 'test-drivers/windows-runtime-dependency-audit.driver.json'
-      - '.github/workflows/windows-runtime-dependency-audit.yml'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

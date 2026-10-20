@@ -4,13 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/core/**'
-      - 'src/cmake/**'
-      - 'tests/fuse-z80-conformance.c'
-      - 'ci/test/fuse-z80/**'
-      - 'tests/fuse-z80-conformance.md'
-      - 'test-drivers/fuse-z80-conformance.driver.json'
-      - '.github/workflows/fuse-z80-regression.yml'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

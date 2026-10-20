@@ -5,7 +5,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/timing-trace-retention.yml",
-      "sha256": "86ea7879b0562ec2537f003c6306b21717dc34172c925424ca032246b03ede0c"
+      "sha256": "d093516c795e7138642a95bf0e70d36dae65e118ebd24b4eab38ab2b06bdf44d"
     },
     {
       "path": "ci/test/timing-trace-retention/CMakeLists.txt",

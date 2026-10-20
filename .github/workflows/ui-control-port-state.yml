@@ -11,12 +11,9 @@ on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/ui-control-port-state.yml'
-      - 'ci/test/ui-control-port-state/**'
-      - 'test-drivers/ui-control-port-state.driver.json'
-      - 'src/app/wz_host_config.*'
-      - 'src/app/wz_control_port.h'
-      - 'src/app/wz_ui_layout.*'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

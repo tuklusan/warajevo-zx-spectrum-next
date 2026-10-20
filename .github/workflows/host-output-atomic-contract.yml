@@ -4,14 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/app/wz_host_output.*'
-      - 'src/app/wz_host_output_utf8.*'
-      - 'src/app/wz_sokol_main.c'
-      - 'src/app/wz_telnet_keyboard_command.*'
-      - 'ci/test/host-output-atomic/**'
-      - 'tests/host-output-atomic-contract.md'
-      - 'test-drivers/host-output-atomic-contract.driver.json'
-      - '.github/workflows/host-output-atomic-contract.yml'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

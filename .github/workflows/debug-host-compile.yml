@@ -4,9 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/app/wz_sokol_main.c'
-      - 'src/cmake/CMakeLists.txt'
-      - '.github/workflows/debug-host-compile.yml'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

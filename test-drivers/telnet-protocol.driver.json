@@ -11,7 +11,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/telnet-protocol-regression.yml",
-      "sha256": "096ca9a2cd5ea0d0a333abb110eb78137e2fb6a4ead0c0b21a131beff10292b4"
+      "sha256": "0ad15e29eb7771c28397ef71639bf610c03d08d522a5c3f5d87832bb5b6900c3"
     },
     {
       "path": "ci/test/telnet-protocol/CMakeLists.txt",

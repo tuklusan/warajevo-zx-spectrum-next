@@ -8,7 +8,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/fuse-visual-comparator-contract.yml",
-      "sha256": "2439f49d6a10dd3c9ba6d6d6364e5a6e8ae1bd7980a5595bca93adaeb305e259"
+      "sha256": "fa775f75ac6ba5ac0b1db69886fa590e084f30c84f5e8adb1ef7f257a70d510f"
     },
     {
       "path": "ci/test/fuse-visual-equivalence/compare.py",

@@ -5,7 +5,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/host-audio-settings-contract.yml",
-      "sha256": "6913a7a973190af84286d951f03e65dd922da690de66c732f045c3efa9866533"
+      "sha256": "da2a50d04c740a65a497cdd3c71f519bbd9828ea77b9fd47777a46ef3e34e98b"
     },
     {
       "path": "ci/test/host-audio-settings/CMakeLists.txt",

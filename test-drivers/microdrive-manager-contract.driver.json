@@ -5,7 +5,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/microdrive-manager-contract.yml",
-      "sha256": "eb070fbf08c97d299c0ef1fcfb4ee8d8540bc1426da7d72895cbc84f72176a4d"
+      "sha256": "afe94945618fdfcc215f6dde297001d64f28e71dfe75ff15d4e56c0ac41f242e"
     },
     {
       "path": "ci/test/microdrive-manager/CMakeLists.txt",

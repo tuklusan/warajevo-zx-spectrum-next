@@ -11,18 +11,9 @@ on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/ui-networking-mode.yml'
-      - 'ci/test/ui-networking-mode/**'
-      - 'test-drivers/ui-networking-mode.driver.json'
-      - 'src/app/wz_command_registry.*'
-      - 'src/app/wz_host_audio_policy.*'
-      - 'src/app/wz_host_thread.*'
-      - 'src/app/wz_networking_commands.*'
-      - 'src/app/wz_speed_policy.*'
-      - 'src/app/wz_ui_layout.*'
-      - 'src/app/wz_sokol_main.c'
-      - 'src/core/wz_machine.*'
-      - 'docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

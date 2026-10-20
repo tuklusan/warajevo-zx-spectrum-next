@@ -6,6 +6,10 @@ on:
     branches: [main]
 
 permissions:
+    paths:
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   contents: read
 
 jobs:

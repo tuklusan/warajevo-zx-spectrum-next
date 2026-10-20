@@ -11,12 +11,9 @@ on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/private-media-playback.yml'
-      - 'ci/test/private-media-playback/**'
-      - 'src/core/wz_machine.*'
-      - 'src/core/wz_tape.*'
-      - 'test-media/**'
-      - 'test-drivers/private-media-playback.driver.json'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

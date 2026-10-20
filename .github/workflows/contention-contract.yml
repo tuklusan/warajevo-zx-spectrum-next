@@ -4,11 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/core/**'
-      - 'ci/test/contention-contract/**'
-      - 'reference/t-state-description.md'
-      - 'test-drivers/contention-contract.driver.json'
-      - '.github/workflows/contention-contract.yml'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

@@ -4,23 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'src/core/wz_machine.c'
-      - 'src/core/wz_machine_internal.h'
-      - 'src/core/wz_machine_profile.c'
-      - 'src/core/wz_machine_profile.h'
-      - 'src/core/wz_types.h'
-      - 'src/core/wz_bus.h'
-      - 'src/core/wz_bus.c'
-      - 'src/core/wz_machine.h'
-      - 'src/core/wz_trace.h'
-      - 'src/core/wz_z80.h'
-      - 'src/diagnostics/wz_trace_dump_main.c'
-      - 'src/diagnostics/wz_trace_file.c'
-      - 'src/diagnostics/wz_trace_file.h'
-      - 'src/cmake/CMakeLists.txt'
-      - 'ci/test/ula-full-frame-trace/**'
-      - 'test-drivers/ula-full-frame-trace.driver.json'
-      - '.github/workflows/ula-full-frame-trace-contract.yml'
+      - 'src/**/*.c'
+      - 'src/**/*.h'
+      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:
