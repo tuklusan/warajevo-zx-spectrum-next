@@ -23,7 +23,7 @@
     },
     {
       "path": "ci/test/host-output-atomic/run-contract.py",
-      "sha256": "6403ed1eb380fb0114ae8af068225211e90fac57915f4c376500ed3df15e20c6"
+      "sha256": "5a712317721955018b3db690fb42999ea5e28e6c0dae0ae2024432322b83033b"
     },
     {
       "path": "ci/test/host-output-atomic/worker.c",

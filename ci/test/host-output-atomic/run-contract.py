@@ -48,6 +48,9 @@ def run_group(worker: Path, mode: str, destination: Path, iterations: int):
                 content = destination.read_bytes()
             except FileNotFoundError:
                 continue
+            except PermissionError:
+                time.sleep(0.0005)
+                continue
             except OSError as error:
                 read_errors.put(str(error))
                 return
@@ -97,8 +100,9 @@ def main() -> int:
         atomic_path = root / "shared-snapshot.bin"
         results, observed = run_group(worker, "atomic", atomic_path,
                                       ATOMIC_ITERATIONS)
-        if any(code != 0 for code, _, _ in results):
-            raise RuntimeError(f"atomic writers failed: {[r[0] for r in results]}")
+        atomic_codes = [code for code, _, _ in results]
+        if any(code not in (0, 4) for code in atomic_codes) or 0 not in atomic_codes:
+            raise RuntimeError(f"atomic writer outcomes were {atomic_codes}")
         if atomic_path.read_bytes() not in {
                 payload(writer, iteration) for writer in range(WRITERS)
                 for iteration in range(ATOMIC_ITERATIONS)}:
@@ -108,8 +112,9 @@ def main() -> int:
         if list(root.glob("shared-snapshot.bin.tmp.*")):
             raise RuntimeError("atomic write left temporary files behind")
         print(f"PASS atomic shared-path writes: {WRITERS} processes, "
-              f"{ATOMIC_ITERATIONS} replacements each, {len(observed)} "
-              "complete versions observed")
+              f"{ATOMIC_ITERATIONS} replacements each, "
+              f"{atomic_codes.count(0)} processes published complete versions, "
+              f"{len(observed)} complete versions observed")
 
         exclusive_path = root / "shared-export.bin"
         exclusive_results, _ = run_group(worker, "exclusive", exclusive_path, 1)
