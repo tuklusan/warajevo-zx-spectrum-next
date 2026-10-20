@@ -1,10 +1,10 @@
 {
   "testId": "file-open-run-routing",
   "status": "pass",
-  "commit": "68b222176734b0951d0fa7e7915c2389eedc31bd",
-  "runId": 38318090710,
+  "commit": "51b042b66b026510c1ae33d6a49df037fe0c067d",
+  "runId": 39382064568,
   "runner": "Linux/X64",
-  "timestamp": "2026-10-12T22:41:44+00:00",
+  "timestamp": "2026-10-20T06:43:52+00:00",
   "caseCount": 23,
   "fixtures": [
     {
@@ -21,7 +21,7 @@
     },
     {
       "path": "src/app/wz_file_open_run.c",
-      "sha256": "9343f4f16880011075e96b0e903f5ea808d559ec160cf26bb0a140a41c41cb5e"
+      "sha256": "0935793d2fcf5e9776b8c89de29d63d8a79c2705f839d5ec80b280da92c1ae1e"
     },
     {
       "path": "src/app/wz_file_open_run.h",
@@ -29,11 +29,11 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "af1a055ba24a42e870645a1b7389cffcf449028e8dd2f3344881282db94f51f4"
+      "sha256": "7c92695d1282104d62ac3b4c9c929a96a6ed7169533fa3e71ba6f93af1186469"
     },
     {
       "path": "test-drivers/file-open-run.driver.json",
-      "sha256": "eaa7ec21af44d085c74faa89fd8e36d13e0630db188f3fbabe8cd1a6db57895b"
+      "sha256": "4317328ef6d07eb37b5af34a938f590184e71ae530202d1dee21c4c5ef180de4"
     }
   ]
 }
