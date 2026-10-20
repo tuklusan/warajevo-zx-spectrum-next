@@ -1,0 +1,30 @@
+name: Snapshot format regression
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/core/wz_state.*'
+      - 'ci/test/snapshot-format/**'
+      - '.github/workflows/snapshot-format-regression.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot-format:
+    name: Snapshot format parser behavior
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out exact main revision
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+      - name: Configure isolated core regression
+        run: cmake -S ci/test/snapshot-format -B dist/snapshot-format -DCMAKE_BUILD_TYPE=Debug
+      - name: Build snapshot regression
+        run: cmake --build dist/snapshot-format --config Debug --target wz_snapshot_format_regression --parallel 2
+      - name: Execute snapshot regression
+        run: ctest --test-dir dist/snapshot-format --output-on-failure --verbose -R '^wz_snapshot_format_regression$'
