@@ -11,7 +11,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include <stdbool.h>
 
-#include "core/wz_input_types.h"
+#include "app/wz_input_event.h"
+#include "core/wz_types.h"
 
 typedef struct {
     wz_master_tick_t last_tick;

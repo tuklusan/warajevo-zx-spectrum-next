@@ -93,6 +93,7 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "app/wz_host_socket.h"
 #include "app/wz_input_arbiter.h"
 #include "app/wz_input_focus.h"
+#include "app/wz_input_projection.h"
 #include "app/wz_ui_keyboard_menu.h"
 #include "app/wz_keyboard_mapping.h"
 #include "app/wz_kempston_mapping.h"
@@ -7235,13 +7236,8 @@ static void wz_host_apply_keyboard_input(void)
         (void)wz_machine_set_tape_motor(&wz_host_session.machine, true);
     }
     wz_host_session.tape_enter_down = enter_down;
-    for (size_t key = 0u; key < WZ_INPUT_ARBITER_KEY_COUNT; ++key) {
-        bool pressed = wz_input_arbiter_key_down(
-            &wz_host_session.input_arbiter, key);
-        (void)wz_machine_set_keyboard_key(
-            &wz_host_session.machine, (wz_byte_t)(key / 5u),
-            (wz_byte_t)(key % 5u), pressed);
-    }
+    (void)wz_input_projection_apply_keyboard(
+        &wz_host_session.input_arbiter, &wz_host_session.machine);
 }
 
 static void wz_host_frame(void)
