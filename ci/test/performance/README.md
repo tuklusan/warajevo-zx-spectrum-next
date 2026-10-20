@@ -19,11 +19,14 @@ The pre-optimization records were produced on the four pinned hosted runner
 families at commit `574714b6be131e086f117676159efca4eb58a273` (run
 `35886051010`). After the first accepted raster optimization, the current
 records in `baselines/` were captured at `350181913777165a4a52fb47318b1b54269101f7`
-(run `35888370795`). The original records remain in Git history. The performance
-workflow runs on `main`, repeats these workloads, and rejects a fingerprint
-change or a throughput decrease greater than 40% against that runner's own
-current baseline. The 40% allowance absorbs normal hosted-runner variance; it
-is not a target for accepted optimizations.
+(run `35888370795`). The original records remain in Git history. The main-branch
+full native build workflow runs these workloads on the same five native runners
+as the product build. Windows x64 and both macOS runners reject a fingerprint
+change or a throughput decrease greater than 40% against their pinned runner
+baseline. Linux x64 and ARM64 compare deterministic fingerprints against the
+frozen Windows reference and report runner-specific throughput; no historical
+Linux throughput baseline is pinned. The 40% allowance absorbs normal hosted
+runner variance; it is not a target for accepted optimizations.
 
 When accepting an optimization, compare against the existing records first.
 Update the affected runner baselines only after the optimization has passing

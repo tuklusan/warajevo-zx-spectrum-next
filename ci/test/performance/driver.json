@@ -1,5 +1,41 @@
 {
   "testId": "phase16-performance-baseline",
-  "command": "cmake -S ci/test/performance -B dist/performance/<runner> -DCMAKE_BUILD_TYPE=Release && cmake --build dist/performance/<runner> --config Release --target wz_performance_baseline && run wz_performance_baseline on the assigned hosted runner && compare against ci/test/performance/baselines/<runner>.json",
-  "fixtures": []
+  "command": "The main-branch Full native build and test workflow runs all six deterministic Release workloads on each of its five native runners. Windows x64 and both macOS runners compare fingerprints and throughput against their pinned runner baselines; Linux x64 and ARM64 compare all fingerprints and record current throughput.",
+  "runnerMatrix": [
+    "Windows-windows-x64",
+    "Linux-ubuntu-24.04",
+    "Linux-ubuntu-24.04-arm",
+    "macOS-macos-arm64",
+    "macOS-macos-x64"
+  ],
+  "fixtures": [
+    {
+      "path": "ci/test/performance/README.md",
+      "sha256": "b9843733518e46920b439f6c95b1f31dd69f15f7c0534869edb62d04690ab79c"
+    },
+    {
+      "path": "ci/test/performance/baseline.c",
+      "sha256": "717a58a112206148740d77f5c03049916c20d6653e36d264ef57dacb3a968c21"
+    },
+    {
+      "path": "ci/test/performance/CMakeLists.txt",
+      "sha256": "00e55369533639d8e25f77cfd67eb51d6c66356086ea7803d4ba8e477b3101e7"
+    },
+    {
+      "path": "ci/test/performance/compare.py",
+      "sha256": "b7317caff4efa4f1ab982078f1ee8e5694fae2245f881736ec4a2179ef873b4b"
+    },
+    {
+      "path": "ci/test/performance/baselines/windows-x64.json",
+      "sha256": "178f6158b8194ceb6dd6f60bec668f9641518d230d240d12ca7ac8c4ad82fdf6"
+    },
+    {
+      "path": "ci/test/performance/baselines/macos-x64.json",
+      "sha256": "ad1b4ccf29c2180de8ecbc7b010cc12abf8d376c5474dfa28a011cc67c1d1069"
+    },
+    {
+      "path": "ci/test/performance/baselines/macos-arm64.json",
+      "sha256": "6a0125ada5673a331351fc71514595b588e332ea763d4d55786d89039f0b6a46"
+    }
+  ]
 }

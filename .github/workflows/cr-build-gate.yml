@@ -31,18 +31,28 @@ jobs:
           - name: Windows x64
             label: windows-2025
             architecture: X64
+            performance_runner: Windows-windows-x64
+            performance_baseline: windows-x64
           - name: Linux x64
             label: ubuntu-24.04
             architecture: X64
+            performance_runner: Linux-ubuntu-24.04
+            performance_baseline: ''
           - name: Linux ARM64
             label: ubuntu-24.04-arm
             architecture: ARM64
+            performance_runner: Linux-ubuntu-24.04-arm
+            performance_baseline: ''
           - name: macOS ARM64
             label: macos-15
             architecture: ARM64
+            performance_runner: macOS-macos-arm64
+            performance_baseline: macos-arm64
           - name: macOS Intel
             label: macos-15-intel
             architecture: X64
+            performance_runner: macOS-macos-x64
+            performance_baseline: macos-x64
 
     steps:
       - name: Check out source
@@ -81,3 +91,30 @@ jobs:
           cmake -S src/cmake -B dist/cr-gate-${{ matrix.label }} -DCMAKE_BUILD_TYPE=Release -DWZSN_BUILD_SOKOL_HOST=ON
           cmake --build dist/cr-gate-${{ matrix.label }} --clean-first --config Release --parallel 2
           ctest --test-dir dist/cr-gate-${{ matrix.label }} -C Release --output-on-failure --verbose
+
+      - name: Phase-16 correctness and performance regression
+        shell: bash
+        env:
+          WZ_PERF_COMMIT: ${{ github.sha }}
+          WZ_PERF_RUNNER: ${{ matrix.performance_runner }}
+          WZ_PERF_ARCH: ${{ matrix.architecture }}
+        run: |
+          set -o pipefail
+          export WZ_PERF_TIMESTAMP="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+          build_dir="dist/performance-${{ matrix.label }}"
+          cmake -S ci/test/performance -B "$build_dir" -DCMAKE_BUILD_TYPE=Release
+          cmake --build "$build_dir" --config Release --target wz_performance_baseline --parallel 2
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            executable="$build_dir/Release/wz_performance_baseline.exe"
+          else
+            executable="$build_dir/wz_performance_baseline"
+          fi
+          "$executable" | tee "$build_dir/current.json"
+          if [[ -n "${{ matrix.performance_baseline }}" ]]; then
+            python ci/test/performance/compare.py \
+              "$build_dir/current.json" \
+              "ci/test/performance/baselines/${{ matrix.performance_baseline }}.json"
+          else
+            python -c 'import json,sys; current=json.load(open(sys.argv[1])); baseline=json.load(open("ci/test/performance/baselines/windows-x64.json")); expected={item["name"]:item["fingerprint"] for item in baseline["metrics"]}; actual={item["name"]:item["fingerprint"] for item in current["metrics"]}; assert actual == expected, "deterministic workload fingerprints differ from frozen baseline"; print("PASS all six deterministic workload fingerprints")' \
+              "$build_dir/current.json"
+          fi
