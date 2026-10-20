@@ -56,6 +56,9 @@ static void record_trace(const wz_trace_event_t* event, void* context)
                 (attribute ? 0x15u : 0x5bu);
             if (event->address != expected_address ||
                 event->value != expected_value) {
+            (void)fprintf(stderr, "fetch %u %u %u %u\n",
+                (unsigned)event->master_tick, (unsigned)cell,
+                (unsigned)event->auxiliary, (unsigned)event->value);
                 check->values_valid = false;
             }
             ++check->target_events;
@@ -133,6 +136,11 @@ int main(int argc, char** argv)
             (void)fprintf(stderr, "bus request failed at tick %llu\n",
                           (unsigned long long)tick);
             goto cleanup;
+        }
+        if (switch_to_7 || switch_to_5) {
+            (void)fprintf(stderr, "page %u %u\n",
+                (unsigned)wz_machine_128k_paging_value(&machine),
+                (unsigned)wz_machine_128k_screen_bank(&machine));
         }
     }
     if (trace.failed || trace.record_count != 12288u ||
