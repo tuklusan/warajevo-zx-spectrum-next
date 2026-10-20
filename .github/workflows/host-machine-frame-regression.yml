@@ -1,12 +1,6 @@
 name: Host machine frame audio independence
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'src/**/*.c'
-      - 'src/**/*.h'
-      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

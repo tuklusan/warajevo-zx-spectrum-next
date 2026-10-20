@@ -1,12 +1,6 @@
 name: Master-time contract
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'src/**/*.c'
-      - 'src/**/*.h'
-      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

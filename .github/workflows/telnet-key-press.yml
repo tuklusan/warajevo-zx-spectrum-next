@@ -1,12 +1,6 @@
 name: Telnet KEY PRESS reset regression
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'src/**/*.c'
-      - 'src/**/*.h'
-      - 'src/**/*.m'
   workflow_dispatch:
 
 permissions:

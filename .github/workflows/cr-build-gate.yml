@@ -51,6 +51,7 @@ jobs:
         run: |
           cmake -S src/cmake -B dist/cr-gate-${{ matrix.label }} -DCMAKE_BUILD_TYPE=Release
           cmake --build dist/cr-gate-${{ matrix.label }} --clean-first --parallel 2
+          ctest --test-dir dist/cr-gate-${{ matrix.label }} -C Release --output-on-failure
 
       - name: Build declared repository-root Visual Studio solution
         if: runner.os == 'Windows' && hashFiles('*.sln') != ''

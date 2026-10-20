@@ -49,23 +49,22 @@ workflows have finished and all required proof has been downloaded before
 purging them.
 
 Every project commit is made directly on local `main`, and every push updates
-remote `main`; no other branch or pull request is used. Every push-triggered
-GitHub workflow is scoped to `main` and filtered to production source files
-under `src/` with `.c`, `.h`, or `.m` extensions. A push with no change to one
-of those files starts no hosted runner, including pushes containing only
-documentation, test harnesses, trace data, test results, workflow files, or
-other administrative records. Source changes trigger the configured build
-and test workflows so the resulting binaries are exercised. Manual dispatch
-remains available for focused checks on `main`; pull-request triggers are
+remote `main`; no other branch or pull request is used. Exactly one GitHub
+workflow runs on source pushes: `cr-build-gate.yml`, filtered to production
+`.c`, `.h`, and `.m` files under `src/`. It clean-builds the application and
+runs the integrated CTest suite on the maintained Windows and macOS x64 and
+ARM64 targets. Documentation, tests, traces, results, workflow edits, and
+administrative records alone start no hosted runner. Focused contract,
+reference, media, and release workflows remain manually dispatchable on `main`
+when their specialized evidence is needed. Pull-request triggers are
 prohibited. Do not add branch protection that requires a pull request or
 prevents authorized direct updates to `main`.
 
 The pre-commit hook checks every pathname in the complete staged index,
 including directory components, for forbidden terms case-insensitively before
 creating a commit. The pre-push gate repeats the check against the complete
-prospective tree before contacting GitHub. The hosted pathname workflow uses
-the source-only push filter, so the mandatory local pathname checks cover every
-push while the hosted audit covers source-triggered commits and manual runs.
+prospective tree before contacting GitHub. The hosted pathname workflow is a
+manual audit; the mandatory local pathname checks cover every direct push.
 Git metadata and the fixed `main` ref are not repository pathnames. No other
 branch or pull request is part of this workflow.
 

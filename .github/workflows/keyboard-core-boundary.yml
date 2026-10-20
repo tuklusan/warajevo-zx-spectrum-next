@@ -1,12 +1,6 @@
 name: Keyboard core boundary
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'src/**/*.c'
-      - 'src/**/*.h'
-      - 'src/**/*.m'
   workflow_dispatch:
     inputs:
       ref:

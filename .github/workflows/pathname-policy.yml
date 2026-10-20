@@ -1,13 +1,8 @@
 name: Repository pathname policy
 
 on:
-  # Run after every direct update to the sole project branch.
-  push:
-    branches: [main]
-    paths:
-      - 'src/**/*.c'
-      - 'src/**/*.h'
-      - 'src/**/*.m'
+  # Run manually when a focused pathname audit is needed.
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -17,20 +12,20 @@ jobs:
     name: Main pathname policy
     runs-on: ubuntu-latest
     steps:
-      - name: Require a push to main
+      - name: Require main branch dispatch
         shell: bash
         run: |
-          if [[ "$GITHUB_REF" != "refs/heads/main" || "$GITHUB_EVENT_NAME" != "push" ]]; then
-            echo "Pathname policy runs only after pushes to main." >&2
+          if [[ "$GITHUB_REF" != "refs/heads/main" || "$GITHUB_EVENT_NAME" != "workflow_dispatch" ]]; then
+            echo "Pathname policy is manually dispatched on main." >&2
             exit 1
           fi
 
       - name: Check out repository tree
         uses: actions/checkout@v5
         with:
-          # Pin the audited tree to the exact commit that triggered this run.
+          # Pin the audited tree to the selected main revision.
           ref: ${{ github.sha }}
 
-      - name: Validate every tracked pathname at the pushed commit
+      - name: Validate every tracked pathname at the selected commit
         shell: bash
         run: python3 ci/validate-pathnames.py "$GITHUB_SHA"
