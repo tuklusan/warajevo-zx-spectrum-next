@@ -149,6 +149,8 @@ int main(int argc, char** argv)
     machine.cpu.iff1 = 1u;
     machine.cpu.iff2 = 1u;
     machine.cpu.interrupt_mode = (wz_byte_t)WZ_Z80_INTERRUPT_MODE_1;
+    machine.master_tick = (wz_master_tick_t)machine.profile->interrupt_deassert_tstate *
+        machine.profile->master_ticks_per_cpu_tstate;
     frame_ticks = (wz_master_tick_t)machine.profile->tstates_per_frame *
         machine.profile->master_ticks_per_cpu_tstate;
 
@@ -178,7 +180,7 @@ int main(int argc, char** argv)
         recovery.ula_fetch_count != WZ_ULA_CAPTURE_CELL_COUNT * 2u ||
         recovery.cpu_instruction_count == 0u ||
         !recovery.have_bus_event ||
-        recovery.first_bus_event.cycle != WZ_BUS_INTERRUPT_ACKNOWLEDGE ||
+        recovery.first_bus_event.cycle != WZ_BUS_M1_OPCODE_FETCH ||
         recovery.first_bus_event.program_counter != 0x2345u ||
         !recovery.bus_context_valid || !recovery.timeline_ordered ||
         !recovery.interrupt_ordered) {
