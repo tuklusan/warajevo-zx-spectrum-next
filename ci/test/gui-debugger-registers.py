@@ -67,22 +67,35 @@ def screenshot_text(root):
     return run("tesseract", str(prepared), "stdout", "--psm", "6")
 
 
-def main_af(root):
+def main_af(root, window):
     observations = []
+    geometry = run("xdotool", "getwindowgeometry", "--shell", window)
+    app_width = int(re.search(r"^WIDTH=(\d+)$", geometry,
+                              re.MULTILINE).group(1))
+    app_height = int(re.search(r"^HEIGHT=(\d+)$", geometry,
+                               re.MULTILINE).group(1))
+    x0 = int(re.search(r"^X=(\d+)$", geometry, re.MULTILINE).group(1))
+    y0 = int(re.search(r"^Y=(\d+)$", geometry, re.MULTILINE).group(1))
+    debugger_left = x0 + max(0, (app_width - 760) // 2)
+    debugger_top = y0 + max(0, (app_height - 740) // 2)
     for _ in range(3):
-        text = screenshot_text(root)
+        image = capture(root)
+        with Image.open(image) as source:
+            line = source.crop((debugger_left + 360, debugger_top + 80,
+                                debugger_left + 580, debugger_top + 112))
+            line = line.resize((line.width * 4, line.height * 4),
+                               Image.Resampling.LANCZOS)
+            line = ImageEnhance.Contrast(ImageOps.grayscale(line)).enhance(2.5)
+        prepared = root / "af-ocr.png"
+        line.save(prepared)
+        text = run("tesseract", str(prepared), "stdout", "--psm", "7",
+                   "-c", "tessedit_char_whitelist=NAF0123456789")
         observations.append(text)
-        match = re.search(r"(?:^|[^A-Z])N?AF\s+([0-9A-F]{4})\b", text)
+        match = re.search(r"N?AF\s+([0-9A-F]{4})\b", text)
         if match is not None:
             return match.group(1), text
         time.sleep(0.2)
     raise RuntimeError(f"main AF value is not readable; OCR={observations!r}")
-
-
-def af_matches(actual, expected):
-    return len(actual) == len(expected) and all(
-        observed == wanted or (wanted == "A" and observed == "4")
-        for observed, wanted in zip(actual, expected))
 
 
 def click_at(x, y):
@@ -149,7 +162,8 @@ def main():
                 run("xdotool", "mousemove", "--sync", "--window", window,
                     "260", "60", "click", "1")
                 time.sleep(0.25)
-                original_af, before = main_af(root)
+                before = screenshot_text(root)
+                original_af, _ = main_af(root, window)
                 (args.capture_dir / "debugger-paused.png").write_bytes(
                     (root / "screen.png").read_bytes())
                 if "paused" not in before.casefold():
@@ -176,7 +190,7 @@ def main():
                 invalid = screenshot_text(root)
                 (args.capture_dir / "debugger-register-invalid.png").write_bytes(
                     (root / "screen.png").read_bytes())
-                invalid_af, _ = main_af(root)
+                invalid_af, _ = main_af(root, window)
                 if ("Invalid debugger register value" not in invalid or
                         invalid_af != original_af):
                     raise RuntimeError(
@@ -191,10 +205,10 @@ def main():
                 updated = screenshot_text(root)
                 (args.capture_dir / "debugger-register-edited.png").write_bytes(
                     (root / "screen.png").read_bytes())
-                updated_af, _ = main_af(root)
+                updated_af, _ = main_af(root, window)
                 if ("Debugger register updated" not in updated or
                         not re.search(r"\bA\s+\S+\s+5A\b", updated) or
-                        not af_matches(updated_af, "5A" + original_af[2:])):
+                        updated_af != "5A" + original_af[2:]):
                     raise RuntimeError(
                         "main A register edit was not reflected in UI; "
                         f"AF OCR={updated_af!r}; screen OCR={updated!r}")
@@ -202,9 +216,9 @@ def main():
 
                 click_at(debugger_left + 570, debugger_top + 400)
                 restored = screenshot_text(root)
-                restored_af, _ = main_af(root)
+                restored_af, _ = main_af(root, window)
                 if ("Debugger registers restored" not in restored or
-                        not af_matches(restored_af, original_af)):
+                        restored_af != original_af):
                     raise RuntimeError("register undo did not restore the prior AF value")
                 assertions.append("register-undo-restored-prior-af")
                 (args.capture_dir / "debugger-register-undo.png").write_bytes(
