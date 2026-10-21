@@ -3286,6 +3286,24 @@ static wz_result_t wz_host_display_settings_open(
     return WZ_RESULT_OK;
 }
 
+static wz_result_t wz_host_command_status_panel_toggle(
+    const void* context, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    wz_host_session_t* session = (wz_host_session_t*)context;
+    bool visible;
+    if (session == NULL || arguments.size != 0u) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    visible = wz_ui_layout_toggle_status_panel(&session->ui_window.layout);
+    if (result != NULL) {
+        (void)snprintf(result->message, sizeof(result->message), "%s",
+                       visible ? "Machine / Media Status shown" :
+                                 "Machine / Media Status hidden");
+    }
+    return WZ_RESULT_OK;
+}
+
 static wz_result_t wz_host_audio_settings_open(
     const void* context, wz_command_arguments_t arguments,
     wz_command_result_t* result)
@@ -3558,6 +3576,24 @@ static bool wz_host_register_commands(void)
             "wz_host_toggle_fullscreen", "local", NULL,
             WZ_COMMAND_LOCAL_ONLY, wz_host_settings_available,
             wz_host_toggle_fullscreen, &wz_host_session, false, false, NULL
+        },
+        {
+            "view.machine_media_status", "Machine / Media Status",
+            "Show or hide the host status panel",
+            "view", "NONE", "wz-command-result",
+            "wz_host_command_status_panel_toggle", "local", NULL,
+            WZ_COMMAND_LOCAL_ONLY, NULL,
+            wz_host_command_status_panel_toggle, &wz_host_session,
+            false, false, NULL
+        },
+        {
+            "view.display_settings", "Display Settings...",
+            "Open the display settings category",
+            "view", "NONE", "wz-command-result",
+            "wz_host_display_settings_open", "local", NULL,
+            WZ_COMMAND_LOCAL_ONLY, wz_host_settings_available,
+            wz_host_display_settings_open, &wz_host_session,
+            false, false, NULL
         },
         {
             "help.help", "Help", "Show keyboard and application help",
