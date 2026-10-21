@@ -8,18 +8,22 @@ SANYALnet Labs." See LICENSE for full terms. -->
 # Debugger core contract
 
 The hosted Release/Sokol build runs `wz_debugger_core_contract` in integrated
-CTest on Windows x64, Linux x64/ARM64, and macOS Intel/ARM64. It checks 64
-assertions per target for live snapshots, read-only memory inspection and
-search including masked wildcard and word patterns, bounded reads, base and
-CB-prefixed disassembly, hexadecimal formatting, pause-gated
-byte/word/fill/copy mutations, overlap-safe copying, CPU state edit and one-shot
-undo, jump, single-step, continue, breakpoint stop/clear, and 128K paging
-inspection, bank selection, and paging lock behavior. Copy checks cover
-overlapping linear and bank-mapped regions. All five builds, 99 assertions and
-28 CTests per target, and configured Phase-16 checks passed in run
-`39654672838` at source `e2f6c7293bedb9c22eb99cd8adfc3622e0e16a5a`.
+CTest on Windows x64, Linux x64/ARM64, and macOS Intel/ARM64. It passed 241
+assertions and all 28 CTests on each target in run `39659158070` at source
+`647567ed1c96ab4b02ad6a14f78f1e9b75dcf67c`. The same exact-source run passed
+all configured Phase-16 correctness fingerprints and throughput checks on all
+five targets; maximum slowdown was 30.6%.
 
-This contract directly covers shared debugger-core behavior only. Full monitor
-command equivalence, wildcard memory entry, mapped-bank boundary behavior,
-interrupt stepping, full register-edit UI paths, and the remaining per-command
-migration strategies stay open.
+Coverage includes snapshots, memory inspection and exact/masked search,
+base/CB disassembly, bounded formatting, pause-gated byte/word/fill/copy edits,
+linear and bank-mapped overlap behavior, full CPU-state edit/undo, individual
+primary/alternate/index/stack/program/interrupt register edits, width and range
+rejection, pause gating, one-step undo, jump, step, continue, breakpoints, and
+128K page selection and lock behavior. The proof and fixture hashes are in
+[test-results/debugger-core-contract.json](../test-results/debugger-core-contract.json)
+and [test-drivers/debugger-core-contract.driver.json](../test-drivers/debugger-core-contract.driver.json).
+
+This contract directly covers shared debugger-core behavior. Full monitor
+command equivalence, register editing through the production debugger UI,
+remaining mapped-bank boundary cases, interrupt stepping, remaining monitor
+routines, and third-party clearance stay open.

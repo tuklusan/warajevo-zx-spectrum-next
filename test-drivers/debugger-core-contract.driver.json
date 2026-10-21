@@ -4,7 +4,7 @@
   "fixtures": [
     {
       "path": "ci/test/debugger-core-contract.c",
-      "sha256": "a3896f7e6f7dba441b7066999d04c1098e133579e41678d3c3c463c4a3ca9c25"
+      "sha256": "dd6777bd832aa1a4d42c6b5a7bbd3445e90365e1d14736e379652072ef148a66"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
@@ -12,11 +12,11 @@
     },
     {
       "path": "src/core/wz_debugger.c",
-      "sha256": "8298d10154ba4540412eeee36620fd563fa8b066d2c5a99aaab71096b429d153"
+      "sha256": "3475f4cb3acc84a58843a16205661068b86479d19c522602a34ee21b4aeb70fd"
     },
     {
       "path": "src/core/wz_debugger.h",
-      "sha256": "bce86fa966396093e7658773bf427781bd7c26a94be14e6e00fa54a3fe56d258"
+      "sha256": "03450f85a4b5d043cab29384623f27b207e44847d72b88158e3e7bd841324472"
     }
   ]
 }

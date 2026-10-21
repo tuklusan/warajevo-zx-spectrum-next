@@ -1,53 +1,53 @@
 {
   "testId": "debugger-core-contract",
   "status": "pass",
-  "commit": "e2f6c7293bedb9c22eb99cd8adfc3622e0e16a5a",
+  "commit": "647567ed1c96ab4b02ad6a14f78f1e9b75dcf67c",
   "runner": "GitHub Actions native matrix",
-  "timestamp": "2026-10-21T18:39:22Z",
-  "workflowRun": 39654672838,
-  "assertionsPerRunner": 99,
+  "timestamp": "2026-10-21T19:13:41Z",
+  "workflowRun": 39659158070,
+  "assertionsPerRunner": 241,
   "integratedCtest": "28/28 per target",
-  "phase16": "all configured correctness and performance checks passed per target",
+  "phase16": "all configured correctness fingerprints and throughput checks passed per target; max slowdown 30.6%",
   "targets": [
     {
       "name": "Windows x64",
       "runner": "windows-2025",
-      "assertions": 99,
+      "assertions": 241,
       "conclusion": "success"
     },
     {
       "name": "Linux x64",
       "runner": "ubuntu-24.04",
-      "assertions": 99,
+      "assertions": 241,
       "conclusion": "success"
     },
     {
       "name": "Linux ARM64",
       "runner": "ubuntu-24.04-arm",
-      "assertions": 99,
+      "assertions": 241,
       "conclusion": "success"
     },
     {
       "name": "macOS ARM64",
       "runner": "macos-15",
-      "assertions": 99,
+      "assertions": 241,
       "conclusion": "success"
     },
     {
       "name": "macOS Intel",
       "runner": "macos-15-intel",
-      "assertions": 99,
+      "assertions": 241,
       "conclusion": "success"
     }
   ],
   "sourceReview": {
     "status": "complete",
-    "adjudication": "The deliberate undersized disassembly buffer exercises WZ_RESULT_BUFFER_TOO_SMALL and bounded termination. The first paging run exposed an incorrect test expectation after selecting bank 0 while asserting bank 2; the fixture now locks bank 2 and verifies it remains selected. The reported unsigned subtraction underflow is prevented by the preceding pattern_length > length return; length is bounded to the 16-bit address space. For mapped memory copies, the full source range is snapshotted to preserve overlap semantics across physical bank aliases; allocation failure is returned before mutation, while ordinary linear 48K copies retain memmove. The reported profile null dereference cannot occur because writable_range rejects a missing profile before entering the branch, and mapped memory helpers also handle a null profile."
+    "adjudication": "Mandatory Gito 4.5.0 review passed before push. A prior review pass exposed an enum-range test assumption; the contract now enumerates every supported register explicitly. Final review reported no actionable findings."
   },
   "fixtures": [
     {
       "path": "ci/test/debugger-core-contract.c",
-      "sha256": "a3896f7e6f7dba441b7066999d04c1098e133579e41678d3c3c463c4a3ca9c25"
+      "sha256": "dd6777bd832aa1a4d42c6b5a7bbd3445e90365e1d14736e379652072ef148a66"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
@@ -55,11 +55,11 @@
     },
     {
       "path": "src/core/wz_debugger.c",
-      "sha256": "8298d10154ba4540412eeee36620fd563fa8b066d2c5a99aaab71096b429d153"
+      "sha256": "3475f4cb3acc84a58843a16205661068b86479d19c522602a34ee21b4aeb70fd"
     },
     {
       "path": "src/core/wz_debugger.h",
-      "sha256": "bce86fa966396093e7658773bf427781bd7c26a94be14e6e00fa54a3fe56d258"
+      "sha256": "03450f85a4b5d043cab29384623f27b207e44847d72b88158e3e7bd841324472"
     }
   ]
 }
