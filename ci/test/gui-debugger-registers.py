@@ -183,10 +183,11 @@ def main():
                 run("xdotool", "key", "ctrl+a", "type", "--clearmodifiers", "100")
                 time.sleep(0.25)
                 click_at(debugger_left + 190, debugger_top + 400)
+                invalid_af, _ = main_af(root, debugger_left, debugger_top)
                 invalid = screenshot_text(root)
+                capture(root)
                 (args.capture_dir / "debugger-register-invalid.png").write_bytes(
                     (root / "screen.png").read_bytes())
-                invalid_af, _ = main_af(root, debugger_left, debugger_top)
                 if ("Invalid debugger register value" not in invalid or
                         invalid_af[:2] != original_af[:2]):
                     raise RuntimeError(
@@ -199,10 +200,11 @@ def main():
                 run("xdotool", "key", "ctrl+a", "type", "--clearmodifiers", "5A")
                 time.sleep(0.25)
                 click_at(debugger_left + 190, debugger_top + 400)
+                updated_af, _ = main_af(root, debugger_left, debugger_top)
                 updated = screenshot_text(root)
+                capture(root)
                 (args.capture_dir / "debugger-register-edited.png").write_bytes(
                     (root / "screen.png").read_bytes())
-                updated_af, _ = main_af(root, debugger_left, debugger_top)
                 if ("Debugger register updated" not in updated or
                         not re.search(r"\bA\s+\S+\s+5A\b", updated) or
                         updated_af[:2] != "5A"):
@@ -212,8 +214,9 @@ def main():
                 assertions.append("paused-main-register-edit-reflected")
 
                 click_at(debugger_left + 570, debugger_top + 400)
-                restored = screenshot_text(root)
                 restored_af, _ = main_af(root, debugger_left, debugger_top)
+                restored = screenshot_text(root)
+                capture(root)
                 if ("Debugger registers restored" not in restored or
                         restored_af[:2] != original_af[:2]):
                     raise RuntimeError("register undo did not restore the prior AF value")
@@ -229,10 +232,12 @@ def main():
                     "R SETREG A 5A")
                 time.sleep(0.25)
                 click_at(debugger_left + 570, monitor_y)
+                time.sleep(0.25)
+                monitor_af, _ = main_af(root, debugger_left, debugger_top)
                 monitor_result = screenshot_text(root)
+                capture(root)
                 (args.capture_dir / "debugger-monitor-register-edited.png").write_bytes(
                     (root / "screen.png").read_bytes())
-                monitor_af, _ = main_af(root, debugger_left, debugger_top)
                 if ("Monitor command executed" not in monitor_result or
                         monitor_af[:2] != "5A"):
                     raise RuntimeError(
@@ -245,6 +250,8 @@ def main():
                 if monitor_restored_af[:2] != original_af[:2]:
                     raise RuntimeError("monitor register undo did not restore AF")
                 assertions.append("monitor-r-setreg-undo-restored-register")
+                screenshot_text(root)
+                capture(root)
                 (args.capture_dir / "debugger-monitor-register-undo.png").write_bytes(
                     (root / "screen.png").read_bytes())
 
