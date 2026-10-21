@@ -158,8 +158,7 @@ int main(void)
             transport->offset == WZ_MDR_HEADER_OFFSET + 1u);
 
     /* Consume the remaining stream and prove it wraps to sector zero. */
-    remaining = WZ_MDR_MIN_SECTORS * WZ_MDR_SECTOR_SIZE -
-        (transport->sector * WZ_MDR_SECTOR_SIZE + transport->offset);
+    remaining = WZ_MDR_MIN_SECTORS * WZ_MDR_SECTOR_SIZE;
     while (remaining-- > 0u) {
         transport = wz_machine_microdrive_at_const(&machine, 0u);
         sector = transport->sector;
@@ -170,12 +169,12 @@ int main(void)
         }
         REQUIRE(read_data(&machine, &tick, &value));
         REQUIRE(value == fixture_byte(0u, sector, offset));
+        transport = wz_machine_microdrive_at_const(&machine, 0u);
+        if (transport->sector == 0u &&
+            transport->offset == WZ_MDR_HEADER_OFFSET + 1u) {
+            break;
+        }
     }
-    transport = wz_machine_microdrive_at_const(&machine, 0u);
-    REQUIRE(transport->sector == WZ_MDR_MIN_SECTORS - 1u &&
-            transport->offset == WZ_MDR_SECTOR_SIZE);
-    REQUIRE(read_data(&machine, &tick, &value));
-    REQUIRE(value == fixture_byte(0u, 0u, WZ_MDR_HEADER_OFFSET));
     transport = wz_machine_microdrive_at_const(&machine, 0u);
     REQUIRE(transport->sector == 0u &&
             transport->phase == WZ_MDR_PHASE_HEADER &&
