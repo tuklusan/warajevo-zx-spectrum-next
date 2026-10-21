@@ -1,0 +1,65 @@
+{
+  "testId": "private-extra-media",
+  "status": "pass",
+  "commit": "702d85b7b31ca2c1b8c7eb4699468416743d7f19",
+  "runId": 39642805288,
+  "runner": "Linux/X64",
+  "timestamp": "2026-10-21T17:20:01+00:00",
+  "caseCount": 1,
+  "playbackSummary": {
+    "failures": 0,
+    "files": 1,
+    "tapFiles": 1,
+    "tzxFiles": 0,
+    "segments": 220632,
+    "signalEdges": 220631,
+    "motorStops": 2,
+    "ticks": 590004768
+  },
+  "fixtures": [
+    {
+      "path": ".github/workflows/private-extra-media.yml",
+      "sha256": "afe2aca236260e2937987efc74946c6177c7818fd39107929fe45dac283b6dc5"
+    },
+    {
+      "path": "ci/test/private-extra-media/write-proof.py",
+      "sha256": "0434c5ad88fb1c368d521a392b7f51cdf7faa1106bee28d1fc74a79f8b8d4e12"
+    },
+    {
+      "path": "ci/test/private-media-playback/CMakeLists.txt",
+      "sha256": "b6c61c6d6b23f1c6048da5dd1314189755df7c294758198e3144274b8e0a9064"
+    },
+    {
+      "path": "ci/test/private-media-playback/private-media-playback.c",
+      "sha256": "d04f964e8a2b27c24440c1bd35cafba2dc9acbe58e461ad9608a8e3dda0ac147"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "efafa34c1c3947cd96aa9d54d013116bbdbd466033cba16386801f790888225a"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "3de492c7022baaef1a348f2fa64d019cdef7a414e0195bbf5113f82eef804013"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "808eef5dddd9851505b1861fa89e9916cee1cc3776f165a1ae34dc01f4105b95"
+    },
+    {
+      "path": "src/core/wz_machine_profile.c",
+      "sha256": "912a458de8d9a9d2d89bb57cac896e819d8ce82297a4e2ac707c90be1d4450b5"
+    },
+    {
+      "path": "src/core/wz_machine_profile.h",
+      "sha256": "1b246ec8245bf68400b0f9c5a1e69438264d8c671f23d656d82c87a032c4c700"
+    },
+    {
+      "path": "src/core/wz_tape.c",
+      "sha256": "20c4523214f828d5129cbde2fb2c0d077ed15dae0daa923d019d1934b0c33d0b"
+    },
+    {
+      "path": "src/core/wz_tape.h",
+      "sha256": "d483f3f99bcfa26590bf259114193d2314dd2af2720316bf66021462f5c31fd6"
+    }
+  ]
+}
