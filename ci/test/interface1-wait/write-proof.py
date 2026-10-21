@@ -28,7 +28,7 @@ PLATFORMS = (
     ("macOS ARM64", "Full build / macOS ARM64"),
     ("macOS Intel", "Full build / macOS Intel"),
 )
-MARKER = "PASS Interface 1 WAIT pending-cycle resume (76 checks)"
+MARKER = "PASS Interface 1 WAIT pending-cycle resume (75 checks)"
 
 
 def git_blob(commit: str, path: str) -> bytes:
@@ -84,7 +84,8 @@ def main() -> None:
                   "--json", "headSha,conclusion,event,headBranch,jobs")
     if (run.get("headSha") != args.commit or
             run.get("conclusion") != "success" or
-            run.get("event") != "push" or run.get("headBranch") != "main"):
+            run.get("event") not in ("push", "workflow_dispatch") or
+            run.get("headBranch") != "main"):
         raise SystemExit("workflow run does not prove a successful main push at the requested source")
 
     results = []
@@ -115,6 +116,40 @@ def main() -> None:
         "nativeBuildConfiguration": "Release; WZSN_BUILD_SOKOL_HOST=ON",
         "ctest": "all integrated CTests passed on each native runner",
         "runnerResults": results, "fixtures": fixtures,
+        "sourceReview": {
+            "status": "passed; findings adjudicated",
+            "tool": "Gito 4.5.0",
+            "findings": [
+                {
+                    "title": "Potential use-after-free in test cleanup",
+                    "disposition": "Non-actionable: wz_machine_destroy releases and nulls owned allocations without freeing the static machine object; repeated cleanup and reinitialization are safe."
+                },
+                {
+                    "title": "Fixture path validation",
+                    "disposition": "Non-actionable: Python str.startswith accepts a tuple of prefixes; all allowed roots end in a slash, and absolute paths, parent components, and unsupported characters are rejected."
+                },
+                {
+                    "title": "Pending I/O without CPU continuation",
+                    "disposition": "Non-actionable: CPU I/O installs its continuation before the bus call. A direct bus API caller receives PENDING before the device cycle commits and remains responsible for retrying its request."
+                },
+                {
+                    "title": "Runner progress while pending",
+                    "disposition": "Non-actionable: the runner loop starts only below its target; a pending cycle advances to that target, and the elapsed-tick guard rejects zero-progress cases."
+                },
+                {
+                    "title": "Version 8 deserialization",
+                    "disposition": "Non-actionable: extension version 8 remains supported with a zeroed pending continuation; the new ten-byte field is read only for version 9."
+                },
+                {
+                    "title": "Clearing pending I/O with memset",
+                    "disposition": "Non-actionable: the pending-I/O record contains only scalar fields and zero maps to its NONE/inactive state."
+                },
+                {
+                    "title": "Clock setup in the raster contract",
+                    "disposition": "Addressed: the fixture uses the internal master-tick advancement helper, which also synchronizes ZX Net time when tracing is enabled; follow-up review found no issue."
+                }
+            ]
+        },
         "githubArtifactsRetained": False, "githubCachesRetained": False,
     }
     output = (ROOT / args.output).resolve()

@@ -13,7 +13,7 @@
       "operations": "250005",
       "median_cpu_seconds": 0.012409,
       "operations_per_second": 20147070.675,
-      "fingerprint": "ca4dd4078c5cf15a"
+      "fingerprint": "52af84e53ed19a63"
     },
     {
       "name": "raster_generation",
@@ -45,7 +45,7 @@
       "operations": "8192",
       "median_cpu_seconds": 0.018109,
       "operations_per_second": 452371.749,
-      "fingerprint": "98af2e4bce1d0c15"
+      "fingerprint": "5bda2a39ca868954"
     },
     {
       "name": "ui_presentation",
@@ -57,8 +57,8 @@
     }
   ],
   "fingerprintRefresh": {
-    "commit": "dbc76b9290af4b68319a5024310c37ceed06faf8",
-    "runId": 39540070233,
-    "reason": "Exact-source five-target Release/Sokol build and CTest passed all 25 tests per platform; Phase-16 passed all 30 fingerprints and throughput checks with a 28.6% maximum slowdown."
+    "commit": "68d2b55bb56a56f24540ce92d382163d3e88349c",
+    "runId": 39543047933,
+    "reason": "State extension v9 serializes suspended Interface 1 bus continuations. The exact-source five-target run 39543047933 passed all 26 CTests per target; only the expected cpu_execution and snapshot_serialization fingerprints changed. Throughput references remain unchanged."
   }
 }

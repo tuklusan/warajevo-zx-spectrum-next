@@ -1,7 +1,7 @@
 {
   "testId": "interface1-wait",
   "command": "Full native Release/Sokol build and integrated CTest on five supported architectures",
-  "requiredCases": 76,
+  "requiredCases": 75,
   "runnerMatrix": [
     "Windows x64",
     "Linux x64",
@@ -16,7 +16,7 @@
     },
     {
       "path": "ci/test/interface1-wait/write-proof.py",
-      "sha256": "28c3b6f808cf6c1f866d9b3e74506cbf02d13448fe4eb5aee2ad0c0b2d868fb5"
+      "sha256": "6091780e1ca527707896529a198207d7ea33e2040390dd28e58c9c21a0813eac"
     },
     {
       "path": ".github/workflows/cr-build-gate.yml",

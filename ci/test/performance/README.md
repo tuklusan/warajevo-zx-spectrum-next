@@ -61,3 +61,5 @@ throughput checks. The largest slowdown was 31.0% on macOS Intel. Current
 records and the aggregator are pinned in
 `test-results/performance-current/` and
 `test-results/phase16-performance-current.json`.
+
+State extension v9 adds a canonical pending Interface 1 bus continuation. Run `39543047933` passed all 26 CTests per native target and produced the same new CPU and snapshot fingerprints on all five targets. Only those fingerprints were refreshed; throughput references and the 40% gate remain unchanged. A successful exact-head five-target rerun is required to close the current gate.

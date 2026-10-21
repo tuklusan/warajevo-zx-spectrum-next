@@ -1,1 +1,64 @@
-{"schema":1,"status":"pass","commit":"b8fb83d1cfdfa1a643e60eef20820618c58dccda","runner":"Windows-windows-x64","architecture":"X64","timestamp":"2026-10-01T05:40:31Z","compiler":"MSVC 19.51.36260.0","metrics":[{"name":"cpu_execution","unit":"instructions","operations":"250005","median_cpu_seconds":0.015,"operations_per_second":16667000.0,"fingerprint":"ca4dd4078c5cf15a"},{"name":"raster_generation","unit":"frames","operations":"384","median_cpu_seconds":0.023,"operations_per_second":16695.652,"fingerprint":"d3d8bb78938b5fb1"},{"name":"audio_mixing","unit":"samples","operations":"2000000","median_cpu_seconds":0.046,"operations_per_second":43478260.87,"fingerprint":"56e7cab2bab26d0d"},{"name":"tape_playback","unit":"master_ticks","operations":"4000000","median_cpu_seconds":0.012,"operations_per_second":333333333.333,"fingerprint":"40000000001db212"},{"name":"snapshot_serialization","unit":"snapshots","operations":"8192","median_cpu_seconds":0.016,"operations_per_second":512000.0,"fingerprint":"98af2e4bce1d0c15"},{"name":"ui_presentation","unit":"frames","operations":"512","median_cpu_seconds":0.025,"operations_per_second":20480.0,"fingerprint":"6b9c6deb0ca3fbc9"}],"fingerprintRefresh":{"commit":"dbc76b9290af4b68319a5024310c37ceed06faf8","runId":39540070233,"reason":"Exact-source five-target Release/Sokol build and CTest passed all 25 tests per platform; Phase-16 passed all 30 fingerprints and throughput checks with a 28.6% maximum slowdown."}}
+{
+  "schema": 1,
+  "status": "pass",
+  "commit": "b8fb83d1cfdfa1a643e60eef20820618c58dccda",
+  "runner": "Windows-windows-x64",
+  "architecture": "X64",
+  "timestamp": "2026-10-01T05:40:31Z",
+  "compiler": "MSVC 19.51.36260.0",
+  "metrics": [
+    {
+      "name": "cpu_execution",
+      "unit": "instructions",
+      "operations": "250005",
+      "median_cpu_seconds": 0.015,
+      "operations_per_second": 16667000.0,
+      "fingerprint": "52af84e53ed19a63"
+    },
+    {
+      "name": "raster_generation",
+      "unit": "frames",
+      "operations": "384",
+      "median_cpu_seconds": 0.023,
+      "operations_per_second": 16695.652,
+      "fingerprint": "d3d8bb78938b5fb1"
+    },
+    {
+      "name": "audio_mixing",
+      "unit": "samples",
+      "operations": "2000000",
+      "median_cpu_seconds": 0.046,
+      "operations_per_second": 43478260.87,
+      "fingerprint": "56e7cab2bab26d0d"
+    },
+    {
+      "name": "tape_playback",
+      "unit": "master_ticks",
+      "operations": "4000000",
+      "median_cpu_seconds": 0.012,
+      "operations_per_second": 333333333.333,
+      "fingerprint": "40000000001db212"
+    },
+    {
+      "name": "snapshot_serialization",
+      "unit": "snapshots",
+      "operations": "8192",
+      "median_cpu_seconds": 0.016,
+      "operations_per_second": 512000.0,
+      "fingerprint": "5bda2a39ca868954"
+    },
+    {
+      "name": "ui_presentation",
+      "unit": "frames",
+      "operations": "512",
+      "median_cpu_seconds": 0.025,
+      "operations_per_second": 20480.0,
+      "fingerprint": "6b9c6deb0ca3fbc9"
+    }
+  ],
+  "fingerprintRefresh": {
+    "commit": "68d2b55bb56a56f24540ce92d382163d3e88349c",
+    "runId": 39543047933,
+    "reason": "State extension v9 serializes suspended Interface 1 bus continuations. The exact-source five-target run 39543047933 passed all 26 CTests per target; only the expected cpu_execution and snapshot_serialization fingerprints changed. Throughput references remain unchanged."
+  }
+}

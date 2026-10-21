@@ -11,7 +11,7 @@
   "fixtures": [
     {
       "path": "ci/test/performance/README.md",
-      "sha256": "a94f890cc67b3e5be8c691fd04763202d0e6f4518a08b8db3623a6af4536214c"
+      "sha256": "923d095012c4adab75887280f6d7011e69a59c8bf0338a2cec0b592d4db9eee8"
     },
     {
       "path": "ci/test/performance/baseline.c",
@@ -27,23 +27,23 @@
     },
     {
       "path": "ci/test/performance/baselines/windows-x64.json",
-      "sha256": "2469c7cc90a66dd43f83f2ef92a804bd0d803996b136e03a26ab22ec02a041f2"
+      "sha256": "10108ff21ed725cb5e62d9e0bdd7cc3df0e40c011f6925b8fc24a39c0fa38be5"
     },
     {
       "path": "ci/test/performance/baselines/linux-x64.json",
-      "sha256": "02c686e7e5e8087b93fa08012b984b81042d8456def803dce804bdc402954925"
+      "sha256": "2e6b6566fb39ef641b8e36dac875e841c2cd9636507f967affcd1c4779f95e10"
     },
     {
       "path": "ci/test/performance/baselines/linux-arm64.json",
-      "sha256": "4bb152d5cea248bc9d10557ba682957f2d43850d68bafebaa2863bc49725771c"
+      "sha256": "285cc3c0991b22370d96c6a8f541e84331881e4f793de2b1d1f27e248906e696"
     },
     {
       "path": "ci/test/performance/baselines/macos-x64.json",
-      "sha256": "c881f87d5e8a6bec2505ce2a0c24836fb4a45bd94c8ae88201104e46b05ad7e8"
+      "sha256": "83e3e2518231042e28bc56c775dfd02a61747466fa502fe0934c1c8236919426"
     },
     {
       "path": "ci/test/performance/baselines/macos-arm64.json",
-      "sha256": "247b8f47884e125d27aefb123fbfca2eb1dfe1701e390a3889ade812d98a69c6"
+      "sha256": "9bcf336019eca166573244e681da2d2541b00add56a02edb8b5e1249c2225075"
     }
   ]
 }
