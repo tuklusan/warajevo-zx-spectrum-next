@@ -13,7 +13,7 @@
       "operations": "250005",
       "median_cpu_seconds": 0.012409,
       "operations_per_second": 20147070.675,
-      "fingerprint": "f49f759382ec8a34"
+      "fingerprint": "16f5054a635c93d4"
     },
     {
       "name": "raster_generation",
@@ -45,7 +45,7 @@
       "operations": "8192",
       "median_cpu_seconds": 0.018109,
       "operations_per_second": 452371.749,
-      "fingerprint": "7254cf8df4a13bdb"
+      "fingerprint": "1453ad89e4085223"
     },
     {
       "name": "ui_presentation",
@@ -55,5 +55,10 @@
       "operations_per_second": 20932.99,
       "fingerprint": "6b9c6deb0ca3fbc9"
     }
-  ]
+  ],
+  "fingerprintRefresh": {
+    "commit": "4714dca3ac5dd57b573a423117c13d4876d5c6f9",
+    "runId": 39526536113,
+    "reason": "Expected canonical fingerprint refresh after adding serialized host Microdrive write-protection state; throughput references are unchanged."
+  }
 }

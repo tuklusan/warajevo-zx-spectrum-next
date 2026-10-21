@@ -51,3 +51,10 @@ comparisons in run `39506587064` at source
 macOS ARM64 CPU execution, within the 40% gate. Current raw records are pinned
 in `test-results/performance-current/` and
 `test-results/phase16-performance-current.json`.
+State extension v6 adds each drive's host write-protection state to canonical
+serialization. The five-target build at source `4714dca3ac5dd57b573a423117c13d4876d5c6f9`
+produced consistent new CPU and snapshot fingerprints; its initial comparison
+correctly rejected the prior expectations. The five delivered-platform
+fingerprints are refreshed in the baseline files, with the established
+throughput measurements unchanged. A follow-up hosted comparison must pass
+before these refreshed expectations are accepted.
