@@ -693,6 +693,12 @@ add_test(NAME wz_host_output_tests COMMAND wz_host_output_tests)
 
 endif()
 enable_testing()
+add_executable(
+    wz_printer_core_contract
+    ${WZSN_REPO_ROOT}/ci/test/printer-core-contract.c)
+target_link_libraries(wz_printer_core_contract PRIVATE wz_core wz_warnings)
+add_test(NAME wz_printer_core_contract COMMAND wz_printer_core_contract)
+
 set(WZSN_ULA_128K_TRACE_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/test-output")
 file(MAKE_DIRECTORY "${WZSN_ULA_128K_TRACE_OUTPUT}")
 add_test(NAME wz_ula_128k_trace_contract
