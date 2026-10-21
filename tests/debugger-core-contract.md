@@ -12,10 +12,11 @@ CTest on Windows x64, Linux x64/ARM64, and macOS Intel/ARM64. It checks 64
 assertions per target for live snapshots, read-only memory inspection and
 search, bounded reads, base and CB-prefixed disassembly, hexadecimal formatting,
 pause-gated byte/word/fill/copy mutations, overlap-safe copying, CPU state edit
-and one-shot undo, jump, single-step, continue, and breakpoint stop/clear.
-All five builds, 28 CTests per target, and configured Phase-16 checks passed in
-run `39648029341` at source
-`faad5e429fb60c966f3c4928716888d3edd9eabf`.
+and one-shot undo, jump, single-step, continue, breakpoint stop/clear, and 128K
+paging inspection, bank selection, and paging lock behavior. All five builds,
+86 assertions and 28 CTests per target, and configured Phase-16 checks passed
+in run `39650347623` at source
+`0d78891e623e6d8b1e4a7aecadfaab71296e277c`.
 
 This contract directly covers shared debugger-core behavior only. Full monitor
 command equivalence, wildcard memory entry, mapped-bank boundary behavior,

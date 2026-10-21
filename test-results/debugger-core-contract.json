@@ -1,53 +1,53 @@
 {
   "testId": "debugger-core-contract",
   "status": "pass",
-  "commit": "faad5e429fb60c966f3c4928716888d3edd9eabf",
+  "commit": "0d78891e623e6d8b1e4a7aecadfaab71296e277c",
   "runner": "GitHub Actions native matrix",
-  "timestamp": "2026-10-21T17:55:02Z",
-  "workflowRun": 39648029341,
-  "assertionsPerRunner": 64,
+  "timestamp": "2026-10-21T18:10:38Z",
+  "workflowRun": 39650347623,
+  "assertionsPerRunner": 86,
   "integratedCtest": "28/28 per target",
   "phase16": "all configured correctness and performance checks passed per target",
   "targets": [
     {
       "name": "Windows x64",
       "runner": "windows-2025",
-      "assertions": 64,
+      "assertions": 86,
       "conclusion": "success"
     },
     {
       "name": "Linux x64",
       "runner": "ubuntu-24.04",
-      "assertions": 64,
+      "assertions": 86,
       "conclusion": "success"
     },
     {
       "name": "Linux ARM64",
       "runner": "ubuntu-24.04-arm",
-      "assertions": 64,
+      "assertions": 86,
       "conclusion": "success"
     },
     {
       "name": "macOS ARM64",
       "runner": "macos-15",
-      "assertions": 64,
+      "assertions": 86,
       "conclusion": "success"
     },
     {
       "name": "macOS Intel",
       "runner": "macos-15-intel",
-      "assertions": 64,
+      "assertions": 86,
       "conclusion": "success"
     }
   ],
   "sourceReview": {
     "status": "complete",
-    "adjudication": "The reported undersized disassembly buffer is the deliberate boundary case: wz_debugger_disassemble must return WZ_RESULT_BUFFER_TOO_SMALL for it, and disassembly_result uses snprintf, terminates the buffer, clears consumed, and returns that result. The assertion tests this API contract; it is not an application buffer defect."
+    "adjudication": "The deliberate undersized disassembly buffer exercises WZ_RESULT_BUFFER_TOO_SMALL and bounded termination. The first paging run exposed an incorrect test expectation after selecting bank 0 while asserting bank 2; the fixture now locks bank 2 and verifies it remains selected. The final source review found no issues."
   },
   "fixtures": [
     {
       "path": "ci/test/debugger-core-contract.c",
-      "sha256": "e82c3d10a21e29bfb606a0aacc446c56e4fc9cc3549136a002e1f2b7960e8994"
+      "sha256": "8f758eed762b0b58ebe9f098698c8187b3d91ed3b817ca4cb1a7edc730bfc65a"
     },
     {
       "path": "src/cmake/CMakeLists.txt",

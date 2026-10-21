@@ -4,7 +4,7 @@
   "fixtures": [
     {
       "path": "ci/test/debugger-core-contract.c",
-      "sha256": "e82c3d10a21e29bfb606a0aacc446c56e4fc9cc3549136a002e1f2b7960e8994"
+      "sha256": "8f758eed762b0b58ebe9f098698c8187b3d91ed3b817ca4cb1a7edc730bfc65a"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
