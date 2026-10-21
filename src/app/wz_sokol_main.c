@@ -4296,31 +4296,7 @@ static wz_result_t wz_host_ui_set_speed(wz_speed_policy_t speed)
         (wz_command_arguments_t){NULL, 0u}, &result);
 }
 
-static wz_result_t wz_host_ui_set_model(const char* model)
-{
-    wz_command_result_t result;
-    const char* action_id;
-    if (model == NULL) return WZ_RESULT_INVALID_ARGUMENT;
-    if (strcmp(model, "48k") == 0) action_id = "machine.model.48k";
-    else if (strcmp(model, "128k") == 0) action_id = "machine.model.128k";
-    else return WZ_RESULT_INVALID_ARGUMENT;
-    return wz_command_registry_dispatch(
-        &wz_host_session.command_registry, action_id,
-        (wz_command_arguments_t){NULL, 0u}, &result);
-}
-
-static void wz_host_ui_draw_speed_items(struct nk_context* context)
-{
-    size_t index;
-    for (index = 0u; index < WZ_SPEED_COUNT; ++index) {
-        const char* label = wz_ui_layout_speed_label(index);
-        if (label != NULL && nk_menu_item_label(context, label, NK_TEXT_LEFT)) {
-            (void)wz_host_ui_set_speed((wz_speed_policy_t)index);
-        }
-    }
-}
-
-static void wz_host_ui_draw_printer_settings(struct nk_context* context)
+static void wz_host_ui_draw_printer_modes(struct nk_context* context)
 {
     static const char* printer_modes[] = {
         "Disabled", "Epson", "Epson enlarged", "HP", "HP enlarged"
@@ -4330,29 +4306,19 @@ static void wz_host_ui_draw_printer_settings(struct nk_context* context)
         &wz_host_session.command_registry, command_id, NULL) ==
         WZ_COMMAND_ENABLED;
     if (!enabled) nk_widget_disable_begin(context);
-    if (nk_menu_begin_label(context, "Peripherals", NK_TEXT_LEFT,
-                             nk_vec2(210.0f, 180.0f))) {
-        nk_layout_row_dynamic(context, 24.0f, 1);
-        if (nk_menu_begin_label(context, "ZX Printer", NK_TEXT_LEFT,
-                                nk_vec2(190.0f, 5.0f * 25.0f))) {
-            nk_layout_row_dynamic(context, 24.0f, 1);
-            for (uint8_t mode = 0u;
-                 mode <= (uint8_t)WZ_PRINTER_MODE_HP_ENLARGED; ++mode) {
-                char mode_label[64];
-                (void)snprintf(mode_label, sizeof(mode_label), "%s%s",
-                    printer_modes[mode],
-                    wz_machine_printer_mode(&wz_host_session.machine) ==
-                        (wz_printer_mode_t)mode ? " *" : "");
-                if (nk_menu_item_label(context, mode_label, NK_TEXT_LEFT)) {
-                    wz_command_result_t result;
-                    (void)wz_command_registry_dispatch(
-                        &wz_host_session.command_registry, command_id,
-                        (wz_command_arguments_t){&mode, sizeof(mode)}, &result);
-                }
-            }
-            nk_menu_end(context);
+    for (uint8_t mode = 0u;
+         mode <= (uint8_t)WZ_PRINTER_MODE_HP_ENLARGED; ++mode) {
+        char mode_label[64];
+        (void)snprintf(mode_label, sizeof(mode_label), "%s%s",
+            printer_modes[mode],
+            wz_machine_printer_mode(&wz_host_session.machine) ==
+                (wz_printer_mode_t)mode ? " *" : "");
+        if (nk_menu_item_label(context, mode_label, NK_TEXT_LEFT)) {
+            wz_command_result_t result;
+            (void)wz_command_registry_dispatch(
+                &wz_host_session.command_registry, command_id,
+                (wz_command_arguments_t){&mode, sizeof(mode)}, &result);
         }
-        nk_menu_end(context);
     }
     if (!enabled) nk_widget_disable_end(context);
 }
@@ -4522,6 +4488,143 @@ static void wz_host_ui_draw_keyboard_menu(struct nk_context* context,
     nk_end(context);
 }
 
+typedef struct {
+    const char* id;
+    const char* label;
+} wz_host_ui_menu_node_t;
+
+static const wz_host_ui_menu_node_t wz_host_ui_menu_nodes[] = {
+    {"file.recent", "Recent"},
+    {"machine.model", "Model"},
+    {"machine.speed", "Emulation Speed"},
+    {"media.tape", "Tape"},
+    {"media.microdrive", "Microdrive"},
+    {"media.zx_printer", "ZX Printer"},
+    {"tools.debugger", "Debugger"},
+    {"tools.compatibility", "Compatibility Tools"},
+    {"settings.peripherals", "Peripherals"},
+    {"settings.peripherals.networking", "Networking"},
+    {"settings.peripherals.zx_printer", "ZX Printer"}
+};
+
+static bool wz_host_ui_menu_is_direct_child(const char* parent,
+                                             const char* candidate)
+{
+    size_t parent_length = strlen(parent);
+    const char* child;
+    if (strncmp(candidate, parent, parent_length) != 0 ||
+        candidate[parent_length] != '.') return false;
+    child = candidate + parent_length + 1u;
+    return child[0] != '\0' && strchr(child, '.') == NULL;
+}
+
+static bool wz_host_ui_menu_is_descendant(const char* parent,
+                                           const char* candidate)
+{
+    size_t parent_length = strlen(parent);
+    return strncmp(candidate, parent, parent_length) == 0 &&
+        candidate[parent_length] == '.' &&
+        candidate[parent_length + 1u] != '\0';
+}
+
+static void wz_host_ui_draw_menu_group(struct nk_context* context,
+                                       const char* parent_id, size_t depth);
+
+static void wz_host_ui_draw_menu_command(struct nk_context* context,
+                                         const wz_command_metadata_t* command)
+{
+    const char* disabled_reason = NULL;
+    bool enabled;
+    const char* label;
+    if (command == NULL) return;
+    if (strcmp(command->id, WZ_PRINTER_MODE_COMMAND_ID) == 0) return;
+    enabled = wz_command_registry_state(&wz_host_session.command_registry,
+        command->id, &disabled_reason) == WZ_COMMAND_ENABLED;
+    if (strcmp(command->id, WZ_TAPE_INSERT_COMMAND_ID) == 0) {
+        if (!enabled) nk_widget_disable_begin(context);
+        if (nk_menu_item_label(context, command->label, NK_TEXT_LEFT) &&
+            enabled) wz_host_ui_insert_tape();
+        if (!enabled) nk_widget_disable_end(context);
+        return;
+    }
+    if (command->parameter_schema != NULL &&
+        strcmp(command->parameter_schema, "NONE") != 0) {
+        nk_widget_disable_begin(context);
+        (void)nk_menu_item_label(context, command->label, NK_TEXT_LEFT);
+        nk_widget_disable_end(context);
+        return;
+    }
+    if (!enabled) nk_widget_disable_begin(context);
+    label = command->label;
+    if (strcmp(command->id, "machine.pause_resume") == 0) {
+        label = wz_host_session.ui_window.layout.paused ? "Resume" : "Pause";
+    }
+    if (nk_menu_item_label(context, label, NK_TEXT_LEFT) && enabled) {
+        wz_command_result_t result;
+        (void)wz_command_registry_dispatch(&wz_host_session.command_registry,
+            command->id, (wz_command_arguments_t){NULL, 0u}, &result);
+    }
+    if (!enabled) nk_widget_disable_end(context);
+}
+
+static void wz_host_ui_draw_menu_group(struct nk_context* context,
+                                       const char* parent_id, size_t depth)
+{
+    size_t index;
+    size_t count = wz_command_registry_count(&wz_host_session.command_registry);
+    if (depth > 4u) return;
+    {
+        const wz_command_metadata_t* group_action =
+            wz_command_registry_find(&wz_host_session.command_registry,
+                                     parent_id);
+        if (group_action != NULL &&
+            strcmp(parent_id, "machine.model") != 0 &&
+            strcmp(parent_id, "machine.speed") != 0) {
+            wz_host_ui_draw_menu_command(context, group_action);
+        }
+    }
+    for (index = 0u; index < sizeof(wz_host_ui_menu_nodes) /
+            sizeof(wz_host_ui_menu_nodes[0]); ++index) {
+        const wz_host_ui_menu_node_t* node = &wz_host_ui_menu_nodes[index];
+        if (!wz_host_ui_menu_is_direct_child(parent_id, node->id)) continue;
+        if (nk_menu_begin_label(context, node->label,
+                                NK_TEXT_LEFT, nk_vec2(230.0f, 300.0f))) {
+            nk_layout_row_dynamic(context, 24.0f, 1);
+            wz_host_ui_draw_menu_group(context, node->id, depth + 1u);
+            nk_menu_end(context);
+        }
+    }
+    for (index = 0u; index < count; ++index) {
+        const wz_command_metadata_t* command = wz_command_registry_at(
+            &wz_host_session.command_registry, index);
+        size_t node_index;
+        bool nested = false;
+        if (command == NULL || command->id == NULL ||
+            (!wz_host_ui_menu_is_descendant(parent_id, command->id) &&
+             (command->menu_group == NULL ||
+              strcmp(command->menu_group, parent_id) != 0))) continue;
+        for (node_index = 0u; node_index < sizeof(wz_host_ui_menu_nodes) /
+                sizeof(wz_host_ui_menu_nodes[0]); ++node_index) {
+            if (wz_host_ui_menu_is_descendant(parent_id,
+                    wz_host_ui_menu_nodes[node_index].id) &&
+                (strcmp(command->id,
+                        wz_host_ui_menu_nodes[node_index].id) == 0 ||
+                 (strncmp(command->id,
+                          wz_host_ui_menu_nodes[node_index].id,
+                          strlen(wz_host_ui_menu_nodes[node_index].id)) == 0 &&
+                  command->id[strlen(
+                      wz_host_ui_menu_nodes[node_index].id)] == '.'))) {
+                nested = true;
+                break;
+            }
+        }
+        if (!nested) wz_host_ui_draw_menu_command(context, command);
+    }
+    if (strcmp(parent_id, "settings.peripherals.zx_printer") == 0) {
+        wz_host_ui_draw_printer_modes(context);
+    }
+}
+
 static void wz_host_ui_draw_menus(struct nk_context* context, float width)
 {
     size_t root_index;
@@ -4541,7 +4644,6 @@ static void wz_host_ui_draw_menus(struct nk_context* context, float width)
     for (root_index = 0u; root_index < root_count; ++root_index) {
         const wz_command_menu_root_t* root =
             wz_command_registry_menu_root_at(root_index);
-        size_t command_index;
         nk_layout_row_push(context, root_count == 0u ? 0.0f :
                            1.0f / (float)root_count);
         if (root == NULL || !nk_menu_begin_label(
@@ -4549,79 +4651,7 @@ static void wz_host_ui_draw_menus(struct nk_context* context, float width)
             continue;
         }
         nk_layout_row_dynamic(context, 24.0f, 1);
-        for (command_index = 0u;
-             command_index < wz_command_registry_count(
-                 &wz_host_session.command_registry);
-             ++command_index) {
-            const wz_command_metadata_t* command =
-                wz_command_registry_at(&wz_host_session.command_registry,
-                                       command_index);
-            const char* disabled_reason = NULL;
-            bool enabled;
-            if (command == NULL || command->menu_group == NULL ||
-                strcmp(command->menu_group, root->id) != 0) {
-                continue;
-            }
-            enabled = wz_command_registry_state(
-                &wz_host_session.command_registry, command->id,
-                &disabled_reason) == WZ_COMMAND_ENABLED;
-            if (strcmp(command->id, WZ_TAPE_INSERT_COMMAND_ID) == 0) {
-                if (!enabled) nk_widget_disable_begin(context);
-                if (nk_menu_item_label(context, command->label, NK_TEXT_LEFT) &&
-                    enabled) {
-                    wz_host_ui_insert_tape();
-                }
-                if (!enabled) nk_widget_disable_end(context);
-            } else if (strcmp(command->id, "machine.speed.set") == 0) {
-                if (!enabled) nk_widget_disable_begin(context);
-                if (nk_menu_begin_label(context, "Emulation Speed",
-                                        NK_TEXT_LEFT,
-                                        nk_vec2(160.0f, 7.0f * 25.0f))) {
-                    nk_layout_row_dynamic(context, 24.0f, 1);
-                    wz_host_ui_draw_speed_items(context);
-                    nk_menu_end(context);
-                }
-                if (!enabled) nk_widget_disable_end(context);
-            } else if (strcmp(command->id, "machine.model.set") == 0) {
-                if (!enabled) nk_widget_disable_begin(context);
-                if (nk_menu_begin_label(context, "Model", NK_TEXT_LEFT,
-                                        nk_vec2(160.0f, 2.0f * 25.0f))) {
-                    nk_layout_row_dynamic(context, 24.0f, 1);
-                    if (nk_menu_item_label(context, "48K", NK_TEXT_LEFT)) {
-                        (void)wz_host_ui_set_model("48k");
-                    }
-                    if (nk_menu_item_label(context, "128K", NK_TEXT_LEFT)) {
-                        (void)wz_host_ui_set_model("128k");
-                    }
-                    nk_menu_end(context);
-                }
-                if (!enabled) nk_widget_disable_end(context);
-            } else if (command->parameter_schema != NULL &&
-                       strcmp(command->parameter_schema, "NONE") != 0) {
-                nk_widget_disable_begin(context);
-                (void)nk_menu_item_label(context, command->label, NK_TEXT_LEFT);
-                nk_widget_disable_end(context);
-            } else {
-                if (!enabled) nk_widget_disable_begin(context);
-                {
-                    const char* label = command->label;
-                    if (strcmp(command->id, "machine.pause_resume") == 0) {
-                        label = wz_host_session.ui_window.layout.paused ?
-                            "Resume" : "Pause";
-                    }
-                    if (nk_menu_item_label(context, label, NK_TEXT_LEFT)) {
-                        wz_command_result_t result;
-                        (void)wz_command_registry_dispatch(
-                            &wz_host_session.command_registry, command->id,
-                            (wz_command_arguments_t){NULL, 0u}, &result);
-                    }
-                }
-                if (!enabled) nk_widget_disable_end(context);
-            }
-        }
-        if (strcmp(root->id, "settings") == 0) {
-            wz_host_ui_draw_printer_settings(context);
-        }
+        wz_host_ui_draw_menu_group(context, root->id, 0u);
         nk_menu_end(context);
     }
     nk_layout_row_end(context);
