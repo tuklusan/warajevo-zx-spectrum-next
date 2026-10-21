@@ -1,0 +1,78 @@
+{
+  "nativeBuildConfiguration": "Release; WZSN_BUILD_SOKOL_HOST=ON",
+  "testId": "interface1-paging",
+  "caseCountPerRunner": 33,
+  "ctest": "16/16 passed on each native runner",
+  "runnerResults": [
+    {
+      "jobId": 118960043190,
+      "status": "pass",
+      "ctest": "16/16 passed",
+      "timestamp": "2026-10-21T00:11:16Z",
+      "runner": "Windows x64",
+      "caseCount": 33
+    },
+    {
+      "jobId": 118960043149,
+      "status": "pass",
+      "ctest": "16/16 passed",
+      "timestamp": "2026-10-21T00:11:05Z",
+      "runner": "Linux x64",
+      "caseCount": 33
+    },
+    {
+      "jobId": 118960043183,
+      "status": "pass",
+      "ctest": "16/16 passed",
+      "timestamp": "2026-10-21T00:10:57Z",
+      "runner": "Linux ARM64",
+      "caseCount": 33
+    },
+    {
+      "jobId": 118960042931,
+      "status": "pass",
+      "ctest": "16/16 passed",
+      "timestamp": "2026-10-21T00:10:35Z",
+      "runner": "macOS ARM64",
+      "caseCount": 33
+    },
+    {
+      "jobId": 118960043301,
+      "status": "pass",
+      "ctest": "16/16 passed",
+      "timestamp": "2026-10-21T00:11:05Z",
+      "runner": "macOS Intel",
+      "caseCount": 33
+    }
+  ],
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39519638077",
+  "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
+  "fixtures": [
+    {
+      "path": "ci/test/interface1-paging/interface1-paging-contract.c",
+      "sha256": "404e5d2ad295a8db1427ef93038d06ef22a69964d6937e570b13417b833fe122"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "14c45bc3178d4d69c56682b2e51f24cb9d6f4ca10dcfaa2e4a5afe49d23a16f3"
+    },
+    {
+      "path": "src/core/wz_bus.c",
+      "sha256": "e8d5f372fc226f673f00cc92969c6d3758fff167a3a8b6463641189e2b77677d"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "e7440ef90ecd7d41ea1a26e2a54f1bd06e9d636dd8ff2c5b39aff14e6f9ff355"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "337b6cd7e8e8751bb7eb8fde7f679f9f342639273ac8e7a213383a2c8a122cb2"
+    }
+  ],
+  "timestamp": "2026-10-21T00:11:16Z",
+  "observedOutput": "PASS Interface 1 8 KiB ROM trap paging and unpaging",
+  "commit": "d284d5409f68f00e58d43faa42006e50185ebe27",
+  "runId": 39519638077,
+  "status": "pass",
+  "caseCount": 165
+}

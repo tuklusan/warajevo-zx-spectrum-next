@@ -1,10 +1,5 @@
 {
-  "timestamp": "2026-10-20T23:52:55Z",
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39517679760",
-  "runId": 39517679760,
-  "status": "pass",
-  "commit": "7f10b95b85148571eeb102246f5aac2288ac3677",
-  "testId": "phase16-performance-baseline",
+  "commit": "d284d5409f68f00e58d43faa42006e50185ebe27",
   "fixtures": [
     {
       "path": "ci/test/performance/README.md",
@@ -43,76 +38,86 @@
       "sha256": "f74ac1c86a173a7cb87a117973434c65fd273835b873fbd92286d29350a53113"
     }
   ],
+  "timestamp": "2026-10-21T00:11:16Z",
+  "testId": "phase16-performance-baseline",
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39519638077",
+  "runId": 39519638077,
+  "status": "pass",
   "runnerResults": [
     {
-      "ctest": "15/15 passed",
-      "comparison": {
-        "gate": "all fingerprints match; no throughput regression exceeded 40%",
-        "baseline": "ci/test/performance/baselines/windows-x64.json",
-        "status": "pass",
-        "largestSlowdownPercent": 0.0
-      },
-      "runner": "Windows-windows-x64",
       "performanceRecord": "test-results/performance-current/windows-x64.json",
-      "timestamp": "2026-10-20T23:52:15Z",
-      "status": "pass",
-      "metricCount": 6
-    },
-    {
-      "ctest": "15/15 passed",
       "comparison": {
         "gate": "all fingerprints match; no throughput regression exceeded 40%",
-        "baseline": "ci/test/performance/baselines/linux-x64.json",
         "status": "pass",
-        "largestSlowdownPercent": 5.83
+        "largestSlowdownPercent": 7.41,
+        "baseline": "ci/test/performance/baselines/windows-x64.json"
       },
-      "runner": "Linux-ubuntu-24.04",
+      "ctest": "16/16 passed",
+      "runner": "Windows-windows-x64",
+      "timestamp": "2026-10-21T00:11:16Z",
+      "jobId": 118960043190,
+      "metricCount": 6,
+      "status": "pass"
+    },
+    {
       "performanceRecord": "test-results/performance-current/linux-x64.json",
-      "timestamp": "2026-10-20T23:52:28Z",
-      "status": "pass",
-      "metricCount": 6
-    },
-    {
-      "ctest": "15/15 passed",
       "comparison": {
         "gate": "all fingerprints match; no throughput regression exceeded 40%",
-        "baseline": "ci/test/performance/baselines/linux-arm64.json",
         "status": "pass",
-        "largestSlowdownPercent": 0.19
+        "largestSlowdownPercent": 2.98,
+        "baseline": "ci/test/performance/baselines/linux-x64.json"
       },
-      "runner": "Linux-ubuntu-24.04-arm",
+      "ctest": "16/16 passed",
+      "runner": "Linux-ubuntu-24.04",
+      "timestamp": "2026-10-21T00:11:05Z",
+      "jobId": 118960043149,
+      "metricCount": 6,
+      "status": "pass"
+    },
+    {
       "performanceRecord": "test-results/performance-current/linux-arm64.json",
-      "timestamp": "2026-10-20T23:52:33Z",
-      "status": "pass",
-      "metricCount": 6
-    },
-    {
-      "ctest": "15/15 passed",
       "comparison": {
         "gate": "all fingerprints match; no throughput regression exceeded 40%",
-        "baseline": "ci/test/performance/baselines/macos-arm64.json",
         "status": "pass",
-        "largestSlowdownPercent": 12.85
+        "largestSlowdownPercent": 3.77,
+        "baseline": "ci/test/performance/baselines/linux-arm64.json"
       },
-      "runner": "macOS-macos-arm64",
+      "ctest": "16/16 passed",
+      "runner": "Linux-ubuntu-24.04-arm",
+      "timestamp": "2026-10-21T00:10:57Z",
+      "jobId": 118960043183,
+      "metricCount": 6,
+      "status": "pass"
+    },
+    {
       "performanceRecord": "test-results/performance-current/macos-arm64.json",
-      "timestamp": "2026-10-20T23:51:55Z",
-      "status": "pass",
-      "metricCount": 6
-    },
-    {
-      "ctest": "15/15 passed",
       "comparison": {
         "gate": "all fingerprints match; no throughput regression exceeded 40%",
-        "baseline": "ci/test/performance/baselines/macos-x64.json",
         "status": "pass",
-        "largestSlowdownPercent": 29.27
+        "largestSlowdownPercent": 11.45,
+        "baseline": "ci/test/performance/baselines/macos-arm64.json"
       },
-      "runner": "macOS-macos-x64",
+      "ctest": "16/16 passed",
+      "runner": "macOS-macos-arm64",
+      "timestamp": "2026-10-21T00:10:35Z",
+      "jobId": 118960042931,
+      "metricCount": 6,
+      "status": "pass"
+    },
+    {
       "performanceRecord": "test-results/performance-current/macos-x64.json",
-      "timestamp": "2026-10-20T23:52:55Z",
-      "status": "pass",
-      "metricCount": 6
+      "comparison": {
+        "gate": "all fingerprints match; no throughput regression exceeded 40%",
+        "status": "pass",
+        "largestSlowdownPercent": 0.0,
+        "baseline": "ci/test/performance/baselines/macos-x64.json"
+      },
+      "ctest": "16/16 passed",
+      "runner": "macOS-macos-x64",
+      "timestamp": "2026-10-21T00:11:05Z",
+      "jobId": 118960043301,
+      "metricCount": 6,
+      "status": "pass"
     }
   ]
 }
