@@ -37,12 +37,12 @@ jobs:
             --rom roms/48.rom \
             --proof dist/ui-required-command-actions/proof.json
       - name: Upload proof
-        if: success()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ui-required-command-actions-proof
           path: |
             dist/ui-required-command-actions/proof.json
             dist/ui-required-command-actions/telnet-settings.png
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 1
