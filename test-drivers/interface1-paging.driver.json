@@ -1,0 +1,33 @@
+{
+  "testId": "interface1-paging",
+  "command": "The Full native build and test workflow clean-builds WZSN_BUILD_SOKOL_HOST=ON and runs the integrated CTest suite on all five native supported targets.",
+  "runnerMatrix": [
+    "Windows-windows-x64",
+    "Linux-ubuntu-24.04",
+    "Linux-ubuntu-24.04-arm",
+    "macOS-macos-arm64",
+    "macOS-macos-x64"
+  ],
+  "fixtures": [
+    {
+      "path": "ci/test/interface1-paging/interface1-paging-contract.c",
+      "sha256": "682a2a4c40eb21d723e3da26f696b4f600930ac0b6ef9c35703c3465579efc11"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "14c45bc3178d4d69c56682b2e51f24cb9d6f4ca10dcfaa2e4a5afe49d23a16f3"
+    },
+    {
+      "path": "src/core/wz_bus.c",
+      "sha256": "e8d5f372fc226f673f00cc92969c6d3758fff167a3a8b6463641189e2b77677d"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "e7440ef90ecd7d41ea1a26e2a54f1bd06e9d636dd8ff2c5b39aff14e6f9ff355"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "337b6cd7e8e8751bb7eb8fde7f679f9f342639273ac8e7a213383a2c8a122cb2"
+    }
+  ]
+}

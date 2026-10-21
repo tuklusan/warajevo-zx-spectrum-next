@@ -18,6 +18,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "core/wz_machine.h"
 #include "core/wz_machine_internal.h"
 
+#include <stdbool.h>
+
 void wz_bus_request_init(wz_bus_request_t* request,
                          wz_bus_cycle_t cycle,
                          wz_master_tick_t master_tick,
@@ -128,6 +130,7 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
 {
     /* Resolve a bus cycle, including contention and optional data sources. */
     wz_byte_t contention_delay;
+    bool interface1_unpage_after_fetch = false;
 
     if (machine == 0 || request == 0) {
         return WZ_RESULT_INVALID_ARGUMENT;
@@ -150,6 +153,17 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
     if (wz_machine_trace_ula_until(machine, request->master_tick, false) !=
         WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_STATE;
+    }
+
+    if (request->cycle == WZ_BUS_M1_OPCODE_FETCH &&
+        machine->networking_mode == WZ_NETWORKING_INTERFACE1 &&
+        machine->has_interface1_rom != 0u) {
+        if (request->address == 0x0008u || request->address == 0x1708u) {
+            machine->interface1_rom_page = 1u;
+        } else if (request->address == 0x0700u &&
+                   machine->interface1_rom_page != 0u) {
+            interface1_unpage_after_fetch = true;
+        }
     }
 
     if ((request->cycle == WZ_BUS_M1_OPCODE_FETCH ||
@@ -286,6 +300,11 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
         break;
     default:
         return WZ_RESULT_INVALID_ARGUMENT;
+    }
+
+    /* Fetch the Interface 1 RET at 0700h before exposing the main ROM again. */
+    if (interface1_unpage_after_fetch) {
+        machine->interface1_rom_page = 0u;
     }
 
     if (machine->bus_observer.record != 0) {
