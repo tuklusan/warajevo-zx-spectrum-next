@@ -1,34 +1,34 @@
 {
   "schema": 1,
   "status": "pass",
-  "commit": "0e7e63edac56a3921667a2e258b22274d2d21729",
+  "commit": "b02ea02e600e994e846e204bd37fe68133c08722",
   "runner": "Linux-ubuntu-24.04",
   "architecture": "X64",
-  "timestamp": "2026-10-21T13:51:05Z",
+  "timestamp": "2026-10-21T14:57:27Z",
   "compiler": "GNU 13.3.0",
   "metrics": [
     {
       "name": "cpu_execution",
       "unit": "instructions",
       "operations": "250005",
-      "median_cpu_seconds": 0.011826,
-      "operations_per_second": 21140284.12,
+      "median_cpu_seconds": 0.011839,
+      "operations_per_second": 21117070.699,
       "fingerprint": "52af84e53ed19a63"
     },
     {
       "name": "raster_generation",
       "unit": "frames",
       "operations": "384",
-      "median_cpu_seconds": 0.032014,
-      "operations_per_second": 11994.752,
+      "median_cpu_seconds": 0.03173,
+      "operations_per_second": 12102.112,
       "fingerprint": "d3d8bb78938b5fb1"
     },
     {
       "name": "audio_mixing",
       "unit": "samples",
       "operations": "2000000",
-      "median_cpu_seconds": 0.045729,
-      "operations_per_second": 43735922.5,
+      "median_cpu_seconds": 0.045832,
+      "operations_per_second": 43637633.095,
       "fingerprint": "56e7cab2bab26d0d"
     },
     {
@@ -43,16 +43,16 @@
       "name": "snapshot_serialization",
       "unit": "snapshots",
       "operations": "8192",
-      "median_cpu_seconds": 0.020537,
-      "operations_per_second": 398889.809,
+      "median_cpu_seconds": 0.020386,
+      "operations_per_second": 401844.403,
       "fingerprint": "5bda2a39ca868954"
     },
     {
       "name": "ui_presentation",
       "unit": "frames",
       "operations": "512",
-      "median_cpu_seconds": 0.02739,
-      "operations_per_second": 18692.954,
+      "median_cpu_seconds": 0.027507,
+      "operations_per_second": 18613.444,
       "fingerprint": "6b9c6deb0ca3fbc9"
     }
   ]
