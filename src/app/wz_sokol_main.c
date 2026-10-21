@@ -4730,12 +4730,16 @@ static void wz_host_ui_draw_menus(struct nk_context* context, float width)
     size_t root_index;
     size_t root_count = wz_command_registry_menu_root_count();
     struct nk_vec2 saved_padding = context->style.window.padding;
+    const float saved_disabled_factor =
+        context->style.menu_button.disabled_factor;
     context->style.window.padding = nk_vec2(0.0f, 0.0f);
+    context->style.menu_button.disabled_factor = 0.8f;
     if (!nk_begin(context, "Application menu",
             nk_rect(0.0f, 0.0f, width, WZ_UI_MENU_BAR_HEIGHT),
             NK_WINDOW_NO_SCROLLBAR)) {
         nk_end(context);
         context->style.window.padding = saved_padding;
+        context->style.menu_button.disabled_factor = saved_disabled_factor;
         return;
     }
     nk_menubar_begin(context);
@@ -4762,6 +4766,7 @@ static void wz_host_ui_draw_menus(struct nk_context* context, float width)
     nk_menubar_end(context);
     nk_end(context);
     context->style.window.padding = saved_padding;
+    context->style.menu_button.disabled_factor = saved_disabled_factor;
 }
 
 static void wz_host_ui_draw_toolbar(struct nk_context* context, float width)
