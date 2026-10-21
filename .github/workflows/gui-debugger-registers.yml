@@ -23,7 +23,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install --yes libgtk-3-dev libasound2-dev libgl1-mesa-dev \
-            libxi-dev libxcursor-dev xvfb xdotool imagemagick tesseract-ocr \\
+            libxi-dev libxcursor-dev xvfb xdotool imagemagick tesseract-ocr \
             python3-pil
       - name: Build production Release/Sokol host
         run: |

@@ -8,7 +8,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/gui-debugger-registers.yml",
-      "sha256": "e4fc0971ab79a412f6bc049b22959ce6daa5602f794622da4d0034c7d3bdde95"
+      "sha256": "848fcf0fc48c0c3d870905480bfb6d5707baa390930b7c172a88ad14e72a6403"
     },
     {
       "path": "ci/test/gui-debugger-registers.py",
