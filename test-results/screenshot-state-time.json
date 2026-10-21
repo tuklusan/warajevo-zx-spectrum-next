@@ -130,5 +130,6 @@
       "path": "src/core/wz_state.h",
       "sha256": "46ec8063cc5976b743d53a23b64c34c84583878c9793434d3622c8f8a38f9aa3"
     }
-  ]
+  ],
+  "runner": "Windows x64, Linux x64, Linux ARM64, macOS ARM64, and macOS Intel hosted runners"
 }

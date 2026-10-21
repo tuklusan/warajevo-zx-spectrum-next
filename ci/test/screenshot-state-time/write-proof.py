@@ -107,7 +107,9 @@ def main() -> None:
 
     proof = {
         "testId": driver["testId"], "status": "pass",
-        "commit": args.commit, "runId": args.run_id,
+        "commit": args.commit,
+        "runner": "Windows x64, Linux x64, Linux ARM64, macOS ARM64, and macOS Intel hosted runners",
+        "runId": args.run_id,
         "workflowRun": f"https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/{args.run_id}",
         "workflowEvent": args.event, "branch": args.branch,
         "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),

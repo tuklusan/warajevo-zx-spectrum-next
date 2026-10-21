@@ -21,7 +21,7 @@
     },
     {
       "path": "ci/test/screenshot-state-time/write-proof.py",
-      "sha256": "6ba8159df1fced1530f6d8f68ee5f3b17e15b3d6cb51cd8713f3db1d073fa351"
+      "sha256": "c1fd0374be0c096bd17ce48e585d823099772121797a2b35c96d8b51465d4558"
     },
     {
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
