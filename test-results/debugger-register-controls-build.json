@@ -1,0 +1,68 @@
+{
+  "testId": "debugger-register-controls-build",
+  "status": "pass",
+  "commit": "91fbc2efe4dcad30b0c242b2e1d88f9f86bb87fe",
+  "runId": 39663125690,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39663125690",
+  "event": "push",
+  "branch": "main",
+  "timestamp": "2026-10-21T19:38:22Z",
+  "checks": [
+    "Release Sokol application build passed",
+    "Integrated CTest passed 29/29 on every native target",
+    "Phase-16 fingerprints and throughput comparisons passed on every native target"
+  ],
+  "targets": [
+    {
+      "runner": "windows-2025",
+      "architecture": "X64",
+      "jobId": 119441043311,
+      "status": "pass",
+      "ctest": "29/29"
+    },
+    {
+      "runner": "ubuntu-24.04",
+      "architecture": "X64",
+      "jobId": 119441043706,
+      "status": "pass",
+      "ctest": "29/29"
+    },
+    {
+      "runner": "ubuntu-24.04-arm",
+      "architecture": "ARM64",
+      "jobId": 119441044285,
+      "status": "pass",
+      "ctest": "29/29"
+    },
+    {
+      "runner": "macos-15",
+      "architecture": "ARM64",
+      "jobId": 119441044111,
+      "status": "pass",
+      "ctest": "29/29"
+    },
+    {
+      "runner": "macos-15-intel",
+      "architecture": "X64",
+      "jobId": 119441044217,
+      "status": "pass",
+      "ctest": "29/29"
+    }
+  ],
+  "fixtures": [
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "b68f715d25622bb2af58886e092706c78049ce4ace898c7f0bf6d322d429d75d"
+    },
+    {
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "930594f8096c02b87c30bce7c9e0963b030c1e52348db833b4c81098c7ebbcd0"
+    }
+  ],
+  "sourceReview": {
+    "status": "passed",
+    "tool": "Gito 4.5.0",
+    "findingDisposition": "Non-actionable: the five-byte buffer accommodates four editor characters and a terminating NUL; the parser enforces the selected register's legal width and range."
+  },
+  "scope": "Build and CTest proof only; does not claim GUI interaction equivalence or monitor R SETREG command coverage."
+}
