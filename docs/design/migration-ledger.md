@@ -79,10 +79,39 @@ uncertain source or license defaults to `RESEARCH` or `EXCLUDE`.
 | Conflict precedence | The preserved source and companion Interface 1/Microdrive spec agree on stored offsets and stream order. No physical-hardware byte/timing evidence is available; timing behavior is explicitly outside this differential test. |
 | Status | Behavior reimplementation and hosted differential proof are recorded. This does not clear source reuse or close other Interface 1 timing criteria. |
 
+### ZX Printer — function-level disposition inventory
+
+Source identity: Warajevo 2.50 import from commit
+`94f69bd8f4acb6c0c320ae34f9b1c3ee29bc5545`; source file
+`reference/original-warajevo/source/src/spectrum-kernel/ZXPRINT.ASM`, Git blob
+`840fcc86680c7cb8018884c8735353c3f413588d`, SHA-256
+`e107984f22e35d31e4d442192bca12da766d99b6bbc57e0c2797a2c0879d4211`.
+The file header names Zeljko Juric and Samir Ribic; upstream is classified as
+GPL by the official source notice. This inventory does not clear reuse.
+
+| Historical routine | Original purpose / host boundary | Disposition | WZSN destination | Regression strategy |
+|---|---|---|---|---|
+| `ZXP_IN` (public entry) | Expose the ZX Printer status-port read to the Spectrum machine. | REQUIRED | `wz_machine_printer_read` and the printer branch in `wz_bus.c`; no x86 far call. | Read the emulated port in each mode; assert absent-device status, ready/status bits, address decode, and no printer-state mutation. |
+| `ZXP_OUT` (public entry) | Expose the ZX Printer control-port write to the Spectrum machine. | REQUIRED | `wz_machine_printer_write` and the printer branch in `wz_bus.c`. | Write every relevant control-bit transition at explicit master ticks; check motor, pixel, row, flush, and state-hash behavior. |
+| `Z_IN_FAR` | Compute printer status, mixing emulated port latches with BIOS LPT1 presence/status and the prior output latch. | REPLACE | `wz_printer_status` models the Spectrum-visible deterministic status; host printer discovery/status is removed from core state. | Cover all four configured printer modes and `NONE`, status-latch semantics, and absence of host-device dependence. |
+| `Z_OUT_FAR` | Interpret motor/pixel/row control, expand Epson or HP output, and synchronously send control/data bytes to BIOS LPT1 while suspending/restoring the DOS timer. | REPLACE | `wz_printer_write_control` captures bounded Epson/HP flush events; the application-owned printer manager renders/exports them. DOS timer changes, BIOS calls, and LPT writes are excluded. | Compare per-mode pixel accumulation, row progression, motor transitions, flush ordering/ticks, bounded event data, and deterministic state across all required native targets. |
+| `INT17` | Gate and invoke the BIOS printer interrupt used for host LPT output. | REPLACE | Completed output is delivered as a bounded core flush event and consumed by the host printer manager. | Verify machine state is independent of host printer availability and export failures; host export/path failures must not mutate the core. |
+| `SETASCII` | Convert HP printer coordinates to ASCII and construct host-specific LaserJet command parameters. | DROP | No equivalent host-device command stream; the HP raster remains represented by the printer mode's pixel flush event and host bitmap projection. | Assert the HP output pixels and mode-specific bitmap dimensions; do not test BIOS/LPT command bytes. |
+
+The named local labels in `Z_OUT_FAR` (`MOTON`, `MOTOFF`, `FLUSH`, `HPFLUSH`,
+`HPLASER`, and related branch/loop labels) are control-flow blocks, not
+independently callable routines. Their behavior is covered by the `Z_OUT_FAR`
+regression strategy above. Existing printer settings evidence validates mode
+selection only; the routine-specific port/status/pixel/flush strategy above
+still requires direct pinned acceptance proof. Per-file copyright/license
+compatibility remains unresolved, so this is an inventory and disposition only,
+not a license grant or source-derivation clearance.
+
 ## Explicit gaps
 
-- Routine-level coverage has not yet been completed for the remaining Z80,
-  ULA, media, peripheral, machine, and host/UI implementation areas.
+- The monitor/debugger function-level inventory required by Architecture §49.2
+  remains incomplete; routine-level coverage also remains open for the other
+  migrated Z80, ULA, media, peripheral, machine, and host/UI areas.
 - Every source file containing third-party material must be individually
   excluded or cleared before any reuse. The preserved source includes files
   with Borland and TurboPower notices as well as a converter naming a separate
