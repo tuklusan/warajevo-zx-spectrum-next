@@ -1,0 +1,95 @@
+{
+  "testId": "networking-mode-guard",
+  "status": "pass",
+  "commit": "86935265cd036db6171887aa0938ef90c015e342",
+  "runId": 39531197200,
+  "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
+  "timestamp": "2026-10-21T02:09:01+00:00",
+  "caseCount": 75,
+  "caseCountPerRunner": 15,
+  "observedOutput": "PASS dirty Microdrive networking-mode guard",
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39531197200",
+  "runnerResults": [
+    {
+      "runner": "Windows x64",
+      "status": "pass",
+      "caseCount": 15,
+      "ctest": "22/22 passed",
+      "jobId": 118997228736,
+      "timestamp": "2026-10-21T02:07:56.9795242Z"
+    },
+    {
+      "runner": "Linux x64",
+      "status": "pass",
+      "caseCount": 15,
+      "ctest": "22/22 passed",
+      "jobId": 118997228547,
+      "timestamp": "2026-10-21T02:08:36.5950877Z"
+    },
+    {
+      "runner": "Linux ARM64",
+      "status": "pass",
+      "caseCount": 15,
+      "ctest": "22/22 passed",
+      "jobId": 118997228498,
+      "timestamp": "2026-10-21T02:08:25.4733233Z"
+    },
+    {
+      "runner": "macOS ARM64",
+      "status": "pass",
+      "caseCount": 15,
+      "ctest": "22/22 passed",
+      "jobId": 118997228698,
+      "timestamp": "2026-10-21T02:07:41.4274260Z"
+    },
+    {
+      "runner": "macOS Intel",
+      "status": "pass",
+      "caseCount": 15,
+      "ctest": "22/22 passed",
+      "jobId": 118997228626,
+      "timestamp": "2026-10-21T02:08:44.1759170Z"
+    }
+  ],
+  "nativeBuildConfiguration": "Release; WZSN_BUILD_SOKOL_HOST=ON",
+  "ctest": "22/22 integrated CTests passed on each native runner",
+  "sourceReviewAdjudication": "The reported out-of-range fail slot is a false positive: WZ_MACHINE_MICRODRIVE_COUNT is fixed at 8, so slot 3 is valid and the expected four callback calls cover slots 0 through 3.",
+  "fixtures": [
+    {
+      "path": "ci/test/networking-mode-guard/networking-mode-guard-contract.c",
+      "sha256": "fb533fe165d8fe05524fe5a3bc20da37da292e1531e68c71af879937429bb0d8"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "e3fa5c75e998e095060cf3d20fea4df5d6340dc2cb293be6b861c3dd45011cc8"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "018cb55bd8bcdf3c4342274215cc50b58618e1216b5f3e0f99b6f9191d01ee22"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "90cf96e435148c80817bf835c74f5e778cefd4024ec213c52a514d4bd6fd1efb"
+    },
+    {
+      "path": "src/core/wz_microdrive.c",
+      "sha256": "30d9e3b2f856deff18fe8c6aa21332fbf8018d5742adec79107e52051c0016d8"
+    },
+    {
+      "path": "src/core/wz_microdrive.h",
+      "sha256": "223cba6f9359eace0fcc85a361e28e5f4daeb1c34bf06b2f01bf5f040d00959b"
+    },
+    {
+      "path": "src/core/wz_machine_profile.h",
+      "sha256": "1b246ec8245bf68400b0f9c5a1e69438264d8c671f23d656d82c87a032c4c700"
+    },
+    {
+      "path": "src/core/wz_state.c",
+      "sha256": "420db27b919cc348ada1c235b05480def396f22cb6bfa2ba275b7ffd2118e409"
+    },
+    {
+      "path": "src/core/wz_state.h",
+      "sha256": "46ec8063cc5976b743d53a23b64c34c84583878c9793434d3622c8f8a38f9aa3"
+    }
+  ]
+}
