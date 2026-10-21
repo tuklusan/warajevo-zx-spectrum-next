@@ -71,7 +71,7 @@ def open_root(host_window, index):
 
 def open_group(host_window, x, row):
     xdotool("mousemove", "--sync", "--window", host_window,
-            str(x + 80), str(42 + row * 24))
+            str(x + 80), str(34 + row * 24))
     xdotool("click", "1")
     time.sleep(0.3)
 

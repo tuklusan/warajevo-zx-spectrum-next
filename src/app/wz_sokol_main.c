@@ -4660,6 +4660,7 @@ static void wz_host_ui_draw_menu_group(struct nk_context* context,
                                      parent_id);
         if (group_action != NULL &&
             !wz_host_ui_menu_is_group_node(parent_id)) {
+            nk_layout_row_dynamic(context, 20.0f, 1);
             wz_host_ui_draw_menu_command(context, group_action, depth + 1u);
         }
     }
@@ -4668,7 +4669,6 @@ static void wz_host_ui_draw_menu_group(struct nk_context* context,
         const wz_host_ui_menu_node_t* node = &wz_host_ui_menu_nodes[index];
         char node_label[96];
         if (!wz_host_ui_menu_is_direct_child(parent_id, node->id)) continue;
-        nk_layout_row_dynamic(context, 20.0f, 1);
         if (nk_tree_push_id(context, NK_TREE_TAB,
                 wz_host_ui_menu_indented_label(node->label, depth + 1u,
                     node_label, sizeof(node_label)), NK_MINIMIZED,
@@ -4755,7 +4755,6 @@ static void wz_host_ui_draw_menus(struct nk_context* context, float width)
                 nk_vec2(popup_width, 700.0f))) {
             continue;
         }
-        nk_layout_row_dynamic(context, 20.0f, 1);
         wz_host_ui_draw_menu_group(context, root->id, 0u);
         nk_menu_end(context);
     }
