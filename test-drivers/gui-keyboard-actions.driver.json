@@ -1,0 +1,38 @@
+{
+  "testId": "gui-keyboard-actions",
+  "command": "Dispatch .github/workflows/gui-keyboard-actions.yml on main. Build the production Release/Sokol GUI under Xvfb, navigate its keyboard command menu using F1, arrows, Enter, and Escape, and verify model, all seven speed choices, pause/resume, reset, and cancellation through Control Port status.",
+  "requiredCases": 15,
+  "runnerMatrix": [
+    "ubuntu-24.04"
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/gui-keyboard-actions.yml",
+      "sha256": "1740b032aea1f761503f6df18ffad65967e075c5365f6851a160a94ed817eaba"
+    },
+    {
+      "path": "ci/test/gui-keyboard-actions.py",
+      "sha256": "2d449d2cc6d7772dd9ca60c69f31ea1eee1d1319fda209c5e893dc125db32035"
+    },
+    {
+      "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
+      "sha256": "dc47afb96f2c0566788d59ef74a691c33a8943e1c4e199c96c74d07739e68b31"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "b246a5a23ffa20e53be79821bab4c623136704477994082dae118799a90696f0"
+    },
+    {
+      "path": "src/app/wz_command_registry.c",
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
+    },
+    {
+      "path": "src/app/wz_speed_policy.c",
+      "sha256": "cb9d2d0befc0becaa81558d794a257f399c4a46e1c1a0bdb19c4893d8f547183"
+    },
+    {
+      "path": "roms/48.rom",
+      "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"
+    }
+  ]
+}
