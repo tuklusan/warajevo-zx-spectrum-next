@@ -12,7 +12,7 @@
     },
     {
       "path": "ci/test/gui-menu-groups.py",
-      "sha256": "4ff986c1b663b647c62d2d3158e96eac58a333b8f4d2d67e8c0f2137bad7e822"
+      "sha256": "3203b506a1a17099ff68553e1f064e04ecaf30ff95077914d59077a821975334"
     },
     {
       "path": "ci/test/gui-menu-groups/README.md",
@@ -45,10 +45,6 @@
     {
       "path": "src/app/wz_telnet_status.c",
       "sha256": "98e77532404a726162a1bd8b075df7934b66a231f085e901094a1aa2cee2f04f"
-    },
-    {
-      "path": "tests/gui-menu-groups.md",
-      "sha256": "3e236ac1edc41c2ec2a7822cfa84091f79cf2a448e7164350c5456475a7151ba"
     }
   ]
 }
