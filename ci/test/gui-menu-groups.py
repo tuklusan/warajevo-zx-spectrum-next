@@ -44,17 +44,24 @@ def capture(host_window, destination):
 
 def root_x(host_window, index):
     geometry = xdotool("getwindowgeometry", "--shell", host_window)
-    match = re.search(r"^WIDTH=(\d+)$", geometry, re.MULTILINE)
-    if match is None:
+    width_match = re.search(r"^WIDTH=(\d+)$", geometry, re.MULTILINE)
+    height_match = re.search(r"^HEIGHT=(\d+)$", geometry, re.MULTILINE)
+    if width_match is None or height_match is None:
         raise RuntimeError(f"host window width unavailable: {geometry!r}")
-    width = int(match.group(1))
+    width = int(width_match.group(1))
     return int(width * (index + 0.5) / 7)
 
 
 def open_root(host_window, index):
     x = root_x(host_window, index)
     xdotool("windowfocus", "--sync", host_window)
-    xdotool("key", "Escape")
+    geometry = xdotool("getwindowgeometry", "--shell", host_window)
+    height_match = re.search(r"^HEIGHT=(\d+)$", geometry, re.MULTILINE)
+    if height_match is None:
+        raise RuntimeError(f"host window height unavailable: {geometry!r}")
+    xdotool("mousemove", "--sync", "--window", host_window,
+            "4", str(int(height_match.group(1)) - 4))
+    xdotool("click", "1")
     time.sleep(0.1)
     xdotool("mousemove", "--sync", "--window", host_window, str(x), "10")
     xdotool("click", "1")
