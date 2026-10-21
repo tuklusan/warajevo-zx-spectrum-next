@@ -3180,7 +3180,7 @@ static wz_result_t wz_host_debugger_monitor_command(const void* context,
             ? WZ_RESULT_PARSE_ERROR : WZ_RESULT_INVALID_STATE;
     }
     (void)snprintf(result->message, sizeof(result->message),
-                   "Debugger register updated");
+                   "Monitor command executed");
     (void)snprintf(session->debugger_register_status,
                    sizeof(session->debugger_register_status), "%s",
                    result->message);

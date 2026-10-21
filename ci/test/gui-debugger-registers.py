@@ -222,8 +222,13 @@ def main():
                 monitor_y = debugger_top + 448
                 run("xdotool", "mousemove", "--sync",
                     str(debugger_left + 190), str(monitor_y), "click", "1")
-                run("xdotool", "key", "ctrl+a", "type", "--clearmodifiers",
+                run("xdotool", "key", "ctrl+a")
+                run("xdotool", "type", "--clearmodifiers", "--delay", "80",
                     "R SETREG A 5A")
+                monitor_input = screenshot_text(root)
+                if "R SETREG A 5A" not in monitor_input:
+                    raise RuntimeError(
+                        f"monitor command was not entered in its field; OCR={monitor_input!r}")
                 click_at(debugger_left + 570, monitor_y)
                 monitor_result = screenshot_text(root)
                 (args.capture_dir / "debugger-monitor-register-edited.png").write_bytes(
