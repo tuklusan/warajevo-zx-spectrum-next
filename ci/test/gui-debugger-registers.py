@@ -67,8 +67,7 @@ def screenshot_text(root):
     return run("tesseract", str(prepared), "stdout", "--psm", "6")
 
 
-def main_af(root, window):
-    observations = []
+def debugger_origin(window):
     geometry = run("xdotool", "getwindowgeometry", "--shell", window)
     app_width = int(re.search(r"^WIDTH=(\d+)$", geometry,
                               re.MULTILINE).group(1))
@@ -76,8 +75,12 @@ def main_af(root, window):
                                re.MULTILINE).group(1))
     x0 = int(re.search(r"^X=(\d+)$", geometry, re.MULTILINE).group(1))
     y0 = int(re.search(r"^Y=(\d+)$", geometry, re.MULTILINE).group(1))
-    debugger_left = x0 + max(0, (app_width - 760) // 2)
-    debugger_top = y0 + max(0, (app_height - 740) // 2)
+    return (x0 + max(0, (app_width - 760) // 2),
+            y0 + max(0, (app_height - 740) // 2))
+
+
+def main_af(root, debugger_left, debugger_top):
+    observations = []
     for _ in range(3):
         image = capture(root)
         with Image.open(image) as source:
@@ -163,21 +166,13 @@ def main():
                     "260", "60", "click", "1")
                 time.sleep(0.25)
                 before = screenshot_text(root)
-                original_af, _ = main_af(root, window)
+                debugger_left, debugger_top = debugger_origin(window)
+                original_af, _ = main_af(root, debugger_left, debugger_top)
                 (args.capture_dir / "debugger-paused.png").write_bytes(
                     (root / "screen.png").read_bytes())
                 if "paused" not in before.casefold():
                     raise RuntimeError(
                         f"debugger did not report a paused machine; OCR={before!r}")
-                geometry = run("xdotool", "getwindowgeometry", "--shell", window)
-                app_width = int(re.search(r"^WIDTH=(\d+)$", geometry,
-                                          re.MULTILINE).group(1))
-                app_height = int(re.search(r"^HEIGHT=(\d+)$", geometry,
-                                           re.MULTILINE).group(1))
-                x0 = int(re.search(r"^X=(\d+)$", geometry, re.MULTILINE).group(1))
-                y0 = int(re.search(r"^Y=(\d+)$", geometry, re.MULTILINE).group(1))
-                debugger_left = x0 + max(0, (app_width - 760) // 2)
-                debugger_top = y0 + max(0, (app_height - 740) // 2)
                 assertions.append("machine-paused-in-debugger")
 
                 # Register editor is directly below its label; value input is
@@ -190,7 +185,7 @@ def main():
                 invalid = screenshot_text(root)
                 (args.capture_dir / "debugger-register-invalid.png").write_bytes(
                     (root / "screen.png").read_bytes())
-                invalid_af, _ = main_af(root, window)
+                invalid_af, _ = main_af(root, debugger_left, debugger_top)
                 if ("Invalid debugger register value" not in invalid or
                         invalid_af != original_af):
                     raise RuntimeError(
@@ -205,7 +200,7 @@ def main():
                 updated = screenshot_text(root)
                 (args.capture_dir / "debugger-register-edited.png").write_bytes(
                     (root / "screen.png").read_bytes())
-                updated_af, _ = main_af(root, window)
+                updated_af, _ = main_af(root, debugger_left, debugger_top)
                 if ("Debugger register updated" not in updated or
                         not re.search(r"\bA\s+\S+\s+5A\b", updated) or
                         updated_af != "5A" + original_af[2:]):
@@ -216,7 +211,7 @@ def main():
 
                 click_at(debugger_left + 570, debugger_top + 400)
                 restored = screenshot_text(root)
-                restored_af, _ = main_af(root, window)
+                restored_af, _ = main_af(root, debugger_left, debugger_top)
                 if ("Debugger registers restored" not in restored or
                         restored_af != original_af):
                     raise RuntimeError("register undo did not restore the prior AF value")
