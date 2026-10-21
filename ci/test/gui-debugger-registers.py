@@ -148,8 +148,11 @@ def main():
                 run("xdotool", "key", "ctrl+a", "type", "--clearmodifiers", "0100")
                 click_at(debugger_left + 190, debugger_top + 400)
                 invalid = screenshot_text(root)
-                if "Invalid debugger register value" not in invalid:
-                    raise RuntimeError("out-of-range byte register edit was not rejected")
+                (args.capture_dir / "debugger-register-invalid.png").write_bytes(
+                    (root / "screen.png").read_bytes())
+                if not re.search(rf"AF\s+{original_af}\b", invalid):
+                    raise RuntimeError(
+                        f"out-of-range byte register changed AF; OCR={invalid!r}")
                 assertions.append("byte-register-width-rejected")
 
                 run("xdotool", "mousemove", str(edit_x), str(edit_y), "click", "1")
