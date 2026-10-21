@@ -1,17 +1,17 @@
 {
   "testId": "interface1-wait",
   "status": "pass",
-  "commit": "2dcca11f104b7b9b8f9753ebf7f975a9305a5b04",
-  "runId": 39632784395,
+  "commit": "a07f9373fd4d0e051be2f83af022257070c76ebe",
+  "runId": 39684892104,
   "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
-  "timestamp": "2026-10-21T16:50:03+00:00",
+  "timestamp": "2026-10-21T22:27:38+00:00",
   "caseCount": 375,
   "caseCountPerRunner": 75,
   "observedOutput": "PASS Interface 1 WAIT pending-cycle resume (75 checks)",
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39632784395",
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39684892104",
   "workflowEvent": "workflow_dispatch",
   "branch": "main",
-  "fixtureMetadataCommit": "febf1a26a27e15649ac65833a11391ac2be4dfa9",
+  "fixtureMetadataCommit": "00da0fa39959d300eb8aa0c7f70cc1b4a90dd8ab",
   "nativeBuildConfiguration": "Release; WZSN_BUILD_SOKOL_HOST=ON",
   "ctest": "all integrated CTests passed on each native runner",
   "runnerResults": [
@@ -53,19 +53,19 @@
     },
     {
       "path": "ci/test/interface1-wait/write-proof.py",
-      "sha256": "05ede052ec453bb97b0092872703ca0d9b06b37b4f53f0c79ef60006edb4da61"
+      "sha256": "1178a8d429b21769d8393c2d0ff1f908263f8ca60922ee401878b64a5c57e887"
     },
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "3e0231f35b038f059e137a1eb1e9cc3374fd07f5c12bf77e338d1143dd94c3e1"
+      "sha256": "1a24084f2117fbf746e296b4f8376c54d9321efa710f60528fa70a8da7771904"
     },
     {
       "path": "ci/test/performance/write-runner-evidence.py",
-      "sha256": "ec2c8d0c36427fb8ea51ee2ffe8f5702eec1d63a93332130c62a974a8d8208e7"
+      "sha256": "5efe8c7f2b9f108ee0f5a38d5a6be05dc97cf4715ede82b3e2ee7ef9e9b44bb7"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "efafa34c1c3947cd96aa9d54d013116bbdbd466033cba16386801f790888225a"
+      "sha256": "3ab0ea61c455a5ea7806796c4586129c0777da37492ec0eb14490fdbfa53566d"
     },
     {
       "path": "src/core/wz_bus.c",

@@ -1,0 +1,81 @@
+{
+  "testId": "gui-debugger-registers",
+  "status": "pass",
+  "commit": "897a7f1716e17401f87edc8230e144e4b2b0baac",
+  "runId": 39685859941,
+  "runner": "Linux",
+  "architecture": "X64",
+  "timestamp": "2026-10-21T22:23:09.506553+00:00",
+  "assertions": [
+    "debugger-register-controls-visible",
+    "machine-paused-in-debugger",
+    "byte-register-width-rejected",
+    "paused-main-register-edit-reflected",
+    "register-undo-restored-prior-af"
+  ],
+  "assertionCount": 5,
+  "originalAf": "AFAC",
+  "fixtures": [
+    {
+      "path": ".github/workflows/gui-debugger-registers.yml",
+      "sha256": "848fcf0fc48c0c3d870905480bfb6d5707baa390930b7c172a88ad14e72a6403"
+    },
+    {
+      "path": "ci/test/gui-debugger-registers.py",
+      "sha256": "e3e4ad93b2ee100cdbae9c5503eaa09d8915be62b05abde917360c98b63ad16d"
+    },
+    {
+      "path": "ci/test/gui-screenshot-save.py",
+      "sha256": "b141ac9b4c91e33028291b0312f8fc2ac31f67c161c52cc0eb51a42bc54ff82f"
+    },
+    {
+      "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
+      "sha256": "dc47afb96f2c0566788d59ef74a691c33a8943e1c4e199c96c74d07739e68b31"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "0654706bdf6a5ffea41c05de692e4c2d27b7e3cc9f7dc0b13af55539b4620357"
+    },
+    {
+      "path": "src/app/wz_debugger_window.c",
+      "sha256": "1c42b0a9ae6a48b4ee59fcdd03248ff00f2d6236bafb5e93ccc5f954da33bb14"
+    },
+    {
+      "path": "src/core/wz_debugger.c",
+      "sha256": "3475f4cb3acc84a58843a16205661068b86479d19c522602a34ee21b4aeb70fd"
+    },
+    {
+      "path": "roms/48.rom",
+      "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"
+    }
+  ],
+  "captures": [
+    "debugger-open.png",
+    "debugger-paused.png",
+    "debugger-register-edited.png",
+    "debugger-register-invalid.png",
+    "debugger-register-undo.png"
+  ],
+  "captureEvidence": [
+    {
+      "path": "test-results/gui-debugger-registers/debugger-open.png",
+      "sha256": "0ed1ef6f1034ce0b84289b4eaa6c2ad6aca0a764aca54187d86c61a58e20f0aa"
+    },
+    {
+      "path": "test-results/gui-debugger-registers/debugger-paused.png",
+      "sha256": "00d8b0caf7df4b8f32a0befff67a206306beae1c60d0857d982c7d63c62a87dd"
+    },
+    {
+      "path": "test-results/gui-debugger-registers/debugger-register-edited.png",
+      "sha256": "69c2b67d9558d9457021fe01dee359da58b0477539c179bead29acccc807927e"
+    },
+    {
+      "path": "test-results/gui-debugger-registers/debugger-register-invalid.png",
+      "sha256": "fe75e95da5acf877d235facadd83b5d3eaa7e4610be3567aee52d793444c6ea9"
+    },
+    {
+      "path": "test-results/gui-debugger-registers/debugger-register-undo.png",
+      "sha256": "d703ccd42e979a0c3c54aefa68560aef59cda142407881d55ebed7d7f5db0361"
+    }
+  ]
+}

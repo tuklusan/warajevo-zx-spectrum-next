@@ -1,13 +1,13 @@
 {
   "testId": "screenshot-state-time",
   "status": "pass",
-  "commit": "2dcca11f104b7b9b8f9753ebf7f975a9305a5b04",
+  "commit": "a07f9373fd4d0e051be2f83af022257070c76ebe",
   "runner": "Windows x64, Linux x64, Linux ARM64, macOS ARM64, and macOS Intel hosted runners",
-  "runId": 39632784395,
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39632784395",
+  "runId": 39684892104,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39684892104",
   "workflowEvent": "workflow_dispatch",
   "branch": "main",
-  "timestamp": "2026-10-21T16:50:04+00:00",
+  "timestamp": "2026-10-21T22:27:38+00:00",
   "assertionsPerRunner": 20,
   "totalAssertions": 100,
   "nativeBuildConfiguration": "Release; WZSN_BUILD_SOKOL_HOST=ON",
@@ -19,7 +19,7 @@
       "status": "pass",
       "assertions": 20,
       "observedOutput": "PASS screenshot success and failure preserve canonical machine hash and master tick (20 assertions)",
-      "ctest": "26/26 passed"
+      "ctest": "29/29 passed"
     },
     {
       "name": "Linux x64",
@@ -28,7 +28,7 @@
       "status": "pass",
       "assertions": 20,
       "observedOutput": "PASS screenshot success and failure preserve canonical machine hash and master tick (20 assertions)",
-      "ctest": "26/26 passed"
+      "ctest": "29/29 passed"
     },
     {
       "name": "Linux ARM64",
@@ -37,7 +37,7 @@
       "status": "pass",
       "assertions": 20,
       "observedOutput": "PASS screenshot success and failure preserve canonical machine hash and master tick (20 assertions)",
-      "ctest": "26/26 passed"
+      "ctest": "29/29 passed"
     },
     {
       "name": "macOS ARM64",
@@ -46,7 +46,7 @@
       "status": "pass",
       "assertions": 20,
       "observedOutput": "PASS screenshot success and failure preserve canonical machine hash and master tick (20 assertions)",
-      "ctest": "26/26 passed"
+      "ctest": "29/29 passed"
     },
     {
       "name": "macOS Intel",
@@ -55,13 +55,13 @@
       "status": "pass",
       "assertions": 20,
       "observedOutput": "PASS screenshot success and failure preserve canonical machine hash and master tick (20 assertions)",
-      "ctest": "26/26 passed"
+      "ctest": "29/29 passed"
     }
   ],
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "3e0231f35b038f059e137a1eb1e9cc3374fd07f5c12bf77e338d1143dd94c3e1"
+      "sha256": "1a24084f2117fbf746e296b4f8376c54d9321efa710f60528fa70a8da7771904"
     },
     {
       "path": "ci/test/screenshot-state-time/screenshot-state-time.c",
@@ -69,7 +69,7 @@
     },
     {
       "path": "ci/test/screenshot-state-time/write-proof.py",
-      "sha256": "bc468bb6deeff3f510f1a69651a57ac0b114bb6891751f6f117ea2d7787f213e"
+      "sha256": "39ad2c70c38bea2c68650a9bd50c428bcb48cd94f3b68bf84a4043244e7afabb"
     },
     {
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
@@ -101,7 +101,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "efafa34c1c3947cd96aa9d54d013116bbdbd466033cba16386801f790888225a"
+      "sha256": "3ab0ea61c455a5ea7806796c4586129c0777da37492ec0eb14490fdbfa53566d"
     },
     {
       "path": "src/app/wz_telnet_negotiation.c",

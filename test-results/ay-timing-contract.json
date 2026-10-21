@@ -1,13 +1,13 @@
 {
   "testId": "ay-timing-contract",
   "status": "pass",
-  "commit": "2dcca11f104b7b9b8f9753ebf7f975a9305a5b04",
-  "runId": 39632784395,
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39632784395",
+  "commit": "a07f9373fd4d0e051be2f83af022257070c76ebe",
+  "runId": 39684892104,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39684892104",
   "workflowEvent": "workflow_dispatch",
   "branch": "main",
-  "fixtureMetadataCommit": "febf1a26a27e15649ac65833a11391ac2be4dfa9",
-  "timestamp": "2026-10-21T16:50:03+00:00",
+  "fixtureMetadataCommit": "00da0fa39959d300eb8aa0c7f70cc1b4a90dd8ab",
+  "timestamp": "2026-10-21T22:27:38+00:00",
   "assertionsPerRunner": 67,
   "totalAssertions": 335,
   "observedOutput": "AY timing contract passed (67 assertions)",
@@ -20,7 +20,7 @@
       "architecture": "X64",
       "status": "pass",
       "assertions": 67,
-      "ctest": "26/26"
+      "ctest": "29/29"
     },
     {
       "name": "Linux x64",
@@ -29,7 +29,7 @@
       "architecture": "X64",
       "status": "pass",
       "assertions": 67,
-      "ctest": "26/26"
+      "ctest": "29/29"
     },
     {
       "name": "Linux ARM64",
@@ -38,7 +38,7 @@
       "architecture": "ARM64",
       "status": "pass",
       "assertions": 67,
-      "ctest": "26/26"
+      "ctest": "29/29"
     },
     {
       "name": "macOS ARM64",
@@ -47,7 +47,7 @@
       "architecture": "ARM64",
       "status": "pass",
       "assertions": 67,
-      "ctest": "26/26"
+      "ctest": "29/29"
     },
     {
       "name": "macOS Intel",
@@ -56,7 +56,7 @@
       "architecture": "X64",
       "status": "pass",
       "assertions": 67,
-      "ctest": "26/26"
+      "ctest": "29/29"
     }
   ],
   "fixtures": [
@@ -66,7 +66,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "efafa34c1c3947cd96aa9d54d013116bbdbd466033cba16386801f790888225a"
+      "sha256": "3ab0ea61c455a5ea7806796c4586129c0777da37492ec0eb14490fdbfa53566d"
     },
     {
       "path": "src/core/audio/wz_ay.c",
@@ -86,11 +86,11 @@
     },
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "3e0231f35b038f059e137a1eb1e9cc3374fd07f5c12bf77e338d1143dd94c3e1"
+      "sha256": "1a24084f2117fbf746e296b4f8376c54d9321efa710f60528fa70a8da7771904"
     },
     {
       "path": "ci/test/ay-timing/write-proof.py",
-      "sha256": "5e719a1220854ef800e15b03df3767be667527beee2db9948bf1f9860740ceec"
+      "sha256": "499365feb74266bb0f02fd48d1898886fc6700cc7bfb9c5c7197b4279a8158ac"
     }
   ],
   "reference": "General Instrument AY-3-8910/AY-3-8912 Programmable Sound Generator Data Manual, tone/noise/envelope clock dividers and envelope shape table: https://www.westfloridacomponents.com/mm5/graphics/ds10/AY-3-8912.pdf",
