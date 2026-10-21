@@ -116,15 +116,16 @@ static const wz_ui_toolbar_item_t microdrive_drive_actions[
     {"media.microdrive.drive8", "MDV 8"}
 };
 
+/* Menu group IDs stay distinct from the driveN toolbar command aliases. */
 static const char* const microdrive_menu_groups[WZ_UI_MICRODRIVE_COUNT] = {
-    "media.microdrive.drive1",
-    "media.microdrive.drive2",
-    "media.microdrive.drive3",
-    "media.microdrive.drive4",
-    "media.microdrive.drive5",
-    "media.microdrive.drive6",
-    "media.microdrive.drive7",
-    "media.microdrive.drive8"
+    "media.microdrive.drive_group1",
+    "media.microdrive.drive_group2",
+    "media.microdrive.drive_group3",
+    "media.microdrive.drive_group4",
+    "media.microdrive.drive_group5",
+    "media.microdrive.drive_group6",
+    "media.microdrive.drive_group7",
+    "media.microdrive.drive_group8"
 };
 
 static const wz_ui_networking_option_t networking_options[
