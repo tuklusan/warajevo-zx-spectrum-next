@@ -559,7 +559,8 @@ wz_result_t wz_debugger_copy_memory(wz_machine_t* machine,
             machine->networking_mode == WZ_NETWORKING_INTERFACE1 &&
             machine->has_interface1_rom != 0u &&
             machine->interface1_rom_page != 0u;
-        if (machine->profile->kind != WZ_MACHINE_128K_PAL &&
+        if (machine->profile != 0 &&
+            machine->profile->kind != WZ_MACHINE_128K_PAL &&
             !interface1_overlay) {
             memmove(&machine->memory[destination_address],
                     &machine->memory[source_address], length);
