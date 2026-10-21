@@ -4530,6 +4530,17 @@ static bool wz_host_ui_menu_is_group_node(const char* candidate)
     return false;
 }
 
+static bool wz_host_ui_menu_is_microdrive_selector(const char* candidate)
+{
+    static const char prefix[] = "media.microdrive.drive";
+    const char* slot;
+    if (candidate == NULL || strncmp(candidate, prefix,
+            sizeof(prefix) - 1u) != 0 ||
+        strlen(candidate) != sizeof(prefix)) return false;
+    slot = candidate + sizeof(prefix) - 1u;
+    return slot[0] >= '1' && slot[0] <= '8';
+}
+
 static bool wz_host_ui_menu_is_direct_child(const char* parent,
                                              const char* candidate)
 {
@@ -4575,6 +4586,7 @@ static void wz_host_ui_draw_menu_command(struct nk_context* context,
         strcmp(command->id, WZ_MICRODRIVE_MANAGER_OPEN_COMMAND_ID) == 0) {
         return;
     }
+    if (wz_host_ui_menu_is_microdrive_selector(command->id)) return;
     if (strcmp(command->id, WZ_PRINTER_MODE_COMMAND_ID) == 0) return;
     enabled = wz_command_registry_state(&wz_host_session.command_registry,
         command->id, &disabled_reason) == WZ_COMMAND_ENABLED;
