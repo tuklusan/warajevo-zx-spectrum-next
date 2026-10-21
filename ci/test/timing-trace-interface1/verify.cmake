@@ -22,7 +22,7 @@ endif()
 foreach(fragment
         "interface1_io direction=write port=00ef value=06 control=06 motor_shift=ff active_motor=ff tick=10"
         "interface1_io direction=write port=a0ef value=04 control=04 motor_shift=fe active_motor=00 tick=20"
-        "interface1_io direction=read port=80e7 value=0c control=04 motor_shift=fe active_motor=00 tick=30"
+        "interface1_io direction=read port=80e7 value=00 control=04 motor_shift=fe active_motor=00 tick=30"
         "interface1_io direction=write port=00f7 value=01 control=04 motor_shift=fe active_motor=00 tick=40"
         "interface1_io direction=read port=80f7 value=ff control=04 motor_shift=fe active_motor=00 tick=50")
     string(FIND "${dump_output}" "${fragment}" match_index)

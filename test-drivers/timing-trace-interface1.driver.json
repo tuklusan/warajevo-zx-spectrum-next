@@ -20,7 +20,7 @@
     },
     {
       "path": "ci/test/timing-trace-interface1/verify.cmake",
-      "sha256": "4d9d66d8480bff40c80a8192bf8f4a19a7e6a3212e6d3b21e92ca6b03152418d"
+      "sha256": "ec0997e023080adbd1be28fd6072c9360673e8c84a346f46ed99947cf25a6d7e"
     },
     {
       "path": "ci/test/timing-trace-interface1/write-proof.py",
@@ -28,19 +28,19 @@
     },
     {
       "path": "src/core/wz_bus.c",
-      "sha256": "1a185602bb9c8a6e25f9d14286a7b5905d7330126373ee7d41fc7e3fc46dfdcc"
+      "sha256": "12d0b0b9d7a6f990c9564393c1c73cb680ed58a2570969be7df4a45ae0d174b3"
     },
     {
       "path": "src/core/wz_trace.h",
-      "sha256": "da4a77e1c387d93a30ad1bff1ba5c24d2d79dec6daf3ced9f471c7e6a4ac7142"
+      "sha256": "3c4b63a79f9094517eae4ae09bb5a98f06bc5e5af991d5cd7b08f5a80b1d5d6b"
     },
     {
       "path": "src/diagnostics/wz_trace_dump_main.c",
-      "sha256": "16c89efb0fe1c80e54ccd8062f5d2f352a4ad6a171b6f7d364228d2e3e40c637"
+      "sha256": "7f477bad5c8d6e6b410d5871e37989b67498e61b46cbf10aec480ed743fd39b6"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "8396fb90fa06e873d75c3f1a2db25296a47df056c6f3bf67241a30f631e222b9"
+      "sha256": "913704705a983e0642855a6260b8c27c67dc58a9b209d8b884acca2f00607c2e"
     }
   ]
 }
