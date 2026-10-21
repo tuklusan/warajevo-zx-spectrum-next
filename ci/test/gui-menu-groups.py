@@ -72,6 +72,7 @@ def open_root(host_window, index):
 def hover(host_window, x, row):
     xdotool("mousemove", "--sync", "--window", host_window,
             str(x), str(42 + row * 28))
+    xdotool("click", "1")
     time.sleep(0.3)
 
 
