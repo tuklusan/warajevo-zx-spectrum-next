@@ -146,6 +146,10 @@ def main():
                 run("xdotool", "key", "--clearmodifiers", "F12")
                 time.sleep(0.5)
                 screen = screenshot_text(root)
+                if "register" not in screen.casefold() or "editor" not in screen.casefold():
+                    click_text(root, "Debugger")
+                    time.sleep(0.5)
+                    screen = screenshot_text(root)
                 (args.capture_dir / "debugger-open.png").write_bytes(
                     (root / "screen.png").read_bytes())
                 if "register" not in screen.casefold() or "editor" not in screen.casefold():
