@@ -910,7 +910,10 @@ add_executable(
     ${WZSN_SOURCE_ROOT}/app/wz_screenshot_service.c)
 target_include_directories(wz_telnet_do_parse_tests PRIVATE "${WZSN_SOURCE_ROOT}")
 target_link_libraries(wz_telnet_do_parse_tests PRIVATE wz_core Threads::Threads ZLIB::ZLIB)
-add_test(NAME wz_telnet_do_parse_tests COMMAND wz_telnet_do_parse_tests)
+add_custom_target(wz_telnet_do_parse_check ALL
+    COMMAND "$<TARGET_FILE:wz_telnet_do_parse_tests>"
+    DEPENDS wz_telnet_do_parse_tests
+    VERBATIM)
 
 if(WZSN_FUSE_Z80_TEST_INPUT AND WZSN_FUSE_Z80_TEST_EXPECTED)
     enable_testing()
