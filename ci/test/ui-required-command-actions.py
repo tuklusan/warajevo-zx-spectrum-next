@@ -18,7 +18,7 @@ import subprocess
 import tempfile
 import time
 
-from PIL import Image, ImageChops
+from PIL import Image, ImageOps
 
 
 helpers = runpy.run_path(str(Path(__file__).with_name(
@@ -107,20 +107,27 @@ def main():
                         f"Could not parse host window geometry: {geometry!r}")
                 width = int(width_match.group(1))
                 height = int(height_match.group(1))
+                xdotool("windowfocus", "--sync", host_window)
                 xdotool("mousemove", "--sync", "--window", host_window,
                         str(width // 2), str(height - 14))
-                before_screenshot = args.proof.parent / "before-telnet-settings.png"
-                capture(host_window, before_screenshot)
                 xdotool("click", "1")
-                time.sleep(0.5)
+                time.sleep(0.8)
                 screenshot = args.proof.parent / "telnet-settings.png"
                 capture(host_window, screenshot)
-                with Image.open(before_screenshot) as before, \
-                        Image.open(screenshot) as after:
-                    bounds = ImageChops.difference(
-                        before.convert("RGB"), after.convert("RGB")).getbbox()
-                if bounds is None or \
-                        (bounds[2] - bounds[0]) * (bounds[3] - bounds[1]) < 20000:
+                panel_crop = args.proof.parent / "telnet-settings-crop.png"
+                with Image.open(screenshot) as after:
+                    crop = after.crop((width - 440, height - 260,
+                                       width - 4, height - 50))
+                    crop = ImageOps.grayscale(crop).resize(
+                        (crop.width * 3, crop.height * 3),
+                        Image.Resampling.LANCZOS)
+                    crop.save(panel_crop)
+                visible_text = subprocess.run(
+                    ["tesseract", str(panel_crop), "stdout", "--psm", "6"],
+                    check=True, capture_output=True, text=True).stdout
+                normalized_text = re.sub(r"[^a-z0-9]+", "",
+                                         visible_text.casefold())
+                if "telnetkeyboardremotecontrol" not in normalized_text:
                     raise RuntimeError(
                         "status control did not visibly open Telnet Settings")
                 assertions += 1
@@ -137,7 +144,7 @@ def main():
                     "settingsActions": settings_ids,
                     "telnetSettingsScreenshotSha256": hashlib.sha256(
                         screenshot.read_bytes()).hexdigest(),
-                    "telnetSettingsChangedBounds": list(bounds),
+                    "telnetSettingsVisibleText": visible_text.strip(),
                 }, indent=2) + "\n", encoding="utf-8")
         finally:
             if connection is not None:
