@@ -1,0 +1,46 @@
+{
+  "testId": "microdrive-position-contract",
+  "command": "cmake -S src/cmake -B dist/microdrive-position -DCMAKE_BUILD_TYPE=Release -DWZSN_BUILD_SOKOL_HOST=ON && cmake --build dist/microdrive-position --config Release --target wz_microdrive_position_contract --parallel 2 && ctest --test-dir dist/microdrive-position -C Release -R \"^wz_microdrive_position_contract$\" --output-on-failure",
+  "fixtures": [
+    {
+      "path": "ci/test/microdrive-position/microdrive-position-contract.c",
+      "sha256": "bc166b033e719fad26a87a06b0c0968d090ddad7cffed54397beee7950505645"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "0856a8eb80671877997059ee47c0d78fd1415d6400ea04d9723ff0ee651a177c"
+    },
+    {
+      "path": "src/core/wz_microdrive.c",
+      "sha256": "4de612e163208d566988a3f4bf18cb0206f9e45a5cabe7bce8f1bb00a4727d06"
+    },
+    {
+      "path": "src/core/wz_microdrive.h",
+      "sha256": "9843858b28b09b4f6a3315edf1db32613752907d66111335cd6b3ff4088972f9"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "e7440ef90ecd7d41ea1a26e2a54f1bd06e9d636dd8ff2c5b39aff14e6f9ff355"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "337b6cd7e8e8751bb7eb8fde7f679f9f342639273ac8e7a213383a2c8a122cb2"
+    },
+    {
+      "path": "src/core/wz_machine_internal.h",
+      "sha256": "356576730ce7cd7a7f6ccfed49543f19968893056e4d60bfa3427f0d0595cd46"
+    },
+    {
+      "path": "src/core/wz_bus.c",
+      "sha256": "e8d5f372fc226f673f00cc92969c6d3758fff167a3a8b6463641189e2b77677d"
+    },
+    {
+      "path": "src/core/wz_bus.h",
+      "sha256": "e406a5e0f69c289cfb6986d9db0da2a0af29aee3c0652435ec643b2577c2a605"
+    },
+    {
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "c2e12e678786ad70ea9171d276a54549ef035e874c42562252227dd590e15c8f"
+    }
+  ]
+}
