@@ -708,7 +708,9 @@ add_test(NAME wz_debugger_core_contract COMMAND wz_debugger_core_contract)
 add_executable(
     wz_debugger_register_window_contract
     ${WZSN_REPO_ROOT}/ci/test/debugger-register-window-contract.c
-    ${WZSN_SOURCE_ROOT}/app/wz_debugger_window.c)
+    ${WZSN_SOURCE_ROOT}/app/wz_debugger_window.c
+    ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c
+    ${WZSN_SOURCE_ROOT}/app/wz_host_thread.c)
 target_include_directories(wz_debugger_register_window_contract PRIVATE
     ${WZSN_SOURCE_ROOT})
 target_link_libraries(wz_debugger_register_window_contract PRIVATE
