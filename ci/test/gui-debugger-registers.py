@@ -181,6 +181,7 @@ def main():
                 edit_x = debugger_left + 560
                 run("xdotool", "mousemove", str(edit_x), str(edit_y), "click", "1")
                 run("xdotool", "key", "ctrl+a", "type", "--clearmodifiers", "100")
+                time.sleep(0.25)
                 click_at(debugger_left + 190, debugger_top + 400)
                 invalid = screenshot_text(root)
                 (args.capture_dir / "debugger-register-invalid.png").write_bytes(
@@ -196,6 +197,7 @@ def main():
 
                 run("xdotool", "mousemove", str(edit_x), str(edit_y), "click", "1")
                 run("xdotool", "key", "ctrl+a", "type", "--clearmodifiers", "5A")
+                time.sleep(0.25)
                 click_at(debugger_left + 190, debugger_top + 400)
                 updated = screenshot_text(root)
                 (args.capture_dir / "debugger-register-edited.png").write_bytes(
@@ -225,6 +227,7 @@ def main():
                 run("xdotool", "key", "ctrl+a")
                 run("xdotool", "type", "--clearmodifiers", "--delay", "80",
                     "R SETREG A 5A")
+                time.sleep(0.25)
                 click_at(debugger_left + 570, monitor_y)
                 monitor_result = screenshot_text(root)
                 (args.capture_dir / "debugger-monitor-register-edited.png").write_bytes(
