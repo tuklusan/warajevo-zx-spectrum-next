@@ -20,7 +20,7 @@ patent, trademark, and governing-law provisions.
 #define WZ_STATE_VERSION 15u
 #define WZ_STATE_HEADER_LENGTH WZ_STATE_MACHINE_MEMORY_OFFSET
 #define WZ_STATE_EXTENSION_MAGIC UINT32_C(0x4e535a57)
-#define WZ_STATE_EXTENSION_VERSION 6u
+#define WZ_STATE_EXTENSION_VERSION 7u
 #define WZ_STATE_EXTENSION_OFFSET (WZ_STATE_HEADER_LENGTH + 65536u)
 
 static wz_result_t wz_state_write(wz_state_writer_t* writer,
@@ -117,6 +117,7 @@ static wz_result_t wz_state_write_mdr(wz_state_writer_t* writer,
         transport->image_present > 1u ||
         transport->write_enabled > 1u || transport->erase_enabled > 1u ||
         transport->host_write_protected > 1u ||
+        transport->gap_count > 15u || transport->sync_count > 15u ||
         transport->dirty > 1u || transport->phase > WZ_MDR_PHASE_DATA) {
         return WZ_RESULT_INVALID_STATE;
     }
@@ -130,6 +131,8 @@ static wz_result_t wz_state_write_mdr(wz_state_writer_t* writer,
         wz_state_write_u8(writer, transport->write_enabled) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, transport->erase_enabled) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, transport->host_write_protected) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, transport->gap_count) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, transport->sync_count) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, transport->dirty) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, (wz_byte_t)transport->phase) != WZ_RESULT_OK ||
         (transport->dirty != 0u &&
@@ -630,6 +633,7 @@ static wz_result_t wz_state_deserialize_machine_in_place(
         extension_version = wz_read_le16(data + offset);
         if (extension_version != 3u && extension_version != 4u &&
             extension_version != 5u &&
+            extension_version != 6u &&
             extension_version != WZ_STATE_EXTENSION_VERSION) {
             return WZ_RESULT_INVALID_STATE;
         }
@@ -716,6 +720,10 @@ static wz_result_t wz_state_deserialize_machine_in_place(
             if (extension_version >= 6u) {
                 microdrive->host_write_protected = data[offset++];
             }
+            if (extension_version >= 7u) {
+                microdrive->gap_count = data[offset++];
+                microdrive->sync_count = data[offset++];
+            }
             microdrive->dirty = data[offset++];
             microdrive->phase = (wz_mdr_phase_t)data[offset++];
             if (extension_version == 3u || microdrive->dirty != 0u) {
@@ -747,6 +755,8 @@ static wz_result_t wz_state_deserialize_machine_in_place(
                     microdrive->write_enabled > 1u ||
                     microdrive->erase_enabled > 1u ||
                     microdrive->host_write_protected > 1u ||
+                    microdrive->gap_count > 15u ||
+                    microdrive->sync_count > 15u ||
                     microdrive->dirty > 1u ||
                     microdrive->phase > WZ_MDR_PHASE_DATA) {
                     return WZ_RESULT_INVALID_STATE;

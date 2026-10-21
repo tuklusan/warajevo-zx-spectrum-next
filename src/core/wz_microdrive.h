@@ -47,6 +47,9 @@ typedef struct {
     wz_byte_t write_enabled;
     wz_byte_t erase_enabled;
     wz_byte_t host_write_protected;
+    /* Status-port counters from the deterministic Fuse-compatible profile. */
+    wz_byte_t gap_count;
+    wz_byte_t sync_count;
     wz_byte_t dirty;
     wz_byte_t buffer[WZ_MDR_SECTOR_SIZE];
     wz_mdr_phase_t phase;

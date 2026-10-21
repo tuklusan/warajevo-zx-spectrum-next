@@ -110,22 +110,85 @@ wz_result_t wz_machine_interface1_data_write(wz_machine_t* machine,
     return wz_mdr_transport_write(transport, value);
 }
 
-wz_byte_t wz_machine_interface1_status_read(const wz_machine_t* machine)
+wz_byte_t wz_machine_interface1_status_read(wz_machine_t* machine)
 {
-    const wz_mdr_transport_t* transport;
+    wz_mdr_transport_t* transport;
+    wz_byte_t status = 0xffu;
 
-    if (machine == 0 ||
-        machine->interface1_active_motor >= WZ_MACHINE_MICRODRIVE_COUNT) {
-        return 0xffu;
+    if (machine == 0) {
+        return status;
     }
-    transport = wz_machine_microdrive_at_const(machine,
-        machine->interface1_active_motor);
-    if (transport == 0 || transport->image_present == 0u ||
-        transport->image == 0 || transport->host_write_protected != 0u ||
-        wz_mdr_image_is_write_protected(transport->image)) {
-        return 0xffu;
+    transport = machine->interface1_active_motor < WZ_MACHINE_MICRODRIVE_COUNT
+        ? wz_machine_microdrive_at(machine,
+            machine->interface1_active_motor) : 0;
+    if (transport != 0 && transport->image_present != 0u &&
+        transport->image != 0) {
+        if (transport->host_write_protected != 0u ||
+            wz_mdr_image_is_write_protected(transport->image)) {
+            status |= 0x01u;
+        } else {
+            status &= 0xfeu;
+        }
+        if (transport->gap_count != 0u) {
+            --transport->gap_count;
+        } else {
+            status &= 0xf9u;
+            if (transport->sync_count != 0u) {
+                --transport->sync_count;
+            } else {
+                transport->gap_count = 15u;
+                transport->sync_count = 15u;
+            }
+        }
+    } else {
+        /* No mounted cartridge is writable for the status-line purpose. */
+        status &= 0xfeu;
     }
-    return 0xfeu;
+    /* The disconnected DTR input is deasserted; Fuse models it low. */
+    status &= 0xf7u;
+    if (machine->zxnet.state.state == WZ_ZXNET_BUSY) {
+        status |= 0x10u;
+    } else {
+        status &= 0xefu;
+    }
+    return status;
+}
+
+wz_result_t wz_machine_interface1_network_read(wz_machine_t* machine,
+    wz_byte_t* value, wz_master_tick_t master_tick)
+{
+    wz_byte_t network_value;
+    if (machine == 0 || value == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if ((machine->interface1_control_latch & 0x01u) != 0u) {
+        /* Serial host redirection is deferred; its unconnected line idles high. */
+        *value = 0xffu;
+        return WZ_RESULT_OK;
+    }
+    wz_zxnet_set_master_tick(&machine->zxnet, master_tick);
+    if (wz_zxnet_read(&machine->zxnet, &network_value) != WZ_RESULT_OK) {
+        *value = 0xffu;
+        return WZ_RESULT_OK;
+    }
+    *value = (wz_byte_t)(0xfeu | (network_value & 0x01u));
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_machine_interface1_network_write(wz_machine_t* machine,
+    wz_byte_t value, wz_master_tick_t master_tick)
+{
+    if (machine == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if ((machine->interface1_control_latch & 0x01u) != 0u) {
+        return WZ_RESULT_OK;
+    }
+    wz_zxnet_set_master_tick(&machine->zxnet, master_tick);
+    if (machine->zxnet.state.state == WZ_ZXNET_COLLWRITE) {
+        return wz_zxnet_write_bit(&machine->zxnet, (value & 0x01u) != 0u);
+    }
+    return WZ_RESULT_OK;
 }
 
 static wz_result_t wz_machine_ula_capture_until(

@@ -1,0 +1,58 @@
+{
+  "testId": "interface1-registers",
+  "command": "Full native Release/Sokol build and integrated CTest on five supported architectures",
+  "requiredCases": 60,
+  "runnerMatrix": [
+    "Windows x64",
+    "Linux x64",
+    "Linux ARM64",
+    "macOS ARM64",
+    "macOS Intel"
+  ],
+  "fixtures": [
+    {
+      "path": "ci/test/interface1-registers/interface1-registers-contract.c",
+      "sha256": "577f5c7defddfc2d61ca34133606779543eeb3b0b1884dc24b19508cd5bc2a67"
+    },
+    {
+      "path": "ci/test/interface1-registers/write-proof.py",
+      "sha256": "5d6693697ebedb2519cc4c5769f34be9b5a09dff22d67fc0d9970a214b9c780f"
+    },
+    {
+      "path": "src/core/wz_bus.c",
+      "sha256": "62d41c1d7c05857a3e70c334cc76fe68b5bf7ba415a07142b3e5ac8440751fe9"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "c0114cdf5782c9f94ceef0e561f4962ed79a720c9dccd2bebd7e8cd8329bde88"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "adeeaab73dd408613ba69536795179e8b04a3ba1e33221be5100e662701a7b26"
+    },
+    {
+      "path": "src/core/wz_microdrive.c",
+      "sha256": "7a768c785d4ec9ecdc7d23347261dab3da6b8d5662fd6813e6483fc3246b4e1b"
+    },
+    {
+      "path": "src/core/wz_microdrive.h",
+      "sha256": "eb2ac0ef1ead6d2038bb66688606d8ccf4590ff8a60a8e7e8990d47aa4e44098"
+    },
+    {
+      "path": "src/core/wz_state.c",
+      "sha256": "ee7ce902199d68a921d8ee5a31be9c5e4e289c4b6c9689e0e9ec31693469f25a"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "fbda61a73a7e23f5520e849f2be5042d1d0e8687c8e02e9c97bc54ecd1230e8b"
+    },
+    {
+      "path": "docs/design/interface1-microdrive-zxnet.md",
+      "sha256": "b24eaf42c8d305149ddaac70116ff10bfdabc0b4a131d8904041e0c0eab03c5f"
+    },
+    {
+      "path": "docs/design/04-wzsn-architectures-1-2-developer-tasks.md",
+      "sha256": "ed9b60da64068632b019dd6cb979253ad37ac18409c438af9ad70d49a0cf75ed"
+    }
+  ]
+}

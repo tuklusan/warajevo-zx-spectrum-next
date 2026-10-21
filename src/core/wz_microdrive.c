@@ -111,6 +111,8 @@ void wz_mdr_transport_init(wz_mdr_transport_t* transport)
         transport->write_enabled = 0u;
         transport->erase_enabled = 0u;
         transport->host_write_protected = 0u;
+        transport->gap_count = 15u;
+        transport->sync_count = 15u;
         transport->dirty = 0u;
         memset(transport->buffer, 0, sizeof(transport->buffer));
         transport->phase = WZ_MDR_PHASE_HEADER;
@@ -138,6 +140,8 @@ wz_result_t wz_mdr_transport_mount(wz_mdr_transport_t* transport,
     transport->write_enabled = 0u;
     transport->erase_enabled = 0u;
     transport->host_write_protected = 0u;
+    transport->gap_count = 15u;
+    transport->sync_count = 15u;
     transport->dirty = 0u;
     memset(transport->buffer, 0, sizeof(transport->buffer));
     transport->phase = WZ_MDR_PHASE_HEADER;

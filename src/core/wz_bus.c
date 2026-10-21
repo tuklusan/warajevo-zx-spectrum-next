@@ -170,6 +170,12 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
          request->cycle == WZ_BUS_MEMORY_READ ||
          request->cycle == WZ_BUS_IO_READ ||
          request->cycle == WZ_BUS_INTERRUPT_ACKNOWLEDGE) &&
+        !(request->cycle == WZ_BUS_IO_READ &&
+          machine->hardware_io_decode_enabled &&
+          machine->networking_mode == WZ_NETWORKING_INTERFACE1 &&
+          (wz_machine_interface1_port_selected(request->address, 0xe7u) ||
+           wz_machine_interface1_port_selected(request->address, 0xefu) ||
+           wz_machine_interface1_port_selected(request->address, 0xf7u))) &&
         machine->bus_data_source.read != 0 &&
         machine->bus_data_source.read(request, &request->value,
                                       machine->bus_data_source.context)) {
@@ -208,7 +214,10 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
         } else if (machine->hardware_io_decode_enabled &&
             machine->networking_mode == WZ_NETWORKING_INTERFACE1 &&
             wz_machine_interface1_port_selected(request->address, 0xf7u)) {
-            request->value = 0xffu;
+            if (wz_machine_interface1_network_read(machine,
+                    &request->value, request->master_tick) != WZ_RESULT_OK) {
+                request->value = 0xffu;
+            }
             request->source = WZ_BUS_SOURCE_INPUT;
         } else if (machine->hardware_io_decode_enabled &&
             wz_kempston_port_selected(request->address)) {
@@ -285,6 +294,10 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
                    machine->networking_mode == WZ_NETWORKING_INTERFACE1 &&
                    wz_machine_interface1_port_selected(request->address, 0xf7u)) {
             request->source = WZ_BUS_SOURCE_INPUT;
+            if (wz_machine_interface1_network_write(machine,
+                    request->value, request->master_tick) != WZ_RESULT_OK) {
+                return WZ_RESULT_INVALID_STATE;
+            }
         } else {
             request->source = WZ_BUS_SOURCE_FALLBACK;
         }

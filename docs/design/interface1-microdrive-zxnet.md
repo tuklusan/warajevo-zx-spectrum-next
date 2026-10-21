@@ -104,6 +104,16 @@ full CPU address and canonical bus-cycle tick.
 | `EFh` (`239`) | write | Control latch: bit 0 communications data, bit 1 communications clock, bit 2 read/write (`1` read, `0` write), bit 3 erase (`0` erase asserted), bit 4 CTS, bit 5 wait; bits 6–7 are retained but have no device effect. |
 | `F7h` (`247`) | read/write | Network/serial data register; with communications-data low, bit 0 is ZX Net input/output. With it high, bit 7 is serial input and bit 0 serial output; serial host redirection remains LATER per Architecture §1. |
 
+EFh status bit 0 is active-high write protection by the service-manual rule
+above. Bits 1 and 2 are active-low SYNC and GAP indications. Each selected,
+mounted transport starts with both deterministic counters at 15; status reads
+consume the GAP count, then report SYNC and GAP low while consuming the SYNC
+count, and reload both counts to 15 after the sequence. No mounted/selected
+cartridge leaves both bits high. Bit 3 is the serial DTR input; with no serial
+host it is deasserted low, matching the pinned Fuse comparator. Bit 4 is the
+active-high ZX Net busy indication. Bits 5–7 read high. These counters are
+per-drive canonical state.
+
 The service manual says the WR PROT line is normally low, and the selected
 drive pulls it high when the write-protect switch is closed. WZSN therefore
 reports EFh bit 0 high for protected media and low for writable/unmounted
@@ -252,6 +262,11 @@ machine-tick state, never by blocking a host thread. Microdrive reads do not
 use this line. F7h network input/output is selected only while COMMS DATA is
 low; the serial side remains electrically idle in the initial architecture
 because historical RS-232 host redirection is LATER.
+
+At F7h, a network read returns the next serialized ZX Net bit in bit 0 and
+ones in bits 1–7. A network write submits bit 0 to an active `COLLWRITE`
+collection; other network states ignore output bits. With COMMS DATA high,
+the unattached serial input idles high and serial output has no host effect.
 
 The legacy delay value is not interpreted as wall-clock time. Deterministic
 machine-visible status lengths are read-count based; any future clocked network
