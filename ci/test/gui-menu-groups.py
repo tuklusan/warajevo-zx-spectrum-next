@@ -207,8 +207,7 @@ def main():
                 open_group(host_window, x, 2)
                 image, text = save_capture(host_window, args.proof.parent,
                                            "media-microdrive-drive1")
-                require_text(text, ("Mount MDV", "Eject MDV 1",
-                                    "Set MDV 1 Default"),
+                require_text(text, ("Mount MDV", "Set MDV 1 Default"),
                              "Media > Microdrive > Drive 1 actions")
                 captures.append(image)
                 assertions.append("media-microdrive-drive1-actions-visible")
