@@ -99,6 +99,7 @@ def main():
                             "dynamic Recent paths must remain local presentation state")
                 assertions += 1
 
+                missing_actions = []
                 for identifier in required_ids:
                     records = item_records.get(identifier, [])
                     if records:
@@ -148,13 +149,11 @@ def main():
                         # are not registry commands with DESCRIBE metadata.
                         continue
                     else:
-                        raise RuntimeError(
-                            f"required command ID is absent: {identifier}")
+                        missing_actions.append(identifier)
 
-                missing = sorted(set(required_ids) - set(item_records) -
-                                 group_ids)
-                if missing:
-                    raise RuntimeError(f"unresolved required IDs: {missing}")
+                if missing_actions:
+                    raise RuntimeError(
+                        f"required command IDs are absent: {missing_actions}")
                 args.proof.write_text(json.dumps({
                     "testId": "ui-menu-registry-inventory",
                     "status": "pass",
