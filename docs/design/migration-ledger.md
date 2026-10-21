@@ -175,7 +175,9 @@ The standalone [debugger core contract](../../tests/debugger-core-contract.md)
 directly verifies a subset of shared inspection, disassembly, memory editing,
 CPU undo, stepping, breakpoints, and 128K paging behavior on five native
 targets, including byte-exact and masked wildcard sequence search. It does not
-complete the per-row regression strategies above;
+complete the per-row regression strategies above; mapped copy uses logical
+banked reads/writes and preserves overlap semantics while linear 48K copy keeps
+the `memmove` path.
 monitor/debugger migration remains open pending detailed source-level semantics
 review, full direct acceptance proof, and any required design decisions.
 

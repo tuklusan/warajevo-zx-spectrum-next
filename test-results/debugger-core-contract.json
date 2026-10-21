@@ -1,53 +1,53 @@
 {
   "testId": "debugger-core-contract",
   "status": "pass",
-  "commit": "42414ad5c97f125b2a7d9837ff73be5f9057d2e9",
+  "commit": "e2f6c7293bedb9c22eb99cd8adfc3622e0e16a5a",
   "runner": "GitHub Actions native matrix",
-  "timestamp": "2026-10-21T18:18:38Z",
-  "workflowRun": 39651548928,
-  "assertionsPerRunner": 92,
+  "timestamp": "2026-10-21T18:39:22Z",
+  "workflowRun": 39654672838,
+  "assertionsPerRunner": 99,
   "integratedCtest": "28/28 per target",
   "phase16": "all configured correctness and performance checks passed per target",
   "targets": [
     {
       "name": "Windows x64",
       "runner": "windows-2025",
-      "assertions": 92,
+      "assertions": 99,
       "conclusion": "success"
     },
     {
       "name": "Linux x64",
       "runner": "ubuntu-24.04",
-      "assertions": 92,
+      "assertions": 99,
       "conclusion": "success"
     },
     {
       "name": "Linux ARM64",
       "runner": "ubuntu-24.04-arm",
-      "assertions": 92,
+      "assertions": 99,
       "conclusion": "success"
     },
     {
       "name": "macOS ARM64",
       "runner": "macos-15",
-      "assertions": 92,
+      "assertions": 99,
       "conclusion": "success"
     },
     {
       "name": "macOS Intel",
       "runner": "macos-15-intel",
-      "assertions": 92,
+      "assertions": 99,
       "conclusion": "success"
     }
   ],
   "sourceReview": {
     "status": "complete",
-    "adjudication": "The deliberate undersized disassembly buffer exercises WZ_RESULT_BUFFER_TOO_SMALL and bounded termination. The first paging run exposed an incorrect test expectation after selecting bank 0 while asserting bank 2; the fixture now locks bank 2 and verifies it remains selected. The reported unsigned subtraction underflow is prevented by the preceding pattern_length > length return; length is also bounded to the 16-bit address space. Retain subtraction-based bounds to avoid addition overflow."
+    "adjudication": "The deliberate undersized disassembly buffer exercises WZ_RESULT_BUFFER_TOO_SMALL and bounded termination. The first paging run exposed an incorrect test expectation after selecting bank 0 while asserting bank 2; the fixture now locks bank 2 and verifies it remains selected. The reported unsigned subtraction underflow is prevented by the preceding pattern_length > length return; length is bounded to the 16-bit address space. For mapped memory copies, the full source range is snapshotted to preserve overlap semantics across physical bank aliases; allocation failure is returned before mutation, while ordinary linear 48K copies retain memmove. The reported profile null dereference cannot occur because writable_range rejects a missing profile before entering the branch, and mapped memory helpers also handle a null profile."
   },
   "fixtures": [
     {
       "path": "ci/test/debugger-core-contract.c",
-      "sha256": "8f758eed762b0b58ebe9f098698c8187b3d91ed3b817ca4cb1a7edc730bfc65a"
+      "sha256": "a3896f7e6f7dba441b7066999d04c1098e133579e41678d3c3c463c4a3ca9c25"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
@@ -55,7 +55,7 @@
     },
     {
       "path": "src/core/wz_debugger.c",
-      "sha256": "a7d14e4e83c4cbfe968ee7dd2c6db7d8b345c6d65e3659f0e2856661100bf597"
+      "sha256": "8298d10154ba4540412eeee36620fd563fa8b066d2c5a99aaab71096b429d153"
     },
     {
       "path": "src/core/wz_debugger.h",

@@ -14,10 +14,10 @@ search including masked wildcard and word patterns, bounded reads, base and
 CB-prefixed disassembly, hexadecimal formatting, pause-gated
 byte/word/fill/copy mutations, overlap-safe copying, CPU state edit and one-shot
 undo, jump, single-step, continue, breakpoint stop/clear, and 128K paging
-inspection, bank selection, and paging lock behavior. All five builds, 92
-assertions and 28 CTests per target, and configured Phase-16 checks passed in
-run `39651548928` at source
-`42414ad5c97f125b2a7d9837ff73be5f9057d2e9`.
+inspection, bank selection, and paging lock behavior. Copy checks cover
+overlapping linear and bank-mapped regions. All five builds, 99 assertions and
+28 CTests per target, and configured Phase-16 checks passed in run
+`39654672838` at source `e2f6c7293bedb9c22eb99cd8adfc3622e0e16a5a`.
 
 This contract directly covers shared debugger-core behavior only. Full monitor
 command equivalence, wildcard memory entry, mapped-bank boundary behavior,
