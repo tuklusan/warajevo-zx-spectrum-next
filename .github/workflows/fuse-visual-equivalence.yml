@@ -1,0 +1,92 @@
+name: Fuse visual equivalence delivery gate
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compare:
+    if: github.ref == 'refs/heads/main'
+    name: Fuse display / ${{ matrix.name }}
+    runs-on: ${{ matrix.label }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows x64
+            id: windows-x64
+            label: windows-2025
+          - name: macOS ARM64
+            id: macos-arm64
+            label: macos-15
+          - name: macOS Intel
+            id: macos-x64
+            label: macos-15-intel
+
+    steps:
+      - name: Check out exact main commit
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Verify pinned reference and certified ROM
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          proof = json.loads(Path("test-results/fuse-visual-equivalence.json").read_text())
+          reference = Path(proof["reference"]["evidenceFile"])
+          rom = Path("roms/48.rom")
+          if hashlib.sha256(reference.read_bytes()).hexdigest() != proof["reference"]["sha256"]:
+              raise SystemExit("pinned Fuse reference hash changed")
+          if hashlib.sha256(rom.read_bytes()).hexdigest() != proof["romSha256"]:
+              raise SystemExit("certified ROM hash changed")
+          PY
+
+      - name: Install screenshot comparison dependency
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install Pillow
+        run: python -m pip install --disable-pip-version-check Pillow
+
+      - name: Build production desktop host
+        shell: bash
+        run: |
+          cmake -S src/cmake -B dist/fuse-visual/${{ matrix.id }} \
+            -DCMAKE_BUILD_TYPE=Release -DWZSN_BUILD_SOKOL_HOST=ON
+          cmake --build dist/fuse-visual/${{ matrix.id }} --clean-first \
+            --config Release --parallel 2
+
+      - name: Capture application display and enforce Fuse equivalence
+        shell: bash
+        run: |
+          set -euo pipefail
+          build="dist/fuse-visual/${{ matrix.id }}"
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            binary="$build/Release/Warajevo-ZX-Spectrum-Next.exe"
+          else
+            binary="$build/Warajevo-ZX-Spectrum-Next"
+          fi
+          output="$build/evidence"
+          python ci/test/fuse-visual-equivalence/capture-candidate.py \
+            "$binary" roms/48.rom "$output"
+          python ci/test/fuse-visual-equivalence/compare.py \
+            --reference test-results/fuse-visual-equivalence/reference-fuse.png \
+            --candidate "$output/application.png" \
+            --output "$output/comparison.json"
+
+      - name: Upload capture metrics and diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fuse-visual-equivalence-${{ matrix.id }}-${{ github.sha }}
+          path: dist/fuse-visual/${{ matrix.id }}/evidence/
+          if-no-files-found: warn
+          retention-days: 1

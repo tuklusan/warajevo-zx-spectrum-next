@@ -48,6 +48,14 @@ evidence; tracked proof records are authoritative. Wait until all relevant
 workflows have finished and all required proof has been downloaded before
 purging them.
 
+The Fuse visual-equivalence delivery gate is mandatory before declaring a
+release candidate. Dispatch `.github/workflows/fuse-visual-equivalence.yml` on
+`main`; it compares the full production display against the pinned Fuse screen
+on Windows x64, macOS Intel, and macOS ARM64 using the committed mismatch and
+mean-channel-error limits. Pin its per-runner metrics and hashes in
+`test-results/fuse-visual-equivalence.json`, inspect the captures, then delete
+the completed run and its artifacts under the retention rule above.
+
 Every project commit is made directly on local `main`, and every push updates
 remote `main`; no other branch or pull request is used. Exactly one GitHub
 workflow runs on source pushes: `cr-build-gate.yml`, filtered to production
