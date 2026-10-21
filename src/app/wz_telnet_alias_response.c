@@ -43,6 +43,10 @@ bool wz_telnet_alias_response_rewrite(const char* alias,
                                       size_t output_capacity,
                                       size_t* output_length)
 {
+    static const char screenshot_success_prefix[] =
+        "OK DO host.screenshot.temp PATH=\"";
+    static const char screenshot_failure[] =
+        "ERR DO host.screenshot.temp screenshot-failed\r\n";
     static const char* const speeds[] = {
         "25", "50", "100", "200", "400", "800", "UNLIMITED"
     };
@@ -72,6 +76,35 @@ bool wz_telnet_alias_response_rewrite(const char* alias,
         strcmp(dispatch_response, "OK DO machine.resume running\r\n") == 0) {
         return write_response("OK RESUME\r\n", output, output_capacity,
                               output_length);
+    }
+    if (strcmp(alias, "SCREENSHOT") == 0) {
+        if (strncmp(dispatch_response, screenshot_success_prefix,
+                    sizeof(screenshot_success_prefix) - 1u) == 0) {
+            const char* path = dispatch_response +
+                sizeof(screenshot_success_prefix) - 1u;
+            const char* terminator = strstr(path, "\"\r\n");
+            int response_length;
+            if (terminator == NULL || terminator[3] != '\0' ||
+                terminator == path) {
+                *output_length = 0u;
+                return false;
+            }
+            response_length = snprintf(output, output_capacity,
+                                       "OK SCREENSHOT %.*s\r\n",
+                                       (int)(terminator - path), path);
+            if (response_length < 0 ||
+                (size_t)response_length >= output_capacity) {
+                *output_length = 0u;
+                return false;
+            }
+            *output_length = (size_t)response_length;
+            return true;
+        }
+        if (strcmp(dispatch_response, screenshot_failure) == 0) {
+            return write_response("ERR SCREENSHOT screenshot-failed\r\n",
+                                  output, output_capacity, output_length);
+        }
+        return false;
     }
     if (strcmp(alias, "MODEL 48K") == 0 &&
         strcmp(dispatch_response, "OK DO machine.model.set 48k\r\n") == 0) {
