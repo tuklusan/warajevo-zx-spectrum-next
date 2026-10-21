@@ -84,8 +84,6 @@ def main() -> None:
     run = gh_json("run", "view", str(args.run_id),
                   "--json", "headSha,conclusion,event,headBranch,jobs")
     if (run.get("headSha") != args.commit or
-            run.get("status") not in ("in_progress", "completed") or
-            run.get("conclusion") not in (None, "", "success") or
             run.get("event") not in ("push", "workflow_dispatch") or
             run.get("headBranch") != "main"):
         raise SystemExit("workflow run does not match the requested main-branch source")

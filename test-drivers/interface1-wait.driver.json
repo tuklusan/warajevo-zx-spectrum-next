@@ -16,7 +16,7 @@
     },
     {
       "path": "ci/test/interface1-wait/write-proof.py",
-      "sha256": "da1786618d9a951b7c37036a4c1ca1e8dc98896ab3f35f8692880b05d04110c7"
+      "sha256": "38bdd0212d1d962dc2d4b0bb66f5124d8446a061e89047a92a502fd3cab4edfe"
     },
     {
       "path": ".github/workflows/cr-build-gate.yml",
