@@ -112,9 +112,9 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "app/wz_ui_window.h"
 #include "app/wz_ui_help.h"
 
-#define WZ_HOST_COMMAND_CAPACITY 128u
+#define WZ_HOST_COMMAND_CAPACITY 160u
 #define WZ_HOST_MICRODRIVE_COMMAND_COUNT \
-    (WZ_UI_MICRODRIVE_COUNT * WZ_UI_MICRODRIVE_OPERATION_COUNT)
+    (WZ_UI_MICRODRIVE_COUNT * (WZ_UI_MICRODRIVE_OPERATION_COUNT + 1u))
 #define WZ_HOST_RASTER_BYTES (WZ_RASTER_CANONICAL_WIDTH * WZ_RASTER_CANONICAL_HEIGHT)
 #define WZ_HOST_TELNET_IO_CAPACITY 2048u
 #define WZ_HOST_TELNET_RESPONSE_CAPACITY 65536u
@@ -3106,6 +3106,22 @@ static wz_result_t wz_host_rom_settings_open(
     return WZ_RESULT_OK;
 }
 
+static wz_result_t wz_host_remote_settings_open(
+    const void* context, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    wz_host_session_t* session = (wz_host_session_t*)context;
+    if (session == NULL || arguments.size != 0u) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    session->remote_settings_visible = true;
+    if (result != NULL) {
+        (void)snprintf(result->message, sizeof(result->message),
+                       "Telnet Keyboard & Remote Control opened");
+    }
+    return WZ_RESULT_OK;
+}
+
 static wz_result_t wz_host_rom_settings_choose(
     const void* context, wz_command_arguments_t arguments,
     wz_command_result_t* result)
@@ -3545,9 +3561,17 @@ static bool wz_host_register_commands(void)
             wz_host_input_settings_open, &wz_host_session, false, false, NULL
         },
         {
-            "settings.rom.open", "ROM / Firmware...",
+            "settings.rom_firmware", "ROM / Firmware...",
             "Inspect the required ROM identity and user-supplied firmware status",
             "settings", "NONE", "wz-command-result",
+            "wz_host_rom_settings_open", "local", NULL,
+            WZ_COMMAND_LOCAL_ONLY, wz_host_settings_available,
+            wz_host_rom_settings_open, &wz_host_session, false, false, NULL
+        },
+        {
+            "settings.rom.open", "ROM / Firmware compatibility alias",
+            "Compatibility alias for the canonical ROM / Firmware settings action",
+            NULL, "NONE", "wz-command-result",
             "wz_host_rom_settings_open", "local", NULL,
             WZ_COMMAND_LOCAL_ONLY, wz_host_settings_available,
             wz_host_rom_settings_open, &wz_host_session, false, false, NULL
@@ -3559,6 +3583,16 @@ static bool wz_host_register_commands(void)
             "wz_host_networking_settings_open", "local", NULL,
             WZ_COMMAND_LOCAL_ONLY, wz_host_settings_available,
             wz_host_networking_settings_open, &wz_host_session,
+            false, false, NULL
+        },
+        {
+            "settings.peripherals.telnet",
+            "Telnet Keyboard & Remote Control...",
+            "Show Control Port, listener, and remote-control policy status",
+            "settings", "NONE", "wz-command-result",
+            "wz_host_remote_settings_open", "local", NULL,
+            WZ_COMMAND_LOCAL_ONLY, wz_host_settings_available,
+            wz_host_remote_settings_open, &wz_host_session,
             false, false, NULL
         },
         {
@@ -4156,7 +4190,7 @@ static const wz_host_keyboard_action_t wz_host_keyboard_actions[] = {
     {"Display Settings...", "settings.display.open", -1, NULL, false, false},
     {"Audio Settings...", "settings.audio.open", -1, NULL, false, false},
     {"Input Settings...", "settings.input", -1, NULL, false, false},
-    {"ROM / Firmware...", "settings.rom.open", -1, NULL, false, false},
+    {"ROM / Firmware...", "settings.rom_firmware", -1, NULL, false, false},
     {"Networking...", "settings.networking.open", -1, NULL, false, false},
     {"Open Tape Manager...", "media.tape.manager", -1, NULL, false, false},
     {"Open Microdrive Manager...", "media.microdrive.manager", -1, NULL, false, false},
@@ -4168,7 +4202,8 @@ static const wz_host_keyboard_action_t wz_host_keyboard_actions[] = {
     {"Eject MDV 6...", "media.microdrive.eject.6", -1, NULL, false, false},
     {"Eject MDV 7...", "media.microdrive.eject.7", -1, NULL, false, false},
     {"Eject MDV 8...", "media.microdrive.eject.8", -1, NULL, false, false},
-    {"Remote Control Status...", NULL, -1, NULL, false, true}
+    {"Telnet Keyboard & Remote Control...", "settings.peripherals.telnet",
+        -1, NULL, false, false}
 };
 
 static void wz_host_keyboard_menu_close(void)
@@ -6308,7 +6343,11 @@ static void wz_host_ui_draw_status(struct nk_context* context,
         }
         nk_layout_row_dynamic(context, 20.0f / dpi_scale, 1);
         if (nk_button_label(context, control_status)) {
-            wz_host_session.remote_settings_visible = true;
+            wz_command_result_t result = {0};
+            (void)wz_command_registry_dispatch(
+                &wz_host_session.command_registry,
+                "settings.peripherals.telnet",
+                (wz_command_arguments_t){NULL, 0u}, &result);
         }
     }
     nk_end(context);

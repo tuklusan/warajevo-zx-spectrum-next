@@ -104,6 +104,18 @@ static const wz_ui_toolbar_item_t microdrive_actions[WZ_UI_MICRODRIVE_ACTION_COU
     {"media.microdrive.set_default.8", "Set MDV 8 Default"}
 };
 
+static const wz_ui_toolbar_item_t microdrive_drive_actions[
+    WZ_UI_MICRODRIVE_COUNT] = {
+    {"media.microdrive.drive1", "MDV 1"},
+    {"media.microdrive.drive2", "MDV 2"},
+    {"media.microdrive.drive3", "MDV 3"},
+    {"media.microdrive.drive4", "MDV 4"},
+    {"media.microdrive.drive5", "MDV 5"},
+    {"media.microdrive.drive6", "MDV 6"},
+    {"media.microdrive.drive7", "MDV 7"},
+    {"media.microdrive.drive8", "MDV 8"}
+};
+
 static const wz_ui_networking_option_t networking_options[
     WZ_UI_NETWORKING_OPTION_COUNT] = {
     {WZ_NETWORKING_NONE, WZ_UI_NETWORKING_COMMAND_ID, "None", true, 0},
@@ -634,7 +646,8 @@ wz_result_t wz_ui_layout_register_microdrive_commands(
     const size_t required = WZ_UI_MICRODRIVE_COUNT *
         (size_t)WZ_UI_MICRODRIVE_OPERATION_COUNT;
     if (registry == NULL || contexts == NULL ||
-        context_capacity < required || availability == NULL || handler == NULL) {
+        context_capacity < required ||
+        availability == NULL || handler == NULL) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
     for (size_t slot = 0u; slot < WZ_UI_MICRODRIVE_COUNT; ++slot) {
@@ -683,6 +696,34 @@ wz_result_t wz_ui_layout_register_microdrive_commands(
                 WZ_RESULT_OK) {
                 return WZ_RESULT_INVALID_STATE;
             }
+        }
+    }
+    for (size_t slot = 0u; slot < WZ_UI_MICRODRIVE_COUNT; ++slot) {
+        const size_t index = slot *
+            (size_t)WZ_UI_MICRODRIVE_OPERATION_COUNT +
+            (size_t)WZ_UI_MICRODRIVE_ACTION_SET_DEFAULT;
+        wz_command_metadata_t metadata;
+        metadata = (wz_command_metadata_t){
+            microdrive_drive_actions[slot].command_id,
+            microdrive_drive_actions[slot].label,
+            "Select this Microdrive as the default drive",
+            "media.microdrive",
+            "NONE",
+            "wz-command-result",
+            "wz_ui_layout_microdrive_command",
+            "none",
+            NULL,
+            WZ_COMMAND_REMOTE_SAFE,
+            wz_ui_layout_microdrive_command_available,
+            wz_ui_layout_microdrive_command,
+            &contexts[index],
+            false,
+            true,
+            NULL
+        };
+        if (wz_command_registry_register(registry, metadata) !=
+            WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
         }
     }
     return WZ_RESULT_OK;
