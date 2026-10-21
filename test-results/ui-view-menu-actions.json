@@ -1,0 +1,37 @@
+{
+  "testId": "ui-view-menu-actions",
+  "status": "pass",
+  "commit": "a6aebfc0ed2765370ba36d8e7359893eaabf0f17",
+  "runId": 39553041351,
+  "runner": "Linux",
+  "architecture": "X64",
+  "runnerName": "ubuntu-24.04",
+  "timestamp": "2026-10-21T06:02:55Z",
+  "assertions": 10,
+  "remoteDeniedIds": [
+    "view.machine_media_status",
+    "view.display_settings"
+  ],
+  "statusPanel": ["visible", "hidden", "visible"],
+  "displaySettingsOpened": true,
+  "screenshotSha256": {
+    "view-menu.png": "0cbbb559e543bdc8fad0b9f353f2251e235b9fbf8b47287271a17d31084b451f",
+    "status-visible.png": "247aaef0cf43f6b452e4741125eda42eb41e7de2273ce6e35356984dad663c37",
+    "status-hidden.png": "244277f544ea5bbf5acb3ea75757598dd060af0343d5ccc9b87912a61effd2a0",
+    "status-restored.png": "f8179d269f1e2f86d37e2270ff95705614bfe1a30460cbd8330940c5e05cb0f6",
+    "display-settings.png": "90324f4cb4f666fab677b4f0121c70ac956572b268d2b04cf9d1f1455fc5e9ad"
+  },
+  "fixtures": [
+    {"path": ".github/workflows/ui-view-menu-actions.yml", "sha256": "f4549e46a3f00cf4a7faafd9db5b57b67f4f5b393ce9cb8ac65edfb631904471"},
+    {"path": "ci/test/ui-view-menu-actions.py", "sha256": "388079d88acf5c1e85c3f221c50e61b02675627625d24537a3377507ce5badb8"},
+    {"path": "ci/test/ui-view-menu-actions/README.md", "sha256": "1ae1112c408067c15f3d63d89941db26f3f6744b14d832efce569aa2fdfae615"},
+    {"path": "roms/48.rom", "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"},
+    {"path": "src/app/wz_sokol_main.c", "sha256": "9b7d02cfcb1cd7bde0a0d9f19820a6a061ffdc4ced985b50d24965183ba46ec9"},
+    {"path": "src/app/wz_command_registry.c", "sha256": "707bd4c4c9d0e12db0135ef857d3c7de8a5d6e7d717d790d09f3080bb90c9607"},
+    {"path": "src/app/wz_command_registry.h", "sha256": "4b8530859e953c5876d41792f6221a00a7facc14658c05f28076cda926c9bf04"},
+    {"path": "src/app/wz_ui_layout.c", "sha256": "6c5de7b5b6a20cad20643b1f9007629846bccc0bb49bf7412cad9464ae9be062"},
+    {"path": "src/app/wz_ui_layout.h", "sha256": "0ef859ac915722f0ea2e2e6d66b8cda00c78577ad14029966c98ebb324abd8ac"},
+    {"path": "src/app/wz_telnet_keyboard_command.c", "sha256": "f9bc61d019c440e04102ea7a2c5af4146f812b9b16cd257d1bc244733b2da0d4"},
+    {"path": "src/app/wz_telnet_keyboard_command.h", "sha256": "a525163fd16b5113b8166293055c88f46ebf53a373bb24d04254aafc395b7e82"}
+  ]
+}
