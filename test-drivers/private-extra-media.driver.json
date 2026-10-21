@@ -12,7 +12,7 @@
     },
     {
       "path": "ci/test/private-extra-media/write-proof.py",
-      "sha256": "b62efe6d69270c9a44864661c1d86ae3da0a735e122ce5a0a1fc23485cb3f5fb"
+      "sha256": "0434c5ad88fb1c368d521a392b7f51cdf7faa1106bee28d1fc74a79f8b8d4e12"
     },
     {
       "path": "ci/test/private-media-playback/CMakeLists.txt",

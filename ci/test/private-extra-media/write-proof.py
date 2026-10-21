@@ -12,6 +12,8 @@ import datetime
 import hashlib
 import json
 from pathlib import Path
+from pathlib import PurePosixPath
+import re
 import subprocess
 
 
@@ -23,12 +25,19 @@ def main():
     parser.add_argument("--summary", required=True, type=Path)
     parser.add_argument("--proof", required=True, type=Path)
     args = parser.parse_args()
+    if not re.fullmatch(r"[0-9a-f]{40}", args.commit):
+        raise SystemExit("invalid source commit")
     driver = json.loads(Path("test-drivers/private-extra-media.driver.json")
                         .read_text(encoding="utf-8"))
     fixtures = []
     for fixture in driver["fixtures"]:
+        path = PurePosixPath(fixture["path"])
+        if not path.parts or path.is_absolute() or ":" in fixture["path"] or "\\" in \
+                fixture["path"] or any(part in ("", ".", "..")
+                                        for part in path.parts):
+            raise SystemExit("invalid source fixture path")
         content = subprocess.check_output(
-            ["git", "show", f"{args.commit}:{fixture['path']}"])
+            ["git", "show", f"{args.commit}:{path.as_posix()}"])
         digest = hashlib.sha256(content).hexdigest()
         if digest != fixture["sha256"]:
             raise SystemExit("private-media regression source fixture mismatch")
