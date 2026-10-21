@@ -68,6 +68,28 @@ typedef enum {
 } wz_interface1_rom_variant_t;
 
 typedef enum {
+    WZ_INTERFACE1_PENDING_IO_NONE = 0,
+    WZ_INTERFACE1_PENDING_IN_A_N,
+    WZ_INTERFACE1_PENDING_OUT_N_A,
+    WZ_INTERFACE1_PENDING_ED_IN_R_C,
+    WZ_INTERFACE1_PENDING_ED_OUT_C_R,
+    WZ_INTERFACE1_PENDING_BLOCK_IN,
+    WZ_INTERFACE1_PENDING_BLOCK_OUT
+} wz_interface1_pending_io_continuation_t;
+
+typedef struct {
+    wz_byte_t active;
+    wz_interface1_pending_io_continuation_t continuation;
+    wz_byte_t operand;
+    wz_byte_t decrement;
+    wz_byte_t repeat;
+    wz_byte_t prior_q;
+    wz_byte_t t_states;
+    wz_word_t address;
+    wz_byte_t value;
+} wz_interface1_pending_io_t;
+
+typedef enum {
     WZ_TAPE_TRAP_REASON_NORMAL_MODE = 0,
     WZ_TAPE_TRAP_REASON_NO_TAPE,
     WZ_TAPE_TRAP_REASON_NO_ROM,
@@ -129,6 +151,7 @@ typedef struct wz_machine {
     wz_byte_t interface1_motor_shift;
     wz_byte_t interface1_active_motor;
     wz_master_tick_t interface1_control_latch_tick;
+    wz_interface1_pending_io_t interface1_pending_io;
     wz_byte_t* ram_128k;
     wz_byte_t paging_7ffd;
     wz_byte_t paging_7ffd_locked;

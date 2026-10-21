@@ -19,6 +19,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "core/wz_machine.h"
 #include "core/wz_machine_internal.h"
 
+#include <string.h>
+
 #define WZ_Z80_FLAG_C 0x01u
 #define WZ_Z80_FLAG_N 0x02u
 #define WZ_Z80_FLAG_PV 0x04u
@@ -1617,6 +1619,10 @@ static wz_result_t wz_z80_execute_in_block(wz_machine_t* machine,
     wz_word_t sum;
     wz_byte_t value = 0u;
 
+    machine->interface1_pending_io.continuation =
+        WZ_INTERFACE1_PENDING_BLOCK_IN;
+    machine->interface1_pending_io.decrement = decrement ? 1u : 0u;
+    machine->interface1_pending_io.repeat = repeat ? 1u : 0u;
     if (wz_z80_ed_bus(machine, WZ_BUS_IO_READ, 10u, port, &value, 4u) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_STATE;
     }
@@ -1656,6 +1662,10 @@ static wz_result_t wz_z80_execute_out_block(wz_machine_t* machine,
     wz_z80_set_rr(&machine->cpu, 2u, wz_z80_add16(address, decrement ? 0xffffu : 1u));
     port = wz_z80_get_rr(&machine->cpu, 0u);
     machine->cpu.memptr = wz_z80_add16(port, decrement ? 0xffffu : 1u);
+    machine->interface1_pending_io.continuation =
+        WZ_INTERFACE1_PENDING_BLOCK_OUT;
+    machine->interface1_pending_io.decrement = decrement ? 1u : 0u;
+    machine->interface1_pending_io.repeat = repeat ? 1u : 0u;
     if (wz_z80_ed_bus(machine, WZ_BUS_IO_WRITE, 16u, port, &value, 4u) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_STATE;
     }
@@ -1729,6 +1739,9 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         address = wz_z80_get_rr(&machine->cpu, 0u);
         machine->cpu.memptr = wz_z80_add16(address, 1u);
         value = 0u;
+        machine->interface1_pending_io.continuation =
+            WZ_INTERFACE1_PENDING_ED_IN_R_C;
+        machine->interface1_pending_io.operand = decode.operand;
         if (wz_z80_ed_bus(machine, WZ_BUS_IO_READ, 8u, address, &value, 4u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
@@ -1753,6 +1766,8 @@ static wz_result_t wz_z80_execute_ed(wz_machine_t* machine,
         } else {
             return WZ_RESULT_INVALID_STATE;
         }
+        machine->interface1_pending_io.continuation =
+            WZ_INTERFACE1_PENDING_ED_OUT_C_R;
         if (wz_z80_ed_bus(machine, WZ_BUS_IO_WRITE, 8u, address, &value, 4u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
@@ -2047,6 +2062,9 @@ static wz_result_t wz_z80_accept_maskable_interrupt_impl(wz_machine_t* machine,
     if (machine == 0 || wz_z80_state_validate(&machine->cpu) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
+    if (machine->interface1_pending_io.active != 0u) {
+        return WZ_RESULT_PENDING;
+    }
     if (trace_sample) {
         wz_z80_trace_interrupt(machine, WZ_TRACE_INTERRUPT_MASKABLE_SAMPLE);
     }
@@ -2103,6 +2121,9 @@ wz_result_t wz_z80_sample_maskable_interrupt(wz_machine_t* machine)
     if (machine == 0 || wz_z80_state_validate(&machine->cpu) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
+    if (machine->interface1_pending_io.active != 0u) {
+        return WZ_RESULT_PENDING;
+    }
     wz_machine_update_interrupt_line(machine);
     wz_z80_trace_interrupt(machine, WZ_TRACE_INTERRUPT_MASKABLE_SAMPLE);
     if (!wz_machine_maskable_interrupt_line_low(machine) ||
@@ -2121,6 +2142,9 @@ wz_result_t wz_z80_accept_nmi(wz_machine_t* machine)
 {
     if (machine == 0 || wz_z80_state_validate(&machine->cpu) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (machine->interface1_pending_io.active != 0u) {
+        return WZ_RESULT_PENDING;
     }
     wz_z80_trace_interrupt(machine, WZ_TRACE_INTERRUPT_NMI_ACCEPT);
     wz_z80_exit_halt_for_interrupt(&machine->cpu);
@@ -2142,7 +2166,116 @@ wz_result_t wz_z80_accept_nmi(wz_machine_t* machine)
 // codeql[cpp/poorly-documented-function]
 wz_result_t wz_z80_step(wz_machine_t* machine)
 {
-    return wz_z80_step_impl(machine, false);
+    wz_result_t result;
+    if (machine == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (machine->interface1_pending_io.active != 0u) {
+        wz_interface1_pending_io_t pending = machine->interface1_pending_io;
+        wz_bus_request_t request;
+        wz_result_t bus_result;
+        wz_byte_t value;
+        wz_word_t address;
+        wz_word_t port;
+        wz_word_t sum;
+        wz_master_tick_t remaining;
+
+        if (pending.continuation == WZ_INTERFACE1_PENDING_IO_NONE ||
+            pending.decrement > 1u || pending.repeat > 1u ||
+            pending.prior_q > 1u || pending.t_states == 0u ||
+            pending.t_states > 4u) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        machine->z80_prior_q = pending.prior_q;
+        wz_bus_request_init(&request,
+            pending.continuation == WZ_INTERFACE1_PENDING_OUT_N_A ||
+            pending.continuation == WZ_INTERFACE1_PENDING_ED_OUT_C_R ||
+            pending.continuation == WZ_INTERFACE1_PENDING_BLOCK_OUT
+                ? WZ_BUS_IO_WRITE : WZ_BUS_IO_READ,
+            machine->master_tick, pending.address, pending.value,
+            pending.t_states);
+        bus_result = wz_machine_bus_request(machine, &request);
+        if (bus_result != WZ_RESULT_OK) {
+            return bus_result;
+        }
+        value = request.value;
+        memset(&machine->interface1_pending_io, 0,
+               sizeof(machine->interface1_pending_io));
+        switch (pending.continuation) {
+        case WZ_INTERFACE1_PENDING_IN_A_N:
+            machine->cpu.main.a = value;
+            remaining = 8u;
+            break;
+        case WZ_INTERFACE1_PENDING_OUT_N_A:
+        case WZ_INTERFACE1_PENDING_ED_OUT_C_R:
+            remaining = 8u;
+            break;
+        case WZ_INTERFACE1_PENDING_ED_IN_R_C: {
+            wz_byte_t* target = wz_z80_target_register(
+                &machine->cpu, pending.operand);
+            if (target != 0) {
+                *target = value;
+            } else if (pending.operand != WZ_Z80_TARGET_HL_INDIRECT) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+            machine->cpu.main.f = wz_z80_in_flags(machine, value);
+            machine->cpu.q = 1u;
+            remaining = 8u;
+            break;
+        }
+        case WZ_INTERFACE1_PENDING_BLOCK_IN:
+            address = wz_z80_hl(&machine->cpu);
+            if (wz_z80_bus(machine, WZ_BUS_MEMORY_WRITE, 8u,
+                           address, &value, 3u) != WZ_RESULT_OK) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+            port = pending.address;
+            machine->cpu.main.b = (wz_byte_t)(machine->cpu.main.b - 1u);
+            machine->cpu.memptr = wz_z80_add16(
+                port, pending.decrement != 0u ? 0xffffu : 1u);
+            wz_z80_set_rr(&machine->cpu, 2u,
+                wz_z80_add16(address,
+                    pending.decrement != 0u ? 0xffffu : 1u));
+            sum = (wz_word_t)value + (wz_byte_t)(machine->cpu.main.c +
+                (pending.decrement != 0u ? 0xffu : 1u));
+            machine->cpu.main.f = wz_z80_block_io_flags(
+                machine->cpu.main.b, value, sum);
+            machine->cpu.q = 1u;
+            if (pending.repeat != 0u && machine->cpu.main.b != 0u) {
+                machine->cpu.program_counter = wz_z80_add16(
+                    machine->cpu.program_counter, 0xfffeu);
+                remaining = 24u;
+            } else {
+                remaining = 14u;
+            }
+            break;
+        case WZ_INTERFACE1_PENDING_BLOCK_OUT:
+            sum = (wz_word_t)value + machine->cpu.main.l;
+            machine->cpu.main.f = wz_z80_block_io_flags(
+                machine->cpu.main.b, value, sum);
+            machine->cpu.q = 1u;
+            if (pending.repeat != 0u && machine->cpu.main.b != 0u) {
+                machine->cpu.program_counter = wz_z80_add16(
+                    machine->cpu.program_counter, 0xfffeu);
+                remaining = 18u;
+            } else {
+                remaining = 8u;
+            }
+            break;
+        default:
+            return WZ_RESULT_INVALID_STATE;
+        }
+        wz_machine_advance_master_ticks(machine, remaining);
+        return WZ_RESULT_OK;
+    }
+    result = wz_z80_step_impl(machine, false);
+    if (machine->interface1_pending_io.active != 0u) {
+        machine->interface1_pending_io.prior_q = machine->z80_prior_q;
+        return WZ_RESULT_PENDING;
+    }
+    memset(&machine->interface1_pending_io, 0,
+           sizeof(machine->interface1_pending_io));
+    return result;
 }
 
 static wz_result_t wz_z80_step_impl(wz_machine_t* machine,
@@ -2276,6 +2409,8 @@ execute_opcode:
         machine->cpu.memptr = (wz_word_t)((wz_word_t)machine->cpu.main.a << 8u) |
             (wz_byte_t)(low + 1u);
         value = machine->cpu.main.a;
+        machine->interface1_pending_io.continuation =
+            WZ_INTERFACE1_PENDING_OUT_N_A;
         if (wz_z80_bus(machine, WZ_BUS_IO_WRITE, 14u, address, &value, 4u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
@@ -2323,6 +2458,8 @@ execute_opcode:
         address = (wz_word_t)(((wz_word_t)machine->cpu.main.a << 8u) | low);
         machine->cpu.memptr = (wz_word_t)((wz_word_t)machine->cpu.main.a << 8u) |
             (wz_byte_t)(low + 1u);
+        machine->interface1_pending_io.continuation =
+            WZ_INTERFACE1_PENDING_IN_A_N;
         if (wz_z80_bus(machine, WZ_BUS_IO_READ, 14u, address, &value, 4u) != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }

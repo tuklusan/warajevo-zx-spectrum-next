@@ -263,6 +263,15 @@ use this line. F7h network input/output is selected only while COMMS DATA is
 low; the serial side remains electrically idle in the initial architecture
 because historical RS-232 host redirection is LATER.
 
+For this deterministic model, the awaited network signal is available when
+ZX Net is outside `IDLE`, or when a complete queued read block is available.
+With WAIT asserted, F7h reads and writes remain pending in `IDLE` without a
+queued block. The runner advances raster and machine time while the CPU is
+suspended; it resumes the same bus cycle on the next state-machine signal.
+Pending opcode continuation and bus address are part of canonical state, so a
+snapshot taken during WAIT resumes identically after restore. No wall-clock
+sleep or host-thread wait is used.
+
 At F7h, a network read returns the next serialized ZX Net bit in bit 0 and
 ones in bits 1–7. A network write submits bit 0 to an active `COLLWRITE`
 collection; other network states ignore output bits. With COMMS DATA high,

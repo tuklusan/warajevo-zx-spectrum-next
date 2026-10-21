@@ -278,6 +278,8 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     machine->interface1_motor_shift = 0xffu;
     machine->interface1_active_motor = 0xffu;
     machine->interface1_control_latch_tick = 0u;
+    memset(&machine->interface1_pending_io, 0,
+           sizeof(machine->interface1_pending_io));
     machine->paging_7ffd = 0u;
     machine->paging_7ffd_locked = 0u;
     machine->hardware_io_decode_enabled = 1u;
@@ -496,6 +498,8 @@ void wz_machine_destroy(wz_machine_t* machine)
         machine->interface1_motor_shift = 0xffu;
         machine->interface1_active_motor = 0xffu;
         machine->interface1_control_latch_tick = 0u;
+        memset(&machine->interface1_pending_io, 0,
+               sizeof(machine->interface1_pending_io));
         machine->paging_7ffd = 0u;
         machine->paging_7ffd_locked = 0u;
         machine->hardware_io_decode_enabled = 1u;

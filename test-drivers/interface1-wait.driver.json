@@ -1,0 +1,70 @@
+{
+  "testId": "interface1-wait",
+  "command": "Full native Release/Sokol build and integrated CTest on five supported architectures",
+  "requiredCases": 76,
+  "runnerMatrix": [
+    "Windows x64",
+    "Linux x64",
+    "Linux ARM64",
+    "macOS ARM64",
+    "macOS Intel"
+  ],
+  "fixtures": [
+    {
+      "path": "ci/test/interface1-wait/interface1-wait-contract.c",
+      "sha256": "fb64dd6ec6eea69998f08a29180ffd9dbeb79103d30a3d30653946940728d68a"
+    },
+    {
+      "path": "ci/test/interface1-wait/write-proof.py",
+      "sha256": "28c3b6f808cf6c1f866d9b3e74506cbf02d13448fe4eb5aee2ad0c0b2d868fb5"
+    },
+    {
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "f9b15496fbb11f3627f67b0da3ba593625b3614b9d641be2c6cda8978e368f08"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "d284c58a767513a7869e0688b7629fea115bab848d24819eb585050e72d97273"
+    },
+    {
+      "path": "src/core/wz_bus.c",
+      "sha256": "be2e57a38f32ec45e9975a3249e5c89dedd6343e4061c4355b072a0cac0e43d7"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "3de492c7022baaef1a348f2fa64d019cdef7a414e0195bbf5113f82eef804013"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "808eef5dddd9851505b1861fa89e9916cee1cc3776f165a1ae34dc01f4105b95"
+    },
+    {
+      "path": "src/core/wz_runner.c",
+      "sha256": "22c6511dbbcd3ef2721dcdeba5d435f9f3a35c30f701f7264a04962fb71ba144"
+    },
+    {
+      "path": "src/core/wz_state.c",
+      "sha256": "93479ac03c344c429455d8627096147fb4da4a2b94c5204d8223d7e7b11fc983"
+    },
+    {
+      "path": "src/core/wz_types.h",
+      "sha256": "aa77ae7cf238009aa43f0a5554da281f4d36851c797a879000f3797cdb4280ee"
+    },
+    {
+      "path": "src/core/wz_z80.c",
+      "sha256": "cef55b660b43d3f7fb3737962d92e062966e126b3b99f8b87816553303c820f9"
+    },
+    {
+      "path": "src/core/wz_zxnet.c",
+      "sha256": "9b74d445a10dcd9669c72c858bf5c2c87b57998bf370322f0608367bd6d2ddda"
+    },
+    {
+      "path": "src/core/wz_zxnet.h",
+      "sha256": "3f8e58593ca15fc173531d1174b19c4bea95fd8123bf1855b34148d79b73d495"
+    },
+    {
+      "path": "docs/design/interface1-microdrive-zxnet.md",
+      "sha256": "a275dfd1cc380031eb01347219fcdc6a273d9fa962e8c5503d502b4ec37dd706"
+    }
+  ]
+}

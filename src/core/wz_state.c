@@ -20,7 +20,7 @@ patent, trademark, and governing-law provisions.
 #define WZ_STATE_VERSION 15u
 #define WZ_STATE_HEADER_LENGTH WZ_STATE_MACHINE_MEMORY_OFFSET
 #define WZ_STATE_EXTENSION_MAGIC UINT32_C(0x4e535a57)
-#define WZ_STATE_EXTENSION_VERSION 8u
+#define WZ_STATE_EXTENSION_VERSION 9u
 #define WZ_STATE_EXTENSION_OFFSET (WZ_STATE_HEADER_LENGTH + 65536u)
 
 static wz_result_t wz_state_write(wz_state_writer_t* writer,
@@ -187,6 +187,26 @@ static wz_result_t wz_state_write_extension(wz_state_writer_t* writer,
         machine->ay.noise_input_clock_phase >= WZ_AY_NOISE_INPUT_CLOCK_DIVIDER) {
         return WZ_RESULT_INVALID_STATE;
     }
+    if (machine->interface1_pending_io.active > 1u ||
+        machine->interface1_pending_io.continuation >
+            WZ_INTERFACE1_PENDING_BLOCK_OUT ||
+        machine->interface1_pending_io.decrement > 1u ||
+        machine->interface1_pending_io.repeat > 1u ||
+        machine->interface1_pending_io.prior_q > 1u ||
+        (machine->interface1_pending_io.active != 0u &&
+         (machine->interface1_pending_io.continuation ==
+              WZ_INTERFACE1_PENDING_IO_NONE ||
+          machine->interface1_pending_io.t_states == 0u ||
+          machine->interface1_pending_io.t_states > 4u ||
+          machine->networking_mode != WZ_NETWORKING_INTERFACE1 ||
+          (machine->interface1_control_latch & 0x21u) != 0x20u ||
+          !wz_machine_interface1_port_selected(
+              machine->interface1_pending_io.address, 0xf7u))) ||
+        (machine->interface1_pending_io.active == 0u &&
+         machine->interface1_pending_io.continuation !=
+              WZ_INTERFACE1_PENDING_IO_NONE)) {
+        return WZ_RESULT_INVALID_STATE;
+    }
     if (machine->has_128k_rom > 1u ||
         (machine->has_128k_rom == 0u &&
          (machine->rom_128k_identity[0] != 0u ||
@@ -245,6 +265,26 @@ static wz_result_t wz_state_write_extension(wz_state_writer_t* writer,
             wz_state_write_u8(writer, transport->sync_count) != WZ_RESULT_OK) {
             return WZ_RESULT_SERIALIZATION_FAILURE;
         }
+    }
+    if (wz_state_write_u8(writer,
+            machine->interface1_pending_io.active) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer, (wz_byte_t)
+            machine->interface1_pending_io.continuation) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer,
+            machine->interface1_pending_io.operand) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer,
+            machine->interface1_pending_io.decrement) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer,
+            machine->interface1_pending_io.repeat) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer,
+            machine->interface1_pending_io.prior_q) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer,
+            machine->interface1_pending_io.t_states) != WZ_RESULT_OK ||
+        wz_state_write_u16(writer,
+            machine->interface1_pending_io.address) != WZ_RESULT_OK ||
+        wz_state_write_u8(writer,
+            machine->interface1_pending_io.value) != WZ_RESULT_OK) {
+        return WZ_RESULT_SERIALIZATION_FAILURE;
     }
     if (writer->length - start < WZ_STATE_EXTENSION_CAPACITY) {
         static const wz_byte_t zero_padding[WZ_STATE_EXTENSION_CAPACITY] = {0u};
@@ -641,6 +681,7 @@ static wz_result_t wz_state_deserialize_machine_in_place(
         if (extension_version != 3u && extension_version != 4u &&
             extension_version != 5u &&
             extension_version != 6u && extension_version != 7u &&
+            extension_version != 8u &&
             extension_version != WZ_STATE_EXTENSION_VERSION) {
             return WZ_RESULT_INVALID_STATE;
         }
@@ -824,6 +865,41 @@ static wz_result_t wz_state_deserialize_machine_in_place(
                     microdrives[slot].sync_count > 15u) {
                     return WZ_RESULT_INVALID_STATE;
                 }
+            }
+        }
+        memset(&machine->interface1_pending_io, 0,
+               sizeof(machine->interface1_pending_io));
+        if (extension_version >= 9u) {
+            wz_interface1_pending_io_t* pending =
+                &machine->interface1_pending_io;
+            if (offset > length || 10u > length - offset) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+            pending->active = data[offset++];
+            pending->continuation =
+                (wz_interface1_pending_io_continuation_t)data[offset++];
+            pending->operand = data[offset++];
+            pending->decrement = data[offset++];
+            pending->repeat = data[offset++];
+            pending->prior_q = data[offset++];
+            pending->t_states = data[offset++];
+            pending->address = wz_read_le16(data + offset);
+            offset += 2u;
+            pending->value = data[offset++];
+            if (pending->active > 1u ||
+                pending->continuation > WZ_INTERFACE1_PENDING_BLOCK_OUT ||
+                pending->decrement > 1u || pending->repeat > 1u ||
+                pending->prior_q > 1u ||
+                (pending->active != 0u &&
+                 (pending->continuation == WZ_INTERFACE1_PENDING_IO_NONE ||
+                  pending->t_states == 0u || pending->t_states > 4u ||
+                  machine->networking_mode != WZ_NETWORKING_INTERFACE1 ||
+                  (machine->interface1_control_latch & 0x21u) != 0x20u ||
+                  !wz_machine_interface1_port_selected(pending->address,
+                                                       0xf7u))) ||
+                (pending->active == 0u &&
+                 pending->continuation != WZ_INTERFACE1_PENDING_IO_NONE)) {
+                return WZ_RESULT_INVALID_STATE;
             }
         }
         if (machine->cpu.q > 1u) {

@@ -191,6 +191,16 @@ set_target_properties(wz_interface1_registers_contract PROPERTIES
     C_EXTENSIONS OFF)
 
 add_executable(
+    wz_interface1_wait_contract
+    ${WZSN_REPO_ROOT}/ci/test/interface1-wait/interface1-wait-contract.c)
+target_include_directories(wz_interface1_wait_contract PRIVATE "${WZSN_SOURCE_ROOT}")
+target_link_libraries(wz_interface1_wait_contract PRIVATE wz_core wz_warnings)
+set_target_properties(wz_interface1_wait_contract PROPERTIES
+    C_STANDARD 11
+    C_STANDARD_REQUIRED ON
+    C_EXTENSIONS OFF)
+
+add_executable(
     wz_mdr_image_trailer_contract
     ${WZSN_REPO_ROOT}/ci/test/mdr-image-trailer/mdr-image-trailer-contract.c)
 target_include_directories(wz_mdr_image_trailer_contract PRIVATE "${WZSN_SOURCE_ROOT}")
@@ -742,6 +752,11 @@ add_test(NAME wz_interface1_registers_contract
 set_tests_properties(wz_interface1_registers_contract PROPERTIES
     PASS_REGULAR_EXPRESSION
         "PASS Interface 1 bus registers")
+add_test(NAME wz_interface1_wait_contract
+    COMMAND "$<TARGET_FILE:wz_interface1_wait_contract>")
+set_tests_properties(wz_interface1_wait_contract PROPERTIES
+    PASS_REGULAR_EXPRESSION
+        "PASS Interface 1 WAIT pending-cycle resume")
 add_test(NAME wz_mdr_image_trailer_contract
     COMMAND "$<TARGET_FILE:wz_mdr_image_trailer_contract>")
 set_tests_properties(wz_mdr_image_trailer_contract PROPERTIES

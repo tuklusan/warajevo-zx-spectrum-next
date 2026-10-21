@@ -62,7 +62,8 @@ wz_result_t wz_headless_runner_execute(wz_headless_runner_t* runner,
         wz_machine_update_interrupt_line(runner->machine);
         wz_result_t step_result;
         bool interrupt_accepted = false;
-        if (wz_machine_maskable_interrupt_line_low(runner->machine)) {
+        if (runner->machine->interface1_pending_io.active == 0u &&
+            wz_machine_maskable_interrupt_line_low(runner->machine)) {
             step_result = wz_z80_sample_maskable_interrupt(runner->machine);
             if (step_result == WZ_RESULT_OK) {
                 interrupt_accepted = true;
@@ -73,7 +74,16 @@ wz_result_t wz_headless_runner_execute(wz_headless_runner_t* runner,
         if (!interrupt_accepted) {
             step_result = wz_z80_step(runner->machine);
         }
-        if (step_result != WZ_RESULT_OK) {
+        if (step_result == WZ_RESULT_PENDING) {
+            if (runner->machine->master_tick < target) {
+                if (wz_machine_trace_ula_until(runner->machine, target,
+                                               false) != WZ_RESULT_OK) {
+                    return WZ_RESULT_INVALID_STATE;
+                }
+                wz_machine_advance_master_ticks(runner->machine,
+                    target - runner->machine->master_tick);
+            }
+        } else if (step_result != WZ_RESULT_OK) {
             return WZ_RESULT_INVALID_STATE;
         }
         elapsed = runner->machine->master_tick - before;

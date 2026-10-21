@@ -150,6 +150,38 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
         request->master_tick += (wz_master_tick_t)contention_delay * 2u;
     }
 
+    /* WAIT holds a network I/O cycle before the bus operation commits. The CPU
+     * step supplies a continuation so the host can run frames while no signal is
+     * available, then resume this exact I/O cycle when ZX Net becomes ready. */
+    if ((request->cycle == WZ_BUS_IO_READ ||
+         request->cycle == WZ_BUS_IO_WRITE) &&
+        machine->hardware_io_decode_enabled &&
+        machine->networking_mode == WZ_NETWORKING_INTERFACE1 &&
+        (machine->interface1_control_latch & 0x21u) == 0x20u &&
+        wz_machine_interface1_port_selected(request->address, 0xf7u) &&
+        machine->zxnet.state.state == WZ_ZXNET_IDLE &&
+        !machine->zxnet.state.read_block_ready) {
+        wz_interface1_pending_io_t* pending =
+            &machine->interface1_pending_io;
+        const wz_master_tick_t requested_tick = request->master_tick;
+        if (wz_machine_trace_ula_until(machine, requested_tick, false) !=
+            WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+        if (requested_tick > machine->master_tick) {
+            wz_machine_advance_master_ticks(
+                machine, requested_tick - machine->master_tick);
+        }
+        if (pending->continuation != WZ_INTERFACE1_PENDING_IO_NONE) {
+            pending->active = 1u;
+            pending->address = request->address;
+            pending->value = request->value;
+            pending->prior_q = machine->z80_prior_q;
+            pending->t_states = request->t_states;
+        }
+        return WZ_RESULT_PENDING;
+    }
+
     if (wz_machine_trace_ula_until(machine, request->master_tick, false) !=
         WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_STATE;
