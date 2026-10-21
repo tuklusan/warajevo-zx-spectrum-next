@@ -65,6 +65,10 @@ wz_debugger_window_result_t wz_debugger_window_write_memory(
     wz_debugger_window_t* window,
     wz_word_t address,
     wz_byte_t value);
+wz_debugger_window_result_t wz_debugger_window_set_register(
+    wz_debugger_window_t* window,
+    wz_debugger_register_t reg,
+    wz_word_t value);
 wz_debugger_window_result_t wz_debugger_window_step(
     wz_debugger_window_t* window);
 wz_debugger_window_result_t wz_debugger_window_continue(

@@ -705,6 +705,17 @@ add_executable(
 target_link_libraries(wz_debugger_core_contract PRIVATE wz_core wz_warnings)
 add_test(NAME wz_debugger_core_contract COMMAND wz_debugger_core_contract)
 
+add_executable(
+    wz_debugger_register_window_contract
+    ${WZSN_REPO_ROOT}/ci/test/debugger-register-window-contract.c
+    ${WZSN_SOURCE_ROOT}/app/wz_debugger_window.c)
+target_include_directories(wz_debugger_register_window_contract PRIVATE
+    ${WZSN_SOURCE_ROOT})
+target_link_libraries(wz_debugger_register_window_contract PRIVATE
+    wz_core wz_warnings)
+add_test(NAME wz_debugger_register_window_contract
+    COMMAND wz_debugger_register_window_contract)
+
 set(WZSN_ULA_128K_TRACE_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/test-output")
 file(MAKE_DIRECTORY "${WZSN_ULA_128K_TRACE_OUTPUT}")
 add_test(NAME wz_ula_128k_trace_contract

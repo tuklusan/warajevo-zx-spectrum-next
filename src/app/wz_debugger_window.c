@@ -135,6 +135,23 @@ wz_debugger_window_result_t wz_debugger_window_write_memory(
     return refresh_view(window);
 }
 
+wz_debugger_window_result_t wz_debugger_window_set_register(
+    wz_debugger_window_t* window,
+    wz_debugger_register_t reg,
+    wz_word_t value)
+{
+    if (!wz_debugger_window_is_open(window)) {
+        return WZ_DEBUGGER_WINDOW_NOT_OPEN;
+    }
+    if (!window->paused) {
+        return WZ_DEBUGGER_WINDOW_NOT_PAUSED;
+    }
+    if (wz_debugger_set_register(window->machine, reg, value) != WZ_RESULT_OK) {
+        return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+    }
+    return refresh_view(window);
+}
+
 wz_debugger_window_result_t wz_debugger_window_step(
     wz_debugger_window_t* window)
 {
