@@ -1,68 +1,68 @@
 {
   "testId": "full-native-build-gate",
   "status": "pass",
-  "commit": "0e7e63edac56a3921667a2e258b22274d2d21729",
-  "tree": "983861536159598cbb8a0d1b32b4820b92831282",
-  "runId": 39611425782,
-  "event": "workflow_dispatch",
+  "commit": "016025970299e5a2acc45933bbf727ef3a77ec8b",
+  "tree": "1974198b155cc57a9020405b580222f8eca8782d",
+  "runId": 39690861672,
+  "event": "push",
   "runner": "GitHub Actions native matrix",
   "architecture": "x64 and ARM64",
-  "timestamp": "2026-10-21T13:51:50+00:00",
+  "timestamp": "2026-10-21T23:03:33+00:00",
   "checks": [
     "Clean Release build with WZSN_BUILD_SOKOL_HOST=ON",
-    "Integrated CTest: 26/26 per target",
-    "Phase-16 correctness and performance: 30 fingerprints and 30 throughput comparisons passed",
+    "Integrated CTest: 29/29 per target",
+    "Phase-16 correctness and performance: 30 fingerprints and 30 throughput comparisons passed; maximum slowdown 24.9%",
     "Interface-1 WAIT: 75 checks per target (375 total)",
-    "Sanitized Microdrive transition fuzz passed on non-Windows targets",
-    "Production Telnet DO parser regression: 14 assertions during clean build on all five targets"
+    "Sanitized Microdrive transition fuzz passed on non-Windows targets"
   ],
   "targets": [
     {
       "name": "Windows x64",
       "conclusion": "success",
-      "ctest": "26/26",
+      "ctest": "29/29",
       "runner": "windows-2025",
       "waitChecks": 75
     },
     {
       "name": "Linux x64",
       "conclusion": "success",
-      "ctest": "26/26",
+      "ctest": "29/29",
       "runner": "ubuntu-24.04",
       "waitChecks": 75
     },
     {
       "name": "Linux ARM64",
       "conclusion": "success",
-      "ctest": "26/26",
+      "ctest": "29/29",
       "runner": "ubuntu-24.04-arm",
       "waitChecks": 75
     },
     {
       "name": "macOS ARM64",
       "conclusion": "success",
-      "ctest": "26/26",
+      "ctest": "29/29",
       "runner": "macos-15",
       "waitChecks": 75
     },
     {
       "name": "macOS Intel",
       "conclusion": "success",
-      "ctest": "26/26",
+      "ctest": "29/29",
       "runner": "macos-15-intel",
       "waitChecks": 75
     }
   ],
   "phase16": {
-    "proof": "phase16-performance-current.json",
+    "status": "pass",
+    "runId": 39690861672,
     "fingerprintsPassed": 30,
     "throughputComparisonsPassed": 30,
-    "largestSlowdownPercent": 25.9
+    "largestSlowdownPercent": 24.9
   },
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "80d7005abc5435e087de93a859cea399514144f50b3b704b85cc00a5da97acbc"
+      "sha256": "1a24084f2117fbf746e296b4f8376c54d9321efa710f60528fa70a8da7771904"
     },
     {
       "path": "ci/test/interface1-wait/interface1-wait-contract.c",
@@ -167,6 +167,22 @@
     {
       "sha256": "4ae982f282e6fb8fbb6b318e338faf8fe97f8810b5ed1cfa169422ad882e07ee",
       "path": "ci/test/telnet-do-parser/telnet-do-parser.c"
+    },
+    {
+      "path": "src/app/wz_debugger_window.c",
+      "sha256": "fa03c9e48f5f894b8f0899f50bd6330ce924246f04fc10fa972131b62d9aa3a8"
+    },
+    {
+      "path": "src/app/wz_debugger_window.h",
+      "sha256": "e8adfe2fdf7c168d1fe6f1bba2880074d78c790a1d48e2acb4332e5ac6ef611c"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "7ff8453ab148a2b460e0d3f904b099a930d242be124908ab7f995b663fd4e6e0"
+    },
+    {
+      "path": "ci/test/debugger-register-window-contract.c",
+      "sha256": "e4cf0a1a5342682e503ccae9d759f4ba113d376be714889d9d865a4998d3775b"
     }
   ],
   "githubCleanupPolicy": "After pinning proof records, delete the workflow run and all hosted artifacts and caches.",
@@ -175,45 +191,22 @@
     "tool": "Gito 4.5.0",
     "findings": [
       {
-        "title": "Potential use-after-free in test cleanup",
-        "disposition": "Non-actionable: wz_machine_destroy releases and nulls owned allocations without freeing the static machine object; repeated cleanup and reinitialization are safe."
+        "title": "Repeated debugger-window close",
+        "disposition": "Non-actionable: close only clears borrowed pointers and scalar state; it owns no allocation and is idempotent."
       },
       {
-        "title": "Fixture path validation",
-        "disposition": "Non-actionable: Python str.startswith accepts a tuple of prefixes; all allowed roots end in a slash, and absolute paths, parent components, and unsupported characters are rejected."
+        "title": "Monitor hex token bounds",
+        "disposition": "Non-actionable: token lengths are bounded by the command slice before parsing; the parser also caps reads at four hexadecimal digits."
       },
       {
-        "title": "Pending I/O without CPU continuation",
-        "disposition": "Non-actionable: CPU I/O installs its continuation before the bus call. A direct bus API caller receives PENDING before the device cycle commits and remains responsible for retrying its request."
+        "title": "Monitor undo coordinate",
+        "disposition": "Non-actionable: the monitor edit uses the same register undo stack; the click targets the shared Undo registers button."
       },
       {
-        "title": "Runner progress while pending",
-        "disposition": "Non-actionable: the runner loop starts only below its target; a pending cycle advances to that target, and the elapsed-tick guard rejects zero-progress cases."
-      },
-      {
-        "title": "Version 8 deserialization",
-        "disposition": "Non-actionable: extension version 8 remains supported with a zeroed pending continuation; the new ten-byte field is read only for version 9."
-      },
-      {
-        "title": "Clearing pending I/O with memset",
-        "disposition": "Non-actionable: the pending-I/O record contains only scalar fields and zero maps to its NONE/inactive state."
-      },
-      {
-        "title": "Clock setup in the raster contract",
-        "disposition": "Addressed: the fixture uses the internal master-tick advancement helper, which also synchronizes ZX Net time when tracing is enabled; follow-up review found no issue."
-      },
-      {
-        "title": "Incorrect logic for calculating largest slowdown",
-        "disposition": "False positive: deltas are stored as percentage points; negating a negative delta reports the slowdown as a positive percentage. The 40% gate is checked against the unrounded ratio before this summary calculation."
-      },
-      {
-        "disposition": "Non-actionable: required NUL space is included in the capacity check; the undersized-buffer regression verifies rejection before copy.",
-        "title": "Telnet argument capacity check"
-      },
-      {
-        "disposition": "Non-actionable: tokenizer creates NUL-terminated tokens in its local storage before the parser copies them to the separate production output buffers.",
-        "title": "Telnet token copy termination"
+        "title": "Monitor success message",
+        "disposition": "Addressed: success now reports \u201cMonitor command executed\u201d."
       }
     ]
-  }
+  },
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39690861672"
 }
