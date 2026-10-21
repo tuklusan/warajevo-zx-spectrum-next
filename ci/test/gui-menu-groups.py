@@ -32,7 +32,7 @@ def capture(destination):
     subprocess.run(["import", "-window", "root", str(destination)],
                    check=True, capture_output=True)
     with Image.open(destination) as image:
-        enlarged = image.resize((image.width * 2, image.height * 2),
+        enlarged = image.resize((image.width * 3, image.height * 3),
                                 Image.Resampling.LANCZOS)
         with tempfile.TemporaryDirectory(prefix="wz-menu-ocr-") as temporary:
             ocr_path = Path(temporary) / "capture.png"
