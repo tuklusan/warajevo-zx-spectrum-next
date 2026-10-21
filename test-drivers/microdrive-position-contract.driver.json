@@ -4,7 +4,7 @@
   "fixtures": [
     {
       "path": "ci/test/microdrive-position/microdrive-position-contract.c",
-      "sha256": "bc166b033e719fad26a87a06b0c0968d090ddad7cffed54397beee7950505645"
+      "sha256": "c875ab15a04706cbadbf2f3e0560921431dceb01996b8a5f38a2cdd2ffd5a5c3"
     },
     {
       "path": "src/cmake/CMakeLists.txt",

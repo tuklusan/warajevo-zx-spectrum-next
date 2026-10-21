@@ -123,9 +123,15 @@ int main(void)
         REQUIRE(value == fixture_byte(0u, 0u, offset));
     }
     transport = wz_machine_microdrive_at_const(&machine, 0u);
-    REQUIRE(transport->phase == WZ_MDR_PHASE_DATA &&
+    REQUIRE(transport->phase == WZ_MDR_PHASE_HEADER &&
             transport->offset == WZ_MDR_DATA_OFFSET);
-    for (offset = WZ_MDR_DATA_OFFSET; offset < WZ_MDR_SECTOR_SIZE; ++offset) {
+    REQUIRE(read_data(&machine, &tick, &value));
+    REQUIRE(value == fixture_byte(0u, 0u, WZ_MDR_DATA_OFFSET));
+    transport = wz_machine_microdrive_at_const(&machine, 0u);
+    REQUIRE(transport->phase == WZ_MDR_PHASE_DATA &&
+            transport->offset == WZ_MDR_DATA_OFFSET + 1u);
+    for (offset = WZ_MDR_DATA_OFFSET + 1u;
+         offset < WZ_MDR_SECTOR_SIZE; ++offset) {
         REQUIRE(read_data(&machine, &tick, &value));
         REQUIRE(value == fixture_byte(0u, 0u, offset));
     }
