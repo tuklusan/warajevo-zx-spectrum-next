@@ -12,7 +12,7 @@
   "fixtures": [
     {
       "path": "ci/test/interface1-wait/interface1-wait-contract.c",
-      "sha256": "558d51900639aed2e9c2600df24d22e184a9b20d46a30c302650197d4daac6cd"
+      "sha256": "c8da19d4a522971b49ebc58a8bee784625596e42a4f7e6742d34ba030ecaba23"
     },
     {
       "path": "ci/test/interface1-wait/write-proof.py",

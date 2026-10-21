@@ -7,6 +7,7 @@
  */
 
 #include "core/wz_machine.h"
+#include "core/wz_machine_internal.h"
 #include "core/wz_runner.h"
 #include "core/wz_trace.h"
 #include "core/wz_state.h"
@@ -101,11 +102,10 @@ int main(void)
             WZ_NETWORKING_INTERFACE1) == WZ_RESULT_OK);
     REQUIRE(wz_machine_interface1_control_write(&machine, 0x20u, 0u) ==
             WZ_RESULT_OK);
-    machine.master_tick =
-        (wz_master_tick_t)machine.profile->ula_fetch_start_tstate * 2u - 40u;
-    wz_zxnet_set_master_tick(&machine.zxnet, machine.master_tick);
     wz_trace_sink_init(&trace_sink, count_trace_event, &trace_counts);
     wz_machine_set_timing_trace(&machine, &trace_sink);
+    wz_machine_advance_master_ticks(&machine,
+        (wz_master_tick_t)machine.profile->ula_fetch_start_tstate * 2u - 40u);
     machine.memory[0] = 0xedu;
     machine.memory[1] = 0x40u; /* IN B,(C) */
     machine.cpu.main.c = 0xf7u;
