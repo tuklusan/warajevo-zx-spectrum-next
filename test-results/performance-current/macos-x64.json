@@ -1,61 +1,59 @@
 {
   "schema": 1,
   "status": "pass",
-  "commit": "dbc76b9290af4b68319a5024310c37ceed06faf8",
+  "commit": "e93a726d05a92f4d477b56a9897d92c0e08e86dd",
   "runner": "macOS-macos-x64",
   "architecture": "X64",
-  "timestamp": "2026-10-21T03:43:48Z",
+  "timestamp": "2026-10-21T05:01:30Z",
   "compiler": "AppleClang 17.0.0.17000013",
   "metrics": [
     {
       "name": "cpu_execution",
       "unit": "instructions",
       "operations": "250005",
-      "median_cpu_seconds": 0.020044,
-      "operations_per_second": 12472809.818,
-      "fingerprint": "ca4dd4078c5cf15a"
+      "median_cpu_seconds": 0.026417,
+      "operations_per_second": 9463792.255,
+      "fingerprint": "52af84e53ed19a63"
     },
     {
       "name": "raster_generation",
       "unit": "frames",
       "operations": "384",
-      "median_cpu_seconds": 0.029044,
-      "operations_per_second": 13221.319,
+      "median_cpu_seconds": 0.034886,
+      "operations_per_second": 11007.281,
       "fingerprint": "d3d8bb78938b5fb1"
     },
     {
       "name": "audio_mixing",
       "unit": "samples",
       "operations": "2000000",
-      "median_cpu_seconds": 0.04724,
-      "operations_per_second": 42337002.54,
+      "median_cpu_seconds": 0.054599,
+      "operations_per_second": 36630707.522,
       "fingerprint": "56e7cab2bab26d0d"
     },
     {
       "name": "tape_playback",
       "unit": "master_ticks",
       "operations": "4000000",
-      "median_cpu_seconds": 0.012826,
-      "operations_per_second": 311866521.129,
+      "median_cpu_seconds": 0.014232,
+      "operations_per_second": 281056773.468,
       "fingerprint": "40000000001db212"
     },
     {
       "name": "snapshot_serialization",
       "unit": "snapshots",
       "operations": "8192",
-      "median_cpu_seconds": 0.018993,
-      "operations_per_second": 431316.801,
-      "fingerprint": "98af2e4bce1d0c15"
+      "median_cpu_seconds": 0.020955,
+      "operations_per_second": 390932.952,
+      "fingerprint": "5bda2a39ca868954"
     },
     {
       "name": "ui_presentation",
       "unit": "frames",
       "operations": "512",
-      "median_cpu_seconds": 0.027229,
-      "operations_per_second": 18803.482,
+      "median_cpu_seconds": 0.031724,
+      "operations_per_second": 16139.201,
       "fingerprint": "6b9c6deb0ca3fbc9"
     }
-  ],
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39540070233",
-  "jobId": 119025546071
+  ]
 }

@@ -1,0 +1,149 @@
+{
+  "testId": "interface1-wait",
+  "status": "pass",
+  "commit": "e93a726d05a92f4d477b56a9897d92c0e08e86dd",
+  "runId": 39547031562,
+  "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
+  "timestamp": "2026-10-21T05:01:51+00:00",
+  "caseCount": 375,
+  "caseCountPerRunner": 75,
+  "observedOutput": "PASS Interface 1 WAIT pending-cycle resume (75 checks)",
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39547031562",
+  "workflowEvent": "workflow_dispatch",
+  "branch": "main",
+  "nativeBuildConfiguration": "Release; WZSN_BUILD_SOKOL_HOST=ON",
+  "ctest": "all integrated CTests passed on each native runner",
+  "runnerResults": [
+    {
+      "runner": "Windows x64",
+      "status": "pass",
+      "jobName": "Full build / Windows x64",
+      "requiredCases": 75
+    },
+    {
+      "runner": "Linux x64",
+      "status": "pass",
+      "jobName": "Full build / Linux x64",
+      "requiredCases": 75
+    },
+    {
+      "runner": "Linux ARM64",
+      "status": "pass",
+      "jobName": "Full build / Linux ARM64",
+      "requiredCases": 75
+    },
+    {
+      "runner": "macOS ARM64",
+      "status": "pass",
+      "jobName": "Full build / macOS ARM64",
+      "requiredCases": 75
+    },
+    {
+      "runner": "macOS Intel",
+      "status": "pass",
+      "jobName": "Full build / macOS Intel",
+      "requiredCases": 75
+    }
+  ],
+  "fixtures": [
+    {
+      "path": "ci/test/interface1-wait/interface1-wait-contract.c",
+      "sha256": "c8da19d4a522971b49ebc58a8bee784625596e42a4f7e6742d34ba030ecaba23"
+    },
+    {
+      "path": "ci/test/interface1-wait/write-proof.py",
+      "sha256": "ab7eddb0aa4f163eca85e9971e6540a14be064f676753560f2451f8df2052b00"
+    },
+    {
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "80d7005abc5435e087de93a859cea399514144f50b3b704b85cc00a5da97acbc"
+    },
+    {
+      "path": "ci/test/performance/write-runner-evidence.py",
+      "sha256": "ec2c8d0c36427fb8ea51ee2ffe8f5702eec1d63a93332130c62a974a8d8208e7"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "d284c58a767513a7869e0688b7629fea115bab848d24819eb585050e72d97273"
+    },
+    {
+      "path": "src/core/wz_bus.c",
+      "sha256": "be2e57a38f32ec45e9975a3249e5c89dedd6343e4061c4355b072a0cac0e43d7"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "3de492c7022baaef1a348f2fa64d019cdef7a414e0195bbf5113f82eef804013"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "808eef5dddd9851505b1861fa89e9916cee1cc3776f165a1ae34dc01f4105b95"
+    },
+    {
+      "path": "src/core/wz_runner.c",
+      "sha256": "22c6511dbbcd3ef2721dcdeba5d435f9f3a35c30f701f7264a04962fb71ba144"
+    },
+    {
+      "path": "src/core/wz_state.c",
+      "sha256": "93479ac03c344c429455d8627096147fb4da4a2b94c5204d8223d7e7b11fc983"
+    },
+    {
+      "path": "src/core/wz_types.h",
+      "sha256": "aa77ae7cf238009aa43f0a5554da281f4d36851c797a879000f3797cdb4280ee"
+    },
+    {
+      "path": "src/core/wz_z80.c",
+      "sha256": "cef55b660b43d3f7fb3737962d92e062966e126b3b99f8b87816553303c820f9"
+    },
+    {
+      "path": "src/core/wz_zxnet.c",
+      "sha256": "9b74d445a10dcd9669c72c858bf5c2c87b57998bf370322f0608367bd6d2ddda"
+    },
+    {
+      "path": "src/core/wz_zxnet.h",
+      "sha256": "3f8e58593ca15fc173531d1174b19c4bea95fd8123bf1855b34148d79b73d495"
+    },
+    {
+      "path": "docs/design/interface1-microdrive-zxnet.md",
+      "sha256": "a275dfd1cc380031eb01347219fcdc6a273d9fa962e8c5503d502b4ec37dd706"
+    }
+  ],
+  "sourceReview": {
+    "status": "passed; findings adjudicated",
+    "tool": "Gito 4.5.0",
+    "findings": [
+      {
+        "title": "Potential use-after-free in test cleanup",
+        "disposition": "Non-actionable: wz_machine_destroy releases and nulls owned allocations without freeing the static machine object; repeated cleanup and reinitialization are safe."
+      },
+      {
+        "title": "Fixture path validation",
+        "disposition": "Non-actionable: Python str.startswith accepts a tuple of prefixes; all allowed roots end in a slash, and absolute paths, parent components, and unsupported characters are rejected."
+      },
+      {
+        "title": "Pending I/O without CPU continuation",
+        "disposition": "Non-actionable: CPU I/O installs its continuation before the bus call. A direct bus API caller receives PENDING before the device cycle commits and remains responsible for retrying its request."
+      },
+      {
+        "title": "Runner progress while pending",
+        "disposition": "Non-actionable: the runner loop starts only below its target; a pending cycle advances to that target, and the elapsed-tick guard rejects zero-progress cases."
+      },
+      {
+        "title": "Version 8 deserialization",
+        "disposition": "Non-actionable: extension version 8 remains supported with a zeroed pending continuation; the new ten-byte field is read only for version 9."
+      },
+      {
+        "title": "Clearing pending I/O with memset",
+        "disposition": "Non-actionable: the pending-I/O record contains only scalar fields and zero maps to its NONE/inactive state."
+      },
+      {
+        "title": "Clock setup in the raster contract",
+        "disposition": "Addressed: the fixture uses the internal master-tick advancement helper, which also synchronizes ZX Net time when tracing is enabled; follow-up review found no issue."
+      },
+      {
+        "title": "Incorrect logic for calculating largest slowdown",
+        "disposition": "False positive: deltas are stored as percentage points; negating a negative delta reports the slowdown as a positive percentage. The 40% gate is checked against the unrounded ratio before this summary calculation."
+      }
+    ]
+  },
+  "githubCleanupPolicy": "Download the temporary proof artifact, then delete the workflow run; this workflow does not create caches."
+}
