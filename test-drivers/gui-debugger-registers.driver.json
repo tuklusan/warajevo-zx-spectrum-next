@@ -1,7 +1,7 @@
 {
   "testId": "gui-debugger-registers",
-  "command": "Dispatch .github/workflows/gui-debugger-registers.yml on main. Build the production Release/Sokol GUI under Xvfb, open the debugger from the production toolbar, pause the machine, reject an out-of-range A register value, edit A through both the register editor and monitor command R SETREG A 5A, verify the displayed A value after each edit, and undo both edits.",
-  "requiredCases": 7,
+  "command": "Dispatch .github/workflows/gui-debugger-registers.yml on main. Build the production Release/Sokol GUI under Xvfb, open and pause the production debugger, read 16 bytes at RAM address 8000, change only its first byte and restore the original row, reject an out-of-range A register value, then edit A through both the register editor and monitor command R SETREG A 5A, verify A after each edit, and undo both edits.",
+  "requiredCases": 10,
   "runnerMatrix": [
     "ubuntu-24.04"
   ],
@@ -12,7 +12,7 @@
     },
     {
       "path": "ci/test/gui-debugger-registers.py",
-      "sha256": "1e2585594470984dbd820ba2ec087162760dfb45e50c3f677205c47fc82af727"
+      "sha256": "827de4cb4cbc93f61a1cc2e089c0c9ae22c45c82ba053c476dfdd30428a2497d"
     },
     {
       "path": "ci/test/gui-screenshot-save.py",
