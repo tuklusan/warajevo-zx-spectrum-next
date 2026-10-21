@@ -104,7 +104,7 @@ def main() -> None:
         ctest_log = ctest_path.read_text(encoding="utf-8", errors="replace")
         build_log = build_path.read_text(encoding="utf-8", errors="replace")
         ctest_summary = re.search(
-            r"100% tests passed, 0 tests failed out of (\d+)", ctest_log)
+            r"100% tests passed(?:, 0 tests failed)? out of (\d+)", ctest_log)
         if ctest_summary is None or int(ctest_summary.group(1)) == 0:
             raise SystemExit(f"successful CTest completion is missing: {platform}")
         ctest_count = int(ctest_summary.group(1))

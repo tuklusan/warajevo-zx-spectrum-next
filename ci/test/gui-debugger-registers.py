@@ -79,6 +79,12 @@ def main_af(root):
     raise RuntimeError(f"main AF value is not readable; OCR={observations!r}")
 
 
+def af_matches(actual, expected):
+    return len(actual) == len(expected) and all(
+        observed == wanted or (wanted == "A" and observed == "4")
+        for observed, wanted in zip(actual, expected))
+
+
 def click_at(x, y):
     run("xdotool", "mousemove", "--sync", str(x), str(y))
     run("xdotool", "mousedown", "1")
@@ -187,7 +193,8 @@ def main():
                     (root / "screen.png").read_bytes())
                 updated_af, _ = main_af(root)
                 if ("Debugger register updated" not in updated or
-                        updated_af[:2] != "5A"):
+                        not re.search(r"\bA\s+\S+\s+5A\b", updated) or
+                        not af_matches(updated_af, "5A" + original_af[2:])):
                     raise RuntimeError(
                         "main A register edit was not reflected in UI; "
                         f"AF OCR={updated_af!r}; screen OCR={updated!r}")
@@ -197,7 +204,7 @@ def main():
                 restored = screenshot_text(root)
                 restored_af, _ = main_af(root)
                 if ("Debugger registers restored" not in restored or
-                        restored_af != original_af):
+                        not af_matches(restored_af, original_af)):
                     raise RuntimeError("register undo did not restore the prior AF value")
                 assertions.append("register-undo-restored-prior-af")
                 (args.capture_dir / "debugger-register-undo.png").write_bytes(

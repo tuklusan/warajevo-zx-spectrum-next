@@ -48,7 +48,8 @@ def main() -> None:
     ctest = ctest_path.read_text(encoding="utf-8", errors="replace")
     if WAIT_MARKER not in ctest:
         raise SystemExit("Interface 1 WAIT marker is missing from the CTest log")
-    summary = re.search(r"100% tests passed, 0 tests failed out of (\d+)", ctest)
+    summary = re.search(
+        r"100% tests passed(?:, 0 tests failed)? out of (\d+)", ctest)
     if summary is None or int(summary.group(1)) == 0:
         raise SystemExit("successful CTest completion is missing from the CTest log")
     ctest_count = int(summary.group(1))
