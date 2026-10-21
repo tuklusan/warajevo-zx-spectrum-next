@@ -41,11 +41,22 @@ static const wz_compatibility_tool_t tools[WZ_COMPATIBILITY_TOOL_COUNT] = {
 static bool compatibility_tool_available(const void* context,
                                          const char** reason)
 {
-    const wz_compatibility_tool_t* tool =
-        (const wz_compatibility_tool_t*)context;
+    const wz_compatibility_tool_command_context_t* action =
+        (const wz_compatibility_tool_command_context_t*)context;
+    const wz_compatibility_tool_t* tool = action == 0 ? 0 : action->tool;
     if (reason != 0) *reason = tool == 0 ? "unknown-compatibility-tool"
                                          : tool->reason;
     return tool != 0 && tool->availability == WZ_COMPATIBILITY_AVAILABLE;
+}
+
+static wz_result_t compatibility_tool_dispatch(
+    const void* context, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    const wz_compatibility_tool_command_context_t* action =
+        (const wz_compatibility_tool_command_context_t*)context;
+    if (action == 0 || action->handler == 0) return WZ_RESULT_INVALID_ARGUMENT;
+    return action->handler(action->application_context, arguments, result);
 }
 
 size_t wz_compatibility_tools_count(void)
@@ -108,10 +119,15 @@ wz_result_t wz_compatibility_tools_register_commands(
     wz_command_registry_t* registry,
     wz_command_availability_fn availability,
     wz_command_handler_fn handler,
-    const void* context)
+    const void* context,
+    wz_compatibility_tool_command_context_t* tool_contexts,
+    size_t tool_context_capacity)
 {
     wz_command_metadata_t command;
-    if (registry == 0 || handler == 0) return WZ_RESULT_INVALID_ARGUMENT;
+    if (registry == 0 || handler == 0 || tool_contexts == 0 ||
+        tool_context_capacity < WZ_COMPATIBILITY_TOOL_COUNT - 1u) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
     memset(&command, 0, sizeof(command));
     command.id = WZ_COMPATIBILITY_TOOLS_COMMAND_ID;
     command.label = "Compatibility Tools";
@@ -132,6 +148,11 @@ wz_result_t wz_compatibility_tools_register_commands(
     }
     for (size_t index = 1u; index < WZ_COMPATIBILITY_TOOL_COUNT; ++index) {
         const wz_compatibility_tool_t* tool = &tools[index];
+        wz_compatibility_tool_command_context_t* tool_context =
+            &tool_contexts[index - 1u];
+        *tool_context = (wz_compatibility_tool_command_context_t){
+            tool, handler, context
+        };
         wz_command_metadata_t action = {
             tool->id,
             tool->label,
@@ -144,8 +165,8 @@ wz_result_t wz_compatibility_tools_register_commands(
             NULL,
             WZ_COMMAND_LOCAL_ONLY,
             compatibility_tool_available,
-            handler,
-            context,
+            compatibility_tool_dispatch,
+            tool_context,
             false,
             false,
             NULL

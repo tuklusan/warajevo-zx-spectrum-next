@@ -45,6 +45,12 @@ typedef struct {
     bool requires_loss_disclosure;
 } wz_compatibility_tool_t;
 
+typedef struct {
+    const wz_compatibility_tool_t* tool;
+    wz_command_handler_fn handler;
+    const void* application_context;
+} wz_compatibility_tool_command_context_t;
+
 size_t wz_compatibility_tools_count(void);
 const wz_compatibility_tool_t* wz_compatibility_tools_at(size_t index);
 bool wz_compatibility_tools_is_available(size_t index, const char** reason);
@@ -65,6 +71,8 @@ wz_result_t wz_compatibility_tools_register_commands(
     wz_command_registry_t* registry,
     wz_command_availability_fn availability,
     wz_command_handler_fn handler,
-    const void* context);
+    const void* context,
+    wz_compatibility_tool_command_context_t* tool_contexts,
+    size_t tool_context_capacity);
 
 #endif

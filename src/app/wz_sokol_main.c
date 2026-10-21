@@ -115,6 +115,7 @@ SANYALnet Labs." See LICENSE for full terms. */
 #define WZ_HOST_COMMAND_CAPACITY 160u
 #define WZ_HOST_MICRODRIVE_COMMAND_COUNT \
     (WZ_UI_MICRODRIVE_COUNT * (WZ_UI_MICRODRIVE_OPERATION_COUNT + 1u))
+#define WZ_HOST_MICRODRIVE_SEMANTIC_COMMAND_COUNT 3u
 
 typedef struct {
     void* session;
@@ -235,6 +236,8 @@ typedef struct {
     wz_diagnostics_router_t diagnostics_router;
     wz_diagnostics_window_t diagnostics_window;
     wz_compatibility_tools_window_t compatibility_tools_window;
+    wz_compatibility_tool_command_context_t compatibility_tool_contexts[
+        WZ_COMPATIBILITY_TOOL_COUNT - 1u];
     char compatibility_requested_format[24];
     bool compatibility_conversion_requested;
     char microdrive_path[WZ_UI_MICRODRIVE_COUNT][4096];
@@ -258,7 +261,8 @@ typedef struct {
     int microdrive_manager_raw_hex_length;
     wz_ui_microdrive_command_context_t microdrive_command_contexts[
         WZ_HOST_MICRODRIVE_COMMAND_COUNT];
-    wz_host_microdrive_semantic_context_t microdrive_semantic_contexts[3];
+    wz_host_microdrive_semantic_context_t microdrive_semantic_contexts[
+        WZ_HOST_MICRODRIVE_SEMANTIC_COMMAND_COUNT];
     bool microdrive_eject_confirmation_open;
     size_t microdrive_eject_confirmation_slot;
     char file_notification[WZ_COMMAND_MESSAGE_CAPACITY];
@@ -3929,7 +3933,9 @@ static bool wz_host_register_commands(void)
             &wz_host_session.command_registry,
             wz_host_compatibility_tools_available,
             wz_host_compatibility_tools_open_command,
-            &wz_host_session) != WZ_RESULT_OK) {
+            &wz_host_session,
+            wz_host_session.compatibility_tool_contexts,
+            WZ_COMPATIBILITY_TOOL_COUNT - 1u) != WZ_RESULT_OK) {
         return false;
     }
     wz_host_session.networking_command_context.machine =
@@ -4002,6 +4008,12 @@ static bool wz_host_register_commands(void)
              wz_host_microdrive_semantic_available,
              wz_host_microdrive_semantic_command, NULL, false, true, NULL}
         };
+        if (sizeof(actions) / sizeof(actions[0]) !=
+                WZ_HOST_MICRODRIVE_SEMANTIC_COMMAND_COUNT ||
+            sizeof(definitions) / sizeof(definitions[0]) !=
+                WZ_HOST_MICRODRIVE_SEMANTIC_COMMAND_COUNT) {
+            return false;
+        }
         for (index = 0u; index < sizeof(definitions) / sizeof(definitions[0]);
              ++index) {
             wz_command_metadata_t metadata = definitions[index];
