@@ -11,6 +11,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 
 static bool valid_range(wz_word_t address, size_t length);
 
@@ -554,7 +555,15 @@ wz_result_t wz_debugger_copy_memory(wz_machine_t* machine,
     } else if (!writable_range(machine, destination_address, length)) {
         result = WZ_RESULT_UNSUPPORTED_OPERATION;
     } else {
-        if (length > 0u) {
+        bool interface1_overlay =
+            machine->networking_mode == WZ_NETWORKING_INTERFACE1 &&
+            machine->has_interface1_rom != 0u &&
+            machine->interface1_rom_page != 0u;
+        if (machine->profile->kind != WZ_MACHINE_128K_PAL &&
+            !interface1_overlay) {
+            memmove(&machine->memory[destination_address],
+                    &machine->memory[source_address], length);
+        } else if (length > 0u) {
             copy = (wz_byte_t*)malloc(length);
             if (copy == 0) {
                 wz_debugger_trace_memory_result(machine, destination_address,
