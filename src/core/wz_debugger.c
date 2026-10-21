@@ -8,7 +8,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "core/wz_debugger.h"
 
-#include <string.h>
+#include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
 
@@ -546,6 +546,7 @@ wz_result_t wz_debugger_copy_memory(wz_machine_t* machine,
                                     size_t length)
 {
     wz_result_t result;
+    wz_byte_t* copy = 0;
     if (machine == 0 || !valid_range(source_address, length) ||
         !valid_range(destination_address, length)) return WZ_RESULT_INVALID_ARGUMENT;
     if (machine->debugger_access_mode != WZ_DEBUGGER_PAUSED_MUTATION) {
@@ -553,12 +554,29 @@ wz_result_t wz_debugger_copy_memory(wz_machine_t* machine,
     } else if (!writable_range(machine, destination_address, length)) {
         result = WZ_RESULT_UNSUPPORTED_OPERATION;
     } else {
-        memmove(&machine->memory[destination_address],
-                &machine->memory[source_address], length);
+        if (length > 0u) {
+            copy = (wz_byte_t*)malloc(length);
+            if (copy == 0) {
+                wz_debugger_trace_memory_result(machine, destination_address,
+                                                0u, WZ_RESULT_OUT_OF_MEMORY);
+                return WZ_RESULT_OUT_OF_MEMORY;
+            }
+            for (size_t index = 0u; index < length; ++index) {
+                copy[index] = wz_machine_memory_read(
+                    machine, (wz_word_t)(source_address + index));
+            }
+            for (size_t index = 0u; index < length; ++index) {
+                wz_machine_memory_write(
+                    machine, (wz_word_t)(destination_address + index),
+                    copy[index]);
+            }
+            free(copy);
+        }
         result = WZ_RESULT_OK;
     }
     wz_debugger_trace_memory_result(machine, destination_address,
-                                    length == 0u ? 0u : machine->memory[destination_address],
+                                    length == 0u ? 0u : wz_machine_memory_read(
+                                        machine, destination_address),
                                     result);
     return result;
 }

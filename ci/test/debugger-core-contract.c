@@ -262,6 +262,18 @@ static int test_128k_page_inspection_and_editing(void)
     CHECK(wz_debugger_read_memory(machine, 0xc000u, &value) == WZ_RESULT_OK &&
           value == 0u);
     CHECK(wz_debugger_write_memory(machine, 0xc000u, 0x22u) == WZ_RESULT_OK);
+    CHECK(wz_debugger_write_memory(machine, 0xc001u, 0x33u) == WZ_RESULT_OK);
+    CHECK(wz_debugger_write_memory(machine, 0xc002u, 0x44u) == WZ_RESULT_OK);
+    CHECK(wz_debugger_copy_memory(machine, 0xc000u, 0xc001u, 3u) ==
+          WZ_RESULT_OK);
+    CHECK(wz_debugger_read_memory(machine, 0xc000u, &value) == WZ_RESULT_OK &&
+          value == 0x22u);
+    CHECK(wz_debugger_read_memory(machine, 0xc001u, &value) == WZ_RESULT_OK &&
+          value == 0x22u);
+    CHECK(wz_debugger_read_memory(machine, 0xc002u, &value) == WZ_RESULT_OK &&
+          value == 0x33u);
+    CHECK(wz_debugger_read_memory(machine, 0xc003u, &value) == WZ_RESULT_OK &&
+          value == 0x44u);
     CHECK(wz_debugger_set_page_config(machine, 0x22u) == WZ_RESULT_OK);
     CHECK(wz_debugger_read_page_info(machine, &page) == WZ_RESULT_OK);
     CHECK(page.paging_value == 0x22u && page.paging_locked == 1u);
