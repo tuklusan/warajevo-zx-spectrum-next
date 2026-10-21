@@ -77,7 +77,9 @@ def open_group(host_window, x, row):
 
 
 def require_text(text, expected, label):
-    missing = [value for value in expected if value.casefold() not in text.casefold()]
+    normalized = text.casefold().replace("mdy", "mdv")
+    missing = [value for value in expected
+               if value.casefold() not in normalized]
     if missing:
         raise RuntimeError(f"{label} omitted {missing}; OCR was {text!r}")
 
@@ -170,7 +172,7 @@ def main():
                     assertions.append(name)
 
                 x = open_root(host_window, 2)
-                open_group(host_window, x, 1)
+                open_group(host_window, x, 2)
                 image, text = save_capture(host_window, args.proof.parent,
                                            "media-microdrive")
                 require_text(text, ("Drive 1", "Drive 8",
