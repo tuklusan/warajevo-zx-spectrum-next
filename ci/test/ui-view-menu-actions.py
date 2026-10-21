@@ -36,11 +36,12 @@ def capture(host_window, destination, bottom_only=False):
                                 image.width, image.height))
         enlarged = image.resize((image.width * 2, image.height * 2),
                                 Image.Resampling.LANCZOS)
-        ocr_path = destination.with_name(destination.stem + "-ocr.png")
-        enlarged.save(ocr_path)
-    return subprocess.run(["tesseract", str(ocr_path), "stdout", "--psm",
-                           "11" if bottom_only else "6"], check=True,
-                          capture_output=True, text=True).stdout.strip()
+        with tempfile.TemporaryDirectory(prefix="wz-view-ocr-") as temporary:
+            ocr_path = Path(temporary) / "capture.png"
+            enlarged.save(ocr_path)
+            return subprocess.run(["tesseract", str(ocr_path), "stdout",
+                "--psm", "11" if bottom_only else "6"], check=True,
+                capture_output=True, text=True).stdout.strip()
 
 
 def view_choice(host_window, row):
