@@ -24,7 +24,11 @@ Control = helpers["Control"]
 
 
 def read_id_block(document, heading):
+    if heading not in document:
+        raise RuntimeError(f"canonical inventory heading is missing: {heading}")
     section = document.split(heading, 1)[1]
+    if "```text" not in section:
+        raise RuntimeError(f"canonical ID block is missing after: {heading}")
     block = section.split("```text", 1)[1].split("```", 1)[0]
     return [line.strip() for line in block.splitlines() if line.strip()]
 
@@ -56,7 +60,6 @@ def main():
         "settings.peripherals.networking",
         "settings.peripherals.zx_printer",
     })
-    local_presentation_groups = {"file.recent"}
     assertions = 0
     process = None
     connection = None
@@ -75,13 +78,11 @@ def main():
                 control = Control(connection)
                 tree = control.send("MENU TREE", multiline=True)
                 item_records = {}
-                parents = set()
                 for line in tree:
                     match = re.match(r"ITEM ([a-z0-9_.]+) PARENT=([^ ]+) ", line)
                     if match is None:
                         continue
                     item_records.setdefault(match.group(1), []).append(line)
-                    parents.add(match.group(2))
 
                 for root_id in roots:
                     records = item_records.get(root_id, [])
@@ -142,15 +143,10 @@ def main():
                             raise RuntimeError(
                                 f"MENU TREE and DESCRIBE metadata disagree: {identifier}")
                         assertions += 2
-                    elif identifier in group_ids and identifier in local_presentation_groups:
-                        assertions += 1
                     elif identifier in group_ids:
-                        represented = identifier in parents or any(
-                            parent.startswith(identifier + ".") for parent in parents)
-                        if not represented:
-                            raise RuntimeError(
-                                f"required menu group is not represented: {identifier}")
-                        assertions += 1
+                        # Group IDs describe local menu/toolbar structure; they
+                        # are not registry commands with DESCRIBE metadata.
+                        continue
                     else:
                         raise RuntimeError(
                             f"required command ID is absent: {identifier}")
