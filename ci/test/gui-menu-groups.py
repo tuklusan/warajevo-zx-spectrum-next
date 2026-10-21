@@ -77,7 +77,8 @@ def open_group(host_window, x, row):
 
 
 def require_text(text, expected, label):
-    normalized = text.casefold().replace("mdy", "mdv")
+    normalized = (text.casefold().replace("mdy", "mdv")
+                  .replace("2x printer", "zx printer"))
     missing = [value for value in expected
                if value.casefold() not in normalized]
     if missing:
