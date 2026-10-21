@@ -118,7 +118,8 @@ wz_byte_t wz_machine_interface1_status_read(wz_machine_t* machine)
     if (machine == 0) {
         return status;
     }
-    transport = machine->interface1_active_motor < WZ_MACHINE_MICRODRIVE_COUNT
+    transport = machine->interface1_active_motor != 0xffu &&
+        machine->interface1_active_motor < WZ_MACHINE_MICRODRIVE_COUNT
         ? wz_machine_microdrive_at(machine,
             machine->interface1_active_motor) : 0;
     if (transport != 0 && transport->image_present != 0u &&
@@ -163,6 +164,13 @@ wz_result_t wz_machine_interface1_network_read(wz_machine_t* machine,
     }
     if ((machine->interface1_control_latch & 0x01u) != 0u) {
         /* Serial host redirection is deferred; its unconnected line idles high. */
+        *value = 0xffu;
+        return WZ_RESULT_OK;
+    }
+    if (machine->zxnet.state.state == WZ_ZXNET_IDLE &&
+        !machine->zxnet.state.read_block_ready) {
+        /* An unconnected network bus is passive high; do not synthesize a
+         * low data bit from the state machine's internal idle status code. */
         *value = 0xffu;
         return WZ_RESULT_OK;
     }

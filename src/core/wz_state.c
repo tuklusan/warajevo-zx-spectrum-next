@@ -20,7 +20,7 @@ patent, trademark, and governing-law provisions.
 #define WZ_STATE_VERSION 15u
 #define WZ_STATE_HEADER_LENGTH WZ_STATE_MACHINE_MEMORY_OFFSET
 #define WZ_STATE_EXTENSION_MAGIC UINT32_C(0x4e535a57)
-#define WZ_STATE_EXTENSION_VERSION 7u
+#define WZ_STATE_EXTENSION_VERSION 8u
 #define WZ_STATE_EXTENSION_OFFSET (WZ_STATE_HEADER_LENGTH + 65536u)
 
 static wz_result_t wz_state_write(wz_state_writer_t* writer,
@@ -117,7 +117,6 @@ static wz_result_t wz_state_write_mdr(wz_state_writer_t* writer,
         transport->image_present > 1u ||
         transport->write_enabled > 1u || transport->erase_enabled > 1u ||
         transport->host_write_protected > 1u ||
-        transport->gap_count > 15u || transport->sync_count > 15u ||
         transport->dirty > 1u || transport->phase > WZ_MDR_PHASE_DATA) {
         return WZ_RESULT_INVALID_STATE;
     }
@@ -131,8 +130,6 @@ static wz_result_t wz_state_write_mdr(wz_state_writer_t* writer,
         wz_state_write_u8(writer, transport->write_enabled) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, transport->erase_enabled) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, transport->host_write_protected) != WZ_RESULT_OK ||
-        wz_state_write_u8(writer, transport->gap_count) != WZ_RESULT_OK ||
-        wz_state_write_u8(writer, transport->sync_count) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, transport->dirty) != WZ_RESULT_OK ||
         wz_state_write_u8(writer, (wz_byte_t)transport->phase) != WZ_RESULT_OK ||
         (transport->dirty != 0u &&
@@ -238,6 +235,16 @@ static wz_result_t wz_state_write_extension(wz_state_writer_t* writer,
     /* Extension v4 reserved tail: persist the CPU's prior flag-write Q bit. */
     if (wz_state_write_u8(writer, machine->cpu.q) != WZ_RESULT_OK) {
         return WZ_RESULT_SERIALIZATION_FAILURE;
+    }
+    for (size_t slot = 0u; slot < WZ_MACHINE_MICRODRIVE_COUNT; ++slot) {
+        const wz_mdr_transport_t* transport =
+            wz_machine_microdrive_at_const(machine, slot);
+        if (transport == 0 || transport->gap_count > 15u ||
+            transport->sync_count > 15u ||
+            wz_state_write_u8(writer, transport->gap_count) != WZ_RESULT_OK ||
+            wz_state_write_u8(writer, transport->sync_count) != WZ_RESULT_OK) {
+            return WZ_RESULT_SERIALIZATION_FAILURE;
+        }
     }
     if (writer->length - start < WZ_STATE_EXTENSION_CAPACITY) {
         static const wz_byte_t zero_padding[WZ_STATE_EXTENSION_CAPACITY] = {0u};
@@ -633,7 +640,7 @@ static wz_result_t wz_state_deserialize_machine_in_place(
         extension_version = wz_read_le16(data + offset);
         if (extension_version != 3u && extension_version != 4u &&
             extension_version != 5u &&
-            extension_version != 6u &&
+            extension_version != 6u && extension_version != 7u &&
             extension_version != WZ_STATE_EXTENSION_VERSION) {
             return WZ_RESULT_INVALID_STATE;
         }
@@ -720,7 +727,10 @@ static wz_result_t wz_state_deserialize_machine_in_place(
             if (extension_version >= 6u) {
                 microdrive->host_write_protected = data[offset++];
             }
-            if (extension_version >= 7u) {
+            if (extension_version == 7u) {
+                if (offset > length || length - offset < 2u) {
+                    return WZ_RESULT_INVALID_STATE;
+                }
                 microdrive->gap_count = data[offset++];
                 microdrive->sync_count = data[offset++];
             }
@@ -797,17 +807,31 @@ static wz_result_t wz_state_deserialize_machine_in_place(
             read_ready > 1u) {
             return WZ_RESULT_INVALID_STATE;
         }
-        machine->microdrive = microdrives[0];
-        for (size_t slot = 1u; slot < WZ_MACHINE_MICRODRIVE_COUNT; ++slot) {
-            *wz_machine_microdrive_at(machine, slot) = microdrives[slot];
-        }
         machine->zxnet = zxnet;
         wz_zxnet_set_timing_trace(&machine->zxnet, machine->timing_trace);
         wz_zxnet_set_master_tick(&machine->zxnet, machine->master_tick);
         /* Older snapshots keep this reserved extension byte zero. */
         machine->cpu.q = data[offset++];
+        if (extension_version >= 8u) {
+            if (offset > length ||
+                WZ_MACHINE_MICRODRIVE_COUNT * 2u > length - offset) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+            for (size_t slot = 0u; slot < WZ_MACHINE_MICRODRIVE_COUNT; ++slot) {
+                microdrives[slot].gap_count = data[offset++];
+                microdrives[slot].sync_count = data[offset++];
+                if (microdrives[slot].gap_count > 15u ||
+                    microdrives[slot].sync_count > 15u) {
+                    return WZ_RESULT_INVALID_STATE;
+                }
+            }
+        }
         if (machine->cpu.q > 1u) {
             return WZ_RESULT_INVALID_STATE;
+        }
+        machine->microdrive = microdrives[0];
+        for (size_t slot = 1u; slot < WZ_MACHINE_MICRODRIVE_COUNT; ++slot) {
+            *wz_machine_microdrive_at(machine, slot) = microdrives[slot];
         }
     }
     return wz_machine_reset_ula_capture(machine);

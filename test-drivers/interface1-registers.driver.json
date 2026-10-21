@@ -12,7 +12,7 @@
   "fixtures": [
     {
       "path": "ci/test/interface1-registers/interface1-registers-contract.c",
-      "sha256": "577f5c7defddfc2d61ca34133606779543eeb3b0b1884dc24b19508cd5bc2a67"
+      "sha256": "aed9fb2db2d8744a09ced0e8b3500ac23de41768d4a67cd704beed8ce8d894c4"
     },
     {
       "path": "ci/test/interface1-registers/write-proof.py",
@@ -24,7 +24,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "8c723677a889412704a2ec1b06bb4e5f69444894097fe189658faa151b8b99db"
+      "sha256": "e0ae2271882f2d859eed115976a3024dbc0301f0a794235f2d952da3cd4ef616"
     },
     {
       "path": "src/core/wz_machine.h",
@@ -40,7 +40,7 @@
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "d9970066fc41ae23a5f7673f55fdc22ce38a4112a8d0179fa362646d49a53a4c"
+      "sha256": "c5dcbcfa22834195a7dbb0b4ad60f82876f541bfa6e1a908a146ec21bdaa7f2a"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
