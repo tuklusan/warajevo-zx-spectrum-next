@@ -69,6 +69,13 @@ def open_root(host_window, index):
     return x
 
 
+def open_group(host_window, x, row):
+    xdotool("mousemove", "--sync", "--window", host_window,
+            str(x + 80), str(42 + row * 24))
+    xdotool("click", "1")
+    time.sleep(0.3)
+
+
 def require_text(text, expected, label):
     normalized = text.casefold().replace("mdy", "mdv")
     missing = [value for value in expected
@@ -101,10 +108,11 @@ def save_capture(host_window, proof_dir, name):
 
 def click_model_choice(host_window, control, proof_dir):
     x = open_root(host_window, 1)
+    open_group(host_window, x, 0)
     image, text = save_capture(host_window, proof_dir, "machine-model")
     require_text(text, ("48K", "128K"), "Machine > Model")
     xdotool("mousemove", "--sync", "--window", host_window,
-            str(x + 240), "98")
+            str(x + 240), "114")
     time.sleep(0.2)
     xdotool("click", "1")
     time.sleep(0.7)
@@ -116,10 +124,12 @@ def click_model_choice(host_window, control, proof_dir):
 
 def click_speed_choice(host_window, control, proof_dir):
     x = open_root(host_window, 1)
+    open_group(host_window, x, 0)
+    open_group(host_window, x, 1)
     image, text = save_capture(host_window, proof_dir, "machine-speed")
     require_text(text, ("25%", "400%", "Unlimited"), "Machine > Emulation Speed")
     xdotool("mousemove", "--sync", "--window", host_window,
-            str(x + 240), "266")
+            str(x + 240), "210")
     time.sleep(0.2)
     xdotool("click", "1")
     time.sleep(0.5)
@@ -159,7 +169,7 @@ def main():
                 root_specs = (
                     (0, "file-root", ("Recent",)),
                     (1, "machine-root", ("Model", "Emulation Speed")),
-                    (2, "media-root", ("Tape", "Microdrive", "Printer")),
+                    (2, "media-root", ("Tape", "Microdrive", "ZX Printer")),
                     (4, "tools-root", ("Debugger", "Compatibility Tools",
                                         "Diagnostics", "Snapshot Inspector")),
                     (5, "settings-root", ("Peripherals", "Display", "Audio")),
@@ -172,10 +182,10 @@ def main():
                     assertions.append(name)
 
                 x = open_root(host_window, 2)
+                open_group(host_window, x, 1)
                 image, text = save_capture(host_window, args.proof.parent,
                                            "media-microdrive")
-                require_text(text, ("Drive 1", "Drive 7", "Mount MDV",
-                                    "Set MDV 1 Default", "Microdrive Manager"),
+                require_text(text, ("Drive 1", "Drive 7", "Microdrive Manager"),
                              "Media > Microdrive groups")
                 require_count(text, r"\bDrive\s+\d+\.\.\.", 8,
                               "Media > Microdrive eight drive groups")
@@ -185,10 +195,18 @@ def main():
                 captures.append(image)
                 assertions.append("media-microdrive-children")
                 assertions.append("media-microdrive-menu-clean")
-                assertions.append("media-microdrive-drive1-actions-visible")
                 assertions.append("media-microdrive-eight-groups")
+                open_group(host_window, x, 2)
+                image, text = save_capture(host_window, args.proof.parent,
+                                           "media-microdrive-drive1")
+                require_text(text, ("Mount MDV 1", "Eject MDV 1",
+                                    "Set MDV 1 Default"),
+                             "Media > Microdrive > Drive 1 actions")
+                captures.append(image)
+                assertions.append("media-microdrive-drive1-actions-visible")
 
                 x = open_root(host_window, 4)
+                open_group(host_window, x, 1)
                 image, text = save_capture(host_window, args.proof.parent,
                                            "tools-compatibility")
                 require_text(text, ("Tape Converter", "Snapshot Converter",
@@ -198,6 +216,8 @@ def main():
                 assertions.append("tools-compatibility-children")
 
                 x = open_root(host_window, 5)
+                open_group(host_window, x, 0)
+                open_group(host_window, x, 1)
                 image, text = save_capture(host_window, args.proof.parent,
                                            "settings-peripherals")
                 require_text(text, ("Networking", "Printer",

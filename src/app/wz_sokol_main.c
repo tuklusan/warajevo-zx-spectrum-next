@@ -4669,9 +4669,13 @@ static void wz_host_ui_draw_menu_group(struct nk_context* context,
         char node_label[96];
         if (!wz_host_ui_menu_is_direct_child(parent_id, node->id)) continue;
         nk_layout_row_dynamic(context, 20.0f, 1);
-        nk_label(context, wz_host_ui_menu_indented_label(node->label,
-            depth + 1u, node_label, sizeof(node_label)), NK_TEXT_LEFT);
-        wz_host_ui_draw_menu_group(context, node->id, depth + 1u);
+        if (nk_tree_push_id(context, NK_TREE_TAB,
+                wz_host_ui_menu_indented_label(node->label, depth + 1u,
+                    node_label, sizeof(node_label)), NK_MINIMIZED,
+                (int)index + 1)) {
+            wz_host_ui_draw_menu_group(context, node->id, depth + 1u);
+            nk_tree_pop(context);
+        }
     }
     if (depth != 0u) nk_layout_row_dynamic(context, 20.0f, 1);
     if (wz_host_ui_menu_is_microdrive_drive_group(parent_id)) {
