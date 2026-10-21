@@ -4502,6 +4502,14 @@ static const wz_host_ui_menu_node_t wz_host_ui_menu_nodes[] = {
     {"machine.speed", "Emulation Speed"},
     {"media.tape", "Tape"},
     {"media.microdrive", "Microdrive"},
+    {"media.microdrive.drive1", "Drive 1..."},
+    {"media.microdrive.drive2", "Drive 2..."},
+    {"media.microdrive.drive3", "Drive 3..."},
+    {"media.microdrive.drive4", "Drive 4..."},
+    {"media.microdrive.drive5", "Drive 5..."},
+    {"media.microdrive.drive6", "Drive 6..."},
+    {"media.microdrive.drive7", "Drive 7..."},
+    {"media.microdrive.drive8", "Drive 8..."},
     {"media.zx_printer", "ZX Printer"},
     {"tools.debugger", "Debugger"},
     {"tools.compatibility", "Compatibility Tools"},
@@ -4591,7 +4599,10 @@ static void wz_host_ui_draw_menu_group(struct nk_context* context,
                                      parent_id);
         if (group_action != NULL &&
             strcmp(parent_id, "machine.model") != 0 &&
-            strcmp(parent_id, "machine.speed") != 0) {
+            strcmp(parent_id, "machine.speed") != 0 &&
+            !(strncmp(parent_id, "media.microdrive.drive", 22u) == 0 &&
+              parent_id[22] >= '1' && parent_id[22] <= '8' &&
+              parent_id[23] == '\0')) {
             wz_host_ui_draw_menu_command(context, group_action);
         }
     }
@@ -4600,7 +4611,7 @@ static void wz_host_ui_draw_menu_group(struct nk_context* context,
         const wz_host_ui_menu_node_t* node = &wz_host_ui_menu_nodes[index];
         if (!wz_host_ui_menu_is_direct_child(parent_id, node->id)) continue;
         if (nk_menu_begin_label(context, node->label,
-                                NK_TEXT_LEFT, nk_vec2(230.0f, 300.0f))) {
+                                NK_TEXT_LEFT, nk_vec2(230.0f, 420.0f))) {
             nk_layout_row_dynamic(context, 24.0f, 1);
             wz_host_ui_draw_menu_group(context, node->id, depth + 1u);
             nk_menu_end(context);
@@ -4624,9 +4635,11 @@ static void wz_host_ui_draw_menu_group(struct nk_context* context,
                   command->id[strlen(
                       wz_host_ui_menu_nodes[node_index].id)] == '.') ||
                  (command->menu_group != NULL &&
-                  wz_host_ui_menu_is_descendant(
-                      wz_host_ui_menu_nodes[node_index].id,
-                      command->menu_group)))) {
+                  (strcmp(command->menu_group,
+                          wz_host_ui_menu_nodes[node_index].id) == 0 ||
+                   wz_host_ui_menu_is_descendant(
+                       wz_host_ui_menu_nodes[node_index].id,
+                       command->menu_group))))) {
                 nested = true;
                 break;
             }
@@ -4660,7 +4673,7 @@ static void wz_host_ui_draw_menus(struct nk_context* context, float width)
         nk_layout_row_push(context, root_count == 0u ? 0.0f :
                            1.0f / (float)root_count);
         if (root == NULL || !nk_menu_begin_label(
-                context, root->label, NK_TEXT_LEFT, nk_vec2(230.0f, 300.0f))) {
+                context, root->label, NK_TEXT_LEFT, nk_vec2(230.0f, 420.0f))) {
             continue;
         }
         nk_layout_row_dynamic(context, 24.0f, 1);

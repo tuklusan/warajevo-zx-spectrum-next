@@ -116,6 +116,17 @@ static const wz_ui_toolbar_item_t microdrive_drive_actions[
     {"media.microdrive.drive8", "MDV 8"}
 };
 
+static const char* const microdrive_menu_groups[WZ_UI_MICRODRIVE_COUNT] = {
+    "media.microdrive.drive1",
+    "media.microdrive.drive2",
+    "media.microdrive.drive3",
+    "media.microdrive.drive4",
+    "media.microdrive.drive5",
+    "media.microdrive.drive6",
+    "media.microdrive.drive7",
+    "media.microdrive.drive8"
+};
+
 static const wz_ui_networking_option_t networking_options[
     WZ_UI_NETWORKING_OPTION_COUNT] = {
     {WZ_NETWORKING_NONE, WZ_UI_NETWORKING_COMMAND_ID, "None", true, 0},
@@ -675,7 +686,7 @@ wz_result_t wz_ui_layout_register_microdrive_commands(
                     : action == WZ_UI_MICRODRIVE_ACTION_EJECT
                         ? "Eject this cartridge with local confirmation"
                         : "Set this drive as the default Microdrive",
-                "media.microdrive",
+                microdrive_menu_groups[slot],
                 "NONE",
                 "wz-command-result",
                 "wz_ui_layout_microdrive_command",

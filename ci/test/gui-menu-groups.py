@@ -166,19 +166,19 @@ def main():
                 open_group(host_window, x, 1)
                 image, text = save_capture(host_window, args.proof.parent,
                                            "media-microdrive")
-                require_text(text, ("ZX Printer", "Mount", "Set MDV"),
-                             "Media > Microdrive visible actions")
+                require_text(text, ("Drive 1", "Drive 8",
+                                    "Microdrive Manager"),
+                             "Media > Microdrive groups")
                 captures.append(image)
-                xdotool("mousemove", "--sync", "--window", host_window,
-                        str(x + 120), "250")
-                xdotool("click", "--repeat", "24", "--delay", "20", "5")
-                time.sleep(0.3)
+                open_group(host_window, x, 3)
                 image, text = save_capture(host_window, args.proof.parent,
-                                           "media-microdrive-manager")
-                require_text(text, ("Microdrive Manager", "Mount Microdrive"),
-                             "Media > Microdrive manager actions")
+                                           "media-microdrive-drive1")
+                require_text(text, ("Mount MDV 1", "Eject MDV 1",
+                                    "Set MDV 1 Default"),
+                             "Media > Microdrive > Drive 1")
                 captures.append(image)
                 assertions.append("media-microdrive-children")
+                assertions.append("media-microdrive-drive1-actions")
 
                 x = open_root(host_window, 4)
                 open_group(host_window, x, 1)

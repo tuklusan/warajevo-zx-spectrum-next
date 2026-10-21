@@ -1,7 +1,7 @@
 {
   "testId": "gui-menu-groups",
-  "command": "Dispatch .github/workflows/gui-menu-groups.yml on main. The workflow builds and launches the Release/Sokol host under Xvfb, OCR-checks nested menus, and verifies 128K and 400% menu actions through STATUS.",
-  "requiredCases": 12,
+  "command": "Dispatch .github/workflows/gui-menu-groups.yml on main. The workflow builds and launches the Release/Sokol host under Xvfb, OCR-checks canonical nested menus and Microdrive drive actions, and verifies 128K and 400% menu actions through STATUS.",
+  "requiredCases": 13,
   "runnerMatrix": [
     "ubuntu-24.04"
   ],
@@ -12,11 +12,11 @@
     },
     {
       "path": "ci/test/gui-menu-groups.py",
-      "sha256": "bb846df6e6a07b04c0c5ca6ca6f4885cb2278abd9fa67c90f6e46277ff6b873e"
+      "sha256": "542287e8c43344b8c8fe4e0f0685cb958922c4ea9e341c42020bc1229b2b5bb8"
     },
     {
       "path": "ci/test/gui-menu-groups/README.md",
-      "sha256": "65af167b28b27b48d7c1b293ba6398103983c47c92bcc27cc30acbff0a9d5448"
+      "sha256": "93502129bc3239ba9f135471455420c59d2963f8240177c93c50bc49c85fd412"
     },
     {
       "path": "ci/test/gui-screenshot-save.py",
@@ -32,7 +32,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "7c3ec16ab94246e4e433c7c9a626e3d29d7de9b078d39de5eb0a8dc9408bbeaa"
+      "sha256": "e17034a48a93208b2b90aac33076061fa61850701d0945afc8daf9f9193930c2"
     },
     {
       "path": "src/app/wz_command_registry.c",
@@ -45,6 +45,10 @@
     {
       "path": "src/app/wz_telnet_status.c",
       "sha256": "98e77532404a726162a1bd8b075df7934b66a231f085e901094a1aa2cee2f04f"
+    },
+    {
+      "path": "src/app/wz_ui_layout.c",
+      "sha256": "b8e3d9b6e76cda261fbc6d3870794db0723b95c26903f5e788529480736358cf"
     }
   ]
 }
