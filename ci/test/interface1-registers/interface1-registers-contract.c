@@ -48,6 +48,8 @@ int main(void)
 
     memset(rom, 0x5au, sizeof(rom));
     memset(media, 0x33u, sizeof(media));
+    REQUIRE(io(0, WZ_BUS_IO_READ, 0x00efu, &value) ==
+            WZ_RESULT_INVALID_ARGUMENT);
     REQUIRE(wz_machine_init(&machine, wz_machine_profile_48k_pal()) ==
             WZ_RESULT_OK);
     REQUIRE(wz_machine_load_interface1_rom(&machine, rom, sizeof(rom),
