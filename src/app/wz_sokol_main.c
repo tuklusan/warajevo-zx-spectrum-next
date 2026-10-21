@@ -4636,11 +4636,21 @@ static void wz_host_ui_draw_menu_group(struct nk_context* context,
             sizeof(wz_host_ui_menu_nodes[0]); ++index) {
         const wz_host_ui_menu_node_t* node = &wz_host_ui_menu_nodes[index];
         if (!wz_host_ui_menu_is_direct_child(parent_id, node->id)) continue;
-        if (nk_menu_begin_label(context, node->label,
-                                NK_TEXT_LEFT, nk_vec2(230.0f, 420.0f))) {
-            nk_layout_row_dynamic(context, 24.0f, 1);
+        if (depth == 0u) {
+            const float popup_height =
+                strcmp(node->id, "media.microdrive") == 0 ? 700.0f : 420.0f;
+            if (nk_menu_begin_label(context, node->label,
+                    NK_TEXT_LEFT, nk_vec2(320.0f, popup_height))) {
+                nk_layout_row_dynamic(context, 20.0f, 1);
+                wz_host_ui_draw_menu_group(context, node->id, depth + 1u);
+                nk_menu_end(context);
+            }
+        } else {
+            /* Nuklear popups cannot own popups; keep deeper groups visible as
+               headings and render their commands inline beneath them. */
+            nk_layout_row_dynamic(context, 20.0f, 1);
+            nk_label(context, node->label, NK_TEXT_LEFT);
             wz_host_ui_draw_menu_group(context, node->id, depth + 1u);
-            nk_menu_end(context);
         }
     }
     for (index = 0u; index < count; ++index) {

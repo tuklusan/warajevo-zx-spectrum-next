@@ -12,7 +12,7 @@
     },
     {
       "path": "ci/test/gui-menu-groups.py",
-      "sha256": "c23013e37acaac0bce28857a0c39170772f7c411dd2fa373df55e5efa8c06e3b"
+      "sha256": "bc830903adaa48f257d1533f8ae1ad235ceb9d8bb94d0df63e5b25272bbdbd6c"
     },
     {
       "path": "ci/test/gui-menu-groups/README.md",
@@ -32,7 +32,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "ab3c4b62c71eab5df95d65a32548fdf2e92522f026b39fce20092719f41b2828"
+      "sha256": "80493420f24daad794b29fdacc043ed6e7588d717e135ce43a14beff1c8c81f1"
     },
     {
       "path": "src/app/wz_command_registry.c",

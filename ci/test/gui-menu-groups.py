@@ -174,18 +174,12 @@ def main():
                 image, text = save_capture(host_window, args.proof.parent,
                                            "media-microdrive")
                 require_text(text, ("Drive 1", "Drive 8",
-                                    "Microdrive Manager"),
+                                    "Mount MDV 1", "Eject MDV 1",
+                                    "Set MDV 1 Default", "Microdrive Manager"),
                              "Media > Microdrive groups")
                 reject_text(text, ("Mount Microdrive", "Eject Microdrive",
                                    "Set Default Drive"),
                             "Media > Microdrive menu")
-                captures.append(image)
-                open_group(host_window, x, 3)
-                image, text = save_capture(host_window, args.proof.parent,
-                                           "media-microdrive-drive1")
-                require_text(text, ("Mount MDV 1", "Eject MDV 1",
-                                    "Set MDV 1 Default"),
-                             "Media > Microdrive > Drive 1")
                 captures.append(image)
                 assertions.append("media-microdrive-children")
                 assertions.append("media-microdrive-menu-clean")
