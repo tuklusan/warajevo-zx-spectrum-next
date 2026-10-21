@@ -1,0 +1,98 @@
+{
+  "schema": 1,
+  "status": "pass",
+  "testId": "mdr-image-trailer-contract",
+  "commit": "e30a2bcad8aec874bb011030c5ba1de864f271fc",
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39523045347",
+  "runId": 39523045347,
+  "nativeBuildConfiguration": "Release; WZSN_BUILD_SOKOL_HOST=ON",
+  "scope": [
+    "9-254 sector aligned MDR parsing",
+    "fixed 254 sector optional write-protection trailer",
+    "malformed trailing lengths rejected without mutating output",
+    "writable and protected transport behavior",
+    "state round-trip preserves raw image length and identity"
+  ],
+  "assertionCount": 41,
+  "runnerResults": [
+    {
+      "jobId": 118971198334,
+      "status": "pass",
+      "ctest": "17/17 passed",
+      "contract": "wz_mdr_image_trailer_contract passed",
+      "timestamp": "2026-10-21T00:44:34Z",
+      "runner": "Linux x64"
+    },
+    {
+      "jobId": 118971198315,
+      "status": "pass",
+      "ctest": "17/17 passed",
+      "contract": "wz_mdr_image_trailer_contract passed",
+      "timestamp": "2026-10-21T00:44:13Z",
+      "runner": "macOS ARM64"
+    },
+    {
+      "jobId": 118971198466,
+      "status": "pass",
+      "ctest": "17/17 passed",
+      "contract": "wz_mdr_image_trailer_contract passed",
+      "timestamp": "2026-10-21T00:44:55Z",
+      "runner": "Linux ARM64"
+    },
+    {
+      "jobId": 118971198413,
+      "status": "pass",
+      "ctest": "17/17 passed",
+      "contract": "wz_mdr_image_trailer_contract passed",
+      "timestamp": "2026-10-21T00:44:56Z",
+      "runner": "Windows x64"
+    },
+    {
+      "jobId": 118971198232,
+      "status": "pass",
+      "ctest": "17/17 passed",
+      "contract": "wz_mdr_image_trailer_contract passed",
+      "timestamp": "2026-10-21T00:45:01Z",
+      "runner": "macOS Intel"
+    }
+  ],
+  "fixtures": [
+    {
+      "path": "ci/test/mdr-image-trailer/mdr-image-trailer-contract.c",
+      "sha256": "0e578a446f6430f20f647668cf5b600a6d895ee3cb919ba746d054a597c1187a"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "332919e9d13b14e0c23d7d77852a392384b3d08a843080d186906e5c77b92260"
+    },
+    {
+      "path": "src/core/wz_microdrive.c",
+      "sha256": "4de612e163208d566988a3f4bf18cb0206f9e45a5cabe7bce8f1bb00a4727d06"
+    },
+    {
+      "path": "src/core/wz_microdrive.h",
+      "sha256": "9843858b28b09b4f6a3315edf1db32613752907d66111335cd6b3ff4088972f9"
+    },
+    {
+      "path": "src/core/wz_state.c",
+      "sha256": "a2feac7b28f67daabf4bb7026dfb322279db31e09a270681f2539d96ad823efa"
+    },
+    {
+      "path": "src/app/wz_microdrive_manager.c",
+      "sha256": "ae7b59034282f2d57a5072a70e56ac291fcdf03f49fed55d41833da9db25a929"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "53fd85cf869b6d063a3e06cd31d4f5711bb18d1b304b6ea72082fe8b9d595125"
+    },
+    {
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "c2e12e678786ad70ea9171d276a54549ef035e874c42562252227dd590e15c8f"
+    }
+  ],
+  "sourceReviewAdjudication": [
+    "The sector-count output pointer is explicitly optional; the manager uses NULL only to query validity, while callers needing a count pass a valid pointer.",
+    "The protected-image check passes a non-null local count, and accesses the trailer only after confirming exact trailer-inclusive length.",
+    "Restored image length is read from a 32-bit serialized field; the removed comparison against UINT32_MAX could never reject an encoded value."
+  ]
+}
