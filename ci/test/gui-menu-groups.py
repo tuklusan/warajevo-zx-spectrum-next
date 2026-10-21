@@ -149,7 +149,7 @@ def main():
                 root_specs = (
                     (0, "file-root", ("Recent",)),
                     (1, "machine-root", ("Model", "Emulation Speed")),
-                    (2, "media-root", ("Tape", "Microdrive", "ZX Printer")),
+                    (2, "media-root", ("Tape", "Microdrive", "Printer")),
                     (4, "tools-root", ("Debugger", "Compatibility Tools",
                                         "Diagnostics", "Snapshot Inspector")),
                     (5, "settings-root", ("Peripherals", "Display", "Audio")),
@@ -184,7 +184,7 @@ def main():
                 hover(host_window, x, 0)
                 image, text = save_capture(host_window, args.proof.parent,
                                            "settings-peripherals")
-                require_text(text, ("Networking", "ZX Printer",
+                require_text(text, ("Networking", "Printer",
                                     "Telnet Keyboard"),
                              "Settings > Peripherals")
                 captures.append(image)
