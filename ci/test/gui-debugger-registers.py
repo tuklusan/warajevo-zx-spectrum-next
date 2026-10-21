@@ -67,29 +67,7 @@ def screenshot_text(root):
     return run("tesseract", str(prepared), "stdout", "--psm", "6")
 
 
-def find_text(root, label, timeout=5):
-    deadline = time.monotonic() + timeout
-    while time.monotonic() < deadline:
-        image = capture(root)
-        prepared = prepare_ocr(root, image)
-        data = subprocess.run(["tesseract", str(prepared), "stdout", "--psm",
-                               "6", "tsv"],
-                              check=True, capture_output=True, text=True).stdout
-        rows = [line.split("\t") for line in data.splitlines()]
-        matches = [row for row in rows if len(row) >= 12 and
-                   row[11].strip().casefold() == label.casefold() and
-                   row[10].strip().lstrip("-").isdigit() and int(row[10]) > 35]
-        if matches:
-            row = matches[-1]
-            return tuple(int(row[index]) // 3 for index in (6, 7, 8, 9))
-        time.sleep(0.25)
-    raise RuntimeError(f"visible UI label not found: {label}")
-
-
-def click_text(root, label, timeout=5):
-    x0, y0, width, height = find_text(root, label, timeout)
-    x = x0 + width // 2
-    y = y0 + height // 2
+def click_at(x, y):
     run("xdotool", "mousemove", "--sync", str(x), str(y), "click", "1")
     time.sleep(0.25)
 
@@ -158,22 +136,25 @@ def main():
                 geometry = run("xdotool", "getwindowgeometry", "--shell", window)
                 app_width = int(re.search(r"^WIDTH=(\d+)$", geometry,
                                           re.MULTILINE).group(1))
+                app_height = int(re.search(r"^HEIGHT=(\d+)$", geometry,
+                                           re.MULTILINE).group(1))
                 x0 = int(re.search(r"^X=(\d+)$", geometry, re.MULTILINE).group(1))
+                y0 = int(re.search(r"^Y=(\d+)$", geometry, re.MULTILINE).group(1))
                 debugger_left = x0 + max(0, (app_width - 760) // 2)
-                register_label = find_text(root, "Register")
-                edit_y = register_label[1] + register_label[3] + 16
+                debugger_top = y0 + max(0, (app_height - 740) // 2)
+                edit_y = debugger_top + 368
                 edit_x = debugger_left + 560
-                run("xdotool", "mousemove", str(edit_x), str(edit_y), "click", "1",
-                    "key", "ctrl+a", "type", "--clearmodifiers", "0100")
-                click_text(root, "Set")
+                run("xdotool", "mousemove", str(edit_x), str(edit_y), "click", "1")
+                run("xdotool", "key", "ctrl+a", "type", "--clearmodifiers", "0100")
+                click_at(debugger_left + 190, debugger_top + 400)
                 invalid = screenshot_text(root)
                 if "Invalid debugger register value" not in invalid:
                     raise RuntimeError("out-of-range byte register edit was not rejected")
                 assertions.append("byte-register-width-rejected")
 
-                run("xdotool", "mousemove", str(edit_x), str(edit_y), "click", "1",
-                    "key", "ctrl+a", "type", "--clearmodifiers", "5A")
-                click_text(root, "Set")
+                run("xdotool", "mousemove", str(edit_x), str(edit_y), "click", "1")
+                run("xdotool", "key", "ctrl+a", "type", "--clearmodifiers", "5A")
+                click_at(debugger_left + 190, debugger_top + 400)
                 updated = screenshot_text(root)
                 if not re.search(r"AF\s+5A[0-9A-F]{2}", updated):
                     raise RuntimeError("main A register edit was not reflected in UI")
@@ -181,7 +162,7 @@ def main():
                 (args.capture_dir / "debugger-register-edited.png").write_bytes(
                     (root / "screen.png").read_bytes())
 
-                click_text(root, "Undo")
+                click_at(debugger_left + 570, debugger_top + 400)
                 restored = screenshot_text(root)
                 if not re.search(rf"AF\s+{original_af}\b", restored):
                     raise RuntimeError("register undo did not restore the prior AF value")
