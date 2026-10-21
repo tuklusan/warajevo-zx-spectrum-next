@@ -28,7 +28,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "061d925f164a2a33a32355e49fe694c3924fc02782555897350b99af9c95a085"
+      "sha256": "55c48f8dbac01c5492a10b5534e18bd44b975b398c1ee0413655dab2e6850ce2"
     },
     {
       "path": "src/core/wz_bus.c",
