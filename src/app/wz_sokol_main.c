@@ -2818,6 +2818,56 @@ static wz_result_t wz_host_command_speed(
     return WZ_RESULT_OK;
 }
 
+typedef struct {
+    const char* target_id;
+    const char* fixed_argument;
+} wz_host_fixed_action_t;
+
+static wz_result_t wz_host_command_fixed_action(
+    const void* context, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    const wz_host_fixed_action_t* action =
+        (const wz_host_fixed_action_t*)context;
+    (void)arguments;
+    if (action == NULL || action->target_id == NULL ||
+        action->fixed_argument == NULL || result == NULL) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    return wz_command_registry_dispatch(
+        &wz_host_session.command_registry, action->target_id,
+        (wz_command_arguments_t){action->fixed_argument,
+                                 strlen(action->fixed_argument)}, result);
+}
+
+static const wz_host_fixed_action_t wz_host_model_48k_action = {
+    "machine.model.set", "48k"
+};
+static const wz_host_fixed_action_t wz_host_model_128k_action = {
+    "machine.model.set", "128k"
+};
+static const wz_host_fixed_action_t wz_host_speed_25_action = {
+    "machine.speed.set", "25"
+};
+static const wz_host_fixed_action_t wz_host_speed_50_action = {
+    "machine.speed.set", "50"
+};
+static const wz_host_fixed_action_t wz_host_speed_100_action = {
+    "machine.speed.set", "100"
+};
+static const wz_host_fixed_action_t wz_host_speed_200_action = {
+    "machine.speed.set", "200"
+};
+static const wz_host_fixed_action_t wz_host_speed_400_action = {
+    "machine.speed.set", "400"
+};
+static const wz_host_fixed_action_t wz_host_speed_800_action = {
+    "machine.speed.set", "800"
+};
+static const wz_host_fixed_action_t wz_host_speed_unlimited_action = {
+    "machine.speed.set", "UNLIMITED"
+};
+
 static int wz_host_printer_open_token = 1;
 static int wz_host_printer_export_token = 2;
 
@@ -3561,6 +3611,69 @@ static bool wz_host_register_commands(void)
             &wz_host_session, true, true, NULL
         },
         {
+            "machine.model.48k", "48K", "Select the ZX Spectrum 48K PAL profile",
+            "machine.model", "NONE", "MODEL", "wz_host_command_fixed_action",
+            "fixed", NULL, WZ_COMMAND_REMOTE_SAFE, NULL,
+            wz_host_command_fixed_action, &wz_host_model_48k_action,
+            true, true, NULL
+        },
+        {
+            "machine.model.128k", "128K", "Select the ZX Spectrum 128K PAL profile",
+            "machine.model", "NONE", "MODEL", "wz_host_command_fixed_action",
+            "fixed", NULL, WZ_COMMAND_REMOTE_SAFE, NULL,
+            wz_host_command_fixed_action, &wz_host_model_128k_action,
+            true, true, NULL
+        },
+        {
+            "machine.speed.25", "25%", "Set emulation speed to 25 percent",
+            "machine.speed", "NONE", "SPEED", "wz_host_command_fixed_action",
+            "fixed", NULL, WZ_COMMAND_REMOTE_SAFE, NULL,
+            wz_host_command_fixed_action, &wz_host_speed_25_action,
+            true, true, NULL
+        },
+        {
+            "machine.speed.50", "50%", "Set emulation speed to 50 percent",
+            "machine.speed", "NONE", "SPEED", "wz_host_command_fixed_action",
+            "fixed", NULL, WZ_COMMAND_REMOTE_SAFE, NULL,
+            wz_host_command_fixed_action, &wz_host_speed_50_action,
+            true, true, NULL
+        },
+        {
+            "machine.speed.100", "100%", "Set emulation speed to 100 percent",
+            "machine.speed", "NONE", "SPEED", "wz_host_command_fixed_action",
+            "fixed", NULL, WZ_COMMAND_REMOTE_SAFE, NULL,
+            wz_host_command_fixed_action, &wz_host_speed_100_action,
+            true, true, NULL
+        },
+        {
+            "machine.speed.200", "200%", "Set emulation speed to 200 percent",
+            "machine.speed", "NONE", "SPEED", "wz_host_command_fixed_action",
+            "fixed", NULL, WZ_COMMAND_REMOTE_SAFE, NULL,
+            wz_host_command_fixed_action, &wz_host_speed_200_action,
+            true, true, NULL
+        },
+        {
+            "machine.speed.400", "400%", "Set emulation speed to 400 percent",
+            "machine.speed", "NONE", "SPEED", "wz_host_command_fixed_action",
+            "fixed", NULL, WZ_COMMAND_REMOTE_SAFE, NULL,
+            wz_host_command_fixed_action, &wz_host_speed_400_action,
+            true, true, NULL
+        },
+        {
+            "machine.speed.800", "800%", "Set emulation speed to 800 percent",
+            "machine.speed", "NONE", "SPEED", "wz_host_command_fixed_action",
+            "fixed", NULL, WZ_COMMAND_REMOTE_SAFE, NULL,
+            wz_host_command_fixed_action, &wz_host_speed_800_action,
+            true, true, NULL
+        },
+        {
+            "machine.speed.unlimited", "Unlimited", "Run without a speed limit",
+            "machine.speed", "NONE", "SPEED", "wz_host_command_fixed_action",
+            "fixed", NULL, WZ_COMMAND_REMOTE_SAFE, NULL,
+            wz_host_command_fixed_action, &wz_host_speed_unlimited_action,
+            true, true, NULL
+        },
+        {
             "host.screenshot.temp", "Screenshot", "Save the current raster",
             "host", "NONE", "PATH", "wz_host_command_screenshot", "telnet",
             NULL, WZ_COMMAND_REMOTE_SAFE, NULL, wz_host_command_screenshot,
@@ -3899,16 +4012,29 @@ static void wz_host_telnet_poll(void)
 
 static wz_result_t wz_host_ui_set_speed(wz_speed_policy_t speed)
 {
+    static const char* const action_ids[WZ_SPEED_COUNT] = {
+        "machine.speed.25", "machine.speed.50", "machine.speed.100",
+        "machine.speed.200", "machine.speed.400", "machine.speed.800",
+        "machine.speed.unlimited"
+    };
     wz_command_result_t result;
-    return wz_ui_layout_activate_speed(
-        &wz_host_session.command_registry, speed, &result);
+    if (!wz_speed_policy_valid(speed)) return WZ_RESULT_INVALID_ARGUMENT;
+    return wz_command_registry_dispatch(
+        &wz_host_session.command_registry, action_ids[(size_t)speed],
+        (wz_command_arguments_t){NULL, 0u}, &result);
 }
 
 static wz_result_t wz_host_ui_set_model(const char* model)
 {
     wz_command_result_t result;
-    return wz_ui_layout_activate_model(
-        &wz_host_session.command_registry, model, &result);
+    const char* action_id;
+    if (model == NULL) return WZ_RESULT_INVALID_ARGUMENT;
+    if (strcmp(model, "48k") == 0) action_id = "machine.model.48k";
+    else if (strcmp(model, "128k") == 0) action_id = "machine.model.128k";
+    else return WZ_RESULT_INVALID_ARGUMENT;
+    return wz_command_registry_dispatch(
+        &wz_host_session.command_registry, action_id,
+        (wz_command_arguments_t){NULL, 0u}, &result);
 }
 
 static void wz_host_ui_draw_speed_items(struct nk_context* context)
