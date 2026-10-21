@@ -1,13 +1,13 @@
 {
   "testId": "debugger-core-contract",
   "status": "pass",
-  "commit": "647567ed1c96ab4b02ad6a14f78f1e9b75dcf67c",
+  "commit": "93cad5fa9eca608e19e728af2840be54928e4f66",
   "runner": "GitHub Actions native matrix",
-  "timestamp": "2026-10-21T19:13:41Z",
-  "workflowRun": 39659158070,
+  "timestamp": "2026-10-21T19:26:27Z",
+  "workflowRun": 39661406687,
   "assertionsPerRunner": 241,
-  "integratedCtest": "28/28 per target",
-  "phase16": "all configured correctness fingerprints and throughput checks passed per target; max slowdown 30.6%",
+  "integratedCtest": "29/29 per target",
+  "phase16": "all configured correctness fingerprints and throughput checks passed per target",
   "targets": [
     {
       "name": "Windows x64",
@@ -51,7 +51,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "656eb8eaf045f24acedc5bb1af8895c5d179a2b3ef894e7bbfa0c6405efe88e0"
+      "sha256": "a15191a10f52e7f5fa1010b08bf575211609116a61c67190bdc7f299e7321d5a"
     },
     {
       "path": "src/core/wz_debugger.c",

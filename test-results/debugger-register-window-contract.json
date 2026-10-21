@@ -1,0 +1,46 @@
+{
+  "testId": "debugger-register-window-contract",
+  "workflowRun": 39661406687,
+  "fixtures": [
+    {
+      "sha256": "3bfc24b9f882d5479a3a465769633a69b5681a494cae2b8246afd5e79a5bd671",
+      "path": "ci/test/debugger-register-window-contract.c"
+    },
+    {
+      "sha256": "1c42b0a9ae6a48b4ee59fcdd03248ff00f2d6236bafb5e93ccc5f954da33bb14",
+      "path": "src/app/wz_debugger_window.c"
+    },
+    {
+      "sha256": "f2bba1351a2057bc5a9d94e3e65b2f1ad4e654c78f78b609db86bd0f18ab4b2c",
+      "path": "src/app/wz_debugger_window.h"
+    },
+    {
+      "sha256": "a15191a10f52e7f5fa1010b08bf575211609116a61c67190bdc7f299e7321d5a",
+      "path": "src/cmake/CMakeLists.txt"
+    }
+  ],
+  "sourceReview": {
+    "adjudication": "The reported repeated close is non-actionable: wz_debugger_window_close only resets flags, counters, and borrowed pointers; it owns and releases no allocations, so repeated close is idempotent.",
+    "tool": "Gito 4.5.0",
+    "status": "passed; finding adjudicated"
+  },
+  "ctest": "29/29 per target",
+  "commit": "93cad5fa9eca608e19e728af2840be54928e4f66",
+  "status": "pass",
+  "cases": [
+    "register edits are rejected while running without mutation",
+    "paused edits update the live CPU and refreshed debugger snapshot",
+    "one-step CPU undo remains available",
+    "invalid IFF range returns debugger error without changing state",
+    "window close makes further register edits unavailable"
+  ],
+  "targets": [
+    "Windows x64",
+    "Linux x64",
+    "Linux ARM64",
+    "macOS ARM64",
+    "macOS Intel"
+  ],
+  "runner": "GitHub Actions native matrix",
+  "timestamp": "2026-10-21T19:26:27Z"
+}
