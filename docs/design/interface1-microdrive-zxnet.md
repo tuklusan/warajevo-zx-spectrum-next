@@ -100,9 +100,16 @@ full CPU address and canonical bus-cycle tick.
 | Low-five-bit port | Direction | Register behavior |
 |---|---|---|
 | `E7h` (`231`) | read/write | Microdrive serial data byte; reads and writes follow the control latch and selected motor. |
-| `EFh` (`239`) | read | Status: bit 0 write protect, bit 1 sync, bit 2 gap, bit 3 DTR, bit 4 busy; bits 5–7 read high. |
+| `EFh` (`239`) | read | Status: bit 0 write protect (active high per the service manual), bit 1 sync, bit 2 gap, bit 3 DTR, bit 4 busy; bits 5–7 read high. |
 | `EFh` (`239`) | write | Control latch: bit 0 communications data, bit 1 communications clock, bit 2 read/write (`1` read, `0` write), bit 3 erase (`0` erase asserted), bit 4 CTS, bit 5 wait; bits 6–7 are retained but have no device effect. |
-| `F7h` (`247`) | read/write | Network/serial data register; bit 0 carries ZX Net data when communications-data is low. Serial signaling is outside this task's ZX Net implementation. |
+| `F7h` (`247`) | read/write | Network/serial data register; with communications-data low, bit 0 is ZX Net input/output. With it high, bit 7 is serial input and bit 0 serial output; serial host redirection remains LATER per Architecture §1. |
+
+The service manual says the WR PROT line is normally low, and the selected
+drive pulls it high when the write-protect switch is closed. WZSN therefore
+reports EFh bit 0 high for protected media and low for writable/unmounted
+media. The pinned Fuse source clears bit 0 when its cartridge is protected;
+this known divergence follows the primary service manual and is covered by the
+write-protection contract.
 
 The control latch stores the complete written byte. DTR and CTS are RS-232
 signals at bits 3 and 4; CTS is not a Microdrive signal. The daisy-chain selection
@@ -114,14 +121,13 @@ models this as an active-low eight-bit mask and clocks on a falling COMMS CLK
 edge; that representation is not the electrical COMMS OUT polarity. A single
 selection maps to drive 1–8; no selection or multiple selections yields no
 usable drive. Motor numbers in UI/API calls are one-based. `E7h` transfers
-serial Microdrive data. The controller asserts WAIT until a byte is available;
-each access consumes the byte presented by the serial head. A read with no
-selected/running drive or readable data can stall the CPU, as on the hardware.
-The emulator records the stall as deterministic machine state and releases it
-only when a valid device transition supplies the awaited data. Writes follow
-bits 2/3 and selected-drive write-protect state; they may not silently accept
-data in the wrong direction. UI operations may run while the machine is paused
-to resolve a missing cartridge, but they cannot inject data from another thread.
+serial Microdrive data, one byte per eligible port access in the frozen Fuse
+emulator profile. If there is no selected mounted drive, the bus returns the
+profile idle value `0xff`; Microdrive data availability does not assert the
+network WAIT line. Writes follow bits 2/3 and selected-drive write-protect
+state; they may not silently accept data in the wrong direction. UI operations
+may run while the machine is paused to resolve a missing cartridge, but they
+cannot inject data from another thread.
 
 The Interface 1 bus handlers own all three ports while that mode is active.
 They must preserve unrelated ULA, printer, 128K paging, and host bus observer
@@ -177,9 +183,10 @@ MDR bytes. Fuse models formatted-sector GAP/SYNC through counters initialized
 to 15 and advanced by EFh status reads, and consumes byte data on E7h accesses;
 it does not model bit-cell duration or motor spin-up. WZSN follows those
 observable transaction semantics and serializes every counter and position
-that can affect a later bus read. Physical bit-cell duration, motor acceleration,
-and sector period remain unclaimed rather than guessed. Any future physical
-timing profile requires new evidence and a deliberate spec revision.
+that can affect a later bus read. The WR PROT polarity divergence is the
+explicit exception described in §4. Physical bit-cell duration, motor
+acceleration, and sector period remain unclaimed rather than guessed. Any future
+physical timing profile requires new evidence and a deliberate spec revision.
 
 Erase/format gaps, invalid sector checksums, end-of-sector advancement, motor
 changes, and write-protect status are explicit device state, included in
@@ -237,6 +244,14 @@ without mutation. Delivery occurs on the core owner thread when the stamped
 tick is due. Tests cover every state transition, duplicate/changed IDs,
 bit/byte boundaries, callback failure/success, wraparound IDs, queue ordering,
 and queue saturation.
+
+EFh control bit 5 is the Interface 1 WAIT output. When the control latch
+requests WAIT, the Spectrum's I/O cycle remains pending until the ZX Net state
+machine supplies the awaited signal; this is represented in canonical
+machine-tick state, never by blocking a host thread. Microdrive reads do not
+use this line. F7h network input/output is selected only while COMMS DATA is
+low; the serial side remains electrically idle in the initial architecture
+because historical RS-232 host redirection is LATER.
 
 The legacy delay value is not interpreted as wall-clock time. Deterministic
 machine-visible status lengths are read-count based; any future clocked network
