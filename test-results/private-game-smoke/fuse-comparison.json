@@ -1,9 +1,9 @@
 {
   "testId": "private-game-rom-loading-observation",
   "status": "observation",
-  "commit": "cd6fc6b5fff9d265c2eb37bb6d7447c6a5a5b4c2",
-  "runId": 39344848510,
-  "runner": "macOS ARM64",
+  "commit": "ff55d3f83ec15e366874ee89d85f02ce88896161",
+  "runId": 39605027435,
+  "runner": "Linux X64",
   "mediaClass": "private ZX Spectrum game TAP",
   "romSha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42",
   "speedPercent": 400,
@@ -17,38 +17,7 @@
   ],
   "samples": [
     {
-      "elapsedSeconds": 30.026,
-      "frameSha256": "d1706cfc9b9d5cb036c4fdbf78f4e90e59c1e5623b91f37cdfa59f4d6bfe35da",
-      "width": 448,
-      "height": 312,
-      "changedPixelsFromBoot": 48426,
-      "changedPercentFromBoot": 34.645433,
-      "meanChannelDifferenceFromBoot": 65.773352,
-      "dominantColors": [
-        {
-          "rgb": "#c0c0c0",
-          "pixels": 91043
-        },
-        {
-          "rgb": "#000000",
-          "pixels": 47104
-        },
-        {
-          "rgb": "#c00000",
-          "pixels": 1629
-        }
-      ],
-      "textSignals": {
-        "romCopyright": false,
-        "loadCommand": false,
-        "tapeError": false,
-        "gameTitle": true,
-        "startPrompt": false,
-        "score": false
-      }
-    },
-    {
-      "elapsedSeconds": 90.164,
+      "elapsedSeconds": 30.028,
       "frameSha256": "86242ac65c1842c2f49dc8ef4403da6059e1b7a94931757a05be8f627c8b8afd",
       "width": 448,
       "height": 312,
@@ -79,7 +48,7 @@
       }
     },
     {
-      "elapsedSeconds": 180.012,
+      "elapsedSeconds": 90.014,
       "frameSha256": "d1706cfc9b9d5cb036c4fdbf78f4e90e59c1e5623b91f37cdfa59f4d6bfe35da",
       "width": 448,
       "height": 312,
@@ -110,7 +79,7 @@
       }
     },
     {
-      "elapsedSeconds": 240.05,
+      "elapsedSeconds": 180.014,
       "frameSha256": "86242ac65c1842c2f49dc8ef4403da6059e1b7a94931757a05be8f627c8b8afd",
       "width": 448,
       "height": 312,
@@ -141,7 +110,38 @@
       }
     },
     {
-      "elapsedSeconds": 300.026,
+      "elapsedSeconds": 240.021,
+      "frameSha256": "d1706cfc9b9d5cb036c4fdbf78f4e90e59c1e5623b91f37cdfa59f4d6bfe35da",
+      "width": 448,
+      "height": 312,
+      "changedPixelsFromBoot": 48426,
+      "changedPercentFromBoot": 34.645433,
+      "meanChannelDifferenceFromBoot": 65.773352,
+      "dominantColors": [
+        {
+          "rgb": "#c0c0c0",
+          "pixels": 91043
+        },
+        {
+          "rgb": "#000000",
+          "pixels": 47104
+        },
+        {
+          "rgb": "#c00000",
+          "pixels": 1629
+        }
+      ],
+      "textSignals": {
+        "romCopyright": false,
+        "loadCommand": false,
+        "tapeError": false,
+        "gameTitle": true,
+        "startPrompt": false,
+        "score": false
+      }
+    },
+    {
+      "elapsedSeconds": 300.028,
       "frameSha256": "0b05c9f1f4e1b39d44ce53233712bebc202e6f0c6d94e12decaa7099f3c2f926",
       "width": 448,
       "height": 312,
@@ -182,7 +182,8 @@
   ],
   "limitations": [
     "Aggregate frame metrics are an observation, not gameplay or Fuse visual equivalence proof.",
-    "Private media bytes, media paths, and screenshots are not uploaded."
+    "Private media bytes, media paths, and screenshots are not uploaded.",
+    "Private-media comparison is not gameplay acceptance: the Fuse and product frames are not synchronized to a matching emulated game state."
   ],
   "fuseReference": {
     "inputSha256": "a54aa9d21c16e0700dab6ea816dab7a62c8c7b0e92fc04f8e8f0fb255b1c4d2a",
@@ -219,35 +220,35 @@
     },
     "comparisons": [
       {
-        "elapsedSeconds": 30.026,
-        "mismatchPercent": 71.29264,
-        "activeScreenMismatchPercent": 20.446777,
-        "borderMismatchPercent": 98.870056,
-        "meanChannelError": 132.284985
-      },
-      {
-        "elapsedSeconds": 90.164,
+        "elapsedSeconds": 30.028,
         "mismatchPercent": 71.29264,
         "activeScreenMismatchPercent": 20.446777,
         "borderMismatchPercent": 98.870056,
         "meanChannelError": 132.517585
       },
       {
-        "elapsedSeconds": 180.012,
+        "elapsedSeconds": 90.014,
         "mismatchPercent": 71.29264,
         "activeScreenMismatchPercent": 20.446777,
         "borderMismatchPercent": 98.870056,
         "meanChannelError": 132.284985
       },
       {
-        "elapsedSeconds": 240.05,
+        "elapsedSeconds": 180.014,
         "mismatchPercent": 71.29264,
         "activeScreenMismatchPercent": 20.446777,
         "borderMismatchPercent": 98.870056,
         "meanChannelError": 132.517585
       },
       {
-        "elapsedSeconds": 300.026,
+        "elapsedSeconds": 240.021,
+        "mismatchPercent": 71.29264,
+        "activeScreenMismatchPercent": 20.446777,
+        "borderMismatchPercent": 98.870056,
+        "meanChannelError": 132.284985
+      },
+      {
+        "elapsedSeconds": 300.028,
         "mismatchPercent": 77.896062,
         "activeScreenMismatchPercent": 38.452148,
         "borderMismatchPercent": 99.289371,
