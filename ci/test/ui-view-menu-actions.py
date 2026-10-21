@@ -24,7 +24,9 @@ helpers = runpy.run_path(str(Path(__file__).with_name("gui-screenshot-save.py"))
 xdotool = helpers["xdotool"]
 window = helpers["window"]
 connect = helpers["connect"]
-command = helpers["command"]
+control_helpers = runpy.run_path(str(Path(__file__).with_name(
+    "live-telnet-acceptance.py")))
+Control = control_helpers["Control"]
 
 
 def capture(host_window, destination, bottom_only=False):
@@ -83,45 +85,54 @@ def main():
                     stderr=subprocess.STDOUT)
                 host_window = window(helpers["TITLE"])
                 sock = connect(process)
-                tree = command(sock, "MENU TREE").splitlines()
+                control = Control(sock)
+                tree = control.send("MENU TREE", multiline=True)
                 ids = ("view.machine_media_status", "view.display_settings")
+                assertions = 0
                 for action_id in ids:
                     entries = [line for line in tree
                                if line.startswith(f"ITEM {action_id} ")]
                     if len(entries) != 1 or "CLASS=LOCAL_ONLY" not in entries[0]:
                         raise RuntimeError(
                             f"View action metadata missing or unsafe: {action_id}")
-                    denial = command(sock, f"DO {action_id}")
-                    if f"DENIED {action_id}" not in denial:
+                    assertions += 1
+                    denial = control.send(f"DO {action_id}")
+                    if denial[-1] != f"DENIED {action_id} LOCAL_ONLY":
                         raise RuntimeError(
-                            f"remote View action was not denied: {action_id}: {denial}")
+                            f"remote View action was not denied: {action_id}: {denial[-1]}")
+                    assertions += 1
 
                 initial_status = capture(host_window,
                     args.proof.parent / "status-visible.png", True)
                 if "Keyboard" not in initial_status:
                     raise RuntimeError(
                         f"initial status panel is not visible: {initial_status!r}")
+                assertions += 1
                 view_choice(host_window, 1)
                 hidden_status = capture(host_window,
                     args.proof.parent / "status-hidden.png", True)
                 if "Keyboard" in hidden_status:
                     raise RuntimeError(
                         f"status panel remained visible after toggle: {hidden_status!r}")
+                assertions += 1
                 view_choice(host_window, 1)
                 restored_status = capture(host_window,
                     args.proof.parent / "status-restored.png", True)
                 if "Keyboard" not in restored_status:
                     raise RuntimeError(
                         f"status panel did not restore: {restored_status!r}")
+                assertions += 1
                 view_choice(host_window, 2)
                 display_settings = capture(host_window,
                     args.proof.parent / "display-settings.png")
                 if not re.search(r"Display Settings", display_settings, re.I):
                     raise RuntimeError(
                         f"display settings panel did not open: {display_settings!r}")
-                machine_status = command(sock, "STATUS")
+                assertions += 1
+                machine_status = control.send("STATUS")[-1]
                 if "STATE=RUNNING" not in machine_status:
                     raise RuntimeError("View actions changed machine run state")
+                assertions += 1
                 images = {}
                 for name in ("status-visible", "status-hidden",
                              "status-restored", "display-settings"):
@@ -134,7 +145,7 @@ def main():
                     "runId": int(os.environ.get("GITHUB_RUN_ID", "0")),
                     "runner": os.environ.get("RUNNER_OS", ""),
                     "architecture": os.environ.get("RUNNER_ARCH", ""),
-                    "assertions": 8,
+                    "assertions": assertions,
                     "remoteDeniedIds": list(ids),
                     "statusPanel": ["visible", "hidden", "visible"],
                     "displaySettingsOpened": True,
