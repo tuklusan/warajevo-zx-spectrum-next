@@ -222,9 +222,19 @@ int main(void)
     {
         wz_mdr_transport_t* preserved_drive =
             wz_machine_microdrive_at(&restored, 0u);
-        const size_t q_offset = WZ_STATE_MACHINE_MEMORY_OFFSET + 65536u +
-            20u + 17u + 31u * WZ_MACHINE_MICRODRIVE_COUNT + 281u;
+        size_t q_offset = WZ_STATE_MACHINE_MEMORY_OFFSET + 65536u +
+            20u + 17u;
         CHECK(preserved_drive != NULL);
+        for (size_t slot = 0u; slot < WZ_MACHINE_MICRODRIVE_COUNT; ++slot) {
+            const wz_mdr_transport_t* transport =
+                wz_machine_microdrive_at_const(&machine, slot);
+            CHECK(transport != NULL);
+            q_offset += 31u;
+            if (transport->dirty != 0u) {
+                q_offset += sizeof(transport->buffer);
+            }
+        }
+        q_offset += 281u;
         preserved_drive->image = &image;
         wz_zxnet_set_write_callback(&restored.zxnet,
                                     unused_write_callback, &restored);

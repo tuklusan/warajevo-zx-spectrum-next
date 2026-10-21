@@ -11,7 +11,7 @@
   "fixtures": [
     {
       "path": "ci/test/zxnet-canonical-state/zxnet-canonical-state-contract.c",
-      "sha256": "2202dd4c6939f41ba8d07e814bdb871c9bf66bf6a62984060b3edf34197f33ee"
+      "sha256": "1c09760e03aae4c48d1791211ed27efae20aeaab86064086de6f467a0218a066"
     },
     {
       "path": "src/core/wz_state.c",
