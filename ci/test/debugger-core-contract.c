@@ -216,11 +216,52 @@ static int test_cpu_edit_undo_and_execution(void)
     return 0;
 }
 
+static int test_128k_page_inspection_and_editing(void)
+{
+    wz_machine_t* machine = new_machine(wz_machine_profile_128k_pal());
+    wz_debugger_page_info_t page;
+    wz_byte_t value = 0u;
+
+    CHECK(machine != NULL);
+    CHECK(wz_debugger_read_page_info(machine, &page) == WZ_RESULT_OK);
+    CHECK(page.paging_value == 0u && page.screen_bank == 5u &&
+          page.rom_bank == 0u && page.paging_locked == 0u);
+    CHECK(wz_debugger_set_page_config(machine, 0x1fu) == WZ_RESULT_INVALID_STATE);
+    CHECK(wz_debugger_set_access_mode(machine, WZ_DEBUGGER_PAUSED_MUTATION) ==
+          WZ_RESULT_OK);
+    CHECK(wz_debugger_set_page_config(machine, 0x40u) ==
+          WZ_RESULT_INVALID_ARGUMENT);
+    CHECK(wz_debugger_write_memory(machine, 0x3fffu, 0u) ==
+          WZ_RESULT_UNSUPPORTED_OPERATION);
+    CHECK(wz_debugger_set_page_config(machine, 0x1fu) == WZ_RESULT_OK);
+    CHECK(wz_debugger_read_page_info(machine, &page) == WZ_RESULT_OK);
+    CHECK(page.paging_value == 0x1fu && page.screen_bank == 7u &&
+          page.rom_bank == 1u && page.paging_locked == 0u);
+    CHECK(wz_debugger_write_memory(machine, 0xc000u, 0x71u) == WZ_RESULT_OK);
+    CHECK(wz_debugger_read_memory(machine, 0xc000u, &value) == WZ_RESULT_OK &&
+          value == 0x71u);
+    CHECK(wz_debugger_set_page_config(machine, 0x02u) == WZ_RESULT_OK);
+    CHECK(wz_debugger_read_memory(machine, 0xc000u, &value) == WZ_RESULT_OK &&
+          value == 0u);
+    CHECK(wz_debugger_write_memory(machine, 0xc000u, 0x22u) == WZ_RESULT_OK);
+    CHECK(wz_debugger_set_page_config(machine, 0x20u) == WZ_RESULT_OK);
+    CHECK(wz_debugger_read_page_info(machine, &page) == WZ_RESULT_OK);
+    CHECK(page.paging_value == 0x20u && page.paging_locked == 1u);
+    CHECK(wz_debugger_set_page_config(machine, 0x00u) == WZ_RESULT_OK);
+    CHECK(wz_debugger_read_page_info(machine, &page) == WZ_RESULT_OK);
+    CHECK(page.paging_value == 0x20u && page.paging_locked == 1u);
+    CHECK(wz_debugger_read_memory(machine, 0xc000u, &value) == WZ_RESULT_OK &&
+          value == 0x22u);
+    free_machine(machine);
+    return 0;
+}
+
 int main(void)
 {
     if (test_inspection_and_disassembly() != 0 ||
         test_memory_edit_gate_and_ranges() != 0 ||
-        test_cpu_edit_undo_and_execution() != 0) {
+        test_cpu_edit_undo_and_execution() != 0 ||
+        test_128k_page_inspection_and_editing() != 0) {
         return 1;
     }
     printf("debugger-core-contract assertions=%u status=pass\n", checks);
