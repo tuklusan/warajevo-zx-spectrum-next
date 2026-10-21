@@ -46,18 +46,23 @@ def capture(host_window, destination, bottom_only=False):
                 capture_output=True, text=True).stdout.strip()
 
 
-def view_choice(host_window, row):
+def open_view_menu(host_window):
     geometry = xdotool("getwindowgeometry", "--shell", host_window)
     width_match = re.search(r"^WIDTH=(\d+)$", geometry, re.MULTILINE)
     if width_match is None:
         raise RuntimeError("host window width unavailable")
     x = int(int(width_match.group(1)) * 0.50)
     xdotool("windowfocus", "--sync", host_window)
-    xdotool("mousemove", "--sync", "--window", host_window, str(x), "42")
+    xdotool("mousemove", "--sync", "--window", host_window, str(x), "10")
     xdotool("click", "1")
     time.sleep(0.4)
+    return x
+
+
+def view_choice(host_window, row):
+    x = open_view_menu(host_window)
     xdotool("mousemove", "--sync", "--window", host_window,
-            str(x), str(68 + row * 24))
+            str(x), str(42 + row * 24))
     xdotool("click", "1")
     time.sleep(0.7)
 
@@ -102,6 +107,16 @@ def main():
                             f"remote View action was not denied: {action_id}: {denial[-1]}")
                     assertions += 1
 
+                open_view_menu(host_window)
+                view_menu_text = capture(host_window,
+                    args.proof.parent / "view-menu.png")
+                if "Fullscreen" not in view_menu_text or \
+                        "Machine / Media Status" not in view_menu_text or \
+                        "Display Settings" not in view_menu_text:
+                    raise RuntimeError(
+                        f"canonical View menu unavailable: {view_menu_text!r}")
+                assertions += 1
+                xdotool("key", "Escape")
                 initial_status = capture(host_window,
                     args.proof.parent / "status-visible.png", True)
                 if "Keyboard" not in initial_status:
@@ -134,7 +149,7 @@ def main():
                     raise RuntimeError("View actions changed machine run state")
                 assertions += 1
                 images = {}
-                for name in ("status-visible", "status-hidden",
+                for name in ("view-menu", "status-visible", "status-hidden",
                              "status-restored", "display-settings"):
                     image_path = args.proof.parent / f"{name}.png"
                     images[name] = hashlib.sha256(

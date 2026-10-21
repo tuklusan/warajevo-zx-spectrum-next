@@ -44,6 +44,7 @@ jobs:
           name: ui-view-menu-actions-proof
           path: |
             dist/ui-view-menu-actions/proof.json
+            dist/ui-view-menu-actions/view-menu.png
             dist/ui-view-menu-actions/status-visible.png
             dist/ui-view-menu-actions/status-hidden.png
             dist/ui-view-menu-actions/status-restored.png
