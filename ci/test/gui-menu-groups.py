@@ -47,7 +47,7 @@ def root_x(host_window, index):
     width_match = re.search(r"^WIDTH=(\d+)$", geometry, re.MULTILINE)
     height_match = re.search(r"^HEIGHT=(\d+)$", geometry, re.MULTILINE)
     if width_match is None or height_match is None:
-        raise RuntimeError(f"host window width unavailable: {geometry!r}")
+        raise RuntimeError(f"host window geometry unavailable: {geometry!r}")
     width = int(width_match.group(1))
     return int(width * (index + 0.5) / 7)
 
