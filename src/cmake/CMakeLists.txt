@@ -915,6 +915,17 @@ add_custom_target(wz_telnet_do_parse_check ALL
     DEPENDS wz_telnet_do_parse_tests
     VERBATIM)
 
+add_executable(
+    wz_ay_timing_contract_tests
+    ${WZSN_REPO_ROOT}/ci/test/ay-timing/ay-timing-contract.c
+    ${WZSN_SOURCE_ROOT}/core/audio/wz_ay.c)
+target_include_directories(wz_ay_timing_contract_tests PRIVATE "${WZSN_SOURCE_ROOT}")
+target_link_libraries(wz_ay_timing_contract_tests PRIVATE wz_warnings)
+add_custom_target(wz_ay_timing_contract_check ALL
+    COMMAND "$<TARGET_FILE:wz_ay_timing_contract_tests>"
+    DEPENDS wz_ay_timing_contract_tests
+    VERBATIM)
+
 if(WZSN_FUSE_Z80_TEST_INPUT AND WZSN_FUSE_Z80_TEST_EXPECTED)
     enable_testing()
     add_test(NAME fuse_z80_conformance

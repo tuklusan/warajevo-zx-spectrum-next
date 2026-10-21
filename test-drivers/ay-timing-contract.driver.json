@@ -1,0 +1,43 @@
+{
+  "testId": "ay-timing-contract",
+  "command": "cmake -S src/cmake -B dist/ay-timing-contract -DCMAKE_BUILD_TYPE=Release -DWZSN_BUILD_SOKOL_HOST=ON && cmake --build dist/ay-timing-contract --clean-first --config Release --parallel 2",
+  "requiredAssertions": 67,
+  "runnerMatrix": [
+    "windows-2025 x64",
+    "ubuntu-24.04 x64",
+    "ubuntu-24.04-arm ARM64",
+    "macos-15 ARM64",
+    "macos-15-intel x64"
+  ],
+  "reference": "General Instrument AY-3-8910/AY-3-8912 Programmable Sound Generator Data Manual, tone/noise/envelope clock dividers and envelope shape table: https://www.westfloridacomponents.com/mm5/graphics/ds10/AY-3-8912.pdf",
+  "fixtures": [
+    {
+      "path": "ci/test/ay-timing/ay-timing-contract.c",
+      "sha256": "3e4b244534ec6b83a23a7ef11cf34766082850b87b1d4658abd550eaf7028bb8"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "bbf0280a803f789387b3de60ab0bf27fa20db5a455dfe6faa9c65aed4c6e2ad2"
+    },
+    {
+      "path": "src/core/audio/wz_ay.c",
+      "sha256": "ddb27e2d878c5e9a0ca803e5198e04468c97f9c95a4dd9ac33d7324033c5ae39"
+    },
+    {
+      "path": "src/core/audio/wz_ay.h",
+      "sha256": "5cff8be704c4f33e8cbb54ea09c9b5ed4ac2f2b39fc4f9fc92f4dedf6b920da3"
+    },
+    {
+      "path": "docs/design/01-warajevo-zx-spectrum-next-architecture.md",
+      "sha256": "dc5cf052d8ad6e6df51e81a5a1156fa6d7c874881bd6a7617b4115029cf0d990"
+    },
+    {
+      "path": "docs/design/machine-timing-evidence.md",
+      "sha256": "a8078c758fa9df7ae39faa75fa49a66b9d94150c8e0be34687c7b64a42ea255d"
+    },
+    {
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "80d7005abc5435e087de93a859cea399514144f50b3b704b85cc00a5da97acbc"
+    }
+  ]
+}
