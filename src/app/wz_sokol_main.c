@@ -4568,7 +4568,13 @@ static void wz_host_ui_draw_menu_command(struct nk_context* context,
     const char* disabled_reason = NULL;
     bool enabled;
     const char* label;
-    if (command == NULL) return;
+    if (command == NULL || command->id == NULL) return;
+    if (strcmp(command->id, "media.microdrive.mount") == 0 ||
+        strcmp(command->id, "media.microdrive.eject") == 0 ||
+        strcmp(command->id, "media.microdrive.set_default") == 0 ||
+        strcmp(command->id, WZ_MICRODRIVE_MANAGER_OPEN_COMMAND_ID) == 0) {
+        return;
+    }
     if (strcmp(command->id, WZ_PRINTER_MODE_COMMAND_ID) == 0) return;
     enabled = wz_command_registry_state(&wz_host_session.command_registry,
         command->id, &disabled_reason) == WZ_COMMAND_ENABLED;

@@ -28,8 +28,8 @@ command = helpers["command"]
 TITLE = helpers["TITLE"]
 
 
-def capture(host_window, destination):
-    subprocess.run(["import", "-window", host_window, str(destination)],
+def capture(destination):
+    subprocess.run(["import", "-window", "root", str(destination)],
                    check=True, capture_output=True)
     with Image.open(destination) as image:
         enlarged = image.resize((image.width * 2, image.height * 2),
@@ -91,7 +91,7 @@ def reject_text(text, unexpected, label):
 
 def save_capture(host_window, proof_dir, name):
     destination = proof_dir / f"{name}.png"
-    text = capture(host_window, destination)
+    text = capture(destination)
     return destination, text
 
 
