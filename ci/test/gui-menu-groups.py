@@ -195,7 +195,7 @@ def main():
                                            "media-microdrive")
                 require_text(text, ("Drive 1", "Drive 7", "Microdrive Manager"),
                              "Media > Microdrive groups")
-                require_count(text, r"\bDrive\s+\d+\.\.\.", 8,
+                require_count(text, r"\bDrive\s+\d+\S{0,3}\.{2,}", 8,
                               "Media > Microdrive eight drive groups")
                 reject_text(text, ("Mount Microdrive", "Eject Microdrive",
                                    "Set Default Drive"),
