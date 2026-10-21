@@ -1,0 +1,75 @@
+{
+  "testId": "telnet-screenshot-runtime",
+  "status": "pass",
+  "commit": "a9a537586f97796d1dcbf66581606925a3074f60",
+  "runId": 39602641769,
+  "runner": "Linux",
+  "architecture": "X64",
+  "assertions": [
+    "running-state-preserved",
+    "absolute-os-temp-path",
+    "timestamped-filename",
+    "valid-448x312-png",
+    "paused-state-preserved",
+    "paused-raster-repeatable",
+    "pause-resume-state-preserved",
+    "failed-write-returns-error-without-path",
+    "failed-write-preserves-status"
+  ],
+  "assertionCount": 9,
+  "runningPngSha256": "55aa70bf047750ae0990f6b82a75a6e7a6f0f5ab676b2258250845b7f565efcd",
+  "pausedPngSha256": "55aa70bf047750ae0990f6b82a75a6e7a6f0f5ab676b2258250845b7f565efcd",
+  "timestamp": "2026-10-21T12:48:59Z",
+  "fixtures": [
+    {
+      "path": ".github/workflows/telnet-screenshot-runtime.yml",
+      "sha256": "b106741e9afb62143e4e06859d6c2c990481a4c1a4c3ba73d8503c444fbcc39a"
+    },
+    {
+      "path": "ci/test/telnet-screenshot-runtime.py",
+      "sha256": "74a58464e62307d53bba84a93a5a64339cc3640ae04bb5b2a75dbaf6d4a67308"
+    },
+    {
+      "path": "ci/test/telnet-screenshot-runtime/README.md",
+      "sha256": "645c27d25f446985ce8819ce496f7fe58adcd6b169cac8938e895b07f537ac25"
+    },
+    {
+      "path": "ci/test/gui-screenshot-save.py",
+      "sha256": "b141ac9b4c91e33028291b0312f8fc2ac31f67c161c52cc0eb51a42bc54ff82f"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "b246a5a23ffa20e53be79821bab4c623136704477994082dae118799a90696f0"
+    },
+    {
+      "path": "src/app/wz_telnet_keyboard_command.c",
+      "sha256": "f9bc61d019c440e04102ea7a2c5af4146f812b9b16cd257d1bc244733b2da0d4"
+    },
+    {
+      "path": "src/app/wz_telnet_alias_response.c",
+      "sha256": "f2df5aebedf4d5be5113c32c0e070c6b076b7b1934cb6736803cafddfc3ecd99"
+    },
+    {
+      "path": "src/app/wz_screenshot_service.c",
+      "sha256": "05c8da60b7b90ca6b3a2b6b865ef6e00ab017ac739be8e282f196078fd195949"
+    },
+    {
+      "path": "roms/48.rom",
+      "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"
+    }
+  ],
+  "sourceReviewAdjudication": "The reviewer reported an out-of-bounds terminator read. This is a false positive: dispatch_response is a NUL-terminated string, and strstr can return the three-byte quote/CR/LF sequence only when its terminating NUL is addressable as the following byte; the check safely requires the response to end there.",
+  "fiveTargetBuildRun": {
+    "runId": 39602597193,
+    "commit": "a9a537586f97796d1dcbf66581606925a3074f60",
+    "result": "success",
+    "targets": [
+      "Windows x64",
+      "Linux x64",
+      "Linux ARM64",
+      "macOS ARM64",
+      "macOS Intel"
+    ],
+    "workflow": "Full native build and test"
+  }
+}
