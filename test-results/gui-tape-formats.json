@@ -1,24 +1,24 @@
 {
   "testId": "gui-tape-formats",
   "status": "pass",
-  "commit": "1dd61908ac9dfb6c4871e8c39f79e3ac3dbc9b5c",
-  "runId": 38918000157,
+  "commit": "3d6dfe743be735ee74194b00acd97d494ce2319a",
+  "runId": 39548310544,
   "runner": "Linux",
   "cases": [
     {
       "format": "TZX",
       "mediaSha256": "62b7e7fd8f931942e189e4fd4d1b47c05a8524b4ce61ad7c0e446fbaf0796fee",
-      "managerOcr": "File\n\nMachine\n\nMedia\n\nview\n\nTools\n\nSettings\n\nHelp\n\nopen / Run\n\nPause\n\nReset\n\n100%\n\nVY Tape / Normal\n\nv\n\nLoad Snapsho\n\nSave Snapsho\n\nMov 4\n\nv\n\nScreenshot\n\nFullscreen\n\nDebugger\n\nTape Manager\n\nClose Tape Manager\n\nSource\n\n/tmp/w2-gui-tape-formats-876mbi jt/synthetic. tzx\n\nFormat\n\nT2x | Loading mode\n\nNormal\n\nTransport\n\nStopped | Signal segment 4 / e114\n\nTape blocks\n\nPrevious blacks\n\nNext blacks\n\n> Block 4 | Standard data (18) | supported | logical 1 / sto\n\n19g\n\nincl\n\nir\n\n2x Spectrum 48k PAL | 196% | Running | Keyboard UI | Audio On | Tape Stopped | MOV1 Empty | Net None | Tape inserte\n\nControl Port\n\nACTIVE\n\n30740 |\n\nIpv4: UP | Listener\n\nUP | Telnet",
-      "managerScreenshotSha256": "c4bfe058c0eb9854d6b42974ec63943173519a0e672f5dc5728fcf0059d588d4"
+      "managerOcr": "File\n\nMachine\n\nMedia\n\nview\n\nTools\n\nSettings\n\nHelp\n\nopen / Run\n\nPause\n\nReset\n\n100%\n\nVY Tape / Normal\n\nv\n\nLoad Snapsho\n\nSave Snapsho\n\nMov 4\n\nv\n\nScreenshot\n\nFullscreen\n\nDebugger\n\nTape Manager\n\nClose Tape Manager\n\nSource\n\n/tmp/w2-gui-tape-formats-xsk@aq)a/synthetic. tzx\n\nFormat\n\nT2x | Loading mode\n\nNormal\n\nTransport\n\nStopped | Signal segment 4 / e114\n\nTape blocks\n\nPrevious blacks\n\nNext blacks\n\n> Block 4 | Standard data (18) | supported | logical 1 / sto\n\n19g\n\nincl\n\nir\n\n2x Spectrum 48k PAL | 196% | Running | Keyboard UI | Audio On | Tape Stopped | MOV1 Empty | Net None | Tape inserte\n\nControl Port\n\nACTIVE\n\n30740 |\n\nIpv4: UP | Listener\n\nUP | Telnet",
+      "managerScreenshotSha256": "98b7bd995736c1114b54e9c62688ab68bc20838b29e8e0fcc8701b0a1bd5c531"
     },
     {
       "format": "WAV",
       "mediaSha256": "1c0e12cccc2d6ee95dba12697c6be66e32068c48c8e335f6c48b102f6a24d2fb",
-      "managerOcr": "File\n\nMachine\n\nMedia\n\nview\n\nTools\n\nSettings\n\nHelp\n\nopen / Run\n\nPause\n\nReset\n\n100%\n\nVY Tape / Normal\n\nv\n\nLoad Snapsho\n\nSave Snapsho\n\nMov 4\n\nv\n\nScreenshot\n\nFullscreen\n\nDebugger\n\nTape Manager\n\nClose Tape Manager\n\nSource\n\n/tmp/w2-gui-tape-formats-876mbt jt/synthetic. wav\n\nFormat\n\nWAV | Loading mode\n\nNormal\n\nTransport\n\nStopped | Signal segment 1 / 20\n\nTransport signal segments (read only)\n\nPrevious segments\n\nNext segments\n\n> Segment 4 | EAR low\n\n| 35000 master ticks\n\nSegment 2 | EAR high\n\n| 35000 master ticks\n\nSegment 3 | EAR Tow\n\n| 35000 master ticks\n\nSegment 4 | EAR high\n\n| 35000 master ticks\n\nSegment § | EAR Tow\n\n| 35000 master ticks\n\nSegment 6 | EAR high\n\n| 35000 master ticks\n\nSegment 7 | EAR Tow\n\n| 35000 master ticks\n\nSegment 8 | EAR high\n\n| 35000 master ticks\n\nSegment 9 | EAR Tow\n\n| 35000 master ticks\n\n19g\n\nincl\n\nair\n\n2x Spectrum 48K PAL | 196% | Running | Keyboard UT | Audio On | Tape Stopped | MOV1 Empty | Net None | Tape inserted\n\nControl Port\n\nACTIVE\n\n30740 |\n\nIpv4: UP | Listener\n\nUP | Telnet",
-      "managerScreenshotSha256": "bc708157509f38060a5cb467b64c36b83057ebc9b469e887b6aac9e2a6004751"
+      "managerOcr": "File\n\nMachine\n\nMedia\n\nview\n\nTools\n\nSettings\n\nHelp\n\nopen / Run\n\nPause\n\nReset\n\n100%\n\nVY Tape / Normal\n\nv\n\nLoad Snapsho\n\nSave Snapsho\n\nMov 4\n\nv\n\nScreenshot\n\nFullscreen\n\nDebugger\n\nTape Manager\n\nClose Tape Manager\n\nSource\n\n/tmp/w2-gui-tape-formats-xsk@aq)8/synthetic. wav\n\nFormat\n\nWAV | Loading mode\n\nNormal\n\nTransport\n\nStopped | Signal segment 1 / 20\n\nTransport signal segments (read only)\n\nPrevious segments\n\nNext segments\n\n> Segment 4 | EAR low\n\n| 35000 master ticks\n\nSegment 2 | EAR high\n\n| 35000 master ticks\n\nSegment 3 | EAR Tow\n\n| 35000 master ticks\n\nSegment 4 | EAR high\n\n| 35000 master ticks\n\nSegment \u00a7 | EAR Tow\n\n| 35000 master ticks\n\nSegment 6 | EAR high\n\n| 35000 master ticks\n\nSegment 7 | EAR Tow\n\n| 35000 master ticks\n\nSegment 8 | EAR high\n\n| 35000 master ticks\n\nSegment 9 | EAR Tow\n\n| 35000 master ticks\n\n19g\n\nincl\n\nair\n\n2x Spectrum 48K PAL | 196% | Running | Keyboard UT | Audio On | Tape Stopped | MOV1 Empty | Net None | Tape inserted\n\nControl Port\n\nACTIVE\n\n30740 |\n\nIpv4: UP | Listener\n\nUP | Telnet",
+      "managerScreenshotSha256": "ed2a9c76ac0244e3402bbfef8443cf2661e61e6b8b62b5621807a52c2bf52e1d"
     }
   ],
-  "timestamp": "2026-10-16T14:44:41Z",
+  "timestamp": "2026-10-21T05:14:48Z",
   "fixtures": [
     {
       "sha256": "f0e6d2702e4586451c85df61e86ee0c40c279d662979b975e3aadf64997c2df0",
@@ -41,11 +41,11 @@
       "path": "ci/test/gui-screenshot-save.py"
     },
     {
-      "sha256": "917b342f916c0bc9862dfba580531f3d1a9e5bfa6c2e4df1d6736d374bb32088",
+      "sha256": "dd0425c29af2c5ea6a3f541c081aafee6a8f74c5d2f57e7013252fe1dbe5291f",
       "path": "src/app/wz_sokol_main.c"
     },
     {
-      "sha256": "6c5de7b5b6a20cad20643b1f9007629846bccc0bb49bf7412cad9464ae9be062",
+      "sha256": "6c8aaea15cdd323d0f9a7c28d12e254e2145cbdabf07849f05892dc3807758f0",
       "path": "src/app/wz_ui_layout.c"
     },
     {
@@ -53,7 +53,7 @@
       "path": "src/core/wz_tape.c"
     },
     {
-      "sha256": "bbe18851ffea6041d0b5ca663e1a38db881e5fd9e083ed5c76456d8930df2121",
+      "sha256": "7a08c91c117233f94182465b75ea98964dab4f97a5e9560f3cdc58d67a79a076",
       "path": "src/app/wz_tape_manager.c"
     },
     {
@@ -62,5 +62,5 @@
     }
   ],
   "sourceArtifact": "gui-tape-formats-proof",
-  "hostedProofSha256": "8dbeb3c525d6d2f94d60c5989fb240e660cacd7ae387c6cf9c8d2283484d48c3"
+  "hostedProofSha256": "957c6a6af6553c2b9442242adb3bc53511832ba7ff478d7234f81849f81c184d"
 }
