@@ -63,7 +63,7 @@ static int read_file(const char* path, const void* expected, size_t length)
 
 int main(void)
 {
-    static const wz_byte_t pixels[4u] = {1u, 2u, 3u, 4u};
+    static wz_byte_t pixels[4u] = {1u, 2u, 3u, 4u};
     static const char blocked_contents[] = "not a directory";
     wz_machine_t machine;
     wz_presentation_snapshot_t snapshot;
@@ -104,29 +104,23 @@ int main(void)
         return 1;
     }
     machine_initialized = true;
-    (void)fputs("SCREENSHOT CONTRACT STAGE machine-init\n", stderr);
     machine.master_tick = 12345u;
-    REQUIRE(wz_raster_buffer_init(&raster, 2u, 2u,
-                                  (wz_byte_t*)pixels, sizeof(pixels)) ==
+    REQUIRE(wz_raster_buffer_init(&raster, 2u, 2u, pixels, sizeof(pixels)) ==
             WZ_RESULT_OK);
     REQUIRE(wz_presentation_snapshot_init(&snapshot, 2u, 2u, snapshot_pixels,
             sizeof(snapshot_pixels)) == WZ_RESULT_OK);
     REQUIRE(wz_presentation_snapshot_publish(&snapshot, &raster) ==
             WZ_RESULT_OK);
-    (void)fputs("SCREENSHOT CONTRACT STAGE snapshot-ready\n", stderr);
 
     REQUIRE(state_hash(&machine, &before_hash));
-    (void)fputs("SCREENSHOT CONTRACT STAGE hash-before\n", stderr);
     before_tick = machine.master_tick;
     REQUIRE(wz_telnet_screenshot_save(&snapshot, screenshot_path,
             sizeof(screenshot_path)) == WZ_TELNET_SCREENSHOT_OK);
-    (void)fputs("SCREENSHOT CONTRACT STAGE screenshot-saved\n", stderr);
     REQUIRE(screenshot_path[0] != '\0');
     REQUIRE(read_file(screenshot_path, "\x89PNG\r\n\x1a\n", 8u));
     REQUIRE(machine.master_tick == before_tick);
     REQUIRE(state_hash(&machine, &after_hash) && after_hash == before_hash);
     REQUIRE(remove(screenshot_path) == 0);
-    (void)fputs("SCREENSHOT CONTRACT STAGE screenshot-removed\n", stderr);
     screenshot_path[0] = '\0';
 
     blocker = fopen(blocker_path, "wb");
@@ -141,7 +135,6 @@ int main(void)
     before_tick = machine.master_tick;
     REQUIRE(wz_telnet_screenshot_save(&snapshot, screenshot_path,
             sizeof(screenshot_path)) != WZ_TELNET_SCREENSHOT_OK);
-    (void)fputs("SCREENSHOT CONTRACT STAGE failure-captured\n", stderr);
     REQUIRE(screenshot_path[0] == '\0');
     REQUIRE(machine.master_tick == before_tick);
     REQUIRE(state_hash(&machine, &after_hash) && after_hash == before_hash);
