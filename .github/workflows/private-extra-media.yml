@@ -1,0 +1,55 @@
+# Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
+# This file is governed by the SANYALnet Labs Non-Commercial License in the
+# root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
+# for AI/ML model training are prohibited unless separately authorized.
+# Attribution is required: "Based on original work by Supratim Sanyal of
+# SANYALnet Labs." See LICENSE for full terms.
+name: Private extra media playback
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  private-media-playback:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build the existing core media regression
+        run: |
+          cmake -S src/cmake -B dist/private-extra-media -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release -DWZSN_BUILD_SOKOL_HOST=OFF
+          cmake --build dist/private-extra-media --config Release \
+            --target wz_private_media_playback --parallel 2
+      - name: Transfer private TAP to an ephemeral runner directory
+        env:
+          WZSN_TEMP_PRIVATE_MEDIA_BASE64: ${{ secrets.WZSN_TEMP_PRIVATE_MEDIA_BASE64 }}
+        run: |
+          set -eu
+          test -n "$WZSN_TEMP_PRIVATE_MEDIA_BASE64"
+          temp_dir="$(mktemp -d "$RUNNER_TEMP/wz-private-media.XXXXXX")"
+          trap 'rm -rf "$temp_dir"' EXIT
+          printf '%s' "$WZSN_TEMP_PRIVATE_MEDIA_BASE64" \
+            | base64 --decode > "$temp_dir/input.tap"
+          chmod 600 "$temp_dir/input.tap"
+          dist/private-extra-media/wz_private_media_playback "$temp_dir" \
+            > dist/private-extra-media/private-media-summary.json
+      - name: Write proof without media bytes or identifiers
+        run: |
+          python3 ci/test/private-extra-media/write-proof.py \
+            --commit "$GITHUB_SHA" --run-id "$GITHUB_RUN_ID" \
+            --runner "$RUNNER_OS/$RUNNER_ARCH" \
+            --summary dist/private-extra-media/private-media-summary.json \
+            --proof dist/private-extra-media/proof.json
+      - name: Upload aggregate proof only
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: private-extra-media-proof
+          path: dist/private-extra-media/proof.json
+          if-no-files-found: error
+          retention-days: 1
