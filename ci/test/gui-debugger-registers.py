@@ -145,9 +145,9 @@ def main():
                         f"production debugger register editor is not visible; OCR={screen!r}")
                 assertions.append("debugger-register-controls-visible")
 
-                click_text(root, "Pause")
+                click_toolbar(window, 1)
                 before = screenshot_text(root)
-                match = re.search(r"\bAF\s+([0-9A-F]{4})", before)
+                match = re.search(r"AF\s+([0-9A-F]{4})", before)
                 if match is None:
                     raise RuntimeError("main AF value is not readable in debugger")
                 original_af = match.group(1)
@@ -175,7 +175,7 @@ def main():
                     "key", "ctrl+a", "type", "--clearmodifiers", "5A")
                 click_text(root, "Set")
                 updated = screenshot_text(root)
-                if not re.search(r"\bAF\s+5A[0-9A-F]{2}", updated):
+                if not re.search(r"AF\s+5A[0-9A-F]{2}", updated):
                     raise RuntimeError("main A register edit was not reflected in UI")
                 assertions.append("paused-main-register-edit-reflected")
                 (args.capture_dir / "debugger-register-edited.png").write_bytes(
@@ -183,7 +183,7 @@ def main():
 
                 click_text(root, "Undo")
                 restored = screenshot_text(root)
-                if not re.search(rf"\bAF\s+{original_af}\b", restored):
+                if not re.search(rf"AF\s+{original_af}\b", restored):
                     raise RuntimeError("register undo did not restore the prior AF value")
                 assertions.append("register-undo-restored-prior-af")
                 (args.capture_dir / "debugger-register-undo.png").write_bytes(
