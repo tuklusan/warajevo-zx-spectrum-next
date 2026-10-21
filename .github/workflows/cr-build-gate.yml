@@ -90,7 +90,8 @@ jobs:
         run: |
           set -o pipefail
           cmake -S src/cmake -B dist/cr-gate-${{ matrix.label }} -DCMAKE_BUILD_TYPE=Release -DWZSN_BUILD_SOKOL_HOST=ON
-          cmake --build dist/cr-gate-${{ matrix.label }} --clean-first --config Release --parallel 2
+          cmake --build dist/cr-gate-${{ matrix.label }} --clean-first --config Release --parallel 2 2>&1 \
+            | tee "dist/cr-gate-${{ matrix.label }}/build.log"
           ctest --test-dir dist/cr-gate-${{ matrix.label }} -C Release --output-on-failure --verbose \
             | tee dist/cr-gate-${{ matrix.label }}/ctest.log
 
@@ -145,6 +146,8 @@ jobs:
             --ctest-log "dist/cr-gate-${{ matrix.label }}/ctest.log" \
             --performance-record "dist/performance-${{ matrix.label }}/current.json" \
             --output-dir "dist/runner-evidence"
+          cp "dist/cr-gate-${{ matrix.label }}/build.log" \
+            "dist/runner-evidence/build-${{ matrix.performance_baseline }}.log"
 
       - name: Upload temporary runner evidence
         if: github.event_name == 'workflow_dispatch'
@@ -181,6 +184,10 @@ jobs:
             --commit "$GITHUB_SHA" --run-id "$GITHUB_RUN_ID" \
             --branch "$GITHUB_REF_NAME" --event "$GITHUB_EVENT_NAME" \
             --input-dir hosted-inputs
+          python ci/test/ay-timing/write-proof.py \
+            --commit "$GITHUB_SHA" --run-id "$GITHUB_RUN_ID" \
+            --branch "$GITHUB_REF_NAME" --event "$GITHUB_EVENT_NAME" \
+            --input-dir hosted-inputs
 
       - name: Upload temporary proof records
         uses: actions/upload-artifact@v4
@@ -189,6 +196,7 @@ jobs:
           path: |
             test-results/interface1-wait.json
             test-results/phase16-performance-current.json
+            test-results/ay-timing-contract.json
             test-results/performance-current/*.json
           if-no-files-found: error
           retention-days: 1
