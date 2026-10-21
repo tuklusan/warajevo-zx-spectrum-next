@@ -2,8 +2,17 @@
   "testId": "full-native-build-gate",
   "command": "The .github/workflows/cr-build-gate.yml source-push workflow performs a clean Release build, integrated CTest, and Phase-16 regression on each native matrix runner.",
   "requiredCases": 5,
-  "runnerMatrix": ["windows-2025", "ubuntu-24.04", "ubuntu-24.04-arm", "macos-15", "macos-15-intel"],
+  "runnerMatrix": [
+    "windows-2025",
+    "ubuntu-24.04",
+    "ubuntu-24.04-arm",
+    "macos-15",
+    "macos-15-intel"
+  ],
   "fixtures": [
-    {"path": ".github/workflows/cr-build-gate.yml", "sha256": "e10e0157a7e276cbbf2f332082703917defd392c7b9482f4d65d1725052893cb"}
+    {
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "1a24084f2117fbf746e296b4f8376c54d9321efa710f60528fa70a8da7771904"
+    }
   ]
 }

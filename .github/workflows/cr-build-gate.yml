@@ -245,7 +245,7 @@ jobs:
             --branch "$GITHUB_REF_NAME" --event "$GITHUB_EVENT_NAME" \
             --input-dir hosted-inputs
           python ci/test/screenshot-state-time/write-proof.py \
-            --commit "$source_commit" \
+            --commit "$source_commit" --driver-commit "$GITHUB_SHA" \
             --run-id "$source_run_id" \
             --branch "$GITHUB_REF_NAME" --event "$GITHUB_EVENT_NAME" \
             --input-dir hosted-inputs

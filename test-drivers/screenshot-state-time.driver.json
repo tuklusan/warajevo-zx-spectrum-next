@@ -13,7 +13,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "3e0231f35b038f059e137a1eb1e9cc3374fd07f5c12bf77e338d1143dd94c3e1"
+      "sha256": "1a24084f2117fbf746e296b4f8376c54d9321efa710f60528fa70a8da7771904"
     },
     {
       "path": "ci/test/screenshot-state-time/screenshot-state-time.c",
@@ -21,7 +21,7 @@
     },
     {
       "path": "ci/test/screenshot-state-time/write-proof.py",
-      "sha256": "7f574915d2faf02705857351ce31eed31deccead0170c37afeb6e9f90c1b561e"
+      "sha256": "39ad2c70c38bea2c68650a9bd50c428bcb48cd94f3b68bf84a4043244e7afabb"
     },
     {
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
