@@ -1,0 +1,122 @@
+{
+  "schema": 1,
+  "status": "pass",
+  "testId": "microdrive-write-protect-contract",
+  "commit": "c32c0afca00cd25e4df73b99d6aac9ca318c4462",
+  "sourceCommit": "4714dca3ac5dd57b573a423117c13d4876d5c6f9",
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39526865899",
+  "runId": 39526865899,
+  "nativeBuildConfiguration": "Release; WZSN_BUILD_SOKOL_HOST=ON",
+  "contractTest": "wz_microdrive_write_protect_contract passed as part of full CTest suite",
+  "coverage": [
+    "Interface 1 EF write-protect status reflects the selected writable/host-protected cartridge",
+    "host protection rejects bus writes without dirtying staged image data",
+    "allowed E7 writes stage sector bytes without changing the image before flush",
+    "failed persistence preserves dirty data and image bytes",
+    "read-only transition blocks flush and preserves staged data",
+    "successful application callback persists the sector and clears dirty state",
+    "host write-protection survives canonical machine state round-trip"
+  ],
+  "runnerResults": [
+    {
+      "runner": "macOS-macos-arm64",
+      "jobId": 118983472559,
+      "ctest": "19/19 passed",
+      "contract": "wz_microdrive_write_protect_contract passed",
+      "timestamp": "2026-10-21T01:22:29Z",
+      "status": "pass"
+    },
+    {
+      "runner": "Windows-windows-x64",
+      "jobId": 118983472673,
+      "ctest": "19/19 passed",
+      "contract": "wz_microdrive_write_protect_contract passed",
+      "timestamp": "2026-10-21T01:22:46Z",
+      "status": "pass"
+    },
+    {
+      "runner": "Linux-ubuntu-24.04-arm",
+      "jobId": 118983472715,
+      "ctest": "19/19 passed",
+      "contract": "wz_microdrive_write_protect_contract passed",
+      "timestamp": "2026-10-21T01:22:43Z",
+      "status": "pass"
+    },
+    {
+      "runner": "Linux-ubuntu-24.04",
+      "jobId": 118983472751,
+      "ctest": "19/19 passed",
+      "contract": "wz_microdrive_write_protect_contract passed",
+      "timestamp": "2026-10-21T01:22:45Z",
+      "status": "pass"
+    },
+    {
+      "runner": "macOS-macos-x64",
+      "jobId": 118983472937,
+      "ctest": "19/19 passed",
+      "contract": "wz_microdrive_write_protect_contract passed",
+      "timestamp": "2026-10-21T01:23:07Z",
+      "status": "pass"
+    }
+  ],
+  "fixtures": [
+    {
+      "path": "ci/test/microdrive-write-protect/microdrive-write-protect-contract.c",
+      "sha256": "a7a226bd6eb0c8bf43fcf3cabf712bfdc60e3d74f4ed3fcbd6daee8e76638329"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "07afde50642535ac42015fa0bfc3e081533f827d6f4af8ee90590ecb3b1be3a6"
+    },
+    {
+      "path": "src/core/wz_microdrive.c",
+      "sha256": "30d9e3b2f856deff18fe8c6aa21332fbf8018d5742adec79107e52051c0016d8"
+    },
+    {
+      "path": "src/core/wz_microdrive.h",
+      "sha256": "223cba6f9359eace0fcc85a361e28e5f4daeb1c34bf06b2f01bf5f040d00959b"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "018cb55bd8bcdf3c4342274215cc50b58618e1216b5f3e0f99b6f9191d01ee22"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "90cf96e435148c80817bf835c74f5e778cefd4024ec213c52a514d4bd6fd1efb"
+    },
+    {
+      "path": "src/core/wz_machine_internal.h",
+      "sha256": "356576730ce7cd7a7f6ccfed49543f19968893056e4d60bfa3427f0d0595cd46"
+    },
+    {
+      "path": "src/core/wz_bus.c",
+      "sha256": "12d0b0b9d7a6f990c9564393c1c73cb680ed58a2570969be7df4a45ae0d174b3"
+    },
+    {
+      "path": "src/core/wz_bus.h",
+      "sha256": "e406a5e0f69c289cfb6986d9db0da2a0af29aee3c0652435ec643b2577c2a605"
+    },
+    {
+      "path": "src/core/wz_state.c",
+      "sha256": "22b96faf3cbc8c42348d3647ac544ecb3bf5e4f02fb4d1c5065bb4a893530ded"
+    },
+    {
+      "path": "src/core/wz_state.h",
+      "sha256": "46ec8063cc5976b743d53a23b64c34c84583878c9793434d3622c8f8a38f9aa3"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "dd0425c29af2c5ea6a3f541c081aafee6a8f74c5d2f57e7013252fe1dbe5291f"
+    },
+    {
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "1c8474ee8a90035da43da6b2e61469dea1c5764d11edf5d3fffce142351ee027"
+    }
+  ],
+  "sourceReviewAdjudication": [
+    "The test callback receives only the transport current sector, range-checked against the mounted nine-sector fixture before flush; the fixture is exactly nine sectors and the contract writes sector zero, so the reported overflow cannot occur.",
+    "The setter checks a null pointer before dereferencing it and returns WZ_RESULT_INVALID_ARGUMENT; the caller has validated the slot and mounted its image.",
+    "The separate EF and F7 read branches preserve port-specific behavior; repeated conditions are a stylistic suggestion with no correctness defect.",
+    "Deserialization rejects every length except the fixed WZ_STATE_MACHINE_LENGTH before reading extension fields, so the added byte is inside the fixed extension capacity for all eight drives."
+  ]
+}

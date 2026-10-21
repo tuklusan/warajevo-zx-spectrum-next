@@ -52,9 +52,12 @@ macOS ARM64 CPU execution, within the 40% gate. Current raw records are pinned
 in `test-results/performance-current/` and
 `test-results/phase16-performance-current.json`.
 State extension v6 adds each drive's host write-protection state to canonical
-serialization. The five-target build at source `4714dca3ac5dd57b573a423117c13d4876d5c6f9`
-produced consistent new CPU and snapshot fingerprints; its initial comparison
-correctly rejected the prior expectations. The five delivered-platform
-fingerprints are refreshed in the baseline files, with the established
-throughput measurements unchanged. A follow-up hosted comparison must pass
-before these refreshed expectations are accepted.
+serialization. Run `39526536113` built and tested the source on all five native
+targets, then rejected the expected CPU and snapshot fingerprint changes. The
+five delivered-platform fingerprints were refreshed without changing the
+throughput references or 40% gate. Exact follow-up run `39526865899` passed the
+clean full build, all 19 CTests per target, and all 30 Phase-16 fingerprint and
+throughput checks. The largest slowdown was 31.0% on macOS Intel. Current
+records and the aggregator are pinned in
+`test-results/performance-current/` and
+`test-results/phase16-performance-current.json`.
