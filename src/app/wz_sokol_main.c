@@ -4541,6 +4541,17 @@ static bool wz_host_ui_menu_is_microdrive_selector(const char* candidate)
     return slot[0] >= '1' && slot[0] <= '8';
 }
 
+static bool wz_host_ui_menu_is_microdrive_drive_group(const char* candidate)
+{
+    static const char prefix[] = "media.microdrive.drive_group";
+    const char* slot;
+    if (candidate == NULL || strncmp(candidate, prefix,
+            sizeof(prefix) - 1u) != 0 ||
+        strlen(candidate) != sizeof(prefix)) return false;
+    slot = candidate + sizeof(prefix) - 1u;
+    return slot[0] >= '1' && slot[0] <= '8';
+}
+
 static bool wz_host_ui_menu_is_direct_child(const char* parent,
                                              const char* candidate)
 {
@@ -4639,11 +4650,11 @@ static void wz_host_ui_draw_menu_group(struct nk_context* context,
         if (depth == 0u) {
             const float popup_height =
                 strcmp(node->id, "media.microdrive") == 0 ? 700.0f : 420.0f;
+            const float popup_width =
+                strcmp(node->id, "media.microdrive") == 0 ? 450.0f : 230.0f;
             if (nk_menu_begin_label(context, node->label,
-                    NK_TEXT_LEFT, nk_vec2(320.0f, popup_height))) {
-                const float row_height =
-                    strcmp(node->id, "media.microdrive") == 0 ? 12.0f : 20.0f;
-                nk_layout_row_dynamic(context, row_height, 1);
+                    NK_TEXT_LEFT, nk_vec2(popup_width, popup_height))) {
+                nk_layout_row_dynamic(context, 20.0f, 1);
                 wz_host_ui_draw_menu_group(context, node->id, depth + 1u);
                 nk_menu_end(context);
             }
@@ -4654,6 +4665,9 @@ static void wz_host_ui_draw_menu_group(struct nk_context* context,
             nk_label(context, node->label, NK_TEXT_LEFT);
             wz_host_ui_draw_menu_group(context, node->id, depth + 1u);
         }
+    }
+    if (wz_host_ui_menu_is_microdrive_drive_group(parent_id)) {
+        nk_layout_row_begin(context, NK_DYNAMIC, 20.0f, 3);
     }
     for (index = 0u; index < count; ++index) {
         const wz_command_metadata_t* command = wz_command_registry_at(
@@ -4682,7 +4696,15 @@ static void wz_host_ui_draw_menu_group(struct nk_context* context,
                 break;
             }
         }
-        if (!nested) wz_host_ui_draw_menu_command(context, command);
+        if (!nested) {
+            if (wz_host_ui_menu_is_microdrive_drive_group(parent_id)) {
+                nk_layout_row_push(context, 1.0f / 3.0f);
+            }
+            wz_host_ui_draw_menu_command(context, command);
+        }
+    }
+    if (wz_host_ui_menu_is_microdrive_drive_group(parent_id)) {
+        nk_layout_row_end(context);
     }
     if (strcmp(parent_id, "settings.peripherals.zx_printer") == 0) {
         wz_host_ui_draw_printer_modes(context);

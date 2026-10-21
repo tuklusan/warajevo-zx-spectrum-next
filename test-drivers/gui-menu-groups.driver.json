@@ -32,7 +32,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "ed16821041c85ab5b62cf82f790fa4d741869d298ff05b73127daeb0680a49bb"
+      "sha256": "119d732f657f0f7a02c475fb0f2283fc4c07b87cec16dd3d07f8d930273ff46c"
     },
     {
       "path": "src/app/wz_command_registry.c",
