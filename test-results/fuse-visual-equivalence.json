@@ -1,9 +1,9 @@
 {
   "schema": 1,
   "status": "pass",
-  "projectCommit": "c2c3368991a4c818a29e04cb9a10af36c75e480b",
-  "workflowRunId": 39378145256,
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39378145256",
+  "projectCommit": "b69c7c77c15bc47bdbff9141aa178231be0768b9",
+  "workflowRunId": 39521621895,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39521621895",
   "fuseRevision": "7edc2418ce11837d9ede799f7e0445440beead1d",
   "romSha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42",
   "reference": {
@@ -31,7 +31,9 @@
   "platforms": {
     "windows-x64": {
       "status": "pass",
-      "artifact": "fuse-visual-equivalence-windows-x86_64-88fed6a1b248337d7e907a45196c1f4957bd9f69",
+      "runner": "Windows-X64",
+      "artifact": "fuse-visual-equivalence-windows-x64-b69c7c77c15bc47bdbff9141aa178231be0768b9",
+      "applicationSha256": "0384f52ecda891f76a7b5b0439fdd356a2281cfd7ebc1f7aa66931dbd0ea066a",
       "captureSha256": "2c791d54f7e92c84d24150419b2a83d3dd18fb4f9c9ecb3611e86037b57b68dc",
       "normalizedSha256": "0651359a146523079e090cb8e7331776b42ca8c920e81330bcbcce2bd0e5f03e",
       "mismatchedPixels": 526,
@@ -42,26 +44,13 @@
         "normalized": "test-results/fuse-visual-equivalence/application-windows-x64-normalized.png",
         "difference": "test-results/fuse-visual-equivalence/difference-windows-x64.png"
       },
-      "captureRunId": 39395319918
-    },
-    "windows-arm64": {
-      "status": "pass",
-      "artifact": "fuse-visual-equivalence-windows-arm64-88fed6a1b248337d7e907a45196c1f4957bd9f69",
-      "captureSha256": "2c791d54f7e92c84d24150419b2a83d3dd18fb4f9c9ecb3611e86037b57b68dc",
-      "normalizedSha256": "0651359a146523079e090cb8e7331776b42ca8c920e81330bcbcce2bd0e5f03e",
-      "mismatchedPixels": 526,
-      "mismatchPercent": 0.376316,
-      "meanAbsoluteChannelError": 0.722527,
-      "evidenceFiles": {
-        "capture": "test-results/fuse-visual-equivalence/application-windows-arm64-capture.png",
-        "normalized": "test-results/fuse-visual-equivalence/application-windows-arm64-normalized.png",
-        "difference": "test-results/fuse-visual-equivalence/difference-windows-arm64.png"
-      },
-      "captureRunId": 39395319918
+      "captureRunId": 39521621895
     },
     "macos-x64": {
       "status": "pass",
-      "artifact": "fuse-visual-equivalence-macos-x86_64-88fed6a1b248337d7e907a45196c1f4957bd9f69",
+      "runner": "macOS-X64",
+      "artifact": "fuse-visual-equivalence-macos-x64-b69c7c77c15bc47bdbff9141aa178231be0768b9",
+      "applicationSha256": "840f7c215c7b83ba9fc8d9ed3aad7138a612a5eebe7c04d40ae042b747dcf3df",
       "captureSha256": "26adbf33765354ef0061f32372558de8338be334cd71e6c40165e58470d46028",
       "normalizedSha256": "fb40969d8687844dc1d5c795b1bf12b2cac47718b8928a7dcc4650a7010474a0",
       "mismatchedPixels": 526,
@@ -72,11 +61,13 @@
         "normalized": "test-results/fuse-visual-equivalence/application-macos-x64-normalized.png",
         "difference": "test-results/fuse-visual-equivalence/difference-macos-x64.png"
       },
-      "captureRunId": 39395319918
+      "captureRunId": 39521621895
     },
     "macos-arm64": {
       "status": "pass",
-      "artifact": "fuse-visual-equivalence-macos-arm64-88fed6a1b248337d7e907a45196c1f4957bd9f69",
+      "runner": "macOS-ARM64",
+      "artifact": "fuse-visual-equivalence-macos-arm64-b69c7c77c15bc47bdbff9141aa178231be0768b9",
+      "applicationSha256": "caeb38c5dcf55dc15fa5097873bbb022f1702a8951209bc26d3762881664306d",
       "captureSha256": "528d86a315efa63a9098ee47996b4a0f37515e1c63113e3101d4ff72d6168bc4",
       "normalizedSha256": "d2a7c4c012810b4e7df624a9b4493a4718a37485893a54b3b064dbae5b5396fa",
       "mismatchedPixels": 526,
@@ -87,11 +78,12 @@
         "normalized": "test-results/fuse-visual-equivalence/application-macos-arm64-normalized.png",
         "difference": "test-results/fuse-visual-equivalence/difference-macos-arm64.png"
       },
-      "captureRunId": 39395319918
+      "captureRunId": 39521621895
     }
   },
   "capturesVisuallyInspected": true,
   "comparisonRunId": 39395319918,
   "comparisonRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39395319918",
-  "comparisonCommit": "88fed6a1b248337d7e907a45196c1f4957bd9f69"
+  "comparisonCommit": "88fed6a1b248337d7e907a45196c1f4957bd9f69",
+  "buildConfiguration": "Release; WZSN_BUILD_SOKOL_HOST=ON"
 }
