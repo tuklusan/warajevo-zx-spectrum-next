@@ -61,6 +61,14 @@ wz_result_t wz_debugger_find_memory(const wz_machine_t* machine,
                                     size_t length,
                                     wz_byte_t value,
                                     wz_word_t* found_address);
+/* A zero mask byte matches any value; other mask bits compare corresponding bits. */
+wz_result_t wz_debugger_find_memory_pattern(const wz_machine_t* machine,
+                                            wz_word_t address,
+                                            size_t length,
+                                            const wz_byte_t* pattern,
+                                            const wz_byte_t* mask,
+                                            size_t pattern_length,
+                                            wz_word_t* found_address);
 wz_result_t wz_debugger_format_hex8(wz_byte_t value, char* output, size_t capacity);
 wz_result_t wz_debugger_format_hex16(wz_word_t value, char* output, size_t capacity);
 wz_result_t wz_debugger_disassemble(const wz_machine_t* machine,

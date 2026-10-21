@@ -305,12 +305,40 @@ wz_result_t wz_debugger_find_memory(const wz_machine_t* machine,
                                     wz_byte_t value,
                                     wz_word_t* found_address)
 {
-    if (machine == 0 || found_address == 0 || !valid_range(address, length)) {
+    return wz_debugger_find_memory_pattern(machine, address, length, &value,
+                                           0, 1u, found_address);
+}
+
+wz_result_t wz_debugger_find_memory_pattern(const wz_machine_t* machine,
+                                            wz_word_t address,
+                                            size_t length,
+                                            const wz_byte_t* pattern,
+                                            const wz_byte_t* mask,
+                                            size_t pattern_length,
+                                            wz_word_t* found_address)
+{
+    size_t offset;
+
+    if (machine == 0 || found_address == 0 || pattern == 0 ||
+        pattern_length == 0u || !valid_range(address, length)) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
-    for (size_t index = 0u; index < length; ++index) {
-        if (wz_machine_memory_read(machine, (wz_word_t)(address + index)) == value) {
-            *found_address = (wz_word_t)(address + index);
+    if (pattern_length > length) {
+        return WZ_RESULT_NOT_FOUND;
+    }
+    for (offset = 0u; offset <= length - pattern_length; ++offset) {
+        size_t byte_index;
+        for (byte_index = 0u; byte_index < pattern_length; ++byte_index) {
+            wz_byte_t expected = pattern[byte_index];
+            wz_byte_t byte_mask = mask == 0 ? 0xffu : mask[byte_index];
+            wz_byte_t actual = wz_machine_memory_read(
+                machine, (wz_word_t)(address + offset + byte_index));
+            if ((actual & byte_mask) != (expected & byte_mask)) {
+                break;
+            }
+        }
+        if (byte_index == pattern_length) {
+            *found_address = (wz_word_t)(address + offset);
             return WZ_RESULT_OK;
         }
     }

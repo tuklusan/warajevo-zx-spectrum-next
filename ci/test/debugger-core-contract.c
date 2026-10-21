@@ -71,6 +71,9 @@ static int test_inspection_and_disassembly(void)
     wz_machine_t* machine = new_machine(wz_machine_profile_48k_pal());
     wz_debugger_snapshot_t snapshot;
     wz_byte_t block[4] = {0u};
+    wz_byte_t wildcard_pattern[4] = {0x3eu, 0x00u, 0xcbu, 0x47u};
+    wz_byte_t wildcard_mask[4] = {0xffu, 0u, 0xffu, 0xffu};
+    wz_byte_t word_pattern[2] = {0xcbu, 0x47u};
     wz_word_t found = 0u;
     char text[32];
     size_t consumed = 0u;
@@ -96,6 +99,21 @@ static int test_inspection_and_disassembly(void)
     CHECK(found == 0x8002u);
     CHECK(wz_debugger_find_memory(machine, 0x8000u, 4u, 0xffu, &found) ==
           WZ_RESULT_NOT_FOUND);
+    CHECK(wz_debugger_find_memory_pattern(machine, 0x8000u, 4u,
+                                           wildcard_pattern, wildcard_mask,
+                                           sizeof(wildcard_pattern), &found) ==
+          WZ_RESULT_OK);
+    CHECK(found == 0x8000u);
+    CHECK(wz_debugger_find_memory_pattern(machine, 0x8000u, 4u, word_pattern,
+                                           NULL, sizeof(word_pattern), &found) ==
+          WZ_RESULT_OK);
+    CHECK(found == 0x8002u);
+    CHECK(wz_debugger_find_memory_pattern(machine, 0x8000u, 1u, word_pattern,
+                                           NULL, sizeof(word_pattern), &found) ==
+          WZ_RESULT_NOT_FOUND);
+    CHECK(wz_debugger_find_memory_pattern(machine, 0x8000u, 4u, word_pattern,
+                                           NULL, 0u, &found) ==
+          WZ_RESULT_INVALID_ARGUMENT);
     CHECK(wz_debugger_read_memory_block(machine, 0xffffu, block, 2u) ==
           WZ_RESULT_BUFFER_TOO_SMALL);
     CHECK(wz_debugger_disassemble(machine, 0x8000u, text, sizeof(text),
