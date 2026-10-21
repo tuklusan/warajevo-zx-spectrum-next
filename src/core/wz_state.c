@@ -733,7 +733,6 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
                     parsed_sector_count == microdrive->image_sector_count;
                 if (image_present > 1u ||
                     (microdrive->image_identity == 0u && image_present != 0u) ||
-                    microdrive->image_length > UINT32_MAX ||
                     (image_present != 0u &&
                      (!valid_image_shape ||
                       microdrive->sector >= microdrive->image_sector_count)) ||

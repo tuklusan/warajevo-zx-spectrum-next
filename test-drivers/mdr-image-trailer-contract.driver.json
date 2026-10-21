@@ -4,7 +4,7 @@
   "fixtures": [
     {
       "path": "ci/test/mdr-image-trailer/mdr-image-trailer-contract.c",
-      "sha256": "ad374d15b6d5c6c935ca261ff0381f49e31c8fdc49cec3c495b2ee97864d8530"
+      "sha256": "0e578a446f6430f20f647668cf5b600a6d895ee3cb919ba746d054a597c1187a"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
@@ -12,7 +12,7 @@
     },
     {
       "path": "src/core/wz_microdrive.c",
-      "sha256": "40e1384cc8f4a17037ebac4e3ae9d5dce31e71fc3d6ee2e9bf4fc5ac9dfe7fe4"
+      "sha256": "4de612e163208d566988a3f4bf18cb0206f9e45a5cabe7bce8f1bb00a4727d06"
     },
     {
       "path": "src/core/wz_microdrive.h",
@@ -20,11 +20,11 @@
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "70c10a0871c80637d9bc5120df9d1c4df3f7d02d738fedd4d30fa7a612af577a"
+      "sha256": "a2feac7b28f67daabf4bb7026dfb322279db31e09a270681f2539d96ad823efa"
     },
     {
       "path": "src/app/wz_microdrive_manager.c",
-      "sha256": "4ae44f34ae2e99dd6c361a56b0006b5c9aac7fbe9095f7b8b5552154fa3970a9"
+      "sha256": "ae7b59034282f2d57a5072a70e56ac291fcdf03f49fed55d41833da9db25a929"
     },
     {
       "path": "src/app/wz_sokol_main.c",

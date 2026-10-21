@@ -25,9 +25,6 @@ bool wz_mdr_image_sector_count(size_t length, size_t* sector_count)
 {
     size_t count;
 
-    if (sector_count == 0) {
-        return false;
-    }
     if (length % WZ_MDR_SECTOR_SIZE == 0u) {
         count = length / WZ_MDR_SECTOR_SIZE;
     } else if (length == WZ_MDR_MAX_SECTORS * WZ_MDR_SECTOR_SIZE +
@@ -39,7 +36,9 @@ bool wz_mdr_image_sector_count(size_t length, size_t* sector_count)
     if (count < WZ_MDR_MIN_SECTORS || count > WZ_MDR_MAX_SECTORS) {
         return false;
     }
-    *sector_count = count;
+    if (sector_count != 0) {
+        *sector_count = count;
+    }
     return true;
 }
 
@@ -50,8 +49,10 @@ bool wz_mdr_image_is_write_protected(const wz_mdr_image_t* image)
     if (image == 0 || image->data == 0 ||
         !wz_mdr_image_sector_count(image->length, &sector_count) ||
         sector_count != image->sector_count ||
-        sector_count != WZ_MDR_MAX_SECTORS ||
-        image->length != sector_count * WZ_MDR_SECTOR_SIZE +
+        sector_count != WZ_MDR_MAX_SECTORS) {
+        return false;
+    }
+    if (image->length != sector_count * WZ_MDR_SECTOR_SIZE +
                          WZ_MDR_WRITE_PROTECTION_TRAILER_SIZE) {
         return false;
     }

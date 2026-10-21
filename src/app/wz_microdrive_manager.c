@@ -159,8 +159,7 @@ static void update_checksums(wz_byte_t* sector)
 
 static bool image_shape(const wz_byte_t* data, size_t length)
 {
-    size_t count;
-    return data != NULL && wz_mdr_image_sector_count(length, &count);
+    return data != NULL && wz_mdr_image_sector_count(length, NULL);
 }
 
 static bool validate_all(const wz_byte_t* data, size_t length)

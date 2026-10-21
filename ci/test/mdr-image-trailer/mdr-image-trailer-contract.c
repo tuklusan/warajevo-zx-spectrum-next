@@ -45,6 +45,7 @@ int main(void)
 
     REQUIRE(wz_mdr_image_sector_count(sizeof(minimum_image), &sector_count));
     REQUIRE(sector_count == WZ_MDR_MIN_SECTORS);
+    REQUIRE(wz_mdr_image_sector_count(sizeof(minimum_image), NULL));
     REQUIRE(wz_mdr_image_init(&image, minimum_image, sizeof(minimum_image)) ==
             WZ_RESULT_OK);
     REQUIRE(image.length == sizeof(minimum_image));
@@ -104,7 +105,8 @@ int main(void)
     writer.data = state_bytes;
     writer.capacity = sizeof(state_bytes);
     writer.length = 0u;
-    REQUIRE(wz_state_serialize_machine(&machine, &writer) == WZ_RESULT_OK);
+    REQUIRE(wz_state_serialize_machine(&machine, &writer) == WZ_RESULT_OK &&
+            writer.length <= writer.capacity);
     REQUIRE(wz_state_deserialize_machine(&restored, state_bytes,
                                          writer.length) == WZ_RESULT_OK);
     restored_transport = wz_machine_microdrive_at_const(&restored, 0u);
