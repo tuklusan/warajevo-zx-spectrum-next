@@ -1,20 +1,22 @@
 {
   "testId": "gui-debugger-registers",
   "status": "pass",
-  "commit": "897a7f1716e17401f87edc8230e144e4b2b0baac",
-  "runId": 39685859941,
+  "commit": "3d043916093d127045310ab2942d62e7a8bc1469",
+  "runId": 39694046580,
   "runner": "Linux",
   "architecture": "X64",
-  "timestamp": "2026-10-21T22:23:09.506553+00:00",
+  "timestamp": "2026-10-21T23:33:50.214431+00:00",
   "assertions": [
     "debugger-register-controls-visible",
     "machine-paused-in-debugger",
     "byte-register-width-rejected",
     "paused-main-register-edit-reflected",
-    "register-undo-restored-prior-af"
+    "register-undo-restored-prior-af",
+    "monitor-r-setreg-command-updated-register",
+    "monitor-r-setreg-undo-restored-register"
   ],
-  "assertionCount": 5,
-  "originalAf": "AFAC",
+  "assertionCount": 7,
+  "originalAf": "8F88",
   "fixtures": [
     {
       "path": ".github/workflows/gui-debugger-registers.yml",
@@ -22,7 +24,7 @@
     },
     {
       "path": "ci/test/gui-debugger-registers.py",
-      "sha256": "e3e4ad93b2ee100cdbae9c5503eaa09d8915be62b05abde917360c98b63ad16d"
+      "sha256": "1e2585594470984dbd820ba2ec087162760dfb45e50c3f677205c47fc82af727"
     },
     {
       "path": "ci/test/gui-screenshot-save.py",
@@ -34,11 +36,15 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "0654706bdf6a5ffea41c05de692e4c2d27b7e3cc9f7dc0b13af55539b4620357"
+      "sha256": "7ff8453ab148a2b460e0d3f904b099a930d242be124908ab7f995b663fd4e6e0"
     },
     {
       "path": "src/app/wz_debugger_window.c",
-      "sha256": "1c42b0a9ae6a48b4ee59fcdd03248ff00f2d6236bafb5e93ccc5f954da33bb14"
+      "sha256": "fa03c9e48f5f894b8f0899f50bd6330ce924246f04fc10fa972131b62d9aa3a8"
+    },
+    {
+      "path": "src/app/wz_debugger_window.h",
+      "sha256": "e8adfe2fdf7c168d1fe6f1bba2880074d78c790a1d48e2acb4332e5ac6ef611c"
     },
     {
       "path": "src/core/wz_debugger.c",
@@ -50,6 +56,8 @@
     }
   ],
   "captures": [
+    "debugger-monitor-register-edited.png",
+    "debugger-monitor-register-undo.png",
     "debugger-open.png",
     "debugger-paused.png",
     "debugger-register-edited.png",
@@ -58,24 +66,32 @@
   ],
   "captureEvidence": [
     {
+      "path": "test-results/gui-debugger-registers/debugger-monitor-register-edited.png",
+      "sha256": "ed35e2ee42e18c559675d10d9cd503672f69650e6f8d5fb3e0ee6a05616f0897"
+    },
+    {
+      "path": "test-results/gui-debugger-registers/debugger-monitor-register-undo.png",
+      "sha256": "85babab9a127d733bafb35ab571b03ec82e75dd8f881cc62fdddb788af8aaeb1"
+    },
+    {
       "path": "test-results/gui-debugger-registers/debugger-open.png",
-      "sha256": "0ed1ef6f1034ce0b84289b4eaa6c2ad6aca0a764aca54187d86c61a58e20f0aa"
+      "sha256": "b84b2533eb4d1a7d8fc46e717d00995387197034a3e14a9046a55dae9f25743f"
     },
     {
       "path": "test-results/gui-debugger-registers/debugger-paused.png",
-      "sha256": "00d8b0caf7df4b8f32a0befff67a206306beae1c60d0857d982c7d63c62a87dd"
+      "sha256": "1fef134c82df17791cfff3f9a38c86d1b28a173d5aaa8ced539b965a07bdb324"
     },
     {
       "path": "test-results/gui-debugger-registers/debugger-register-edited.png",
-      "sha256": "69c2b67d9558d9457021fe01dee359da58b0477539c179bead29acccc807927e"
+      "sha256": "7fbe65f91847af15bc3f6ac42cc7c0c9caa4a6f84a5d31aedd1fce138f407fb1"
     },
     {
       "path": "test-results/gui-debugger-registers/debugger-register-invalid.png",
-      "sha256": "fe75e95da5acf877d235facadd83b5d3eaa7e4610be3567aee52d793444c6ea9"
+      "sha256": "d0b9ba2ae223cfc580fe233f8e48f69c8db941c46d76e92986305576941596dc"
     },
     {
       "path": "test-results/gui-debugger-registers/debugger-register-undo.png",
-      "sha256": "d703ccd42e979a0c3c54aefa68560aef59cda142407881d55ebed7d7f5db0361"
+      "sha256": "85babab9a127d733bafb35ab571b03ec82e75dd8f881cc62fdddb788af8aaeb1"
     }
   ]
 }
