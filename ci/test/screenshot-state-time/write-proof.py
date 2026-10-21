@@ -39,8 +39,17 @@ def commit_file(commit: str, path: str) -> bytes:
             re.fullmatch(r"[A-Za-z0-9._/-]+", path) is None or
             relative.is_absolute() or ".." in relative.parts):
         raise SystemExit(f"unsafe fixture path: {path}")
-    return subprocess.check_output(["git", "show", f"{commit}:{path}"],
-                                   cwd=ROOT, stderr=subprocess.PIPE)
+    try:
+        return subprocess.check_output(["git", "show", f"{commit}:{path}"],
+                                       cwd=ROOT, stderr=subprocess.PIPE)
+    except subprocess.CalledProcessError:
+        # Proof-only dispatches use a shallow checkout while reading an older
+        # completed runner commit. Fetch that exact reachable commit as needed.
+        subprocess.run(["git", "fetch", "--no-tags", "origin", commit],
+                       cwd=ROOT, check=True, stdout=subprocess.PIPE,
+                       stderr=subprocess.PIPE)
+        return subprocess.check_output(["git", "show", f"{commit}:{path}"],
+                                       cwd=ROOT, stderr=subprocess.PIPE)
 
 
 def main() -> None:
