@@ -38,6 +38,16 @@ static const wz_compatibility_tool_t tools[WZ_COMPATIBILITY_TOOL_COUNT] = {
      WZ_COMPATIBILITY_LATER, true}
 };
 
+static bool compatibility_tool_available(const void* context,
+                                         const char** reason)
+{
+    const wz_compatibility_tool_t* tool =
+        (const wz_compatibility_tool_t*)context;
+    if (reason != 0) *reason = tool == 0 ? "unknown-compatibility-tool"
+                                         : tool->reason;
+    return tool != 0 && tool->availability == WZ_COMPATIBILITY_AVAILABLE;
+}
+
 size_t wz_compatibility_tools_count(void)
 {
     return WZ_COMPATIBILITY_TOOL_COUNT;
@@ -117,7 +127,34 @@ wz_result_t wz_compatibility_tools_register_commands(
     command.handler_context = context;
     command.affects_machine_state = false;
     command.recordable = false;
-    return wz_command_registry_register(registry, command);
+    if (wz_command_registry_register(registry, command) != WZ_RESULT_OK) {
+        return WZ_RESULT_INVALID_STATE;
+    }
+    for (size_t index = 1u; index < WZ_COMPATIBILITY_TOOL_COUNT; ++index) {
+        const wz_compatibility_tool_t* tool = &tools[index];
+        wz_command_metadata_t action = {
+            tool->id,
+            tool->label,
+            tool->warning,
+            "tools",
+            "NONE",
+            "wz-command-result",
+            "ui.compatibility-tools.action",
+            "none",
+            NULL,
+            WZ_COMMAND_LOCAL_ONLY,
+            compatibility_tool_available,
+            handler,
+            context,
+            false,
+            false,
+            NULL
+        };
+        if (wz_command_registry_register(registry, action) != WZ_RESULT_OK) {
+            return WZ_RESULT_INVALID_STATE;
+        }
+    }
+    return WZ_RESULT_OK;
 }
 
 static bool matches(const char* format, const char* value)

@@ -115,6 +115,11 @@ SANYALnet Labs." See LICENSE for full terms. */
 #define WZ_HOST_COMMAND_CAPACITY 160u
 #define WZ_HOST_MICRODRIVE_COMMAND_COUNT \
     (WZ_UI_MICRODRIVE_COUNT * (WZ_UI_MICRODRIVE_OPERATION_COUNT + 1u))
+
+typedef struct {
+    void* session;
+    wz_ui_microdrive_action_t action;
+} wz_host_microdrive_semantic_context_t;
 #define WZ_HOST_RASTER_BYTES (WZ_RASTER_CANONICAL_WIDTH * WZ_RASTER_CANONICAL_HEIGHT)
 #define WZ_HOST_TELNET_IO_CAPACITY 2048u
 #define WZ_HOST_TELNET_RESPONSE_CAPACITY 65536u
@@ -253,6 +258,7 @@ typedef struct {
     int microdrive_manager_raw_hex_length;
     wz_ui_microdrive_command_context_t microdrive_command_contexts[
         WZ_HOST_MICRODRIVE_COMMAND_COUNT];
+    wz_host_microdrive_semantic_context_t microdrive_semantic_contexts[3];
     bool microdrive_eject_confirmation_open;
     size_t microdrive_eject_confirmation_slot;
     char file_notification[WZ_COMMAND_MESSAGE_CAPACITY];
@@ -1577,6 +1583,108 @@ static wz_result_t wz_host_microdrive_manager_open_command(
     (void)snprintf(result->message, sizeof(result->message),
                    "Microdrive Manager opened");
     return WZ_RESULT_OK;
+}
+
+static bool wz_host_microdrive_semantic_available(
+    const void* opaque, const char** reason)
+{
+    const wz_host_microdrive_semantic_context_t* context =
+        (const wz_host_microdrive_semantic_context_t*)opaque;
+    const wz_host_session_t* session = context == NULL ? NULL :
+        (const wz_host_session_t*)context->session;
+    if (reason != NULL) *reason = NULL;
+    if (session == NULL) {
+        if (reason != NULL) *reason = "microdrive-command-unavailable";
+        return false;
+    }
+    if (session->microdrive_eject_confirmation_open) {
+        if (reason != NULL) *reason = "microdrive-eject-confirmation-open";
+        return false;
+    }
+    return true;
+}
+
+static bool wz_host_microdrive_semantic_parse_drive(
+    wz_command_arguments_t arguments, size_t* slot, const char** path,
+    size_t* path_length)
+{
+    const char* bytes = (const char*)arguments.data;
+    size_t separator;
+    if (slot == NULL || path == NULL || path_length == NULL || bytes == NULL ||
+        arguments.size == 0u || bytes[0] < '1' || bytes[0] > '8') {
+        return false;
+    }
+    *slot = (size_t)(bytes[0] - '1');
+    *path = NULL;
+    *path_length = 0u;
+    if (arguments.size == 1u) return true;
+    if (bytes[1] != ',') return false;
+    separator = 2u;
+    if (separator == arguments.size ||
+        memchr(bytes + separator, '\0', arguments.size - separator) != NULL) {
+        return false;
+    }
+    *path = bytes + separator;
+    *path_length = arguments.size - separator;
+    return true;
+}
+
+static wz_result_t wz_host_microdrive_semantic_command(
+    const void* opaque, wz_command_arguments_t arguments,
+    wz_command_result_t* result)
+{
+    const wz_host_microdrive_semantic_context_t* context =
+        (const wz_host_microdrive_semantic_context_t*)opaque;
+    wz_host_session_t* session = context == NULL ? NULL :
+        (wz_host_session_t*)context->session;
+    const char* path;
+    size_t path_length;
+    size_t slot;
+    if (session == NULL || result == NULL ||
+        !wz_host_microdrive_semantic_parse_drive(
+            arguments, &slot, &path, &path_length)) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (context->action != WZ_UI_MICRODRIVE_ACTION_SET_DEFAULT) {
+        const char* reason = NULL;
+        if (!wz_host_microdrive_command_available(
+                session, slot, context->action, &reason)) {
+            result->reason = reason;
+            return WZ_RESULT_INVALID_STATE;
+        }
+    }
+    switch (context->action) {
+    case WZ_UI_MICRODRIVE_ACTION_MOUNT:
+        if (path == NULL) return wz_host_ui_mount_microdrive(slot);
+        if (path_length >= 4096u) return WZ_RESULT_INVALID_ARGUMENT;
+        {
+            char terminated_path[4096];
+            memcpy(terminated_path, path, path_length);
+            terminated_path[path_length] = '\0';
+            if (!wz_host_load_external_microdrive_slot(
+                    session, slot, terminated_path)) {
+                return WZ_RESULT_INVALID_STATE;
+            }
+        }
+        (void)snprintf(result->message, sizeof(result->message),
+                       "MDV %u mounted", (unsigned)(slot + 1u));
+        return WZ_RESULT_OK;
+    case WZ_UI_MICRODRIVE_ACTION_EJECT:
+        if (path != NULL) return WZ_RESULT_INVALID_ARGUMENT;
+        wz_host_ui_eject_microdrive(slot);
+        (void)snprintf(result->message, sizeof(result->message),
+                       "confirmation-required");
+        return WZ_RESULT_OK;
+    case WZ_UI_MICRODRIVE_ACTION_SET_DEFAULT:
+        if (path != NULL) return WZ_RESULT_INVALID_ARGUMENT;
+        session->microdrive_default_slot = slot;
+        (void)snprintf(result->message, sizeof(result->message),
+                       "MDV %u is the default drive",
+                       (unsigned)(slot + 1u));
+        return WZ_RESULT_OK;
+    default:
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
 }
 
 static wz_result_t wz_host_ui_dispatch_microdrive_action(size_t action_index)
@@ -3545,7 +3653,23 @@ static bool wz_host_register_commands(void)
             wz_host_display_settings_open, &wz_host_session, false, false, NULL
         },
         {
+            "settings.display", "Display...",
+            "Adjust host-only scaling, border crop, and fullscreen presentation",
+            "settings", "NONE", "wz-command-result",
+            "wz_host_display_settings_open", "local", NULL,
+            WZ_COMMAND_LOCAL_ONLY, wz_host_settings_available,
+            wz_host_display_settings_open, &wz_host_session, false, false, NULL
+        },
+        {
             "settings.audio.open", "Audio...",
+            "Adjust host audio output without changing emulated beeper or AY state",
+            "settings", "NONE", "wz-command-result",
+            "wz_host_audio_settings_open", "local", NULL,
+            WZ_COMMAND_LOCAL_ONLY, wz_host_settings_available,
+            wz_host_audio_settings_open, &wz_host_session, false, false, NULL
+        },
+        {
+            "settings.audio", "Audio...",
             "Adjust host audio output without changing emulated beeper or AY state",
             "settings", "NONE", "wz-command-result",
             "wz_host_audio_settings_open", "local", NULL,
@@ -3850,27 +3974,93 @@ static bool wz_host_register_commands(void)
         return false;
     }
     {
-        wz_command_metadata_t metadata = {
-            WZ_MICRODRIVE_MANAGER_OPEN_COMMAND_ID,
-            "Microdrive Manager...",
-            "Open the eight-drive cartridge overview",
-            "media.microdrive",
-            "NONE",
-            "wz-command-result",
-            "wz_host_microdrive_manager_open_command",
-            "none",
-            NULL,
-            WZ_COMMAND_LOCAL_ONLY,
-            wz_host_microdrive_manager_open_available,
-            wz_host_microdrive_manager_open_command,
-            &wz_host_session,
-            false,
-            false,
-            NULL
+        static const wz_ui_microdrive_action_t actions[] = {
+            WZ_UI_MICRODRIVE_ACTION_MOUNT,
+            WZ_UI_MICRODRIVE_ACTION_EJECT,
+            WZ_UI_MICRODRIVE_ACTION_SET_DEFAULT
         };
-        if (wz_command_registry_register(&wz_host_session.command_registry,
-                                         metadata) != WZ_RESULT_OK) {
-            return false;
+        static const wz_command_metadata_t definitions[] = {
+            {"media.microdrive.mount", "Mount Microdrive",
+             "Mount a cartridge in the selected drive",
+             "media.microdrive", "drive[,path]", "wz-command-result",
+             "wz_host_microdrive_semantic_command", "drive-selector+file-dialog",
+             NULL, WZ_COMMAND_HOST_READ,
+             wz_host_microdrive_semantic_available,
+             wz_host_microdrive_semantic_command, NULL, true, false, NULL},
+            {"media.microdrive.eject", "Eject Microdrive",
+             "Eject the selected cartridge after local confirmation",
+             "media.microdrive", "drive", "wz-command-result",
+             "wz_host_microdrive_semantic_command", "drive-selector+confirmation",
+             NULL, WZ_COMMAND_MEDIA_DESTRUCTIVE,
+             wz_host_microdrive_semantic_available,
+             wz_host_microdrive_semantic_command, NULL, true, false, NULL},
+            {"media.microdrive.set_default", "Set Default Drive",
+             "Select the default Microdrive",
+             "media.microdrive", "drive", "wz-command-result",
+             "wz_host_microdrive_semantic_command", "drive-selector",
+             NULL, WZ_COMMAND_REMOTE_SAFE,
+             wz_host_microdrive_semantic_available,
+             wz_host_microdrive_semantic_command, NULL, false, true, NULL}
+        };
+        for (index = 0u; index < sizeof(definitions) / sizeof(definitions[0]);
+             ++index) {
+            wz_command_metadata_t metadata = definitions[index];
+            wz_host_session.microdrive_semantic_contexts[index].session =
+                &wz_host_session;
+            wz_host_session.microdrive_semantic_contexts[index].action =
+                actions[index];
+            metadata.handler_context =
+                &wz_host_session.microdrive_semantic_contexts[index];
+            if (wz_command_registry_register(&wz_host_session.command_registry,
+                    metadata) != WZ_RESULT_OK) {
+                return false;
+            }
+        }
+    }
+    {
+        const wz_command_metadata_t metadata[] = {
+            {
+                WZ_MICRODRIVE_MANAGER_OPEN_COMMAND_ID,
+                "Microdrive Manager...",
+                "Open the eight-drive cartridge overview",
+                "media.microdrive",
+                "NONE",
+                "wz-command-result",
+                "wz_host_microdrive_manager_open_command",
+                "none",
+                NULL,
+                WZ_COMMAND_LOCAL_ONLY,
+                wz_host_microdrive_manager_open_available,
+                wz_host_microdrive_manager_open_command,
+                &wz_host_session,
+                false,
+                false,
+                NULL
+            },
+            {
+                "media.microdrive.manager",
+                "Microdrive Manager...",
+                "Open the eight-drive cartridge overview",
+                "media.microdrive",
+                "NONE",
+                "wz-command-result",
+                "wz_host_microdrive_manager_open_command",
+                "none",
+                NULL,
+                WZ_COMMAND_LOCAL_ONLY,
+                wz_host_microdrive_manager_open_available,
+                wz_host_microdrive_manager_open_command,
+                &wz_host_session,
+                false,
+                false,
+                NULL
+            }
+        };
+        for (index = 0u; index < sizeof(metadata) / sizeof(metadata[0]); ++index) {
+            if (wz_command_registry_register(&wz_host_session.command_registry,
+                    metadata[index]) != WZ_RESULT_OK) {
+                return false;
+            }
         }
     }
     return wz_command_registry_finalize(&wz_host_session.command_registry) ==
