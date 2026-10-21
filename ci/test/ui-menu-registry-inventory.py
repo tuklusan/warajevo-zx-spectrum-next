@@ -163,8 +163,8 @@ def main():
                     "architecture": os.environ.get("RUNNER_ARCH", ""),
                     "assertions": assertions,
                     "topLevelMenuIds": roots,
-                    "requiredActionIds": required_ids,
-                    "representedGroups": sorted(group_ids),
+                    "requiredSection71Ids": required_ids,
+                    "groupNodeIds": sorted(group_ids),
                 }, indent=2) + "\n", encoding="utf-8")
         finally:
             if connection is not None:
