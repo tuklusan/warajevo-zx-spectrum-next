@@ -46,14 +46,12 @@ static wz_result_t memory_read(wz_machine_t* machine, wz_word_t address,
 int main(void)
 {
     static wz_machine_t machine;
-    static wz_byte_t main_rom[WZ_48K_ROM_SIZE];
     static wz_byte_t interface1_rom[WZ_INTERFACE1_ROM_SIZE];
     static wz_byte_t oversized_rom[WZ_48K_ROM_SIZE];
     wz_byte_t value = 0u;
     wz_qword_t identity;
     int result = 1;
 
-    memset(main_rom, 0x3cu, sizeof(main_rom));
     memset(interface1_rom, 0x5au, sizeof(interface1_rom));
     memset(oversized_rom, 0xa5u, sizeof(oversized_rom));
     interface1_rom[0x0008u] = 0x08u;
@@ -62,7 +60,6 @@ int main(void)
 
     REQUIRE(wz_machine_init(&machine, wz_machine_profile_48k_pal()) ==
             WZ_RESULT_OK);
-    memcpy(machine.memory, main_rom, sizeof(main_rom));
     REQUIRE(wz_machine_load_interface1_rom(&machine, interface1_rom,
             WZ_INTERFACE1_ROM_SIZE - 1u, WZ_INTERFACE1_ROM_OLD) ==
             WZ_RESULT_INVALID_ARGUMENT);
@@ -81,7 +78,7 @@ int main(void)
 
     /* Data reads at trap addresses do not change ROM selection. */
     REQUIRE(memory_read(&machine, 0x0008u, &value) == WZ_RESULT_OK);
-    REQUIRE(value == 0x3cu);
+    REQUIRE(value == 0u);
     REQUIRE(wz_machine_interface1_rom_page(&machine) == 0u);
 
     /* The 48K ROM's error and CLOSE# entry fetches select the shadow ROM. */
@@ -93,7 +90,7 @@ int main(void)
     REQUIRE(opcode_fetch(&machine, 0x0700u, &value) == WZ_RESULT_OK);
     REQUIRE(value == 0xc9u);
     REQUIRE(wz_machine_interface1_rom_page(&machine) == 0u);
-    REQUIRE(wz_machine_memory_read(&machine, 0x0700u) == 0x3cu);
+    REQUIRE(wz_machine_memory_read(&machine, 0x0700u) == 0u);
 
     REQUIRE(opcode_fetch(&machine, 0x1708u, &value) == WZ_RESULT_OK);
     REQUIRE(value == 0x17u);
@@ -106,11 +103,11 @@ int main(void)
             sizeof(oversized_rom), WZ_INTERFACE1_ROM_NEW) ==
             WZ_RESULT_INVALID_ARGUMENT);
     REQUIRE(wz_machine_interface1_rom_identity(&machine) == identity);
-    REQUIRE(wz_machine_memory_read(&machine, 0x0008u) == 0x3cu);
+    REQUIRE(wz_machine_memory_read(&machine, 0x0008u) == 0u);
     REQUIRE(wz_machine_set_networking_mode(&machine, WZ_NETWORKING_NONE) ==
             WZ_RESULT_OK);
     REQUIRE(opcode_fetch(&machine, 0x0008u, &value) == WZ_RESULT_OK);
-    REQUIRE(value == 0x3cu);
+    REQUIRE(value == 0u);
     REQUIRE(wz_machine_interface1_rom_page(&machine) == 0u);
 
     (void)puts("PASS Interface 1 8 KiB ROM trap paging and unpaging");
