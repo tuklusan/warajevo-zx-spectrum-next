@@ -17,7 +17,7 @@
     },
     {
       "path": "ci/test/screenshot-state-time/screenshot-state-time.c",
-      "sha256": "02620316417152bf2086f51911ef8f7e94909dbbacc66826ac083d8db1239ee7"
+      "sha256": "49f32d575c4966225116e7b853a91edadaaee8a0be1841ac487fb12ff5824cdd"
     },
     {
       "path": "ci/test/screenshot-state-time/write-proof.py",
