@@ -46,6 +46,7 @@ typedef struct {
     wz_byte_t active_motor;
     wz_byte_t write_enabled;
     wz_byte_t erase_enabled;
+    wz_byte_t host_write_protected;
     wz_byte_t dirty;
     wz_byte_t buffer[WZ_MDR_SECTOR_SIZE];
     wz_mdr_phase_t phase;
@@ -75,6 +76,8 @@ wz_result_t wz_mdr_transport_set_write_mode(wz_mdr_transport_t* transport,
                                              wz_byte_t enabled);
 wz_result_t wz_mdr_transport_set_erase(wz_mdr_transport_t* transport,
                                        wz_byte_t enabled);
+wz_result_t wz_mdr_transport_set_host_write_protected(
+    wz_mdr_transport_t* transport, wz_byte_t protected_state);
 wz_result_t wz_mdr_transport_read(wz_mdr_transport_t* transport,
                                   wz_byte_t* value);
 wz_result_t wz_mdr_transport_write(wz_mdr_transport_t* transport,

@@ -201,6 +201,16 @@ set_target_properties(wz_microdrive_position_contract PROPERTIES
     C_EXTENSIONS OFF)
 
 add_executable(
+    wz_microdrive_write_protect_contract
+    ${WZSN_REPO_ROOT}/ci/test/microdrive-write-protect/microdrive-write-protect-contract.c)
+target_include_directories(wz_microdrive_write_protect_contract PRIVATE "${WZSN_SOURCE_ROOT}")
+target_link_libraries(wz_microdrive_write_protect_contract PRIVATE wz_core wz_warnings)
+set_target_properties(wz_microdrive_write_protect_contract PROPERTIES
+    C_STANDARD 11
+    C_STANDARD_REQUIRED ON
+    C_EXTENSIONS OFF)
+
+add_executable(
     wz_timing_trace_zxnet_fixture
     ${WZSN_REPO_ROOT}/ci/test/timing-trace-zxnet/trace-zxnet-fixture.c)
 target_include_directories(wz_timing_trace_zxnet_fixture PRIVATE "${WZSN_SOURCE_ROOT}")
@@ -673,6 +683,11 @@ add_test(NAME wz_microdrive_position_contract
 set_tests_properties(wz_microdrive_position_contract PROPERTIES
     PASS_REGULAR_EXPRESSION
         "PASS Microdrive motor selection, stream position, and sector wrap")
+add_test(NAME wz_microdrive_write_protect_contract
+    COMMAND "$<TARGET_FILE:wz_microdrive_write_protect_contract>")
+set_tests_properties(wz_microdrive_write_protect_contract PROPERTIES
+    PASS_REGULAR_EXPRESSION
+        "PASS Microdrive write protection and application-controlled flush")
 set(WZSN_TRACE_ZXNET_OUTPUT "${WZSN_ULA_128K_TRACE_OUTPUT}/timing-trace-zxnet")
 file(MAKE_DIRECTORY "${WZSN_TRACE_ZXNET_OUTPUT}")
 add_test(NAME wz_timing_trace_zxnet_contract

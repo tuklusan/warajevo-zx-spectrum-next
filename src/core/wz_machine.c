@@ -110,6 +110,24 @@ wz_result_t wz_machine_interface1_data_write(wz_machine_t* machine,
     return wz_mdr_transport_write(transport, value);
 }
 
+wz_byte_t wz_machine_interface1_status_read(const wz_machine_t* machine)
+{
+    const wz_mdr_transport_t* transport;
+
+    if (machine == 0 ||
+        machine->interface1_active_motor >= WZ_MACHINE_MICRODRIVE_COUNT) {
+        return 0xffu;
+    }
+    transport = wz_machine_microdrive_at_const(machine,
+        machine->interface1_active_motor);
+    if (transport == 0 || transport->image_present == 0u ||
+        transport->image == 0 || transport->host_write_protected != 0u ||
+        wz_mdr_image_is_write_protected(transport->image)) {
+        return 0xffu;
+    }
+    return 0xfeu;
+}
+
 static wz_result_t wz_machine_ula_capture_until(
     wz_machine_t* machine, wz_master_tick_t master_tick, bool inclusive);
 

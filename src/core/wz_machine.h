@@ -185,6 +185,7 @@ wz_result_t wz_machine_interface1_data_read(wz_machine_t* machine,
                                              wz_byte_t* value);
 wz_result_t wz_machine_interface1_data_write(wz_machine_t* machine,
                                               wz_byte_t value);
+wz_byte_t wz_machine_interface1_status_read(const wz_machine_t* machine);
 typedef wz_result_t (*wz_mdr_slot_flush_callback_t)(size_t slot,
     size_t sector, const wz_byte_t* data, size_t length, void* context);
 

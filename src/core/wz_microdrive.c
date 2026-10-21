@@ -110,6 +110,7 @@ void wz_mdr_transport_init(wz_mdr_transport_t* transport)
         transport->active_motor = 0xffu;
         transport->write_enabled = 0u;
         transport->erase_enabled = 0u;
+        transport->host_write_protected = 0u;
         transport->dirty = 0u;
         memset(transport->buffer, 0, sizeof(transport->buffer));
         transport->phase = WZ_MDR_PHASE_HEADER;
@@ -136,6 +137,7 @@ wz_result_t wz_mdr_transport_mount(wz_mdr_transport_t* transport,
     transport->active_motor = 0xffu;
     transport->write_enabled = 0u;
     transport->erase_enabled = 0u;
+    transport->host_write_protected = 0u;
     transport->dirty = 0u;
     memset(transport->buffer, 0, sizeof(transport->buffer));
     transport->phase = WZ_MDR_PHASE_HEADER;
@@ -169,6 +171,16 @@ wz_result_t wz_mdr_transport_set_erase(wz_mdr_transport_t* transport,
         return WZ_RESULT_INVALID_ARGUMENT;
     }
     transport->erase_enabled = enabled;
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_mdr_transport_set_host_write_protected(
+    wz_mdr_transport_t* transport, wz_byte_t protected_state)
+{
+    if (transport == 0 || protected_state > 1u) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    transport->host_write_protected = protected_state;
     return WZ_RESULT_OK;
 }
 
@@ -218,6 +230,7 @@ wz_result_t wz_mdr_transport_write(wz_mdr_transport_t* transport,
     }
     if (transport->image == 0 || transport->active_motor > 7u ||
         transport->write_enabled == 0u || transport->erase_enabled != 0u ||
+        transport->host_write_protected != 0u ||
         wz_mdr_image_is_write_protected(transport->image) ||
         wz_mdr_image_sector(transport->image, transport->sector,
                             &sector_data) != WZ_RESULT_OK) {
@@ -251,6 +264,10 @@ wz_result_t wz_mdr_transport_flush(wz_mdr_transport_t* transport,
     }
     if (transport->dirty == 0u) {
         return WZ_RESULT_OK;
+    }
+    if (transport->host_write_protected != 0u ||
+        wz_mdr_image_is_write_protected(transport->image)) {
+        return WZ_RESULT_INVALID_STATE;
     }
     result = callback(transport->sector, transport->buffer,
                       WZ_MDR_SECTOR_SIZE, context);

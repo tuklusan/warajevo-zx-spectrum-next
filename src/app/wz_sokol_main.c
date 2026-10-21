@@ -291,6 +291,7 @@ static bool wz_host_preferences_save_allowed;
 static void wz_host_release_local_keys(void);
 static bool wz_host_extension_is(const char* path, const char* expected);
 static bool wz_host_microdrive_path_read_only(size_t slot);
+static bool wz_host_microdrive_filesystem_read_only(size_t slot);
 static void wz_host_ui_draw_printer_manager(struct nk_context* context,
                                             float width, float height);
 static void wz_host_ui_draw_debugger_window(struct nk_context* context,
@@ -1312,6 +1313,12 @@ static bool wz_host_load_external_microdrive_slot(wz_host_session_t* session,
         &session->microdrive_image[slot];
     (void)snprintf(session->microdrive_path[slot],
                    sizeof(session->microdrive_path[slot]), "%s", path);
+    if (wz_mdr_transport_set_host_write_protected(
+            wz_machine_microdrive_at(&session->machine, slot),
+            wz_host_microdrive_filesystem_read_only(slot) ? 1u : 0u) !=
+            WZ_RESULT_OK) {
+        return false;
+    }
     session->ui_window.layout.microdrive_mounted[slot] = true;
     if (slot == 0u) session->ui_window.layout.microdrive1_mounted = true;
     return true;
@@ -4530,10 +4537,16 @@ static void wz_host_ui_draw_microdrive_eject_confirmation(
 
 static bool wz_host_microdrive_path_read_only(size_t slot)
 {
-    const char* path;
     if (slot >= WZ_UI_MICRODRIVE_COUNT) return true;
     if (wz_mdr_image_is_write_protected(
             &wz_host_session.microdrive_image[slot])) return true;
+    return wz_host_microdrive_filesystem_read_only(slot);
+}
+
+static bool wz_host_microdrive_filesystem_read_only(size_t slot)
+{
+    const char* path;
+    if (slot >= WZ_UI_MICRODRIVE_COUNT) return true;
     path = wz_host_session.microdrive_path[slot];
     if (path[0] == '\0') return true;
 #if defined(_WIN32)
@@ -4555,6 +4568,8 @@ static bool wz_host_microdrive_path_read_only(size_t slot)
 static bool wz_host_microdrive_set_read_only(size_t slot, bool read_only)
 {
     const char* path;
+    bool updated;
+    wz_mdr_transport_t* transport;
     if (slot >= WZ_UI_MICRODRIVE_COUNT) return false;
     path = wz_host_session.microdrive_path[slot];
     if (path[0] == '\0') return false;
@@ -4565,7 +4580,7 @@ static bool wz_host_microdrive_set_read_only(size_t slot, bool read_only)
         if (attributes == INVALID_FILE_ATTRIBUTES) return false;
         updated = read_only ? (attributes | FILE_ATTRIBUTE_READONLY) :
             (attributes & ~FILE_ATTRIBUTE_READONLY);
-        return SetFileAttributesA(path, updated) != 0;
+        if (SetFileAttributesA(path, updated) == 0) return false;
     }
 #else
     {
@@ -4575,9 +4590,14 @@ static bool wz_host_microdrive_set_read_only(size_t slot, bool read_only)
         mode = status.st_mode;
         if (read_only) mode &= (mode_t)~(S_IWUSR | S_IWGRP | S_IWOTH);
         else mode |= S_IWUSR;
-        return chmod(path, mode) == 0;
+        if (chmod(path, mode) != 0) return false;
     }
 #endif
+    updated = wz_host_microdrive_filesystem_read_only(slot);
+    transport = wz_machine_microdrive_at(&wz_host_session.machine, slot);
+    return transport != NULL &&
+        wz_mdr_transport_set_host_write_protected(transport,
+            updated ? 1u : 0u) == WZ_RESULT_OK;
 }
 
 static bool wz_host_microdrive_apply_image_edit(

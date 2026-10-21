@@ -202,8 +202,12 @@ wz_result_t wz_machine_bus_request(wz_machine_t* machine,
             request->source = WZ_BUS_SOURCE_INPUT;
         } else if (machine->hardware_io_decode_enabled &&
             machine->networking_mode == WZ_NETWORKING_INTERFACE1 &&
-            (wz_machine_interface1_port_selected(request->address, 0xefu) ||
-             wz_machine_interface1_port_selected(request->address, 0xf7u))) {
+            wz_machine_interface1_port_selected(request->address, 0xefu)) {
+            request->value = wz_machine_interface1_status_read(machine);
+            request->source = WZ_BUS_SOURCE_INPUT;
+        } else if (machine->hardware_io_decode_enabled &&
+            machine->networking_mode == WZ_NETWORKING_INTERFACE1 &&
+            wz_machine_interface1_port_selected(request->address, 0xf7u)) {
             request->value = 0xffu;
             request->source = WZ_BUS_SOURCE_INPUT;
         } else if (machine->hardware_io_decode_enabled &&
