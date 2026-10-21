@@ -44,7 +44,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "83e0e801fb91db6ffbfd91bbaac42a14967c5fb53ee13f5a6e49f4c45a8a0138"
+      "sha256": "3ab0ea61c455a5ea7806796c4586129c0777da37492ec0eb14490fdbfa53566d"
     },
     {
       "path": "docs/design/interface1-microdrive-zxnet.md",

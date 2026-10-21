@@ -8,7 +8,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "656eb8eaf045f24acedc5bb1af8895c5d179a2b3ef894e7bbfa0c6405efe88e0"
+      "sha256": "3ab0ea61c455a5ea7806796c4586129c0777da37492ec0eb14490fdbfa53566d"
     },
     {
       "path": "src/core/wz_debugger.c",

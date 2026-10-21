@@ -8,7 +8,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "0856a8eb80671877997059ee47c0d78fd1415d6400ea04d9723ff0ee651a177c"
+      "sha256": "3ab0ea61c455a5ea7806796c4586129c0777da37492ec0eb14490fdbfa53566d"
     },
     {
       "path": "src/core/wz_microdrive.c",
