@@ -68,8 +68,11 @@ def screenshot_text(root):
 
 
 def click_at(x, y):
-    run("xdotool", "mousemove", "--sync", str(x), str(y), "click", "1")
-    time.sleep(0.25)
+    run("xdotool", "mousemove", "--sync", str(x), str(y))
+    run("xdotool", "mousedown", "1")
+    time.sleep(1.0)
+    run("xdotool", "mouseup", "1")
+    time.sleep(0.5)
 
 
 def fixture_records(driver_path, commit):
