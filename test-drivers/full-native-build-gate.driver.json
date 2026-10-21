@@ -4,6 +4,6 @@
   "requiredCases": 5,
   "runnerMatrix": ["windows-2025", "ubuntu-24.04", "ubuntu-24.04-arm", "macos-15", "macos-15-intel"],
   "fixtures": [
-    {"path": ".github/workflows/cr-build-gate.yml", "sha256": "36a50590b53d3440e618c6ce545f5dde30a2abec27c1796cd6cfd783a9e985d2"}
+    {"path": ".github/workflows/cr-build-gate.yml", "sha256": "80d7005abc5435e087de93a859cea399514144f50b3b704b85cc00a5da97acbc"}
   ]
 }

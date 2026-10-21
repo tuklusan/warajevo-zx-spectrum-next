@@ -1,53 +1,54 @@
 {
   "testId": "full-native-build-gate",
   "status": "pass",
-  "commit": "da116ea6303c22ea8eaf0562ae849aa4b4da6775",
-  "tree": "f15f998d9583d0d34dfbf003e89cf9f0e3042aa6",
-  "runId": 39564513192,
+  "commit": "6d678b538d614526d1420ceac0cd914a266e1b37",
+  "tree": "ffd9a824bcaf4fcd8b5e364ce93384a04ec9ad06",
+  "runId": 39598453427,
   "event": "workflow_dispatch",
   "runner": "GitHub Actions native matrix",
   "architecture": "x64 and ARM64",
-  "timestamp": "2026-10-21T07:49:56+00:00",
+  "timestamp": "2026-10-21T08:19:32-04:00",
   "checks": [
-    "clean Release build with WZSN_BUILD_SOKOL_HOST=ON",
-    "integrated CTest: 26/26 per target",
+    "Clean Release build with WZSN_BUILD_SOKOL_HOST=ON",
+    "Integrated CTest: 26/26 per target",
     "Phase-16 correctness and performance: 30 fingerprints and 30 throughput comparisons passed",
-    "Interface-1 WAIT: 75 checks per target"
+    "Interface-1 WAIT: 75 checks per target (375 total)",
+    "Sanitized Microdrive transition fuzz passed on non-Windows targets"
   ],
   "targets": [
     {
       "name": "Windows x64",
-      "runner": "windows-2025",
       "conclusion": "success",
       "ctest": "26/26",
+      "runner": "windows-2025",
       "waitChecks": 75
     },
     {
       "name": "Linux x64",
-      "runner": "ubuntu-24.04",
       "conclusion": "success",
       "ctest": "26/26",
+      "runner": "ubuntu-24.04",
       "waitChecks": 75
     },
     {
       "name": "Linux ARM64",
-      "runner": "ubuntu-24.04-arm",
       "conclusion": "success",
       "ctest": "26/26",
+      "runner": "ubuntu-24.04-arm",
       "waitChecks": 75
     },
     {
       "name": "macOS ARM64",
-      "runner": "macos-15",
       "conclusion": "success",
       "ctest": "26/26",
+      "runner": "macos-15",
       "waitChecks": 75
     },
     {
       "name": "macOS Intel",
-      "runner": "macos-15-intel",
       "conclusion": "success",
       "ctest": "26/26",
+      "runner": "macos-15-intel",
       "waitChecks": 75
     }
   ],
@@ -55,7 +56,7 @@
     "proof": "phase16-performance-current.json",
     "fingerprintsPassed": 30,
     "throughputComparisonsPassed": 30,
-    "largestSlowdownPercent": 29.8
+    "largestSlowdownPercent": 23.5
   },
   "fixtures": [
     {
@@ -63,21 +64,139 @@
       "sha256": "80d7005abc5435e087de93a859cea399514144f50b3b704b85cc00a5da97acbc"
     },
     {
+      "path": "ci/test/interface1-wait/interface1-wait-contract.c",
+      "sha256": "c8da19d4a522971b49ebc58a8bee784625596e42a4f7e6742d34ba030ecaba23"
+    },
+    {
+      "path": "ci/test/interface1-wait/write-proof.py",
+      "sha256": "ab7eddb0aa4f163eca85e9971e6540a14be064f676753560f2451f8df2052b00"
+    },
+    {
+      "path": "ci/test/performance/baseline.c",
+      "sha256": "717a58a112206148740d77f5c03049916c20d6653e36d264ef57dacb3a968c21"
+    },
+    {
+      "path": "ci/test/performance/baselines/linux-arm64.json",
+      "sha256": "285cc3c0991b22370d96c6a8f541e84331881e4f793de2b1d1f27e248906e696"
+    },
+    {
+      "path": "ci/test/performance/baselines/linux-x64.json",
+      "sha256": "2e6b6566fb39ef641b8e36dac875e841c2cd9636507f967affcd1c4779f95e10"
+    },
+    {
+      "path": "ci/test/performance/baselines/macos-arm64.json",
+      "sha256": "9bcf336019eca166573244e681da2d2541b00add56a02edb8b5e1249c2225075"
+    },
+    {
+      "path": "ci/test/performance/baselines/macos-x64.json",
+      "sha256": "83e3e2518231042e28bc56c775dfd02a61747466fa502fe0934c1c8236919426"
+    },
+    {
+      "path": "ci/test/performance/baselines/windows-x64.json",
+      "sha256": "10108ff21ed725cb5e62d9e0bdd7cc3df0e40c011f6925b8fc24a39c0fa38be5"
+    },
+    {
+      "path": "ci/test/performance/CMakeLists.txt",
+      "sha256": "00e55369533639d8e25f77cfd67eb51d6c66356086ea7803d4ba8e477b3101e7"
+    },
+    {
+      "path": "ci/test/performance/compare.py",
+      "sha256": "b7317caff4efa4f1ab982078f1ee8e5694fae2245f881736ec4a2179ef873b4b"
+    },
+    {
+      "path": "ci/test/performance/README.md",
+      "sha256": "2bf8352a30b9efb7e2952046ceb4f1998f25e7d39feed2947c837a5a24368012"
+    },
+    {
+      "path": "ci/test/performance/write-proof.py",
+      "sha256": "26201d858d9be74418f9165e1a055f772f3c77ae9133a106bb8fd8f5e3a6ab32"
+    },
+    {
+      "path": "ci/test/performance/write-runner-evidence.py",
+      "sha256": "ec2c8d0c36427fb8ea51ee2ffe8f5702eec1d63a93332130c62a974a8d8208e7"
+    },
+    {
+      "path": "docs/design/interface1-microdrive-zxnet.md",
+      "sha256": "a275dfd1cc380031eb01347219fcdc6a273d9fa962e8c5503d502b4ec37dd706"
+    },
+    {
       "path": "src/cmake/CMakeLists.txt",
       "sha256": "d284c58a767513a7869e0688b7629fea115bab848d24819eb585050e72d97273"
     },
     {
-      "path": "src/app/wz_sokol_main.c",
-      "sha256": "7c3ec16ab94246e4e433c7c9a626e3d29d7de9b078d39de5eb0a8dc9408bbeaa"
+      "path": "src/core/wz_bus.c",
+      "sha256": "be2e57a38f32ec45e9975a3249e5c89dedd6343e4061c4355b072a0cac0e43d7"
     },
     {
-      "path": "src/app/wz_compatibility_tools.c",
-      "sha256": "a76dfb6a03bcbdd6272795e0d8ff9e694692cf14a7db034514083c87e971d3f3"
+      "path": "src/core/wz_machine.c",
+      "sha256": "3de492c7022baaef1a348f2fa64d019cdef7a414e0195bbf5113f82eef804013"
     },
     {
-      "path": "src/app/wz_compatibility_tools.h",
-      "sha256": "eb4b120cf05c63425678b94c2fcef83fca15ee463f21eabb16804f81b499e289"
+      "path": "src/core/wz_machine.h",
+      "sha256": "808eef5dddd9851505b1861fa89e9916cee1cc3776f165a1ae34dc01f4105b95"
+    },
+    {
+      "path": "src/core/wz_runner.c",
+      "sha256": "22c6511dbbcd3ef2721dcdeba5d435f9f3a35c30f701f7264a04962fb71ba144"
+    },
+    {
+      "path": "src/core/wz_state.c",
+      "sha256": "93479ac03c344c429455d8627096147fb4da4a2b94c5204d8223d7e7b11fc983"
+    },
+    {
+      "path": "src/core/wz_types.h",
+      "sha256": "aa77ae7cf238009aa43f0a5554da281f4d36851c797a879000f3797cdb4280ee"
+    },
+    {
+      "path": "src/core/wz_z80.c",
+      "sha256": "cef55b660b43d3f7fb3737962d92e062966e126b3b99f8b87816553303c820f9"
+    },
+    {
+      "path": "src/core/wz_zxnet.c",
+      "sha256": "9b74d445a10dcd9669c72c858bf5c2c87b57998bf370322f0608367bd6d2ddda"
+    },
+    {
+      "path": "src/core/wz_zxnet.h",
+      "sha256": "3f8e58593ca15fc173531d1174b19c4bea95fd8123bf1855b34148d79b73d495"
     }
   ],
-  "githubCleanupPolicy": "After pinning proof records, delete the workflow run and all hosted artifacts and caches."
+  "githubCleanupPolicy": "After pinning proof records, delete the workflow run and all hosted artifacts and caches.",
+  "sourceReview": {
+    "status": "passed; findings adjudicated",
+    "tool": "Gito 4.5.0",
+    "findings": [
+      {
+        "title": "Potential use-after-free in test cleanup",
+        "disposition": "Non-actionable: wz_machine_destroy releases and nulls owned allocations without freeing the static machine object; repeated cleanup and reinitialization are safe."
+      },
+      {
+        "title": "Fixture path validation",
+        "disposition": "Non-actionable: Python str.startswith accepts a tuple of prefixes; all allowed roots end in a slash, and absolute paths, parent components, and unsupported characters are rejected."
+      },
+      {
+        "title": "Pending I/O without CPU continuation",
+        "disposition": "Non-actionable: CPU I/O installs its continuation before the bus call. A direct bus API caller receives PENDING before the device cycle commits and remains responsible for retrying its request."
+      },
+      {
+        "title": "Runner progress while pending",
+        "disposition": "Non-actionable: the runner loop starts only below its target; a pending cycle advances to that target, and the elapsed-tick guard rejects zero-progress cases."
+      },
+      {
+        "title": "Version 8 deserialization",
+        "disposition": "Non-actionable: extension version 8 remains supported with a zeroed pending continuation; the new ten-byte field is read only for version 9."
+      },
+      {
+        "title": "Clearing pending I/O with memset",
+        "disposition": "Non-actionable: the pending-I/O record contains only scalar fields and zero maps to its NONE/inactive state."
+      },
+      {
+        "title": "Clock setup in the raster contract",
+        "disposition": "Addressed: the fixture uses the internal master-tick advancement helper, which also synchronizes ZX Net time when tracing is enabled; follow-up review found no issue."
+      },
+      {
+        "title": "Incorrect logic for calculating largest slowdown",
+        "disposition": "False positive: deltas are stored as percentage points; negating a negative delta reports the slowdown as a positive percentage. The 40% gate is checked against the unrounded ratio before this summary calculation."
+      }
+    ]
+  }
 }
