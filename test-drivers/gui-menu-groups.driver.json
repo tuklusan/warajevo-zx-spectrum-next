@@ -1,0 +1,54 @@
+{
+  "testId": "gui-menu-groups",
+  "command": "Dispatch .github/workflows/gui-menu-groups.yml on main. The workflow builds and launches the Release/Sokol host under Xvfb, OCR-checks nested menus, and verifies 128K and 400% menu actions through STATUS.",
+  "requiredCases": 12,
+  "runnerMatrix": [
+    "ubuntu-24.04"
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/gui-menu-groups.yml",
+      "sha256": "85d85cfb801ac31df949f16b842cefb32d9c72fd19ba44c9d4fc50829092e1a1"
+    },
+    {
+      "path": "ci/test/gui-menu-groups.py",
+      "sha256": "4ff986c1b663b647c62d2d3158e96eac58a333b8f4d2d67e8c0f2137bad7e822"
+    },
+    {
+      "path": "ci/test/gui-menu-groups/README.md",
+      "sha256": "65af167b28b27b48d7c1b293ba6398103983c47c92bcc27cc30acbff0a9d5448"
+    },
+    {
+      "path": "ci/test/gui-screenshot-save.py",
+      "sha256": "b141ac9b4c91e33028291b0312f8fc2ac31f67c161c52cc0eb51a42bc54ff82f"
+    },
+    {
+      "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
+      "sha256": "dc47afb96f2c0566788d59ef74a691c33a8943e1c4e199c96c74d07739e68b31"
+    },
+    {
+      "path": "roms/48.rom",
+      "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "7c3ec16ab94246e4e433c7c9a626e3d29d7de9b078d39de5eb0a8dc9408bbeaa"
+    },
+    {
+      "path": "src/app/wz_command_registry.c",
+      "sha256": "707bd4c4c9d0e12db0135ef857d3c7de8a5d6e7d717d790d09f3080bb90c9607"
+    },
+    {
+      "path": "src/app/wz_command_registry.h",
+      "sha256": "4b8530859e953c5876d41792f6221a00a7facc14658c05f28076cda926c9bf04"
+    },
+    {
+      "path": "src/app/wz_telnet_status.c",
+      "sha256": "98e77532404a726162a1bd8b075df7934b66a231f085e901094a1aa2cee2f04f"
+    },
+    {
+      "path": "tests/gui-menu-groups.md",
+      "sha256": "3e236ac1edc41c2ec2a7822cfa84091f79cf2a448e7164350c5456475a7151ba"
+    }
+  ]
+}
