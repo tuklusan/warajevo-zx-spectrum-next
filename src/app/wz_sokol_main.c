@@ -3707,7 +3707,7 @@ static bool wz_host_register_commands(void)
         {
             "settings.networking.open", "Networking...",
             "Select the exclusive machine networking mode",
-            "settings", "NONE", "wz-command-result",
+            "settings.peripherals.networking", "NONE", "wz-command-result",
             "wz_host_networking_settings_open", "local", NULL,
             WZ_COMMAND_LOCAL_ONLY, wz_host_settings_available,
             wz_host_networking_settings_open, &wz_host_session,
@@ -4534,9 +4534,6 @@ static bool wz_host_ui_menu_command_in_group(
     const wz_command_metadata_t* command, const char* group_id)
 {
     if (command == NULL || command->id == NULL) return false;
-    if (strcmp(command->id, "settings.networking.open") == 0) {
-        return strcmp(group_id, "settings.peripherals.networking") == 0;
-    }
     return wz_host_ui_menu_is_descendant(group_id, command->id) ||
         (command->menu_group != NULL &&
          strcmp(command->menu_group, group_id) == 0);
@@ -4626,9 +4623,10 @@ static void wz_host_ui_draw_menu_group(struct nk_context* context,
                           strlen(wz_host_ui_menu_nodes[node_index].id)) == 0 &&
                   command->id[strlen(
                       wz_host_ui_menu_nodes[node_index].id)] == '.') ||
-                 (strcmp(command->id, "settings.networking.open") == 0 &&
-                  strcmp(wz_host_ui_menu_nodes[node_index].id,
-                         "settings.peripherals.networking") == 0))) {
+                 (command->menu_group != NULL &&
+                  wz_host_ui_menu_is_descendant(
+                      wz_host_ui_menu_nodes[node_index].id,
+                      command->menu_group)))) {
                 nested = true;
                 break;
             }
