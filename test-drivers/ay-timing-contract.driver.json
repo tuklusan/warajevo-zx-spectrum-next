@@ -17,7 +17,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "bbf0280a803f789387b3de60ab0bf27fa20db5a455dfe6faa9c65aed4c6e2ad2"
+      "sha256": "efafa34c1c3947cd96aa9d54d013116bbdbd466033cba16386801f790888225a"
     },
     {
       "path": "src/core/audio/wz_ay.c",
@@ -37,7 +37,7 @@
     },
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "e10e0157a7e276cbbf2f332082703917defd392c7b9482f4d65d1725052893cb"
+      "sha256": "3e0231f35b038f059e137a1eb1e9cc3374fd07f5c12bf77e338d1143dd94c3e1"
     },
     {
       "path": "ci/test/ay-timing/write-proof.py",
