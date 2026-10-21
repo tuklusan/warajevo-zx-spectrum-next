@@ -18,7 +18,7 @@ import subprocess
 import tempfile
 import time
 
-from PIL import Image
+from PIL import Image, ImageEnhance, ImageOps
 
 helpers = runpy.run_path(str(Path(__file__).with_name("gui-screenshot-save.py")))
 xdotool = helpers["xdotool"]
@@ -34,9 +34,11 @@ def capture(destination):
     with Image.open(destination) as image:
         enlarged = image.resize((image.width * 3, image.height * 3),
                                 Image.Resampling.LANCZOS)
+        ocr_image = ImageEnhance.Contrast(
+            ImageOps.grayscale(enlarged)).enhance(2.5)
         with tempfile.TemporaryDirectory(prefix="wz-menu-ocr-") as temporary:
             ocr_path = Path(temporary) / "capture.png"
-            enlarged.save(ocr_path)
+            ocr_image.save(ocr_path)
             return subprocess.run(["tesseract", str(ocr_path), "stdout",
                 "--psm", "6"], check=True, capture_output=True,
                 text=True).stdout.strip()
@@ -200,7 +202,8 @@ def main():
                 open_group(host_window, x, 2)
                 image, text = save_capture(host_window, args.proof.parent,
                                            "media-microdrive-drive1")
-                require_text(text, ("Mount MDV", "Set MDV 1 Default"),
+                require_text(text, ("Mount MDV", "Eject MDV 1",
+                                    "Set MDV 1 Default"),
                              "Media > Microdrive > Drive 1 actions")
                 captures.append(image)
                 assertions.append("media-microdrive-drive1-actions-visible")
