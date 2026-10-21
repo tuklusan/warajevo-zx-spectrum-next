@@ -1,48 +1,48 @@
 {
   "testId": "debugger-core-contract",
   "status": "pass",
-  "commit": "0d78891e623e6d8b1e4a7aecadfaab71296e277c",
+  "commit": "42414ad5c97f125b2a7d9837ff73be5f9057d2e9",
   "runner": "GitHub Actions native matrix",
-  "timestamp": "2026-10-21T18:10:38Z",
-  "workflowRun": 39650347623,
-  "assertionsPerRunner": 86,
+  "timestamp": "2026-10-21T18:18:38Z",
+  "workflowRun": 39651548928,
+  "assertionsPerRunner": 92,
   "integratedCtest": "28/28 per target",
   "phase16": "all configured correctness and performance checks passed per target",
   "targets": [
     {
       "name": "Windows x64",
       "runner": "windows-2025",
-      "assertions": 86,
+      "assertions": 92,
       "conclusion": "success"
     },
     {
       "name": "Linux x64",
       "runner": "ubuntu-24.04",
-      "assertions": 86,
+      "assertions": 92,
       "conclusion": "success"
     },
     {
       "name": "Linux ARM64",
       "runner": "ubuntu-24.04-arm",
-      "assertions": 86,
+      "assertions": 92,
       "conclusion": "success"
     },
     {
       "name": "macOS ARM64",
       "runner": "macos-15",
-      "assertions": 86,
+      "assertions": 92,
       "conclusion": "success"
     },
     {
       "name": "macOS Intel",
       "runner": "macos-15-intel",
-      "assertions": 86,
+      "assertions": 92,
       "conclusion": "success"
     }
   ],
   "sourceReview": {
     "status": "complete",
-    "adjudication": "The deliberate undersized disassembly buffer exercises WZ_RESULT_BUFFER_TOO_SMALL and bounded termination. The first paging run exposed an incorrect test expectation after selecting bank 0 while asserting bank 2; the fixture now locks bank 2 and verifies it remains selected. The final source review found no issues."
+    "adjudication": "The deliberate undersized disassembly buffer exercises WZ_RESULT_BUFFER_TOO_SMALL and bounded termination. The first paging run exposed an incorrect test expectation after selecting bank 0 while asserting bank 2; the fixture now locks bank 2 and verifies it remains selected. The reported unsigned subtraction underflow is prevented by the preceding pattern_length > length return; length is also bounded to the 16-bit address space. Retain subtraction-based bounds to avoid addition overflow."
   },
   "fixtures": [
     {
@@ -52,6 +52,14 @@
     {
       "path": "src/cmake/CMakeLists.txt",
       "sha256": "656eb8eaf045f24acedc5bb1af8895c5d179a2b3ef894e7bbfa0c6405efe88e0"
+    },
+    {
+      "path": "src/core/wz_debugger.c",
+      "sha256": "a7d14e4e83c4cbfe968ee7dd2c6db7d8b345c6d65e3659f0e2856661100bf597"
+    },
+    {
+      "path": "src/core/wz_debugger.h",
+      "sha256": "bce86fa966396093e7658773bf427781bd7c26a94be14e6e00fa54a3fe56d258"
     }
   ]
 }
