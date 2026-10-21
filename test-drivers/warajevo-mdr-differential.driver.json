@@ -1,0 +1,36 @@
+{
+  "testId": "warajevo-mdr-differential",
+  "command": "cmake -S src/cmake -B dist/warajevo-mdr-differential -DCMAKE_BUILD_TYPE=Release -DWZSN_BUILD_SOKOL_HOST=ON && cmake --build dist/warajevo-mdr-differential --config Release --target wz_warajevo_mdr_differential --parallel 2 && ctest --test-dir dist/warajevo-mdr-differential -C Release -R \"^wz_warajevo_mdr_differential$\" --output-on-failure",
+  "reference": {
+    "repository": "https://github.com/tuklusan/warajevo-spectrum-2.50.git",
+    "commit": "94f69bd8f4acb6c0c320ae34f9b1c3ee29bc5545",
+    "path": "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM",
+    "sha256": "d875f63a6ba4abf38641bceb1b827d7dfac3b6d70c3d6437cc165eaf560bc040"
+  },
+  "fixtures": [
+    {
+      "path": "ci/test/warajevo-mdr-differential/warajevo-mdr-differential.c",
+      "sha256": "b7fafb3ec151e2c2dd62e3108eb0f41d0de0fda119595e51912d2c3a28fe9988"
+    },
+    {
+      "path": "src/core/wz_microdrive.h",
+      "sha256": "3308da78909e3842b2a0e0f82df3927927ba988708683b3fd20adfaaef527ad8"
+    },
+    {
+      "path": "src/core/wz_microdrive.c",
+      "sha256": "30d9e3b2f856deff18fe8c6aa21332fbf8018d5742adec79107e52051c0016d8"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "02e349909c7818d973b571996b7a02be0049c4dd2d7528bb4ea0de00ed26be57"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "913704705a983e0642855a6260b8c27c67dc58a9b209d8b884acca2f00607c2e"
+    },
+    {
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "c2e12e678786ad70ea9171d276a54549ef035e874c42562252227dd590e15c8f"
+    }
+  ]
+}

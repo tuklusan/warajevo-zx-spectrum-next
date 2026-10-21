@@ -211,6 +211,16 @@ set_target_properties(wz_microdrive_write_protect_contract PROPERTIES
     C_EXTENSIONS OFF)
 
 add_executable(
+    wz_warajevo_mdr_differential
+    ${WZSN_REPO_ROOT}/ci/test/warajevo-mdr-differential/warajevo-mdr-differential.c)
+target_include_directories(wz_warajevo_mdr_differential PRIVATE "${WZSN_SOURCE_ROOT}")
+target_link_libraries(wz_warajevo_mdr_differential PRIVATE wz_core wz_warnings)
+set_target_properties(wz_warajevo_mdr_differential PROPERTIES
+    C_STANDARD 11
+    C_STANDARD_REQUIRED ON
+    C_EXTENSIONS OFF)
+
+add_executable(
     wz_zxnet_transport_queue_contract
     ${WZSN_REPO_ROOT}/ci/test/zxnet-transport-queue/zxnet-transport-queue-contract.c
     ${WZSN_SOURCE_ROOT}/app/wz_zxnet_transport.c)
@@ -719,6 +729,11 @@ add_test(NAME wz_microdrive_write_protect_contract
 set_tests_properties(wz_microdrive_write_protect_contract PROPERTIES
     PASS_REGULAR_EXPRESSION
         "PASS Microdrive write protection and application-controlled flush")
+add_test(NAME wz_warajevo_mdr_differential
+    COMMAND "$<TARGET_FILE:wz_warajevo_mdr_differential>")
+set_tests_properties(wz_warajevo_mdr_differential PROPERTIES
+    PASS_REGULAR_EXPRESSION
+        "PASS preserved Warajevo Microdrive sector layout and stream behavior")
 add_test(NAME wz_zxnet_transport_queue_contract
     COMMAND "$<TARGET_FILE:wz_zxnet_transport_queue_contract>")
 set_tests_properties(wz_zxnet_transport_queue_contract PROPERTIES
