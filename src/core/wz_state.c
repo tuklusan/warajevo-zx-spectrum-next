@@ -434,9 +434,8 @@ wz_result_t wz_state_validate_historical_representability(
 }
 
 // codeql[cpp/poorly-documented-function]
-wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
-                                         const wz_byte_t* data,
-                                         size_t length)
+static wz_result_t wz_state_deserialize_machine_in_place(
+    wz_machine_t* machine, const wz_byte_t* data, size_t length)
 {
     /* Restore machine state from the validated serialized representation. */
     const wz_machine_profile_t* profile;
@@ -802,6 +801,29 @@ wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
         }
     }
     return wz_machine_reset_ula_capture(machine);
+}
+
+wz_result_t wz_state_deserialize_machine(wz_machine_t* machine,
+                                         const wz_byte_t* data,
+                                         size_t length)
+{
+    wz_machine_t* candidate;
+    wz_result_t result;
+
+    if (machine == 0 || data == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    candidate = (wz_machine_t*)malloc(sizeof(*candidate));
+    if (candidate == 0) {
+        return WZ_RESULT_OUT_OF_MEMORY;
+    }
+    *candidate = *machine;
+    result = wz_state_deserialize_machine_in_place(candidate, data, length);
+    if (result == WZ_RESULT_OK) {
+        *machine = *candidate;
+    }
+    free(candidate);
+    return result;
 }
 
 void wz_snapshot_state_init(wz_snapshot_state_t* snapshot)

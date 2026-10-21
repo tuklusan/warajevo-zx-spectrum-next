@@ -222,6 +222,16 @@ set_target_properties(wz_zxnet_transport_queue_contract PROPERTIES
     C_EXTENSIONS OFF)
 
 add_executable(
+    wz_zxnet_canonical_state_contract
+    ${WZSN_REPO_ROOT}/ci/test/zxnet-canonical-state/zxnet-canonical-state-contract.c)
+target_include_directories(wz_zxnet_canonical_state_contract PRIVATE "${WZSN_SOURCE_ROOT}")
+target_link_libraries(wz_zxnet_canonical_state_contract PRIVATE wz_core wz_warnings)
+set_target_properties(wz_zxnet_canonical_state_contract PROPERTIES
+    C_STANDARD 11
+    C_STANDARD_REQUIRED ON
+    C_EXTENSIONS OFF)
+
+add_executable(
     wz_timing_trace_zxnet_fixture
     ${WZSN_REPO_ROOT}/ci/test/timing-trace-zxnet/trace-zxnet-fixture.c)
 target_include_directories(wz_timing_trace_zxnet_fixture PRIVATE "${WZSN_SOURCE_ROOT}")
@@ -704,6 +714,11 @@ add_test(NAME wz_zxnet_transport_queue_contract
 set_tests_properties(wz_zxnet_transport_queue_contract PROPERTIES
     PASS_REGULAR_EXPRESSION
         "PASS ZX Net transport normalization queue ordering, due delivery, and atomic rejection")
+add_test(NAME wz_zxnet_canonical_state_contract
+    COMMAND "$<TARGET_FILE:wz_zxnet_canonical_state_contract>")
+set_tests_properties(wz_zxnet_canonical_state_contract PROPERTIES
+    PASS_REGULAR_EXPRESSION
+        "PASS ZX Net canonical state fields and transactional restore")
 set(WZSN_TRACE_ZXNET_OUTPUT "${WZSN_ULA_128K_TRACE_OUTPUT}/timing-trace-zxnet")
 file(MAKE_DIRECTORY "${WZSN_TRACE_ZXNET_OUTPUT}")
 add_test(NAME wz_timing_trace_zxnet_contract

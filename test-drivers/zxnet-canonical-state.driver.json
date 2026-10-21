@@ -1,0 +1,41 @@
+{
+  "testId": "zxnet-canonical-state",
+  "command": "Full native build with WZSN_BUILD_SOKOL_HOST=ON and integrated CTest: wz_zxnet_canonical_state_contract",
+  "runnerMatrix": [
+    "windows-2025",
+    "ubuntu-24.04",
+    "ubuntu-24.04-arm",
+    "macos-15",
+    "macos-15-intel"
+  ],
+  "fixtures": [
+    {
+      "path": "ci/test/zxnet-canonical-state/zxnet-canonical-state-contract.c",
+      "sha256": "82ae621948c85704942f644175686548c1188a5ad3241c5455cce538bc64430a"
+    },
+    {
+      "path": "src/core/wz_state.c",
+      "sha256": "420db27b919cc348ada1c235b05480def396f22cb6bfa2ba275b7ffd2118e409"
+    },
+    {
+      "path": "src/core/wz_state.h",
+      "sha256": "46ec8063cc5976b743d53a23b64c34c84583878c9793434d3622c8f8a38f9aa3"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "90cf96e435148c80817bf835c74f5e778cefd4024ec213c52a514d4bd6fd1efb"
+    },
+    {
+      "path": "src/core/wz_microdrive.h",
+      "sha256": "223cba6f9359eace0fcc85a361e28e5f4daeb1c34bf06b2f01bf5f040d00959b"
+    },
+    {
+      "path": "src/core/wz_zxnet.h",
+      "sha256": "3f8e58593ca15fc173531d1174b19c4bea95fd8123bf1855b34148d79b73d495"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "7e7c554780ac86d750cf613eff767dbc42e1b6bf4ea6767aadda5da643dd85ad"
+    }
+  ]
+}
