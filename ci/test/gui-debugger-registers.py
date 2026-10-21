@@ -67,15 +67,16 @@ def screenshot_text(root):
     return run("tesseract", str(prepared), "stdout", "--psm", "6")
 
 
-def debugger_cpu_text(root, left, top):
-    image = root / "screen.png"
-    with Image.open(image) as source:
-        crop = source.crop((left + 350, top + 88, left + 640, top + 126))
-        enlarged = crop.resize((crop.width * 4, crop.height * 4),
-                               Image.Resampling.LANCZOS)
-    prepared = root / "debugger-cpu-ocr.png"
-    ImageEnhance.Contrast(ImageOps.grayscale(enlarged)).enhance(3.0).save(prepared)
-    return run("tesseract", str(prepared), "stdout", "--psm", "7")
+def main_af(root):
+    observations = []
+    for _ in range(3):
+        text = screenshot_text(root)
+        observations.append(text)
+        match = re.search(r"(?:^|[^A-Z])N?AF\s+([0-9A-F]{4})\b", text)
+        if match is not None:
+            return match.group(1), text
+        time.sleep(0.2)
+    raise RuntimeError(f"main AF value is not readable; OCR={observations!r}")
 
 
 def click_at(x, y):
@@ -142,9 +143,12 @@ def main():
                 run("xdotool", "mousemove", "--sync", "--window", window,
                     "110", "42", "click", "1")
                 time.sleep(0.25)
-                before = screenshot_text(root)
+                original_af, before = main_af(root)
                 (args.capture_dir / "debugger-paused.png").write_bytes(
                     (root / "screen.png").read_bytes())
+                if "paused" not in before.casefold():
+                    raise RuntimeError(
+                        f"debugger did not report a paused machine; OCR={before!r}")
                 geometry = run("xdotool", "getwindowgeometry", "--shell", window)
                 app_width = int(re.search(r"^WIDTH=(\d+)$", geometry,
                                           re.MULTILINE).group(1))
@@ -154,14 +158,6 @@ def main():
                 y0 = int(re.search(r"^Y=(\d+)$", geometry, re.MULTILINE).group(1))
                 debugger_left = x0 + max(0, (app_width - 760) // 2)
                 debugger_top = y0 + max(0, (app_height - 740) // 2)
-                register_view = debugger_cpu_text(
-                    root, debugger_left, debugger_top)
-                match = re.search(r"AF\s+([0-9A-F]{4})", register_view)
-                if match is None:
-                    raise RuntimeError(
-                        "main AF value is not readable; "
-                        f"CPU OCR={register_view!r}; screen OCR={before!r}")
-                original_af = match.group(1)
                 assertions.append("machine-paused-in-debugger")
 
                 # Register editor is directly below its label; value input is
@@ -174,15 +170,13 @@ def main():
                 invalid = screenshot_text(root)
                 (args.capture_dir / "debugger-register-invalid.png").write_bytes(
                     (root / "screen.png").read_bytes())
-                invalid_register_view = debugger_cpu_text(
-                    root, debugger_left, debugger_top)
+                invalid_af, _ = main_af(root)
                 if ("Invalid debugger register value" not in invalid or
-                        not re.search(rf"AF\s+{original_af}\b",
-                                      invalid_register_view)):
+                        invalid_af != original_af):
                     raise RuntimeError(
                         "out-of-range byte register was not rejected without "
-                        f"changing AF={original_af}; "
-                        f"CPU OCR={invalid_register_view!r}; screen OCR={invalid!r}")
+                        f"changing AF={original_af} (read {invalid_af}); "
+                        f"screen OCR={invalid!r}")
                 assertions.append("byte-register-width-rejected")
 
                 run("xdotool", "mousemove", str(edit_x), str(edit_y), "click", "1")
@@ -191,23 +185,19 @@ def main():
                 updated = screenshot_text(root)
                 (args.capture_dir / "debugger-register-edited.png").write_bytes(
                     (root / "screen.png").read_bytes())
-                updated_register_view = debugger_cpu_text(
-                    root, debugger_left, debugger_top)
+                updated_af, _ = main_af(root)
                 if ("Debugger register updated" not in updated or
-                        not re.search(r"AF\s+5A[0-9A-F]{2}",
-                                      updated_register_view)):
+                        updated_af[:2] != "5A"):
                     raise RuntimeError(
                         "main A register edit was not reflected in UI; "
-                        f"CPU OCR={updated_register_view!r}; screen OCR={updated!r}")
+                        f"AF OCR={updated_af!r}; screen OCR={updated!r}")
                 assertions.append("paused-main-register-edit-reflected")
 
                 click_at(debugger_left + 570, debugger_top + 400)
                 restored = screenshot_text(root)
-                restored_register_view = debugger_cpu_text(
-                    root, debugger_left, debugger_top)
+                restored_af, _ = main_af(root)
                 if ("Debugger registers restored" not in restored or
-                        not re.search(rf"AF\s+{original_af}\b",
-                                      restored_register_view)):
+                        restored_af != original_af):
                     raise RuntimeError("register undo did not restore the prior AF value")
                 assertions.append("register-undo-restored-prior-af")
                 (args.capture_dir / "debugger-register-undo.png").write_bytes(
