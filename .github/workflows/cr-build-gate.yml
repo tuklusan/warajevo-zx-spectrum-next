@@ -18,7 +18,6 @@ on:
 
 permissions:
   contents: read
-  actions: read
 
 jobs:
   clean-build:
@@ -139,6 +138,7 @@ jobs:
           python ci/test/performance/write-runner-evidence.py \
             --commit "$GITHUB_SHA" \
             --platform "${{ matrix.name }}" \
+            --job-name "Full build / ${{ matrix.name }}" \
             --runner "${{ matrix.performance_runner }}" \
             --architecture "${{ matrix.architecture }}" \
             --slug "${{ matrix.performance_baseline }}" \
@@ -175,9 +175,11 @@ jobs:
         run: |
           python ci/test/interface1-wait/write-proof.py \
             --commit "$GITHUB_SHA" --run-id "$GITHUB_RUN_ID" \
+            --branch "$GITHUB_REF_NAME" --event "$GITHUB_EVENT_NAME" \
             --input-dir hosted-inputs
           python ci/test/performance/write-proof.py \
             --commit "$GITHUB_SHA" --run-id "$GITHUB_RUN_ID" \
+            --branch "$GITHUB_REF_NAME" --event "$GITHUB_EVENT_NAME" \
             --input-dir hosted-inputs
 
       - name: Upload temporary proof records

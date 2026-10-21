@@ -29,6 +29,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--commit", required=True)
     parser.add_argument("--platform", required=True)
+    parser.add_argument("--job-name", required=True)
     parser.add_argument("--runner", required=True)
     parser.add_argument("--architecture", required=True)
     parser.add_argument("--slug", required=True)
@@ -66,7 +67,8 @@ def main() -> None:
         json.dumps(performance, indent=2) + "\n", encoding="utf-8")
     runner = {
         "testId": "interface1-wait", "status": "pass", "commit": args.commit,
-        "platform": args.platform, "runner": args.runner,
+        "platform": args.platform, "jobName": args.job_name,
+        "runner": args.runner,
         "architecture": args.architecture,
         "requiredCases": 75, "observedOutput": WAIT_MARKER,
         "ctest": "26/26 passed",

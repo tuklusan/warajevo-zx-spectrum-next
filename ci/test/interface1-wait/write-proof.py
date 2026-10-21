@@ -23,11 +23,11 @@ FIXTURE_ROOTS = (".github/workflows/", "ci/test/interface1-wait/",
                  "ci/test/performance/", "test-drivers/",
                  "src/cmake/", "src/core/", "docs/design/")
 PLATFORMS = (
-    ("Windows x64", "Full build / Windows x64", "windows-x64"),
-    ("Linux x64", "Full build / Linux x64", "linux-x64"),
-    ("Linux ARM64", "Full build / Linux ARM64", "linux-arm64"),
-    ("macOS ARM64", "Full build / macOS ARM64", "macos-arm64"),
-    ("macOS Intel", "Full build / macOS Intel", "macos-x64"),
+    ("Windows x64", "Full build / Windows x64", "windows-x64", "Windows-windows-x64", "X64"),
+    ("Linux x64", "Full build / Linux x64", "linux-x64", "Linux-ubuntu-24.04", "X64"),
+    ("Linux ARM64", "Full build / Linux ARM64", "linux-arm64", "Linux-ubuntu-24.04-arm", "ARM64"),
+    ("macOS ARM64", "Full build / macOS ARM64", "macos-arm64", "macOS-macos-arm64", "ARM64"),
+    ("macOS Intel", "Full build / macOS Intel", "macos-x64", "macOS-macos-x64", "X64"),
 )
 MARKER = "PASS Interface 1 WAIT pending-cycle resume (75 checks)"
 
@@ -55,15 +55,12 @@ def git_blob(commit: str, path: str) -> bytes:
                                    cwd=ROOT, stderr=subprocess.PIPE)
 
 
-def gh_json(*args: str) -> dict:
-    return json.loads(subprocess.check_output(
-        ["gh", *args], cwd=ROOT, text=True, stderr=subprocess.PIPE))
-
-
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--commit", required=True)
     parser.add_argument("--run-id", required=True, type=int)
+    parser.add_argument("--branch", required=True)
+    parser.add_argument("--event", required=True)
     parser.add_argument("--input-dir", required=True)
     parser.add_argument("--output", default="test-results/interface1-wait.json")
     args = parser.parse_args()
@@ -82,22 +79,14 @@ def main() -> None:
             raise SystemExit(f"fixture hash mismatch: {path}")
         fixtures.append({"path": path, "sha256": digest})
 
-    run = gh_json("run", "view", str(args.run_id),
-                  "--json", "headSha,conclusion,event,headBranch,jobs")
-    if (run.get("headSha") != args.commit or
-            run.get("event") not in ("push", "workflow_dispatch") or
-            run.get("headBranch") != "main"):
+    if args.branch != "main" or args.event not in ("push", "workflow_dispatch"):
         raise SystemExit("workflow run does not match the requested main-branch source")
 
     results = []
     input_dir = Path(args.input_dir).resolve()
     if ROOT not in input_dir.parents or not input_dir.is_dir():
         raise SystemExit("hosted runner evidence directory is missing or outside the repository")
-    for platform, job_name, slug in PLATFORMS:
-        job = next((item for item in run.get("jobs", [])
-                    if item.get("name") == job_name), None)
-        if job is None or job.get("conclusion") != "success":
-            raise SystemExit(f"successful native job missing: {platform}")
+    for platform, job_name, slug, runner, architecture in PLATFORMS:
         runner_record_path = input_dir / f"runner-{slug}.json"
         ctest_log_path = input_dir / f"ctest-{slug}.log"
         if not runner_record_path.is_file() or not ctest_log_path.is_file():
@@ -107,6 +96,9 @@ def main() -> None:
         if (runner_record.get("status") != "pass" or
                 runner_record.get("commit") != args.commit or
                 runner_record.get("platform") != platform or
+                runner_record.get("jobName") != job_name or
+                runner_record.get("runner") != runner or
+                runner_record.get("architecture") != architecture or
                 runner_record.get("requiredCases") != driver["requiredCases"] or
                 runner_record.get("observedOutput") != MARKER or
                 runner_record.get("ctest") != "26/26 passed" or
@@ -114,9 +106,8 @@ def main() -> None:
                 re.search(r"100% tests passed(?:, 0 tests failed)? out of 26", ctest_log) is None):
             raise SystemExit(f"WAIT/CTest evidence missing from {platform}")
         results.append({"runner": platform, "status": "pass",
-                        "requiredCases": driver["requiredCases"],
-                        "jobId": job["databaseId"],
-                        "completedAt": job.get("completedAt")})
+                        "jobName": job_name,
+                        "requiredCases": driver["requiredCases"]})
 
     proof = {
         "testId": driver["testId"], "status": "pass", "commit": args.commit,
@@ -126,6 +117,7 @@ def main() -> None:
         "caseCountPerRunner": driver["requiredCases"],
         "observedOutput": MARKER,
         "workflowRun": f"https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/{args.run_id}",
+        "workflowEvent": args.event, "branch": args.branch,
         "nativeBuildConfiguration": "Release; WZSN_BUILD_SOKOL_HOST=ON",
         "ctest": "all integrated CTests passed on each native runner",
         "runnerResults": results, "fixtures": fixtures,

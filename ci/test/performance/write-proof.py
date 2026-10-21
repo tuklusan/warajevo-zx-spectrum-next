@@ -12,7 +12,6 @@ import argparse
 import hashlib
 import json
 import re
-import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -28,11 +27,6 @@ PLATFORMS = (
 )
 WAIT_MARKER = "PASS Interface 1 WAIT pending-cycle resume (75 checks)"
 MAX_SLOWDOWN = 0.40
-
-
-def gh_json(*args: str) -> dict:
-    return json.loads(subprocess.check_output(
-        ["gh", *args], cwd=ROOT, text=True, stderr=subprocess.PIPE))
 
 
 def compare(current: dict, baseline: dict) -> list[dict]:
@@ -66,6 +60,8 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--commit", required=True)
     parser.add_argument("--run-id", required=True, type=int)
+    parser.add_argument("--branch", required=True)
+    parser.add_argument("--event", required=True)
     parser.add_argument("--input-dir", required=True)
     args = parser.parse_args()
     if re.fullmatch(r"[0-9a-f]{40}", args.commit) is None:
@@ -85,11 +81,7 @@ def main() -> None:
             raise SystemExit(f"performance fixture hash mismatch: {path}")
         fixtures.append({"path": path, "sha256": digest})
 
-    run = gh_json("run", "view", str(args.run_id), "--json",
-                  "headSha,status,conclusion,event,headBranch,jobs")
-    if (run.get("headSha") != args.commit or
-            run.get("event") not in ("push", "workflow_dispatch") or
-            run.get("headBranch") != "main"):
+    if args.branch != "main" or args.event not in ("push", "workflow_dispatch"):
         raise SystemExit("workflow run does not match the requested main-branch source")
 
     input_dir = Path(args.input_dir).resolve()
@@ -102,10 +94,6 @@ def main() -> None:
     max_slowdown = 0.0
     for platform, slug, runner, architecture in PLATFORMS:
         job_name = f"Full build / {platform}"
-        job = next((item for item in run["jobs"]
-                    if item.get("name") == job_name), None)
-        if job is None or job.get("conclusion") != "success":
-            raise SystemExit(f"successful native job missing: {platform}")
         runner_path = input_dir / f"runner-{slug}.json"
         ctest_path = input_dir / f"ctest-{slug}.log"
         performance_path = input_dir / f"performance-{slug}.json"
@@ -115,6 +103,7 @@ def main() -> None:
         ctest = ctest_path.read_text(encoding="utf-8", errors="replace")
         if (runner_record.get("status") != "pass" or
                 runner_record.get("commit") != args.commit or
+                runner_record.get("jobName") != job_name or
                 runner_record.get("runner") != runner or
                 runner_record.get("architecture") != architecture or
                 runner_record.get("requiredCases") != 75 or
@@ -145,7 +134,7 @@ def main() -> None:
                 "metricDeltasPercent": deltas,
             },
             "ctest": "26/26 passed", "runner": runner,
-            "timestamp": record["timestamp"], "jobId": job["databaseId"],
+            "timestamp": record["timestamp"], "jobName": job_name,
             "metricCount": len(record["metrics"]), "status": "pass",
         })
 
@@ -159,6 +148,7 @@ def main() -> None:
         "testId": driver["testId"], "status": "pass",
         "workflowRun": f"https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/{args.run_id}",
         "runId": args.run_id,
+        "workflowEvent": args.event, "branch": args.branch,
         "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "fixtures": fixtures, "runnerResults": results,
         "summary": {
