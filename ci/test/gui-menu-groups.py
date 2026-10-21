@@ -84,6 +84,14 @@ def require_text(text, expected, label):
         raise RuntimeError(f"{label} omitted {missing}; OCR was {text!r}")
 
 
+def require_count(text, pattern, expected, label):
+    actual = len(re.findall(pattern, text, re.IGNORECASE))
+    if actual != expected:
+        raise RuntimeError(
+            f"{label} expected {expected} matches for {pattern!r}, "
+            f"got {actual}; OCR was {text!r}")
+
+
 def reject_text(text, unexpected, label):
     present = [value for value in unexpected
                if value.casefold() in text.casefold()]
@@ -175,10 +183,11 @@ def main():
                 open_group(host_window, x, 2)
                 image, text = save_capture(host_window, args.proof.parent,
                                            "media-microdrive")
-                require_text(text, ("Drive 1", "Drive 8",
-                                    "Mount MDV 1", "Eject MDV 1",
+                require_text(text, ("Drive 1", "Drive 7", "Mount MDV",
                                     "Set MDV 1 Default", "Microdrive Manager"),
                              "Media > Microdrive groups")
+                require_count(text, r"\bDrive\s+\d+\.\.\.", 8,
+                              "Media > Microdrive eight drive groups")
                 reject_text(text, ("Mount Microdrive", "Eject Microdrive",
                                    "Set Default Drive"),
                             "Media > Microdrive menu")
@@ -186,6 +195,7 @@ def main():
                 assertions.append("media-microdrive-children")
                 assertions.append("media-microdrive-menu-clean")
                 assertions.append("media-microdrive-drive1-actions-visible")
+                assertions.append("media-microdrive-eight-groups")
 
                 x = open_root(host_window, 4)
                 open_group(host_window, x, 1)
