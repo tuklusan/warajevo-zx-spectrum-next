@@ -159,7 +159,8 @@ def main():
                 invalid = screenshot_text(root)
                 (args.capture_dir / "debugger-register-invalid.png").write_bytes(
                     (root / "screen.png").read_bytes())
-                if not re.search(rf"AF\s+{original_af}\b", invalid):
+                if ("Invalid debugger register value" not in invalid or
+                        not re.search(rf"AF\s+{original_af}\b", invalid)):
                     raise RuntimeError(
                         "out-of-range byte register was not rejected without "
                         f"changing AF={original_af}; OCR={invalid!r}")
@@ -171,14 +172,16 @@ def main():
                 updated = screenshot_text(root)
                 (args.capture_dir / "debugger-register-edited.png").write_bytes(
                     (root / "screen.png").read_bytes())
-                if not re.search(r"AF\s+5A[0-9A-F]{2}", updated):
+                if ("Debugger register updated" not in updated or
+                        not re.search(r"AF\s+5A[0-9A-F]{2}", updated)):
                     raise RuntimeError(
                         f"main A register edit was not reflected in UI; OCR={updated!r}")
                 assertions.append("paused-main-register-edit-reflected")
 
                 click_at(debugger_left + 570, debugger_top + 400)
                 restored = screenshot_text(root)
-                if not re.search(rf"AF\s+{original_af}\b", restored):
+                if ("Debugger registers restored" not in restored or
+                        not re.search(rf"AF\s+{original_af}\b", restored)):
                     raise RuntimeError("register undo did not restore the prior AF value")
                 assertions.append("register-undo-restored-prior-af")
                 (args.capture_dir / "debugger-register-undo.png").write_bytes(

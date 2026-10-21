@@ -236,6 +236,7 @@ typedef struct {
     size_t debugger_register_selection;
     char debugger_register_value_text[5];
     int debugger_register_value_length;
+    char debugger_register_status[80];
     wz_diagnostics_router_t diagnostics_router;
     wz_diagnostics_window_t diagnostics_window;
     wz_compatibility_tools_window_t compatibility_tools_window;
@@ -3125,6 +3126,7 @@ static wz_result_t wz_host_debugger_open_command(const void* context,
     session->debugger_register_selection = WZ_DEBUGGER_REGISTER_MAIN_A;
     session->debugger_register_value_text[0] = '\0';
     session->debugger_register_value_length = 0;
+    session->debugger_register_status[0] = '\0';
     if (result != NULL) (void)snprintf(result->message,
         sizeof(result->message), "Debugger opened");
     return WZ_RESULT_OK;
@@ -6083,9 +6085,15 @@ static void wz_host_ui_draw_debugger_window(struct nk_context* context,
             (void)snprintf(session->file_notification,
                 sizeof(session->file_notification),
                 "Debugger register updated");
+            (void)snprintf(session->debugger_register_status,
+                sizeof(session->debugger_register_status),
+                "Debugger register updated");
         } else {
             (void)snprintf(session->file_notification,
                 sizeof(session->file_notification),
+                "Invalid debugger register value");
+            (void)snprintf(session->debugger_register_status,
+                sizeof(session->debugger_register_status),
                 "Invalid debugger register value");
         }
     }
@@ -6095,13 +6103,22 @@ static void wz_host_ui_draw_debugger_window(struct nk_context* context,
             (void)snprintf(session->file_notification,
                 sizeof(session->file_notification),
                 "Debugger registers restored");
+            (void)snprintf(session->debugger_register_status,
+                sizeof(session->debugger_register_status),
+                "Debugger registers restored");
         } else {
             (void)snprintf(session->file_notification,
                 sizeof(session->file_notification),
                 "No debugger register edit to undo");
+            (void)snprintf(session->debugger_register_status,
+                sizeof(session->debugger_register_status),
+                "No debugger register edit to undo");
         }
     }
     if (!window->paused) nk_widget_disable_end(context);
+    nk_layout_row_dynamic(context, 20.0f, 1);
+    nk_label(context, session->debugger_register_status,
+             NK_TEXT_LEFT);
     nk_layout_row_dynamic(context, 24.0f, 1);
     if (nk_button_label(context, "Close Debugger")) {
         (void)wz_debugger_set_access_mode(&session->machine,
