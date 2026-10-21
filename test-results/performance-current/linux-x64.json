@@ -1,59 +1,61 @@
 {
   "schema": 1,
   "status": "pass",
-  "commit": "e7a1472ed5e126be6be81c50810dc7fbc5b39feb",
+  "commit": "dbc76b9290af4b68319a5024310c37ceed06faf8",
   "runner": "Linux-ubuntu-24.04",
   "architecture": "X64",
-  "timestamp": "2026-10-21T02:51:06Z",
+  "timestamp": "2026-10-21T03:43:51Z",
   "compiler": "GNU 13.3.0",
   "metrics": [
     {
       "name": "cpu_execution",
       "unit": "instructions",
       "operations": "250005",
-      "median_cpu_seconds": 0.012846,
-      "operations_per_second": 19461700.14,
-      "fingerprint": "16f5054a635c93d4"
+      "median_cpu_seconds": 0.012248,
+      "operations_per_second": 20411903.984,
+      "fingerprint": "ca4dd4078c5cf15a"
     },
     {
       "name": "raster_generation",
       "unit": "frames",
       "operations": "384",
-      "median_cpu_seconds": 0.046009,
-      "operations_per_second": 8346.193,
+      "median_cpu_seconds": 0.045503,
+      "operations_per_second": 8439.004,
       "fingerprint": "d3d8bb78938b5fb1"
     },
     {
       "name": "audio_mixing",
       "unit": "samples",
       "operations": "2000000",
-      "median_cpu_seconds": 0.046726,
-      "operations_per_second": 42802722.253,
+      "median_cpu_seconds": 0.046713,
+      "operations_per_second": 42814634.042,
       "fingerprint": "56e7cab2bab26d0d"
     },
     {
       "name": "tape_playback",
       "unit": "master_ticks",
       "operations": "4000000",
-      "median_cpu_seconds": 0.009601,
-      "operations_per_second": 416623268.41,
+      "median_cpu_seconds": 0.009588,
+      "operations_per_second": 417188151.856,
       "fingerprint": "40000000001db212"
     },
     {
       "name": "snapshot_serialization",
       "unit": "snapshots",
       "operations": "8192",
-      "median_cpu_seconds": 0.017729,
-      "operations_per_second": 462067.799,
-      "fingerprint": "1453ad89e4085223"
+      "median_cpu_seconds": 0.019221,
+      "operations_per_second": 426200.51,
+      "fingerprint": "98af2e4bce1d0c15"
     },
     {
       "name": "ui_presentation",
       "unit": "frames",
       "operations": "512",
-      "median_cpu_seconds": 0.024585,
-      "operations_per_second": 20825.707,
+      "median_cpu_seconds": 0.024983,
+      "operations_per_second": 20493.936,
       "fingerprint": "6b9c6deb0ca3fbc9"
     }
-  ]
+  ],
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39540070233",
+  "jobId": 119025546122
 }

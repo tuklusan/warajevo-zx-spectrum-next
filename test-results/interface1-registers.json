@@ -1,0 +1,112 @@
+{
+  "testId": "interface1-registers",
+  "status": "pass",
+  "commit": "dbc76b9290af4b68319a5024310c37ceed06faf8",
+  "runId": 39540070233,
+  "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
+  "timestamp": "2026-10-21T03:45:17+00:00",
+  "caseCount": 300,
+  "caseCountPerRunner": 60,
+  "observedOutput": "PASS Interface 1 bus registers (60 checks)",
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39540070233",
+  "nativeBuildConfiguration": "Release; WZSN_BUILD_SOKOL_HOST=ON",
+  "ctest": "all 25 integrated CTests passed on each native runner",
+  "runnerResults": [
+    {
+      "runner": "Windows x64",
+      "status": "pass",
+      "requiredCases": 60,
+      "jobId": 119025545951,
+      "completedAt": "2026-10-21T03:44:20Z"
+    },
+    {
+      "runner": "Linux x64",
+      "status": "pass",
+      "requiredCases": 60,
+      "jobId": 119025546122,
+      "completedAt": "2026-10-21T03:43:56Z"
+    },
+    {
+      "runner": "Linux ARM64",
+      "status": "pass",
+      "requiredCases": 60,
+      "jobId": 119025546049,
+      "completedAt": "2026-10-21T03:44:03Z"
+    },
+    {
+      "runner": "macOS ARM64",
+      "status": "pass",
+      "requiredCases": 60,
+      "jobId": 119025546087,
+      "completedAt": "2026-10-21T03:43:25Z"
+    },
+    {
+      "runner": "macOS Intel",
+      "status": "pass",
+      "requiredCases": 60,
+      "jobId": 119025546071,
+      "completedAt": "2026-10-21T03:43:56Z"
+    }
+  ],
+  "fixtures": [
+    {
+      "path": "ci/test/interface1-registers/interface1-registers-contract.c",
+      "sha256": "b655f3774f3ab1da5b5ddd767b336c03fb897fd8dc9276d140f0c5b1a17d7eca"
+    },
+    {
+      "path": "ci/test/interface1-registers/write-proof.py",
+      "sha256": "5d6693697ebedb2519cc4c5769f34be9b5a09dff22d67fc0d9970a214b9c780f"
+    },
+    {
+      "path": "src/core/wz_bus.c",
+      "sha256": "62d41c1d7c05857a3e70c334cc76fe68b5bf7ba415a07142b3e5ac8440751fe9"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "12dab53fa96604867b25d56b0f495a681af65d230a0455f7e331222f599649e3"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "adeeaab73dd408613ba69536795179e8b04a3ba1e33221be5100e662701a7b26"
+    },
+    {
+      "path": "src/core/wz_microdrive.c",
+      "sha256": "7a768c785d4ec9ecdc7d23347261dab3da6b8d5662fd6813e6483fc3246b4e1b"
+    },
+    {
+      "path": "src/core/wz_microdrive.h",
+      "sha256": "eb2ac0ef1ead6d2038bb66688606d8ccf4590ff8a60a8e7e8990d47aa4e44098"
+    },
+    {
+      "path": "src/core/wz_state.c",
+      "sha256": "c5dcbcfa22834195a7dbb0b4ad60f82876f541bfa6e1a908a146ec21bdaa7f2a"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "83e0e801fb91db6ffbfd91bbaac42a14967c5fb53ee13f5a6e49f4c45a8a0138"
+    },
+    {
+      "path": "docs/design/interface1-microdrive-zxnet.md",
+      "sha256": "b24eaf42c8d305149ddaac70116ff10bfdabc0b4a131d8904041e0c0eab03c5f"
+    },
+    {
+      "path": "docs/design/04-wzsn-architectures-1-2-developer-tasks.md",
+      "sha256": "f6af57c29adfacfbf0763f4e74fb26d4a706c6cdaea0dd91a65ffd7feb1ff31c"
+    }
+  ],
+  "sourceReview": {
+    "status": "passed; findings adjudicated",
+    "findings": [
+      {
+        "file": "src/core/wz_machine.c",
+        "disposition": "Non-actionable future-configuration concern: interface1_active_motor is an 8-bit field and WZ_MACHINE_MICRODRIVE_COUNT is currently 8; the strict less-than bound excludes 0xff and prevents out-of-range indexing."
+      },
+      {
+        "file": "ci/test/interface1-registers/interface1-registers-contract.c",
+        "disposition": "False positive: the fixture machine has static zero initialization; wz_machine_init sets owned pointers to null before allocation and cleans partial allocation failure; wz_machine_destroy safely frees null pointers."
+      }
+    ]
+  },
+  "githubArtifactsRetained": false,
+  "githubCachesRetained": false
+}

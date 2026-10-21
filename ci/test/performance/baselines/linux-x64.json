@@ -57,8 +57,8 @@
     }
   ],
   "fingerprintRefresh": {
-    "commit": "f7e95c01fb89597c70a827a2b7bcf8c215c3e6be",
-    "runId": 39538850889,
-    "reason": "Interface 1 GAP/SYNC counters became canonical per-drive state and the state extension advanced to version 8. All five hosted runs reported the same new CPU and snapshot fingerprints; other throughput comparisons passed. Exact-source passing confirmation is required after refreshing these expected hashes."
+    "commit": "dbc76b9290af4b68319a5024310c37ceed06faf8",
+    "runId": 39540070233,
+    "reason": "Exact-source five-target Release/Sokol build and CTest passed all 25 tests per platform; Phase-16 passed all 30 fingerprints and throughput checks with a 28.6% maximum slowdown."
   }
 }
