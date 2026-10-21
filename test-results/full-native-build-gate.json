@@ -1,19 +1,20 @@
 {
   "testId": "full-native-build-gate",
   "status": "pass",
-  "commit": "6d678b538d614526d1420ceac0cd914a266e1b37",
-  "tree": "ffd9a824bcaf4fcd8b5e364ce93384a04ec9ad06",
-  "runId": 39598453427,
+  "commit": "0e7e63edac56a3921667a2e258b22274d2d21729",
+  "tree": "983861536159598cbb8a0d1b32b4820b92831282",
+  "runId": 39611425782,
   "event": "workflow_dispatch",
   "runner": "GitHub Actions native matrix",
   "architecture": "x64 and ARM64",
-  "timestamp": "2026-10-21T08:19:32-04:00",
+  "timestamp": "2026-10-21T13:51:50+00:00",
   "checks": [
     "Clean Release build with WZSN_BUILD_SOKOL_HOST=ON",
     "Integrated CTest: 26/26 per target",
     "Phase-16 correctness and performance: 30 fingerprints and 30 throughput comparisons passed",
     "Interface-1 WAIT: 75 checks per target (375 total)",
-    "Sanitized Microdrive transition fuzz passed on non-Windows targets"
+    "Sanitized Microdrive transition fuzz passed on non-Windows targets",
+    "Production Telnet DO parser regression: 14 assertions during clean build on all five targets"
   ],
   "targets": [
     {
@@ -56,7 +57,7 @@
     "proof": "phase16-performance-current.json",
     "fingerprintsPassed": 30,
     "throughputComparisonsPassed": 30,
-    "largestSlowdownPercent": 23.5
+    "largestSlowdownPercent": 25.9
   },
   "fixtures": [
     {
@@ -120,10 +121,6 @@
       "sha256": "a275dfd1cc380031eb01347219fcdc6a273d9fa962e8c5503d502b4ec37dd706"
     },
     {
-      "path": "src/cmake/CMakeLists.txt",
-      "sha256": "d284c58a767513a7869e0688b7629fea115bab848d24819eb585050e72d97273"
-    },
-    {
       "path": "src/core/wz_bus.c",
       "sha256": "be2e57a38f32ec45e9975a3249e5c89dedd6343e4061c4355b072a0cac0e43d7"
     },
@@ -158,6 +155,18 @@
     {
       "path": "src/core/wz_zxnet.h",
       "sha256": "3f8e58593ca15fc173531d1174b19c4bea95fd8123bf1855b34148d79b73d495"
+    },
+    {
+      "sha256": "55c48f8dbac01c5492a10b5534e18bd44b975b398c1ee0413655dab2e6850ce2",
+      "path": "src/cmake/CMakeLists.txt"
+    },
+    {
+      "sha256": "74daf16ed99440541ff5e7a43fb7bf30dd958c42d6a32d6d2466ab987e2f4240",
+      "path": "src/app/wz_telnet_keyboard_command.c"
+    },
+    {
+      "sha256": "4ae982f282e6fb8fbb6b318e338faf8fe97f8810b5ed1cfa169422ad882e07ee",
+      "path": "ci/test/telnet-do-parser/telnet-do-parser.c"
     }
   ],
   "githubCleanupPolicy": "After pinning proof records, delete the workflow run and all hosted artifacts and caches.",
@@ -196,6 +205,14 @@
       {
         "title": "Incorrect logic for calculating largest slowdown",
         "disposition": "False positive: deltas are stored as percentage points; negating a negative delta reports the slowdown as a positive percentage. The 40% gate is checked against the unrounded ratio before this summary calculation."
+      },
+      {
+        "disposition": "Non-actionable: required NUL space is included in the capacity check; the undersized-buffer regression verifies rejection before copy.",
+        "title": "Telnet argument capacity check"
+      },
+      {
+        "disposition": "Non-actionable: tokenizer creates NUL-terminated tokens in its local storage before the parser copies them to the separate production output buffers.",
+        "title": "Telnet token copy termination"
       }
     ]
   }

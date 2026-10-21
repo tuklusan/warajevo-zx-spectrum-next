@@ -1,0 +1,89 @@
+{
+  "testId": "telnet-do-parser",
+  "status": "pass",
+  "commit": "0e7e63edac56a3921667a2e258b22274d2d21729",
+  "runId": 39611425782,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39611425782",
+  "workflowEvent": "workflow_dispatch",
+  "branch": "main",
+  "timestamp": "2026-10-21T09:51:50-04:00",
+  "testMethod": "Production wz_telnet_do_parse parser, invoked by the socket command path, exercised in a standalone regression executable run by the default clean-build target.",
+  "caseCount": 14,
+  "targets": [
+    {
+      "status": "pass",
+      "evidence": "wz_telnet_do_parse_tests.exe built and default ALL target succeeded",
+      "name": "Windows x64"
+    },
+    {
+      "status": "pass",
+      "evidence": "wz_telnet_do_parse_check built and executed",
+      "name": "Linux x64"
+    },
+    {
+      "status": "pass",
+      "evidence": "wz_telnet_do_parse_check built and executed",
+      "name": "Linux ARM64"
+    },
+    {
+      "status": "pass",
+      "evidence": "wz_telnet_do_parse_check built and executed",
+      "name": "macOS ARM64"
+    },
+    {
+      "status": "pass",
+      "evidence": "wz_telnet_do_parse_check built and executed",
+      "name": "macOS Intel"
+    }
+  ],
+  "assertions": [
+    "quoted argument preserves spaces",
+    "only frozen backslash and quote escapes decode",
+    "shell, environment, wildcard, and command-substitution characters remain literal",
+    "spaces and tabs tokenize",
+    "extra tokens reject",
+    "unknown escapes reject",
+    "empty quoted argument rejects",
+    "text after a quoted argument rejects",
+    "insufficient output capacity rejects"
+  ],
+  "fixtures": [
+    {
+      "sha256": "74daf16ed99440541ff5e7a43fb7bf30dd958c42d6a32d6d2466ab987e2f4240",
+      "path": "src/app/wz_telnet_keyboard_command.c"
+    },
+    {
+      "sha256": "4ae982f282e6fb8fbb6b318e338faf8fe97f8810b5ed1cfa169422ad882e07ee",
+      "path": "ci/test/telnet-do-parser/telnet-do-parser.c"
+    },
+    {
+      "sha256": "55c48f8dbac01c5492a10b5534e18bd44b975b398c1ee0413655dab2e6850ce2",
+      "path": "src/cmake/CMakeLists.txt"
+    }
+  ],
+  "sourceReview": {
+    "findings": [
+      {
+        "disposition": "Non-actionable: required NUL space is included in the capacity check; the undersized-buffer regression verifies rejection before copy.",
+        "title": "Telnet argument capacity check"
+      },
+      {
+        "disposition": "Non-actionable: tokenizer creates NUL-terminated tokens in local storage before the parser copies them to the separate production output buffers.",
+        "title": "Telnet token copy termination"
+      }
+    ],
+    "status": "passed; findings adjudicated"
+  },
+  "workflowChecks": {
+    "sanitizedTransitionFuzz": "passed on non-Windows runners",
+    "ctest": "26/26 passed per runner",
+    "interface1WaitCases": 375,
+    "largestSlowdownPercent": 25.9,
+    "phase16": "30 fingerprints and 30 throughput comparisons passed"
+  },
+  "staticAudit": {
+    "result": "No matches.",
+    "scope": "src/",
+    "method": "Search for direct process or shell-launch APIs (system, popen, ShellExecute, CreateProcess, execv, execl, cmd.exe, /bin/sh, PowerShell)."
+  }
+}

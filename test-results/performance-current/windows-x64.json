@@ -1,10 +1,10 @@
 {
   "schema": 1,
   "status": "pass",
-  "commit": "6d678b538d614526d1420ceac0cd914a266e1b37",
+  "commit": "0e7e63edac56a3921667a2e258b22274d2d21729",
   "runner": "Windows-windows-x64",
   "architecture": "X64",
-  "timestamp": "2026-10-21T12:19:04Z",
+  "timestamp": "2026-10-21T13:51:20Z",
   "compiler": "MSVC 19.51.36260.0",
   "metrics": [
     {
@@ -35,8 +35,8 @@
       "name": "tape_playback",
       "unit": "master_ticks",
       "operations": "4000000",
-      "median_cpu_seconds": 0.013,
-      "operations_per_second": 307692307.692,
+      "median_cpu_seconds": 0.012,
+      "operations_per_second": 333333333.333,
       "fingerprint": "40000000001db212"
     },
     {
