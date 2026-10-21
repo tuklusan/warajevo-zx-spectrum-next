@@ -44,7 +44,10 @@ def capture(host_window, destination):
 
 def root_x(host_window, index):
     geometry = xdotool("getwindowgeometry", "--shell", host_window)
-    width = int(re.search(r"^WIDTH=(\d+)$", geometry, re.MULTILINE).group(1))
+    match = re.search(r"^WIDTH=(\d+)$", geometry, re.MULTILINE)
+    if match is None:
+        raise RuntimeError(f"host window width unavailable: {geometry!r}")
+    width = int(match.group(1))
     return int(width * (index + 0.5) / 7)
 
 
