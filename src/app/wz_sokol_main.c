@@ -233,6 +233,9 @@ typedef struct {
     int debugger_memory_address_length;
     char debugger_memory_value_text[3];
     int debugger_memory_value_length;
+    size_t debugger_register_selection;
+    char debugger_register_value_text[5];
+    int debugger_register_value_length;
     wz_diagnostics_router_t diagnostics_router;
     wz_diagnostics_window_t diagnostics_window;
     wz_compatibility_tools_window_t compatibility_tools_window;
@@ -3119,6 +3122,9 @@ static wz_result_t wz_host_debugger_open_command(const void* context,
     session->debugger_memory_address_length = 4;
     session->debugger_memory_value_text[0] = '\0';
     session->debugger_memory_value_length = 0;
+    session->debugger_register_selection = WZ_DEBUGGER_REGISTER_MAIN_A;
+    session->debugger_register_value_text[0] = '\0';
+    session->debugger_register_value_length = 0;
     if (result != NULL) (void)snprintf(result->message,
         sizeof(result->message), "Debugger opened");
     return WZ_RESULT_OK;
@@ -5851,6 +5857,37 @@ static void wz_host_ui_draw_printer_manager(struct nk_context* context,
 static void wz_host_ui_draw_debugger_window(struct nk_context* context,
                                             float width, float height)
 {
+    static const struct {
+        const char* label;
+        wz_debugger_register_t reg;
+    } registers[] = {
+        {"A", WZ_DEBUGGER_REGISTER_MAIN_A},
+        {"F", WZ_DEBUGGER_REGISTER_MAIN_F},
+        {"B", WZ_DEBUGGER_REGISTER_MAIN_B},
+        {"C", WZ_DEBUGGER_REGISTER_MAIN_C},
+        {"D", WZ_DEBUGGER_REGISTER_MAIN_D},
+        {"E", WZ_DEBUGGER_REGISTER_MAIN_E},
+        {"H", WZ_DEBUGGER_REGISTER_MAIN_H},
+        {"L", WZ_DEBUGGER_REGISTER_MAIN_L},
+        {"A'", WZ_DEBUGGER_REGISTER_ALT_A},
+        {"F'", WZ_DEBUGGER_REGISTER_ALT_F},
+        {"B'", WZ_DEBUGGER_REGISTER_ALT_B},
+        {"C'", WZ_DEBUGGER_REGISTER_ALT_C},
+        {"D'", WZ_DEBUGGER_REGISTER_ALT_D},
+        {"E'", WZ_DEBUGGER_REGISTER_ALT_E},
+        {"H'", WZ_DEBUGGER_REGISTER_ALT_H},
+        {"L'", WZ_DEBUGGER_REGISTER_ALT_L},
+        {"IX", WZ_DEBUGGER_REGISTER_IX},
+        {"IY", WZ_DEBUGGER_REGISTER_IY},
+        {"SP", WZ_DEBUGGER_REGISTER_SP},
+        {"PC", WZ_DEBUGGER_REGISTER_PC},
+        {"I", WZ_DEBUGGER_REGISTER_I},
+        {"R", WZ_DEBUGGER_REGISTER_R},
+        {"IFF1", WZ_DEBUGGER_REGISTER_IFF1},
+        {"IFF2", WZ_DEBUGGER_REGISTER_IFF2},
+        {"EI delay", WZ_DEBUGGER_REGISTER_INTERRUPT_ENABLE_DELAY},
+        {"IM", WZ_DEBUGGER_REGISTER_INTERRUPT_MODE}
+    };
     wz_host_session_t* session = &wz_host_session;
     wz_debugger_window_t* window = &session->debugger_window;
     const wz_debugger_snapshot_t* snapshot;
@@ -5868,8 +5905,8 @@ static void wz_host_ui_draw_debugger_window(struct nk_context* context,
     if (snapshot == NULL || paging == NULL) return;
     cpu = &snapshot->cpu;
     if (!nk_begin(context, "Debugger / Monitor",
-            nk_rect((width - 760.0f) * 0.5f, (height - 650.0f) * 0.5f,
-                    760.0f, 650.0f),
+            nk_rect((width - 760.0f) * 0.5f, (height - 740.0f) * 0.5f,
+                    760.0f, 740.0f),
             NK_WINDOW_BORDER | NK_WINDOW_TITLE | NK_WINDOW_MOVABLE |
                 NK_WINDOW_SCALABLE | NK_WINDOW_MINIMIZABLE)) {
         nk_end(context);
@@ -5991,6 +6028,77 @@ static void wz_host_ui_draw_debugger_window(struct nk_context* context,
                 (wz_byte_t)value) == WZ_DEBUGGER_WINDOW_OK) {
             (void)snprintf(session->file_notification,
                 sizeof(session->file_notification), "Debugger memory updated");
+        }
+    }
+    if (!window->paused) nk_widget_disable_end(context);
+    nk_layout_row_dynamic(context, 22.0f, 1);
+    nk_label(context, window->paused
+        ? "Register editor (hex, paused machine only):"
+        : "Register editor disabled while the machine runs.", NK_TEXT_LEFT);
+    if (session->debugger_register_selection >=
+        sizeof(registers) / sizeof(registers[0])) {
+        session->debugger_register_selection = WZ_DEBUGGER_REGISTER_MAIN_A;
+    }
+    nk_layout_row_dynamic(context, 24.0f, 2);
+    if (!window->paused) nk_widget_disable_begin(context);
+    if (nk_combo_begin_label(context,
+            registers[session->debugger_register_selection].label,
+            nk_vec2(180.0f, 260.0f))) {
+        nk_layout_row_dynamic(context, 20.0f, 1);
+        for (size_t index = 0u;
+             index < sizeof(registers) / sizeof(registers[0]); ++index) {
+            if (nk_combo_item_label(context, registers[index].label,
+                                    NK_TEXT_LEFT)) {
+                session->debugger_register_selection = index;
+                session->debugger_register_value_text[0] = '\0';
+                session->debugger_register_value_length = 0;
+            }
+        }
+        nk_combo_end(context);
+    }
+    if (session->debugger_register_value_length < 0)
+        session->debugger_register_value_length = 0;
+    if (session->debugger_register_value_length >=
+        (int)sizeof(session->debugger_register_value_text)) {
+        session->debugger_register_value_length =
+            (int)sizeof(session->debugger_register_value_text) - 1;
+    }
+    session->debugger_register_value_text[
+        session->debugger_register_value_length] = '\0';
+    (void)nk_edit_string(context, NK_EDIT_FIELD,
+        session->debugger_register_value_text,
+        &session->debugger_register_value_length,
+        (int)sizeof(session->debugger_register_value_text) - 1,
+        nk_filter_hex);
+    if (!window->paused) nk_widget_disable_end(context);
+    nk_layout_row_dynamic(context, 24.0f, 2);
+    if (!window->paused) nk_widget_disable_begin(context);
+    if (nk_button_label(context, "Set register")) {
+        size_t value;
+        if (wz_host_parse_hex_value(session->debugger_register_value_text,
+                4u, &value) && value <= 0xffffu &&
+            wz_debugger_window_set_register(window,
+                registers[session->debugger_register_selection].reg,
+                (wz_word_t)value) == WZ_DEBUGGER_WINDOW_OK) {
+            (void)snprintf(session->file_notification,
+                sizeof(session->file_notification),
+                "Debugger register updated");
+        } else {
+            (void)snprintf(session->file_notification,
+                sizeof(session->file_notification),
+                "Invalid debugger register value");
+        }
+    }
+    if (nk_button_label(context, "Undo registers")) {
+        if (wz_debugger_undo_registers(&session->machine) == WZ_RESULT_OK) {
+            (void)wz_debugger_window_refresh(window);
+            (void)snprintf(session->file_notification,
+                sizeof(session->file_notification),
+                "Debugger registers restored");
+        } else {
+            (void)snprintf(session->file_notification,
+                sizeof(session->file_notification),
+                "No debugger register edit to undo");
         }
     }
     if (!window->paused) nk_widget_disable_end(context);
