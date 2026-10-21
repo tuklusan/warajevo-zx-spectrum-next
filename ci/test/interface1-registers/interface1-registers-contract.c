@@ -24,6 +24,9 @@ static wz_result_t io(wz_machine_t* machine, wz_bus_cycle_t cycle,
                       wz_word_t address, wz_byte_t* value)
 {
     wz_bus_request_t request;
+    if (machine == 0 || value == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
     wz_bus_request_init(&request, cycle, machine->master_tick, address,
                         cycle == WZ_BUS_IO_WRITE ? *value : 0u, 4u);
     if (wz_machine_bus_request(machine, &request) != WZ_RESULT_OK) {

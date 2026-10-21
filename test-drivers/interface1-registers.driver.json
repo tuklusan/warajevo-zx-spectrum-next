@@ -12,7 +12,7 @@
   "fixtures": [
     {
       "path": "ci/test/interface1-registers/interface1-registers-contract.c",
-      "sha256": "aed9fb2db2d8744a09ced0e8b3500ac23de41768d4a67cd704beed8ce8d894c4"
+      "sha256": "cd7001e95178e57d4af07c92644ceff62b8396c614bd0f3bd560ce0c11446238"
     },
     {
       "path": "ci/test/interface1-registers/write-proof.py",
@@ -24,7 +24,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "e0ae2271882f2d859eed115976a3024dbc0301f0a794235f2d952da3cd4ef616"
+      "sha256": "cc775c3d41ac6d9c44f1865011633bf76d407329923fabd7b53a4341df1419db"
     },
     {
       "path": "src/core/wz_machine.h",

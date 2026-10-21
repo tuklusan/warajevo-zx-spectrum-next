@@ -118,8 +118,7 @@ wz_byte_t wz_machine_interface1_status_read(wz_machine_t* machine)
     if (machine == 0) {
         return status;
     }
-    transport = machine->interface1_active_motor != 0xffu &&
-        machine->interface1_active_motor < WZ_MACHINE_MICRODRIVE_COUNT
+    transport = machine->interface1_active_motor < WZ_MACHINE_MICRODRIVE_COUNT
         ? wz_machine_microdrive_at(machine,
             machine->interface1_active_motor) : 0;
     if (transport != 0 && transport->image_present != 0u &&

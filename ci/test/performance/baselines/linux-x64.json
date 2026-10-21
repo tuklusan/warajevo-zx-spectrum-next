@@ -13,7 +13,7 @@
       "operations": "250005",
       "median_cpu_seconds": 0.012409,
       "operations_per_second": 20147070.675,
-      "fingerprint": "16f5054a635c93d4"
+      "fingerprint": "ca4dd4078c5cf15a"
     },
     {
       "name": "raster_generation",
@@ -45,7 +45,7 @@
       "operations": "8192",
       "median_cpu_seconds": 0.018109,
       "operations_per_second": 452371.749,
-      "fingerprint": "1453ad89e4085223"
+      "fingerprint": "98af2e4bce1d0c15"
     },
     {
       "name": "ui_presentation",
@@ -57,8 +57,8 @@
     }
   ],
   "fingerprintRefresh": {
-    "commit": "4714dca3ac5dd57b573a423117c13d4876d5c6f9",
-    "runId": 39526536113,
-    "reason": "Expected canonical fingerprint refresh after adding serialized host Microdrive write-protection state; throughput references are unchanged."
+    "commit": "f7e95c01fb89597c70a827a2b7bcf8c215c3e6be",
+    "runId": 39538850889,
+    "reason": "Interface 1 GAP/SYNC counters became canonical per-drive state and the state extension advanced to version 8. All five hosted runs reported the same new CPU and snapshot fingerprints; other throughput comparisons passed. Exact-source passing confirmation is required after refreshing these expected hashes."
   }
 }
