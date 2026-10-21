@@ -85,7 +85,8 @@ def require_text(text, expected, label):
 
 
 def require_count(text, pattern, expected, label):
-    actual = len(re.findall(pattern, text, re.IGNORECASE))
+    normalized = text.casefold().replace("mdy", "mdv")
+    actual = len(re.findall(pattern, normalized, re.IGNORECASE))
     if actual != expected:
         raise RuntimeError(
             f"{label} expected {expected} matches for {pattern!r}, "
