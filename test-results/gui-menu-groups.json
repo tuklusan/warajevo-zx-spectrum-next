@@ -1,0 +1,122 @@
+{
+  "testId": "gui-menu-groups",
+  "status": "pass",
+  "commit": "1453a381440af96d4cf8e1d4e6e96cf900e41344",
+  "runId": 39597742902,
+  "runner": "Linux",
+  "architecture": "X64",
+  "assertionCount": 15,
+  "assertions": [
+    "file-root",
+    "machine-root",
+    "media-root",
+    "tools-root",
+    "settings-root",
+    "media-microdrive-children",
+    "media-microdrive-menu-clean",
+    "media-microdrive-eight-groups",
+    "media-microdrive-drive1-actions-visible",
+    "tools-compatibility-children",
+    "settings-peripherals-children",
+    "machine-model-actions",
+    "model-128k-dispatch",
+    "machine-speed-actions",
+    "speed-400-dispatch"
+  ],
+  "machineStatusAfterModelChoice": "STATUS PROTOCOL=1 CONTROL_PORT=30740 IPV4=UP CLIENT=ACTIVE MODEL=128K STATE=RUNNING SPEED=100 AUDIO=UNAVAILABLE NETWORKING=NONE",
+  "machineStatusAfterSpeedChoice": "STATUS PROTOCOL=1 CONTROL_PORT=30740 IPV4=UP CLIENT=ACTIVE MODEL=128K STATE=RUNNING SPEED=400 AUDIO=UNAVAILABLE NETWORKING=NONE",
+  "captures": [
+    {
+      "path": "file-root.png",
+      "sha256": "280e6a18ec4d0fd2d7643ba559698f9b0cca22c1e2044ac725a34cc126d56237"
+    },
+    {
+      "path": "machine-root.png",
+      "sha256": "67d7ed2cca3d20a1755189c80cff77f3b61d079bf6e4301b7af246871342f630"
+    },
+    {
+      "path": "media-root.png",
+      "sha256": "8a73f2452752e93a1d2b9f02c29e6d3ad3179da7b0ebc57497474d0c2b16cfce"
+    },
+    {
+      "path": "tools-root.png",
+      "sha256": "ace81c056f4e4f8c79fa7fe9f3f6bd5e79c7630630a5d451dadf47d6336588c9"
+    },
+    {
+      "path": "settings-root.png",
+      "sha256": "df20472276e4efebcd5287892d66bbaed67bc5851631f0d294a922889f069a21"
+    },
+    {
+      "path": "media-microdrive.png",
+      "sha256": "534e07bd8ca16e9bbbc3678d9d49d46df1ea83a2c857e0252aa7dc5f11dd8fc7"
+    },
+    {
+      "path": "media-microdrive-drive1.png",
+      "sha256": "7e8c28419273bfa37a02e6149f0637f55876fb0154a0b3c9bc7b74ea2a9c853f"
+    },
+    {
+      "path": "tools-compatibility.png",
+      "sha256": "b88cb759153504d2c39460ee1b2a9c5d0c65ce16b7edc06edf180c51976f2f39"
+    },
+    {
+      "path": "settings-peripherals.png",
+      "sha256": "1b2fe43186a987938688e11c667ede50ae30f88e1df85a157e629691fcf7ccc7"
+    },
+    {
+      "path": "machine-model.png",
+      "sha256": "04c67bdfb392ed1c3ef3a91f0514fbda11f20ea072c9b9acbf9248dd6083b300"
+    },
+    {
+      "path": "machine-speed.png",
+      "sha256": "72c1238f096b1976fb04f25961134aa77239c3967c7e0a72f4b3f401c3a5aba0"
+    }
+  ],
+  "runnerName": "ubuntu-24.04",
+  "timestamp": "2026-10-21T12:13:45Z",
+  "fixtures": [
+    {
+      "path": ".github/workflows/gui-menu-groups.yml",
+      "sha256": "85d85cfb801ac31df949f16b842cefb32d9c72fd19ba44c9d4fc50829092e1a1"
+    },
+    {
+      "path": "ci/test/gui-menu-groups.py",
+      "sha256": "4cece972e28bf14e093530401c24592ddf2fa8573a903c8a0abf236c2ec1b9ae"
+    },
+    {
+      "path": "ci/test/gui-menu-groups/README.md",
+      "sha256": "880835bf4eaf10c77a19a70e6fc4b8efd172d500f7736712437dfa19021ca892"
+    },
+    {
+      "path": "ci/test/gui-screenshot-save.py",
+      "sha256": "b141ac9b4c91e33028291b0312f8fc2ac31f67c161c52cc0eb51a42bc54ff82f"
+    },
+    {
+      "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
+      "sha256": "dc47afb96f2c0566788d59ef74a691c33a8943e1c4e199c96c74d07739e68b31"
+    },
+    {
+      "path": "roms/48.rom",
+      "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "40393183dbb1bac15c3aa10c0464d7db5b8f7f337956ca7ba963ba6b06aafc58"
+    },
+    {
+      "path": "src/app/wz_command_registry.c",
+      "sha256": "707bd4c4c9d0e12db0135ef857d3c7de8a5d6e7d717d790d09f3080bb90c9607"
+    },
+    {
+      "path": "src/app/wz_command_registry.h",
+      "sha256": "4b8530859e953c5876d41792f6221a00a7facc14658c05f28076cda926c9bf04"
+    },
+    {
+      "path": "src/app/wz_telnet_status.c",
+      "sha256": "98e77532404a726162a1bd8b075df7934b66a231f085e901094a1aa2cee2f04f"
+    },
+    {
+      "path": "src/app/wz_ui_layout.c",
+      "sha256": "974bda9fdd121bf2d631ede80635f6e5ecfc6448dd1ad63ade40256bd50b368a"
+    }
+  ]
+}
