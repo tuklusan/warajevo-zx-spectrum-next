@@ -16,11 +16,11 @@
     },
     {
       "path": "ci/test/interface1-wait/write-proof.py",
-      "sha256": "6091780e1ca527707896529a198207d7ea33e2040390dd28e58c9c21a0813eac"
+      "sha256": "ed333441ea62aeee2d75d916b849b99230234c9e3c0e61fda1906f95bdbb81db"
     },
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "f9b15496fbb11f3627f67b0da3ba593625b3614b9d641be2c6cda8978e368f08"
+      "sha256": "731868610e0ff041d6d4f2869c811a1fb33e7721401680f66950fb05ba54f5e5"
     },
     {
       "path": "src/cmake/CMakeLists.txt",

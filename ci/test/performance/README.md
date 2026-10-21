@@ -62,4 +62,4 @@ records and the aggregator are pinned in
 `test-results/performance-current/` and
 `test-results/phase16-performance-current.json`.
 
-State extension v9 adds a canonical pending Interface 1 bus continuation. Run `39543047933` passed all 26 CTests per native target and produced the same new CPU and snapshot fingerprints on all five targets. Only those fingerprints were refreshed; throughput references and the 40% gate remain unchanged. A successful exact-head five-target rerun is required to close the current gate.
+State extension v9 adds a canonical pending Interface 1 bus continuation. Its CPU and snapshot fingerprints are pinned across all five native targets; throughput references and the 40% gate remain unchanged. A manual full-native run generates the Interface 1 WAIT and Phase-16 evidence records on a hosted runner after all five native jobs pass, then uploads them as a one-day artifact for processing. The run and artifact are deleted after the evidence is downloaded; no workflow cache is used. Push-triggered builds do not upload evidence artifacts.

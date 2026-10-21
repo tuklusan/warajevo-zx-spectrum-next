@@ -11,7 +11,7 @@
   "fixtures": [
     {
       "path": "ci/test/performance/README.md",
-      "sha256": "923d095012c4adab75887280f6d7011e69a59c8bf0338a2cec0b592d4db9eee8"
+      "sha256": "77ad16e2deec3366ac01b9245283386ee2246c630d4cd529c1bc50b984fa0092"
     },
     {
       "path": "ci/test/performance/baseline.c",
@@ -24,6 +24,10 @@
     {
       "path": "ci/test/performance/compare.py",
       "sha256": "b7317caff4efa4f1ab982078f1ee8e5694fae2245f881736ec4a2179ef873b4b"
+    },
+    {
+      "path": "ci/test/performance/write-proof.py",
+      "sha256": "3d96bae0e26ac829c7ad2c6d7af374212b4569e6c0835c90c22129c6aa2a6b9f"
     },
     {
       "path": "ci/test/performance/baselines/windows-x64.json",

@@ -20,6 +20,7 @@ from pathlib import Path, PurePosixPath
 ROOT = Path(__file__).resolve().parents[3]
 DRIVER_PATH = "test-drivers/interface1-wait.driver.json"
 FIXTURE_ROOTS = (".github/workflows/", "ci/test/interface1-wait/",
+                 "test-drivers/",
                  "src/cmake/", "src/core/", "docs/design/")
 PLATFORMS = (
     ("Windows x64", "Full build / Windows x64"),
@@ -83,10 +84,11 @@ def main() -> None:
     run = gh_json("run", "view", str(args.run_id),
                   "--json", "headSha,conclusion,event,headBranch,jobs")
     if (run.get("headSha") != args.commit or
-            run.get("conclusion") != "success" or
+            run.get("status") not in ("in_progress", "completed") or
+            run.get("conclusion") not in (None, "", "success") or
             run.get("event") not in ("push", "workflow_dispatch") or
             run.get("headBranch") != "main"):
-        raise SystemExit("workflow run does not prove a successful main push at the requested source")
+        raise SystemExit("workflow run does not match the requested main-branch source")
 
     results = []
     for platform, job_name in PLATFORMS:
@@ -150,7 +152,7 @@ def main() -> None:
                 }
             ]
         },
-        "githubArtifactsRetained": False, "githubCachesRetained": False,
+        "githubCleanupPolicy": "Download the temporary proof artifact, then delete the workflow run; this workflow does not create caches.",
     }
     output = (ROOT / args.output).resolve()
     if ROOT not in output.parents:
