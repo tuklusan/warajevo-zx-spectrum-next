@@ -166,11 +166,12 @@ def main():
                 run("xdotool", "key", "ctrl+a", "type", "--clearmodifiers", "5A")
                 click_at(debugger_left + 190, debugger_top + 400)
                 updated = screenshot_text(root)
-                if not re.search(r"AF\s+5A[0-9A-F]{2}", updated):
-                    raise RuntimeError("main A register edit was not reflected in UI")
-                assertions.append("paused-main-register-edit-reflected")
                 (args.capture_dir / "debugger-register-edited.png").write_bytes(
                     (root / "screen.png").read_bytes())
+                if not re.search(r"AF\s+5A[0-9A-F]{2}", updated):
+                    raise RuntimeError(
+                        f"main A register edit was not reflected in UI; OCR={updated!r}")
+                assertions.append("paused-main-register-edit-reflected")
 
                 click_at(debugger_left + 570, debugger_top + 400)
                 restored = screenshot_text(root)
