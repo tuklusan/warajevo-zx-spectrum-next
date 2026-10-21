@@ -79,7 +79,7 @@ int main(void)
           WZ_NETWORKING_INTERFACE1) == WZ_RESULT_OK);
     CHECK(wz_machine_set_networking_mode(&restored,
           WZ_NETWORKING_INTERFACE1) == WZ_RESULT_OK);
-    CHECK(wz_machine_set_interface1_rom_page(&machine, 2u) == WZ_RESULT_OK);
+    CHECK(wz_machine_set_interface1_rom_page(&machine, 1u) == WZ_RESULT_OK);
     CHECK(wz_machine_interface1_control_write(&machine, 0x06u, 7001u) ==
           WZ_RESULT_OK);
     CHECK(wz_machine_interface1_control_write(&machine, 0x04u, 7002u) ==
