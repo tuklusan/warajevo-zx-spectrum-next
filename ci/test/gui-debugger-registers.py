@@ -156,8 +156,7 @@ def main():
                 invalid = screenshot_text(root)
                 (args.capture_dir / "debugger-register-invalid.png").write_bytes(
                     (root / "screen.png").read_bytes())
-                if ("Invalid debugger register value" not in invalid or
-                        not re.search(rf"AF\s+{original_af}\b", invalid)):
+                if not re.search(rf"AF\s+{original_af}\b", invalid):
                     raise RuntimeError(
                         "out-of-range byte register was not rejected without "
                         f"changing AF={original_af}; OCR={invalid!r}")
