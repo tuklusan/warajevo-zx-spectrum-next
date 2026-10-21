@@ -13,7 +13,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "930594f8096c02b87c30bce7c9e0963b030c1e52348db833b4c81098c7ebbcd0"
+      "sha256": "3e0231f35b038f059e137a1eb1e9cc3374fd07f5c12bf77e338d1143dd94c3e1"
     },
     {
       "path": "ci/test/screenshot-state-time/screenshot-state-time.c",
@@ -29,7 +29,7 @@
     },
     {
       "path": "src/app/wz_host_output.c",
-      "sha256": "423a559f3d07b01c8b8ecf9d2e5f128fe3d94dd248b0be25ea5493b2d33d2b9c"
+      "sha256": "57ac1582e7769cbb66c6a3fb3a641a6f14de2878814c7ac4dc31ed8a7e21a6d3"
     },
     {
       "path": "src/app/wz_host_output.h",
@@ -53,7 +53,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "9d5594e06e0e4d02e3978eecfc2a2719e62e0daeb31e185e5d01d56ce110f058"
+      "sha256": "efafa34c1c3947cd96aa9d54d013116bbdbd466033cba16386801f790888225a"
     },
     {
       "path": "src/app/wz_telnet_negotiation.c",
@@ -61,7 +61,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "67b293875d0206c38195d212bdd73a1195babc4b03ed5fdf39934b2874f48f5e"
+      "sha256": "3de492c7022baaef1a348f2fa64d019cdef7a414e0195bbf5113f82eef804013"
     },
     {
       "path": "src/core/wz_machine.h",
@@ -77,7 +77,7 @@
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "bf80178fb030751ff462be5b60486323005a3a65451fe273db065a5df27b4b39"
+      "sha256": "93479ac03c344c429455d8627096147fb4da4a2b94c5204d8223d7e7b11fc983"
     },
     {
       "path": "src/core/wz_state.h",
