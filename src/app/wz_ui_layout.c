@@ -709,6 +709,8 @@ wz_result_t wz_ui_layout_register_microdrive_commands(
             }
         }
     }
+    /* The drive IDs also back toolbar selectors; keep those aliases on the
+       Microdrive parent while their nested menu actions use drive groups. */
     for (size_t slot = 0u; slot < WZ_UI_MICRODRIVE_COUNT; ++slot) {
         const size_t index = slot *
             (size_t)WZ_UI_MICRODRIVE_OPERATION_COUNT +

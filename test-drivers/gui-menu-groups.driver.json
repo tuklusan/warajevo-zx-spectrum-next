@@ -32,7 +32,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "e17034a48a93208b2b90aac33076061fa61850701d0945afc8daf9f9193930c2"
+      "sha256": "959bfd0fc6a8191e63bcb7f5faf9c4d2e69fdc812ee747abfe54690e03487584"
     },
     {
       "path": "src/app/wz_command_registry.c",
@@ -48,7 +48,7 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "b8e3d9b6e76cda261fbc6d3870794db0723b95c26903f5e788529480736358cf"
+      "sha256": "b0cea047e7d0a960224187e335d7f0a616a639d2bb0fef90ffa24f0640ad796d"
     }
   ]
 }

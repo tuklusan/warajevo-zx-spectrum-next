@@ -4601,8 +4601,8 @@ static void wz_host_ui_draw_menu_group(struct nk_context* context,
             strcmp(parent_id, "machine.model") != 0 &&
             strcmp(parent_id, "machine.speed") != 0 &&
             !(strncmp(parent_id, "media.microdrive.drive", 22u) == 0 &&
-              parent_id[22] >= '1' && parent_id[22] <= '8' &&
-              parent_id[23] == '\0')) {
+              strlen(parent_id) == 23u &&
+              parent_id[22] >= '1' && parent_id[22] <= '8')) {
             wz_host_ui_draw_menu_command(context, group_action);
         }
     }
