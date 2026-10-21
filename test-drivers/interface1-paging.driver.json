@@ -11,7 +11,7 @@
   "fixtures": [
     {
       "path": "ci/test/interface1-paging/interface1-paging-contract.c",
-      "sha256": "682a2a4c40eb21d723e3da26f696b4f600930ac0b6ef9c35703c3465579efc11"
+      "sha256": "e4b2ccdec9b112be5f4af0f84e36fc2b286242ab6de5bddf0510d723dd618a6b"
     },
     {
       "path": "src/cmake/CMakeLists.txt",

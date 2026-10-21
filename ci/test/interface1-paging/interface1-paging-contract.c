@@ -45,10 +45,10 @@ static wz_result_t memory_read(wz_machine_t* machine, wz_word_t address,
 
 int main(void)
 {
-    wz_machine_t machine = {0};
-    wz_byte_t main_rom[WZ_48K_ROM_SIZE];
-    wz_byte_t interface1_rom[WZ_INTERFACE1_ROM_SIZE];
-    wz_byte_t oversized_rom[WZ_48K_ROM_SIZE];
+    static wz_machine_t machine;
+    static wz_byte_t main_rom[WZ_48K_ROM_SIZE];
+    static wz_byte_t interface1_rom[WZ_INTERFACE1_ROM_SIZE];
+    static wz_byte_t oversized_rom[WZ_48K_ROM_SIZE];
     wz_byte_t value = 0u;
     wz_qword_t identity;
     int result = 1;
@@ -62,8 +62,7 @@ int main(void)
 
     REQUIRE(wz_machine_init(&machine, wz_machine_profile_48k_pal()) ==
             WZ_RESULT_OK);
-    REQUIRE(wz_machine_load_48k_rom(&machine, main_rom, sizeof(main_rom)) ==
-            WZ_RESULT_OK);
+    memcpy(machine.memory, main_rom, sizeof(main_rom));
     REQUIRE(wz_machine_load_interface1_rom(&machine, interface1_rom,
             WZ_INTERFACE1_ROM_SIZE - 1u, WZ_INTERFACE1_ROM_OLD) ==
             WZ_RESULT_INVALID_ARGUMENT);
