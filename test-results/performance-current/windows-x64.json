@@ -1,10 +1,10 @@
 {
   "schema": 1,
   "status": "pass",
-  "commit": "c32c0afca00cd25e4df73b99d6aac9ca318c4462",
+  "commit": "2dbbd06f39edd2e6ef71d315dc45f1ab6f8f402b",
   "runner": "Windows-windows-x64",
   "architecture": "X64",
-  "timestamp": "2026-10-21T01:22:46Z",
+  "timestamp": "2026-10-21T01:36:33Z",
   "compiler": "MSVC 19.51.36260.0",
   "metrics": [
     {
@@ -19,8 +19,8 @@
       "name": "raster_generation",
       "unit": "frames",
       "operations": "384",
-      "median_cpu_seconds": 0.014,
-      "operations_per_second": 27428.571,
+      "median_cpu_seconds": 0.013,
+      "operations_per_second": 29538.462,
       "fingerprint": "d3d8bb78938b5fb1"
     },
     {
@@ -51,8 +51,8 @@
       "name": "ui_presentation",
       "unit": "frames",
       "operations": "512",
-      "median_cpu_seconds": 0.019,
-      "operations_per_second": 26947.368,
+      "median_cpu_seconds": 0.018,
+      "operations_per_second": 28444.444,
       "fingerprint": "6b9c6deb0ca3fbc9"
     }
   ]

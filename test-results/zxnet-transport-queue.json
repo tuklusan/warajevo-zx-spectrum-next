@@ -1,0 +1,75 @@
+{
+  "testId": "zxnet-transport-queue",
+  "status": "pass",
+  "commit": "2dbbd06f39edd2e6ef71d315dc45f1ab6f8f402b",
+  "runId": 39528210861,
+  "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
+  "timestamp": "2026-10-21T01:38:47+00:00",
+  "caseCount": 185,
+  "caseCountPerRunner": 37,
+  "observedOutput": "PASS ZX Net transport normalization queue ordering, due delivery, and atomic rejection",
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39528210861",
+  "runnerResults": [
+    {
+      "runner": "Windows x64",
+      "status": "pass",
+      "caseCount": 37,
+      "ctest": "20/20 passed",
+      "jobId": 118987736472,
+      "timestamp": "2026-10-21T01:36:46Z"
+    },
+    {
+      "runner": "Linux x64",
+      "status": "pass",
+      "caseCount": 37,
+      "ctest": "20/20 passed",
+      "jobId": 118987736757,
+      "timestamp": "2026-10-21T01:36:38Z"
+    },
+    {
+      "runner": "Linux ARM64",
+      "status": "pass",
+      "caseCount": 37,
+      "ctest": "20/20 passed",
+      "jobId": 118987736672,
+      "timestamp": "2026-10-21T01:36:46Z"
+    },
+    {
+      "runner": "macOS ARM64",
+      "status": "pass",
+      "caseCount": 37,
+      "ctest": "20/20 passed",
+      "jobId": 118987736801,
+      "timestamp": "2026-10-21T01:36:23Z"
+    },
+    {
+      "runner": "macOS Intel",
+      "status": "pass",
+      "caseCount": 37,
+      "ctest": "20/20 passed",
+      "jobId": 118987736687,
+      "timestamp": "2026-10-21T01:37:02Z"
+    }
+  ],
+  "nativeBuildConfiguration": "Release; WZSN_BUILD_SOKOL_HOST=ON",
+  "ctest": "20/20 integrated CTests passed on each native runner",
+  "reviewAdjudication": "The reported array bound concern is not present for the committed configuration: queue capacity is 8 and the fixture supplies 10 blocks, covering all capacity entries plus two explicit wrap/saturation inputs.",
+  "fixtures": [
+    {
+      "path": "ci/test/zxnet-transport-queue/zxnet-transport-queue-contract.c",
+      "sha256": "cbd3f8531ec2841de5867d38be18857d6ed761f443009a096b3296612f980c7b"
+    },
+    {
+      "path": "src/app/wz_zxnet_transport.c",
+      "sha256": "9c7254bb8c330794482b80c70e89f6c0f1e21f0535d0932340395fbd01d5c49c"
+    },
+    {
+      "path": "src/app/wz_zxnet_transport.h",
+      "sha256": "4bcd9c10a3331d7f99bdd8e241e8d638b41edaa1307afa51790892529f4484b5"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "fc86741acebce933ff253b1f7b1a6affe6d768cb0ca2dc8d4474e3a89d378c7e"
+    }
+  ]
+}
