@@ -59,10 +59,12 @@ def open_view_menu(host_window):
     return x
 
 
-def view_choice(host_window, row):
+def view_choice(host_window, row, proof_directory):
     x = open_view_menu(host_window)
     xdotool("mousemove", "--sync", "--window", host_window,
             str(x), str(42 + row * 28))
+    time.sleep(0.2)
+    capture(host_window, proof_directory / f"view-hover-{row}.png")
     xdotool("click", "1")
     time.sleep(0.7)
 
@@ -123,21 +125,21 @@ def main():
                     raise RuntimeError(
                         f"initial status panel is not visible: {initial_status!r}")
                 assertions += 1
-                view_choice(host_window, 1)
+                view_choice(host_window, 1, args.proof.parent)
                 hidden_status = capture(host_window,
                     args.proof.parent / "status-hidden.png", True)
                 if "Keyboard" in hidden_status:
                     raise RuntimeError(
                         f"status panel remained visible after toggle: {hidden_status!r}")
                 assertions += 1
-                view_choice(host_window, 1)
+                view_choice(host_window, 1, args.proof.parent)
                 restored_status = capture(host_window,
                     args.proof.parent / "status-restored.png", True)
                 if "Keyboard" not in restored_status:
                     raise RuntimeError(
                         f"status panel did not restore: {restored_status!r}")
                 assertions += 1
-                view_choice(host_window, 2)
+                view_choice(host_window, 2, args.proof.parent)
                 display_settings = capture(host_window,
                     args.proof.parent / "display-settings.png")
                 if not re.search(r"Display Settings", display_settings, re.I):
