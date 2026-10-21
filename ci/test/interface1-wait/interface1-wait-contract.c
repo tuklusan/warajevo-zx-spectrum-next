@@ -101,9 +101,9 @@ int main(void)
             WZ_NETWORKING_INTERFACE1) == WZ_RESULT_OK);
     REQUIRE(wz_machine_interface1_control_write(&machine, 0x20u, 0u) ==
             WZ_RESULT_OK);
-    REQUIRE(wz_machine_advance(&machine,
-        (wz_master_tick_t)machine.profile->ula_fetch_start_tstate * 2u -
-        40u) == WZ_RESULT_OK);
+    machine.master_tick =
+        (wz_master_tick_t)machine.profile->ula_fetch_start_tstate * 2u - 40u;
+    wz_zxnet_set_master_tick(&machine.zxnet, machine.master_tick);
     wz_trace_sink_init(&trace_sink, count_trace_event, &trace_counts);
     wz_machine_set_timing_trace(&machine, &trace_sink);
     machine.memory[0] = 0xedu;
