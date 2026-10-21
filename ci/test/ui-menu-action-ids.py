@@ -66,19 +66,26 @@ def main():
                 for action_id, model in (("machine.model.128k", "128K"),
                                          ("machine.model.48k", "48K")):
                     response = control.send(f"DO {action_id}")
-                    if response[-1] != f"OK DO {action_id}":
-                        raise RuntimeError(f"fixed model action failed: {action_id}")
+                    expected_result = f"OK DO {action_id} {model.lower()}"
+                    if response[-1] != expected_result:
+                        raise RuntimeError(
+                            f"fixed model action failed: {action_id}: {response[-1]}")
                     status = control.send("STATUS")[-1]
                     if f"MODEL={model}" not in status:
                         raise RuntimeError(f"model action did not select {model}")
                     assertions += 2
 
-                expected_speeds = ("25", "50", "100", "200", "400", "800",
-                                   "UNLIMITED")
-                for action_id, speed in zip(ids[2:], expected_speeds):
+                expected_speeds = (
+                    ("25", "25%"), ("50", "50%"), ("100", "100%"),
+                    ("200", "200%"), ("400", "400%"), ("800", "800%"),
+                    ("UNLIMITED", "Unlimited"),
+                )
+                for action_id, (speed, result_label) in zip(ids[2:], expected_speeds):
                     response = control.send(f"DO {action_id}")
-                    if response[-1] != f"OK DO {action_id}":
-                        raise RuntimeError(f"fixed speed action failed: {action_id}")
+                    expected_result = f"OK DO {action_id} {result_label}"
+                    if response[-1] != expected_result:
+                        raise RuntimeError(
+                            f"fixed speed action failed: {action_id}: {response[-1]}")
                     status = control.send("STATUS")[-1]
                     if f"SPEED={speed}" not in status:
                         raise RuntimeError(f"speed action did not select {speed}")
