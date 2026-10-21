@@ -9,6 +9,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #ifndef WZ_CORE_WZ_MICRODRIVE_H
 #define WZ_CORE_WZ_MICRODRIVE_H
 
+#include <stdbool.h>
 #include <stddef.h>
 
 #include "core/wz_types.h"
@@ -20,6 +21,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #define WZ_MDR_HEADER_SIZE 15u
 #define WZ_MDR_DATA_OFFSET (WZ_MDR_HEADER_OFFSET + WZ_MDR_HEADER_SIZE)
 #define WZ_MDR_DATA_SIZE (WZ_MDR_SECTOR_SIZE - WZ_MDR_DATA_OFFSET)
+#define WZ_MDR_WRITE_PROTECTION_TRAILER_SIZE 1u
 
 typedef struct {
     const wz_byte_t* data;
@@ -53,6 +55,9 @@ typedef wz_result_t (*wz_mdr_flush_callback_t)(size_t sector,
                                                const wz_byte_t* data,
                                                size_t length,
                                                void* context);
+
+bool wz_mdr_image_sector_count(size_t length, size_t* sector_count);
+bool wz_mdr_image_is_write_protected(const wz_mdr_image_t* image);
 
 wz_result_t wz_mdr_image_init(wz_mdr_image_t* image,
                               const wz_byte_t* data,

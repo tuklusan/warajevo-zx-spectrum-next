@@ -21,6 +21,43 @@ static wz_qword_t wz_mdr_identity(const wz_byte_t* data, size_t length)
     return identity;
 }
 
+bool wz_mdr_image_sector_count(size_t length, size_t* sector_count)
+{
+    size_t count;
+
+    if (sector_count == 0) {
+        return false;
+    }
+    if (length % WZ_MDR_SECTOR_SIZE == 0u) {
+        count = length / WZ_MDR_SECTOR_SIZE;
+    } else if (length == WZ_MDR_MAX_SECTORS * WZ_MDR_SECTOR_SIZE +
+                       WZ_MDR_WRITE_PROTECTION_TRAILER_SIZE) {
+        count = WZ_MDR_MAX_SECTORS;
+    } else {
+        return false;
+    }
+    if (count < WZ_MDR_MIN_SECTORS || count > WZ_MDR_MAX_SECTORS) {
+        return false;
+    }
+    *sector_count = count;
+    return true;
+}
+
+bool wz_mdr_image_is_write_protected(const wz_mdr_image_t* image)
+{
+    size_t sector_count;
+
+    if (image == 0 || image->data == 0 ||
+        !wz_mdr_image_sector_count(image->length, &sector_count) ||
+        sector_count != image->sector_count ||
+        sector_count != WZ_MDR_MAX_SECTORS ||
+        image->length != sector_count * WZ_MDR_SECTOR_SIZE +
+                         WZ_MDR_WRITE_PROTECTION_TRAILER_SIZE) {
+        return false;
+    }
+    return image->data[sector_count * WZ_MDR_SECTOR_SIZE] != 0u;
+}
+
 wz_result_t wz_mdr_image_init(wz_mdr_image_t* image,
                               const wz_byte_t* data,
                               size_t length)
@@ -30,11 +67,7 @@ wz_result_t wz_mdr_image_init(wz_mdr_image_t* image,
     if (image == 0 || data == 0) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
-    if (length % WZ_MDR_SECTOR_SIZE != 0u) {
-        return WZ_RESULT_PARSE_ERROR;
-    }
-    sector_count = length / WZ_MDR_SECTOR_SIZE;
-    if (sector_count < WZ_MDR_MIN_SECTORS || sector_count > WZ_MDR_MAX_SECTORS) {
+    if (!wz_mdr_image_sector_count(length, &sector_count)) {
         return WZ_RESULT_PARSE_ERROR;
     }
     image->data = data;
@@ -48,12 +81,14 @@ wz_result_t wz_mdr_image_sector(const wz_mdr_image_t* image,
                                 size_t sector,
                                 const wz_byte_t** data)
 {
+    size_t sector_count;
+
     if (image == 0 || data == 0) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
-    if (image->data == 0 || image->sector_count < WZ_MDR_MIN_SECTORS ||
-        image->sector_count > WZ_MDR_MAX_SECTORS ||
-        image->length != image->sector_count * WZ_MDR_SECTOR_SIZE ||
+    if (image->data == 0 ||
+        !wz_mdr_image_sector_count(image->length, &sector_count) ||
+        sector_count != image->sector_count ||
         sector >= image->sector_count) {
         return WZ_RESULT_INVALID_STATE;
     }
@@ -83,10 +118,11 @@ void wz_mdr_transport_init(wz_mdr_transport_t* transport)
 wz_result_t wz_mdr_transport_mount(wz_mdr_transport_t* transport,
                                     const wz_mdr_image_t* image)
 {
+    size_t sector_count;
+
     if (transport == 0 || image == 0 || image->data == 0 ||
-        image->sector_count < WZ_MDR_MIN_SECTORS ||
-        image->sector_count > WZ_MDR_MAX_SECTORS ||
-        image->length != image->sector_count * WZ_MDR_SECTOR_SIZE) {
+        !wz_mdr_image_sector_count(image->length, &sector_count) ||
+        sector_count != image->sector_count) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
     transport->image = image;
@@ -181,6 +217,7 @@ wz_result_t wz_mdr_transport_write(wz_mdr_transport_t* transport,
     }
     if (transport->image == 0 || transport->active_motor > 7u ||
         transport->write_enabled == 0u || transport->erase_enabled != 0u ||
+        wz_mdr_image_is_write_protected(transport->image) ||
         wz_mdr_image_sector(transport->image, transport->sector,
                             &sector_data) != WZ_RESULT_OK) {
         return WZ_RESULT_INVALID_STATE;

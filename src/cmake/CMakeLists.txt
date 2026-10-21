@@ -181,6 +181,16 @@ set_target_properties(wz_interface1_paging_contract PROPERTIES
     C_EXTENSIONS OFF)
 
 add_executable(
+    wz_mdr_image_trailer_contract
+    ${WZSN_REPO_ROOT}/ci/test/mdr-image-trailer/mdr-image-trailer-contract.c)
+target_include_directories(wz_mdr_image_trailer_contract PRIVATE "${WZSN_SOURCE_ROOT}")
+target_link_libraries(wz_mdr_image_trailer_contract PRIVATE wz_core wz_warnings)
+set_target_properties(wz_mdr_image_trailer_contract PROPERTIES
+    C_STANDARD 11
+    C_STANDARD_REQUIRED ON
+    C_EXTENSIONS OFF)
+
+add_executable(
     wz_timing_trace_zxnet_fixture
     ${WZSN_REPO_ROOT}/ci/test/timing-trace-zxnet/trace-zxnet-fixture.c)
 target_include_directories(wz_timing_trace_zxnet_fixture PRIVATE "${WZSN_SOURCE_ROOT}")
@@ -643,6 +653,11 @@ add_test(NAME wz_interface1_paging_contract
 set_tests_properties(wz_interface1_paging_contract PROPERTIES
     PASS_REGULAR_EXPRESSION
         "PASS Interface 1 8 KiB ROM trap paging and unpaging")
+add_test(NAME wz_mdr_image_trailer_contract
+    COMMAND "$<TARGET_FILE:wz_mdr_image_trailer_contract>")
+set_tests_properties(wz_mdr_image_trailer_contract PROPERTIES
+    PASS_REGULAR_EXPRESSION
+        "PASS MDR optional write-protection trailer parsing")
 set(WZSN_TRACE_ZXNET_OUTPUT "${WZSN_ULA_128K_TRACE_OUTPUT}/timing-trace-zxnet")
 file(MAKE_DIRECTORY "${WZSN_TRACE_ZXNET_OUTPUT}")
 add_test(NAME wz_timing_trace_zxnet_contract

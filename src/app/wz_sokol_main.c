@@ -4532,6 +4532,8 @@ static bool wz_host_microdrive_path_read_only(size_t slot)
 {
     const char* path;
     if (slot >= WZ_UI_MICRODRIVE_COUNT) return true;
+    if (wz_mdr_image_is_write_protected(
+            &wz_host_session.microdrive_image[slot])) return true;
     path = wz_host_session.microdrive_path[slot];
     if (path[0] == '\0') return true;
 #if defined(_WIN32)
