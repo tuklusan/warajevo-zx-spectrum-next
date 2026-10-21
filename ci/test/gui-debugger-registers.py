@@ -14,12 +14,17 @@ import json
 import os
 from pathlib import Path
 import re
+import runpy
 import subprocess
 import tempfile
 import time
 
+from PIL import Image, ImageEnhance, ImageOps
+
 
 TITLE = "Warajevo ZX Spectrum Next"
+connect_control = runpy.run_path(
+    str(Path(__file__).with_name("gui-screenshot-save.py")))["connect"]
 
 
 def run(*args):
@@ -38,19 +43,35 @@ def find_window(timeout=20):
     raise RuntimeError("production application window was not shown")
 
 
-def screenshot_text(root):
+def capture(root):
     image = root / "screen.png"
-    run("scrot", "--silent", str(image))
-    output = run("tesseract", str(image), "stdout")
-    return output
+    run("import", "-window", "root", str(image))
+    return image
+
+
+def prepare_ocr(root, image):
+    with Image.open(image) as source:
+        enlarged = source.resize((source.width * 3, source.height * 3),
+                                 Image.Resampling.LANCZOS)
+    enhanced = ImageEnhance.Contrast(ImageOps.grayscale(enlarged)).enhance(2.5)
+    prepared = root / "ocr.png"
+    enhanced.save(prepared)
+    return prepared
+
+
+def screenshot_text(root):
+    image = capture(root)
+    prepared = prepare_ocr(root, image)
+    return run("tesseract", str(prepared), "stdout", "--psm", "6")
 
 
 def find_text(root, label, timeout=5):
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
-        image = root / "screen.png"
-        run("scrot", "--silent", str(image))
-        data = subprocess.run(["tesseract", str(image), "stdout", "tsv"],
+        image = capture(root)
+        prepared = prepare_ocr(root, image)
+        data = subprocess.run(["tesseract", str(prepared), "stdout", "--psm",
+                               "6", "tsv"],
                               check=True, capture_output=True, text=True).stdout
         rows = [line.split("\t") for line in data.splitlines()]
         matches = [row for row in rows if len(row) >= 12 and
@@ -58,7 +79,7 @@ def find_text(root, label, timeout=5):
                    row[10].strip().lstrip("-").isdigit() and int(row[10]) > 35]
         if matches:
             row = matches[-1]
-            return (int(row[6]), int(row[7]), int(row[8]), int(row[9]))
+            return tuple(int(row[index]) // 3 for index in (6, 7, 8, 9))
         time.sleep(0.25)
     raise RuntimeError(f"visible UI label not found: {label}")
 
@@ -111,6 +132,8 @@ def main():
                 process = subprocess.Popen([str(args.binary.resolve())], cwd=root,
                     env=environment, stdout=log, stderr=subprocess.STDOUT)
                 window = find_window()
+                control = connect_control(process)
+                control.close()
                 run("xdotool", "windowfocus", "--sync", window)
                 run("xdotool", "key", "--clearmodifiers", "F12")
                 time.sleep(0.5)

@@ -8,11 +8,15 @@
   "fixtures": [
     {
       "path": ".github/workflows/gui-debugger-registers.yml",
-      "sha256": "4fa88863f01fa15c74c01c393f1b796e2928f3b67a16b9b9b0d7ea593eef7b06"
+      "sha256": "e4fc0971ab79a412f6bc049b22959ce6daa5602f794622da4d0034c7d3bdde95"
     },
     {
       "path": "ci/test/gui-debugger-registers.py",
-      "sha256": "340177bbfd9bf667169afc0cb79a203381fab93aaef19cfe26c7002946c5de6c"
+      "sha256": "67090fc65b9a9e6a97db97731e446620dc3f3ddb8b977084689bba1839093316"
+    },
+    {
+      "path": "ci/test/gui-screenshot-save.py",
+      "sha256": "b141ac9b4c91e33028291b0312f8fc2ac31f67c161c52cc0eb51a42bc54ff82f"
     },
     {
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
