@@ -1,0 +1,107 @@
+{
+  "schema": 1,
+  "status": "pass",
+  "testId": "warajevo-mdr-differential",
+  "commit": "8b377d9c5b42410bdb562d3cb64823be983545a6",
+  "sourceCommit": "8b377d9c5b42410bdb562d3cb64823be983545a6",
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39533151050",
+  "runId": 39533151050,
+  "nativeBuildConfiguration": "Release; WZSN_BUILD_SOKOL_HOST=ON",
+  "coverage": [
+    "checksum-valid 9-sector MDR images with stored 15-byte headers and 528-byte record blocks",
+    "all eight motor selections return the selected cartridge header byte",
+    "complete 9-sector stream byte order and wrap to sector zero",
+    "Interface 1 bus read uses the stored image offset; physical sync preambles are excluded from MDR files"
+  ],
+  "reference": {
+    "repository": "https://github.com/tuklusan/warajevo-spectrum-2.50.git",
+    "commit": "94f69bd8f4acb6c0c320ae34f9b1c3ee29bc5545",
+    "path": "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM",
+    "sha256": "a438796586ecc970efbfb63cee718854a3f8ce716318efd17565ffa17ab695f8",
+    "routines": [
+      "MDV_IN",
+      "MDV_OUT",
+      "ZXI1_CTRL",
+      "NEXT",
+      "FLUSH",
+      "INCSEC"
+    ]
+  },
+  "runnerResults": [
+    {
+      "runner": "Windows x64",
+      "status": "pass",
+      "contract": "wz_warajevo_mdr_differential passed",
+      "ctest": "23/23 passed",
+      "jobId": 119003548959,
+      "timestamp": "2026-10-21T02:29:36Z",
+      "phase16": "30/30 checks passed"
+    },
+    {
+      "runner": "Linux x64",
+      "status": "pass",
+      "contract": "wz_warajevo_mdr_differential passed",
+      "ctest": "23/23 passed",
+      "jobId": 119003548978,
+      "timestamp": "2026-10-21T02:29:00Z",
+      "phase16": "30/30 checks passed"
+    },
+    {
+      "runner": "Linux ARM64",
+      "status": "pass",
+      "contract": "wz_warajevo_mdr_differential passed",
+      "ctest": "23/23 passed",
+      "jobId": 119003548949,
+      "timestamp": "2026-10-21T02:29:12Z",
+      "phase16": "30/30 checks passed"
+    },
+    {
+      "runner": "macOS ARM64",
+      "status": "pass",
+      "contract": "wz_warajevo_mdr_differential passed",
+      "ctest": "23/23 passed",
+      "jobId": 119003548692,
+      "timestamp": "2026-10-21T02:28:43Z",
+      "phase16": "30/30 checks passed"
+    },
+    {
+      "runner": "macOS Intel",
+      "status": "pass",
+      "contract": "wz_warajevo_mdr_differential passed",
+      "ctest": "23/23 passed",
+      "jobId": 119003548923,
+      "timestamp": "2026-10-21T02:29:21Z",
+      "phase16": "30/30 checks passed"
+    }
+  ],
+  "sourceReviewAdjudication": [
+    "The reported buffer-overflow finding is non-actionable: data begins at sector offset 15 and data[527] is raw sector offset 542, within the 543-byte record. The fixed-size fixture allocates exactly nine complete sectors."
+  ],
+  "fixtures": [
+    {
+      "path": "ci/test/warajevo-mdr-differential/warajevo-mdr-differential.c",
+      "sha256": "b7fafb3ec151e2c2dd62e3108eb0f41d0de0fda119595e51912d2c3a28fe9988"
+    },
+    {
+      "path": "src/core/wz_microdrive.h",
+      "sha256": "3308da78909e3842b2a0e0f82df3927927ba988708683b3fd20adfaaef527ad8"
+    },
+    {
+      "path": "src/core/wz_microdrive.c",
+      "sha256": "30d9e3b2f856deff18fe8c6aa21332fbf8018d5742adec79107e52051c0016d8"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "018cb55bd8bcdf3c4342274215cc50b58618e1216b5f3e0f99b6f9191d01ee22"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "160792f2f033b0406c166d2820dd52ff6fe155a333250240100054f2448602ac"
+    },
+    {
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "1c8474ee8a90035da43da6b2e61469dea1c5764d11edf5d3fffce142351ee027"
+    }
+  ],
+  "conflictResolution": "Preserved MDRIVE.ASM and the companion Interface 1/Microdrive spec agree on the 15+528 stored-byte layout. Physical hardware timing was unavailable and is excluded; no higher-authority conflict was observed."
+}

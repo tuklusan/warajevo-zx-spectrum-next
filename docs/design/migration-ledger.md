@@ -57,6 +57,28 @@ uncertain source or license defaults to `RESEARCH` or `EXCLUDE`.
 | Provenance comment | Added beside the NOP branch; it points to this ledger and the exact imported source label/revision. |
 | Status | This sample is accounted for. The ledger is not a complete inventory of all migrated routines. |
 
+### Interface 1 Microdrive sector stream — behavior reimplementation
+
+| Field | Recorded value |
+|---|---|
+| Upstream identity | Warajevo 2.50 import from commit `94f69bd8f4acb6c0c320ae34f9b1c3ee29bc5545`; imported source file `MDRIVE.ASM` SHA-256 `a438796586ecc970efbfb63cee718854a3f8ce716318efd17565ffa17ab695f8`; imported Git blob `a823929a015943260a6b1c1b4faebb27afd805ed`. |
+| Source routines | `reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM`: `MDV_IN`, `MDV_OUT`, `ZXI1_CTRL`, `NEXT`, `FLUSH`, and `INCSEC`. |
+| Original purpose | Transfer Interface 1 Microdrive bytes from/to the selected cartridge, advancing from its 15-byte header to its 528-byte record block and then to the next sector. `FLUSH` skips each 12-byte synchronization preamble when copying into the stored 543-byte image sector. |
+| Original copyright/notice | The source file header names Zeljko Juric and Samir Ribic. The official source page classifies the published source as GPL; this record does not clear reuse of source text. |
+| New material license | `src/core/wz_microdrive.h` retains the project's existing source license. Repository-wide compatibility with the root `LICENSE` remains unresolved. |
+| Migration type / clearance | `REIMPLEMENT`: only observable sector layout and stream ordering are represented in portable C; no assembly or source expression was copied. Clearance is limited to these behaviors and does not authorize translating other routines. |
+| Inputs | Mounted MDR image bytes, selected motor, current sector and byte offset, and Interface 1 data-port reads. |
+| Outputs | The stored 15-byte header followed by the 528-byte record block; after the block, position advances to the next sector and wraps at cartridge length. |
+| Emulated state read/written | Reads image identity, sector count, selected motor, phase, and offset; updates the selected drive's phase/offset and sector. |
+| Host state | Mounted image storage and persistence callbacks remain outside the machine-visible byte stream. |
+| Timing consequences | This record covers byte ordering only. Synchronization pulse widths, gaps, erase timing, random seeks, and physical tape behavior are not claimed. |
+| External calls / error behavior | Uses existing machine bus and MDR transport APIs; invalid/missing motor or image returns the existing error result. |
+| C destination | `src/core/wz_microdrive.h` sector offsets and `src/core/wz_microdrive.c` read-position transitions. |
+| Regression evidence | Exact-source run `39533151050` passed the differential contract and all 23 CTests on five native targets; Phase-16 passed all 30 checks with a 25.7% maximum slowdown. Proof: `test-results/warajevo-mdr-differential.json`; Phase-16: `test-results/phase16-performance-current.json`. Differential fixture: `ci/test/warajevo-mdr-differential/warajevo-mdr-differential.c`; driver: `test-drivers/warajevo-mdr-differential.driver.json`. |
+| Provenance comment | This record and the differential fixture identify the preserved source revision, file digest, and exact behavior under comparison. |
+| Conflict precedence | The preserved source and companion Interface 1/Microdrive spec agree on stored offsets and stream order. No physical-hardware byte/timing evidence is available; timing behavior is explicitly outside this differential test. |
+| Status | Behavior reimplementation and hosted differential proof are recorded. This does not clear source reuse or close other Interface 1 timing criteria. |
+
 ## Explicit gaps
 
 - Routine-level coverage has not yet been completed for the remaining Z80,

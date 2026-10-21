@@ -5,7 +5,7 @@
     "repository": "https://github.com/tuklusan/warajevo-spectrum-2.50.git",
     "commit": "94f69bd8f4acb6c0c320ae34f9b1c3ee29bc5545",
     "path": "reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM",
-    "sha256": "d875f63a6ba4abf38641bceb1b827d7dfac3b6d70c3d6437cc165eaf560bc040"
+    "sha256": "a438796586ecc970efbfb63cee718854a3f8ce716318efd17565ffa17ab695f8"
   },
   "fixtures": [
     {
@@ -22,15 +22,15 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "02e349909c7818d973b571996b7a02be0049c4dd2d7528bb4ea0de00ed26be57"
+      "sha256": "018cb55bd8bcdf3c4342274215cc50b58618e1216b5f3e0f99b6f9191d01ee22"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "913704705a983e0642855a6260b8c27c67dc58a9b209d8b884acca2f00607c2e"
+      "sha256": "160792f2f033b0406c166d2820dd52ff6fe155a333250240100054f2448602ac"
     },
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "c2e12e678786ad70ea9171d276a54549ef035e874c42562252227dd590e15c8f"
+      "sha256": "1c8474ee8a90035da43da6b2e61469dea1c5764d11edf5d3fffce142351ee027"
     }
   ]
 }
