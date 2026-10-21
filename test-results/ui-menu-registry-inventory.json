@@ -1,38 +1,160 @@
 {
   "testId": "ui-menu-registry-inventory",
   "status": "pass",
-  "commit": "bef1a67a697897fb406199a813054c0a31a7a23e",
-  "runId": 39560252025,
+  "commit": "1149377589730e666f272dfe58b9576f3d2aed0b",
+  "runId": 39599783772,
   "runner": "Linux",
   "architecture": "X64",
-  "runnerName": "ubuntu-24.04",
-  "timestamp": "2026-10-21T07:11:23Z",
   "assertions": 130,
-  "topLevelMenuIds": ["file", "machine", "media", "view", "tools", "settings", "help"],
-  "requiredSection71Ids": [
-    "file.open_run", "file.recent", "snapshot.load", "snapshot.save", "snapshot.save_as", "host.screenshot.save", "application.quit",
-    "machine.model", "machine.model.48k", "machine.model.128k", "machine.reset", "machine.pause_resume", "machine.speed", "machine.speed.25", "machine.speed.50", "machine.speed.100", "machine.speed.200", "machine.speed.400", "machine.speed.800", "machine.speed.unlimited",
-    "media.tape", "media.tape.insert", "media.tape.eject", "media.tape.loading_mode", "media.tape.loading_mode.normal", "media.tape.loading_mode.instant", "media.tape.manager",
-    "media.microdrive", "media.microdrive.drive1", "media.microdrive.drive2", "media.microdrive.drive3", "media.microdrive.drive4", "media.microdrive.drive5", "media.microdrive.drive6", "media.microdrive.drive7", "media.microdrive.drive8", "media.microdrive.manager",
-    "media.zx_printer", "media.zx_printer.manager", "view.fullscreen", "view.machine_media_status", "view.display_settings",
-    "tools.debugger", "tools.diagnostics", "tools.snapshot_inspector", "tools.compatibility", "tools.compatibility.tape", "tools.compatibility.snapshot", "tools.compatibility.spectrum_data", "tools.compatibility.microdrive", "tools.compatibility.database",
-    "settings.display", "settings.audio", "settings.input", "settings.rom_firmware", "settings.peripherals", "settings.peripherals.networking", "settings.peripherals.zx_printer", "settings.peripherals.telnet", "help.help", "help.about",
-    "host.screenshot.temp", "machine.pause", "machine.resume", "machine.model.set", "machine.speed.set", "machine.networking.set", "media.tape.loading_mode.set", "media.microdrive.mount", "media.microdrive.eject", "media.microdrive.set_default"
+  "topLevelMenuIds": [
+    "file",
+    "machine",
+    "media",
+    "view",
+    "tools",
+    "settings",
+    "help"
   ],
-  "groupNodeIds": ["file.recent", "machine.model", "machine.speed", "media.microdrive", "media.tape", "media.tape.loading_mode", "media.zx_printer", "settings.peripherals", "settings.peripherals.networking", "settings.peripherals.zx_printer", "tools.compatibility"],
+  "requiredSection71Ids": [
+    "file.open_run",
+    "file.recent",
+    "snapshot.load",
+    "snapshot.save",
+    "snapshot.save_as",
+    "host.screenshot.save",
+    "application.quit",
+    "machine.model",
+    "machine.model.48k",
+    "machine.model.128k",
+    "machine.reset",
+    "machine.pause_resume",
+    "machine.speed",
+    "machine.speed.25",
+    "machine.speed.50",
+    "machine.speed.100",
+    "machine.speed.200",
+    "machine.speed.400",
+    "machine.speed.800",
+    "machine.speed.unlimited",
+    "media.tape",
+    "media.tape.insert",
+    "media.tape.eject",
+    "media.tape.loading_mode",
+    "media.tape.loading_mode.normal",
+    "media.tape.loading_mode.instant",
+    "media.tape.manager",
+    "media.microdrive",
+    "media.microdrive.drive1",
+    "media.microdrive.drive2",
+    "media.microdrive.drive3",
+    "media.microdrive.drive4",
+    "media.microdrive.drive5",
+    "media.microdrive.drive6",
+    "media.microdrive.drive7",
+    "media.microdrive.drive8",
+    "media.microdrive.manager",
+    "media.zx_printer",
+    "media.zx_printer.manager",
+    "view.fullscreen",
+    "view.machine_media_status",
+    "view.display_settings",
+    "tools.debugger",
+    "tools.diagnostics",
+    "tools.snapshot_inspector",
+    "tools.compatibility",
+    "tools.compatibility.tape",
+    "tools.compatibility.snapshot",
+    "tools.compatibility.spectrum_data",
+    "tools.compatibility.microdrive",
+    "tools.compatibility.database",
+    "settings.display",
+    "settings.audio",
+    "settings.input",
+    "settings.rom_firmware",
+    "settings.peripherals",
+    "settings.peripherals.networking",
+    "settings.peripherals.zx_printer",
+    "settings.peripherals.telnet",
+    "help.help",
+    "help.about",
+    "host.screenshot.temp",
+    "machine.pause",
+    "machine.resume",
+    "machine.model.set",
+    "machine.speed.set",
+    "machine.networking.set",
+    "media.tape.loading_mode.set",
+    "media.microdrive.mount",
+    "media.microdrive.eject",
+    "media.microdrive.set_default"
+  ],
+  "groupNodeIds": [
+    "file.recent",
+    "machine.model",
+    "machine.speed",
+    "media.microdrive",
+    "media.tape",
+    "media.tape.loading_mode",
+    "media.zx_printer",
+    "settings.peripherals",
+    "settings.peripherals.networking",
+    "settings.peripherals.zx_printer",
+    "tools.compatibility"
+  ],
+  "runnerName": "ubuntu-24.04",
+  "timestamp": "2026-10-21T12:29:08Z",
   "fixtures": [
-    {"path": ".github/workflows/ui-menu-registry-inventory.yml", "sha256": "ee1c58268364aa30ce2773a5d4e4c9ee4d1af57d19b01a87c425d28566598fce"},
-    {"path": "ci/test/ui-menu-registry-inventory.py", "sha256": "548c8d867b069bf828a63b0c6592fdb06d10c965ff8a5023716869499b92ab87"},
-    {"path": "ci/test/ui-menu-registry-inventory/README.md", "sha256": "b959d1dd24f552e230d40903d6e7fb44d9a0814ad970c17fcc24edf5fce454c7"},
-    {"path": "ci/test/live-telnet-acceptance.py", "sha256": "01d9f9bd1e3f61f33e5852722750c26dba4ae6fbb9a7444a92966e031bb31923"},
-    {"path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md", "sha256": "dc47afb96f2c0566788d59ef74a691c33a8943e1c4e199c96c74d07739e68b31"},
-    {"path": "roms/48.rom", "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"},
-    {"path": "src/app/wz_sokol_main.c", "sha256": "116894fee4156f98e924f9c99def3ee908bc15dc2f488785cade6863eb742bad"},
-    {"path": "src/app/wz_compatibility_tools.c", "sha256": "a76dfb6a03bcbdd6272795e0d8ff9e694692cf14a7db034514083c87e971d3f3"},
-    {"path": "src/app/wz_compatibility_tools.h", "sha256": "eb4b120cf05c63425678b94c2fcef83fca15ee463f21eabb16804f81b499e289"},
-    {"path": "src/app/wz_command_registry.c", "sha256": "707bd4c4c9d0e12db0135ef857d3c7de8a5d6e7d717d790d09f3080bb90c9607"},
-    {"path": "src/app/wz_command_registry.h", "sha256": "4b8530859e953c5876d41792f6221a00a7facc14658c05f28076cda926c9bf04"},
-    {"path": "src/app/wz_telnet_keyboard_command.c", "sha256": "f9bc61d019c440e04102ea7a2c5af4146f812b9b16cd257d1bc244733b2da0d4"},
-    {"path": "src/app/wz_telnet_keyboard_command.h", "sha256": "a525163fd16b5113b8166293055c88f46ebf53a373bb24d04254aafc395b7e82"}
+    {
+      "path": ".github/workflows/ui-menu-registry-inventory.yml",
+      "sha256": "ee1c58268364aa30ce2773a5d4e4c9ee4d1af57d19b01a87c425d28566598fce"
+    },
+    {
+      "path": "ci/test/ui-menu-registry-inventory.py",
+      "sha256": "548c8d867b069bf828a63b0c6592fdb06d10c965ff8a5023716869499b92ab87"
+    },
+    {
+      "path": "ci/test/ui-menu-registry-inventory/README.md",
+      "sha256": "b959d1dd24f552e230d40903d6e7fb44d9a0814ad970c17fcc24edf5fce454c7"
+    },
+    {
+      "path": "ci/test/live-telnet-acceptance.py",
+      "sha256": "01d9f9bd1e3f61f33e5852722750c26dba4ae6fbb9a7444a92966e031bb31923"
+    },
+    {
+      "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
+      "sha256": "dc47afb96f2c0566788d59ef74a691c33a8943e1c4e199c96c74d07739e68b31"
+    },
+    {
+      "path": "roms/48.rom",
+      "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "b246a5a23ffa20e53be79821bab4c623136704477994082dae118799a90696f0"
+    },
+    {
+      "path": "src/app/wz_compatibility_tools.c",
+      "sha256": "a76dfb6a03bcbdd6272795e0d8ff9e694692cf14a7db034514083c87e971d3f3"
+    },
+    {
+      "path": "src/app/wz_compatibility_tools.h",
+      "sha256": "eb4b120cf05c63425678b94c2fcef83fca15ee463f21eabb16804f81b499e289"
+    },
+    {
+      "path": "src/app/wz_command_registry.c",
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
+    },
+    {
+      "path": "src/app/wz_command_registry.h",
+      "sha256": "54cc2e949ff026fa183b0aa30cac9ebad8b431c97b80d966ef0ac1ff35a06087"
+    },
+    {
+      "path": "src/app/wz_telnet_keyboard_command.c",
+      "sha256": "f9bc61d019c440e04102ea7a2c5af4146f812b9b16cd257d1bc244733b2da0d4"
+    },
+    {
+      "path": "src/app/wz_telnet_keyboard_command.h",
+      "sha256": "a525163fd16b5113b8166293055c88f46ebf53a373bb24d04254aafc395b7e82"
+    }
   ]
 }
