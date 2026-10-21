@@ -28,6 +28,36 @@ typedef enum {
     WZ_DEBUGGER_PAUSED_MUTATION = 1
 } wz_debugger_access_mode_t;
 
+typedef enum {
+    WZ_DEBUGGER_REGISTER_MAIN_A = 0,
+    WZ_DEBUGGER_REGISTER_MAIN_F,
+    WZ_DEBUGGER_REGISTER_MAIN_B,
+    WZ_DEBUGGER_REGISTER_MAIN_C,
+    WZ_DEBUGGER_REGISTER_MAIN_D,
+    WZ_DEBUGGER_REGISTER_MAIN_E,
+    WZ_DEBUGGER_REGISTER_MAIN_H,
+    WZ_DEBUGGER_REGISTER_MAIN_L,
+    WZ_DEBUGGER_REGISTER_ALT_A,
+    WZ_DEBUGGER_REGISTER_ALT_F,
+    WZ_DEBUGGER_REGISTER_ALT_B,
+    WZ_DEBUGGER_REGISTER_ALT_C,
+    WZ_DEBUGGER_REGISTER_ALT_D,
+    WZ_DEBUGGER_REGISTER_ALT_E,
+    WZ_DEBUGGER_REGISTER_ALT_H,
+    WZ_DEBUGGER_REGISTER_ALT_L,
+    WZ_DEBUGGER_REGISTER_IX,
+    WZ_DEBUGGER_REGISTER_IY,
+    WZ_DEBUGGER_REGISTER_SP,
+    WZ_DEBUGGER_REGISTER_PC,
+    WZ_DEBUGGER_REGISTER_I,
+    WZ_DEBUGGER_REGISTER_R,
+    WZ_DEBUGGER_REGISTER_IFF1,
+    WZ_DEBUGGER_REGISTER_IFF2,
+    WZ_DEBUGGER_REGISTER_INTERRUPT_ENABLE_DELAY,
+    WZ_DEBUGGER_REGISTER_INTERRUPT_MODE,
+    WZ_DEBUGGER_REGISTER_COUNT
+} wz_debugger_register_t;
+
 enum {
     WZ_DEBUGGER_TRACE_ACCESS_MODE = 1,
     WZ_DEBUGGER_TRACE_CPU_MUTATION = 2,
@@ -96,6 +126,9 @@ wz_result_t wz_debugger_copy_memory(wz_machine_t* machine,
                                     size_t length);
 wz_result_t wz_debugger_set_cpu_state(wz_machine_t* machine,
                                       const wz_z80_state_t* state);
+wz_result_t wz_debugger_set_register(wz_machine_t* machine,
+                                     wz_debugger_register_t reg,
+                                     wz_word_t value);
 wz_result_t wz_debugger_jump(wz_machine_t* machine, wz_word_t address);
 wz_result_t wz_debugger_undo_registers(wz_machine_t* machine);
 bool wz_debugger_undo_available(const wz_machine_t* machine);

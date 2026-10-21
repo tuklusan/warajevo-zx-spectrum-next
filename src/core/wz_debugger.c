@@ -392,6 +392,70 @@ wz_result_t wz_debugger_set_cpu_state(wz_machine_t* machine,
     return WZ_RESULT_OK;
 }
 
+wz_result_t wz_debugger_set_register(wz_machine_t* machine,
+                                     wz_debugger_register_t reg,
+                                     wz_word_t value)
+{
+    wz_z80_state_t state;
+    wz_byte_t* byte_register = 0;
+
+    if (machine == 0 || (int)reg < 0 || reg >= WZ_DEBUGGER_REGISTER_COUNT) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (machine->debugger_access_mode != WZ_DEBUGGER_PAUSED_MUTATION) {
+        wz_debugger_trace_result(machine, WZ_DEBUGGER_TRACE_CPU_MUTATION,
+                                 WZ_RESULT_INVALID_STATE, &machine->cpu);
+        return WZ_RESULT_INVALID_STATE;
+    }
+    state = machine->cpu;
+    switch (reg) {
+        case WZ_DEBUGGER_REGISTER_MAIN_A: byte_register = &state.main.a; break;
+        case WZ_DEBUGGER_REGISTER_MAIN_F: byte_register = &state.main.f; break;
+        case WZ_DEBUGGER_REGISTER_MAIN_B: byte_register = &state.main.b; break;
+        case WZ_DEBUGGER_REGISTER_MAIN_C: byte_register = &state.main.c; break;
+        case WZ_DEBUGGER_REGISTER_MAIN_D: byte_register = &state.main.d; break;
+        case WZ_DEBUGGER_REGISTER_MAIN_E: byte_register = &state.main.e; break;
+        case WZ_DEBUGGER_REGISTER_MAIN_H: byte_register = &state.main.h; break;
+        case WZ_DEBUGGER_REGISTER_MAIN_L: byte_register = &state.main.l; break;
+        case WZ_DEBUGGER_REGISTER_ALT_A: byte_register = &state.alternate.a; break;
+        case WZ_DEBUGGER_REGISTER_ALT_F: byte_register = &state.alternate.f; break;
+        case WZ_DEBUGGER_REGISTER_ALT_B: byte_register = &state.alternate.b; break;
+        case WZ_DEBUGGER_REGISTER_ALT_C: byte_register = &state.alternate.c; break;
+        case WZ_DEBUGGER_REGISTER_ALT_D: byte_register = &state.alternate.d; break;
+        case WZ_DEBUGGER_REGISTER_ALT_E: byte_register = &state.alternate.e; break;
+        case WZ_DEBUGGER_REGISTER_ALT_H: byte_register = &state.alternate.h; break;
+        case WZ_DEBUGGER_REGISTER_ALT_L: byte_register = &state.alternate.l; break;
+        case WZ_DEBUGGER_REGISTER_IX: state.ix = value; break;
+        case WZ_DEBUGGER_REGISTER_IY: state.iy = value; break;
+        case WZ_DEBUGGER_REGISTER_SP: state.stack_pointer = value; break;
+        case WZ_DEBUGGER_REGISTER_PC: state.program_counter = value; break;
+        case WZ_DEBUGGER_REGISTER_I: byte_register = &state.i; break;
+        case WZ_DEBUGGER_REGISTER_R: byte_register = &state.r; break;
+        case WZ_DEBUGGER_REGISTER_IFF1: byte_register = &state.iff1; break;
+        case WZ_DEBUGGER_REGISTER_IFF2: byte_register = &state.iff2; break;
+        case WZ_DEBUGGER_REGISTER_INTERRUPT_ENABLE_DELAY:
+            byte_register = &state.interrupt_enable_delay;
+            break;
+        case WZ_DEBUGGER_REGISTER_INTERRUPT_MODE:
+            if (value > WZ_Z80_INTERRUPT_MODE_2) return WZ_RESULT_INVALID_ARGUMENT;
+            byte_register = &state.interrupt_mode;
+            break;
+        case WZ_DEBUGGER_REGISTER_COUNT:
+        default:
+            return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (byte_register != 0) {
+        if (value > UINT8_MAX ||
+            ((reg == WZ_DEBUGGER_REGISTER_IFF1 ||
+              reg == WZ_DEBUGGER_REGISTER_IFF2 ||
+              reg == WZ_DEBUGGER_REGISTER_INTERRUPT_ENABLE_DELAY) && value > 1u)) {
+            return WZ_RESULT_INVALID_ARGUMENT;
+        }
+        *byte_register = (wz_byte_t)value;
+    }
+    return wz_debugger_set_cpu_state(machine, &state);
+}
+
 wz_result_t wz_debugger_jump(wz_machine_t* machine, wz_word_t address)
 {
     if (machine == 0) return WZ_RESULT_INVALID_ARGUMENT;

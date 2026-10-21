@@ -66,6 +66,42 @@ static int same_cpu(const wz_z80_state_t* left, const wz_z80_state_t* right)
         left->halted == right->halted && left->q == right->q;
 }
 
+static wz_word_t register_value(const wz_z80_state_t* state,
+                                wz_debugger_register_t reg)
+{
+    switch (reg) {
+        case WZ_DEBUGGER_REGISTER_MAIN_A: return state->main.a;
+        case WZ_DEBUGGER_REGISTER_MAIN_F: return state->main.f;
+        case WZ_DEBUGGER_REGISTER_MAIN_B: return state->main.b;
+        case WZ_DEBUGGER_REGISTER_MAIN_C: return state->main.c;
+        case WZ_DEBUGGER_REGISTER_MAIN_D: return state->main.d;
+        case WZ_DEBUGGER_REGISTER_MAIN_E: return state->main.e;
+        case WZ_DEBUGGER_REGISTER_MAIN_H: return state->main.h;
+        case WZ_DEBUGGER_REGISTER_MAIN_L: return state->main.l;
+        case WZ_DEBUGGER_REGISTER_ALT_A: return state->alternate.a;
+        case WZ_DEBUGGER_REGISTER_ALT_F: return state->alternate.f;
+        case WZ_DEBUGGER_REGISTER_ALT_B: return state->alternate.b;
+        case WZ_DEBUGGER_REGISTER_ALT_C: return state->alternate.c;
+        case WZ_DEBUGGER_REGISTER_ALT_D: return state->alternate.d;
+        case WZ_DEBUGGER_REGISTER_ALT_E: return state->alternate.e;
+        case WZ_DEBUGGER_REGISTER_ALT_H: return state->alternate.h;
+        case WZ_DEBUGGER_REGISTER_ALT_L: return state->alternate.l;
+        case WZ_DEBUGGER_REGISTER_IX: return state->ix;
+        case WZ_DEBUGGER_REGISTER_IY: return state->iy;
+        case WZ_DEBUGGER_REGISTER_SP: return state->stack_pointer;
+        case WZ_DEBUGGER_REGISTER_PC: return state->program_counter;
+        case WZ_DEBUGGER_REGISTER_I: return state->i;
+        case WZ_DEBUGGER_REGISTER_R: return state->r;
+        case WZ_DEBUGGER_REGISTER_IFF1: return state->iff1;
+        case WZ_DEBUGGER_REGISTER_IFF2: return state->iff2;
+        case WZ_DEBUGGER_REGISTER_INTERRUPT_ENABLE_DELAY:
+            return state->interrupt_enable_delay;
+        case WZ_DEBUGGER_REGISTER_INTERRUPT_MODE: return state->interrupt_mode;
+        case WZ_DEBUGGER_REGISTER_COUNT:
+        default: return 0u;
+    }
+}
+
 static int test_inspection_and_disassembly(void)
 {
     wz_machine_t* machine = new_machine(wz_machine_profile_48k_pal());
@@ -234,6 +270,68 @@ static int test_cpu_edit_undo_and_execution(void)
     return 0;
 }
 
+static int test_register_edit_contract(void)
+{
+    static const wz_debugger_register_t registers[] = {
+        WZ_DEBUGGER_REGISTER_MAIN_A, WZ_DEBUGGER_REGISTER_MAIN_F,
+        WZ_DEBUGGER_REGISTER_MAIN_B, WZ_DEBUGGER_REGISTER_MAIN_C,
+        WZ_DEBUGGER_REGISTER_MAIN_D, WZ_DEBUGGER_REGISTER_MAIN_E,
+        WZ_DEBUGGER_REGISTER_MAIN_H, WZ_DEBUGGER_REGISTER_MAIN_L,
+        WZ_DEBUGGER_REGISTER_ALT_A, WZ_DEBUGGER_REGISTER_ALT_F,
+        WZ_DEBUGGER_REGISTER_ALT_B, WZ_DEBUGGER_REGISTER_ALT_C,
+        WZ_DEBUGGER_REGISTER_ALT_D, WZ_DEBUGGER_REGISTER_ALT_E,
+        WZ_DEBUGGER_REGISTER_ALT_H, WZ_DEBUGGER_REGISTER_ALT_L,
+        WZ_DEBUGGER_REGISTER_IX, WZ_DEBUGGER_REGISTER_IY,
+        WZ_DEBUGGER_REGISTER_SP, WZ_DEBUGGER_REGISTER_PC,
+        WZ_DEBUGGER_REGISTER_I, WZ_DEBUGGER_REGISTER_R,
+        WZ_DEBUGGER_REGISTER_IFF1, WZ_DEBUGGER_REGISTER_IFF2,
+        WZ_DEBUGGER_REGISTER_INTERRUPT_ENABLE_DELAY,
+        WZ_DEBUGGER_REGISTER_INTERRUPT_MODE
+    };
+    wz_machine_t* machine = new_machine(wz_machine_profile_48k_pal());
+    wz_z80_state_t original;
+    wz_word_t value;
+    size_t index;
+    wz_debugger_register_t reg;
+
+    CHECK(machine != NULL);
+    original = machine->cpu;
+    CHECK(wz_debugger_set_register(machine, WZ_DEBUGGER_REGISTER_MAIN_A,
+                                   0x12u) == WZ_RESULT_INVALID_STATE);
+    CHECK(wz_debugger_set_access_mode(machine, WZ_DEBUGGER_PAUSED_MUTATION) ==
+          WZ_RESULT_OK);
+    for (index = 0u; index < sizeof(registers) / sizeof(registers[0]); index++) {
+        reg = registers[index];
+        value = reg < WZ_DEBUGGER_REGISTER_IX ? 0x12u :
+            (reg <= WZ_DEBUGGER_REGISTER_PC ? 0x1234u :
+             (reg == WZ_DEBUGGER_REGISTER_INTERRUPT_MODE ? 2u : 1u));
+        CHECK(wz_debugger_set_register(machine, reg, value) == WZ_RESULT_OK);
+        CHECK(register_value(&machine->cpu, reg) == value);
+        CHECK(wz_debugger_undo_available(machine));
+        CHECK(wz_debugger_undo_registers(machine) == WZ_RESULT_OK);
+        CHECK(same_cpu(&machine->cpu, &original));
+    }
+    CHECK(wz_debugger_set_register(machine, WZ_DEBUGGER_REGISTER_MAIN_A,
+                                   0x100u) == WZ_RESULT_INVALID_ARGUMENT);
+    CHECK(wz_debugger_set_register(machine, WZ_DEBUGGER_REGISTER_I,
+                                   0x100u) == WZ_RESULT_INVALID_ARGUMENT);
+    CHECK(wz_debugger_set_register(machine, WZ_DEBUGGER_REGISTER_IFF1,
+                                   2u) == WZ_RESULT_INVALID_ARGUMENT);
+    CHECK(wz_debugger_set_register(machine,
+                                   WZ_DEBUGGER_REGISTER_INTERRUPT_ENABLE_DELAY,
+                                   2u) == WZ_RESULT_INVALID_ARGUMENT);
+    CHECK(wz_debugger_set_register(machine, WZ_DEBUGGER_REGISTER_INTERRUPT_MODE,
+                                   3u) == WZ_RESULT_INVALID_ARGUMENT);
+    CHECK(wz_debugger_set_register(machine, WZ_DEBUGGER_REGISTER_COUNT,
+                                   0u) == WZ_RESULT_INVALID_ARGUMENT);
+    CHECK(wz_debugger_set_register(machine, (wz_debugger_register_t)-1,
+                                   0u) == WZ_RESULT_INVALID_ARGUMENT);
+    CHECK(!wz_debugger_undo_available(machine));
+    CHECK(same_cpu(&machine->cpu, &original));
+    free_machine(machine);
+    return 0;
+}
+
 static int test_128k_page_inspection_and_editing(void)
 {
     wz_machine_t* machine = new_machine(wz_machine_profile_128k_pal());
@@ -291,6 +389,7 @@ int main(void)
     if (test_inspection_and_disassembly() != 0 ||
         test_memory_edit_gate_and_ranges() != 0 ||
         test_cpu_edit_undo_and_execution() != 0 ||
+        test_register_edit_contract() != 0 ||
         test_128k_page_inspection_and_editing() != 0) {
         return 1;
     }
