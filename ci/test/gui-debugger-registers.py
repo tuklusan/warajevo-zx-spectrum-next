@@ -134,7 +134,15 @@ def main():
                 window = find_window()
                 control = connect_control(process)
                 control.close()
+                geometry = run("xdotool", "getwindowgeometry", "--shell", window)
+                app_width = int(re.search(r"^WIDTH=(\d+)$", geometry,
+                                          re.MULTILINE).group(1))
+                app_height = int(re.search(r"^HEIGHT=(\d+)$", geometry,
+                                           re.MULTILINE).group(1))
                 run("xdotool", "windowfocus", "--sync", window)
+                run("xdotool", "mousemove", "--sync", "--window", window,
+                    str(app_width // 2), str(app_height // 2), "click", "1")
+                time.sleep(0.25)
                 run("xdotool", "key", "--clearmodifiers", "F12")
                 time.sleep(0.5)
                 screen = screenshot_text(root)
@@ -155,10 +163,7 @@ def main():
 
                 # Register editor is directly below its label; value input is
                 # the right-hand field, while the left combo defaults to A.
-                geometry = run("xdotool", "getwindowgeometry", "--shell", window)
                 x0 = int(re.search(r"^X=(\d+)$", geometry, re.MULTILINE).group(1))
-                app_width = int(re.search(r"^WIDTH=(\d+)$", geometry,
-                                          re.MULTILINE).group(1))
                 debugger_left = x0 + max(0, (app_width - 760) // 2)
                 register_label = find_text(root, "Register")
                 edit_y = register_label[1] + register_label[3] + 16

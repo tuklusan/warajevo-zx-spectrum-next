@@ -12,7 +12,7 @@
     },
     {
       "path": "ci/test/gui-debugger-registers.py",
-      "sha256": "67090fc65b9a9e6a97db97731e446620dc3f3ddb8b977084689bba1839093316"
+      "sha256": "a85886991f4bf1cdbc127171a0ee390934f5d2c265ad801ff1b5ea8380ca0e7d"
     },
     {
       "path": "ci/test/gui-screenshot-save.py",
