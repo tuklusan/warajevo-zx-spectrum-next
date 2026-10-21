@@ -53,6 +53,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: gui-debugger-registers-diagnostic
-          path: dist/gui-debugger-registers/product/Warajevo-ZX-Spectrum-Next
+          path: |
+            dist/gui-debugger-registers/captures/application.log
+            dist/gui-debugger-registers/captures/*.png
           if-no-files-found: warn
           retention-days: 1

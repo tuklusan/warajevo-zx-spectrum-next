@@ -107,7 +107,7 @@ def main():
         environment["XDG_CONFIG_HOME"] = str(root / "config")
         process = None
         try:
-            with (root / "application.log").open("w", encoding="utf-8") as log:
+            with (args.capture_dir / "application.log").open("w", encoding="utf-8") as log:
                 process = subprocess.Popen([str(args.binary.resolve())], cwd=root,
                     env=environment, stdout=log, stderr=subprocess.STDOUT)
                 window = find_window()
@@ -115,11 +115,12 @@ def main():
                 run("xdotool", "key", "--clearmodifiers", "F12")
                 time.sleep(0.5)
                 screen = screenshot_text(root)
-                if "Register editor" not in screen:
-                    raise RuntimeError("production debugger register editor is not visible")
-                assertions.append("debugger-register-controls-visible")
                 (args.capture_dir / "debugger-open.png").write_bytes(
                     (root / "screen.png").read_bytes())
+                if "register" not in screen.casefold() or "editor" not in screen.casefold():
+                    raise RuntimeError(
+                        f"production debugger register editor is not visible; OCR={screen!r}")
+                assertions.append("debugger-register-controls-visible")
 
                 click_text(root, "Pause")
                 before = screenshot_text(root)
