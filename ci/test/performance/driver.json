@@ -27,7 +27,11 @@
     },
     {
       "path": "ci/test/performance/write-proof.py",
-      "sha256": "491ef9b367bf08b0b01e78602d1a4f64086a9408b0e48f6fb3718944555c50ed"
+      "sha256": "c6352bd64f26d9ca93241e73df353351d1deecbabb26cc79519e55a675832983"
+    },
+    {
+      "path": "ci/test/performance/write-runner-evidence.py",
+      "sha256": "6a992f420b1073ab2c8a9953759e247af99978918f291d8e48010563b0022a2e"
     },
     {
       "path": "ci/test/performance/baselines/windows-x64.json",

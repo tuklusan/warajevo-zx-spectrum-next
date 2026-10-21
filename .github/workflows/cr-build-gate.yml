@@ -89,9 +89,11 @@ jobs:
       - name: Clean CMake configure and build
         shell: bash
         run: |
+          set -o pipefail
           cmake -S src/cmake -B dist/cr-gate-${{ matrix.label }} -DCMAKE_BUILD_TYPE=Release -DWZSN_BUILD_SOKOL_HOST=ON
           cmake --build dist/cr-gate-${{ matrix.label }} --clean-first --config Release --parallel 2
-          ctest --test-dir dist/cr-gate-${{ matrix.label }} -C Release --output-on-failure --verbose
+          ctest --test-dir dist/cr-gate-${{ matrix.label }} -C Release --output-on-failure --verbose \
+            | tee dist/cr-gate-${{ matrix.label }}/ctest.log
 
       - name: Sanitized MDR image and transition fuzz
         if: runner.os != 'Windows'
@@ -130,6 +132,29 @@ jobs:
             "$build_dir/current.json" \
             "ci/test/performance/baselines/${{ matrix.performance_baseline }}.json"
 
+      - name: Write hosted runner evidence
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          python ci/test/performance/write-runner-evidence.py \
+            --commit "$GITHUB_SHA" \
+            --platform "${{ matrix.name }}" \
+            --runner "${{ matrix.performance_runner }}" \
+            --architecture "${{ matrix.architecture }}" \
+            --slug "${{ matrix.performance_baseline }}" \
+            --ctest-log "dist/cr-gate-${{ matrix.label }}/ctest.log" \
+            --performance-record "dist/performance-${{ matrix.label }}/current.json" \
+            --output-dir "dist/runner-evidence"
+
+      - name: Upload temporary runner evidence
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: runner-evidence-${{ matrix.performance_baseline }}
+          path: dist/runner-evidence/*
+          if-no-files-found: error
+          retention-days: 1
+
   write-hosted-proof:
     name: Generate hosted test evidence
     if: github.event_name == 'workflow_dispatch' && success()
@@ -139,14 +164,21 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v5
 
+      - name: Download this run's native evidence
+        uses: actions/download-artifact@v4
+        with:
+          pattern: runner-evidence-*
+          path: hosted-inputs
+          merge-multiple: true
+
       - name: Generate proof records from this completed five-target run
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           python ci/test/interface1-wait/write-proof.py \
-            --commit "$GITHUB_SHA" --run-id "$GITHUB_RUN_ID"
+            --commit "$GITHUB_SHA" --run-id "$GITHUB_RUN_ID" \
+            --input-dir hosted-inputs
           python ci/test/performance/write-proof.py \
-            --commit "$GITHUB_SHA" --run-id "$GITHUB_RUN_ID"
+            --commit "$GITHUB_SHA" --run-id "$GITHUB_RUN_ID" \
+            --input-dir hosted-inputs
 
       - name: Upload temporary proof records
         uses: actions/upload-artifact@v4

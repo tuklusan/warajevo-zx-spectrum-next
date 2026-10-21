@@ -20,14 +20,14 @@ from pathlib import Path, PurePosixPath
 ROOT = Path(__file__).resolve().parents[3]
 DRIVER_PATH = "test-drivers/interface1-wait.driver.json"
 FIXTURE_ROOTS = (".github/workflows/", "ci/test/interface1-wait/",
-                 "test-drivers/",
+                 "ci/test/performance/", "test-drivers/",
                  "src/cmake/", "src/core/", "docs/design/")
 PLATFORMS = (
-    ("Windows x64", "Full build / Windows x64"),
-    ("Linux x64", "Full build / Linux x64"),
-    ("Linux ARM64", "Full build / Linux ARM64"),
-    ("macOS ARM64", "Full build / macOS ARM64"),
-    ("macOS Intel", "Full build / macOS Intel"),
+    ("Windows x64", "Full build / Windows x64", "windows-x64"),
+    ("Linux x64", "Full build / Linux x64", "linux-x64"),
+    ("Linux ARM64", "Full build / Linux ARM64", "linux-arm64"),
+    ("macOS ARM64", "Full build / macOS ARM64", "macos-arm64"),
+    ("macOS Intel", "Full build / macOS Intel", "macos-x64"),
 )
 MARKER = "PASS Interface 1 WAIT pending-cycle resume (75 checks)"
 
@@ -64,6 +64,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--commit", required=True)
     parser.add_argument("--run-id", required=True, type=int)
+    parser.add_argument("--input-dir", required=True)
     parser.add_argument("--output", default="test-results/interface1-wait.json")
     args = parser.parse_args()
     if re.fullmatch(r"[0-9a-f]{40}", args.commit) is None:
@@ -89,16 +90,28 @@ def main() -> None:
         raise SystemExit("workflow run does not match the requested main-branch source")
 
     results = []
-    for platform, job_name in PLATFORMS:
+    input_dir = Path(args.input_dir).resolve()
+    if ROOT not in input_dir.parents or not input_dir.is_dir():
+        raise SystemExit("hosted runner evidence directory is missing or outside the repository")
+    for platform, job_name, slug in PLATFORMS:
         job = next((item for item in run.get("jobs", [])
                     if item.get("name") == job_name), None)
         if job is None or job.get("conclusion") != "success":
             raise SystemExit(f"successful native job missing: {platform}")
-        log = subprocess.check_output(
-            ["gh", "run", "view", str(args.run_id), "--job",
-             str(job["databaseId"]), "--log"], cwd=ROOT, text=True,
-            stderr=subprocess.PIPE)
-        if MARKER not in log or "100% tests passed" not in log:
+        runner_record_path = input_dir / f"runner-{slug}.json"
+        ctest_log_path = input_dir / f"ctest-{slug}.log"
+        if not runner_record_path.is_file() or not ctest_log_path.is_file():
+            raise SystemExit(f"hosted runner evidence files missing: {platform}")
+        runner_record = json.loads(runner_record_path.read_text(encoding="utf-8"))
+        ctest_log = ctest_log_path.read_text(encoding="utf-8", errors="replace")
+        if (runner_record.get("status") != "pass" or
+                runner_record.get("commit") != args.commit or
+                runner_record.get("platform") != platform or
+                runner_record.get("requiredCases") != driver["requiredCases"] or
+                runner_record.get("observedOutput") != MARKER or
+                runner_record.get("ctest") != "26/26 passed" or
+                MARKER not in ctest_log or
+                re.search(r"100% tests passed(?:, 0 tests failed)? out of 26", ctest_log) is None):
             raise SystemExit(f"WAIT/CTest evidence missing from {platform}")
         results.append({"runner": platform, "status": "pass",
                         "requiredCases": driver["requiredCases"],

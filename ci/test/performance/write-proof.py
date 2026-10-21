@@ -35,21 +35,6 @@ def gh_json(*args: str) -> dict:
         ["gh", *args], cwd=ROOT, text=True, stderr=subprocess.PIPE))
 
 
-def job_log(run_id: int, job_id: int) -> str:
-    return subprocess.check_output(
-        ["gh", "run", "view", str(run_id), "--job", str(job_id), "--log"],
-        cwd=ROOT, text=True, stderr=subprocess.PIPE)
-
-
-def performance_record(log: str, commit: str) -> dict:
-    marker = f'"schema":1,"status":"pass","commit":"{commit}"'
-    for line in log.splitlines():
-        if marker not in line:
-            continue
-        return json.loads(line[line.index("{"):])
-    raise ValueError("hosted performance JSON record is missing")
-
-
 def compare(current: dict, baseline: dict) -> list[dict]:
     if (current.get("runner") != baseline.get("runner") or
             current.get("architecture") != baseline.get("architecture")):
@@ -81,6 +66,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--commit", required=True)
     parser.add_argument("--run-id", required=True, type=int)
+    parser.add_argument("--input-dir", required=True)
     args = parser.parse_args()
     if re.fullmatch(r"[0-9a-f]{40}", args.commit) is None:
         raise SystemExit("commit must be a full lowercase Git SHA")
@@ -106,6 +92,10 @@ def main() -> None:
             run.get("headBranch") != "main"):
         raise SystemExit("workflow run does not match the requested main-branch source")
 
+    input_dir = Path(args.input_dir).resolve()
+    if ROOT not in input_dir.parents or not input_dir.is_dir():
+        raise SystemExit("hosted runner evidence directory is missing or outside the repository")
+
     results = []
     raw_dir = ROOT / "test-results/performance-current"
     raw_dir.mkdir(parents=True, exist_ok=True)
@@ -116,15 +106,29 @@ def main() -> None:
                     if item.get("name") == job_name), None)
         if job is None or job.get("conclusion") != "success":
             raise SystemExit(f"successful native job missing: {platform}")
-        log = job_log(args.run_id, job["databaseId"])
-        if WAIT_MARKER not in log:
-            raise SystemExit(f"Interface 1 WAIT proof missing: {platform}")
-        if re.search(r"100% tests passed(?:, 0 tests failed)? out of 26", log) is None:
-            raise SystemExit(f"26/26 CTest result missing: {platform}")
+        runner_path = input_dir / f"runner-{slug}.json"
+        ctest_path = input_dir / f"ctest-{slug}.log"
+        performance_path = input_dir / f"performance-{slug}.json"
+        if not runner_path.is_file() or not ctest_path.is_file() or not performance_path.is_file():
+            raise SystemExit(f"hosted runner evidence files missing: {platform}")
+        runner_record = json.loads(runner_path.read_text(encoding="utf-8"))
+        ctest = ctest_path.read_text(encoding="utf-8", errors="replace")
+        if (runner_record.get("status") != "pass" or
+                runner_record.get("commit") != args.commit or
+                runner_record.get("runner") != runner or
+                runner_record.get("architecture") != architecture or
+                runner_record.get("requiredCases") != 75 or
+                runner_record.get("observedOutput") != WAIT_MARKER or
+                runner_record.get("ctest") != "26/26 passed" or
+                WAIT_MARKER not in ctest or
+                re.search(r"100% tests passed(?:, 0 tests failed)? out of 26", ctest) is None):
+            raise SystemExit(f"Interface 1 WAIT/CTest evidence missing: {platform}")
 
-        record = performance_record(log, args.commit)
+        record = json.loads(performance_path.read_text(encoding="utf-8"))
         if record.get("runner") != runner or record.get("architecture") != architecture:
             raise SystemExit(f"unexpected performance runner identity: {platform}")
+        if record.get("commit") != args.commit or record.get("status") != "pass":
+            raise SystemExit(f"performance record does not match source: {platform}")
         output = raw_dir / f"{slug}.json"
         output.write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
         baseline_path = ROOT / f"ci/test/performance/baselines/{slug}.json"
