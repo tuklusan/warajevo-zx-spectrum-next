@@ -62,7 +62,7 @@ def open_view_menu(host_window):
 def view_choice(host_window, row):
     x = open_view_menu(host_window)
     xdotool("mousemove", "--sync", "--window", host_window,
-            str(x), str(42 + row * 24))
+            str(x), str(42 + row * 28))
     xdotool("click", "1")
     time.sleep(0.7)
 
