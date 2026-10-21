@@ -27,11 +27,11 @@
     },
     {
       "path": "ci/test/performance/write-proof.py",
-      "sha256": "26201d858d9be74418f9165e1a055f772f3c77ae9133a106bb8fd8f5e3a6ab32"
+      "sha256": "f19b016b90e89a16f2a75d6359c6667d7013bef46725a877157f95842ad2d822"
     },
     {
       "path": "ci/test/performance/write-runner-evidence.py",
-      "sha256": "ec2c8d0c36427fb8ea51ee2ffe8f5702eec1d63a93332130c62a974a8d8208e7"
+      "sha256": "5efe8c7f2b9f108ee0f5a38d5a6be05dc97cf4715ede82b3e2ee7ef9e9b44bb7"
     },
     {
       "path": "ci/test/performance/baselines/windows-x64.json",
