@@ -166,7 +166,7 @@ def main():
                 open_group(host_window, x, 1)
                 image, text = save_capture(host_window, args.proof.parent,
                                            "media-microdrive")
-                require_text(text, ("Microdrive", "Mount MDV"),
+                require_text(text, ("ZX Printer", "Mount", "Set MDV"),
                              "Media > Microdrive visible actions")
                 captures.append(image)
                 xdotool("mousemove", "--sync", "--window", host_window,
