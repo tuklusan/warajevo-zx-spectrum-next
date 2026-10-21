@@ -84,8 +84,8 @@ uncertain source or license defaults to `RESEARCH` or `EXCLUDE`.
 Source identity: Warajevo 2.50 import from commit
 `94f69bd8f4acb6c0c320ae34f9b1c3ee29bc5545`; source file
 `reference/original-warajevo/source/src/spectrum-kernel/ZXPRINT.ASM`, Git blob
-`840fcc86680c7cb8018884c8735353c3f413588d`, SHA-256
-`e107984f22e35d31e4d442192bca12da766d99b6bbc57e0c2797a2c0879d4211`.
+`d248fa59050235ddbf094f0d9881d30ba1cf6369`, SHA-256
+`e96b015c3e4fda7f6ea42d593a6c70f07ccef9100eacc782c76c2de5d71404b5`.
 The file header names Zeljko Juric and Samir Ribic; upstream is classified as
 GPL by the official source notice. This inventory does not clear reuse.
 
@@ -107,11 +107,73 @@ still requires direct pinned acceptance proof. Per-file copyright/license
 compatibility remains unresolved, so this is an inventory and disposition only,
 not a license grant or source-derivation clearance.
 
+### Built-in monitor/debugger — command-dispatch inventory
+
+Source identity: Warajevo 2.50 import from commit
+`94f69bd8f4acb6c0c320ae34f9b1c3ee29bc5545`; source file
+`reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM`, Git blob
+`840fcc86680c7cb8018884c8735353c3f413588d`, SHA-256
+`e107984f22e35d31e4d442192a6c70f07ccef9100eacc782c76c2de5d71404b5`.
+The header names Zeljko Juric and Samir Ribic; upstream is classified as GPL
+by the official source notice. This inventory does not clear reuse. The handler
+names below are resolved from the file's `COMS`/`COMADDR` dispatch tables, not
+inferred from user-interface labels. Conditional 48K/128K behavior is retained
+as a profile-specific case where applicable.
+
+| Command | Handler | Original purpose | Disposition | Regression strategy |
+|---|---|---|---|---|
+| `A` | `ABORT` | Abort to BASIC, optionally using a RAM top. | REPLACE | Verify the modern machine/reset or return workflow preserves the specified run/pause and device state. |
+| `B` | `BREAKP` | Set/remove a breakpoint, including shadow-memory location. | REQUIRED | Assert breakpoint insertion/removal, saved byte restoration, profile/page mapping, and stop/resume behavior. |
+| `C` | `COPYMEM` | Copy a memory range. | REQUIRED | Copy boundary/wrapping ranges through the shared memory editor and verify only the requested mapped bytes change. |
+| `D` | `DISS` | Disassemble a memory range. | REQUIRED | Compare supported base/prefix/indexed instructions and address advancement against the Z80 decoder; reading must not mutate the machine. |
+| `E` | `MONEXIT` | Execute/resume from the selected PC. | REQUIRED | Resume at the selected PC, preserve registers, and verify the debugger returns on the next stop. |
+| `F` | `FINDMEM` | Search memory for byte/word patterns and wildcards. | REQUIRED | Cover exact/wildcard matches, range boundaries, no match, and read-only behavior. |
+| `H` | `HEXMODE` | Toggle hexadecimal/decimal monitor display. | REPLACE | Verify modern debugger value formatting and parsing for both supported radices. |
+| `I` | `ISTEP` | Single-step, optionally to an end address. | REQUIRED | Verify one-instruction stepping, step-to-address stop, interrupt behavior, and exact register/tick trace. |
+| `J` | `JUMP` | Set a jump/execute address. | REQUIRED | Verify address selection and subsequent execute/resume state. |
+| `K` | `KILLMEM` | Fill a memory range with a value. | REQUIRED | Cover range boundaries, value validation, mapped-bank selection, and exact changed-byte set. |
+| `L` | `LOAD` | Load a memory block through DOS file handling. | LATER | If retained, test native file selection, address/range validation, short/read failure rollback, and resulting mapped memory. |
+| `M` | `MWRITE` | Set the memory pointer and optionally write bytes/XOR-decoded bytes. | REQUIRED | Verify pointer navigation, byte sequence writes, wildcard skips, bank mapping, and bounded address behavior. |
+| `N` | `IMADDR` | Inspect the interrupt handler/vector address. | REPLACE | Verify shared interrupt-state inspection reports IM 0/1/2 and the effective vector without mutating state. |
+| `O` | `SETOUTPUT` | Redirect monitor text to a DOS output file. | REPLACE | If replaced by diagnostics export, verify captured text, path failure, and no machine-state mutation. |
+| `P` | `POKE` | Write bytes at the current memory pointer. | REQUIRED | Verify byte writes and errors for absent/invalid arguments and mapped-memory boundaries. |
+| `Q` | `MONQUIT` | Leave the monitor and return to the interrupted program. | REQUIRED | Close the debugger without changing the selected machine state or losing pending stop context. |
+| `R` | `SETREG` | Edit the selected register value. | REQUIRED | Cover primary/alternate/indexed registers, flags, width/range errors, and pause/run mutation rules. |
+| `S` | `SAVE` | Save a memory block through DOS file handling, optionally with a header. | LATER | If retained, test native destination selection, exact byte/header output, no-clobber policy, and failed-write behavior. |
+| `T` | `TABULATE` | Display a memory range as bytes/words. | REQUIRED | Verify addresses, byte/word formatting, page boundaries, and read-only behavior. |
+| `U` | `UNDO` | Restore saved register state. | REQUIRED | Verify a register edit can be undone once, unrelated machine state is preserved, and empty undo is harmless. |
+| `V` | `VIEWSCR` | Temporarily display the emulated screen. | REPLACE | Verify the debugger's live display view leaves raster and machine state unchanged. |
+| `W` | `POKEWORD` | Write words at the current memory pointer. | REQUIRED | Verify low/high byte order, pointer advance, mapped-bank boundaries, and invalid input rejection. |
+| `X` | `SETXOR` | Set the XOR byte used by monitor memory entry/decryption. | LATER | If retained, cover zero/default and nonzero key behavior, decoded writes, and wrong-width rejection. |
+| `Y` | `MEMPAGE` | On 128K, inspect/set RAM, ROM, and video paging; on 48K, swap ROM. | REPLACE | Verify the shared hardware editor honors profile capability, paging lock, ROM/bank identity, and state-reset policy. |
+| `Z` | `DUMPSCR` | Print the current screen through legacy printer output. | REPLACE | Verify screenshot capture contains the Spectrum raster only and performs no printer-device or machine-state mutation. |
+| `!` | `SETIFFS` | Edit interrupt enable and interrupt mode. | REQUIRED | Cover IFF1/IFF2 and IM 0/1/2 mutation, invalid values, pause requirement, and subsequent interrupt behavior. |
+| `?` | `CONVNUM` | Convert/display a number in supported forms. | REPLACE | Verify modern debugger numeric input/display accepts decimal, hexadecimal, and character forms with deterministic bounds. |
+| `+` | `ADDNUM` | Add two numbers. | LATER | If retained as a monitor calculator, test signed/range behavior and exact displayed result. |
+| `-` | `SUBNUM` | Subtract two numbers. | LATER | If retained as a monitor calculator, test signed/range behavior and exact displayed result. |
+| `*` | `MULNUM` | Multiply two numbers. | LATER | If retained as a monitor calculator, test signed/range behavior and exact displayed result. |
+| `/` | `DIVNUM` | Divide two numbers. | LATER | If retained as a monitor calculator, test quotient, divide-by-zero, and range behavior. |
+| `%` | `MODNUM` | Compute a remainder. | LATER | If retained as a monitor calculator, test positive/negative operands, zero divisor, and range behavior. |
+| `&` | `ANDNUM` | Compute bitwise AND. | LATER | If retained as a monitor calculator, test zero, sign-bit, and width-boundary operands. |
+| `|` | `ORNUM` | Compute bitwise OR. | LATER | If retained as a monitor calculator, test zero, sign-bit, and width-boundary operands. |
+| `^` | `XORNUM` | Compute bitwise XOR. | LATER | If retained as a monitor calculator, test equal/different and width-boundary operands. |
+| `_` | `REFRESH` | Refresh the legacy display/panel. | DROP | No separate regression; modern presentation redraw is host-owned and cannot alter machine state. |
+| `@` | `DEBUG` | Display the internal eight-byte debug zone (undocumented). | DROP | No separate regression; this legacy internal-memory diagnostic has no declared user-facing contract. |
+
+The `MONITOR`/`MONMAIN` entry and loop, register save/restore path, far-call
+wrappers, and breakpoint patch helpers are infrastructure for these command
+handlers; they are not separate user commands. The table is a source-dispatch
+inventory and records intended disposition, not implementation acceptance.
+The current shared debugger APIs and UI have not passed the per-row regression
+strategies above; monitor/debugger migration remains open pending source-level
+semantics review, direct acceptance proof, and any required design decisions.
+
 ## Explicit gaps
 
-- The monitor/debugger function-level inventory required by Architecture §49.2
-  remains incomplete; routine-level coverage also remains open for the other
-  migrated Z80, ULA, media, peripheral, machine, and host/UI areas.
+- Detailed monitor/debugger routine-level records and direct regression proof
+  remain incomplete beyond this command-dispatch inventory; routine-level
+  coverage also remains open for other migrated Z80, ULA, media, peripheral,
+  machine, and host/UI areas.
 - Every source file containing third-party material must be individually
   excluded or cleared before any reuse. The preserved source includes files
   with Borland and TurboPower notices as well as a converter naming a separate
