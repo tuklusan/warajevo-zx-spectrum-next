@@ -24,7 +24,7 @@
       "path": "ci/test/gui-screenshot-save.py"
     },
     {
-      "sha256": "dd0425c29af2c5ea6a3f541c081aafee6a8f74c5d2f57e7013252fe1dbe5291f",
+      "sha256": "2e386e35d79fd2a5002971f151aff611574672582b360ddf951af11a4045e951",
       "path": "src/app/wz_sokol_main.c"
     },
     {

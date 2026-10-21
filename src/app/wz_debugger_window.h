@@ -19,6 +19,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #define WZ_DEBUGGER_WINDOW_STEP_COMMAND_ID "tools.debugger.step"
 #define WZ_DEBUGGER_WINDOW_CONTINUE_COMMAND_ID "tools.debugger.continue"
 #define WZ_DEBUGGER_WINDOW_MEMORY_COMMAND_ID "tools.debugger.memory"
+#define WZ_DEBUGGER_WINDOW_MONITOR_COMMAND_ID "tools.debugger.monitor"
 #define WZ_DEBUGGER_WINDOW_MEMORY_BYTES 16u
 #define WZ_DEBUGGER_WINDOW_DISASSEMBLY_CAPACITY 96u
 
@@ -69,6 +70,10 @@ wz_debugger_window_result_t wz_debugger_window_set_register(
     wz_debugger_window_t* window,
     wz_debugger_register_t reg,
     wz_word_t value);
+wz_debugger_window_result_t wz_debugger_window_dispatch_monitor_command(
+    wz_debugger_window_t* window,
+    const char* command,
+    size_t command_length);
 wz_debugger_window_result_t wz_debugger_window_step(
     wz_debugger_window_t* window);
 wz_debugger_window_result_t wz_debugger_window_continue(

@@ -8,7 +8,120 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include "app/wz_debugger_window.h"
 
+#include <ctype.h>
 #include <string.h>
+
+typedef struct {
+    const char* name;
+    wz_debugger_register_t reg;
+} wz_debugger_monitor_register_t;
+
+static const wz_debugger_monitor_register_t monitor_registers[] = {
+    {"A", WZ_DEBUGGER_REGISTER_MAIN_A},
+    {"F", WZ_DEBUGGER_REGISTER_MAIN_F},
+    {"B", WZ_DEBUGGER_REGISTER_MAIN_B},
+    {"C", WZ_DEBUGGER_REGISTER_MAIN_C},
+    {"D", WZ_DEBUGGER_REGISTER_MAIN_D},
+    {"E", WZ_DEBUGGER_REGISTER_MAIN_E},
+    {"H", WZ_DEBUGGER_REGISTER_MAIN_H},
+    {"L", WZ_DEBUGGER_REGISTER_MAIN_L},
+    {"A'", WZ_DEBUGGER_REGISTER_ALT_A},
+    {"F'", WZ_DEBUGGER_REGISTER_ALT_F},
+    {"B'", WZ_DEBUGGER_REGISTER_ALT_B},
+    {"C'", WZ_DEBUGGER_REGISTER_ALT_C},
+    {"D'", WZ_DEBUGGER_REGISTER_ALT_D},
+    {"E'", WZ_DEBUGGER_REGISTER_ALT_E},
+    {"H'", WZ_DEBUGGER_REGISTER_ALT_H},
+    {"L'", WZ_DEBUGGER_REGISTER_ALT_L},
+    {"IX", WZ_DEBUGGER_REGISTER_IX},
+    {"IY", WZ_DEBUGGER_REGISTER_IY},
+    {"SP", WZ_DEBUGGER_REGISTER_SP},
+    {"PC", WZ_DEBUGGER_REGISTER_PC},
+    {"I", WZ_DEBUGGER_REGISTER_I},
+    {"R", WZ_DEBUGGER_REGISTER_R},
+    {"IFF1", WZ_DEBUGGER_REGISTER_IFF1},
+    {"IFF2", WZ_DEBUGGER_REGISTER_IFF2},
+    {"EIDELAY", WZ_DEBUGGER_REGISTER_INTERRUPT_ENABLE_DELAY},
+    {"IM", WZ_DEBUGGER_REGISTER_INTERRUPT_MODE}
+};
+
+static bool monitor_token_equal(const char* token, size_t length,
+                                const char* expected)
+{
+    size_t index;
+    if (token == NULL || expected == NULL || strlen(expected) != length) {
+        return false;
+    }
+    for (index = 0u; index < length; ++index) {
+        if (toupper((unsigned char)token[index]) !=
+            toupper((unsigned char)expected[index])) return false;
+    }
+    return true;
+}
+
+static bool monitor_next_token(const char* command, size_t command_length,
+                               size_t* cursor, const char** token,
+                               size_t* token_length)
+{
+    size_t start;
+    if (command == NULL || cursor == NULL || token == NULL ||
+        token_length == NULL) return false;
+    while (*cursor < command_length &&
+           (command[*cursor] == ' ' || command[*cursor] == '\t' ||
+            command[*cursor] == '\r' || command[*cursor] == '\n')) {
+        ++*cursor;
+    }
+    if (*cursor >= command_length) return false;
+    start = *cursor;
+    while (*cursor < command_length &&
+           command[*cursor] != ' ' && command[*cursor] != '\t' &&
+           command[*cursor] != '\r' && command[*cursor] != '\n') {
+        ++*cursor;
+    }
+    *token = command + start;
+    *token_length = *cursor - start;
+    return true;
+}
+
+static bool monitor_parse_hex(const char* token, size_t length,
+                              wz_word_t* value)
+{
+    size_t index;
+    wz_word_t parsed = 0u;
+    if (token == NULL || value == NULL || length == 0u || length > 4u) {
+        return false;
+    }
+    for (index = 0u; index < length; ++index) {
+        const unsigned char character = (unsigned char)token[index];
+        const unsigned char upper = (unsigned char)toupper(character);
+        unsigned digit;
+        if (character >= '0' && character <= '9') {
+            digit = (unsigned)(character - '0');
+        } else if (upper >= 'A' && upper <= 'F') {
+            digit = (unsigned)(upper - 'A') + 10u;
+        } else {
+            return false;
+        }
+        parsed = (wz_word_t)((parsed << 4u) | (wz_word_t)digit);
+    }
+    *value = parsed;
+    return true;
+}
+
+static bool monitor_parse_register(const char* token, size_t length,
+                                   wz_debugger_register_t* reg)
+{
+    size_t index;
+    if (reg == NULL) return false;
+    for (index = 0u; index < sizeof(monitor_registers) /
+            sizeof(monitor_registers[0]); ++index) {
+        if (monitor_token_equal(token, length, monitor_registers[index].name)) {
+            *reg = monitor_registers[index].reg;
+            return true;
+        }
+    }
+    return false;
+}
 
 static wz_debugger_window_result_t refresh_view(wz_debugger_window_t* window)
 {
@@ -150,6 +263,44 @@ wz_debugger_window_result_t wz_debugger_window_set_register(
         return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
     }
     return refresh_view(window);
+}
+
+wz_debugger_window_result_t wz_debugger_window_dispatch_monitor_command(
+    wz_debugger_window_t* window,
+    const char* command,
+    size_t command_length)
+{
+    const char* tokens[4];
+    size_t lengths[4];
+    size_t cursor = 0u;
+    size_t index;
+    wz_debugger_register_t reg;
+    wz_word_t value;
+
+    if (command == NULL || command_length == 0u) {
+        return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
+    }
+    for (index = 0u; index < 4u; ++index) {
+        if (!monitor_next_token(command, command_length, &cursor,
+                                &tokens[index], &lengths[index])) {
+            return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
+        }
+    }
+    {
+        const char* extra_token;
+        size_t extra_length;
+        if (monitor_next_token(command, command_length, &cursor,
+                               &extra_token, &extra_length)) {
+            return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
+        }
+    }
+    if (!monitor_token_equal(tokens[0], lengths[0], "R") ||
+        !monitor_token_equal(tokens[1], lengths[1], "SETREG") ||
+        !monitor_parse_register(tokens[2], lengths[2], &reg) ||
+        !monitor_parse_hex(tokens[3], lengths[3], &value)) {
+        return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
+    }
+    return wz_debugger_window_set_register(window, reg, value);
 }
 
 wz_debugger_window_result_t wz_debugger_window_step(

@@ -28,7 +28,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "53fd85cf869b6d063a3e06cd31d4f5711bb18d1b304b6ea72082fe8b9d595125"
+      "sha256": "2e386e35d79fd2a5002971f151aff611574672582b360ddf951af11a4045e951"
     },
     {
       "path": ".github/workflows/cr-build-gate.yml",

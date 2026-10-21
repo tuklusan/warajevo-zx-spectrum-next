@@ -236,6 +236,8 @@ typedef struct {
     size_t debugger_register_selection;
     char debugger_register_value_text[5];
     int debugger_register_value_length;
+    char debugger_monitor_command_text[128];
+    int debugger_monitor_command_length;
     char debugger_register_status[WZ_COMMAND_MESSAGE_CAPACITY];
     wz_diagnostics_router_t diagnostics_router;
     wz_diagnostics_window_t diagnostics_window;
@@ -3126,9 +3128,62 @@ static wz_result_t wz_host_debugger_open_command(const void* context,
     session->debugger_register_selection = WZ_DEBUGGER_REGISTER_MAIN_A;
     session->debugger_register_value_text[0] = '\0';
     session->debugger_register_value_length = 0;
+    session->debugger_monitor_command_text[0] = '\0';
+    session->debugger_monitor_command_length = 0;
     session->debugger_register_status[0] = '\0';
     if (result != NULL) (void)snprintf(result->message,
         sizeof(result->message), "Debugger opened");
+    return WZ_RESULT_OK;
+}
+
+static bool wz_host_debugger_monitor_available(const void* context,
+                                               const char** reason)
+{
+    const wz_host_session_t* session = (const wz_host_session_t*)context;
+    if (session == NULL || !session->initialized ||
+        !wz_debugger_window_is_open(&session->debugger_window)) {
+        if (reason != NULL) *reason = "debugger-window-closed";
+        return false;
+    }
+    if (!wz_debugger_window_is_paused(&session->debugger_window)) {
+        if (reason != NULL) *reason = "machine-not-paused";
+        return false;
+    }
+    if (reason != NULL) *reason = NULL;
+    return true;
+}
+
+static wz_result_t wz_host_debugger_monitor_command(const void* context,
+    wz_command_arguments_t arguments, wz_command_result_t* result)
+{
+    wz_host_session_t* session = (wz_host_session_t*)context;
+    wz_debugger_window_result_t dispatched;
+    if (session == NULL || result == NULL || arguments.data == NULL ||
+        arguments.size == 0u || arguments.size >=
+            sizeof(session->debugger_monitor_command_text) ||
+        memchr(arguments.data, '\0', arguments.size) != NULL) {
+        if (result != NULL) result->reason = "invalid-monitor-command";
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    dispatched = wz_debugger_window_dispatch_monitor_command(
+        &session->debugger_window, (const char*)arguments.data,
+        arguments.size);
+    if (dispatched != WZ_DEBUGGER_WINDOW_OK) {
+        result->reason = dispatched == WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT
+            ? "invalid-monitor-command"
+            : dispatched == WZ_DEBUGGER_WINDOW_NOT_PAUSED
+                ? "machine-not-paused"
+                : dispatched == WZ_DEBUGGER_WINDOW_NOT_OPEN
+                    ? "debugger-window-closed"
+                    : "register-value-rejected";
+        return dispatched == WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT
+            ? WZ_RESULT_PARSE_ERROR : WZ_RESULT_INVALID_STATE;
+    }
+    (void)snprintf(result->message, sizeof(result->message),
+                   "Debugger register updated");
+    (void)snprintf(session->debugger_register_status,
+                   sizeof(session->debugger_register_status), "%s",
+                   result->message);
     return WZ_RESULT_OK;
 }
 
@@ -3655,6 +3710,14 @@ static bool wz_host_register_commands(void)
             "wz_host_debugger_open_command", "local", "F12",
             WZ_COMMAND_LOCAL_ONLY, wz_host_debugger_open_available,
             wz_host_debugger_open_command, &wz_host_session, false, false, NULL
+        },
+        {
+            WZ_DEBUGGER_WINDOW_MONITOR_COMMAND_ID, "Monitor command",
+            "Dispatch a local R SETREG command while the machine is paused",
+            "none", "COMMAND", "wz-command-result",
+            "wz_host_debugger_monitor_command", "debugger-command-line", NULL,
+            WZ_COMMAND_LOCAL_ONLY, wz_host_debugger_monitor_available,
+            wz_host_debugger_monitor_command, &wz_host_session, true, false, NULL
         },
         {
             "settings.display.open", "Display...",
@@ -6117,8 +6180,49 @@ static void wz_host_ui_draw_debugger_window(struct nk_context* context,
     }
     if (!window->paused) nk_widget_disable_end(context);
     nk_layout_row_dynamic(context, 20.0f, 1);
-    nk_label(context, session->debugger_register_status,
+    nk_label(context, "Monitor command: R SETREG <register> <hex value>",
              NK_TEXT_LEFT);
+    nk_layout_row_dynamic(context, 24.0f, 2);
+    if (session->debugger_monitor_command_length < 0) {
+        session->debugger_monitor_command_length = 0;
+    }
+    if (session->debugger_monitor_command_length >=
+        (int)sizeof(session->debugger_monitor_command_text)) {
+        session->debugger_monitor_command_length =
+            (int)sizeof(session->debugger_monitor_command_text) - 1;
+    }
+    session->debugger_monitor_command_text[
+        session->debugger_monitor_command_length] = '\0';
+    (void)nk_edit_string(context, NK_EDIT_FIELD,
+        session->debugger_monitor_command_text,
+        &session->debugger_monitor_command_length,
+        (int)sizeof(session->debugger_monitor_command_text) - 1,
+        nk_filter_ascii);
+    if (!window->paused) nk_widget_disable_begin(context);
+    if (nk_button_label(context, "Run monitor command")) {
+        wz_command_result_t result;
+        wz_command_arguments_t arguments = {
+            session->debugger_monitor_command_text,
+            strlen(session->debugger_monitor_command_text)
+        };
+        (void)wz_command_registry_dispatch(&session->command_registry,
+            WZ_DEBUGGER_WINDOW_MONITOR_COMMAND_ID, arguments, &result);
+        if (result.status == WZ_COMMAND_RESULT_SUCCESS) {
+            (void)snprintf(session->debugger_register_status,
+                sizeof(session->debugger_register_status), "%s",
+                result.message);
+            session->debugger_monitor_command_text[0] = '\0';
+            session->debugger_monitor_command_length = 0;
+        } else {
+            (void)snprintf(session->debugger_register_status,
+                sizeof(session->debugger_register_status), "%s",
+                result.reason == NULL ? "Monitor command failed" :
+                    result.reason);
+        }
+    }
+    if (!window->paused) nk_widget_disable_end(context);
+    nk_layout_row_dynamic(context, 20.0f, 1);
+    nk_label(context, session->debugger_register_status, NK_TEXT_LEFT);
     nk_layout_row_dynamic(context, 24.0f, 1);
     if (nk_button_label(context, "Close Debugger")) {
         (void)wz_debugger_set_access_mode(&session->machine,

@@ -12,3 +12,8 @@ window against one initialized machine and verifies snapshot data comes from
 that exact shared instance, running mode rejects memory writes and stepping,
 paused mode writes to the live machine, and closing clears the window's machine
 reference.
+
+It also exercises the production monitor parser with `R SETREG <register>
+<hex-value>`, including mixed case, surrounding whitespace, primary and
+alternate registers, invalid commands, width rejection, pause gating, and
+register undo.

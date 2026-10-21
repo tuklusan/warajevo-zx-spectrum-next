@@ -8,7 +8,7 @@
     {"path": "ci/test/ui-view-menu-actions.py", "sha256": "388079d88acf5c1e85c3f221c50e61b02675627625d24537a3377507ce5badb8"},
     {"path": "ci/test/ui-view-menu-actions/README.md", "sha256": "1ae1112c408067c15f3d63d89941db26f3f6744b14d832efce569aa2fdfae615"},
     {"path": "roms/48.rom", "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"},
-    {"path": "src/app/wz_sokol_main.c", "sha256": "9b7d02cfcb1cd7bde0a0d9f19820a6a061ffdc4ced985b50d24965183ba46ec9"},
+    {"path": "src/app/wz_sokol_main.c", "sha256": "2e386e35d79fd2a5002971f151aff611574672582b360ddf951af11a4045e951"},
     {"path": "src/app/wz_command_registry.c", "sha256": "707bd4c4c9d0e12db0135ef857d3c7de8a5d6e7d717d790d09f3080bb90c9607"},
     {"path": "src/app/wz_command_registry.h", "sha256": "4b8530859e953c5876d41792f6221a00a7facc14658c05f28076cda926c9bf04"},
     {"path": "src/app/wz_ui_layout.c", "sha256": "6c5de7b5b6a20cad20643b1f9007629846bccc0bb49bf7412cad9464ae9be062"},

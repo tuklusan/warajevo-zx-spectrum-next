@@ -11,11 +11,18 @@ SANYALnet Labs." See LICENSE for full terms.
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 int main(void)
 {
     wz_machine_t* machine = (wz_machine_t*)calloc(1u, sizeof(*machine));
     wz_debugger_window_t window;
+    static const char monitor_set_a[] = " \t r  SETREG a 5a\r\n";
+    static const char monitor_set_alt_a[] = "R SETREG A' 2C";
+    static const char monitor_set_pc[] = "R SETREG PC 1234";
+    static const char monitor_bad_register[] = "R SETREG UNKNOWN 01";
+    static const char monitor_bad_width[] = "R SETREG A 100";
+    static const char monitor_extra_argument[] = "R SETREG A 01 EXTRA";
     int status = 1;
 
     if (machine == NULL ||
@@ -30,11 +37,38 @@ int main(void)
         wz_debugger_window_set_register(&window, WZ_DEBUGGER_REGISTER_MAIN_A,
                                         0x42u) !=
             WZ_DEBUGGER_WINDOW_NOT_PAUSED ||
+        wz_debugger_window_dispatch_monitor_command(&window, monitor_set_a,
+            sizeof(monitor_set_a) - 1u) != WZ_DEBUGGER_WINDOW_NOT_PAUSED ||
         machine->cpu.main.a != 0u) {
         goto cleanup;
     }
     if (wz_debugger_window_set_paused(&window, true) !=
             WZ_DEBUGGER_WINDOW_OK ||
+        wz_debugger_window_dispatch_monitor_command(&window,
+            monitor_bad_register, sizeof(monitor_bad_register) - 1u) !=
+            WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT ||
+        wz_debugger_window_dispatch_monitor_command(&window,
+            monitor_extra_argument, sizeof(monitor_extra_argument) - 1u) !=
+            WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT ||
+        wz_debugger_window_dispatch_monitor_command(&window, monitor_bad_width,
+            sizeof(monitor_bad_width) - 1u) !=
+            WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR || machine->cpu.main.a != 0u ||
+        wz_debugger_window_dispatch_monitor_command(&window, monitor_set_a,
+            sizeof(monitor_set_a) - 1u) != WZ_DEBUGGER_WINDOW_OK ||
+        machine->cpu.main.a != 0x5au ||
+        wz_debugger_window_snapshot(&window)->cpu.main.a != 0x5au ||
+        wz_debugger_undo_registers(machine) != WZ_RESULT_OK ||
+        wz_debugger_window_refresh(&window) != WZ_DEBUGGER_WINDOW_OK ||
+        wz_debugger_window_dispatch_monitor_command(&window,
+            monitor_set_alt_a, sizeof(monitor_set_alt_a) - 1u) !=
+            WZ_DEBUGGER_WINDOW_OK || machine->cpu.alternate.a != 0x2cu ||
+        wz_debugger_undo_registers(machine) != WZ_RESULT_OK ||
+        wz_debugger_window_refresh(&window) != WZ_DEBUGGER_WINDOW_OK ||
+        wz_debugger_window_dispatch_monitor_command(&window, monitor_set_pc,
+            sizeof(monitor_set_pc) - 1u) != WZ_DEBUGGER_WINDOW_OK ||
+        machine->cpu.program_counter != 0x1234u ||
+        wz_debugger_undo_registers(machine) != WZ_RESULT_OK ||
+        wz_debugger_window_refresh(&window) != WZ_DEBUGGER_WINDOW_OK ||
         wz_debugger_window_set_register(&window, WZ_DEBUGGER_REGISTER_MAIN_A,
                                         0x42u) != WZ_DEBUGGER_WINDOW_OK ||
         machine->cpu.main.a != 0x42u ||

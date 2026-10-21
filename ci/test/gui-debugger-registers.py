@@ -219,6 +219,31 @@ def main():
                 (args.capture_dir / "debugger-register-undo.png").write_bytes(
                     (root / "screen.png").read_bytes())
 
+                monitor_y = debugger_top + 448
+                run("xdotool", "mousemove", "--sync",
+                    str(debugger_left + 190), str(monitor_y), "click", "1")
+                run("xdotool", "key", "ctrl+a", "type", "--clearmodifiers",
+                    "R SETREG A 5A")
+                click_at(debugger_left + 570, monitor_y)
+                monitor_result = screenshot_text(root)
+                (args.capture_dir / "debugger-monitor-register-edited.png").write_bytes(
+                    (root / "screen.png").read_bytes())
+                monitor_af, _ = main_af(root, debugger_left, debugger_top)
+                if ("Monitor command executed" not in monitor_result or
+                        monitor_af != "5A" + original_af[2:]):
+                    raise RuntimeError(
+                        "R SETREG monitor command did not edit main A; "
+                        f"AF OCR={monitor_af!r}; screen OCR={monitor_result!r}")
+                assertions.append("monitor-r-setreg-command-updated-register")
+
+                click_at(debugger_left + 570, debugger_top + 400)
+                monitor_restored_af, _ = main_af(root, debugger_left, debugger_top)
+                if monitor_restored_af != original_af:
+                    raise RuntimeError("monitor register undo did not restore AF")
+                assertions.append("monitor-r-setreg-undo-restored-register")
+                (args.capture_dir / "debugger-monitor-register-undo.png").write_bytes(
+                    (root / "screen.png").read_bytes())
+
                 args.proof.write_text(json.dumps({
                     "testId": "gui-debugger-registers",
                     "status": "pass",

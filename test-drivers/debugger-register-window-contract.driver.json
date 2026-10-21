@@ -2,15 +2,15 @@
   "command": "The source-push workflow builds and runs wz_debugger_register_window_contract through integrated CTest on all five native targets.",
   "fixtures": [
     {
-      "sha256": "3bfc24b9f882d5479a3a465769633a69b5681a494cae2b8246afd5e79a5bd671",
+      "sha256": "e4cf0a1a5342682e503ccae9d759f4ba113d376be714889d9d865a4998d3775b",
       "path": "ci/test/debugger-register-window-contract.c"
     },
     {
-      "sha256": "1c42b0a9ae6a48b4ee59fcdd03248ff00f2d6236bafb5e93ccc5f954da33bb14",
+      "sha256": "fa03c9e48f5f894b8f0899f50bd6330ce924246f04fc10fa972131b62d9aa3a8",
       "path": "src/app/wz_debugger_window.c"
     },
     {
-      "sha256": "f2bba1351a2057bc5a9d94e3e65b2f1ad4e654c78f78b609db86bd0f18ab4b2c",
+      "sha256": "e8adfe2fdf7c168d1fe6f1bba2880074d78c790a1d48e2acb4332e5ac6ef611c",
       "path": "src/app/wz_debugger_window.h"
     },
     {
