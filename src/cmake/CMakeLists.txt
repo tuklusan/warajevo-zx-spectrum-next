@@ -221,6 +221,19 @@ set_target_properties(wz_warajevo_mdr_differential PROPERTIES
     C_EXTENSIONS OFF)
 
 add_executable(
+    wz_microdrive_transition_fuzz
+    ${WZSN_REPO_ROOT}/ci/test/microdrive-transition-fuzz/microdrive-transition-fuzz.c
+    ${WZSN_SOURCE_ROOT}/app/wz_microdrive_manager.c
+    ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c
+    ${WZSN_SOURCE_ROOT}/app/wz_host_thread.c)
+target_include_directories(wz_microdrive_transition_fuzz PRIVATE "${WZSN_SOURCE_ROOT}")
+target_link_libraries(wz_microdrive_transition_fuzz PRIVATE wz_core wz_warnings)
+set_target_properties(wz_microdrive_transition_fuzz PROPERTIES
+    C_STANDARD 11
+    C_STANDARD_REQUIRED ON
+    C_EXTENSIONS OFF)
+
+add_executable(
     wz_zxnet_transport_queue_contract
     ${WZSN_REPO_ROOT}/ci/test/zxnet-transport-queue/zxnet-transport-queue-contract.c
     ${WZSN_SOURCE_ROOT}/app/wz_zxnet_transport.c)
@@ -734,6 +747,11 @@ add_test(NAME wz_warajevo_mdr_differential
 set_tests_properties(wz_warajevo_mdr_differential PROPERTIES
     PASS_REGULAR_EXPRESSION
         "PASS preserved Warajevo Microdrive sector layout and stream behavior")
+add_test(NAME wz_microdrive_transition_fuzz
+    COMMAND "$<TARGET_FILE:wz_microdrive_transition_fuzz>")
+set_tests_properties(wz_microdrive_transition_fuzz PROPERTIES
+    PASS_REGULAR_EXPRESSION
+        "PASS MDR malformed-image and invalid-transition fuzz")
 add_test(NAME wz_zxnet_transport_queue_contract
     COMMAND "$<TARGET_FILE:wz_zxnet_transport_queue_contract>")
 set_tests_properties(wz_zxnet_transport_queue_contract PROPERTIES

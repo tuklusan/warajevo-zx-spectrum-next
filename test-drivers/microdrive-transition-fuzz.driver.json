@@ -1,0 +1,35 @@
+{
+  "testId": "microdrive-transition-fuzz",
+  "command": "Full Release/Sokol CTest on all five native targets; AddressSanitizer and UndefinedBehaviorSanitizer Debug build and focused CTest on GCC/Clang runners",
+  "iterations": 1024,
+  "sanitizers": [
+    "address",
+    "undefined"
+  ],
+  "fixtures": [
+    {
+      "path": "ci/test/microdrive-transition-fuzz/microdrive-transition-fuzz.c",
+      "sha256": "8d120e9145e3652214205c55c66e8c6d58ad141c219f5f496f2b18f51161ec4a"
+    },
+    {
+      "path": "src/app/wz_microdrive_manager.c",
+      "sha256": "ae7b59034282f2d57a5072a70e56ac291fcdf03f49fed55d41833da9db25a929"
+    },
+    {
+      "path": "src/core/wz_microdrive.c",
+      "sha256": "30d9e3b2f856deff18fe8c6aa21332fbf8018d5742adec79107e52051c0016d8"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "018cb55bd8bcdf3c4342274215cc50b58618e1216b5f3e0f99b6f9191d01ee22"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "9488b399b9ade642abbb8ff46462f95e768c8068a498b9d8763987ed695ef64f"
+    },
+    {
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "f9b15496fbb11f3627f67b0da3ba593625b3614b9d641be2c6cda8978e368f08"
+    }
+  ]
+}

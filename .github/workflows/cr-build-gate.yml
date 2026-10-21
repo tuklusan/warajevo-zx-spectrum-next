@@ -92,6 +92,21 @@ jobs:
           cmake --build dist/cr-gate-${{ matrix.label }} --clean-first --config Release --parallel 2
           ctest --test-dir dist/cr-gate-${{ matrix.label }} -C Release --output-on-failure --verbose
 
+      - name: Sanitized MDR image and transition fuzz
+        if: runner.os != 'Windows'
+        shell: bash
+        env:
+          ASAN_OPTIONS: detect_leaks=0:halt_on_error=1
+          UBSAN_OPTIONS: halt_on_error=1:print_stacktrace=1
+        run: |
+          build_dir="dist/sanitizer-${{ matrix.label }}"
+          cmake -S src/cmake -B "$build_dir" -DCMAKE_BUILD_TYPE=Debug \
+            -DWZSN_ENABLE_SANITIZERS=ON -DWZSN_BUILD_SOKOL_HOST=OFF
+          cmake --build "$build_dir" --config Debug \
+            --target wz_microdrive_transition_fuzz --parallel 2
+          ctest --test-dir "$build_dir" -C Debug \
+            -R '^wz_microdrive_transition_fuzz$' --output-on-failure --verbose
+
       - name: Phase-16 correctness and performance regression
         shell: bash
         env:
