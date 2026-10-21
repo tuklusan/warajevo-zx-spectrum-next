@@ -149,6 +149,10 @@ def main() -> None:
                 {
                     "title": "Clock setup in the raster contract",
                     "disposition": "Addressed: the fixture uses the internal master-tick advancement helper, which also synchronizes ZX Net time when tracing is enabled; follow-up review found no issue."
+                },
+                {
+                    "title": "Incorrect logic for calculating largest slowdown",
+                    "disposition": "False positive: deltas are stored as percentage points; negating a negative delta reports the slowdown as a positive percentage. The 40% gate is checked against the unrounded ratio before this summary calculation."
                 }
             ]
         },
