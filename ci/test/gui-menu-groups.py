@@ -54,6 +54,8 @@ def root_x(host_window, index):
 def open_root(host_window, index):
     x = root_x(host_window, index)
     xdotool("windowfocus", "--sync", host_window)
+    xdotool("key", "Escape")
+    time.sleep(0.1)
     xdotool("mousemove", "--sync", "--window", host_window, str(x), "10")
     xdotool("click", "1")
     time.sleep(0.35)
