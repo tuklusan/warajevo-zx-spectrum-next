@@ -1,7 +1,7 @@
 {
   "testId": "gui-menu-groups",
   "command": "Dispatch .github/workflows/gui-menu-groups.yml on main. The workflow builds and launches the Release/Sokol host under Xvfb, OCR-checks canonical nested menus and Microdrive drive actions, and verifies 128K and 400% menu actions through STATUS.",
-  "requiredCases": 13,
+  "requiredCases": 14,
   "runnerMatrix": [
     "ubuntu-24.04"
   ],
@@ -12,7 +12,7 @@
     },
     {
       "path": "ci/test/gui-menu-groups.py",
-      "sha256": "542287e8c43344b8c8fe4e0f0685cb958922c4ea9e341c42020bc1229b2b5bb8"
+      "sha256": "809f787d048f36a841be98ce873e2492059f6e4e5afc4fad3f60c571554d16d0"
     },
     {
       "path": "ci/test/gui-menu-groups/README.md",
@@ -32,7 +32,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "959bfd0fc6a8191e63bcb7f5faf9c4d2e69fdc812ee747abfe54690e03487584"
+      "sha256": "6cc09e9cc03af02bdb92a4121b6661ae7c4e2f2d731be2920996351e9077d7c3"
     },
     {
       "path": "src/app/wz_command_registry.c",

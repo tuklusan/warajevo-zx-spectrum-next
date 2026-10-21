@@ -82,6 +82,13 @@ def require_text(text, expected, label):
         raise RuntimeError(f"{label} omitted {missing}; OCR was {text!r}")
 
 
+def reject_text(text, unexpected, label):
+    present = [value for value in unexpected
+               if value.casefold() in text.casefold()]
+    if present:
+        raise RuntimeError(f"{label} exposed {present}; OCR was {text!r}")
+
+
 def save_capture(host_window, proof_dir, name):
     destination = proof_dir / f"{name}.png"
     text = capture(host_window, destination)
@@ -169,6 +176,9 @@ def main():
                 require_text(text, ("Drive 1", "Drive 8",
                                     "Microdrive Manager"),
                              "Media > Microdrive groups")
+                reject_text(text, ("Mount Microdrive", "Eject Microdrive",
+                                   "Set Default Drive"),
+                            "Media > Microdrive menu")
                 captures.append(image)
                 open_group(host_window, x, 3)
                 image, text = save_capture(host_window, args.proof.parent,
@@ -178,6 +188,7 @@ def main():
                              "Media > Microdrive > Drive 1")
                 captures.append(image)
                 assertions.append("media-microdrive-children")
+                assertions.append("media-microdrive-menu-clean")
                 assertions.append("media-microdrive-drive1-actions")
 
                 x = open_root(host_window, 4)

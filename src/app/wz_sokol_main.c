@@ -3988,21 +3988,21 @@ static bool wz_host_register_commands(void)
         static const wz_command_metadata_t definitions[] = {
             {"media.microdrive.mount", "Mount Microdrive",
              "Mount a cartridge in the selected drive",
-             "media.microdrive", "drive[,path]", "wz-command-result",
+             NULL, "drive[,path]", "wz-command-result",
              "wz_host_microdrive_semantic_command", "drive-selector+file-dialog",
              NULL, WZ_COMMAND_HOST_READ,
              wz_host_microdrive_semantic_available,
              wz_host_microdrive_semantic_command, NULL, true, false, NULL},
             {"media.microdrive.eject", "Eject Microdrive",
              "Eject the selected cartridge after local confirmation",
-             "media.microdrive", "drive", "wz-command-result",
+             NULL, "drive", "wz-command-result",
              "wz_host_microdrive_semantic_command", "drive-selector+confirmation",
              NULL, WZ_COMMAND_MEDIA_DESTRUCTIVE,
              wz_host_microdrive_semantic_available,
              wz_host_microdrive_semantic_command, NULL, true, false, NULL},
             {"media.microdrive.set_default", "Set Default Drive",
              "Select the default Microdrive",
-             "media.microdrive", "drive", "wz-command-result",
+             NULL, "drive", "wz-command-result",
              "wz_host_microdrive_semantic_command", "drive-selector",
              NULL, WZ_COMMAND_REMOTE_SAFE,
              wz_host_microdrive_semantic_available,
@@ -4035,7 +4035,7 @@ static bool wz_host_register_commands(void)
                 WZ_MICRODRIVE_MANAGER_OPEN_COMMAND_ID,
                 "Microdrive Manager...",
                 "Open the eight-drive cartridge overview",
-                "media.microdrive",
+                NULL,
                 "NONE",
                 "wz-command-result",
                 "wz_host_microdrive_manager_open_command",
@@ -4518,6 +4518,18 @@ static const wz_host_ui_menu_node_t wz_host_ui_menu_nodes[] = {
     {"settings.peripherals.zx_printer", "ZX Printer"}
 };
 
+static bool wz_host_ui_menu_is_group_node(const char* candidate)
+{
+    size_t index;
+    for (index = 0u; index < sizeof(wz_host_ui_menu_nodes) /
+            sizeof(wz_host_ui_menu_nodes[0]); ++index) {
+        if (strcmp(candidate, wz_host_ui_menu_nodes[index].id) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
 static bool wz_host_ui_menu_is_direct_child(const char* parent,
                                              const char* candidate)
 {
@@ -4598,11 +4610,7 @@ static void wz_host_ui_draw_menu_group(struct nk_context* context,
             wz_command_registry_find(&wz_host_session.command_registry,
                                      parent_id);
         if (group_action != NULL &&
-            strcmp(parent_id, "machine.model") != 0 &&
-            strcmp(parent_id, "machine.speed") != 0 &&
-            !(strncmp(parent_id, "media.microdrive.drive", 22u) == 0 &&
-              strlen(parent_id) == 23u &&
-              parent_id[22] >= '1' && parent_id[22] <= '8')) {
+            !wz_host_ui_menu_is_group_node(parent_id)) {
             wz_host_ui_draw_menu_command(context, group_action);
         }
     }
