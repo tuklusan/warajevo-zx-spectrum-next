@@ -43,6 +43,7 @@ endif()
 if(NOT TARGET ZLIB::ZLIB)
     message(FATAL_ERROR "ZLIB::ZLIB target is unavailable")
 endif()
+find_package(Threads REQUIRED)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -499,6 +500,20 @@ add_executable(
 target_link_libraries(wz_command_registry_tests PRIVATE wz_core)
 
 add_executable(
+    wz_telnet_do_parse_tests
+    ${WZSN_REPO_ROOT}/ci/test/telnet-do-parser/telnet-do-parser.c
+    ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c
+    ${WZSN_SOURCE_ROOT}/app/wz_host_thread.c
+    ${WZSN_SOURCE_ROOT}/app/wz_host_output.c
+    ${WZSN_SOURCE_ROOT}/app/wz_speed_policy.c
+    ${WZSN_SOURCE_ROOT}/app/wz_telnet_keyboard_command.c
+    ${WZSN_SOURCE_ROOT}/app/wz_telnet_keymap.c
+    ${WZSN_SOURCE_ROOT}/app/wz_telnet_negotiation.c
+    ${WZSN_SOURCE_ROOT}/app/wz_screenshot_service.c)
+target_include_directories(wz_telnet_do_parse_tests PRIVATE "${WZSN_SOURCE_ROOT}")
+target_link_libraries(wz_telnet_do_parse_tests PRIVATE wz_core Threads::Threads ZLIB::ZLIB)
+
+add_executable(
     wz_networking_commands_tests
     ${WZSN_TEST_ROOT}/wz_networking_commands_tests.c
     ${WZSN_SOURCE_ROOT}/app/wz_networking_commands.c
@@ -562,6 +577,7 @@ add_test(NAME wz_printer_export_tests COMMAND wz_printer_export_tests)
 add_test(NAME wz_diagnostic_block_tests COMMAND wz_diagnostic_block_tests)
 add_test(NAME wz_application_lifecycle_tests COMMAND wz_application_lifecycle_tests)
 add_test(NAME wz_command_registry_tests COMMAND wz_command_registry_tests)
+add_test(NAME wz_telnet_do_parse_tests COMMAND wz_telnet_do_parse_tests)
 add_test(NAME wz_networking_commands_tests COMMAND wz_networking_commands_tests)
 add_test(NAME wz_ui_layout_tests COMMAND wz_ui_layout_tests)
 add_test(NAME wz_tape_manager_tests COMMAND wz_tape_manager_tests)

@@ -29,6 +29,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "app/wz_command_registry.h"
 #include "app/wz_screenshot_service.h"
 #include "app/wz_telnet_keymap.h"
+#include "app/wz_telnet_negotiation.h"
 
 #if defined(_WIN32)
 #include <windows.h>
@@ -916,33 +917,6 @@ bool wz_telnet_describe_format(const wz_command_registry_t* registry,
     return true;
 }
 
-bool wz_telnet_do_parse(const char* command, char* id, size_t id_capacity,
-                        char* arguments, size_t arguments_capacity)
-{
-    const char* value;
-    const char* separator;
-    size_t id_length;
-    size_t argument_length;
-    if (command == NULL || id == NULL || arguments == NULL || id_capacity == 0u ||
-        arguments_capacity == 0u || strncmp(command, "DO ", 3u) != 0) return false;
-    value = command + 3u;
-    separator = strchr(value, ' ');
-    id_length = separator == NULL ? strlen(value) : (size_t)(separator - value);
-    if (id_length == 0u || id_length + 1u > id_capacity) return false;
-    memcpy(id, value, id_length);
-    id[id_length] = '\0';
-    if (separator == NULL) {
-        arguments[0] = '\0';
-        return true;
-    }
-    while (*separator == ' ') ++separator;
-    argument_length = strlen(separator);
-    if (argument_length + 1u > arguments_capacity || strchr(separator, '\r') != NULL ||
-        strchr(separator, '\n') != NULL) return false;
-    memcpy(arguments, separator, argument_length + 1u);
-    return true;
-}
-
 static bool telnet_do_result_fields_valid(const char* fields)
 {
     const unsigned char* cursor = (const unsigned char*)fields;
@@ -951,6 +925,36 @@ static bool telnet_do_result_fields_valid(const char* fields)
         if (*cursor < 0x20u || *cursor > 0x7eu) return false;
         ++cursor;
     }
+    return true;
+}
+
+bool wz_telnet_do_parse(const char* command, char* id, size_t id_capacity,
+                        char* arguments, size_t arguments_capacity)
+{
+    char storage[WZ_TELNET_COMMAND_CAPACITY + 4u];
+    const char* tokens[4];
+    size_t token_count = 0u;
+    size_t id_length;
+    size_t argument_length;
+
+    if (command == NULL || id == NULL || arguments == NULL || id_capacity == 0u ||
+        arguments_capacity == 0u) return false;
+    if (!wz_telnet_command_tokenize((const uint8_t*)command, strlen(command),
+            storage, sizeof(storage), tokens, 4u, &token_count) ||
+        token_count < 2u || token_count > 3u || strcmp(tokens[0], "DO") != 0)
+        return false;
+
+    id_length = strlen(tokens[1]);
+    argument_length = token_count == 3u ? strlen(tokens[2]) : 0u;
+    if (id_length == 0u || id_length + 1u > id_capacity ||
+        argument_length + 1u > arguments_capacity ||
+        (token_count == 3u && argument_length == 0u)) return false;
+
+    memmove(id, tokens[1], id_length + 1u);
+    if (token_count == 3u)
+        memmove(arguments, tokens[2], argument_length + 1u);
+    else
+        arguments[0] = '\0';
     return true;
 }
 
