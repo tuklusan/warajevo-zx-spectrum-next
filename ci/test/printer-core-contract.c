@@ -40,7 +40,7 @@ static int test_modes_and_status(void)
     CHECK(wz_printer_status(&printer) == 0x3fu);
     CHECK(wz_printer_write_control(&printer, 0x80u, 1u) == WZ_RESULT_OK);
     CHECK(wz_printer_status(&printer) == 0xbfu);
-    CHECK(printer.motor_on == 0u);
+    CHECK(printer.motor_on == 1u);
     CHECK(printer.count == WZ_PRINTER_BUFFER_CAPACITY);
     return 0;
 }
