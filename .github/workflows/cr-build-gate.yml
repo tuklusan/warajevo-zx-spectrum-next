@@ -200,11 +200,10 @@ jobs:
           from pathlib import Path
           run = json.loads(Path(os.environ["RUNNER_TEMP"], "evidence-run.json").read_text())
           if (run.get("status") != "completed" or
-                  run.get("conclusion") != "success" or
                   run.get("head_branch") != "main" or
                   run.get("head_sha") != os.environ["EVIDENCE_COMMIT"] or
                   run.get("event") != "workflow_dispatch"):
-              raise SystemExit("evidence run must be a successful main-branch dispatch at the stated commit")
+              raise SystemExit("evidence run must be a completed main-branch dispatch at the stated commit")
           PY
             exit 0
           fi

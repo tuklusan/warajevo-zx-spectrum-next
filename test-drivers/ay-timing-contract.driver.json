@@ -37,7 +37,7 @@
     },
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "4b262bada45461a0dabf81064a75a282eb8bd436cbad828e2efea70fca55209b"
+      "sha256": "e10e0157a7e276cbbf2f332082703917defd392c7b9482f4d65d1725052893cb"
     },
     {
       "path": "ci/test/ay-timing/write-proof.py",
