@@ -107,7 +107,7 @@ def main():
                             raise RuntimeError(
                                 f"required action is not one unique command: {identifier}")
                         line = records[0]
-                        if not re.search(r" PARENT=[a-z0-9_.]+ TYPE=COMMAND "
+                        if not re.search(r" PARENT=(ROOT|[a-z0-9_.]+) TYPE=COMMAND "
                                          r"STATE=(ENABLED|DISABLED) "
                                          r"REMOTE=(ALLOWED|DENIED) "
                                          r"CLASS=(REMOTE_SAFE|HOST_READ|HOST_WRITE|"
