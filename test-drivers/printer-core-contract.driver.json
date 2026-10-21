@@ -1,0 +1,14 @@
+{
+  "testId": "printer-core-contract",
+  "command": "cmake -S src/cmake -B <build> -DCMAKE_BUILD_TYPE=Release -DWZSN_BUILD_SOKOL_HOST=ON; cmake --build <build> --config Release; ctest --test-dir <build> -C Release --output-on-failure -R ^wz_printer_core_contract$",
+  "fixtures": [
+    {
+      "path": "ci/test/printer-core-contract.c",
+      "sha256": "1a1ea7c2101b46a6f59bc5ff8d4cfbba81d7eaa57243941eaa4b8c1b700af7f0"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "d7fd3ed32fdf751087f9e1e1487007e9578bf514b6df2d7d8ae81ed39bc859fc"
+    }
+  ]
+}

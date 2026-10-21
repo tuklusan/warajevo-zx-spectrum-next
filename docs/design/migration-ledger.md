@@ -98,12 +98,19 @@ GPL by the official source notice. This inventory does not clear reuse.
 | `INT17` | Gate and invoke the BIOS printer interrupt used for host LPT output. | REPLACE | Completed output is delivered as a bounded core flush event and consumed by the host printer manager. | Verify machine state is independent of host printer availability and export failures; host export/path failures must not mutate the core. |
 | `SETASCII` | Convert HP printer coordinates to ASCII and construct host-specific LaserJet command parameters. | DROP | No equivalent host-device command stream; the HP raster remains represented by the printer mode's pixel flush event and host bitmap projection. | Assert the HP output pixels and mode-specific bitmap dimensions; do not test BIOS/LPT command bytes. |
 
-The named local labels in `Z_OUT_FAR` (`MOTON`, `MOTOFF`, `FLUSH`, `HPFLUSH`,
+The direct port/status/pixel/flush contract passed 3,909 assertions on all five
+native targets in hosted run `39646431461` at source
+`2470446f9b8617905a787532ea7426d5f0fed79b`; proof:
+`test-results/printer-core-contract.json`, implementation:
+`ci/test/printer-core-contract.c`. Its source-review warning was adjudicated
+non-actionable because `wz_printer_set_mode` initializes the state before
+reading it. The named local labels in `Z_OUT_FAR` (`MOTON`, `MOTOFF`, `FLUSH`, `HPFLUSH`,
 `HPLASER`, and related branch/loop labels) are control-flow blocks, not
 independently callable routines. Their behavior is covered by the `Z_OUT_FAR`
 regression strategy above. Existing printer settings evidence validates mode
-selection only; the routine-specific port/status/pixel/flush strategy above
-still requires direct pinned acceptance proof. Per-file copyright/license
+selection only; the additional core contract supplies direct software proof
+for the tested port/status/pixel/flush behavior. Legacy BIOS/LPT parity and
+physical timing remain unclaimed. Per-file copyright/license
 compatibility remains unresolved, so this is an inventory and disposition only,
 not a license grant or source-derivation clearance.
 

@@ -1,0 +1,30 @@
+{
+  "testId": "printer-core-contract",
+  "status": "pass",
+  "commit": "2470446f9b8617905a787532ea7426d5f0fed79b",
+  "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
+  "timestamp": "2026-10-21T17:45:59Z",
+  "workflowRun": 39646431461,
+  "assertionsPerRunner": 3909,
+  "nativeTargets": [
+    "Windows x64",
+    "Linux x64",
+    "Linux ARM64",
+    "macOS ARM64",
+    "macOS Intel"
+  ],
+  "sourceReview": {
+    "status": "complete",
+    "falsePositive": "The report claimed wz_printer_t was uninitialized before wz_printer_set_mode. That API calls wz_printer_init before reading printer state, so its use as the first operation is defined."
+  },
+  "fixtures": [
+    {
+      "path": "ci/test/printer-core-contract.c",
+      "sha256": "1a1ea7c2101b46a6f59bc5ff8d4cfbba81d7eaa57243941eaa4b8c1b700af7f0"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "d7fd3ed32fdf751087f9e1e1487007e9578bf514b6df2d7d8ae81ed39bc859fc"
+    }
+  ]
+}
