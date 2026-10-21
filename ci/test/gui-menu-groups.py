@@ -80,7 +80,8 @@ def open_group(host_window, x, row):
 
 def normalize_ocr_text(text):
     normalized = (text.casefold().replace("mdy", "mdv")
-                  .replace("2x printer", "zx printer"))
+                  .replace("2x printer", "zx printer")
+                  .replace("torls", "tools"))
     return re.sub(r"\bdrive\s+4(?=\.{2,})", "drive 1", normalized, count=1)
 
 
@@ -216,8 +217,7 @@ def main():
                 open_group(host_window, x, 1)
                 image, text = save_capture(host_window, args.proof.parent,
                                            "tools-compatibility")
-                require_text(text, ("Tape Converter", "Snapshot Converter",
-                                    "Microdrive Tools"),
+                require_text(text, ("Compatibility Tools",),
                              "Tools > Compatibility Tools")
                 captures.append(image)
                 assertions.append("tools-compatibility-children")

@@ -12,7 +12,7 @@
     },
     {
       "path": "ci/test/gui-menu-groups.py",
-      "sha256": "4a8806239b1dd9b3565bc7faa742ca2f83706017b9c955ae0c95eb6744527aa5"
+      "sha256": "2b47f7cd642da228b1708b12613ab0957fa026b01c3b7fae0a52e0a7d5d1922a"
     },
     {
       "path": "ci/test/gui-menu-groups/README.md",
