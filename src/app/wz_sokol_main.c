@@ -4501,7 +4501,6 @@ static const wz_host_ui_menu_node_t wz_host_ui_menu_nodes[] = {
     {"machine.model", "Model"},
     {"machine.speed", "Emulation Speed"},
     {"media.tape", "Tape"},
-    {"media.zx_printer", "ZX Printer"},
     {"media.microdrive", "Microdrive"},
     {"media.microdrive.drive_group1", "Drive 1..."},
     {"media.microdrive.drive_group2", "Drive 2..."},
@@ -4511,6 +4510,7 @@ static const wz_host_ui_menu_node_t wz_host_ui_menu_nodes[] = {
     {"media.microdrive.drive_group6", "Drive 6..."},
     {"media.microdrive.drive_group7", "Drive 7..."},
     {"media.microdrive.drive_group8", "Drive 8..."},
+    {"media.zx_printer", "ZX Printer"},
     {"tools.debugger", "Debugger"},
     {"tools.compatibility", "Compatibility Tools"},
     {"settings.peripherals", "Peripherals"},
@@ -4584,12 +4584,28 @@ static bool wz_host_ui_menu_command_in_group(
 static void wz_host_ui_draw_menu_group(struct nk_context* context,
                                        const char* parent_id, size_t depth);
 
+static const char* wz_host_ui_menu_indented_label(const char* source,
+                                                   size_t depth,
+                                                   char* buffer,
+                                                   size_t capacity)
+{
+    size_t indent = depth * 2u;
+    if (source == NULL || buffer == NULL || capacity == 0u) return "";
+    if (indent > 24u) indent = 24u;
+    if (indent >= capacity) indent = capacity - 1u;
+    memset(buffer, ' ', indent);
+    (void)snprintf(buffer + indent, capacity - indent, "%s", source);
+    return buffer;
+}
+
 static void wz_host_ui_draw_menu_command(struct nk_context* context,
-                                         const wz_command_metadata_t* command)
+                                         const wz_command_metadata_t* command,
+                                         size_t indent)
 {
     const char* disabled_reason = NULL;
     bool enabled;
     const char* label;
+    char indented_label[128];
     if (command == NULL || command->id == NULL) return;
     if (strcmp(command->id, "media.microdrive.mount") == 0 ||
         strcmp(command->id, "media.microdrive.eject") == 0 ||
@@ -4599,11 +4615,19 @@ static void wz_host_ui_draw_menu_command(struct nk_context* context,
     }
     if (wz_host_ui_menu_is_microdrive_selector(command->id)) return;
     if (strcmp(command->id, WZ_PRINTER_MODE_COMMAND_ID) == 0) return;
+    label = command->label;
+    if (strcmp(command->id, "machine.pause_resume") == 0) {
+        label = wz_host_session.ui_window.layout.paused ? "Resume" : "Pause";
+    }
+    if (indent != 0u) {
+        label = wz_host_ui_menu_indented_label(label, indent, indented_label,
+                                                sizeof(indented_label));
+    }
     enabled = wz_command_registry_state(&wz_host_session.command_registry,
         command->id, &disabled_reason) == WZ_COMMAND_ENABLED;
     if (strcmp(command->id, WZ_TAPE_INSERT_COMMAND_ID) == 0) {
         if (!enabled) nk_widget_disable_begin(context);
-        if (nk_menu_item_label(context, command->label, NK_TEXT_LEFT) &&
+        if (nk_menu_item_label(context, label, NK_TEXT_LEFT) &&
             enabled) wz_host_ui_insert_tape();
         if (!enabled) nk_widget_disable_end(context);
         return;
@@ -4611,15 +4635,11 @@ static void wz_host_ui_draw_menu_command(struct nk_context* context,
     if (command->parameter_schema != NULL &&
         strcmp(command->parameter_schema, "NONE") != 0) {
         nk_widget_disable_begin(context);
-        (void)nk_menu_item_label(context, command->label, NK_TEXT_LEFT);
+        (void)nk_menu_item_label(context, label, NK_TEXT_LEFT);
         nk_widget_disable_end(context);
         return;
     }
     if (!enabled) nk_widget_disable_begin(context);
-    label = command->label;
-    if (strcmp(command->id, "machine.pause_resume") == 0) {
-        label = wz_host_session.ui_window.layout.paused ? "Resume" : "Pause";
-    }
     if (nk_menu_item_label(context, label, NK_TEXT_LEFT) && enabled) {
         wz_command_result_t result;
         (void)wz_command_registry_dispatch(&wz_host_session.command_registry,
@@ -4640,33 +4660,18 @@ static void wz_host_ui_draw_menu_group(struct nk_context* context,
                                      parent_id);
         if (group_action != NULL &&
             !wz_host_ui_menu_is_group_node(parent_id)) {
-            wz_host_ui_draw_menu_command(context, group_action);
+            wz_host_ui_draw_menu_command(context, group_action, depth + 1u);
         }
     }
     for (index = 0u; index < sizeof(wz_host_ui_menu_nodes) /
             sizeof(wz_host_ui_menu_nodes[0]); ++index) {
         const wz_host_ui_menu_node_t* node = &wz_host_ui_menu_nodes[index];
+        char node_label[96];
         if (!wz_host_ui_menu_is_direct_child(parent_id, node->id)) continue;
-        if (depth == 0u) {
-            const float popup_height =
-                strcmp(node->id, "media.microdrive") == 0 ? 700.0f : 420.0f;
-            const float popup_width =
-                strcmp(node->id, "media.microdrive") == 0 ? 450.0f : 230.0f;
-            if (nk_menu_begin_label(context, node->label,
-                    NK_TEXT_LEFT, nk_vec2(popup_width, popup_height))) {
-                const float row_height =
-                    strcmp(node->id, "media.microdrive") == 0 ? 14.0f : 20.0f;
-                nk_layout_row_dynamic(context, row_height, 1);
-                wz_host_ui_draw_menu_group(context, node->id, depth + 1u);
-                nk_menu_end(context);
-            }
-        } else {
-            /* Nuklear popups cannot own popups; keep deeper groups visible as
-               headings and render their commands inline beneath them. */
-            nk_layout_row_dynamic(context, 20.0f, 1);
-            nk_label(context, node->label, NK_TEXT_LEFT);
-            wz_host_ui_draw_menu_group(context, node->id, depth + 1u);
-        }
+        nk_layout_row_dynamic(context, 20.0f, 1);
+        nk_label(context, wz_host_ui_menu_indented_label(node->label,
+            depth + 1u, node_label, sizeof(node_label)), NK_TEXT_LEFT);
+        wz_host_ui_draw_menu_group(context, node->id, depth + 1u);
     }
     if (depth != 0u) nk_layout_row_dynamic(context, 20.0f, 1);
     if (wz_host_ui_menu_is_microdrive_drive_group(parent_id)) {
@@ -4703,7 +4708,9 @@ static void wz_host_ui_draw_menu_group(struct nk_context* context,
             if (wz_host_ui_menu_is_microdrive_drive_group(parent_id)) {
                 nk_layout_row_push(context, 1.0f / 3.0f);
             }
-            wz_host_ui_draw_menu_command(context, command);
+            wz_host_ui_draw_menu_command(context, command,
+                wz_host_ui_menu_is_microdrive_drive_group(parent_id)
+                    ? 0u : depth + 1u);
         }
     }
     if (wz_host_ui_menu_is_microdrive_drive_group(parent_id)) {
@@ -4733,13 +4740,18 @@ static void wz_host_ui_draw_menus(struct nk_context* context, float width)
     for (root_index = 0u; root_index < root_count; ++root_index) {
         const wz_command_menu_root_t* root =
             wz_command_registry_menu_root_at(root_index);
+        const float remaining_width = root_count == 0u ? width :
+            width * (float)(root_count - root_index) / (float)root_count;
+        const float popup_width = remaining_width < 560.0f
+            ? remaining_width : 560.0f;
         nk_layout_row_push(context, root_count == 0u ? 0.0f :
                            1.0f / (float)root_count);
         if (root == NULL || !nk_menu_begin_label(
-                context, root->label, NK_TEXT_LEFT, nk_vec2(230.0f, 420.0f))) {
+                context, root->label, NK_TEXT_LEFT,
+                nk_vec2(popup_width, 700.0f))) {
             continue;
         }
-        nk_layout_row_dynamic(context, 24.0f, 1);
+        nk_layout_row_dynamic(context, 20.0f, 1);
         wz_host_ui_draw_menu_group(context, root->id, 0u);
         nk_menu_end(context);
     }

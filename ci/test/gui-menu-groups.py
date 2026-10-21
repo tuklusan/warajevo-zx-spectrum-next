@@ -69,13 +69,6 @@ def open_root(host_window, index):
     return x
 
 
-def open_group(host_window, x, row):
-    xdotool("mousemove", "--sync", "--window", host_window,
-            str(x), str(42 + row * 28))
-    xdotool("click", "1")
-    time.sleep(0.3)
-
-
 def require_text(text, expected, label):
     normalized = text.casefold().replace("mdy", "mdv")
     missing = [value for value in expected
@@ -108,11 +101,10 @@ def save_capture(host_window, proof_dir, name):
 
 def click_model_choice(host_window, control, proof_dir):
     x = open_root(host_window, 1)
-    open_group(host_window, x, 0)
     image, text = save_capture(host_window, proof_dir, "machine-model")
     require_text(text, ("48K", "128K"), "Machine > Model")
     xdotool("mousemove", "--sync", "--window", host_window,
-            str(x + 240), "70")
+            str(x + 240), "98")
     time.sleep(0.2)
     xdotool("click", "1")
     time.sleep(0.7)
@@ -124,11 +116,10 @@ def click_model_choice(host_window, control, proof_dir):
 
 def click_speed_choice(host_window, control, proof_dir):
     x = open_root(host_window, 1)
-    open_group(host_window, x, 1)
     image, text = save_capture(host_window, proof_dir, "machine-speed")
     require_text(text, ("25%", "400%", "Unlimited"), "Machine > Emulation Speed")
     xdotool("mousemove", "--sync", "--window", host_window,
-            str(x + 240), str(42 + 4 * 28))
+            str(x + 240), "266")
     time.sleep(0.2)
     xdotool("click", "1")
     time.sleep(0.5)
@@ -181,7 +172,6 @@ def main():
                     assertions.append(name)
 
                 x = open_root(host_window, 2)
-                open_group(host_window, x, 2)
                 image, text = save_capture(host_window, args.proof.parent,
                                            "media-microdrive")
                 require_text(text, ("Drive 1", "Drive 7", "Mount MDV",
@@ -199,7 +189,6 @@ def main():
                 assertions.append("media-microdrive-eight-groups")
 
                 x = open_root(host_window, 4)
-                open_group(host_window, x, 1)
                 image, text = save_capture(host_window, args.proof.parent,
                                            "tools-compatibility")
                 require_text(text, ("Tape Converter", "Snapshot Converter",
@@ -209,7 +198,6 @@ def main():
                 assertions.append("tools-compatibility-children")
 
                 x = open_root(host_window, 5)
-                open_group(host_window, x, 0)
                 image, text = save_capture(host_window, args.proof.parent,
                                            "settings-peripherals")
                 require_text(text, ("Networking", "Printer",
