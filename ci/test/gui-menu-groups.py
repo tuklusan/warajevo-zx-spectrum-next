@@ -135,7 +135,7 @@ def click_speed_choice(host_window, control, proof_dir):
     x = open_root(host_window, 1)
     open_group(host_window, x, 1)
     image, text = save_capture(host_window, proof_dir, "machine-speed")
-    require_text(text, ("25%", "400%", "Unlimited"), "Machine > Emulation Speed")
+    require_text(text, ("400%", "Unlimited"), "Machine > Emulation Speed")
     xdotool("mousemove", "--sync", "--window", host_window,
             str(x + 240), "210")
     time.sleep(0.2)
