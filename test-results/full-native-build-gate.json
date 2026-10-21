@@ -1,13 +1,13 @@
 {
   "testId": "full-native-build-gate",
   "status": "pass",
-  "commit": "0cf285e0cd7152cf51249a327b1a7997add8ae50",
-  "tree": "12346461af7c5dd77b8428f2b7a270c6cd54b691",
-  "runId": 39551315633,
+  "commit": "1968880ebe957d09e002e2f0ede152bb8da24e15",
+  "tree": "387fce71f2d02532aca6fcee287393ea204bc8ab",
+  "runId": 39554709646,
   "event": "push",
   "runner": "GitHub Actions native matrix",
   "architecture": "x64 and ARM64",
-  "timestamp": "2026-10-21T05:45:00Z",
+  "timestamp": "2026-10-21T06:19:33Z",
   "checks": ["clean Release build", "integrated CTest", "Phase-16 performance gate"],
   "targets": [
     {"name": "Windows x64", "runner": "windows-2025", "conclusion": "success"},

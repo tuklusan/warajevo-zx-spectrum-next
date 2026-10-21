@@ -10,7 +10,7 @@ SANYALnet Labs." See LICENSE for full terms. -->
 The required `cr-build-gate.yml` source-push workflow passed clean Release
 build, integrated CTest, and Phase-16 checks on all five supported native
 runner targets at exact product-source commit
-`0cf285e0cd7152cf51249a327b1a7997add8ae50` (run `39551315633`). The pinned
+`1968880ebe957d09e002e2f0ede152bb8da24e15` (run `39554709646`). The pinned
 runner matrix and job conclusions are recorded in
 [`full-native-build-gate.json`](../test-results/full-native-build-gate.json).
 The subsequent main commit only changed evidence, documentation, and the

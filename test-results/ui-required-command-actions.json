@@ -1,0 +1,42 @@
+{
+  "testId": "ui-required-command-actions",
+  "status": "pass",
+  "commit": "79f3ae95c184b1ce862a13cb265479737a5ecc20",
+  "runId": 39556128554,
+  "runner": "Linux",
+  "architecture": "X64",
+  "runnerName": "ubuntu-24.04",
+  "timestamp": "2026-10-21T06:33:18Z",
+  "assertions": 21,
+  "microdriveActions": [
+    "media.microdrive.drive1",
+    "media.microdrive.drive2",
+    "media.microdrive.drive3",
+    "media.microdrive.drive4",
+    "media.microdrive.drive5",
+    "media.microdrive.drive6",
+    "media.microdrive.drive7",
+    "media.microdrive.drive8"
+  ],
+  "settingsActions": [
+    "settings.rom_firmware",
+    "settings.peripherals.telnet"
+  ],
+  "telnetSettingsScreenshotSha256": "61c04dbdda0407368a5981241417e1cca05ec8d64b21704ffe651cfeaa6b2585",
+  "telnetSettingsVisibleText": "Telnet Keyboard & Remote Control -\nTelnet Keyboard & Remote Control | Service: enabled |\nBase Control Port: 30740 | Probe range: 30740-32787 |\n=| Selected Control Port: 30740 | IPv4 listener: UP |\nListener: UP | Active client: ACTIVE | Warning: plaintext/no-authentication | Permissions: default-deny host-file/destructive/quit policy\nClose",
+  "fixtures": [
+    {"path": ".github/workflows/ui-required-command-actions.yml", "sha256": "8c320ace217c4a49df44ecd54edbd67469963c2e7138746dfa638742646615ff"},
+    {"path": "ci/test/ui-required-command-actions.py", "sha256": "ad8863171513517e0b1a9fc62ee0ede075568f81684d64cdbbb788c455268cc2"},
+    {"path": "ci/test/ui-required-command-actions/README.md", "sha256": "6457f7702f9c5ae76d47ac2678624f1638ba45849d49dc48008661d36524e726"},
+    {"path": "ci/test/live-telnet-acceptance.py", "sha256": "01d9f9bd1e3f61f33e5852722750c26dba4ae6fbb9a7444a92966e031bb31923"},
+    {"path": "ci/test/gui-screenshot-save.py", "sha256": "b141ac9b4c91e33028291b0312f8fc2ac31f67c161c52cc0eb51a42bc54ff82f"},
+    {"path": "roms/48.rom", "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"},
+    {"path": "src/app/wz_sokol_main.c", "sha256": "4f18aa676c03639101432e4b8220daefc81d4693c5ab8d7aaa848d35df660395"},
+    {"path": "src/app/wz_ui_layout.c", "sha256": "9991401a1c6dff245fc4ff33a0c458efa54267371a5e14127921e2c6e219df64"},
+    {"path": "src/app/wz_ui_layout.h", "sha256": "0ef859ac915722f0ea2e2e6d66b8cda00c78577ad14029966c98ebb324abd8ac"},
+    {"path": "src/app/wz_command_registry.c", "sha256": "707bd4c4c9d0e12db0135ef857d3c7de8a5d6e7d717d790d09f3080bb90c9607"},
+    {"path": "src/app/wz_command_registry.h", "sha256": "4b8530859e953c5876d41792f6221a00a7facc14658c05f28076cda926c9bf04"},
+    {"path": "src/app/wz_telnet_keyboard_command.c", "sha256": "f9bc61d019c440e04102ea7a2c5af4146f812b9b16cd257d1bc244733b2da0d4"},
+    {"path": "src/app/wz_telnet_keyboard_command.h", "sha256": "a525163fd16b5113b8166293055c88f46ebf53a373bb24d04254aafc395b7e82"}
+  ]
+}
