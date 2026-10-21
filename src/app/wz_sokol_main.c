@@ -4301,6 +4301,9 @@ static void wz_host_ui_draw_printer_modes(struct nk_context* context)
     static const char* printer_modes[] = {
         "Disabled", "Epson", "Epson enlarged", "HP", "HP enlarged"
     };
+    _Static_assert(sizeof(printer_modes) / sizeof(printer_modes[0]) ==
+                       (size_t)WZ_PRINTER_MODE_HP_ENLARGED + 1u,
+                   "printer mode labels must cover every printer mode");
     const char* command_id = WZ_PRINTER_MODE_COMMAND_ID;
     const bool enabled = wz_command_registry_state(
         &wz_host_session.command_registry, command_id, NULL) ==
@@ -4527,6 +4530,18 @@ static bool wz_host_ui_menu_is_descendant(const char* parent,
         candidate[parent_length + 1u] != '\0';
 }
 
+static bool wz_host_ui_menu_command_in_group(
+    const wz_command_metadata_t* command, const char* group_id)
+{
+    if (command == NULL || command->id == NULL) return false;
+    if (strcmp(command->id, "settings.networking.open") == 0) {
+        return strcmp(group_id, "settings.peripherals.networking") == 0;
+    }
+    return wz_host_ui_menu_is_descendant(group_id, command->id) ||
+        (command->menu_group != NULL &&
+         strcmp(command->menu_group, group_id) == 0);
+}
+
 static void wz_host_ui_draw_menu_group(struct nk_context* context,
                                        const char* parent_id, size_t depth);
 
@@ -4599,10 +4614,7 @@ static void wz_host_ui_draw_menu_group(struct nk_context* context,
             &wz_host_session.command_registry, index);
         size_t node_index;
         bool nested = false;
-        if (command == NULL || command->id == NULL ||
-            (!wz_host_ui_menu_is_descendant(parent_id, command->id) &&
-             (command->menu_group == NULL ||
-              strcmp(command->menu_group, parent_id) != 0))) continue;
+        if (!wz_host_ui_menu_command_in_group(command, parent_id)) continue;
         for (node_index = 0u; node_index < sizeof(wz_host_ui_menu_nodes) /
                 sizeof(wz_host_ui_menu_nodes[0]); ++node_index) {
             if (wz_host_ui_menu_is_descendant(parent_id,
@@ -4613,7 +4625,10 @@ static void wz_host_ui_draw_menu_group(struct nk_context* context,
                           wz_host_ui_menu_nodes[node_index].id,
                           strlen(wz_host_ui_menu_nodes[node_index].id)) == 0 &&
                   command->id[strlen(
-                      wz_host_ui_menu_nodes[node_index].id)] == '.'))) {
+                      wz_host_ui_menu_nodes[node_index].id)] == '.') ||
+                 (strcmp(command->id, "settings.networking.open") == 0 &&
+                  strcmp(wz_host_ui_menu_nodes[node_index].id,
+                         "settings.peripherals.networking") == 0))) {
                 nested = true;
                 break;
             }
