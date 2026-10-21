@@ -1,15 +1,17 @@
 {
   "testId": "production-live-telnet-acceptance",
   "status": "pass",
-  "runId": 38657400982,
-  "commit": "7316baf13a3f5eb9b9021aaf4fb291b6d88a303b",
+  "runId": 39603985393,
+  "commit": "50fb9f9cd4d853d7f7fb74cafe264c3ccd5eeb39",
+  "timestamp": "2026-10-21T12:58:47Z",
+  "runner": "Windows and macOS hosted matrix",
   "platforms": [
     {
       "testId": "production-live-telnet-acceptance",
       "status": "pass",
-      "commit": "7316baf13a3f5eb9b9021aaf4fb291b6d88a303b",
-      "runId": 38657400982,
-      "runner": "Windows",
+      "commit": "50fb9f9cd4d853d7f7fb74cafe264c3ccd5eeb39",
+      "runId": 39603985393,
+      "runner": "macOS",
       "architecture": "ARM64",
       "assertions": 17,
       "checks": [
@@ -22,9 +24,9 @@
     {
       "testId": "production-live-telnet-acceptance",
       "status": "pass",
-      "commit": "7316baf13a3f5eb9b9021aaf4fb291b6d88a303b",
-      "runId": 38657400982,
-      "runner": "Windows",
+      "commit": "50fb9f9cd4d853d7f7fb74cafe264c3ccd5eeb39",
+      "runId": 39603985393,
+      "runner": "macOS",
       "architecture": "X64",
       "assertions": 17,
       "checks": [
@@ -37,9 +39,9 @@
     {
       "testId": "production-live-telnet-acceptance",
       "status": "pass",
-      "commit": "7316baf13a3f5eb9b9021aaf4fb291b6d88a303b",
-      "runId": 38657400982,
-      "runner": "macOS",
+      "commit": "50fb9f9cd4d853d7f7fb74cafe264c3ccd5eeb39",
+      "runId": 39603985393,
+      "runner": "Windows",
       "architecture": "ARM64",
       "assertions": 17,
       "checks": [
@@ -52,9 +54,9 @@
     {
       "testId": "production-live-telnet-acceptance",
       "status": "pass",
-      "commit": "7316baf13a3f5eb9b9021aaf4fb291b6d88a303b",
-      "runId": 38657400982,
-      "runner": "macOS",
+      "commit": "50fb9f9cd4d853d7f7fb74cafe264c3ccd5eeb39",
+      "runId": 39603985393,
+      "runner": "Windows",
       "architecture": "X64",
       "assertions": 17,
       "checks": [
@@ -67,8 +69,68 @@
   ],
   "totalAssertions": 68,
   "scope": "Production desktop host over its real IPv4 control socket; four hosted runner families.",
+  "checks": [
+    "keyboard-responses",
+    "path-free-discovery",
+    "remote-denial",
+    "pause-reset-resume"
+  ],
   "limitations": [
     "The live run did not insert media, so dynamic Recent-path redaction remains separately gated.",
     "The run does not cover every remote permission class or the 1024-byte parser boundary."
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/live-telnet-acceptance.yml",
+      "sha256": "476237476fa39dd1982c329645f5a26df9bfca4dd634414b1b22be1a304813de"
+    },
+    {
+      "path": "ci/test/live-telnet-acceptance.py",
+      "sha256": "01d9f9bd1e3f61f33e5852722750c26dba4ae6fbb9a7444a92966e031bb31923"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "d284c58a767513a7869e0688b7629fea115bab848d24819eb585050e72d97273"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "b246a5a23ffa20e53be79821bab4c623136704477994082dae118799a90696f0"
+    },
+    {
+      "path": "src/app/wz_control_port.c",
+      "sha256": "c26016fe66e2f3932bf80070f8a00c873946c3ea893b0458e7994f06fbba1ef5"
+    },
+    {
+      "path": "src/app/wz_host_socket.c",
+      "sha256": "fefc065bfd90b46e4acbe045f079fe44a0d66ee45a65decafc83e7030453342a"
+    },
+    {
+      "path": "src/app/wz_telnet_client.c",
+      "sha256": "9f480cd87be95c0721464487456069b61e8ff26491adc9b551a72ea87094d976"
+    },
+    {
+      "path": "src/app/wz_telnet_keyboard_command.c",
+      "sha256": "f9bc61d019c440e04102ea7a2c5af4146f812b9b16cd257d1bc244733b2da0d4"
+    },
+    {
+      "path": "src/app/wz_telnet_status.c",
+      "sha256": "98e77532404a726162a1bd8b075df7934b66a231f085e901094a1aa2cee2f04f"
+    },
+    {
+      "path": "src/app/wz_telnet_alias_response.c",
+      "sha256": "f2df5aebedf4d5be5113c32c0e070c6b076b7b1934cb6736803cafddfc3ecd99"
+    },
+    {
+      "path": "src/app/wz_command_registry.c",
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
+    },
+    {
+      "path": "src/app/wz_telnet_security.c",
+      "sha256": "aaf9eee1049d0a3b03833f66119732d786c65be2a8cda82974b446df05ceb629"
+    },
+    {
+      "path": "roms/48.rom",
+      "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"
+    }
   ]
 }
