@@ -12,7 +12,7 @@
     },
     {
       "path": "ci/test/gui-keyboard-actions.py",
-      "sha256": "2d449d2cc6d7772dd9ca60c69f31ea1eee1d1319fda209c5e893dc125db32035"
+      "sha256": "187d2c4f479fd5f025c8550757f20360ef8d8d8533eb9d6158e28c946e53711f"
     },
     {
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",

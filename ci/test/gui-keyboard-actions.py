@@ -59,6 +59,9 @@ def connect_control(process):
                 return connection
             except OSError:
                 connection.close()
+            except Exception:
+                connection.close()
+                raise
         time.sleep(0.25)
     raise RuntimeError("production Control Port did not become available")
 
