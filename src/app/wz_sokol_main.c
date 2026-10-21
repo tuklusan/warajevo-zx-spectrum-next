@@ -236,7 +236,7 @@ typedef struct {
     size_t debugger_register_selection;
     char debugger_register_value_text[5];
     int debugger_register_value_length;
-    char debugger_register_status[80];
+    char debugger_register_status[WZ_COMMAND_MESSAGE_CAPACITY];
     wz_diagnostics_router_t diagnostics_router;
     wz_diagnostics_window_t diagnostics_window;
     wz_compatibility_tools_window_t compatibility_tools_window;

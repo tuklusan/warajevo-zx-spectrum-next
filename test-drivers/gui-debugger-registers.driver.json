@@ -12,7 +12,7 @@
     },
     {
       "path": "ci/test/gui-debugger-registers.py",
-      "sha256": "277480f6bb7680559d20af84e44aabd9cd53cd8de2a4ec5ec51158a6d8fe39a7"
+      "sha256": "3eb8abb735426d6e2b8a4641b1c0615587641632701a3e8ff80b7d92961b6371"
     },
     {
       "path": "ci/test/gui-screenshot-save.py",
@@ -24,7 +24,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "dee0a249cc379a9d784f82797d6efbc49859d2ff276dcf4d5ab5c571eb7bff7b"
+      "sha256": "0654706bdf6a5ffea41c05de692e4c2d27b7e3cc9f7dc0b13af55539b4620357"
     },
     {
       "path": "src/app/wz_debugger_window.c",
