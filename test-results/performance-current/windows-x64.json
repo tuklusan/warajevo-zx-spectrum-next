@@ -1,10 +1,10 @@
 {
   "schema": 1,
   "status": "pass",
-  "commit": "8b377d9c5b42410bdb562d3cb64823be983545a6",
+  "commit": "e7a1472ed5e126be6be81c50810dc7fbc5b39feb",
   "runner": "Windows-windows-x64",
   "architecture": "X64",
-  "timestamp": "2026-10-21T02:29:17Z",
+  "timestamp": "2026-10-21T02:51:23Z",
   "compiler": "MSVC 19.51.36260.0",
   "metrics": [
     {
@@ -43,8 +43,8 @@
       "name": "snapshot_serialization",
       "unit": "snapshots",
       "operations": "8192",
-      "median_cpu_seconds": 0.013,
-      "operations_per_second": 630153.846,
+      "median_cpu_seconds": 0.014,
+      "operations_per_second": 585142.857,
       "fingerprint": "1453ad89e4085223"
     },
     {

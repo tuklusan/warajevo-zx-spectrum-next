@@ -1,0 +1,108 @@
+{
+  "schema": 1,
+  "status": "pass",
+  "testId": "microdrive-transition-fuzz",
+  "commit": "e7a1472ed5e126be6be81c50810dc7fbc5b39feb",
+  "sourceCommit": "e7a1472ed5e126be6be81c50810dc7fbc5b39feb",
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39535192591",
+  "runId": 39535192591,
+  "nativeBuildConfiguration": "Release; WZSN_BUILD_SOKOL_HOST=ON",
+  "fuzzBuildConfiguration": "Debug; WZSN_ENABLE_SANITIZERS=ON; WZSN_BUILD_SOKOL_HOST=OFF; AddressSanitizer + UndefinedBehaviorSanitizer",
+  "iterations": 1024,
+  "ctest": "24/24 passed on all five native targets",
+  "sanitizerResults": "1/1 focused fuzz CTest passed on Linux x64, Linux ARM64, macOS ARM64, and macOS Intel",
+  "runnerResults": [
+    {
+      "runner": "Windows x64",
+      "status": "pass",
+      "jobId": 119010110759,
+      "ctest": "24/24 passed",
+      "transitionFuzz": "1,024 iterations passed under full CTest",
+      "sanitizer": false,
+      "sanitizerContract": "MSVC full CTest; sanitizers unsupported",
+      "timestamp": "2026-10-21T02:50:00Z"
+    },
+    {
+      "runner": "Linux x64",
+      "status": "pass",
+      "jobId": 119010110931,
+      "ctest": "24/24 passed",
+      "transitionFuzz": "1,024 iterations passed under full CTest",
+      "sanitizer": true,
+      "sanitizerContract": "AddressSanitizer + UndefinedBehaviorSanitizer; 1/1 passed",
+      "sanitizerCtest": "1/1 passed",
+      "timestamp": "2026-10-21T02:50:01Z"
+    },
+    {
+      "runner": "Linux ARM64",
+      "status": "pass",
+      "jobId": 119010110938,
+      "ctest": "24/24 passed",
+      "transitionFuzz": "1,024 iterations passed under full CTest",
+      "sanitizer": true,
+      "sanitizerContract": "AddressSanitizer + UndefinedBehaviorSanitizer; 1/1 passed",
+      "sanitizerCtest": "1/1 passed",
+      "timestamp": "2026-10-21T02:50:01Z"
+    },
+    {
+      "runner": "macOS ARM64",
+      "status": "pass",
+      "jobId": 119010110958,
+      "ctest": "24/24 passed",
+      "transitionFuzz": "1,024 iterations passed under full CTest",
+      "sanitizer": true,
+      "sanitizerContract": "AddressSanitizer + UndefinedBehaviorSanitizer; 1/1 passed",
+      "sanitizerCtest": "1/1 passed",
+      "timestamp": "2026-10-21T02:50:02Z"
+    },
+    {
+      "runner": "macOS Intel",
+      "status": "pass",
+      "jobId": 119010111030,
+      "ctest": "24/24 passed",
+      "transitionFuzz": "1,024 iterations passed under full CTest",
+      "sanitizer": true,
+      "sanitizerContract": "AddressSanitizer + UndefinedBehaviorSanitizer; 1/1 passed",
+      "sanitizerCtest": "1/1 passed",
+      "timestamp": "2026-10-21T02:50:00Z"
+    }
+  ],
+  "coverage": [
+    "boundary and malformed MDR image lengths",
+    "valid 9–254 sector images and fixed 254-sector trailer",
+    "parse error preserves image state",
+    "invalid transport/device calls and transitions",
+    "manager catalog, verify, repair, edit, format, staged write, and flush with random fields",
+    "machine control read/write transitions",
+    "all eight transport dirty buffers discarded after each iteration"
+  ],
+  "reviewAdjudication": [
+    "The reported sector-index bounds concern is non-actionable: sector_verify checks sector_index < sector_count before pointer arithmetic; sector_repair computes image count and checks index before offset arithmetic; sector_edit_data and sector_edit_raw likewise reject indices >= count before dereferencing. The invalid indices are intentional fuzz inputs."
+  ],
+  "fixtures": [
+    {
+      "path": "ci/test/microdrive-transition-fuzz/microdrive-transition-fuzz.c",
+      "sha256": "8d120e9145e3652214205c55c66e8c6d58ad141c219f5f496f2b18f51161ec4a"
+    },
+    {
+      "path": "src/app/wz_microdrive_manager.c",
+      "sha256": "ae7b59034282f2d57a5072a70e56ac291fcdf03f49fed55d41833da9db25a929"
+    },
+    {
+      "path": "src/core/wz_microdrive.c",
+      "sha256": "30d9e3b2f856deff18fe8c6aa21332fbf8018d5742adec79107e52051c0016d8"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "018cb55bd8bcdf3c4342274215cc50b58618e1216b5f3e0f99b6f9191d01ee22"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "9488b399b9ade642abbb8ff46462f95e768c8068a498b9d8763987ed695ef64f"
+    },
+    {
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "f9b15496fbb11f3627f67b0da3ba593625b3614b9d641be2c6cda8978e368f08"
+    }
+  ]
+}
