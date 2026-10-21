@@ -1,0 +1,16 @@
+{
+  "testId": "telnet-screenshot-runtime",
+  "command": "Dispatch .github/workflows/telnet-screenshot-runtime.yml on main; the workflow builds the Release/Sokol production host and exercises the Control Port screenshot command under Xvfb.",
+  "requiredCases": 9,
+  "runnerMatrix": ["ubuntu-24.04"],
+  "fixtures": [
+    {"path": ".github/workflows/telnet-screenshot-runtime.yml", "sha256": "b106741e9afb62143e4e06859d6c2c990481a4c1a4c3ba73d8503c444fbcc39a"},
+    {"path": "ci/test/telnet-screenshot-runtime.py", "sha256": "74a58464e62307d53bba84a93a5a64339cc3640ae04bb5b2a75dbaf6d4a67308"},
+    {"path": "ci/test/telnet-screenshot-runtime/README.md", "sha256": "645c27d25f446985ce8819ce496f7fe58adcd6b169cac8938e895b07f537ac25"},
+    {"path": "ci/test/gui-screenshot-save.py", "sha256": "b141ac9b4c91e33028291b0312f8fc2ac31f67c161c52cc0eb51a42bc54ff82f"},
+    {"path": "src/app/wz_sokol_main.c", "sha256": "b246a5a23ffa20e53be79821bab4c623136704477994082dae118799a90696f0"},
+    {"path": "src/app/wz_telnet_keyboard_command.c", "sha256": "f9bc61d019c440e04102ea7a2c5af4146f812b9b16cd257d1bc244733b2da0d4"},
+    {"path": "src/app/wz_screenshot_service.c", "sha256": "05c8da60b7b90ca6b3a2b6b865ef6e00ab017ac739be8e282f196078fd195949"},
+    {"path": "roms/48.rom", "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"}
+  ]
+}
