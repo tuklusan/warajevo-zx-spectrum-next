@@ -171,9 +171,12 @@ The `MONITOR`/`MONMAIN` entry and loop, register save/restore path, far-call
 wrappers, and breakpoint patch helpers are infrastructure for these command
 handlers; they are not separate user commands. The table is a source-dispatch
 inventory and records intended disposition, not implementation acceptance.
-The current shared debugger APIs and UI have not passed the per-row regression
-strategies above; monitor/debugger migration remains open pending source-level
-semantics review, direct acceptance proof, and any required design decisions.
+The standalone [debugger core contract](../../tests/debugger-core-contract.md)
+directly verifies a subset of shared inspection, disassembly, memory editing,
+CPU undo, stepping, and breakpoint behavior on five native targets. It does
+not complete the per-row regression strategies above; monitor/debugger
+migration remains open pending detailed source-level semantics review, full
+direct acceptance proof, and any required design decisions.
 
 ## Explicit gaps
 

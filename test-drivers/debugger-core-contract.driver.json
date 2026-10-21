@@ -1,0 +1,14 @@
+{
+  "testId": "debugger-core-contract",
+  "command": "The .github/workflows/cr-build-gate.yml source-push workflow builds wz_debugger_core_contract and runs it through integrated CTest on each native matrix runner.",
+  "fixtures": [
+    {
+      "path": "ci/test/debugger-core-contract.c",
+      "sha256": "e82c3d10a21e29bfb606a0aacc446c56e4fc9cc3549136a002e1f2b7960e8994"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "656eb8eaf045f24acedc5bb1af8895c5d179a2b3ef894e7bbfa0c6405efe88e0"
+    }
+  ]
+}
