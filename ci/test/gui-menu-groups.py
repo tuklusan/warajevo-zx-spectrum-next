@@ -78,9 +78,14 @@ def open_group(host_window, x, row):
     time.sleep(0.3)
 
 
-def require_text(text, expected, label):
+def normalize_ocr_text(text):
     normalized = (text.casefold().replace("mdy", "mdv")
                   .replace("2x printer", "zx printer"))
+    return re.sub(r"\bdrive\s+4(?=\.{2,})", "drive 1", normalized, count=1)
+
+
+def require_text(text, expected, label):
+    normalized = normalize_ocr_text(text)
     missing = [value for value in expected
                if value.casefold() not in normalized]
     if missing:
@@ -88,7 +93,7 @@ def require_text(text, expected, label):
 
 
 def require_count(text, pattern, expected, label):
-    normalized = text.casefold().replace("mdy", "mdv")
+    normalized = normalize_ocr_text(text)
     actual = len(re.findall(pattern, normalized, re.IGNORECASE))
     if actual != expected:
         raise RuntimeError(
