@@ -155,6 +155,9 @@ def main():
 
                 # Register editor is directly below its label; value input is
                 # the right-hand field, while the left combo defaults to A.
+                geometry = run("xdotool", "getwindowgeometry", "--shell", window)
+                app_width = int(re.search(r"^WIDTH=(\d+)$", geometry,
+                                          re.MULTILINE).group(1))
                 x0 = int(re.search(r"^X=(\d+)$", geometry, re.MULTILINE).group(1))
                 debugger_left = x0 + max(0, (app_width - 760) // 2)
                 register_label = find_text(root, "Register")
