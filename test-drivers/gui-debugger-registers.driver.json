@@ -1,6 +1,6 @@
 {
   "testId": "gui-debugger-registers",
-  "command": "Dispatch .github/workflows/gui-debugger-registers.yml on main. Build the production Release/Sokol GUI under Xvfb, open the debugger with F12, pause the machine, reject an out-of-range A register value, set A to 5A, verify the displayed AF value, then undo and verify restoration.",
+  "command": "Dispatch .github/workflows/gui-debugger-registers.yml on main. Build the production Release/Sokol GUI under Xvfb, open the debugger from the production toolbar, pause the machine, reject an out-of-range A register value, set A to 5A, verify the displayed AF value, then undo and verify restoration.",
   "requiredCases": 5,
   "runnerMatrix": [
     "ubuntu-24.04"
@@ -12,7 +12,7 @@
     },
     {
       "path": "ci/test/gui-debugger-registers.py",
-      "sha256": "529ec53bcc98e4d8d047d2b5cd14fd0a76b662332743bac373dc50c45d1d065c"
+      "sha256": "b63b174d6aefd75aa26ccb53daebddb7e8ba53535ffea71dc4c3976588f4b1ea"
     },
     {
       "path": "ci/test/gui-screenshot-save.py",

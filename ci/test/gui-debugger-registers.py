@@ -23,8 +23,10 @@ from PIL import Image, ImageEnhance, ImageOps
 
 
 TITLE = "Warajevo ZX Spectrum Next"
-connect_control = runpy.run_path(
-    str(Path(__file__).with_name("gui-screenshot-save.py")))["connect"]
+gui_helpers = runpy.run_path(
+    str(Path(__file__).with_name("gui-screenshot-save.py")))
+connect_control = gui_helpers["connect"]
+click_toolbar = gui_helpers["click_toolbar"]
 
 
 def run(*args):
@@ -134,22 +136,8 @@ def main():
                 window = find_window()
                 control = connect_control(process)
                 control.close()
-                geometry = run("xdotool", "getwindowgeometry", "--shell", window)
-                app_width = int(re.search(r"^WIDTH=(\d+)$", geometry,
-                                          re.MULTILINE).group(1))
-                app_height = int(re.search(r"^HEIGHT=(\d+)$", geometry,
-                                           re.MULTILINE).group(1))
-                run("xdotool", "windowfocus", "--sync", window)
-                run("xdotool", "mousemove", "--sync", "--window", window,
-                    str(app_width // 2), str(app_height // 2), "click", "1")
-                time.sleep(0.25)
-                run("xdotool", "key", "--clearmodifiers", "F12")
-                time.sleep(0.5)
+                click_toolbar(window, 10)
                 screen = screenshot_text(root)
-                if "register" not in screen.casefold() or "editor" not in screen.casefold():
-                    click_text(root, "Debugger")
-                    time.sleep(0.5)
-                    screen = screenshot_text(root)
                 (args.capture_dir / "debugger-open.png").write_bytes(
                     (root / "screen.png").read_bytes())
                 if "register" not in screen.casefold() or "editor" not in screen.casefold():
