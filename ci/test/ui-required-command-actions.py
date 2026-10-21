@@ -99,10 +99,15 @@ def main():
                     assertions += 1
 
                 geometry = xdotool("getwindowgeometry", "--shell", host_window)
-                width = int(re.search(r"^WIDTH=(\d+)$", geometry,
-                                      re.MULTILINE).group(1))
-                height = int(re.search(r"^HEIGHT=(\d+)$", geometry,
-                                       re.MULTILINE).group(1))
+                width_match = re.search(r"^WIDTH=(\d+)$", geometry,
+                                        re.MULTILINE)
+                height_match = re.search(r"^HEIGHT=(\d+)$", geometry,
+                                         re.MULTILINE)
+                if width_match is None or height_match is None:
+                    raise RuntimeError(
+                        f"Could not parse host window geometry: {geometry!r}")
+                width = int(width_match.group(1))
+                height = int(height_match.group(1))
                 xdotool("mousemove", "--sync", "--window", host_window,
                         str(width // 2), str(height - 14))
                 xdotool("click", "1")
