@@ -125,9 +125,11 @@ def main():
 
                 click_toolbar(window, 1)
                 before = screenshot_text(root)
+                (args.capture_dir / "debugger-paused.png").write_bytes(
+                    (root / "screen.png").read_bytes())
                 match = re.search(r"AF\s+([0-9A-F]{4})", before)
                 if match is None:
-                    raise RuntimeError("main AF value is not readable in debugger")
+                    raise RuntimeError(f"main AF value is not readable; OCR={before!r}")
                 original_af = match.group(1)
                 assertions.append("machine-paused-in-debugger")
 
