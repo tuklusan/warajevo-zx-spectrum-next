@@ -1,0 +1,21 @@
+{
+  "testId": "ui-menu-registry-inventory",
+  "command": "Dispatch .github/workflows/ui-menu-registry-inventory.yml on main; the workflow builds the Release/Sokol production host and runs ci/test/ui-menu-registry-inventory.py under Xvfb against roms/48.rom.",
+  "requiredCases": 130,
+  "runnerMatrix": ["ubuntu-24.04"],
+  "fixtures": [
+    {"path": ".github/workflows/ui-menu-registry-inventory.yml", "sha256": "ee1c58268364aa30ce2773a5d4e4c9ee4d1af57d19b01a87c425d28566598fce"},
+    {"path": "ci/test/ui-menu-registry-inventory.py", "sha256": "548c8d867b069bf828a63b0c6592fdb06d10c965ff8a5023716869499b92ab87"},
+    {"path": "ci/test/ui-menu-registry-inventory/README.md", "sha256": "b959d1dd24f552e230d40903d6e7fb44d9a0814ad970c17fcc24edf5fce454c7"},
+    {"path": "ci/test/live-telnet-acceptance.py", "sha256": "01d9f9bd1e3f61f33e5852722750c26dba4ae6fbb9a7444a92966e031bb31923"},
+    {"path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md", "sha256": "dc47afb96f2c0566788d59ef74a691c33a8943e1c4e199c96c74d07739e68b31"},
+    {"path": "roms/48.rom", "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"},
+    {"path": "src/app/wz_sokol_main.c", "sha256": "116894fee4156f98e924f9c99def3ee908bc15dc2f488785cade6863eb742bad"},
+    {"path": "src/app/wz_compatibility_tools.c", "sha256": "a76dfb6a03bcbdd6272795e0d8ff9e694692cf14a7db034514083c87e971d3f3"},
+    {"path": "src/app/wz_compatibility_tools.h", "sha256": "eb4b120cf05c63425678b94c2fcef83fca15ee463f21eabb16804f81b499e289"},
+    {"path": "src/app/wz_command_registry.c", "sha256": "707bd4c4c9d0e12db0135ef857d3c7de8a5d6e7d717d790d09f3080bb90c9607"},
+    {"path": "src/app/wz_command_registry.h", "sha256": "4b8530859e953c5876d41792f6221a00a7facc14658c05f28076cda926c9bf04"},
+    {"path": "src/app/wz_telnet_keyboard_command.c", "sha256": "f9bc61d019c440e04102ea7a2c5af4146f812b9b16cd257d1bc244733b2da0d4"},
+    {"path": "src/app/wz_telnet_keyboard_command.h", "sha256": "a525163fd16b5113b8166293055c88f46ebf53a373bb24d04254aafc395b7e82"}
+  ]
+}

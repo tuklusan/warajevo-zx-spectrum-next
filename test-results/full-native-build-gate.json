@@ -1,22 +1,38 @@
 {
   "testId": "full-native-build-gate",
   "status": "pass",
-  "commit": "1968880ebe957d09e002e2f0ede152bb8da24e15",
-  "tree": "387fce71f2d02532aca6fcee287393ea204bc8ab",
-  "runId": 39554709646,
-  "event": "push",
+  "commit": "bef1a67a697897fb406199a813054c0a31a7a23e",
+  "tree": "924e0051c03f252c7190ad644dca4315d471c9da",
+  "runId": 39560536653,
+  "event": "workflow_dispatch",
   "runner": "GitHub Actions native matrix",
   "architecture": "x64 and ARM64",
-  "timestamp": "2026-10-21T06:19:33Z",
-  "checks": ["clean Release build", "integrated CTest", "Phase-16 performance gate"],
-  "targets": [
-    {"name": "Windows x64", "runner": "windows-2025", "conclusion": "success"},
-    {"name": "Linux x64", "runner": "ubuntu-24.04", "conclusion": "success"},
-    {"name": "Linux ARM64", "runner": "ubuntu-24.04-arm", "conclusion": "success"},
-    {"name": "macOS ARM64", "runner": "macos-15", "conclusion": "success"},
-    {"name": "macOS Intel", "runner": "macos-15-intel", "conclusion": "success"}
+  "timestamp": "2026-10-21T07:15:59Z",
+  "checks": [
+    "clean Release build with WZSN_BUILD_SOKOL_HOST=ON",
+    "integrated CTest: 26/26 per target",
+    "Phase-16 correctness and performance: 30 fingerprints and 30 throughput comparisons passed",
+    "Interface-1 WAIT: 75 checks per target"
   ],
+  "targets": [
+    {"name": "Windows x64", "runner": "windows-2025", "conclusion": "success", "ctest": "26/26", "waitChecks": 75},
+    {"name": "Linux x64", "runner": "ubuntu-24.04", "conclusion": "success", "ctest": "26/26", "waitChecks": 75},
+    {"name": "Linux ARM64", "runner": "ubuntu-24.04-arm", "conclusion": "success", "ctest": "26/26", "waitChecks": 75},
+    {"name": "macOS ARM64", "runner": "macos-15", "conclusion": "success", "ctest": "26/26", "waitChecks": 75},
+    {"name": "macOS Intel", "runner": "macos-15-intel", "conclusion": "success", "ctest": "26/26", "waitChecks": 75}
+  ],
+  "phase16": {
+    "proof": "phase16-performance-current.json",
+    "fingerprintsPassed": 30,
+    "throughputComparisonsPassed": 30,
+    "largestSlowdownPercent": 31.3
+  },
   "fixtures": [
-    {"path": ".github/workflows/cr-build-gate.yml", "sha256": "36a50590b53d3440e618c6ce545f5dde30a2abec27c1796cd6cfd783a9e985d2"}
-  ]
+    {"path": ".github/workflows/cr-build-gate.yml", "sha256": "36a50590b53d3440e618c6ce545f5dde30a2abec27c1796cd6cfd783a9e985d2"},
+    {"path": "src/cmake/CMakeLists.txt", "sha256": "d4c3b9554383674692a6822de3aa4c638b6fa667f0706ca363313646481a4368"},
+    {"path": "src/app/wz_sokol_main.c", "sha256": "116894fee4156f98e924f9c99def3ee908bc15dc2f488785cade6863eb742bad"},
+    {"path": "src/app/wz_compatibility_tools.c", "sha256": "a76dfb6a03bcbdd6272795e0d8ff9e694692cf14a7db034514083c87e971d3f3"},
+    {"path": "src/app/wz_compatibility_tools.h", "sha256": "eb4b120cf05c63425678b94c2fcef83fca15ee463f21eabb16804f81b499e289"}
+  ],
+  "githubCleanupPolicy": "After pinning proof records, delete the workflow run and all hosted artifacts and caches."
 }
