@@ -85,16 +85,16 @@ def main_af(root, debugger_left, debugger_top):
         image = capture(root)
         with Image.open(image) as source:
             line = source.crop((debugger_left + 360, debugger_top + 80,
-                                debugger_left + 580, debugger_top + 112))
+                                debugger_left + 470, debugger_top + 112))
             line = line.resize((line.width * 4, line.height * 4),
                                Image.Resampling.LANCZOS)
             line = ImageEnhance.Contrast(ImageOps.grayscale(line)).enhance(2.5)
         prepared = root / "af-ocr.png"
         line.save(prepared)
         text = run("tesseract", str(prepared), "stdout", "--psm", "7",
-                   "-c", "tessedit_char_whitelist=NAF0123456789")
+                   "-c", "tessedit_char_whitelist=NABCDEF0123456789")
         observations.append(text)
-        match = re.search(r"N?AF\s+([0-9A-F]{4})\b", text)
+        match = re.search(r"N?AF\s*([0-9A-F]{4})\b", text)
         if match is not None:
             return match.group(1), text
         time.sleep(0.2)
