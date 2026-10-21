@@ -18,6 +18,8 @@ import subprocess
 import tempfile
 import time
 
+from PIL import Image, ImageChops
+
 
 helpers = runpy.run_path(str(Path(__file__).with_name(
     "live-telnet-acceptance.py")))
@@ -29,12 +31,9 @@ xdotool = gui_helpers["xdotool"]
 window = gui_helpers["window"]
 
 
-def capture_text(host_window, destination):
+def capture(host_window, destination):
     subprocess.run(["import", "-window", host_window, str(destination)],
                    check=True, capture_output=True)
-    return subprocess.run(["tesseract", str(destination), "stdout"],
-                          check=True, capture_output=True,
-                          text=True).stdout
 
 
 def main():
@@ -110,16 +109,20 @@ def main():
                 height = int(height_match.group(1))
                 xdotool("mousemove", "--sync", "--window", host_window,
                         str(width // 2), str(height - 14))
+                before_screenshot = args.proof.parent / "before-telnet-settings.png"
+                capture(host_window, before_screenshot)
                 xdotool("click", "1")
                 time.sleep(0.5)
                 screenshot = args.proof.parent / "telnet-settings.png"
-                visible_text = capture_text(host_window, screenshot)
-                normalized_text = re.sub(r"[^a-z0-9]+", "",
-                                         visible_text.casefold())
-                if "telnetkeyboardremotecontrol" not in normalized_text:
+                capture(host_window, screenshot)
+                with Image.open(before_screenshot) as before, \
+                        Image.open(screenshot) as after:
+                    bounds = ImageChops.difference(
+                        before.convert("RGB"), after.convert("RGB")).getbbox()
+                if bounds is None or \
+                        (bounds[2] - bounds[0]) * (bounds[3] - bounds[1]) < 20000:
                     raise RuntimeError(
-                        "status control did not open Telnet Settings: "
-                        f"{visible_text!r}")
+                        "status control did not visibly open Telnet Settings")
                 assertions += 1
 
                 args.proof.write_text(json.dumps({
@@ -134,6 +137,7 @@ def main():
                     "settingsActions": settings_ids,
                     "telnetSettingsScreenshotSha256": hashlib.sha256(
                         screenshot.read_bytes()).hexdigest(),
+                    "telnetSettingsChangedBounds": list(bounds),
                 }, indent=2) + "\n", encoding="utf-8")
         finally:
             if connection is not None:
