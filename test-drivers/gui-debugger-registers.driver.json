@@ -1,0 +1,38 @@
+{
+  "testId": "gui-debugger-registers",
+  "command": "Dispatch .github/workflows/gui-debugger-registers.yml on main. Build the production Release/Sokol GUI under Xvfb, open the debugger with F12, pause the machine, reject an out-of-range A register value, set A to 5A, verify the displayed AF value, then undo and verify restoration.",
+  "requiredCases": 5,
+  "runnerMatrix": [
+    "ubuntu-24.04"
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/gui-debugger-registers.yml",
+      "sha256": "346dba467df3cbc4f3b78f2036131d4357ff0ee7c55ca1c15b4cce28c9a1f392"
+    },
+    {
+      "path": "ci/test/gui-debugger-registers.py",
+      "sha256": "83bedaa10b62c7b7f5ac391e1457ccfaea849dc1c913d87c9f707a0d65228244"
+    },
+    {
+      "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
+      "sha256": "dc47afb96f2c0566788d59ef74a691c33a8943e1c4e199c96c74d07739e68b31"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "b68f715d25622bb2af58886e092706c78049ce4ace898c7f0bf6d322d429d75d"
+    },
+    {
+      "path": "src/app/wz_debugger_window.c",
+      "sha256": "1c42b0a9ae6a48b4ee59fcdd03248ff00f2d6236bafb5e93ccc5f954da33bb14"
+    },
+    {
+      "path": "src/core/wz_debugger.c",
+      "sha256": "3475f4cb3acc84a58843a16205661068b86479d19c522602a34ee21b4aeb70fd"
+    },
+    {
+      "path": "roms/48.rom",
+      "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"
+    }
+  ]
+}
