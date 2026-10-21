@@ -231,6 +231,7 @@ int main(void)
         CHECK(wz_state_hash_machine(&restored, &restored_hash) == WZ_RESULT_OK &&
               source_hash == restored_hash);
         memcpy(malformed, state_bytes, writer.length);
+        CHECK(q_offset < writer.length && q_offset < sizeof(malformed));
         malformed[q_offset] = 2u;
         CHECK(wz_state_hash_machine(&restored, &restored_hash) == WZ_RESULT_OK);
         CHECK(wz_state_deserialize_machine(&restored, malformed,
@@ -248,8 +249,9 @@ cleanup:
     if (restored_initialized) wz_machine_destroy(&restored);
     if (machine_initialized) wz_machine_destroy(&machine);
     if (result == 0) {
-        (void)printf("PASS ZX Net canonical state fields and transactional restore; cases=%zu\n",
-                     cases);
+        (void)printf("PASS ZX Net canonical state fields and transactional restore; "
+                     "cases=%zu canonical_hash=%016llx\n", cases,
+                     (unsigned long long)source_hash);
     }
     return result;
 }
