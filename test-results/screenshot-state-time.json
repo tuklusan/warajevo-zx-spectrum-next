@@ -1,0 +1,134 @@
+{
+  "testId": "screenshot-state-time",
+  "status": "pass",
+  "commit": "2dcca11f104b7b9b8f9753ebf7f975a9305a5b04",
+  "runId": 39632784395,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39632784395",
+  "workflowEvent": "workflow_dispatch",
+  "branch": "main",
+  "timestamp": "2026-10-21T16:44:21+00:00",
+  "assertionsPerRunner": 20,
+  "totalAssertions": 100,
+  "nativeBuildConfiguration": "Release; WZSN_BUILD_SOKOL_HOST=ON",
+  "targets": [
+    {
+      "name": "Windows x64",
+      "runner": "Windows-windows-x64",
+      "architecture": "X64",
+      "status": "pass",
+      "assertions": 20,
+      "observedOutput": "PASS screenshot success and failure preserve canonical machine hash and master tick (20 assertions)",
+      "ctest": "26/26 passed"
+    },
+    {
+      "name": "Linux x64",
+      "runner": "Linux-ubuntu-24.04",
+      "architecture": "X64",
+      "status": "pass",
+      "assertions": 20,
+      "observedOutput": "PASS screenshot success and failure preserve canonical machine hash and master tick (20 assertions)",
+      "ctest": "26/26 passed"
+    },
+    {
+      "name": "Linux ARM64",
+      "runner": "Linux-ubuntu-24.04-arm",
+      "architecture": "ARM64",
+      "status": "pass",
+      "assertions": 20,
+      "observedOutput": "PASS screenshot success and failure preserve canonical machine hash and master tick (20 assertions)",
+      "ctest": "26/26 passed"
+    },
+    {
+      "name": "macOS ARM64",
+      "runner": "macOS-macos-arm64",
+      "architecture": "ARM64",
+      "status": "pass",
+      "assertions": 20,
+      "observedOutput": "PASS screenshot success and failure preserve canonical machine hash and master tick (20 assertions)",
+      "ctest": "26/26 passed"
+    },
+    {
+      "name": "macOS Intel",
+      "runner": "macOS-macos-x64",
+      "architecture": "X64",
+      "status": "pass",
+      "assertions": 20,
+      "observedOutput": "PASS screenshot success and failure preserve canonical machine hash and master tick (20 assertions)",
+      "ctest": "26/26 passed"
+    }
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "3e0231f35b038f059e137a1eb1e9cc3374fd07f5c12bf77e338d1143dd94c3e1"
+    },
+    {
+      "path": "ci/test/screenshot-state-time/screenshot-state-time.c",
+      "sha256": "11f5f6f6bb27d38e980e176cf08655fd95f32c7aaac4dcd938974c5128842642"
+    },
+    {
+      "path": "ci/test/screenshot-state-time/write-proof.py",
+      "sha256": "bc468bb6deeff3f510f1a69651a57ac0b114bb6891751f6f117ea2d7787f213e"
+    },
+    {
+      "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
+      "sha256": "dc47afb96f2c0566788d59ef74a691c33a8943e1c4e199c96c74d07739e68b31"
+    },
+    {
+      "path": "src/app/wz_host_output.c",
+      "sha256": "57ac1582e7769cbb66c6a3fb3a641a6f14de2878814c7ac4dc31ed8a7e21a6d3"
+    },
+    {
+      "path": "src/app/wz_host_output.h",
+      "sha256": "0c415f0029214f54d2a92dd9aa46bfc53d1801dee71c7eeb9acd8bd65a104895"
+    },
+    {
+      "path": "src/app/wz_screenshot_service.c",
+      "sha256": "05c8da60b7b90ca6b3a2b6b865ef6e00ab017ac739be8e282f196078fd195949"
+    },
+    {
+      "path": "src/app/wz_screenshot_service.h",
+      "sha256": "1b58549d40bf834a9b2ebf6afa4820119349fa2afce66082c0e041299b634017"
+    },
+    {
+      "path": "src/app/wz_telnet_keyboard_command.c",
+      "sha256": "74daf16ed99440541ff5e7a43fb7bf30dd958c42d6a32d6d2466ab987e2f4240"
+    },
+    {
+      "path": "src/app/wz_telnet_keyboard_command.h",
+      "sha256": "a525163fd16b5113b8166293055c88f46ebf53a373bb24d04254aafc395b7e82"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "efafa34c1c3947cd96aa9d54d013116bbdbd466033cba16386801f790888225a"
+    },
+    {
+      "path": "src/app/wz_telnet_negotiation.c",
+      "sha256": "215a0ad15361f7c4698851b0c4cb9be44782cf01388ce3137bb99702996cffcb"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "3de492c7022baaef1a348f2fa64d019cdef7a414e0195bbf5113f82eef804013"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "808eef5dddd9851505b1861fa89e9916cee1cc3776f165a1ae34dc01f4105b95"
+    },
+    {
+      "path": "src/core/wz_presentation_snapshot.c",
+      "sha256": "e486ad41490593ff803f647460d3542f69f425bf8c15bd0892e882962a685367"
+    },
+    {
+      "path": "src/core/wz_presentation_snapshot.h",
+      "sha256": "5dc1be78cf4627ed526b39e7d1ee4e961c3bff8b00f869e635675f2180af820d"
+    },
+    {
+      "path": "src/core/wz_state.c",
+      "sha256": "93479ac03c344c429455d8627096147fb4da4a2b94c5204d8223d7e7b11fc983"
+    },
+    {
+      "path": "src/core/wz_state.h",
+      "sha256": "46ec8063cc5976b743d53a23b64c34c84583878c9793434d3622c8f8a38f9aa3"
+    }
+  ]
+}

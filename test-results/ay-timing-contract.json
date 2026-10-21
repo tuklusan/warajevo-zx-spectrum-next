@@ -1,13 +1,13 @@
 {
   "testId": "ay-timing-contract",
   "status": "pass",
-  "commit": "d95a46a90da724be8b33825876e511dd23f71632",
-  "runId": 39623986274,
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39623986274",
+  "commit": "2dcca11f104b7b9b8f9753ebf7f975a9305a5b04",
+  "runId": 39632784395,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39632784395",
   "workflowEvent": "workflow_dispatch",
   "branch": "main",
-  "fixtureMetadataCommit": "d95a46a90da724be8b33825876e511dd23f71632",
-  "timestamp": "2026-10-21T15:17:41+00:00",
+  "fixtureMetadataCommit": "4151f4cb590ac560193e2e76f9208cc39b90f13f",
+  "timestamp": "2026-10-21T16:44:19+00:00",
   "assertionsPerRunner": 67,
   "totalAssertions": 335,
   "observedOutput": "AY timing contract passed (67 assertions)",
@@ -66,7 +66,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "bbf0280a803f789387b3de60ab0bf27fa20db5a455dfe6faa9c65aed4c6e2ad2"
+      "sha256": "efafa34c1c3947cd96aa9d54d013116bbdbd466033cba16386801f790888225a"
     },
     {
       "path": "src/core/audio/wz_ay.c",
@@ -86,7 +86,7 @@
     },
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "e10e0157a7e276cbbf2f332082703917defd392c7b9482f4d65d1725052893cb"
+      "sha256": "3e0231f35b038f059e137a1eb1e9cc3374fd07f5c12bf77e338d1143dd94c3e1"
     },
     {
       "path": "ci/test/ay-timing/write-proof.py",
