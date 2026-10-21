@@ -926,6 +926,26 @@ add_custom_target(wz_ay_timing_contract_check ALL
     DEPENDS wz_ay_timing_contract_tests
     VERBATIM)
 
+add_executable(
+    wz_screenshot_state_time_contract_tests
+    ${WZSN_REPO_ROOT}/ci/test/screenshot-state-time/screenshot-state-time.c
+    ${WZSN_SOURCE_ROOT}/app/wz_host_output.c
+    ${WZSN_SOURCE_ROOT}/app/wz_screenshot_service.c
+    ${WZSN_SOURCE_ROOT}/app/wz_telnet_keyboard_command.c
+    ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c
+    ${WZSN_SOURCE_ROOT}/app/wz_host_thread.c
+    ${WZSN_SOURCE_ROOT}/app/wz_telnet_keymap.c)
+target_include_directories(wz_screenshot_state_time_contract_tests PRIVATE
+    "${WZSN_SOURCE_ROOT}")
+target_link_libraries(wz_screenshot_state_time_contract_tests PRIVATE
+    wz_core wz_warnings Threads::Threads ZLIB::ZLIB)
+add_custom_target(wz_screenshot_state_time_contract_check ALL
+    COMMAND "${CMAKE_COMMAND}" -E env
+        "WZSN_SCREENSHOT_DIR=${CMAKE_CURRENT_BINARY_DIR}"
+        "$<TARGET_FILE:wz_screenshot_state_time_contract_tests>"
+    DEPENDS wz_screenshot_state_time_contract_tests
+    VERBATIM)
+
 if(WZSN_FUSE_Z80_TEST_INPUT AND WZSN_FUSE_Z80_TEST_EXPECTED)
     enable_testing()
     add_test(NAME fuse_z80_conformance

@@ -244,6 +244,11 @@ jobs:
             --run-id "$source_run_id" \
             --branch "$GITHUB_REF_NAME" --event "$GITHUB_EVENT_NAME" \
             --input-dir hosted-inputs
+          python ci/test/screenshot-state-time/write-proof.py \
+            --commit "$source_commit" \
+            --run-id "$source_run_id" \
+            --branch "$GITHUB_REF_NAME" --event "$GITHUB_EVENT_NAME" \
+            --input-dir hosted-inputs
 
       - name: Upload temporary proof records
         uses: actions/upload-artifact@v4
@@ -253,6 +258,7 @@ jobs:
             test-results/interface1-wait.json
             test-results/phase16-performance-current.json
             test-results/ay-timing-contract.json
+            test-results/screenshot-state-time.json
             test-results/performance-current/*.json
           if-no-files-found: error
           retention-days: 1
