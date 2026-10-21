@@ -4641,7 +4641,9 @@ static void wz_host_ui_draw_menu_group(struct nk_context* context,
                 strcmp(node->id, "media.microdrive") == 0 ? 700.0f : 420.0f;
             if (nk_menu_begin_label(context, node->label,
                     NK_TEXT_LEFT, nk_vec2(320.0f, popup_height))) {
-                nk_layout_row_dynamic(context, 20.0f, 1);
+                const float row_height =
+                    strcmp(node->id, "media.microdrive") == 0 ? 16.0f : 20.0f;
+                nk_layout_row_dynamic(context, row_height, 1);
                 wz_host_ui_draw_menu_group(context, node->id, depth + 1u);
                 nk_menu_end(context);
             }

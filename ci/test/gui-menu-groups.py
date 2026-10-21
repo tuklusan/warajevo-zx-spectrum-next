@@ -183,7 +183,7 @@ def main():
                 captures.append(image)
                 assertions.append("media-microdrive-children")
                 assertions.append("media-microdrive-menu-clean")
-                assertions.append("media-microdrive-drive1-actions")
+                assertions.append("media-microdrive-drive1-actions-visible")
 
                 x = open_root(host_window, 4)
                 open_group(host_window, x, 1)
