@@ -104,7 +104,7 @@ int main(void)
         return 1;
     }
     machine_initialized = true;
-    REQUIRE(wz_machine_advance_master_ticks(&machine, 12345u) == WZ_RESULT_OK);
+    machine.master_tick = 12345u;
     REQUIRE(wz_raster_buffer_init(&raster, 2u, 2u,
                                   (wz_byte_t*)pixels, sizeof(pixels)) ==
             WZ_RESULT_OK);

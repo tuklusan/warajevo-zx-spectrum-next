@@ -17,7 +17,7 @@
     },
     {
       "path": "ci/test/screenshot-state-time/screenshot-state-time.c",
-      "sha256": "378deed4df9d7e54e406df059ea124e3c8d71a98d0e54eadec61473945a0da60"
+      "sha256": "02620316417152bf2086f51911ef8f7e94909dbbacc66826ac083d8db1239ee7"
     },
     {
       "path": "ci/test/screenshot-state-time/write-proof.py",
@@ -53,7 +53,11 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "d7c79364d63e2a5f580fde44945255f62e4a252a325e8aeb88c20859763dcc2d"
+      "sha256": "9d5594e06e0e4d02e3978eecfc2a2719e62e0daeb31e185e5d01d56ce110f058"
+    },
+    {
+      "path": "src/app/wz_telnet_negotiation.c",
+      "sha256": "215a0ad15361f7c4698851b0c4cb9be44782cf01388ce3137bb99702996cffcb"
     },
     {
       "path": "src/core/wz_machine.c",
