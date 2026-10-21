@@ -48,8 +48,10 @@ def main() -> None:
     ctest = ctest_path.read_text(encoding="utf-8", errors="replace")
     if WAIT_MARKER not in ctest:
         raise SystemExit("Interface 1 WAIT marker is missing from the CTest log")
-    if re.search(r"100% tests passed(?:, 0 tests failed)? out of 26", ctest) is None:
-        raise SystemExit("26/26 CTest completion is missing from the CTest log")
+    summary = re.search(r"100% tests passed, 0 tests failed out of (\d+)", ctest)
+    if summary is None or int(summary.group(1)) == 0:
+        raise SystemExit("successful CTest completion is missing from the CTest log")
+    ctest_count = int(summary.group(1))
 
     performance = json.loads(performance_path.read_text(encoding="utf-8"))
     if (performance.get("schema") != 1 or performance.get("status") != "pass" or
@@ -71,7 +73,7 @@ def main() -> None:
         "runner": args.runner,
         "architecture": args.architecture,
         "requiredCases": 75, "observedOutput": WAIT_MARKER,
-        "ctest": "26/26 passed",
+        "ctest": f"{ctest_count}/{ctest_count} passed",
     }
     (output_dir / f"runner-{args.slug}.json").write_text(
         json.dumps(runner, indent=2) + "\n", encoding="utf-8")

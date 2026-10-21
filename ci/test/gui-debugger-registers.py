@@ -138,10 +138,10 @@ def main():
                         f"production debugger register editor is not visible; OCR={screen!r}")
                 assertions.append("debugger-register-controls-visible")
 
-                # The debugger overlays most of the toolbar's Pause button;
-                # click its exposed left edge while keeping the window open.
+                # Pause through the debugger control itself; the toolbar
+                # button is covered by the debugger window.
                 run("xdotool", "mousemove", "--sync", "--window", window,
-                    "110", "42", "click", "1")
+                    "260", "60", "click", "1")
                 time.sleep(0.25)
                 original_af, before = main_af(root)
                 (args.capture_dir / "debugger-paused.png").write_bytes(

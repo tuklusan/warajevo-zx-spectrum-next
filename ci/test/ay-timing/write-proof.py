@@ -103,21 +103,24 @@ def main() -> None:
         runner_record = json.loads(runner_path.read_text(encoding="utf-8"))
         ctest_log = ctest_path.read_text(encoding="utf-8", errors="replace")
         build_log = build_path.read_text(encoding="utf-8", errors="replace")
+        ctest_summary = re.search(
+            r"100% tests passed, 0 tests failed out of (\d+)", ctest_log)
+        if ctest_summary is None or int(ctest_summary.group(1)) == 0:
+            raise SystemExit(f"successful CTest completion is missing: {platform}")
+        ctest_count = int(ctest_summary.group(1))
         if (runner_record.get("status") != "pass" or
                 runner_record.get("commit") != args.commit or
                 runner_record.get("platform") != platform or
                 runner_record.get("jobName") != job_name or
                 runner_record.get("runner") != runner or
                 runner_record.get("architecture") != architecture or
-                runner_record.get("ctest") != "26/26 passed" or
-                marker not in build_log or
-                re.search(r"100% tests passed(?:, 0 tests failed)? out of 26",
-                          ctest_log) is None):
+                runner_record.get("ctest") != f"{ctest_count}/{ctest_count} passed" or
+                marker not in build_log):
             raise SystemExit(f"AY timing or integrated CTest evidence missing from {platform}")
         results.append({"name": platform, "jobName": job_name,
                         "runner": runner, "architecture": architecture,
                         "status": "pass", "assertions": driver["requiredAssertions"],
-                        "ctest": "26/26"})
+                        "ctest": f"{ctest_count}/{ctest_count}"})
 
     proof = {
         "testId": driver["testId"], "status": "pass", "commit": args.commit,

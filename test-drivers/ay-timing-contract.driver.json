@@ -41,7 +41,7 @@
     },
     {
       "path": "ci/test/ay-timing/write-proof.py",
-      "sha256": "5e719a1220854ef800e15b03df3767be667527beee2db9948bf1f9860740ceec"
+      "sha256": "9778182f304876e8235f6cff93daa6c14c6bb9fd0aa3c69eda3a87dddda018fa"
     }
   ]
 }

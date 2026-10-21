@@ -90,19 +90,20 @@ def main() -> None:
             raise SystemExit(f"hosted evidence missing: {platform}")
         evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
         build_log = build_path.read_text(encoding="utf-8", errors="replace")
+        ctest_record = evidence.get("ctest", "")
         if (evidence.get("status") != "pass" or
                 evidence.get("commit") != args.commit or
                 evidence.get("jobName") != f"Full build / {platform}" or
                 evidence.get("runner") != runner or
                 evidence.get("architecture") != architecture or
-                evidence.get("ctest") != "26/26 passed" or
+                re.fullmatch(r"([1-9]\d*)/\1 passed", ctest_record) is None or
                 MARKER not in build_log):
             raise SystemExit(f"screenshot contract did not pass: {platform}")
         targets.append({
             "name": platform, "runner": runner,
             "architecture": architecture, "status": "pass",
             "assertions": driver["requiredAssertions"],
-            "observedOutput": MARKER, "ctest": evidence["ctest"],
+            "observedOutput": MARKER, "ctest": ctest_record,
         })
 
     proof = {

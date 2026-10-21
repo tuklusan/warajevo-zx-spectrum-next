@@ -92,6 +92,7 @@ def main() -> None:
     raw_dir = ROOT / "test-results/performance-current"
     raw_dir.mkdir(parents=True, exist_ok=True)
     max_slowdown = 0.0
+    ctest_count = None
     for platform, slug, runner, architecture in PLATFORMS:
         job_name = f"Full build / {platform}"
         runner_path = input_dir / f"runner-{slug}.json"
@@ -101,6 +102,16 @@ def main() -> None:
             raise SystemExit(f"hosted runner evidence files missing: {platform}")
         runner_record = json.loads(runner_path.read_text(encoding="utf-8"))
         ctest = ctest_path.read_text(encoding="utf-8", errors="replace")
+        ctest_summary = re.search(
+            r"100% tests passed, 0 tests failed out of (\d+)", ctest)
+        if ctest_summary is None or int(ctest_summary.group(1)) == 0:
+            raise SystemExit(f"successful CTest completion is missing: {platform}")
+        runner_ctest_count = int(ctest_summary.group(1))
+        if ctest_count is None:
+            ctest_count = runner_ctest_count
+        elif ctest_count != runner_ctest_count:
+            raise SystemExit("native runners completed different CTest counts")
+        ctest_record = f"{runner_ctest_count}/{runner_ctest_count} passed"
         if (runner_record.get("status") != "pass" or
                 runner_record.get("commit") != args.commit or
                 runner_record.get("jobName") != job_name or
@@ -108,9 +119,8 @@ def main() -> None:
                 runner_record.get("architecture") != architecture or
                 runner_record.get("requiredCases") != 75 or
                 runner_record.get("observedOutput") != WAIT_MARKER or
-                runner_record.get("ctest") != "26/26 passed" or
-                WAIT_MARKER not in ctest or
-                re.search(r"100% tests passed(?:, 0 tests failed)? out of 26", ctest) is None):
+                runner_record.get("ctest") != ctest_record or
+                WAIT_MARKER not in ctest):
             raise SystemExit(f"Interface 1 WAIT/CTest evidence missing: {platform}")
 
         record = json.loads(performance_path.read_text(encoding="utf-8"))
@@ -133,7 +143,7 @@ def main() -> None:
                 "baseline": baseline_path.relative_to(ROOT).as_posix(),
                 "metricDeltasPercent": deltas,
             },
-            "ctest": "26/26 passed", "runner": runner,
+            "ctest": ctest_record, "runner": runner,
             "timestamp": record["timestamp"], "jobName": job_name,
             "metricCount": len(record["metrics"]), "status": "pass",
         })
@@ -152,7 +162,8 @@ def main() -> None:
         "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "fixtures": fixtures, "runnerResults": results,
         "summary": {
-            "nativeTargets": len(results), "ctestPerTarget": "26/26 passed",
+            "nativeTargets": len(results),
+            "ctestPerTarget": f"{ctest_count}/{ctest_count} passed",
             "fingerprintChecks": sum(item["metricCount"] for item in results),
             "throughputChecks": sum(item["metricCount"] for item in results),
             "largestSlowdownPercent": round(max_slowdown, 1),

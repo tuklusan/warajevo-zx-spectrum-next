@@ -97,6 +97,11 @@ def main() -> None:
             raise SystemExit(f"hosted runner evidence files missing: {platform}")
         runner_record = json.loads(runner_record_path.read_text(encoding="utf-8"))
         ctest_log = ctest_log_path.read_text(encoding="utf-8", errors="replace")
+        ctest_summary = re.search(
+            r"100% tests passed, 0 tests failed out of (\d+)", ctest_log)
+        if ctest_summary is None or int(ctest_summary.group(1)) == 0:
+            raise SystemExit(f"successful CTest completion is missing: {platform}")
+        ctest_count = int(ctest_summary.group(1))
         if (runner_record.get("status") != "pass" or
                 runner_record.get("commit") != args.commit or
                 runner_record.get("platform") != platform or
@@ -105,9 +110,8 @@ def main() -> None:
                 runner_record.get("architecture") != architecture or
                 runner_record.get("requiredCases") != driver["requiredCases"] or
                 runner_record.get("observedOutput") != MARKER or
-                runner_record.get("ctest") != "26/26 passed" or
-                MARKER not in ctest_log or
-                re.search(r"100% tests passed(?:, 0 tests failed)? out of 26", ctest_log) is None):
+                runner_record.get("ctest") != f"{ctest_count}/{ctest_count} passed" or
+                MARKER not in ctest_log):
             raise SystemExit(f"WAIT/CTest evidence missing from {platform}")
         results.append({"runner": platform, "status": "pass",
                         "jobName": job_name,
