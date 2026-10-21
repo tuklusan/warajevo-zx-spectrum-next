@@ -61,6 +61,10 @@ def open_view_menu(host_window):
 
 def view_choice(host_window, row, proof_directory):
     x = open_view_menu(host_window)
+    choose_view_item(host_window, x, row, proof_directory)
+
+
+def choose_view_item(host_window, x, row, proof_directory):
     xdotool("mousemove", "--sync", "--window", host_window,
             str(x), str(42 + row * 28))
     time.sleep(0.2)
@@ -109,7 +113,13 @@ def main():
                             f"remote View action was not denied: {action_id}: {denial[-1]}")
                     assertions += 1
 
-                open_view_menu(host_window)
+                initial_status = capture(host_window,
+                    args.proof.parent / "status-visible.png", True)
+                if "Keyboard" not in initial_status:
+                    raise RuntimeError(
+                        f"initial status panel is not visible: {initial_status!r}")
+                assertions += 1
+                view_x = open_view_menu(host_window)
                 view_menu_text = capture(host_window,
                     args.proof.parent / "view-menu.png")
                 if "Fullscreen" not in view_menu_text or \
@@ -118,14 +128,7 @@ def main():
                     raise RuntimeError(
                         f"canonical View menu unavailable: {view_menu_text!r}")
                 assertions += 1
-                xdotool("key", "Escape")
-                initial_status = capture(host_window,
-                    args.proof.parent / "status-visible.png", True)
-                if "Keyboard" not in initial_status:
-                    raise RuntimeError(
-                        f"initial status panel is not visible: {initial_status!r}")
-                assertions += 1
-                view_choice(host_window, 1, args.proof.parent)
+                choose_view_item(host_window, view_x, 1, args.proof.parent)
                 hidden_status = capture(host_window,
                     args.proof.parent / "status-hidden.png", True)
                 if "Keyboard" in hidden_status:
