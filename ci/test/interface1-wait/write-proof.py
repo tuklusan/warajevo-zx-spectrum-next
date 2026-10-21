@@ -58,6 +58,7 @@ def git_blob(commit: str, path: str) -> bytes:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--commit", required=True)
+    parser.add_argument("--driver-commit")
     parser.add_argument("--run-id", required=True, type=int)
     parser.add_argument("--branch", required=True)
     parser.add_argument("--event", required=True)
@@ -66,17 +67,20 @@ def main() -> None:
     args = parser.parse_args()
     if re.fullmatch(r"[0-9a-f]{40}", args.commit) is None:
         raise SystemExit("commit must be a full lowercase Git SHA")
+    driver_commit = args.driver_commit or args.commit
+    if re.fullmatch(r"[0-9a-f]{40}", driver_commit) is None:
+        raise SystemExit("driver commit must be a full lowercase Git SHA")
 
-    driver = json.loads(git_blob(args.commit, DRIVER_PATH))
+    driver = json.loads(git_blob(driver_commit, DRIVER_PATH))
     if driver.get("testId") != "interface1-wait":
         raise SystemExit("unexpected test driver")
     fixtures = []
     for fixture in driver.get("fixtures", []):
         path = fixture.get("path", "")
-        data = git_blob(args.commit, path)
+        data = git_blob(driver_commit, path)
         digest = hashlib.sha256(data).hexdigest()
         if digest != fixture.get("sha256"):
-            raise SystemExit(f"fixture hash mismatch: {path}")
+            raise SystemExit(f"fixture hash mismatch at {driver_commit}: {path}")
         fixtures.append({"path": path, "sha256": digest})
 
     if args.branch != "main" or args.event not in ("push", "workflow_dispatch"):
@@ -118,6 +122,7 @@ def main() -> None:
         "observedOutput": MARKER,
         "workflowRun": f"https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/{args.run_id}",
         "workflowEvent": args.event, "branch": args.branch,
+        "fixtureMetadataCommit": driver_commit,
         "nativeBuildConfiguration": "Release; WZSN_BUILD_SOKOL_HOST=ON",
         "ctest": "all integrated CTests passed on each native runner",
         "runnerResults": results, "fixtures": fixtures,

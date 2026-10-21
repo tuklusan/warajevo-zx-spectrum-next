@@ -15,14 +15,27 @@ on:
       - 'tests/**/*.c'
       - 'tests/**/*.h'
   workflow_dispatch:
+    inputs:
+      evidence_run_id:
+        description: Reuse a completed native run's retained runner evidence
+        required: false
+        type: string
+      evidence_commit:
+        description: Full source commit recorded by that native run
+        required: false
+        type: string
 
 permissions:
+  actions: read
   contents: read
 
 jobs:
   clean-build:
     name: Full build / ${{ matrix.name }}
-    if: github.ref == 'refs/heads/main'
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name != 'workflow_dispatch' ||
+       (inputs.evidence_run_id == '' && inputs.evidence_commit == ''))
     runs-on: ${{ matrix.label }}
     strategy:
       fail-fast: false
@@ -160,12 +173,47 @@ jobs:
 
   write-hosted-proof:
     name: Generate hosted test evidence
-    if: github.event_name == 'workflow_dispatch' && success()
+    if: >-
+      always() && github.event_name == 'workflow_dispatch' &&
+      (inputs.evidence_run_id != '' || inputs.evidence_commit != '' ||
+       needs.clean-build.result == 'success')
     needs: clean-build
     runs-on: ubuntu-24.04
     steps:
       - name: Check out source
         uses: actions/checkout@v5
+
+      - name: Validate proof source selection
+        env:
+          EVIDENCE_COMMIT: ${{ inputs.evidence_commit }}
+          EVIDENCE_RUN_ID: ${{ inputs.evidence_run_id }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          if [[ -n "$EVIDENCE_COMMIT" && -n "$EVIDENCE_RUN_ID" ]]; then
+            curl --fail --silent --show-error \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer $GITHUB_TOKEN" \
+              "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/actions/runs/$EVIDENCE_RUN_ID" \
+              > "$RUNNER_TEMP/evidence-run.json"
+            python - <<'PY'
+          import json, os
+          from pathlib import Path
+          run = json.loads(Path(os.environ["RUNNER_TEMP"], "evidence-run.json").read_text())
+          if (run.get("status") != "completed" or
+                  run.get("conclusion") != "success" or
+                  run.get("head_branch") != "main" or
+                  run.get("head_sha") != os.environ["EVIDENCE_COMMIT"] or
+                  run.get("event") != "workflow_dispatch"):
+              raise SystemExit("evidence run must be a successful main-branch dispatch at the stated commit")
+          PY
+            exit 0
+          fi
+          if [[ -z "$EVIDENCE_COMMIT" && -z "$EVIDENCE_RUN_ID" && \
+                "${{ needs.clean-build.result }}" == "success" ]]; then
+            exit 0
+          fi
+          echo "Both evidence_run_id and evidence_commit are required for proof-only mode." >&2
+          exit 1
 
       - name: Download this run's native evidence
         uses: actions/download-artifact@v4
@@ -173,19 +221,28 @@ jobs:
           pattern: runner-evidence-*
           path: hosted-inputs
           merge-multiple: true
+          run-id: ${{ inputs.evidence_run_id || github.run_id }}
+          github-token: ${{ github.token }}
 
       - name: Generate proof records from this completed five-target run
+        env:
+          EVIDENCE_COMMIT: ${{ inputs.evidence_commit }}
+          EVIDENCE_RUN_ID: ${{ inputs.evidence_run_id }}
         run: |
+          source_commit="${EVIDENCE_COMMIT:-$GITHUB_SHA}"
+          source_run_id="${EVIDENCE_RUN_ID:-$GITHUB_RUN_ID}"
           python ci/test/interface1-wait/write-proof.py \
-            --commit "$GITHUB_SHA" --run-id "$GITHUB_RUN_ID" \
+            --commit "$source_commit" --driver-commit "$GITHUB_SHA" \
+            --run-id "$source_run_id" \
             --branch "$GITHUB_REF_NAME" --event "$GITHUB_EVENT_NAME" \
             --input-dir hosted-inputs
           python ci/test/performance/write-proof.py \
-            --commit "$GITHUB_SHA" --run-id "$GITHUB_RUN_ID" \
+            --commit "$source_commit" --run-id "$source_run_id" \
             --branch "$GITHUB_REF_NAME" --event "$GITHUB_EVENT_NAME" \
             --input-dir hosted-inputs
           python ci/test/ay-timing/write-proof.py \
-            --commit "$GITHUB_SHA" --run-id "$GITHUB_RUN_ID" \
+            --commit "$source_commit" --driver-commit "$GITHUB_SHA" \
+            --run-id "$source_run_id" \
             --branch "$GITHUB_REF_NAME" --event "$GITHUB_EVENT_NAME" \
             --input-dir hosted-inputs
 

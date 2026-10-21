@@ -16,11 +16,11 @@
     },
     {
       "path": "ci/test/interface1-wait/write-proof.py",
-      "sha256": "ab7eddb0aa4f163eca85e9971e6540a14be064f676753560f2451f8df2052b00"
+      "sha256": "05ede052ec453bb97b0092872703ca0d9b06b37b4f53f0c79ef60006edb4da61"
     },
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "80d7005abc5435e087de93a859cea399514144f50b3b704b85cc00a5da97acbc"
+      "sha256": "4b262bada45461a0dabf81064a75a282eb8bd436cbad828e2efea70fca55209b"
     },
     {
       "path": "ci/test/performance/write-runner-evidence.py",

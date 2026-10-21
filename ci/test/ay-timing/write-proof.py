@@ -62,6 +62,7 @@ def git_blob(commit: str, path: str) -> bytes:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--commit", required=True)
+    parser.add_argument("--driver-commit")
     parser.add_argument("--run-id", required=True, type=int)
     parser.add_argument("--branch", required=True)
     parser.add_argument("--event", required=True)
@@ -70,18 +71,21 @@ def main() -> None:
     args = parser.parse_args()
     if re.fullmatch(r"[0-9a-f]{40}", args.commit) is None:
         raise SystemExit("commit must be a full lowercase Git SHA")
+    driver_commit = args.driver_commit or args.commit
+    if re.fullmatch(r"[0-9a-f]{40}", driver_commit) is None:
+        raise SystemExit("driver commit must be a full lowercase Git SHA")
     if args.branch != "main" or args.event != "workflow_dispatch":
         raise SystemExit("AY proof requires a main-branch hosted dispatch")
 
-    driver = json.loads(git_blob(args.commit, DRIVER_PATH))
+    driver = json.loads(git_blob(driver_commit, DRIVER_PATH))
     if driver.get("testId") != "ay-timing-contract":
         raise SystemExit("unexpected AY test driver")
     fixtures = []
     for fixture in driver.get("fixtures", []):
         path = fixture.get("path", "")
-        digest = hashlib.sha256(git_blob(args.commit, path)).hexdigest()
+        digest = hashlib.sha256(git_blob(driver_commit, path)).hexdigest()
         if digest != fixture.get("sha256"):
-            raise SystemExit(f"fixture hash mismatch: {path}")
+            raise SystemExit(f"fixture hash mismatch at {driver_commit}: {path}")
         fixtures.append({"path": path, "sha256": digest})
 
     input_dir = Path(args.input_dir).resolve()
@@ -120,6 +124,7 @@ def main() -> None:
         "runId": args.run_id,
         "workflowRun": f"https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/{args.run_id}",
         "workflowEvent": args.event, "branch": args.branch,
+        "fixtureMetadataCommit": driver_commit,
         "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "assertionsPerRunner": driver["requiredAssertions"],
         "totalAssertions": driver["requiredAssertions"] * len(results),
