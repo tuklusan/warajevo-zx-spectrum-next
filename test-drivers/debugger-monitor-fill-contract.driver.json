@@ -1,7 +1,7 @@
 {
   "testId": "debugger-monitor-fill-contract",
   "command": "The source-push workflow builds wz_debugger_monitor_fill_contract and runs it through integrated CTest on all five native targets.",
-  "requiredAssertions": 21,
+  "requiredAssertions": 35,
   "runnerMatrix": [
     "Windows x64",
     "Linux x64",

@@ -26,9 +26,13 @@ static unsigned checks;
 int main(void)
 {
     wz_machine_t* machine = (wz_machine_t*)calloc(1u, sizeof(*machine));
+    wz_machine_t* mapped_machine = NULL;
     wz_debugger_window_t window;
+    wz_debugger_window_t mapped_window;
     wz_byte_t original_rom_byte;
     wz_byte_t original_boundary_byte;
+    bool mapped_machine_initialized = false;
+    bool mapped_window_initialized = false;
     int status = 1;
 
     if (machine == NULL ||
@@ -98,8 +102,62 @@ int main(void)
     wz_debugger_window_close(&window);
     CHECK(wz_debugger_window_dispatch_monitor_command(&window,
           "K 8000 8000 00", 14u) == WZ_DEBUGGER_WINDOW_NOT_OPEN);
+
+    mapped_machine = (wz_machine_t*)calloc(1u, sizeof(*mapped_machine));
+    CHECK(mapped_machine != NULL);
+    CHECK(wz_machine_init(mapped_machine, wz_machine_profile_128k_pal()) ==
+          WZ_RESULT_OK);
+    mapped_machine_initialized = true;
+    wz_debugger_window_init(&mapped_window);
+    mapped_window_initialized = true;
+    CHECK(wz_debugger_window_open(&mapped_window, mapped_machine, false) ==
+          WZ_DEBUGGER_WINDOW_OK);
+    CHECK(wz_debugger_window_set_paused(&mapped_window, true) ==
+          WZ_DEBUGGER_WINDOW_OK);
+    CHECK(wz_debugger_set_page_config(mapped_machine, 0x07u) == WZ_RESULT_OK);
+    wz_machine_memory_write(mapped_machine, 0xc000u, 0x80u);
+    wz_machine_memory_write(mapped_machine, 0xc001u, 0x81u);
+    wz_machine_memory_write(mapped_machine, 0xc002u, 0x82u);
+    wz_machine_memory_write(mapped_machine, 0xc003u, 0x83u);
+    CHECK(wz_debugger_set_page_config(mapped_machine, 0x05u) == WZ_RESULT_OK);
+    wz_machine_memory_write(mapped_machine, 0xc000u, 0x10u);
+    wz_machine_memory_write(mapped_machine, 0xc001u, 0x20u);
+    wz_machine_memory_write(mapped_machine, 0xc002u, 0x30u);
+    wz_machine_memory_write(mapped_machine, 0xc003u, 0x40u);
+    CHECK(wz_machine_memory_read(mapped_machine, 0xc000u) == 0x10u &&
+          wz_machine_memory_read(mapped_machine, 0xc001u) == 0x20u &&
+          wz_machine_memory_read(mapped_machine, 0xc002u) == 0x30u &&
+          wz_machine_memory_read(mapped_machine, 0xc003u) == 0x40u);
+    CHECK(wz_debugger_window_select_memory(&mapped_window, 0xc000u) ==
+          WZ_DEBUGGER_WINDOW_OK);
+    CHECK(wz_debugger_window_dispatch_monitor_command(&mapped_window,
+          "K C000 C002 A7", 14u) == WZ_DEBUGGER_WINDOW_OK);
+    CHECK(wz_machine_memory_read(mapped_machine, 0xc000u) == 0xa7u &&
+          wz_machine_memory_read(mapped_machine, 0xc001u) == 0xa7u &&
+          wz_machine_memory_read(mapped_machine, 0xc002u) == 0xa7u &&
+          wz_machine_memory_read(mapped_machine, 0xc003u) == 0x40u);
+    CHECK(wz_debugger_set_page_config(mapped_machine, 0x07u) == WZ_RESULT_OK);
+    CHECK(wz_machine_memory_read(mapped_machine, 0xc000u) == 0x80u &&
+          wz_machine_memory_read(mapped_machine, 0xc001u) == 0x81u &&
+          wz_machine_memory_read(mapped_machine, 0xc002u) == 0x82u &&
+          wz_machine_memory_read(mapped_machine, 0xc003u) == 0x83u);
+    CHECK(wz_debugger_set_page_config(mapped_machine, 0x05u) == WZ_RESULT_OK);
+    CHECK(wz_machine_memory_read(mapped_machine, 0xc000u) == 0xa7u &&
+          wz_machine_memory_read(mapped_machine, 0xc001u) == 0xa7u &&
+          wz_machine_memory_read(mapped_machine, 0xc002u) == 0xa7u &&
+          wz_machine_memory_read(mapped_machine, 0xc003u) == 0x40u);
+    wz_debugger_window_close(&mapped_window);
     status = 0;
 cleanup:
+    if (mapped_machine != NULL) {
+        if (mapped_window_initialized) {
+            wz_debugger_window_close(&mapped_window);
+        }
+        if (mapped_machine_initialized) {
+            wz_machine_destroy(mapped_machine);
+        }
+        free(mapped_machine);
+    }
     wz_debugger_window_close(&window);
     wz_machine_destroy(machine);
     free(machine);
