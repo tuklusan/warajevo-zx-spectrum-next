@@ -313,6 +313,28 @@ wz_debugger_window_result_t wz_debugger_window_dispatch_monitor_command(
         monitor_parse_hex(tokens[3], lengths[3], &value)) {
         return wz_debugger_window_set_register(window, reg, value);
     }
+    if (token_count == 4u &&
+        monitor_token_equal(tokens[0], lengths[0], "K")) {
+        wz_word_t first;
+        wz_word_t last;
+        wz_word_t byte_value;
+        if (!monitor_parse_hex(tokens[1], lengths[1], &first) ||
+            !monitor_parse_hex(tokens[2], lengths[2], &last) ||
+            !monitor_parse_hex(tokens[3], lengths[3], &byte_value) ||
+            byte_value > UINT8_MAX || last < first) {
+            return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
+        }
+        if (!wz_debugger_window_is_open(window)) {
+            return WZ_DEBUGGER_WINDOW_NOT_OPEN;
+        }
+        if (!window->paused) return WZ_DEBUGGER_WINDOW_NOT_PAUSED;
+        if (wz_debugger_fill_memory(window->machine, first,
+                (size_t)last - (size_t)first + 1u,
+                (wz_byte_t)byte_value) != WZ_RESULT_OK) {
+            return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+        }
+        return refresh_view(window);
+    }
     if (token_count >= 2u && token_count <= 3u &&
         monitor_token_equal(tokens[0], lengths[0], "!")) {
         wz_debugger_snapshot_t snapshot;
