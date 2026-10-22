@@ -746,12 +746,13 @@ add_test(NAME wz_debugger_monitor_fill_contract
 
 add_executable(wz_debugger_monitor_poke_contract
     ../../ci/test/debugger-monitor-poke-contract.c
-    ${WZSN_APP_SOURCES}
-    ${WZSN_CORE_SOURCES})
+    ${WZSN_SOURCE_ROOT}/app/wz_debugger_window.c
+    ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c
+    ${WZSN_SOURCE_ROOT}/app/wz_host_thread.c)
 target_include_directories(wz_debugger_monitor_poke_contract PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../src)
+    ${WZSN_SOURCE_ROOT})
 target_link_libraries(wz_debugger_monitor_poke_contract PRIVATE
-    wz_platform_options)
+    wz_core wz_warnings)
 add_test(NAME wz_debugger_monitor_poke_contract
     COMMAND wz_debugger_monitor_poke_contract)
 
