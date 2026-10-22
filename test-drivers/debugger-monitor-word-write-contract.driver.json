@@ -1,30 +1,42 @@
 {
-  "fixtures": [
-    {
-      "path": "ci/test/debugger-monitor-word-write-contract.c",
-      "sha256": "837a25fa14e4741f2f2f65c7695c1eb3847771bf46be093824ef8d699b5c95cd"
-    },
-    {
-      "path": "src/app/wz_debugger_window.c",
-      "sha256": "f026b3f8382296634875f3dfe1fa153d8c87b38378f029f5c30af82635621546"
-    },
-    {
-      "path": "src/app/wz_sokol_main.c",
-      "sha256": "f349179db801c2b48f2a20e6618e0cf17a53b348711a567337c7b267ad3f0f08"
-    },
-    {
-      "path": "src/cmake/CMakeLists.txt",
-      "sha256": "1ccf4203bf0898d8484414243ce847ed3edcb0c93310ee7729a7dd4cd8adf5e4"
-    }
-  ],
-  "command": "The source-push workflow builds wz_debugger_monitor_word_write_contract and runs it through integrated CTest on all five native targets.",
   "requiredAssertions": 32,
-  "testId": "debugger-monitor-word-write-contract",
   "runnerMatrix": [
     "Windows x64",
     "Linux x64",
     "Linux ARM64",
     "macOS ARM64",
     "macOS Intel"
-  ]
+  ],
+  "command": "The source-push workflow builds wz_debugger_monitor_word_write_contract and runs it through integrated CTest on all five native targets.",
+  "fixtures": [
+    {
+      "sha256": "837a25fa14e4741f2f2f65c7695c1eb3847771bf46be093824ef8d699b5c95cd",
+      "path": "ci/test/debugger-monitor-word-write-contract.c"
+    },
+    {
+      "sha256": "f026b3f8382296634875f3dfe1fa153d8c87b38378f029f5c30af82635621546",
+      "path": "src/app/wz_debugger_window.c"
+    },
+    {
+      "sha256": "e8adfe2fdf7c168d1fe6f1bba2880074d78c790a1d48e2acb4332e5ac6ef611c",
+      "path": "src/app/wz_debugger_window.h"
+    },
+    {
+      "sha256": "f349179db801c2b48f2a20e6618e0cf17a53b348711a567337c7b267ad3f0f08",
+      "path": "src/app/wz_sokol_main.c"
+    },
+    {
+      "sha256": "0a09dcf50c5270f25cb6991589a6c37d44202e8688bb34949041dcb291c39485",
+      "path": "src/core/wz_debugger.c"
+    },
+    {
+      "sha256": "4c01627af6f9c1efcf32567b405d2b81b407fdf41fccc6c18782dcda81960d22",
+      "path": "src/core/wz_debugger.h"
+    },
+    {
+      "sha256": "1ccf4203bf0898d8484414243ce847ed3edcb0c93310ee7729a7dd4cd8adf5e4",
+      "path": "src/cmake/CMakeLists.txt"
+    }
+  ],
+  "testId": "debugger-monitor-word-write-contract"
 }
