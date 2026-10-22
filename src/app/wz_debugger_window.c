@@ -166,6 +166,9 @@ static wz_debugger_window_result_t refresh_view(wz_debugger_window_t* window)
     }
     window->memory_length = memory_length;
     window->disassembly_length = consumed;
+    window->breakpoint_address = window->machine->debugger_breakpoint_address;
+    window->breakpoint_active = wz_debugger_breakpoint_active(window->machine);
+    window->breakpoint_hit = wz_debugger_breakpoint_hit(window->machine);
     return WZ_DEBUGGER_WINDOW_OK;
 }
 
@@ -282,6 +285,37 @@ wz_debugger_window_result_t wz_debugger_window_set_register(
         return WZ_DEBUGGER_WINDOW_NOT_PAUSED;
     }
     if (wz_debugger_set_register(window->machine, reg, value) != WZ_RESULT_OK) {
+        return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+    }
+    return refresh_view(window);
+}
+
+wz_debugger_window_result_t wz_debugger_window_set_breakpoint(
+    wz_debugger_window_t* window,
+    wz_word_t address)
+{
+    if (!wz_debugger_window_is_open(window)) {
+        return WZ_DEBUGGER_WINDOW_NOT_OPEN;
+    }
+    if (!window->paused) {
+        return WZ_DEBUGGER_WINDOW_NOT_PAUSED;
+    }
+    if (wz_debugger_set_breakpoint(window->machine, address) != WZ_RESULT_OK) {
+        return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+    }
+    return refresh_view(window);
+}
+
+wz_debugger_window_result_t wz_debugger_window_clear_breakpoint(
+    wz_debugger_window_t* window)
+{
+    if (!wz_debugger_window_is_open(window)) {
+        return WZ_DEBUGGER_WINDOW_NOT_OPEN;
+    }
+    if (!window->paused) {
+        return WZ_DEBUGGER_WINDOW_NOT_PAUSED;
+    }
+    if (wz_debugger_clear_breakpoint(window->machine) != WZ_RESULT_OK) {
         return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
     }
     return refresh_view(window);
@@ -463,6 +497,21 @@ wz_debugger_window_result_t wz_debugger_window_dispatch_monitor_command(
         wz_debugger_window_close(window);
         return WZ_DEBUGGER_WINDOW_OK;
     }
+    if (token_count == 2u &&
+        monitor_token_equal(tokens[0], lengths[0], "B")) {
+        wz_word_t address;
+        if (!wz_debugger_window_is_open(window)) {
+            return WZ_DEBUGGER_WINDOW_NOT_OPEN;
+        }
+        if (!window->paused) return WZ_DEBUGGER_WINDOW_NOT_PAUSED;
+        if (monitor_token_equal(tokens[1], lengths[1], "CLEAR")) {
+            return wz_debugger_window_clear_breakpoint(window);
+        }
+        if (!monitor_parse_hex(tokens[1], lengths[1], &address)) {
+            return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
+        }
+        return wz_debugger_window_set_breakpoint(window, address);
+    }
     if (token_count == 1u &&
         monitor_token_equal(tokens[0], lengths[0], "U")) {
         wz_result_t result;
@@ -525,8 +574,11 @@ wz_debugger_window_result_t wz_debugger_window_step(
     if (!window->paused) {
         return WZ_DEBUGGER_WINDOW_NOT_PAUSED;
     }
-    if (wz_debugger_step(window->machine, &window->executed) != WZ_RESULT_OK) {
-        return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+    {
+        wz_result_t result = wz_debugger_step(window->machine, &window->executed);
+        if (result != WZ_RESULT_OK && result != WZ_RESULT_BREAKPOINT_HIT) {
+            return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+        }
     }
     return refresh_view(window);
 }
@@ -541,9 +593,12 @@ wz_debugger_window_result_t wz_debugger_window_continue(
     if (!window->paused || max_instructions == 0u) {
         return WZ_DEBUGGER_WINDOW_NOT_PAUSED;
     }
-    if (wz_debugger_continue(window->machine, max_instructions,
-                             &window->executed) != WZ_RESULT_OK) {
-        return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+    {
+        wz_result_t result = wz_debugger_continue(window->machine,
+            max_instructions, &window->executed);
+        if (result != WZ_RESULT_OK && result != WZ_RESULT_BREAKPOINT_HIT) {
+            return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+        }
     }
     return refresh_view(window);
 }

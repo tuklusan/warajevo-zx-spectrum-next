@@ -36,6 +36,7 @@ typedef struct {
     wz_debugger_snapshot_t snapshot;
     wz_debugger_page_info_t paging;
     wz_word_t memory_address;
+    wz_word_t breakpoint_address;
     wz_byte_t memory[WZ_DEBUGGER_WINDOW_MEMORY_BYTES];
     size_t memory_length;
     char disassembly[WZ_DEBUGGER_WINDOW_DISASSEMBLY_CAPACITY];
@@ -44,6 +45,8 @@ typedef struct {
     bool open;
     bool paused;
     bool trace_view_visible;
+    bool breakpoint_active;
+    bool breakpoint_hit;
 } wz_debugger_window_t;
 
 void wz_debugger_window_init(wz_debugger_window_t* window);
@@ -70,6 +73,11 @@ wz_debugger_window_result_t wz_debugger_window_set_register(
     wz_debugger_window_t* window,
     wz_debugger_register_t reg,
     wz_word_t value);
+wz_debugger_window_result_t wz_debugger_window_set_breakpoint(
+    wz_debugger_window_t* window,
+    wz_word_t address);
+wz_debugger_window_result_t wz_debugger_window_clear_breakpoint(
+    wz_debugger_window_t* window);
 wz_debugger_window_result_t wz_debugger_window_dispatch_monitor_command(
     wz_debugger_window_t* window,
     const char* command,

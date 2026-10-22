@@ -6067,6 +6067,36 @@ static void wz_host_ui_draw_debugger_window(struct nk_context* context,
     nk_label(context, window->paused
         ? "Memory editor (paused machine only):" :
           "Memory editor disabled while the machine runs.", NK_TEXT_LEFT);
+    if (window->breakpoint_active) {
+        (void)snprintf(line, sizeof(line), "Breakpoint: %s%04X",
+            window->breakpoint_hit ? "hit at " : "at ",
+            window->breakpoint_address);
+    } else {
+        (void)snprintf(line, sizeof(line), "Breakpoint: none");
+    }
+    nk_label(context, line, NK_TEXT_LEFT);
+    nk_layout_row_dynamic(context, 24.0f, 2);
+    if (!window->paused) nk_widget_disable_begin(context);
+    if (nk_button_label(context, "Set breakpoint at address")) {
+        size_t address;
+        if (wz_host_parse_hex_value(session->debugger_memory_address_text,
+                4u, &address) && address <= 0xffffu &&
+            wz_debugger_window_set_breakpoint(window,
+                (wz_word_t)address) == WZ_DEBUGGER_WINDOW_OK) {
+            (void)snprintf(session->debugger_register_status,
+                sizeof(session->debugger_register_status),
+                "Breakpoint set at %04X", (unsigned)address);
+        }
+    }
+    if (nk_button_label(context, "Clear breakpoint")) {
+        if (wz_debugger_window_clear_breakpoint(window) ==
+                WZ_DEBUGGER_WINDOW_OK) {
+            (void)snprintf(session->debugger_register_status,
+                sizeof(session->debugger_register_status),
+                "Breakpoint cleared");
+        }
+    }
+    if (!window->paused) nk_widget_disable_end(context);
     nk_layout_row_dynamic(context, 24.0f, 2);
     if (session->debugger_memory_value_length < 0)
         session->debugger_memory_value_length = 0;
@@ -6181,7 +6211,7 @@ static void wz_host_ui_draw_debugger_window(struct nk_context* context,
     if (!window->paused) nk_widget_disable_end(context);
     nk_layout_row_dynamic(context, 20.0f, 1);
     nk_label(context,
-        "Monitor: R SETREG <register> <hex>, U, ! <IFF|-1> [IM], K <first> <last> <byte>, M <address> [bytes...], P <byte...>, W <word...>, Q",
+        "Monitor: B <address>|CLEAR, R SETREG <register> <hex>, U, ! <IFF|-1> [IM], K <first> <last> <byte>, M <address> [bytes...], P <byte...>, W <word...>, Q",
              NK_TEXT_LEFT);
     nk_layout_row_dynamic(context, 24.0f, 2);
     if (session->debugger_monitor_command_length < 0) {

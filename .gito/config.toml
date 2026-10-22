@@ -1,9 +1,9 @@
 # The structured issue review is sufficient for the pre-push gate. Avoid a
 # second model request for an optional prose summary.
 summary_prompt = ""
-# Keep the mandatory review packet small; changed lines remain in the diff,
-# with up to 5,000 tokens of source context per changed file.
-max_code_tokens = 5000
+# Keep the mandatory review packet compact; changed lines remain in the diff,
+# with up to 1,000 tokens of source context per changed file.
+max_code_tokens = 1000
 
 [prompt_vars]
 requirements = """
