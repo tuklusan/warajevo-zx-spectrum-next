@@ -1,64 +1,64 @@
 {
   "testId": "full-native-build-gate",
   "status": "pass",
-  "commit": "bf270b79ad46ca77a437b8fd0bb9ef6078217653",
-  "tree": "09ed4748b03b0ff4f34f6f3f9d613bdb45d34ae5",
-  "runId": 39709980594,
+  "commit": "dd10a17f67603aea0050e95a5f5b7d06d6776684",
+  "tree": "0697ef98e11a17ab7607fcf909a1bb3060c65651",
+  "runId": 39714414602,
   "event": "workflow_dispatch",
   "runner": "GitHub Actions native matrix",
   "architecture": "x64 and ARM64",
-  "timestamp": "2026-10-22T02:13:12+00:00",
+  "timestamp": "2026-10-22T03:02:01+00:00",
   "checks": [
     "Clean Release build with WZSN_BUILD_SOKOL_HOST=ON",
-    "Integrated CTest: 31/31 per target",
-    "Phase-16 correctness and performance: 30 fingerprints and 30 throughput comparisons passed; maximum slowdown 34.8%",
+    "Integrated CTest: 32/32 per target",
+    "Phase-16 correctness and performance: 30 fingerprints and 30 throughput comparisons passed; maximum slowdown 35.1%",
     "Interface-1 WAIT: 75 checks per target (375 total)",
     "Sanitized Microdrive transition fuzz passed on non-Windows targets",
-    "Debugger monitor fill contract: 35 assertions per target"
+    "Debugger monitor poke contract: 34 assertions per target"
   ],
   "targets": [
     {
       "name": "Windows x64",
       "conclusion": "success",
-      "ctest": "31/31",
+      "ctest": "32/32",
       "runner": "windows-2025",
       "waitChecks": 75
     },
     {
       "name": "Linux x64",
       "conclusion": "success",
-      "ctest": "31/31",
+      "ctest": "32/32",
       "runner": "ubuntu-24.04",
       "waitChecks": 75
     },
     {
       "name": "Linux ARM64",
       "conclusion": "success",
-      "ctest": "31/31",
+      "ctest": "32/32",
       "runner": "ubuntu-24.04-arm",
       "waitChecks": 75
     },
     {
       "name": "macOS ARM64",
       "conclusion": "success",
-      "ctest": "31/31",
+      "ctest": "32/32",
       "runner": "macos-15",
       "waitChecks": 75
     },
     {
       "name": "macOS Intel",
       "conclusion": "success",
-      "ctest": "31/31",
+      "ctest": "32/32",
       "runner": "macos-15-intel",
       "waitChecks": 75
     }
   ],
   "phase16": {
     "status": "pass",
-    "runId": 39709980594,
+    "runId": 39714414602,
     "fingerprintsPassed": 30,
     "throughputComparisonsPassed": 30,
-    "largestSlowdownPercent": 34.8
+    "largestSlowdownPercent": 35.1
   },
   "fixtures": [
     {
@@ -71,7 +71,7 @@
     },
     {
       "path": "ci/test/interface1-wait/write-proof.py",
-      "sha256": "ab7eddb0aa4f163eca85e9971e6540a14be064f676753560f2451f8df2052b00"
+      "sha256": "1178a8d429b21769d8393c2d0ff1f908263f8ca60922ee401878b64a5c57e887"
     },
     {
       "path": "ci/test/performance/baseline.c",
@@ -111,11 +111,11 @@
     },
     {
       "path": "ci/test/performance/write-proof.py",
-      "sha256": "26201d858d9be74418f9165e1a055f772f3c77ae9133a106bb8fd8f5e3a6ab32"
+      "sha256": "f19b016b90e89a16f2a75d6359c6667d7013bef46725a877157f95842ad2d822"
     },
     {
       "path": "ci/test/performance/write-runner-evidence.py",
-      "sha256": "ec2c8d0c36427fb8ea51ee2ffe8f5702eec1d63a93332130c62a974a8d8208e7"
+      "sha256": "5efe8c7f2b9f108ee0f5a38d5a6be05dc97cf4715ede82b3e2ee7ef9e9b44bb7"
     },
     {
       "path": "docs/design/interface1-microdrive-zxnet.md",
@@ -179,15 +179,15 @@
     },
     {
       "path": "src/app/wz_debugger_window.c",
-      "sha256": "29fb66ffad4cf54eb556bda824b3c4359c5f64429ec547d0d24f6962c61d6611"
+      "sha256": "82f423c49aed6cb8682c147de969900c5104e413f15f290f9e5d38b9d8d99cc3"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "0ab6e7bcc4a07c78027553a51b0ca99de91b085b0a3e039d9d45e71f14c4836b"
+      "sha256": "3054f5022679663d440c4ba547760c43130db1cd6f35480eef68950e24c72ac1"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "0e3f895558d4b7587cc5ee13650d7ab02ff26e9e504aac6fbb3635d14ed5a857"
+      "sha256": "959f13b2a781c4de8bdba19a727bcbf9764d19dc7212a2da16c15ce5aa0018e7"
     },
     {
       "path": "ci/test/debugger-monitor-fill-contract.c",
@@ -209,8 +209,8 @@
       }
     ]
   },
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39709980594",
-  "proofEvidenceRunId": 39707820446,
-  "assertionEvidenceRunId": 39709980594,
-  "proofRecordRunId": 39709980594
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39714414602",
+  "proofEvidenceRunId": 39714414602,
+  "assertionEvidenceRunId": 39714414602,
+  "proofRecordRunId": 39714414602
 }

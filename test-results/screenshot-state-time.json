@@ -1,13 +1,13 @@
 {
   "testId": "screenshot-state-time",
   "status": "pass",
-  "commit": "bf270b79ad46ca77a437b8fd0bb9ef6078217653",
+  "commit": "dd10a17f67603aea0050e95a5f5b7d06d6776684",
   "runner": "Windows x64, Linux x64, Linux ARM64, macOS ARM64, and macOS Intel hosted runners",
-  "runId": 39709980594,
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39709980594",
+  "runId": 39714414602,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39714414602",
   "workflowEvent": "workflow_dispatch",
   "branch": "main",
-  "timestamp": "2026-10-22T02:13:08+00:00",
+  "timestamp": "2026-10-22T03:02:01+00:00",
   "assertionsPerRunner": 20,
   "totalAssertions": 100,
   "nativeBuildConfiguration": "Release; WZSN_BUILD_SOKOL_HOST=ON",
@@ -19,7 +19,7 @@
       "status": "pass",
       "assertions": 20,
       "observedOutput": "PASS screenshot success and failure preserve canonical machine hash and master tick (20 assertions)",
-      "ctest": "31/31 passed"
+      "ctest": "32/32 passed"
     },
     {
       "name": "Linux x64",
@@ -28,7 +28,7 @@
       "status": "pass",
       "assertions": 20,
       "observedOutput": "PASS screenshot success and failure preserve canonical machine hash and master tick (20 assertions)",
-      "ctest": "31/31 passed"
+      "ctest": "32/32 passed"
     },
     {
       "name": "Linux ARM64",
@@ -37,7 +37,7 @@
       "status": "pass",
       "assertions": 20,
       "observedOutput": "PASS screenshot success and failure preserve canonical machine hash and master tick (20 assertions)",
-      "ctest": "31/31 passed"
+      "ctest": "32/32 passed"
     },
     {
       "name": "macOS ARM64",
@@ -46,7 +46,7 @@
       "status": "pass",
       "assertions": 20,
       "observedOutput": "PASS screenshot success and failure preserve canonical machine hash and master tick (20 assertions)",
-      "ctest": "31/31 passed"
+      "ctest": "32/32 passed"
     },
     {
       "name": "macOS Intel",
@@ -55,7 +55,7 @@
       "status": "pass",
       "assertions": 20,
       "observedOutput": "PASS screenshot success and failure preserve canonical machine hash and master tick (20 assertions)",
-      "ctest": "31/31 passed"
+      "ctest": "32/32 passed"
     }
   ],
   "fixtures": [
@@ -101,7 +101,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "0e3f895558d4b7587cc5ee13650d7ab02ff26e9e504aac6fbb3635d14ed5a857"
+      "sha256": "959f13b2a781c4de8bdba19a727bcbf9764d19dc7212a2da16c15ce5aa0018e7"
     },
     {
       "path": "src/app/wz_telnet_negotiation.c",
@@ -131,7 +131,5 @@
       "path": "src/core/wz_state.h",
       "sha256": "46ec8063cc5976b743d53a23b64c34c84583878c9793434d3622c8f8a38f9aa3"
     }
-  ],
-  "proofGenerationRun": 39709980594,
-  "nativeEvidenceRun": 39709980594
+  ]
 }

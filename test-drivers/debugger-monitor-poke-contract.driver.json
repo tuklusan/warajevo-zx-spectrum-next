@@ -1,0 +1,38 @@
+{
+  "testId": "debugger-monitor-poke-contract",
+  "command": "The source-push workflow builds wz_debugger_monitor_poke_contract and runs it through integrated CTest on all five native targets.",
+  "requiredAssertions": 34,
+  "runnerMatrix": [
+    "Windows x64",
+    "Linux x64",
+    "Linux ARM64",
+    "macOS ARM64",
+    "macOS Intel"
+  ],
+  "fixtures": [
+    {
+      "path": "ci/test/debugger-monitor-poke-contract.c",
+      "sha256": "36df0848eb4d412545a488c9cac489eac75575b3b2bd9c1b5cd7fd056e49e124"
+    },
+    {
+      "path": "src/app/wz_debugger_window.c",
+      "sha256": "82f423c49aed6cb8682c147de969900c5104e413f15f290f9e5d38b9d8d99cc3"
+    },
+    {
+      "path": "src/core/wz_debugger.c",
+      "sha256": "0a09dcf50c5270f25cb6991589a6c37d44202e8688bb34949041dcb291c39485"
+    },
+    {
+      "path": "src/core/wz_debugger.h",
+      "sha256": "4c01627af6f9c1efcf32567b405d2b81b407fdf41fccc6c18782dcda81960d22"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "959f13b2a781c4de8bdba19a727bcbf9764d19dc7212a2da16c15ce5aa0018e7"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "3054f5022679663d440c4ba547760c43130db1cd6f35480eef68950e24c72ac1"
+    }
+  ]
+}
