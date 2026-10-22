@@ -181,7 +181,8 @@ def main():
                 value_y = debugger_top + 317
                 run("xdotool", "mousemove", "--sync",
                     str(debugger_left + 190), str(address_y), "click", "1")
-                run("xdotool", "key", "ctrl+a", "type", "--clearmodifiers",
+                run("xdotool", "key", "ctrl+a")
+                run("xdotool", "type", "--clearmodifiers", "--delay", "80",
                     "8000")
                 time.sleep(0.25)
                 click_at(debugger_left + 570, address_y)
