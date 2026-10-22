@@ -1,10 +1,10 @@
 {
   "testId": "debugger-monitor-undo-contract",
   "status": "pass",
-  "commit": "1313e894d5a7e0a332df54edef0c87f585f421a5",
+  "commit": "7a802da2da37ed85d31818c18bdc6828caaebc69",
   "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
-  "timestamp": "2026-10-22T04:17:00Z",
-  "workflowRun": 39721466664,
+  "timestamp": "2026-10-22T04:26:17Z",
+  "workflowRun": 39722201032,
   "assertions": 14,
   "ctest": "35/35 per target",
   "targets": [
@@ -57,5 +57,8 @@
       "sha256": "4db398b773bf7e30f23baf028e3864ad2399faeb778e4cc146e767bd9060cb73"
     }
   ],
-  "workflowUrl": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39721466664"
+  "workflowUrl": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39722201032",
+  "proofEvidenceRunId": 39722201032,
+  "assertionEvidenceRunId": 39721466664,
+  "proofRecordRunId": 39722201032
 }

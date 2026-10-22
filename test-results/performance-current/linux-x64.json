@@ -1,58 +1,58 @@
 {
   "schema": 1,
   "status": "pass",
-  "commit": "6484511a109e4197e30747f07906ad7925a1e9eb",
+  "commit": "7a802da2da37ed85d31818c18bdc6828caaebc69",
   "runner": "Linux-ubuntu-24.04",
   "architecture": "X64",
-  "timestamp": "2026-10-22T04:01:34Z",
+  "timestamp": "2026-10-22T04:25:49Z",
   "compiler": "GNU 13.3.0",
   "metrics": [
     {
       "name": "cpu_execution",
       "unit": "instructions",
       "operations": "250005",
-      "median_cpu_seconds": 0.013012,
-      "operations_per_second": 19213418.383,
+      "median_cpu_seconds": 0.012948,
+      "operations_per_second": 19308387.396,
       "fingerprint": "52af84e53ed19a63"
     },
     {
       "name": "raster_generation",
       "unit": "frames",
       "operations": "384",
-      "median_cpu_seconds": 0.02922,
-      "operations_per_second": 13141.684,
+      "median_cpu_seconds": 0.028906,
+      "operations_per_second": 13284.439,
       "fingerprint": "d3d8bb78938b5fb1"
     },
     {
       "name": "audio_mixing",
       "unit": "samples",
       "operations": "2000000",
-      "median_cpu_seconds": 0.042292,
-      "operations_per_second": 47290267.663,
+      "median_cpu_seconds": 0.042319,
+      "operations_per_second": 47260095.938,
       "fingerprint": "56e7cab2bab26d0d"
     },
     {
       "name": "tape_playback",
       "unit": "master_ticks",
       "operations": "4000000",
-      "median_cpu_seconds": 0.010829,
-      "operations_per_second": 369378520.639,
+      "median_cpu_seconds": 0.010892,
+      "operations_per_second": 367242012.486,
       "fingerprint": "40000000001db212"
     },
     {
       "name": "snapshot_serialization",
       "unit": "snapshots",
       "operations": "8192",
-      "median_cpu_seconds": 0.019655,
-      "operations_per_second": 416789.621,
+      "median_cpu_seconds": 0.019739,
+      "operations_per_second": 415015.958,
       "fingerprint": "5bda2a39ca868954"
     },
     {
       "name": "ui_presentation",
       "unit": "frames",
       "operations": "512",
-      "median_cpu_seconds": 0.024579,
-      "operations_per_second": 20830.791,
+      "median_cpu_seconds": 0.024372,
+      "operations_per_second": 21007.714,
       "fingerprint": "6b9c6deb0ca3fbc9"
     }
   ]

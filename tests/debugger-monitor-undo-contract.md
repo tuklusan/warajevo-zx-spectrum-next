@@ -15,9 +15,9 @@ arguments, register restoration, unchanged memory and tick, and repeated undo
 with an empty history.
 
 The contract passed on Windows x64, Linux x64/ARM64, and macOS ARM64/Intel in
-exact-source Release/Sokol run `39721466664` at commit
-`1313e894d5a7e0a332df54edef0c87f585f421a5`. All 35 integrated CTests passed
-per target.
+exact-source Release/Sokol run `39722201032` at commit
+`7a802da2da37ed85d31818c18bdc6828caaebc69`. All 35 integrated CTests and all
+Phase-16 gates passed; maximum slowdown was 18.3%.
 
 Proof and fixture hashes: [debugger-monitor-undo-contract.json](../test-results/debugger-monitor-undo-contract.json)
 and [debugger-monitor-undo-contract.driver.json](../test-drivers/debugger-monitor-undo-contract.driver.json).

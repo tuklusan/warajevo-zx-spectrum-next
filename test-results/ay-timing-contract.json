@@ -1,13 +1,13 @@
 {
   "testId": "ay-timing-contract",
   "status": "pass",
-  "commit": "6484511a109e4197e30747f07906ad7925a1e9eb",
-  "runId": 39719951673,
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39719951673",
+  "commit": "7a802da2da37ed85d31818c18bdc6828caaebc69",
+  "runId": 39722201032,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39722201032",
   "workflowEvent": "workflow_dispatch",
   "branch": "main",
-  "fixtureMetadataCommit": "6484511a109e4197e30747f07906ad7925a1e9eb",
-  "timestamp": "2026-10-22T04:02:46+00:00",
+  "fixtureMetadataCommit": "7a802da2da37ed85d31818c18bdc6828caaebc69",
+  "timestamp": "2026-10-22T04:26:17+00:00",
   "assertionsPerRunner": 67,
   "totalAssertions": 335,
   "observedOutput": "AY timing contract passed (67 assertions)",
@@ -20,7 +20,7 @@
       "architecture": "X64",
       "status": "pass",
       "assertions": 67,
-      "ctest": "34/34"
+      "ctest": "35/35"
     },
     {
       "name": "Linux x64",
@@ -29,7 +29,7 @@
       "architecture": "X64",
       "status": "pass",
       "assertions": 67,
-      "ctest": "34/34"
+      "ctest": "35/35"
     },
     {
       "name": "Linux ARM64",
@@ -38,7 +38,7 @@
       "architecture": "ARM64",
       "status": "pass",
       "assertions": 67,
-      "ctest": "34/34"
+      "ctest": "35/35"
     },
     {
       "name": "macOS ARM64",
@@ -47,7 +47,7 @@
       "architecture": "ARM64",
       "status": "pass",
       "assertions": 67,
-      "ctest": "34/34"
+      "ctest": "35/35"
     },
     {
       "name": "macOS Intel",
@@ -56,7 +56,7 @@
       "architecture": "X64",
       "status": "pass",
       "assertions": 67,
-      "ctest": "34/34"
+      "ctest": "35/35"
     }
   ],
   "fixtures": [
@@ -66,7 +66,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "afa2d5ff78b73090213defadb3d92dd0e36ed4b0490cb7a3abb87398d8bb3586"
+      "sha256": "4db398b773bf7e30f23baf028e3864ad2399faeb778e4cc146e767bd9060cb73"
     },
     {
       "path": "src/core/audio/wz_ay.c",

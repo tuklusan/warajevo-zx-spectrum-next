@@ -1,71 +1,88 @@
 {
   "testId": "full-native-build-gate",
   "status": "pass",
-  "commit": "6484511a109e4197e30747f07906ad7925a1e9eb",
-  "tree": "ab8c7b89b4ee384b5e2077b68684a9497a7810a8",
-  "runId": 39719951673,
+  "commit": "7a802da2da37ed85d31818c18bdc6828caaebc69",
+  "tree": "24438f3150840f98810836cfcf246c06ce1999cd",
+  "runId": 39722201032,
   "event": "workflow_dispatch",
   "runner": "GitHub Actions native matrix",
   "architecture": "x64 and ARM64",
-  "timestamp": "2026-10-22T04:02:46+00:00",
+  "timestamp": "2026-10-22T04:26:17+00:00",
   "checks": [
     "Clean Release build with WZSN_BUILD_SOKOL_HOST=ON",
-    "Integrated CTest: 34/34 per target",
-    "Phase-16 correctness and performance: 30 fingerprints and 30 throughput comparisons passed; maximum slowdown 29.0%",
+    "Integrated CTest: 35/35 per target",
+    "Phase-16 correctness and performance: 30 fingerprints and 30 throughput comparisons passed; maximum slowdown 18.3%",
     "Interface-1 WAIT: 75 checks per target (375 total)",
     "Sanitized Microdrive transition fuzz passed on non-Windows targets",
     "Debugger monitor poke contract: 34 assertions per target",
     "Debugger monitor quit contract: 16 assertions per target",
-    "Debugger monitor memory write contract: 25 assertions per target"
+    "Debugger monitor memory write contract: 25 assertions per target",
+    "Debugger monitor undo contract: 14 assertions per target"
   ],
   "targets": [
     {
       "name": "Windows x64",
       "conclusion": "success",
-      "ctest": "34/34",
+      "ctest": "35/35",
       "runner": "windows-2025",
       "waitChecks": 75
     },
     {
       "name": "Linux x64",
       "conclusion": "success",
-      "ctest": "34/34",
+      "ctest": "35/35",
       "runner": "ubuntu-24.04",
       "waitChecks": 75
     },
     {
       "name": "Linux ARM64",
       "conclusion": "success",
-      "ctest": "34/34",
+      "ctest": "35/35",
       "runner": "ubuntu-24.04-arm",
       "waitChecks": 75
     },
     {
       "name": "macOS ARM64",
       "conclusion": "success",
-      "ctest": "34/34",
+      "ctest": "35/35",
       "runner": "macos-15",
       "waitChecks": 75
     },
     {
       "name": "macOS Intel",
       "conclusion": "success",
-      "ctest": "34/34",
+      "ctest": "35/35",
       "runner": "macos-15-intel",
       "waitChecks": 75
     }
   ],
   "phase16": {
     "status": "pass",
-    "runId": 39719951673,
+    "runId": 39722201032,
     "fingerprintsPassed": 30,
     "throughputComparisonsPassed": 30,
-    "largestSlowdownPercent": 29.0
+    "largestSlowdownPercent": 18.3
   },
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
       "sha256": "1a24084f2117fbf746e296b4f8376c54d9321efa710f60528fa70a8da7771904"
+    },
+    {
+      "path": "ci/test/debugger-monitor-command-contract.c",
+      "sha256": "3cff15ad3292ef39559723f260d1b84d667eef7033bc96f542a95f9ca4eb39e2"
+    },
+    {
+      "path": "ci/test/debugger-monitor-fill-contract.c",
+      "sha256": "c44790b86d024b874dac78437e73aea47ce535c1b4398ccb7181220e8142007e"
+    },
+    {
+      "path": "ci/test/debugger-monitor-undo-contract.c",
+      "sha256": "9987bf4c88034119be862a9163d91263d6fc9549f23f30d6c5b62cc8b63f3a50"
+    },
+    {
+      "path": "ci/test/debugger-register-window-contract.c",
+      "sha256": "e4cf0a1a5342682e503ccae9d759f4ba113d376be714889d9d865a4998d3775b"
     },
     {
       "path": "ci/test/interface1-wait/interface1-wait-contract.c",
@@ -74,6 +91,14 @@
     {
       "path": "ci/test/interface1-wait/write-proof.py",
       "sha256": "1178a8d429b21769d8393c2d0ff1f908263f8ca60922ee401878b64a5c57e887"
+    },
+    {
+      "path": "ci/test/performance/CMakeLists.txt",
+      "sha256": "00e55369533639d8e25f77cfd67eb51d6c66356086ea7803d4ba8e477b3101e7"
+    },
+    {
+      "path": "ci/test/performance/README.md",
+      "sha256": "2bf8352a30b9efb7e2952046ceb4f1998f25e7d39feed2947c837a5a24368012"
     },
     {
       "path": "ci/test/performance/baseline.c",
@@ -100,16 +125,8 @@
       "sha256": "10108ff21ed725cb5e62d9e0bdd7cc3df0e40c011f6925b8fc24a39c0fa38be5"
     },
     {
-      "path": "ci/test/performance/CMakeLists.txt",
-      "sha256": "00e55369533639d8e25f77cfd67eb51d6c66356086ea7803d4ba8e477b3101e7"
-    },
-    {
       "path": "ci/test/performance/compare.py",
       "sha256": "b7317caff4efa4f1ab982078f1ee8e5694fae2245f881736ec4a2179ef873b4b"
-    },
-    {
-      "path": "ci/test/performance/README.md",
-      "sha256": "2bf8352a30b9efb7e2952046ceb4f1998f25e7d39feed2947c837a5a24368012"
     },
     {
       "path": "ci/test/performance/write-proof.py",
@@ -120,8 +137,32 @@
       "sha256": "5efe8c7f2b9f108ee0f5a38d5a6be05dc97cf4715ede82b3e2ee7ef9e9b44bb7"
     },
     {
+      "path": "ci/test/telnet-do-parser/telnet-do-parser.c",
+      "sha256": "4ae982f282e6fb8fbb6b318e338faf8fe97f8810b5ed1cfa169422ad882e07ee"
+    },
+    {
       "path": "docs/design/interface1-microdrive-zxnet.md",
       "sha256": "a275dfd1cc380031eb01347219fcdc6a273d9fa962e8c5503d502b4ec37dd706"
+    },
+    {
+      "path": "src/app/wz_debugger_window.c",
+      "sha256": "2940c4304f237711e829cef0f074ae962a8f977e1e3971436a7bf3354ffcbac1"
+    },
+    {
+      "path": "src/app/wz_debugger_window.h",
+      "sha256": "e8adfe2fdf7c168d1fe6f1bba2880074d78c790a1d48e2acb4332e5ac6ef611c"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "927801d3ed7cf96fcf760c1708d72325cab5dc5a83d11eab73b024b3b43c9165"
+    },
+    {
+      "path": "src/app/wz_telnet_keyboard_command.c",
+      "sha256": "74daf16ed99440541ff5e7a43fb7bf30dd958c42d6a32d6d2466ab987e2f4240"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "4db398b773bf7e30f23baf028e3864ad2399faeb778e4cc146e767bd9060cb73"
     },
     {
       "path": "src/core/wz_bus.c",
@@ -158,42 +199,6 @@
     {
       "path": "src/core/wz_zxnet.h",
       "sha256": "3f8e58593ca15fc173531d1174b19c4bea95fd8123bf1855b34148d79b73d495"
-    },
-    {
-      "sha256": "74daf16ed99440541ff5e7a43fb7bf30dd958c42d6a32d6d2466ab987e2f4240",
-      "path": "src/app/wz_telnet_keyboard_command.c"
-    },
-    {
-      "sha256": "4ae982f282e6fb8fbb6b318e338faf8fe97f8810b5ed1cfa169422ad882e07ee",
-      "path": "ci/test/telnet-do-parser/telnet-do-parser.c"
-    },
-    {
-      "path": "src/app/wz_debugger_window.h",
-      "sha256": "e8adfe2fdf7c168d1fe6f1bba2880074d78c790a1d48e2acb4332e5ac6ef611c"
-    },
-    {
-      "path": "ci/test/debugger-register-window-contract.c",
-      "sha256": "e4cf0a1a5342682e503ccae9d759f4ba113d376be714889d9d865a4998d3775b"
-    },
-    {
-      "path": "ci/test/debugger-monitor-command-contract.c",
-      "sha256": "3cff15ad3292ef39559723f260d1b84d667eef7033bc96f542a95f9ca4eb39e2"
-    },
-    {
-      "path": "src/app/wz_debugger_window.c",
-      "sha256": "3f36795f1cc955b1f1ff7584b01477d43fe070444db221c30510c618986c3dc3"
-    },
-    {
-      "path": "src/app/wz_sokol_main.c",
-      "sha256": "c3c1f1abb518a26dd64ebdd9df04c3f0e950d3d0a65365c42257994f351d8f51"
-    },
-    {
-      "path": "src/cmake/CMakeLists.txt",
-      "sha256": "afa2d5ff78b73090213defadb3d92dd0e36ed4b0490cb7a3abb87398d8bb3586"
-    },
-    {
-      "path": "ci/test/debugger-monitor-fill-contract.c",
-      "sha256": "c44790b86d024b874dac78437e73aea47ce535c1b4398ccb7181220e8142007e"
     }
   ],
   "githubCleanupPolicy": "After pinning proof records, delete the workflow run and all hosted artifacts and caches.",
@@ -212,7 +217,8 @@
     ]
   },
   "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39719951673",
-  "proofEvidenceRunId": 39719951673,
+  "proofEvidenceRunId": 39722201032,
   "assertionEvidenceRunId": 39719951673,
-  "proofRecordRunId": 39719951673
+  "proofRecordRunId": 39719951673,
+  "workflowUrl": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39722201032"
 }
