@@ -1,0 +1,133 @@
+{
+  "testId": "debugger-monitor-breakpoint-contract",
+  "status": "pass",
+  "commit": "ee016380748ef35b923c2e97eada8e5454c1fccb",
+  "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
+  "timestamp": "2026-10-22T15:39:34Z",
+  "workflowRun": 39806895012,
+  "workflowUrl": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39806895012",
+  "proofRun": 39808234500,
+  "proofUrl": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39808234500",
+  "nativeMatrix": "All five native jobs passed; proof generation passed after refreshing stale fixture pins.",
+  "build": "Release with WZSN_BUILD_SOKOL_HOST=ON passed on all five native targets",
+  "ctest": "37/37 per target",
+  "assertions": 51,
+  "behavior": [
+    "48K B command set/clear is paused-only, rejects malformed input, and stops before executing the selected instruction without advancing the master tick.",
+    "The comparator leaves program bytes unchanged; stepping remains stopped until clear, and execution resumes after clear.",
+    "128K breakpoint captures the physical page mapped at the selected address. A breakpoint on bank 6 at C000 does not fire on bank 7 when bank 7 is also selected for the shadow display; it fires again when bank 6 is restored.",
+    "The contract covers ROM, fixed RAM, and switchable RAM mapping keys."
+  ],
+  "targets": [
+    {
+      "name": "Windows x64",
+      "runner": "windows-2025",
+      "status": "pass",
+      "ctest": "37/37",
+      "assertions": 51,
+      "phase16": "pass"
+    },
+    {
+      "name": "Linux x64",
+      "runner": "ubuntu-24.04",
+      "status": "pass",
+      "ctest": "37/37",
+      "assertions": 51,
+      "phase16": "pass"
+    },
+    {
+      "name": "Linux ARM64",
+      "runner": "ubuntu-24.04-arm",
+      "status": "pass",
+      "ctest": "37/37",
+      "assertions": 51,
+      "phase16": "pass"
+    },
+    {
+      "name": "macOS ARM64",
+      "runner": "macos-15",
+      "status": "pass",
+      "ctest": "37/37",
+      "assertions": 51,
+      "phase16": "pass"
+    },
+    {
+      "name": "macOS Intel",
+      "runner": "macos-15-intel",
+      "status": "pass",
+      "ctest": "37/37",
+      "assertions": 51,
+      "phase16": "pass"
+    }
+  ],
+  "phase16Proof": "phase16-performance-current.json",
+  "phase16Summary": {
+    "fingerprintChecks": 30,
+    "throughputChecks": 30,
+    "largestSlowdownPercent": 33.3
+  },
+  "sourceReview": {
+    "status": "passed; findings adjudicated",
+    "tool": "Gito 4.5.0",
+    "reviewedCommits": [
+      "390184d865591cafd2e74e073083f7ce9b3136a4",
+      "ee016380748ef35b923c2e97eada8e5454c1fccb"
+    ],
+    "findings": [
+      {
+        "title": "Repeated paused-state checks",
+        "disposition": "Advisory only: each public window adapter operation must enforce its own paused/open preconditions for direct callers."
+      },
+      {
+        "title": "Possible status-format buffer truncation",
+        "disposition": "False positive: the 128-byte local buffer is sufficient for the fixed status text and four-digit breakpoint address."
+      },
+      {
+        "title": "Page identity on breakpoint checks",
+        "disposition": "No issue reported after adding the physical mapping key and bank-switch contract."
+      }
+    ]
+  },
+  "fixtures": [
+    {
+      "path": "ci/test/debugger-monitor-breakpoint-contract.c",
+      "sha256": "2fd94ca5a6e0b4e5efe6c8abe9a719b8e9a4b0bbb12a3722edaebe26c869450a"
+    },
+    {
+      "path": "src/app/wz_debugger_window.c",
+      "sha256": "357d66b8dea2379d297c930b923e221e1ad3c4b2d50d0cc5d21fc41d12a7929c"
+    },
+    {
+      "path": "src/app/wz_debugger_window.h",
+      "sha256": "b09c07a16e4a6fef08a9c7f80f068cf2ceb5d49ece2a45d1e1055095358bd7fe"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "8f3e3d1c740c9a3cacdf15713347189d00f1f18d07ee3cc747c2d6006d353c1e"
+    },
+    {
+      "path": "src/core/wz_debugger.c",
+      "sha256": "e1865e928c68db122a8353316c85444c4b3ffc67a4cf3ee380db376139597239"
+    },
+    {
+      "path": "src/core/wz_debugger.h",
+      "sha256": "4c01627af6f9c1efcf32567b405d2b81b407fdf41fccc6c18782dcda81960d22"
+    },
+    {
+      "path": "src/core/wz_z80.c",
+      "sha256": "0e0dbb4c8fb07b7f0d4c0ac5da2c1622d9d84d93b8b0818cc3a68f5c96c83790"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "a1694d4cd24d110ac399ceb5f9a715b71af9af62d8cb99d642791c4c0ad887df"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "35e1849d37d62d6b98ee49ca9dcdfd38e165ac3d59984fab312e10c42fbf593f"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "e30e3ac9d0e9ee84e901938ce35d921014b401d3e91088319c93d3a52e4c7177"
+    }
+  ]
+}
