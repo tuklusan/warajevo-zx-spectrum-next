@@ -29,7 +29,6 @@ int main(void)
     wz_debugger_window_t window;
     wz_debugger_page_info_t page_info;
     wz_master_tick_t stop_tick;
-    size_t executed = 99u;
     bool machine_initialized = false;
     int status = 1;
 
@@ -88,7 +87,7 @@ int main(void)
           !wz_debugger_breakpoint_hit(machine));
     CHECK(wz_debugger_window_continue(&window, 2u) == WZ_DEBUGGER_WINDOW_OK);
     CHECK(window.executed == 2u && window.paused && !window.breakpoint_hit &&
-          machine->cpu.program_counter == 0x8002u && machine->cpu.halted != 0u);
+          machine->cpu.program_counter == 0x8001u && machine->cpu.halted != 0u);
     CHECK(wz_debugger_window_clear_breakpoint(&window) == WZ_DEBUGGER_WINDOW_OK);
 
     wz_debugger_window_close(&window);

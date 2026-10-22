@@ -12,7 +12,7 @@
   "fixtures": [
     {
       "path": "ci/test/debugger-monitor-breakpoint-contract.c",
-      "sha256": "e658e47eaa3d8caa4ff5f4ab6a270d18c79540cd4ae1b292574374467cb87492"
+      "sha256": "4481b1e1e2a26ca85168370b8134c3c9e97d9ea18a3f99cd7f7668d6461a796a"
     },
     {
       "path": "src/app/wz_debugger_window.c",
