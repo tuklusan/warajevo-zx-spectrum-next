@@ -17,7 +17,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "4db398b773bf7e30f23baf028e3864ad2399faeb778e4cc146e767bd9060cb73"
+      "sha256": "a0d599d354f110dac90de698e01d905072a9aeaaf0e982d5e7b942a3f3960396"
     },
     {
       "path": "src/core/audio/wz_ay.c",
