@@ -744,6 +744,17 @@ target_link_libraries(wz_debugger_monitor_fill_contract PRIVATE
 add_test(NAME wz_debugger_monitor_fill_contract
     COMMAND wz_debugger_monitor_fill_contract)
 
+add_executable(wz_debugger_monitor_poke_contract
+    ../../ci/test/debugger-monitor-poke-contract.c
+    ${WZSN_APP_SOURCES}
+    ${WZSN_CORE_SOURCES})
+target_include_directories(wz_debugger_monitor_poke_contract PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../src)
+target_link_libraries(wz_debugger_monitor_poke_contract PRIVATE
+    wz_platform_options)
+add_test(NAME wz_debugger_monitor_poke_contract
+    COMMAND wz_debugger_monitor_poke_contract)
+
 set(WZSN_ULA_128K_TRACE_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/test-output")
 file(MAKE_DIRECTORY "${WZSN_ULA_128K_TRACE_OUTPUT}")
 add_test(NAME wz_ula_128k_trace_contract

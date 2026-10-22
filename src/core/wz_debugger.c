@@ -564,6 +564,37 @@ wz_result_t wz_debugger_write_memory(wz_machine_t* machine,
     return WZ_RESULT_OK;
 }
 
+wz_result_t wz_debugger_write_memory_bytes(wz_machine_t* machine,
+                                           wz_word_t address,
+                                           const wz_byte_t* values,
+                                           const bool* write_mask,
+                                           size_t length)
+{
+    wz_result_t result;
+
+    if (machine == 0 || values == 0 || length == 0u ||
+        !valid_range(address, length)) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    if (machine->debugger_access_mode != WZ_DEBUGGER_PAUSED_MUTATION) {
+        result = WZ_RESULT_INVALID_STATE;
+    } else if (!writable_range(machine, address, length)) {
+        result = WZ_RESULT_UNSUPPORTED_OPERATION;
+    } else {
+        for (size_t index = 0u; index < length; ++index) {
+            if (write_mask == 0 || write_mask[index]) {
+                wz_word_t current = (wz_word_t)(address + index);
+                wz_machine_memory_write(machine, current, values[index]);
+                wz_debugger_trace_memory_result(machine, current,
+                                                values[index], WZ_RESULT_OK);
+            }
+        }
+        return WZ_RESULT_OK;
+    }
+    wz_debugger_trace_memory_result(machine, address, values[0], result);
+    return result;
+}
+
 wz_result_t wz_debugger_write_memory_word(wz_machine_t* machine,
                                           wz_word_t address,
                                           wz_word_t value)

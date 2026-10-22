@@ -287,8 +287,8 @@ wz_debugger_window_result_t wz_debugger_window_dispatch_monitor_command(
     const char* command,
     size_t command_length)
 {
-    const char* tokens[5];
-    size_t lengths[5];
+    const char* tokens[18];
+    size_t lengths[18];
     size_t cursor = 0u;
     size_t token_count = 0u;
     wz_debugger_register_t reg;
@@ -333,6 +333,44 @@ wz_debugger_window_result_t wz_debugger_window_dispatch_monitor_command(
                 (wz_byte_t)byte_value) != WZ_RESULT_OK) {
             return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
         }
+        return refresh_view(window);
+    }
+    if (token_count >= 2u && token_count <= 17u &&
+        monitor_token_equal(tokens[0], lengths[0], "P")) {
+        wz_byte_t bytes[16];
+        bool write_mask[16];
+        size_t byte_count = token_count - 1u;
+        for (size_t index = 0u; index < byte_count; ++index) {
+            if (lengths[index + 1u] == 2u &&
+                tokens[index + 1u][0] == '-' &&
+                tokens[index + 1u][1] == '1') {
+                bytes[index] = 0u;
+                write_mask[index] = false;
+            } else {
+                wz_word_t parsed;
+                if (!monitor_parse_hex(tokens[index + 1u],
+                                       lengths[index + 1u], &parsed) ||
+                    parsed > UINT8_MAX) {
+                    return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
+                }
+                bytes[index] = (wz_byte_t)parsed;
+                write_mask[index] = true;
+            }
+        }
+        if (!wz_debugger_window_is_open(window)) {
+            return WZ_DEBUGGER_WINDOW_NOT_OPEN;
+        }
+        if (!window->paused) return WZ_DEBUGGER_WINDOW_NOT_PAUSED;
+        if ((size_t)window->memory_address + byte_count > 0x10000u) {
+            return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
+        }
+        if (wz_debugger_write_memory_bytes(window->machine,
+                window->memory_address, bytes, write_mask, byte_count) !=
+            WZ_RESULT_OK) {
+            return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+        }
+        window->memory_address =
+            (wz_word_t)(window->memory_address + byte_count);
         return refresh_view(window);
     }
     if (token_count >= 2u && token_count <= 3u &&

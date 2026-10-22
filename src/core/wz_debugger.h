@@ -113,6 +113,11 @@ wz_result_t wz_debugger_set_access_mode(wz_machine_t* machine,
 wz_result_t wz_debugger_write_memory(wz_machine_t* machine,
                                      wz_word_t address,
                                      wz_byte_t value);
+wz_result_t wz_debugger_write_memory_bytes(wz_machine_t* machine,
+                                           wz_word_t address,
+                                           const wz_byte_t* values,
+                                           const bool* write_mask,
+                                           size_t length);
 wz_result_t wz_debugger_write_memory_word(wz_machine_t* machine,
                                           wz_word_t address,
                                           wz_word_t value);
