@@ -693,6 +693,8 @@ wz_result_t wz_debugger_set_breakpoint(wz_machine_t* machine,
         return WZ_RESULT_INVALID_ARGUMENT;
     }
     machine->debugger_breakpoint_address = address;
+    machine->debugger_breakpoint_mapping =
+        wz_machine_debugger_mapping_key(machine, address);
     machine->debugger_breakpoint_active = 1u;
     machine->debugger_breakpoint_hit = 0u;
     wz_debugger_trace_result(machine, WZ_TRACE_DEBUGGER_BREAKPOINT_HIT,
@@ -707,6 +709,7 @@ wz_result_t wz_debugger_clear_breakpoint(wz_machine_t* machine)
     }
     machine->debugger_breakpoint_active = 0u;
     machine->debugger_breakpoint_hit = 0u;
+    machine->debugger_breakpoint_mapping = 0xffu;
     wz_debugger_trace_result(machine, WZ_TRACE_DEBUGGER_BREAKPOINT_HIT,
                              WZ_RESULT_OK, 0);
     return WZ_RESULT_OK;

@@ -1,6 +1,6 @@
 {
   "testId": "debugger-monitor-breakpoint-contract",
-  "requiredAssertions": 31,
+  "requiredAssertions": 51,
   "runnerMatrix": [
     "Windows x64",
     "Linux x64",
@@ -8,11 +8,11 @@
     "macOS ARM64",
     "macOS Intel"
   ],
-  "command": "The source-push workflow builds wz_debugger_monitor_breakpoint_contract and runs it through integrated CTest on all five native targets.",
+  "command": "The source-push workflow builds wz_debugger_monitor_breakpoint_contract and runs it through integrated CTest on all five native targets; the breakpoint is bound to the physical page selected for its logical address.",
   "fixtures": [
     {
       "path": "ci/test/debugger-monitor-breakpoint-contract.c",
-      "sha256": "4481b1e1e2a26ca85168370b8134c3c9e97d9ea18a3f99cd7f7668d6461a796a"
+      "sha256": "2fd94ca5a6e0b4e5efe6c8abe9a719b8e9a4b0bbb12a3722edaebe26c869450a"
     },
     {
       "path": "src/app/wz_debugger_window.c",
@@ -28,7 +28,7 @@
     },
     {
       "path": "src/core/wz_debugger.c",
-      "sha256": "0a09dcf50c5270f25cb6991589a6c37d44202e8688bb34949041dcb291c39485"
+      "sha256": "e1865e928c68db122a8353316c85444c4b3ffc67a4cf3ee380db376139597239"
     },
     {
       "path": "src/core/wz_debugger.h",
@@ -36,11 +36,15 @@
     },
     {
       "path": "src/core/wz_z80.c",
-      "sha256": "cef55b660b43d3f7fb3737962d92e062966e126b3b99f8b87816553303c820f9"
+      "sha256": "0e0dbb4c8fb07b7f0d4c0ac5da2c1622d9d84d93b8b0818cc3a68f5c96c83790"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "808eef5dddd9851505b1861fa89e9916cee1cc3776f165a1ae34dc01f4105b95"
+      "sha256": "a1694d4cd24d110ac399ceb5f9a715b71af9af62d8cb99d642791c4c0ad887df"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "35e1849d37d62d6b98ee49ca9dcdfd38e165ac3d59984fab312e10c42fbf593f"
     },
     {
       "path": "src/cmake/CMakeLists.txt",

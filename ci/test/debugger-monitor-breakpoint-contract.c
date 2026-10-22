@@ -63,6 +63,7 @@ int main(void)
     CHECK(window.breakpoint_active && !window.breakpoint_hit &&
           window.breakpoint_address == 0x8000u &&
           wz_debugger_breakpoint_active(machine));
+    CHECK(wz_machine_memory_read(machine, 0x8000u) == 0x00u);
 
     stop_tick = machine->master_tick;
     CHECK(wz_debugger_window_continue(&window, 8u) == WZ_DEBUGGER_WINDOW_OK);
@@ -88,7 +89,10 @@ int main(void)
     CHECK(wz_debugger_window_continue(&window, 2u) == WZ_DEBUGGER_WINDOW_OK);
     CHECK(window.executed == 2u && window.paused && !window.breakpoint_hit &&
           machine->cpu.program_counter == 0x8001u && machine->cpu.halted != 0u);
+    CHECK(wz_machine_memory_read(machine, 0x8000u) == 0x00u &&
+          wz_machine_memory_read(machine, 0x8001u) == 0x76u);
     CHECK(wz_debugger_window_clear_breakpoint(&window) == WZ_DEBUGGER_WINDOW_OK);
+    CHECK(wz_machine_memory_read(machine, 0x8000u) == 0x00u);
 
     wz_debugger_window_close(&window);
     CHECK(wz_debugger_window_set_breakpoint(&window, 0x8000u) ==
@@ -101,6 +105,10 @@ int main(void)
     CHECK(machine != NULL &&
           wz_machine_init(machine, wz_machine_profile_128k_pal()) == WZ_RESULT_OK);
     machine_initialized = true;
+    CHECK(wz_machine_debugger_mapping_key(machine, 0x0000u) == 0x10u);
+    CHECK(wz_machine_debugger_mapping_key(machine, 0x4000u) == 0x25u);
+    CHECK(wz_machine_debugger_mapping_key(machine, 0x8000u) == 0x22u);
+    CHECK(wz_machine_debugger_mapping_key(machine, 0xc000u) == 0x20u);
     machine->cpu.program_counter = 0xc000u;
     wz_machine_memory_write(machine, 0xc000u, 0x00u);
     wz_debugger_window_init(&window);
@@ -109,14 +117,33 @@ int main(void)
     CHECK(wz_debugger_set_page_config(machine, 0x06u) == WZ_RESULT_OK);
     CHECK(wz_debugger_read_page_info(machine, &page_info) == WZ_RESULT_OK &&
           page_info.paging_value == 0x06u);
+    CHECK(wz_machine_debugger_mapping_key(machine, 0xc000u) == 0x26u);
+    wz_machine_memory_write(machine, 0xc000u, 0x00u);
     stop_tick = machine->master_tick;
     CHECK(wz_debugger_window_dispatch_monitor_command(&window, "B C000", 6u) ==
           WZ_DEBUGGER_WINDOW_OK);
+    CHECK(wz_machine_memory_read(machine, 0xc000u) == 0x00u);
+    CHECK(wz_debugger_set_page_config(machine, 0x0fu) == WZ_RESULT_OK);
+    wz_machine_memory_write(machine, 0xc000u, 0x00u);
+    CHECK(wz_debugger_read_page_info(machine, &page_info) == WZ_RESULT_OK &&
+          page_info.paging_value == 0x0fu && page_info.screen_bank == 7u);
+    CHECK(wz_machine_debugger_mapping_key(machine, 0xc000u) == 0x27u);
+    CHECK(wz_debugger_window_continue(&window, 1u) == WZ_DEBUGGER_WINDOW_OK);
+    CHECK(window.executed == 1u && !window.breakpoint_hit &&
+          machine->cpu.program_counter == 0xc001u);
+    CHECK(wz_debugger_jump(machine, 0xc000u) == WZ_RESULT_OK);
+    CHECK(wz_debugger_set_page_config(machine, 0x06u) == WZ_RESULT_OK);
+    stop_tick = machine->master_tick;
     CHECK(wz_debugger_window_continue(&window, 1u) == WZ_DEBUGGER_WINDOW_OK);
     CHECK(window.breakpoint_hit && window.breakpoint_active &&
           window.breakpoint_address == 0xc000u && window.executed == 0u &&
           machine->cpu.program_counter == 0xc000u &&
           machine->master_tick == stop_tick && window.paging.paging_value == 0x06u);
+    CHECK(wz_machine_memory_read(machine, 0xc000u) == 0x00u);
+    CHECK(wz_debugger_window_clear_breakpoint(&window) == WZ_DEBUGGER_WINDOW_OK);
+    CHECK(!window.breakpoint_active && !wz_debugger_breakpoint_active(machine));
+    CHECK(wz_debugger_set_page_config(machine, 0x0fu) == WZ_RESULT_OK &&
+          wz_machine_memory_read(machine, 0xc000u) == 0x00u);
     status = 0;
 
 cleanup:

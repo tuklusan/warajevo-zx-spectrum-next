@@ -9,8 +9,11 @@ SANYALnet Labs." See LICENSE for full terms. -->
 
 The production Debugger / Monitor exposes the shared machine breakpoint through
 paused-only controls and the local-only `B <address>` / `B CLEAR` commands.
-The window adapter reports the active address and hit state, stops bounded
-execution before the instruction at the breakpoint, and preserves the machine
-until the user clears the breakpoint. The contract covers open/running/paused/
-closed gating, malformed commands, stop address and master tick, clear and
-resume, and execution after clearing. CTest runs it on all five native targets.
+The core binds a breakpoint to the physical page currently mapped at that
+logical address. It stops before executing the target instruction, without
+advancing the master tick or changing program bytes. Switching the 128K mapping
+to its shadow-screen page does not trigger a breakpoint bound to a different
+RAM page; restoring the original page triggers it again. The contract covers
+open/running/paused/closed gating, malformed commands, stop address and master
+tick, byte preservation, clear and resume, and execution after clearing. CTest
+runs it on all five native targets.

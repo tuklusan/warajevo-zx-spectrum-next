@@ -264,6 +264,7 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     machine->debugger_access_mode = 0u;
     machine->debugger_breakpoint_active = 0u;
     machine->debugger_breakpoint_hit = 0u;
+    machine->debugger_breakpoint_mapping = 0xffu;
     machine->debugger_breakpoint_address = 0u;
     machine->has_48k_rom = 0u;
     machine->has_128k_rom = 0u;
@@ -1291,6 +1292,25 @@ wz_byte_t wz_machine_memory_read(const wz_machine_t* machine, wz_word_t address)
         }
     }
     return machine->memory[address];
+}
+
+wz_byte_t wz_machine_debugger_mapping_key(const wz_machine_t* machine,
+                                           wz_word_t address)
+{
+    if (machine == 0 || machine->profile == 0 ||
+        machine->profile->kind != WZ_MACHINE_128K_PAL) {
+        return 0x80u;
+    }
+    if (address < 0x4000u) {
+        return (wz_byte_t)(0x10u | ((machine->paging_7ffd >> 4u) & 1u));
+    }
+    if (address < 0x8000u) {
+        return 0x25u;
+    }
+    if (address < 0xc000u) {
+        return 0x22u;
+    }
+    return (wz_byte_t)(0x20u | (machine->paging_7ffd & 0x07u));
 }
 
 static void wz_machine_memory_write_raw(wz_machine_t* machine,

@@ -133,6 +133,7 @@ typedef struct wz_machine {
     wz_byte_t debugger_access_mode;
     wz_byte_t debugger_breakpoint_active;
     wz_byte_t debugger_breakpoint_hit;
+    wz_byte_t debugger_breakpoint_mapping;
     wz_word_t debugger_breakpoint_address;
     wz_z80_state_t debugger_undo_cpu;
     wz_byte_t debugger_undo_valid;
@@ -311,6 +312,9 @@ wz_master_tick_t wz_machine_interface1_control_latch_tick(
 bool wz_machine_interface1_port_selected(wz_word_t address, wz_byte_t port_low);
 wz_qword_t wz_machine_rom_identity(const wz_byte_t* bytes, size_t length);
 wz_byte_t wz_machine_memory_read(const wz_machine_t* machine, wz_word_t address);
+/* Physical page selected for a logical breakpoint address. */
+wz_byte_t wz_machine_debugger_mapping_key(const wz_machine_t* machine,
+                                           wz_word_t address);
 void wz_machine_memory_write(wz_machine_t* machine, wz_word_t address,
                              wz_byte_t value);
 wz_result_t wz_machine_128k_paging_write(wz_machine_t* machine,

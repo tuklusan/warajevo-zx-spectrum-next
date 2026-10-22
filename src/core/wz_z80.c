@@ -2299,7 +2299,9 @@ static wz_result_t wz_z80_step_impl(wz_machine_t* machine,
     }
 
     if (machine->debugger_breakpoint_active != 0u &&
-        machine->cpu.program_counter == machine->debugger_breakpoint_address) {
+        machine->cpu.program_counter == machine->debugger_breakpoint_address &&
+        wz_machine_debugger_mapping_key(machine, machine->cpu.program_counter) ==
+            machine->debugger_breakpoint_mapping) {
         wz_trace_event_t breakpoint_event = {0};
         machine->debugger_breakpoint_hit = 1u;
         breakpoint_event.kind = WZ_TRACE_DEVELOPER_MARKER;
