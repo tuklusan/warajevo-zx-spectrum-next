@@ -125,6 +125,26 @@ static bool monitor_parse_decimal(const char* token, size_t length,
     return true;
 }
 
+static bool monitor_parse_length(const char* token, size_t length,
+                                 size_t* value)
+{
+    size_t index;
+    size_t parsed = 0u;
+    if (token == NULL || value == NULL || length == 0u || length > 5u) {
+        return false;
+    }
+    for (index = 0u; index < length; ++index) {
+        const unsigned char character = (unsigned char)token[index];
+        size_t digit;
+        if (character < '0' || character > '9') return false;
+        digit = (size_t)(character - '0');
+        if (parsed > (65536u - digit) / 10u) return false;
+        parsed = parsed * 10u + digit;
+    }
+    *value = parsed;
+    return true;
+}
+
 static bool monitor_parse_register(const char* token, size_t length,
                                    wz_debugger_register_t* reg)
 {
@@ -273,6 +293,26 @@ wz_debugger_window_result_t wz_debugger_window_write_memory(
     return refresh_view(window);
 }
 
+wz_debugger_window_result_t wz_debugger_window_copy_memory(
+    wz_debugger_window_t* window,
+    wz_word_t source_address,
+    wz_word_t destination_address,
+    size_t length)
+{
+    if (!wz_debugger_window_is_open(window)) {
+        return WZ_DEBUGGER_WINDOW_NOT_OPEN;
+    }
+    if (!window->paused) {
+        return WZ_DEBUGGER_WINDOW_NOT_PAUSED;
+    }
+    if (wz_debugger_copy_memory(window->machine, source_address,
+                                destination_address, length) != WZ_RESULT_OK) {
+        return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+    }
+    window->memory_address = destination_address;
+    return refresh_view(window);
+}
+
 wz_debugger_window_result_t wz_debugger_window_set_register(
     wz_debugger_window_t* window,
     wz_debugger_register_t reg,
@@ -394,6 +434,22 @@ wz_debugger_window_result_t wz_debugger_window_dispatch_monitor_command(
         }
         window->memory_address = (wz_word_t)(address + byte_count);
         return refresh_view(window);
+    }
+    if (token_count == 4u &&
+        monitor_token_equal(tokens[0], lengths[0], "C")) {
+        wz_word_t source_address;
+        wz_word_t destination_address;
+        size_t copy_length;
+        if (!monitor_parse_hex(tokens[1], lengths[1], &source_address) ||
+            !monitor_parse_hex(tokens[2], lengths[2], &destination_address) ||
+            !monitor_parse_length(tokens[3], lengths[3], &copy_length) ||
+            copy_length > 65536u - (size_t)source_address ||
+            copy_length > 65536u - (size_t)destination_address) {
+            return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
+        }
+        return wz_debugger_window_copy_memory(window, source_address,
+                                              destination_address,
+                                              copy_length);
     }
     if (token_count >= 2u && token_count <= 17u &&
         monitor_token_equal(tokens[0], lengths[0], "W")) {

@@ -1,0 +1,38 @@
+{
+  "testId": "debugger-monitor-copy-contract",
+  "requiredAssertions": 34,
+  "runnerMatrix": [
+    "Windows x64",
+    "Linux x64",
+    "Linux ARM64",
+    "macOS ARM64",
+    "macOS Intel"
+  ],
+  "command": "The source-push workflow builds wz_debugger_monitor_copy_contract and runs it through integrated CTest on all five native targets.",
+  "fixtures": [
+    {
+      "path": "ci/test/debugger-monitor-copy-contract.c",
+      "sha256": "d138cca34135fe7182501dbd8fe59c937e9438103e9e8366159ce526d39f2af3"
+    },
+    {
+      "path": "src/app/wz_debugger_window.c",
+      "sha256": "3f72b6b8b8bb27c8459e270294ceb08d02bdd02bad0fbd6465a678df5c07787a"
+    },
+    {
+      "path": "src/app/wz_debugger_window.h",
+      "sha256": "34ce9243b4610002ca57592b69e6e265b2e0c81d07a145dfb590620311907964"
+    },
+    {
+      "path": "src/core/wz_debugger.c",
+      "sha256": "e1865e928c68db122a8353316c85444c4b3ffc67a4cf3ee380db376139597239"
+    },
+    {
+      "path": "src/core/wz_debugger.h",
+      "sha256": "4c01627af6f9c1efcf32567b405d2b81b407fdf41fccc6c18782dcda81960d22"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "efc269ff14888b5b26b4beef46998a006eaaa65acb7dca26d4a3b3c97e35533c"
+    }
+  ]
+}
