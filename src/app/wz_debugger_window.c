@@ -318,6 +318,49 @@ wz_debugger_window_result_t wz_debugger_window_dispatch_monitor_command(
         monitor_parse_hex(tokens[3], lengths[3], &value)) {
         return wz_debugger_window_set_register(window, reg, value);
     }
+    if (token_count >= 2u && token_count <= 18u &&
+        monitor_token_equal(tokens[0], lengths[0], "M")) {
+        wz_word_t address;
+        wz_byte_t bytes[16];
+        bool write_mask[16];
+        size_t byte_count = token_count - 2u;
+        if (!monitor_parse_hex(tokens[1], lengths[1], &address)) {
+            return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
+        }
+        for (size_t index = 0u; index < byte_count; ++index) {
+            if (lengths[index + 2u] == 2u &&
+                tokens[index + 2u][0] == '-' &&
+                tokens[index + 2u][1] == '1') {
+                bytes[index] = 0u;
+                write_mask[index] = false;
+            } else {
+                wz_word_t parsed;
+                if (!monitor_parse_hex(tokens[index + 2u],
+                                       lengths[index + 2u], &parsed) ||
+                    parsed > UINT8_MAX) {
+                    return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
+                }
+                bytes[index] = (wz_byte_t)parsed;
+                write_mask[index] = true;
+            }
+        }
+        if (!wz_debugger_window_is_open(window)) {
+            return WZ_DEBUGGER_WINDOW_NOT_OPEN;
+        }
+        if (byte_count == 0u) {
+            return wz_debugger_window_select_memory(window, address);
+        }
+        if (!window->paused) return WZ_DEBUGGER_WINDOW_NOT_PAUSED;
+        if ((size_t)address + byte_count > 0x10000u) {
+            return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
+        }
+        if (wz_debugger_write_memory_bytes(window->machine, address, bytes,
+                write_mask, byte_count) != WZ_RESULT_OK) {
+            return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+        }
+        window->memory_address = (wz_word_t)(address + byte_count);
+        return refresh_view(window);
+    }
     if (token_count == 4u &&
         monitor_token_equal(tokens[0], lengths[0], "K")) {
         wz_word_t first;

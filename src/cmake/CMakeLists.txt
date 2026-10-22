@@ -768,6 +768,18 @@ target_link_libraries(wz_debugger_monitor_quit_contract PRIVATE
 add_test(NAME wz_debugger_monitor_quit_contract
     COMMAND wz_debugger_monitor_quit_contract)
 
+add_executable(wz_debugger_monitor_memory_write_contract
+    ../../ci/test/debugger-monitor-memory-write-contract.c
+    ${WZSN_SOURCE_ROOT}/app/wz_debugger_window.c
+    ${WZSN_SOURCE_ROOT}/app/wz_command_registry.c
+    ${WZSN_SOURCE_ROOT}/app/wz_host_thread.c)
+target_include_directories(wz_debugger_monitor_memory_write_contract PRIVATE
+    ${WZSN_SOURCE_ROOT})
+target_link_libraries(wz_debugger_monitor_memory_write_contract PRIVATE
+    wz_core wz_warnings)
+add_test(NAME wz_debugger_monitor_memory_write_contract
+    COMMAND wz_debugger_monitor_memory_write_contract)
+
 set(WZSN_ULA_128K_TRACE_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/test-output")
 file(MAKE_DIRECTORY "${WZSN_ULA_128K_TRACE_OUTPUT}")
 add_test(NAME wz_ula_128k_trace_contract
