@@ -1,0 +1,94 @@
+{
+  "testId": "debugger-monitor-copy-contract",
+  "status": "pass",
+  "commit": "751ff678e1c6fb5d473f48a350d43764401103e9",
+  "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
+  "timestamp": "2026-10-22T16:54:09Z",
+  "workflowRun": 39816195654,
+  "workflowAttempt": 2,
+  "workflowUrl": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39816195654/attempts/2",
+  "proofRun": 39817935106,
+  "proofUrl": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39817935106",
+  "build": "Release with WZSN_BUILD_SOKOL_HOST=ON passed on all five native targets",
+  "ctest": "38/38 per target",
+  "assertions": 34,
+  "targets": [
+    {
+      "name": "Linux ARM64",
+      "runner": "Linux-ubuntu-24.04-arm",
+      "status": "pass",
+      "ctest": "38/38 passed",
+      "assertions": 34,
+      "phase16": "pass"
+    },
+    {
+      "name": "Linux x64",
+      "runner": "Linux-ubuntu-24.04",
+      "status": "pass",
+      "ctest": "38/38 passed",
+      "assertions": 34,
+      "phase16": "pass"
+    },
+    {
+      "name": "macOS ARM64",
+      "runner": "macOS-macos-arm64",
+      "status": "pass",
+      "ctest": "38/38 passed",
+      "assertions": 34,
+      "phase16": "pass"
+    },
+    {
+      "name": "macOS Intel",
+      "runner": "macOS-macos-x64",
+      "status": "pass",
+      "ctest": "38/38 passed",
+      "assertions": 34,
+      "phase16": "pass"
+    },
+    {
+      "name": "Windows x64",
+      "runner": "Windows-windows-x64",
+      "status": "pass",
+      "ctest": "38/38 passed",
+      "assertions": 34,
+      "phase16": "pass"
+    }
+  ],
+  "phase16Proof": "phase16-performance-current.json",
+  "sourceReview": {
+    "status": "passed; finding adjudicated",
+    "tool": "Gito 4.5.0",
+    "findings": [
+      {
+        "title": "Potential memory corruption via overlapping memory copy",
+        "disposition": "Non-actionable: wz_debugger_copy_memory uses memmove for linear 48K memory; for mapped 128K and active Interface-1 overlay ranges it snapshots all source bytes before writes. The 34-assertion command contract covers overlapping copy, and the existing debugger core contract covers overlapping linear and banked copies."
+      }
+    ]
+  },
+  "fixtures": [
+    {
+      "path": "ci/test/debugger-monitor-copy-contract.c",
+      "sha256": "d138cca34135fe7182501dbd8fe59c937e9438103e9e8366159ce526d39f2af3"
+    },
+    {
+      "path": "src/app/wz_debugger_window.c",
+      "sha256": "3f72b6b8b8bb27c8459e270294ceb08d02bdd02bad0fbd6465a678df5c07787a"
+    },
+    {
+      "path": "src/app/wz_debugger_window.h",
+      "sha256": "34ce9243b4610002ca57592b69e6e265b2e0c81d07a145dfb590620311907964"
+    },
+    {
+      "path": "src/core/wz_debugger.c",
+      "sha256": "e1865e928c68db122a8353316c85444c4b3ffc67a4cf3ee380db376139597239"
+    },
+    {
+      "path": "src/core/wz_debugger.h",
+      "sha256": "4c01627af6f9c1efcf32567b405d2b81b407fdf41fccc6c18782dcda81960d22"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "3ee17947b562bf51f8cd33f57ba0cabd219caef028fabfd6f5d797a59d6a86ea"
+    }
+  ]
+}

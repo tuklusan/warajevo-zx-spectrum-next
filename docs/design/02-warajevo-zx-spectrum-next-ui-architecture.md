@@ -1541,8 +1541,9 @@ The local monitor exposes memory copying as `C <source> <destination>
 <length>`. Addresses are hexadecimal 16-bit logical addresses and length is a
 decimal byte count. Copying is available only while paused; the source is read
 from the active logical mapping, the complete destination range must be
-writable, and overlapping copies preserve their original source bytes. The
-destination becomes the selected memory-editor address after success.
+writable, and either range that would wrap past `FFFF` is rejected before any
+write. Overlapping copies preserve their original source bytes. The destination
+becomes the selected memory-editor address after success.
 
 Initial presentation should support the required monitor/debugger workflows
 when the core subsystem reaches Phase 11.
