@@ -61,11 +61,11 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "3de492c7022baaef1a348f2fa64d019cdef7a414e0195bbf5113f82eef804013"
+      "sha256": "35e1849d37d62d6b98ee49ca9dcdfd38e165ac3d59984fab312e10c42fbf593f"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "808eef5dddd9851505b1861fa89e9916cee1cc3776f165a1ae34dc01f4105b95"
+      "sha256": "a1694d4cd24d110ac399ceb5f9a715b71af9af62d8cb99d642791c4c0ad887df"
     },
     {
       "path": "src/core/wz_presentation_snapshot.c",
