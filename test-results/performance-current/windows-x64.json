@@ -1,42 +1,42 @@
 {
   "schema": 1,
   "status": "pass",
-  "commit": "a07f9373fd4d0e051be2f83af022257070c76ebe",
+  "commit": "90f6c8252b5e581fdb9d7024b46a5ec3cc554b86",
   "runner": "Windows-windows-x64",
   "architecture": "X64",
-  "timestamp": "2026-10-21T22:15:21Z",
+  "timestamp": "2026-10-22T01:18:29Z",
   "compiler": "MSVC 19.51.36260.0",
   "metrics": [
     {
       "name": "cpu_execution",
       "unit": "instructions",
       "operations": "250005",
-      "median_cpu_seconds": 0.022,
-      "operations_per_second": 11363863.636,
+      "median_cpu_seconds": 0.018,
+      "operations_per_second": 13889166.667,
       "fingerprint": "52af84e53ed19a63"
     },
     {
       "name": "raster_generation",
       "unit": "frames",
       "operations": "384",
-      "median_cpu_seconds": 0.025,
-      "operations_per_second": 15360.0,
+      "median_cpu_seconds": 0.02,
+      "operations_per_second": 19200.0,
       "fingerprint": "d3d8bb78938b5fb1"
     },
     {
       "name": "audio_mixing",
       "unit": "samples",
       "operations": "2000000",
-      "median_cpu_seconds": 0.053,
-      "operations_per_second": 37735849.057,
+      "median_cpu_seconds": 0.039,
+      "operations_per_second": 51282051.282,
       "fingerprint": "56e7cab2bab26d0d"
     },
     {
       "name": "tape_playback",
       "unit": "master_ticks",
       "operations": "4000000",
-      "median_cpu_seconds": 0.016,
-      "operations_per_second": 250000000.0,
+      "median_cpu_seconds": 0.012,
+      "operations_per_second": 333333333.333,
       "fingerprint": "40000000001db212"
     },
     {
@@ -51,8 +51,8 @@
       "name": "ui_presentation",
       "unit": "frames",
       "operations": "512",
-      "median_cpu_seconds": 0.033,
-      "operations_per_second": 15515.152,
+      "median_cpu_seconds": 0.027,
+      "operations_per_second": 18962.963,
       "fingerprint": "6b9c6deb0ca3fbc9"
     }
   ]

@@ -1,58 +1,58 @@
 {
   "schema": 1,
   "status": "pass",
-  "commit": "a07f9373fd4d0e051be2f83af022257070c76ebe",
+  "commit": "90f6c8252b5e581fdb9d7024b46a5ec3cc554b86",
   "runner": "macOS-macos-arm64",
   "architecture": "ARM64",
-  "timestamp": "2026-10-21T22:14:04Z",
+  "timestamp": "2026-10-22T01:17:45Z",
   "compiler": "AppleClang 17.0.0.17000013",
   "metrics": [
     {
       "name": "cpu_execution",
       "unit": "instructions",
       "operations": "250005",
-      "median_cpu_seconds": 0.010887,
-      "operations_per_second": 22963626.343,
+      "median_cpu_seconds": 0.01065,
+      "operations_per_second": 23474647.887,
       "fingerprint": "52af84e53ed19a63"
     },
     {
       "name": "raster_generation",
       "unit": "frames",
       "operations": "384",
-      "median_cpu_seconds": 0.034039,
-      "operations_per_second": 11281.177,
+      "median_cpu_seconds": 0.02943,
+      "operations_per_second": 13047.91,
       "fingerprint": "d3d8bb78938b5fb1"
     },
     {
       "name": "audio_mixing",
       "unit": "samples",
       "operations": "2000000",
-      "median_cpu_seconds": 0.024011,
-      "operations_per_second": 83295156.387,
+      "median_cpu_seconds": 0.023819,
+      "operations_per_second": 83966581.301,
       "fingerprint": "56e7cab2bab26d0d"
     },
     {
       "name": "tape_playback",
       "unit": "master_ticks",
       "operations": "4000000",
-      "median_cpu_seconds": 0.010366,
-      "operations_per_second": 385876905.267,
+      "median_cpu_seconds": 0.009864,
+      "operations_per_second": 405515004.055,
       "fingerprint": "40000000001db212"
     },
     {
       "name": "snapshot_serialization",
       "unit": "snapshots",
       "operations": "8192",
-      "median_cpu_seconds": 0.013623,
-      "operations_per_second": 601335.976,
+      "median_cpu_seconds": 0.013798,
+      "operations_per_second": 593709.233,
       "fingerprint": "5bda2a39ca868954"
     },
     {
       "name": "ui_presentation",
       "unit": "frames",
       "operations": "512",
-      "median_cpu_seconds": 0.026207,
-      "operations_per_second": 19536.765,
+      "median_cpu_seconds": 0.026963,
+      "operations_per_second": 18988.985,
       "fingerprint": "6b9c6deb0ca3fbc9"
     }
   ]
