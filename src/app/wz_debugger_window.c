@@ -144,22 +144,27 @@ static wz_debugger_window_result_t refresh_view(wz_debugger_window_t* window)
 {
     wz_result_t result;
     size_t consumed = 0u;
+    size_t memory_length;
 
     if (window == 0 || !window->open || window->machine == 0) {
         return WZ_DEBUGGER_WINDOW_NOT_OPEN;
+    }
+    memory_length = 65536u - (size_t)window->memory_address;
+    if (memory_length > WZ_DEBUGGER_WINDOW_MEMORY_BYTES) {
+        memory_length = WZ_DEBUGGER_WINDOW_MEMORY_BYTES;
     }
     result = wz_debugger_snapshot(window->machine, &window->snapshot);
     if (result != WZ_RESULT_OK ||
         wz_debugger_read_page_info(window->machine, &window->paging) != WZ_RESULT_OK ||
         wz_debugger_read_memory_block(window->machine, window->memory_address,
-                                       window->memory, WZ_DEBUGGER_WINDOW_MEMORY_BYTES) !=
+                                       window->memory, memory_length) !=
             WZ_RESULT_OK ||
         wz_debugger_disassemble(window->machine, window->memory_address,
                                 window->disassembly,
                                 sizeof(window->disassembly), &consumed) != WZ_RESULT_OK) {
         return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
     }
-    window->memory_length = WZ_DEBUGGER_WINDOW_MEMORY_BYTES;
+    window->memory_length = memory_length;
     window->disassembly_length = consumed;
     return WZ_DEBUGGER_WINDOW_OK;
 }
