@@ -91,17 +91,28 @@ int main(void)
     CHECK(wz_debugger_set_page_config(banked_machine, 0x07u) ==
           WZ_RESULT_OK);
     wz_machine_memory_write(banked_machine, 0xc000u, 0x70u);
+    wz_machine_memory_write(banked_machine, 0xc001u, 0x71u);
+    wz_machine_memory_write(banked_machine, 0xc002u, 0x72u);
     CHECK(wz_debugger_set_page_config(banked_machine, 0x05u) ==
           WZ_RESULT_OK);
     wz_machine_memory_write(banked_machine, 0xc000u, 0x50u);
+    wz_machine_memory_write(banked_machine, 0xc001u, 0x51u);
+    wz_machine_memory_write(banked_machine, 0xc002u, 0x52u);
     CHECK(DISPATCH(banked_window, "M C000 A1 -1 A3") ==
           WZ_DEBUGGER_WINDOW_OK);
     CHECK(wz_machine_memory_read(banked_machine, 0xc000u) == 0xa1u &&
-          wz_machine_memory_read(banked_machine, 0xc001u) == 0x50u &&
+          wz_machine_memory_read(banked_machine, 0xc001u) == 0x51u &&
           wz_machine_memory_read(banked_machine, 0xc002u) == 0xa3u);
     CHECK(wz_debugger_set_page_config(banked_machine, 0x07u) ==
           WZ_RESULT_OK);
-    CHECK(wz_machine_memory_read(banked_machine, 0xc000u) == 0x70u);
+    CHECK(wz_machine_memory_read(banked_machine, 0xc000u) == 0x70u &&
+          wz_machine_memory_read(banked_machine, 0xc001u) == 0x71u &&
+          wz_machine_memory_read(banked_machine, 0xc002u) == 0x72u);
+    CHECK(wz_debugger_set_page_config(banked_machine, 0x05u) ==
+          WZ_RESULT_OK);
+    CHECK(wz_machine_memory_read(banked_machine, 0xc000u) == 0xa1u &&
+          wz_machine_memory_read(banked_machine, 0xc001u) == 0x51u &&
+          wz_machine_memory_read(banked_machine, 0xc002u) == 0xa3u);
 
     wz_debugger_window_close(&banked_window);
     status = 0;
