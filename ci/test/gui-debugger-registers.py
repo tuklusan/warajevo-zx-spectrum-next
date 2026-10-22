@@ -181,12 +181,14 @@ def main():
                 value_y = debugger_top + 317
                 run("xdotool", "mousemove", "--sync",
                     str(debugger_left + 190), str(address_y), "click", "1")
-                run("xdotool", "key", "ctrl+a", "BackSpace")
+                run("xdotool", "key", "Home", "shift+End", "BackSpace")
                 for digit in "8000":
                     run("xdotool", "key", digit)
                     time.sleep(0.15)
                 time.sleep(0.25)
                 address_entry_text = screenshot_text(root)
+                (args.capture_dir / "debugger-memory-address-entry.png").write_bytes(
+                    (root / "screen.png").read_bytes())
                 if "8000" not in address_entry_text:
                     raise RuntimeError(
                         "debugger address field did not retain 8000; "
