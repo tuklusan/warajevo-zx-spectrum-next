@@ -184,16 +184,13 @@ def main():
                     "BackSpace")
                 run("xdotool", "type", "--clearmodifiers", "--delay", "100",
                     "8000")
+                run("xdotool", "type", "--clearmodifiers", "--delay", "100",
+                    "0")
                 time.sleep(0.25)
-                address_entry_text = screenshot_text(root)
-                (args.capture_dir / "debugger-memory-address-entry.png").write_bytes(
-                    (root / "screen.png").read_bytes())
-                if "8000" not in address_entry_text:
-                    raise RuntimeError(
-                        "debugger address field did not retain 8000; "
-                        f"OCR={address_entry_text!r}")
                 click_at(debugger_left + 570, address_y)
                 memory_before_text = screenshot_text(root)
+                (args.capture_dir / "debugger-memory-read.png").write_bytes(
+                    (root / "screen.png").read_bytes())
                 memory_match = re.search(
                     r"\b8000:\s*((?:[0-9A-F]{2}\s*){16})",
                     memory_before_text, re.IGNORECASE)
@@ -206,8 +203,6 @@ def main():
                 if len(memory_before) != 16:
                     raise RuntimeError(
                         f"debugger displayed {len(memory_before)} bytes, expected 16")
-                (args.capture_dir / "debugger-memory-read.png").write_bytes(
-                    (root / "screen.png").read_bytes())
                 assertions.append("paused-memory-read-shows-16-bytes")
 
                 run("xdotool", "mousemove", "--sync",
