@@ -181,10 +181,16 @@ def main():
                 value_y = debugger_top + 317
                 run("xdotool", "mousemove", "--sync",
                     str(debugger_left + 190), str(address_y), "click", "1")
-                run("xdotool", "key", "ctrl+a")
-                run("xdotool", "type", "--clearmodifiers", "--delay", "80",
-                    "8000")
+                run("xdotool", "key", "ctrl+a", "BackSpace")
+                for digit in "8000":
+                    run("xdotool", "key", digit)
+                    time.sleep(0.15)
                 time.sleep(0.25)
+                address_entry_text = screenshot_text(root)
+                if "8000" not in address_entry_text:
+                    raise RuntimeError(
+                        "debugger address field did not retain 8000; "
+                        f"OCR={address_entry_text!r}")
                 click_at(debugger_left + 570, address_y)
                 memory_before_text = screenshot_text(root)
                 memory_match = re.search(
