@@ -53,7 +53,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "afa2d5ff78b73090213defadb3d92dd0e36ed4b0490cb7a3abb87398d8bb3586"
+      "sha256": "4db398b773bf7e30f23baf028e3864ad2399faeb778e4cc146e767bd9060cb73"
     },
     {
       "path": "src/app/wz_telnet_negotiation.c",
