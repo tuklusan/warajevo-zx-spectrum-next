@@ -1,20 +1,20 @@
 {
   "testId": "full-native-build-gate",
   "status": "pass",
-  "commit": "1a61d9861e5818818cbd9f083e494eb330e18cd1",
-  "tree": "1d24a1fdedf96aba19b4dbab71a2b590cd8be396",
-  "runId": 39707597289,
-  "event": "push",
+  "commit": "bf270b79ad46ca77a437b8fd0bb9ef6078217653",
+  "tree": "09ed4748b03b0ff4f34f6f3f9d613bdb45d34ae5",
+  "runId": 39709980594,
+  "event": "workflow_dispatch",
   "runner": "GitHub Actions native matrix",
   "architecture": "x64 and ARM64",
-  "timestamp": "2026-10-22T01:48:06+00:00",
+  "timestamp": "2026-10-22T02:13:12+00:00",
   "checks": [
     "Clean Release build with WZSN_BUILD_SOKOL_HOST=ON",
     "Integrated CTest: 31/31 per target",
-    "Phase-16 correctness and performance: 30 fingerprints and 30 throughput comparisons passed; maximum slowdown 21.9%",
+    "Phase-16 correctness and performance: 30 fingerprints and 30 throughput comparisons passed; maximum slowdown 34.8%",
     "Interface-1 WAIT: 75 checks per target (375 total)",
     "Sanitized Microdrive transition fuzz passed on non-Windows targets",
-    "Debugger monitor fill contract: 21 assertions per target"
+    "Debugger monitor fill contract: 35 assertions per target"
   ],
   "targets": [
     {
@@ -55,10 +55,10 @@
   ],
   "phase16": {
     "status": "pass",
-    "runId": 39707820446,
+    "runId": 39709980594,
     "fingerprintsPassed": 30,
     "throughputComparisonsPassed": 30,
-    "largestSlowdownPercent": 21.9
+    "largestSlowdownPercent": 34.8
   },
   "fixtures": [
     {
@@ -191,7 +191,7 @@
     },
     {
       "path": "ci/test/debugger-monitor-fill-contract.c",
-      "sha256": "a9a71e83768fea94756f3f82cbbda3a97b8b35ab4a799947566b83fdab180b37"
+      "sha256": "c44790b86d024b874dac78437e73aea47ce535c1b4398ccb7181220e8142007e"
     }
   ],
   "githubCleanupPolicy": "After pinning proof records, delete the workflow run and all hosted artifacts and caches.",
@@ -201,12 +201,16 @@
     "findings": [
       {
         "title": "Memory-write return-value checks",
-        "disposition": "False positive: wz_machine_memory_write returns void; explicit read-back checks verify every initialized byte before the contract proceeds."
+        "disposition": "False positive: wz_machine_memory_write returns void; explicit read-back checks verify every initialized byte."
+      },
+      {
+        "title": "Repeated debugger-window close",
+        "disposition": "False positive: close clears borrowed pointers and scalar state, owns no allocation, and is idempotent."
       }
     ]
   },
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39707597289",
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39709980594",
   "proofEvidenceRunId": 39707820446,
-  "assertionEvidenceRunId": 39707820446,
-  "proofRecordRunId": 39708600447
+  "assertionEvidenceRunId": 39709980594,
+  "proofRecordRunId": 39709980594
 }

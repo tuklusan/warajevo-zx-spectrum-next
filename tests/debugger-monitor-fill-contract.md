@@ -15,11 +15,10 @@ changed bytes, the `FFFF` endpoint, ROM and ROM/RAM-boundary rejection,
 malformed arguments, an 8-bit fill value, and distinct 128K RAM banks through
 the current mapping.
 
-The expanded contract expects 35 assertions. Its 128K mapped-bank extension is
-pending the next five-target hosted run. The earlier 21-assertion version
-passed all 31 integrated CTests on all five native targets in exact-source
-Release/Sokol run 39707597289 at commit
-`1a61d9861e5818818cbd9f083e494eb330e18cd1`.
+The 35-assertion contract passed all 31 integrated CTests on Windows x64,
+Linux x64/ARM64, and macOS ARM64/Intel in exact-source Release/Sokol run
+39709980594 at commit `bf270b79ad46ca77a437b8fd0bb9ef6078217653`. It verifies
+the selected physical 128K banks retain independent contents across the fill.
 
 Proof and fixture hashes: [debugger-monitor-fill-contract.json](../test-results/debugger-monitor-fill-contract.json)
 and [debugger-monitor-fill-contract.driver.json](../test-drivers/debugger-monitor-fill-contract.driver.json).

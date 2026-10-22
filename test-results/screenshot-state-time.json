@@ -1,13 +1,13 @@
 {
   "testId": "screenshot-state-time",
   "status": "pass",
-  "commit": "1a61d9861e5818818cbd9f083e494eb330e18cd1",
+  "commit": "bf270b79ad46ca77a437b8fd0bb9ef6078217653",
   "runner": "Windows x64, Linux x64, Linux ARM64, macOS ARM64, and macOS Intel hosted runners",
-  "runId": 39707820446,
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39707820446",
+  "runId": 39709980594,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39709980594",
   "workflowEvent": "workflow_dispatch",
   "branch": "main",
-  "timestamp": "2026-10-22T01:57:03+00:00",
+  "timestamp": "2026-10-22T02:13:08+00:00",
   "assertionsPerRunner": 20,
   "totalAssertions": 100,
   "nativeBuildConfiguration": "Release; WZSN_BUILD_SOKOL_HOST=ON",
@@ -132,6 +132,6 @@
       "sha256": "46ec8063cc5976b743d53a23b64c34c84583878c9793434d3622c8f8a38f9aa3"
     }
   ],
-  "proofGenerationRun": 39708600447,
-  "nativeEvidenceRun": 39707820446
+  "proofGenerationRun": 39709980594,
+  "nativeEvidenceRun": 39709980594
 }

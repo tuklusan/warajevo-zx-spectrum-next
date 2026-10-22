@@ -1,48 +1,48 @@
 {
   "testId": "debugger-monitor-fill-contract",
   "status": "pass",
-  "commit": "1a61d9861e5818818cbd9f083e494eb330e18cd1",
+  "commit": "bf270b79ad46ca77a437b8fd0bb9ef6078217653",
   "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
-  "timestamp": "2026-10-22T01:48:00Z",
-  "workflowRun": 39707597289,
-  "assertions": 21,
+  "timestamp": "2026-10-22T02:13:12Z",
+  "workflowRun": 39709980594,
+  "assertions": 35,
   "ctest": "31/31 per target",
   "targets": [
     {
       "name": "Windows x64",
       "status": "pass",
       "ctest": "31/31",
-      "assertions": 21
+      "assertions": 35
     },
     {
       "name": "Linux x64",
       "status": "pass",
       "ctest": "31/31",
-      "assertions": 21
+      "assertions": 35
     },
     {
       "name": "Linux ARM64",
       "status": "pass",
       "ctest": "31/31",
-      "assertions": 21
+      "assertions": 35
     },
     {
       "name": "macOS ARM64",
       "status": "pass",
       "ctest": "31/31",
-      "assertions": 21
+      "assertions": 35
     },
     {
       "name": "macOS Intel",
       "status": "pass",
       "ctest": "31/31",
-      "assertions": 21
+      "assertions": 35
     }
   ],
   "fixtures": [
     {
       "path": "ci/test/debugger-monitor-fill-contract.c",
-      "sha256": "a9a71e83768fea94756f3f82cbbda3a97b8b35ab4a799947566b83fdab180b37"
+      "sha256": "c44790b86d024b874dac78437e73aea47ce535c1b4398ccb7181220e8142007e"
     },
     {
       "path": "src/app/wz_debugger_window.c",
@@ -57,7 +57,5 @@
       "sha256": "0e3f895558d4b7587cc5ee13650d7ab02ff26e9e504aac6fbb3635d14ed5a857"
     }
   ],
-  "workflowUrl": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39707597289",
-  "assertionEvidenceRun": 39707820446,
-  "proofGenerationRun": 39708600447
+  "workflowUrl": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39709980594"
 }

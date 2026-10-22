@@ -1,13 +1,13 @@
 {
   "testId": "ay-timing-contract",
   "status": "pass",
-  "commit": "1a61d9861e5818818cbd9f083e494eb330e18cd1",
-  "runId": 39707820446,
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39707820446",
+  "commit": "bf270b79ad46ca77a437b8fd0bb9ef6078217653",
+  "runId": 39709980594,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39709980594",
   "workflowEvent": "workflow_dispatch",
   "branch": "main",
-  "fixtureMetadataCommit": "f89990e24a4cd7ea465150dcbdc6ec3a21f8dd06",
-  "timestamp": "2026-10-22T01:57:02+00:00",
+  "fixtureMetadataCommit": "bf270b79ad46ca77a437b8fd0bb9ef6078217653",
+  "timestamp": "2026-10-22T02:13:08+00:00",
   "assertionsPerRunner": 67,
   "totalAssertions": 335,
   "observedOutput": "AY timing contract passed (67 assertions)",
@@ -95,6 +95,6 @@
   ],
   "reference": "General Instrument AY-3-8910/AY-3-8912 Programmable Sound Generator Data Manual, tone/noise/envelope clock dividers and envelope shape table: https://www.westfloridacomponents.com/mm5/graphics/ds10/AY-3-8912.pdf",
   "scope": "Deterministic register and timing behavior; no analog waveform or physical audio claim.",
-  "proofGenerationRun": 39708600447,
-  "nativeEvidenceRun": 39707820446
+  "proofGenerationRun": 39709980594,
+  "nativeEvidenceRun": 39709980594
 }
