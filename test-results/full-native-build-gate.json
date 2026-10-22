@@ -1,65 +1,64 @@
 {
   "testId": "full-native-build-gate",
   "status": "pass",
-  "commit": "90f6c8252b5e581fdb9d7024b46a5ec3cc554b86",
-  "tree": "b93cf9df0d7593101e877b15ff997db3fed781c6",
-  "runId": 39704779175,
+  "commit": "1a61d9861e5818818cbd9f083e494eb330e18cd1",
+  "tree": "1d24a1fdedf96aba19b4dbab71a2b590cd8be396",
+  "runId": 39707597289,
   "event": "push",
   "runner": "GitHub Actions native matrix",
   "architecture": "x64 and ARM64",
-  "timestamp": "2026-10-22T01:18:49+00:00",
+  "timestamp": "2026-10-22T01:48:06+00:00",
   "checks": [
     "Clean Release build with WZSN_BUILD_SOKOL_HOST=ON",
-    "Integrated CTest: 30/30 per target",
-    "Phase-16 correctness and performance: 30 fingerprints and 30 throughput comparisons passed; maximum slowdown ",
-    22.1,
-    "%",
+    "Integrated CTest: 31/31 per target",
+    "Phase-16 correctness and performance: 30 fingerprints and 30 throughput comparisons passed; maximum slowdown 21.9%",
     "Interface-1 WAIT: 75 checks per target (375 total)",
-    "Sanitized Microdrive transition fuzz passed on non-Windows targets"
+    "Sanitized Microdrive transition fuzz passed on non-Windows targets",
+    "Debugger monitor fill contract: 21 assertions per target"
   ],
   "targets": [
     {
       "name": "Windows x64",
       "conclusion": "success",
-      "ctest": "30/30",
+      "ctest": "31/31",
       "runner": "windows-2025",
       "waitChecks": 75
     },
     {
       "name": "Linux x64",
       "conclusion": "success",
-      "ctest": "30/30",
+      "ctest": "31/31",
       "runner": "ubuntu-24.04",
       "waitChecks": 75
     },
     {
       "name": "Linux ARM64",
       "conclusion": "success",
-      "ctest": "30/30",
+      "ctest": "31/31",
       "runner": "ubuntu-24.04-arm",
       "waitChecks": 75
     },
     {
       "name": "macOS ARM64",
       "conclusion": "success",
-      "ctest": "30/30",
+      "ctest": "31/31",
       "runner": "macos-15",
       "waitChecks": 75
     },
     {
       "name": "macOS Intel",
       "conclusion": "success",
-      "ctest": "30/30",
+      "ctest": "31/31",
       "runner": "macos-15-intel",
       "waitChecks": 75
     }
   ],
   "phase16": {
     "status": "pass",
-    "runId": 39704779175,
+    "runId": 39707820446,
     "fingerprintsPassed": 30,
     "throughputComparisonsPassed": 30,
-    "largestSlowdownPercent": 22.1
+    "largestSlowdownPercent": 21.9
   },
   "fixtures": [
     {
@@ -180,15 +179,19 @@
     },
     {
       "path": "src/app/wz_debugger_window.c",
-      "sha256": "1b02a1015f1fd2a3b8f22024249eb9fa2a7985711eb7b128921042b554f17960"
+      "sha256": "29fb66ffad4cf54eb556bda824b3c4359c5f64429ec547d0d24f6962c61d6611"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "4f7b19e2e10aaa97bf0a2ff04a56e17315e03e598f02cb146d2a1fee7a6739e9"
+      "sha256": "0ab6e7bcc4a07c78027553a51b0ca99de91b085b0a3e039d9d45e71f14c4836b"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "4954f86d34f69b26f9c7e64ba4f9bba09c4afb22bf93e109bd38459dcf300a26"
+      "sha256": "0e3f895558d4b7587cc5ee13650d7ab02ff26e9e504aac6fbb3635d14ed5a857"
+    },
+    {
+      "path": "ci/test/debugger-monitor-fill-contract.c",
+      "sha256": "a9a71e83768fea94756f3f82cbbda3a97b8b35ab4a799947566b83fdab180b37"
     }
   ],
   "githubCleanupPolicy": "After pinning proof records, delete the workflow run and all hosted artifacts and caches.",
@@ -197,22 +200,13 @@
     "tool": "Gito 4.5.0",
     "findings": [
       {
-        "title": "Repeated debugger-window close",
-        "disposition": "Non-actionable: close only clears borrowed pointers and scalar state; it owns no allocation and is idempotent."
-      },
-      {
-        "title": "Monitor hex token bounds",
-        "disposition": "Non-actionable: token lengths are bounded by the command slice before parsing; the parser also caps reads at four hexadecimal digits."
-      },
-      {
-        "title": "Monitor undo coordinate",
-        "disposition": "Non-actionable: the monitor edit uses the same register undo stack; the click targets the shared Undo registers button."
-      },
-      {
-        "title": "Monitor success message",
-        "disposition": "Addressed: success now reports “Monitor command executed”."
+        "title": "Memory-write return-value checks",
+        "disposition": "False positive: wz_machine_memory_write returns void; explicit read-back checks verify every initialized byte before the contract proceeds."
       }
     ]
   },
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39690861672"
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39707597289",
+  "proofEvidenceRunId": 39707820446,
+  "assertionEvidenceRunId": 39707820446,
+  "proofRecordRunId": 39708600447
 }

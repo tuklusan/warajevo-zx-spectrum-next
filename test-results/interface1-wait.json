@@ -1,17 +1,17 @@
 {
   "testId": "interface1-wait",
   "status": "pass",
-  "commit": "a07f9373fd4d0e051be2f83af022257070c76ebe",
-  "runId": 39684892104,
+  "commit": "1a61d9861e5818818cbd9f083e494eb330e18cd1",
+  "runId": 39707820446,
   "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
-  "timestamp": "2026-10-21T22:27:38+00:00",
+  "timestamp": "2026-10-22T01:57:02+00:00",
   "caseCount": 375,
   "caseCountPerRunner": 75,
   "observedOutput": "PASS Interface 1 WAIT pending-cycle resume (75 checks)",
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39684892104",
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39707820446",
   "workflowEvent": "workflow_dispatch",
   "branch": "main",
-  "fixtureMetadataCommit": "00da0fa39959d300eb8aa0c7f70cc1b4a90dd8ab",
+  "fixtureMetadataCommit": "f89990e24a4cd7ea465150dcbdc6ec3a21f8dd06",
   "nativeBuildConfiguration": "Release; WZSN_BUILD_SOKOL_HOST=ON",
   "ctest": "all integrated CTests passed on each native runner",
   "runnerResults": [
@@ -65,7 +65,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "3ab0ea61c455a5ea7806796c4586129c0777da37492ec0eb14490fdbfa53566d"
+      "sha256": "0e3f895558d4b7587cc5ee13650d7ab02ff26e9e504aac6fbb3635d14ed5a857"
     },
     {
       "path": "src/core/wz_bus.c",
@@ -146,5 +146,7 @@
       }
     ]
   },
-  "githubCleanupPolicy": "Download the temporary proof artifact, then delete the workflow run; this workflow does not create caches."
+  "githubCleanupPolicy": "Download the temporary proof artifact, then delete the workflow run; this workflow does not create caches.",
+  "proofGenerationRun": 39708600447,
+  "nativeEvidenceRun": 39707820446
 }

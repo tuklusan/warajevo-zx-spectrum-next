@@ -1,0 +1,63 @@
+{
+  "testId": "debugger-monitor-fill-contract",
+  "status": "pass",
+  "commit": "1a61d9861e5818818cbd9f083e494eb330e18cd1",
+  "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
+  "timestamp": "2026-10-22T01:48:00Z",
+  "workflowRun": 39707597289,
+  "assertions": 21,
+  "ctest": "31/31 per target",
+  "targets": [
+    {
+      "name": "Windows x64",
+      "status": "pass",
+      "ctest": "31/31",
+      "assertions": 21
+    },
+    {
+      "name": "Linux x64",
+      "status": "pass",
+      "ctest": "31/31",
+      "assertions": 21
+    },
+    {
+      "name": "Linux ARM64",
+      "status": "pass",
+      "ctest": "31/31",
+      "assertions": 21
+    },
+    {
+      "name": "macOS ARM64",
+      "status": "pass",
+      "ctest": "31/31",
+      "assertions": 21
+    },
+    {
+      "name": "macOS Intel",
+      "status": "pass",
+      "ctest": "31/31",
+      "assertions": 21
+    }
+  ],
+  "fixtures": [
+    {
+      "path": "ci/test/debugger-monitor-fill-contract.c",
+      "sha256": "a9a71e83768fea94756f3f82cbbda3a97b8b35ab4a799947566b83fdab180b37"
+    },
+    {
+      "path": "src/app/wz_debugger_window.c",
+      "sha256": "29fb66ffad4cf54eb556bda824b3c4359c5f64429ec547d0d24f6962c61d6611"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "0ab6e7bcc4a07c78027553a51b0ca99de91b085b0a3e039d9d45e71f14c4836b"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "0e3f895558d4b7587cc5ee13650d7ab02ff26e9e504aac6fbb3635d14ed5a857"
+    }
+  ],
+  "workflowUrl": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39707597289",
+  "assertionEvidenceRun": 39707820446,
+  "proofGenerationRun": 39708600447
+}
