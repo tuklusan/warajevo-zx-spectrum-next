@@ -49,6 +49,7 @@ int main(void)
     wz_machine_memory_write(machine, 0x8000u, 0x10u);
     wz_machine_memory_write(machine, 0x8001u, 0x20u);
     wz_machine_memory_write(machine, 0x8002u, 0x30u);
+    wz_machine_memory_write(machine, 0x4000u, 0x40u);
     rom_before = wz_machine_memory_read(machine, 0x3fffu);
     CHECK(wz_debugger_window_open(&window, machine, false) ==
           WZ_DEBUGGER_WINDOW_OK);
@@ -72,12 +73,32 @@ int main(void)
     CHECK(DISPATCH(window, "W 1111 2222") ==
           WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR);
     CHECK(window.memory_address == 0x3ffeu &&
-          wz_machine_memory_read(machine, 0x3fffu) == rom_before);
+          wz_machine_memory_read(machine, 0x3fffu) == rom_before &&
+          wz_machine_memory_read(machine, 0x4000u) == 0x40u);
     window.memory_address = 0xfffeu;
     CHECK(DISPATCH(window, "W BEEF") == WZ_DEBUGGER_WINDOW_OK);
     CHECK(wz_machine_memory_read(machine, 0xfffeu) == 0xefu &&
           wz_machine_memory_read(machine, 0xffffu) == 0xbeu &&
           window.memory_address == 0u);
+    window.memory_address = 0xffffu;
+    CHECK(DISPATCH(window, "W 1234") == WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT);
+    CHECK(wz_machine_memory_read(machine, 0xffffu) == 0xbeu &&
+          window.memory_address == 0xffffu);
+    window.memory_address = 0x8100u;
+    CHECK(DISPATCH(window,
+          "W 0001 0002 0003 0004 0005 0006 0007 0008 "
+          "0009 000A 000B 000C 000D 000E 000F 0010") ==
+          WZ_DEBUGGER_WINDOW_OK);
+    CHECK(window.memory_address == 0x8120u &&
+          wz_machine_memory_read(machine, 0x8100u) == 0x01u &&
+          wz_machine_memory_read(machine, 0x811fu) == 0x00u);
+    window.memory_address = 0x8100u;
+    CHECK(DISPATCH(window,
+          "W 0001 0002 0003 0004 0005 0006 0007 0008 "
+          "0009 000A 000B 000C 000D 000E 000F 0010 0011") ==
+          WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT);
+    CHECK(window.memory_address == 0x8100u &&
+          wz_machine_memory_read(machine, 0x8100u) == 0x01u);
 
     banked_machine = (wz_machine_t*)calloc(1u, sizeof(*banked_machine));
     CHECK(banked_machine != NULL);
