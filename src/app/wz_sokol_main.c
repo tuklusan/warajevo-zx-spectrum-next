@@ -6181,7 +6181,7 @@ static void wz_host_ui_draw_debugger_window(struct nk_context* context,
     if (!window->paused) nk_widget_disable_end(context);
     nk_layout_row_dynamic(context, 20.0f, 1);
     nk_label(context,
-        "Monitor: R SETREG <register> <hex>, U, ! <IFF|-1> [IM], K <first> <last> <byte>, M <address> [bytes...], P <byte...>, Q",
+        "Monitor: R SETREG <register> <hex>, U, ! <IFF|-1> [IM], K <first> <last> <byte>, M <address> [bytes...], P <byte...>, W <word...>, Q",
              NK_TEXT_LEFT);
     nk_layout_row_dynamic(context, 24.0f, 2);
     if (session->debugger_monitor_command_length < 0) {
