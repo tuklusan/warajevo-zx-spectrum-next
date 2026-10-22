@@ -433,6 +433,19 @@ wz_debugger_window_result_t wz_debugger_window_dispatch_monitor_command(
         wz_debugger_window_close(window);
         return WZ_DEBUGGER_WINDOW_OK;
     }
+    if (token_count == 1u &&
+        monitor_token_equal(tokens[0], lengths[0], "U")) {
+        wz_result_t result;
+        if (!wz_debugger_window_is_open(window)) {
+            return WZ_DEBUGGER_WINDOW_NOT_OPEN;
+        }
+        if (!window->paused) return WZ_DEBUGGER_WINDOW_NOT_PAUSED;
+        result = wz_debugger_undo_registers(window->machine);
+        if (result != WZ_RESULT_OK && result != WZ_RESULT_NOT_FOUND) {
+            return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+        }
+        return refresh_view(window);
+    }
     if (token_count >= 2u && token_count <= 3u &&
         monitor_token_equal(tokens[0], lengths[0], "!")) {
         wz_debugger_snapshot_t snapshot;
