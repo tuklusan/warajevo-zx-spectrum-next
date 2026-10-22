@@ -37,11 +37,16 @@ int main(void)
         return 1;
     }
     wz_debugger_window_init(&window);
-    CHECK(wz_machine_memory_write(machine, 0x7fffu, 0x11u) == WZ_RESULT_OK);
-    CHECK(wz_machine_memory_write(machine, 0x8000u, 0x22u) == WZ_RESULT_OK);
-    CHECK(wz_machine_memory_write(machine, 0x8001u, 0x33u) == WZ_RESULT_OK);
-    CHECK(wz_machine_memory_write(machine, 0x8002u, 0x44u) == WZ_RESULT_OK);
-    CHECK(wz_machine_memory_write(machine, 0x8003u, 0x55u) == WZ_RESULT_OK);
+    wz_machine_memory_write(machine, 0x7fffu, 0x11u);
+    wz_machine_memory_write(machine, 0x8000u, 0x22u);
+    wz_machine_memory_write(machine, 0x8001u, 0x33u);
+    wz_machine_memory_write(machine, 0x8002u, 0x44u);
+    wz_machine_memory_write(machine, 0x8003u, 0x55u);
+    CHECK(wz_machine_memory_read(machine, 0x7fffu) == 0x11u &&
+          wz_machine_memory_read(machine, 0x8000u) == 0x22u &&
+          wz_machine_memory_read(machine, 0x8001u) == 0x33u &&
+          wz_machine_memory_read(machine, 0x8002u) == 0x44u &&
+          wz_machine_memory_read(machine, 0x8003u) == 0x55u);
     original_rom_byte = wz_machine_memory_read(machine, 0x3fffu);
     original_boundary_byte = wz_machine_memory_read(machine, 0x4000u);
     CHECK(wz_debugger_window_open(&window, machine, false) ==
