@@ -1,0 +1,30 @@
+{
+  "testId": "debugger-monitor-undo-contract",
+  "command": "The source-push workflow builds wz_debugger_monitor_undo_contract and runs it through integrated CTest on all five native targets.",
+  "requiredAssertions": 14,
+  "runnerMatrix": [
+    "Windows x64",
+    "Linux x64",
+    "Linux ARM64",
+    "macOS ARM64",
+    "macOS Intel"
+  ],
+  "fixtures": [
+    {
+      "path": "ci/test/debugger-monitor-undo-contract.c",
+      "sha256": "9987bf4c88034119be862a9163d91263d6fc9549f23f30d6c5b62cc8b63f3a50"
+    },
+    {
+      "path": "src/app/wz_debugger_window.c",
+      "sha256": "2940c4304f237711e829cef0f074ae962a8f977e1e3971436a7bf3354ffcbac1"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "927801d3ed7cf96fcf760c1708d72325cab5dc5a83d11eab73b024b3b43c9165"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "4db398b773bf7e30f23baf028e3864ad2399faeb778e4cc146e767bd9060cb73"
+    }
+  ]
+}
