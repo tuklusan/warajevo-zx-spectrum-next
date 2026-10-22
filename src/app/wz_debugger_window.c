@@ -378,6 +378,18 @@ wz_debugger_window_result_t wz_debugger_window_dispatch_monitor_command(
             (wz_word_t)(window->memory_address + byte_count);
         return refresh_view(window);
     }
+    if (token_count == 1u &&
+        monitor_token_equal(tokens[0], lengths[0], "Q")) {
+        if (!wz_debugger_window_is_open(window)) {
+            return WZ_DEBUGGER_WINDOW_NOT_OPEN;
+        }
+        if (wz_debugger_set_access_mode(window->machine,
+                WZ_DEBUGGER_READ_ONLY) != WZ_RESULT_OK) {
+            return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+        }
+        wz_debugger_window_close(window);
+        return WZ_DEBUGGER_WINDOW_OK;
+    }
     if (token_count >= 2u && token_count <= 3u &&
         monitor_token_equal(tokens[0], lengths[0], "!")) {
         wz_debugger_snapshot_t snapshot;
