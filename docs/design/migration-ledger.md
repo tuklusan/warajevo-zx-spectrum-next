@@ -140,7 +140,7 @@ as a profile-specific case where applicable.
 | `J` | `JUMP` | Set a jump/execute address. | REQUIRED | Verify address selection and subsequent execute/resume state. |
 | `K` | `KILLMEM` | Fill a memory range with a value. | REQUIRED | The production debugger implements paused-only `K <first> <last> <byte>` with inclusive, nonwrapping hex bounds, complete range validation before mutation, and selected-view refresh. Its 35-assertion contract covers exact changed bytes, `FFFF`, 48K ROM/boundary rejection, value/syntax validation, and distinct 128K mapped banks; it passed all 31 CTests on each supported target in exact-source run `39709980594` ([proof](../test-results/debugger-monitor-fill-contract.json); [contract](../tests/debugger-monitor-fill-contract.md)). |
 | `L` | `LOAD` | Load a memory block through DOS file handling. | LATER | If retained, test native file selection, address/range validation, short/read failure rollback, and resulting mapped memory. |
-| `M` | `MWRITE` | Set the memory pointer and optionally write bytes/XOR-decoded bytes. | REQUIRED | Verify pointer navigation, byte sequence writes, wildcard skips, bank mapping, and bounded address behavior. |
+| `M` | `MWRITE` | Set the memory pointer and optionally write bytes/XOR-decoded bytes. | REQUIRED | Production `M <address> [bytes...]` sets the pointer and optionally writes up to 16 bytes; exact `-1` skips writes. Validation is atomic, the pointer advances after success, and 128K mapped banks remain independent. Its 25-assertion contract passed all 34 CTests on each target in run `39719951673` ([proof](../test-results/debugger-monitor-memory-write-contract.json); [contract](../tests/debugger-monitor-memory-write-contract.md)). Nonzero XOR decoding remains deferred with the LATER `X` command. |
 | `N` | `IMADDR` | Inspect the interrupt handler/vector address. | REPLACE | Verify shared interrupt-state inspection reports IM 0/1/2 and the effective vector without mutating state. |
 | `O` | `SETOUTPUT` | Redirect monitor text to a DOS output file. | REPLACE | If replaced by diagnostics export, verify captured text, path failure, and no machine-state mutation. |
 | `P` | `POKE` | Write bytes at the current memory pointer. | REQUIRED | The production debugger implements paused-only `P <byte...>` with hexadecimal bytes and exact `-1` skip entries. It validates all arguments and the full nonwrapping writable range before mutation, advances the pointer by the argument count, and refreshes the selected view. Its 34-assertion contract covers errors, skip/write behavior, end-of-address-space and ROM boundaries, and independent 128K banks; all five targets passed in run `39714414602` ([proof](../test-results/debugger-monitor-poke-contract.json); [contract](../tests/debugger-monitor-poke-contract.md)). |
@@ -196,5 +196,6 @@ review, full direct acceptance proof, and any required design decisions.
   cleared for distribution.
 - No entry may be upgraded to `TRANSLATE` based only on matching behavior or
   on the upstream repository's top-level GPL statement.
+
 
 

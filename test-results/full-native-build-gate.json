@@ -1,65 +1,66 @@
 {
   "testId": "full-native-build-gate",
   "status": "pass",
-  "commit": "50a23d6c8b576da009d280e3fd89691d76cbcd2b",
-  "tree": "f1b52c7988ef61251d1aef71bb7b8032ec59b777",
-  "runId": 39716631366,
+  "commit": "6484511a109e4197e30747f07906ad7925a1e9eb",
+  "tree": "ab8c7b89b4ee384b5e2077b68684a9497a7810a8",
+  "runId": 39719951673,
   "event": "workflow_dispatch",
   "runner": "GitHub Actions native matrix",
   "architecture": "x64 and ARM64",
-  "timestamp": "2026-10-22T03:26:11+00:00",
+  "timestamp": "2026-10-22T04:02:46+00:00",
   "checks": [
     "Clean Release build with WZSN_BUILD_SOKOL_HOST=ON",
-    "Integrated CTest: 33/33 per target",
-    "Phase-16 correctness and performance: 30 fingerprints and 30 throughput comparisons passed; maximum slowdown 30.6%",
+    "Integrated CTest: 34/34 per target",
+    "Phase-16 correctness and performance: 30 fingerprints and 30 throughput comparisons passed; maximum slowdown 29.0%",
     "Interface-1 WAIT: 75 checks per target (375 total)",
     "Sanitized Microdrive transition fuzz passed on non-Windows targets",
     "Debugger monitor poke contract: 34 assertions per target",
-    "Debugger monitor quit contract: 16 assertions per target"
+    "Debugger monitor quit contract: 16 assertions per target",
+    "Debugger monitor memory write contract: 25 assertions per target"
   ],
   "targets": [
     {
       "name": "Windows x64",
       "conclusion": "success",
-      "ctest": "33/33",
+      "ctest": "34/34",
       "runner": "windows-2025",
       "waitChecks": 75
     },
     {
       "name": "Linux x64",
       "conclusion": "success",
-      "ctest": "33/33",
+      "ctest": "34/34",
       "runner": "ubuntu-24.04",
       "waitChecks": 75
     },
     {
       "name": "Linux ARM64",
       "conclusion": "success",
-      "ctest": "33/33",
+      "ctest": "34/34",
       "runner": "ubuntu-24.04-arm",
       "waitChecks": 75
     },
     {
       "name": "macOS ARM64",
       "conclusion": "success",
-      "ctest": "33/33",
+      "ctest": "34/34",
       "runner": "macos-15",
       "waitChecks": 75
     },
     {
       "name": "macOS Intel",
       "conclusion": "success",
-      "ctest": "33/33",
+      "ctest": "34/34",
       "runner": "macos-15-intel",
       "waitChecks": 75
     }
   ],
   "phase16": {
     "status": "pass",
-    "runId": 39716631366,
+    "runId": 39719951673,
     "fingerprintsPassed": 30,
     "throughputComparisonsPassed": 30,
-    "largestSlowdownPercent": 30.6
+    "largestSlowdownPercent": 29.0
   },
   "fixtures": [
     {
@@ -180,15 +181,15 @@
     },
     {
       "path": "src/app/wz_debugger_window.c",
-      "sha256": "7dc258a266846d995770f2b8cfc7e242d3c7b9032e98a1b805fb9db56ae025d7"
+      "sha256": "3f36795f1cc955b1f1ff7584b01477d43fe070444db221c30510c618986c3dc3"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "2bac0a692089a7ef2388fe4e571a4c84f8a2859df4e97f7c6b741cff390be6e2"
+      "sha256": "c3c1f1abb518a26dd64ebdd9df04c3f0e950d3d0a65365c42257994f351d8f51"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "083896af704816a2c035247f652487da86112e8762c7000605f3af31b2393cec"
+      "sha256": "afa2d5ff78b73090213defadb3d92dd0e36ed4b0490cb7a3abb87398d8bb3586"
     },
     {
       "path": "ci/test/debugger-monitor-fill-contract.c",
@@ -201,17 +202,17 @@
     "tool": "Gito 4.5.0",
     "findings": [
       {
-        "title": "Double free of machine pointer",
-        "disposition": "False positive: wz_machine_destroy releases internal owned state, not the caller-allocated wz_machine_t object; free(machine) is required."
+        "title": "Repeated debugger-window close in test cleanup",
+        "disposition": "False positive: wz_debugger_window_close is idempotent, clears borrowed state only, and owns no allocation."
       },
       {
-        "title": "Potential null pointer in Q handler",
-        "disposition": "False positive under the window API contract: open() only succeeds with a non-null machine pointer, and close() clears open before clearing machine. No public operation can produce an open window with a null machine."
+        "title": "Potential monitor token array bounds issue",
+        "disposition": "False positive: token and length arrays each have 18 entries; M accepts at most 18 total tokens, so its 16 data arguments index 2 through 17."
       }
     ]
   },
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39716631366",
-  "proofEvidenceRunId": 39716631366,
-  "assertionEvidenceRunId": 39716631366,
-  "proofRecordRunId": 39716631366
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39719951673",
+  "proofEvidenceRunId": 39719951673,
+  "assertionEvidenceRunId": 39719951673,
+  "proofRecordRunId": 39719951673
 }
