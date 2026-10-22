@@ -108,6 +108,23 @@ static bool monitor_parse_hex(const char* token, size_t length,
     return true;
 }
 
+static bool monitor_parse_decimal(const char* token, size_t length,
+                                  unsigned* value)
+{
+    size_t index;
+    unsigned parsed = 0u;
+    if (token == NULL || value == NULL || length == 0u || length > 1u) {
+        return false;
+    }
+    for (index = 0u; index < length; ++index) {
+        const unsigned char character = (unsigned char)token[index];
+        if (character < '0' || character > '9') return false;
+        parsed = parsed * 10u + (unsigned)(character - '0');
+    }
+    *value = parsed;
+    return true;
+}
+
 static bool monitor_parse_register(const char* token, size_t length,
                                    wz_debugger_register_t* reg)
 {
@@ -270,37 +287,70 @@ wz_debugger_window_result_t wz_debugger_window_dispatch_monitor_command(
     const char* command,
     size_t command_length)
 {
-    const char* tokens[4];
-    size_t lengths[4];
+    const char* tokens[5];
+    size_t lengths[5];
     size_t cursor = 0u;
-    size_t index;
+    size_t token_count = 0u;
     wz_debugger_register_t reg;
     wz_word_t value;
 
     if (command == NULL || command_length == 0u) {
         return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
     }
-    for (index = 0u; index < 4u; ++index) {
-        if (!monitor_next_token(command, command_length, &cursor,
-                                &tokens[index], &lengths[index])) {
-            return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
-        }
+    while (token_count < sizeof(tokens) / sizeof(tokens[0]) &&
+           monitor_next_token(command, command_length, &cursor,
+                              &tokens[token_count], &lengths[token_count])) {
+        ++token_count;
     }
-    {
-        const char* extra_token;
-        size_t extra_length;
-        if (monitor_next_token(command, command_length, &cursor,
-                               &extra_token, &extra_length)) {
-            return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
-        }
-    }
-    if (!monitor_token_equal(tokens[0], lengths[0], "R") ||
-        !monitor_token_equal(tokens[1], lengths[1], "SETREG") ||
-        !monitor_parse_register(tokens[2], lengths[2], &reg) ||
-        !monitor_parse_hex(tokens[3], lengths[3], &value)) {
+    if (monitor_next_token(command, command_length, &cursor,
+                           &tokens[0], &lengths[0])) {
         return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
     }
-    return wz_debugger_window_set_register(window, reg, value);
+    if (token_count == 4u &&
+        monitor_token_equal(tokens[0], lengths[0], "R") &&
+        monitor_token_equal(tokens[1], lengths[1], "SETREG") &&
+        monitor_parse_register(tokens[2], lengths[2], &reg) &&
+        monitor_parse_hex(tokens[3], lengths[3], &value)) {
+        return wz_debugger_window_set_register(window, reg, value);
+    }
+    if (token_count >= 2u && token_count <= 3u &&
+        monitor_token_equal(tokens[0], lengths[0], "!")) {
+        wz_debugger_snapshot_t snapshot;
+        unsigned iff_value = 0u;
+        unsigned mode_value = 0u;
+        bool change_iff = true;
+        bool change_mode = token_count == 3u;
+        if (lengths[1] == 2u && tokens[1][0] == '-' && tokens[1][1] == '1') {
+            change_iff = false;
+        } else if (!monitor_parse_decimal(tokens[1], lengths[1], &iff_value) ||
+                   iff_value > 1u) {
+            return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
+        }
+        if (change_mode &&
+            (!monitor_parse_decimal(tokens[2], lengths[2], &mode_value) ||
+             mode_value > WZ_Z80_INTERRUPT_MODE_2)) {
+            return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
+        }
+        if (!wz_debugger_window_is_open(window)) {
+            return WZ_DEBUGGER_WINDOW_NOT_OPEN;
+        }
+        if (!window->paused) return WZ_DEBUGGER_WINDOW_NOT_PAUSED;
+        if (!change_iff && !change_mode) return refresh_view(window);
+        if (wz_debugger_snapshot(window->machine, &snapshot) != WZ_RESULT_OK) {
+            return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+        }
+        if (change_iff) {
+            snapshot.cpu.iff1 = (wz_byte_t)iff_value;
+            snapshot.cpu.iff2 = (wz_byte_t)iff_value;
+        }
+        if (change_mode) snapshot.cpu.interrupt_mode = (wz_byte_t)mode_value;
+        if (wz_debugger_set_cpu_state(window->machine, &snapshot.cpu) !=
+            WZ_RESULT_OK) {
+            return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+        }
+        return refresh_view(window);
+    }
+    return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
 }
 
 wz_debugger_window_result_t wz_debugger_window_step(
