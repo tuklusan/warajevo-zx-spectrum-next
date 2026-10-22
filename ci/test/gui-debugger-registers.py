@@ -179,12 +179,11 @@ def main():
                 # selected byte in writable RAM, then restore the original.
                 address_y = debugger_top + 237
                 value_y = debugger_top + 317
-                run("xdotool", "mousemove", "--sync",
-                    str(debugger_left + 190), str(address_y), "click", "1")
-                run("xdotool", "key", "Home", "shift+End", "BackSpace")
-                for digit in "8000":
-                    run("xdotool", "key", digit)
-                    time.sleep(0.15)
+                click_at(debugger_left + 190, address_y)
+                run("xdotool", "key", "BackSpace", "BackSpace", "BackSpace",
+                    "BackSpace")
+                run("xdotool", "type", "--clearmodifiers", "--delay", "100",
+                    "8000")
                 time.sleep(0.25)
                 address_entry_text = screenshot_text(root)
                 (args.capture_dir / "debugger-memory-address-entry.png").write_bytes(
