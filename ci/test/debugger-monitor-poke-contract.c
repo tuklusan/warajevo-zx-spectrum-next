@@ -80,11 +80,14 @@ int main(void)
     CHECK(DISPATCH(window, "P GG") == WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT);
     CHECK(window.memory_address == 0x8004u &&
           wz_machine_memory_read(machine, 0x8004u) == 0x55u);
-    CHECK(wz_debugger_window_select_memory(&window, 0xffffu) ==
+    CHECK(wz_debugger_window_select_memory(&window, 0xfffcu) ==
           WZ_DEBUGGER_WINDOW_OK);
-    CHECK(DISPATCH(window, "P AA BB") ==
+    CHECK(DISPATCH(window, "P AA BB CC DD EE") ==
           WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT);
-    CHECK(window.memory_address == 0xffffu &&
+    CHECK(window.memory_address == 0xfffcu &&
+          wz_machine_memory_read(machine, 0xfffcu) == 0u &&
+          wz_machine_memory_read(machine, 0xfffdu) == 0u &&
+          wz_machine_memory_read(machine, 0xfffeu) == 0u &&
           wz_machine_memory_read(machine, 0xffffu) == 0u);
     CHECK(wz_debugger_window_select_memory(&window, 0x3fffu) ==
           WZ_DEBUGGER_WINDOW_OK);
