@@ -361,6 +361,36 @@ wz_debugger_window_result_t wz_debugger_window_dispatch_monitor_command(
         window->memory_address = (wz_word_t)(address + byte_count);
         return refresh_view(window);
     }
+    if (token_count >= 2u && token_count <= 17u &&
+        monitor_token_equal(tokens[0], lengths[0], "W")) {
+        wz_byte_t bytes[32];
+        const size_t word_count = token_count - 1u;
+        const size_t byte_count = word_count * 2u;
+        if (!wz_debugger_window_is_open(window)) {
+            return WZ_DEBUGGER_WINDOW_NOT_OPEN;
+        }
+        if (!window->paused) return WZ_DEBUGGER_WINDOW_NOT_PAUSED;
+        if ((size_t)window->memory_address + byte_count > 0x10000u) {
+            return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
+        }
+        for (size_t index = 0u; index < word_count; ++index) {
+            wz_word_t parsed;
+            if (!monitor_parse_hex(tokens[index + 1u], lengths[index + 1u],
+                                   &parsed)) {
+                return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
+            }
+            bytes[index * 2u] = (wz_byte_t)parsed;
+            bytes[index * 2u + 1u] = (wz_byte_t)(parsed >> 8u);
+        }
+        if (wz_debugger_write_memory_bytes(window->machine,
+                window->memory_address, bytes, NULL, byte_count) !=
+            WZ_RESULT_OK) {
+            return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+        }
+        window->memory_address =
+            (wz_word_t)(window->memory_address + byte_count);
+        return refresh_view(window);
+    }
     if (token_count == 4u &&
         monitor_token_equal(tokens[0], lengths[0], "K")) {
         wz_word_t first;
