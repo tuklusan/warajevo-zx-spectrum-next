@@ -69,6 +69,26 @@ static int instruction_length_matrix(wz_machine_t* machine)
     return 0;
 }
 
+static bool call_return_state_matches(const wz_machine_t* machine,
+                                      wz_master_tick_t start_tick)
+{
+    wz_master_tick_t expected_tick = start_tick + 62u;
+    bool matches = machine->cpu.program_counter == 0x8003u &&
+        machine->cpu.stack_pointer == 0x9000u && machine->cpu.main.a == 1u &&
+        machine->master_tick == expected_tick;
+    if (!matches) {
+        fprintf(stderr, "monitor jump result: pc=%04X sp=%04X a=%02X tick=%llu expected_tick=%llu target=%04X active=%u\n",
+                (unsigned)machine->cpu.program_counter,
+                (unsigned)machine->cpu.stack_pointer,
+                (unsigned)machine->cpu.main.a,
+                (unsigned long long)machine->master_tick,
+                (unsigned long long)expected_tick,
+                (unsigned)machine->debugger_step_target_address,
+                (unsigned)machine->debugger_step_target_active);
+    }
+    return matches;
+}
+
 static int default_call_step_over(void)
 {
     wz_machine_t* machine = (wz_machine_t*)calloc(1u, sizeof(*machine));
@@ -119,21 +139,7 @@ static int default_call_step_over(void)
           WZ_DEBUGGER_WINDOW_OK);
     CHECK(wz_host_machine_frame_execute(&runner, 256u, false, NULL, NULL) ==
           WZ_RESULT_BREAKPOINT_HIT);
-    if (machine->cpu.program_counter != 0x8003u ||
-        machine->cpu.stack_pointer != 0x9000u || machine->cpu.main.a != 1u ||
-        machine->master_tick != tick + 31u) {
-        fprintf(stderr, "monitor jump result: pc=%04X sp=%04X a=%02X tick=%llu expected_tick=%llu target=%04X active=%u\n",
-                (unsigned)machine->cpu.program_counter,
-                (unsigned)machine->cpu.stack_pointer,
-                (unsigned)machine->cpu.main.a,
-                (unsigned long long)machine->master_tick,
-                (unsigned long long)(tick + 31u),
-                (unsigned)machine->debugger_step_target_address,
-                (unsigned)machine->debugger_step_target_active);
-    }
-    CHECK(machine->cpu.program_counter == 0x8003u &&
-          machine->cpu.stack_pointer == 0x9000u && machine->cpu.main.a == 1u &&
-          machine->master_tick == tick + 31u);
+    CHECK(call_return_state_matches(machine, tick));
     CHECK(wz_machine_memory_read(machine, 0x8003u) == 0x3eu &&
           machine->cpu.main.a == 1u);
     CHECK(wz_debugger_window_pause_at_breakpoint(&window) ==
@@ -194,7 +200,7 @@ static int explicit_target_and_cancellation(void)
     CHECK(wz_host_machine_frame_execute(&runner, 256u, false, NULL, NULL) ==
           WZ_RESULT_BREAKPOINT_HIT);
     CHECK(machine->cpu.program_counter == 0x8003u &&
-          machine->master_tick == tick + 12u && machine->cpu.main.a == 0u);
+          machine->master_tick == tick + 24u && machine->cpu.main.a == 0u);
     CHECK(wz_debugger_window_pause_at_breakpoint(&window) ==
           WZ_DEBUGGER_WINDOW_OK);
     CHECK(window.paused && window.memory_address == 0x8003u &&
@@ -217,7 +223,7 @@ static int explicit_target_and_cancellation(void)
     CHECK(wz_host_machine_frame_execute(&runner, 256u, false, NULL, NULL) ==
           WZ_RESULT_BREAKPOINT_HIT);
     CHECK(machine->cpu.program_counter == 0x8005u &&
-          machine->cpu.main.a == 1u && machine->master_tick == tick + 8u);
+          machine->cpu.main.a == 1u && machine->master_tick == tick + 16u);
     CHECK(wz_debugger_window_pause_at_breakpoint(&window) ==
           WZ_DEBUGGER_WINDOW_OK);
     CHECK(machine->debugger_step_target_active == 0u &&

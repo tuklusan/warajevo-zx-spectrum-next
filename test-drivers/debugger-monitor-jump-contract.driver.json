@@ -16,7 +16,7 @@
     },
     {
       "path": "ci/test/debugger-monitor-jump/contract.c",
-      "sha256": "5d6d5c46bb5344981b38e3d4d794203aa59d3cf939810f54a0fb7169d36a0d1a"
+      "sha256": "c7ab8ae33c46a7cbb944d9166ec1694e8068c04e2e7aae537acf9a2cb9a4a8ea"
     },
     {
       "path": "ci/test/debugger-monitor-jump/contract.md",
@@ -52,7 +52,7 @@
     },
     {
       "path": "src/core/wz_debugger.c",
-      "sha256": "12ca813da1d50ccc374569258a950ea39b3d7c021dc658a2a392f59fce51be44"
+      "sha256": "b402fce901b096e10f7f7a4c2eda4987eeb3f60523f6593aa529aac5b79a7d20"
     },
     {
       "path": "src/core/wz_debugger.h",

@@ -181,8 +181,7 @@ wz_result_t wz_debugger_instruction_length(const wz_machine_t* machine,
     }
     if (opcode == 0xedu) {
         unsigned extended = wz_machine_memory_read(
-            machine, address_with_offset(
-                address_with_offset(address, prefix_count), 1u));
+            machine, address_with_offset(address, prefix_count + 1u));
         *length = prefix_count +
             (((extended & 0xc7u) == 0x43u) ? 4u : 2u);
         return WZ_RESULT_OK;
