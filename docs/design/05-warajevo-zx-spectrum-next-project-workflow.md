@@ -98,9 +98,11 @@ prospective tree and direct local-`main` to remote-`main` update.
 The gate runs test-ledger validation, banned-term validation, license-header
 validation, local AI source review, and Git LFS validation. Banned matching is
 case-insensitive. Source review is mandatory whenever a pushed change contains
-source files covered by the reviewer. The hook enforces a 20-minute wall-clock
-limit from review start, saves reviewer output under Git metadata, and on
-timeout records `STALL`, elapsed time, and the diagnostic log path in
+source files covered by the reviewer. The hook reviews one changed source file
+per packet, with up to 1,000 tokens of source context for that file, under one
+20-minute wall-clock limit for the complete review. It saves reviewer output
+under Git metadata, and on timeout records `STALL`, elapsed time, and the
+diagnostic log path in
 `wzsn-source-review-stall.log` under Git metadata. A completed review permits
 the gate to continue; review findings remain advisory and require developer
 adjudication. A processing warning that skipped any source file rejects the

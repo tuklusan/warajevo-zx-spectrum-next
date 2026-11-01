@@ -21,7 +21,8 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #define WZ_DEBUGGER_WINDOW_MEMORY_COMMAND_ID "tools.debugger.memory"
 #define WZ_DEBUGGER_WINDOW_MONITOR_COMMAND_ID "tools.debugger.monitor"
 #define WZ_DEBUGGER_WINDOW_MEMORY_BYTES 16u
-#define WZ_DEBUGGER_WINDOW_DISASSEMBLY_CAPACITY 96u
+#define WZ_DEBUGGER_WINDOW_DISASSEMBLY_LINES 24u
+#define WZ_DEBUGGER_WINDOW_DISASSEMBLY_CAPACITY 2048u
 
 typedef enum {
     WZ_DEBUGGER_WINDOW_OK = 0,
@@ -41,10 +42,13 @@ typedef struct {
     size_t memory_length;
     char disassembly[WZ_DEBUGGER_WINDOW_DISASSEMBLY_CAPACITY];
     size_t disassembly_length;
+    size_t disassembly_instruction_count;
     size_t executed;
+    wz_word_t disassembly_range_end;
     bool open;
     bool paused;
     bool trace_view_visible;
+    bool disassembly_range_active;
     bool breakpoint_active;
     bool breakpoint_hit;
 } wz_debugger_window_t;

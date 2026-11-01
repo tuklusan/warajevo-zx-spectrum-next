@@ -1537,6 +1537,12 @@ are not reproduced as emulated-hardware controls.
 
 The debugger is a first-class tool, not a second emulation implementation.
 
+The local monitor provides read-only `D [start [end]]` disassembly. Addresses
+are hexadecimal logical addresses, `end` is inclusive, and each invocation
+shows at most 24 instructions from the active mapping. The displayed address
+and advancement come from the shared Z80 decoder; instruction-byte reads wrap
+at the 16-bit address boundary.
+
 The local monitor exposes memory copying as `C <source> <destination>
 <length>`. Addresses are hexadecimal 16-bit logical addresses and length is a
 decimal byte count. Copying is available only while paused; the source is read

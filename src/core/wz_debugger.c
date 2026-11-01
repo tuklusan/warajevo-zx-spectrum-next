@@ -151,9 +151,9 @@ wz_result_t wz_debugger_disassemble(const wz_machine_t* machine,
     if (machine == 0 || output == 0 || capacity == 0u || consumed == 0) {
         return WZ_RESULT_INVALID_ARGUMENT;
     }
-    if (!valid_range(address, sizeof(bytes))) return WZ_RESULT_BUFFER_TOO_SMALL;
     for (size_t i = 0u; i < sizeof(bytes); ++i) {
-        bytes[i] = wz_machine_memory_read(machine, (wz_word_t)(address + i));
+        bytes[i] = wz_machine_memory_read(
+            machine, (wz_word_t)((size_t)address + i));
     }
     op = bytes[0];
     if (op == 0xcbu) return disassemble_cb(bytes, output, capacity, consumed);

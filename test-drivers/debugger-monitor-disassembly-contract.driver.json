@@ -1,0 +1,38 @@
+{
+  "testId": "debugger-monitor-disassembly-contract",
+  "requiredAssertions": 21,
+  "runnerMatrix": [
+    "Windows x64",
+    "Linux x64",
+    "Linux ARM64",
+    "macOS ARM64",
+    "macOS Intel"
+  ],
+  "command": "The source-push workflow builds wz_debugger_monitor_disassembly_contract and runs it through integrated CTest on all five native targets.",
+  "fixtures": [
+    {
+      "path": "ci/test/debugger-monitor-disassembly-contract.c",
+      "sha256": "3caab443e776757573609a9b56a23fa43f07d314d3ac0cc19aee29130ebf4e90"
+    },
+    {
+      "path": "src/app/wz_debugger_window.c",
+      "sha256": "d4e9b527189d65b6cd254661ce2863df1d404af303bcd1b1f7dde370e5928b34"
+    },
+    {
+      "path": "src/app/wz_debugger_window.h",
+      "sha256": "f4edc542117d3d02f114c6f80c22e37cee1c70805fc39b6f483b1a1554073199"
+    },
+    {
+      "path": "src/core/wz_debugger.c",
+      "sha256": "c7043e05f29aa1be7fb05776fe2f5072a16f33dabf80bd877b0922ddc6f7ec65"
+    },
+    {
+      "path": "src/core/wz_debugger.h",
+      "sha256": "4c01627af6f9c1efcf32567b405d2b81b407fdf41fccc6c18782dcda81960d22"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "b5460bda3f82e284a281299f0ed4185800fb56e993163198f594a602b0bf7764"
+    }
+  ]
+}

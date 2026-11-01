@@ -9,6 +9,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "app/wz_debugger_window.h"
 
 #include <ctype.h>
+#include <stdio.h>
 #include <string.h>
 
 typedef struct {
@@ -145,6 +146,56 @@ static bool monitor_parse_length(const char* token, size_t length,
     return true;
 }
 
+static wz_debugger_window_result_t refresh_disassembly(
+    wz_debugger_window_t* window)
+{
+    char instruction[WZ_DEBUGGER_WINDOW_DISASSEMBLY_CAPACITY];
+    size_t cursor = (size_t)window->memory_address;
+    size_t instruction_count = 0u;
+    size_t byte_count = 0u;
+
+    if (!window->disassembly_range_active) {
+        size_t consumed = 0u;
+        if (wz_debugger_disassemble(window->machine, window->memory_address,
+                window->disassembly, sizeof(window->disassembly), &consumed) !=
+            WZ_RESULT_OK) {
+            return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+        }
+        window->disassembly_length = consumed;
+        window->disassembly_instruction_count = 1u;
+        return WZ_DEBUGGER_WINDOW_OK;
+    }
+
+    window->disassembly[0] = '\0';
+    window->disassembly_length = 0u;
+    while (instruction_count < WZ_DEBUGGER_WINDOW_DISASSEMBLY_LINES &&
+           cursor <= (size_t)window->disassembly_range_end) {
+        size_t consumed = 0u;
+        size_t used = strlen(window->disassembly);
+        int written;
+        if (wz_debugger_disassemble(window->machine, (wz_word_t)cursor,
+                instruction, sizeof(instruction), &consumed) != WZ_RESULT_OK ||
+            consumed == 0u || used >= sizeof(window->disassembly)) {
+            return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+        }
+        written = snprintf(window->disassembly + used,
+                           sizeof(window->disassembly) - used,
+                           "%04X: %s\n", (unsigned)cursor, instruction);
+        if (written < 0 ||
+            (size_t)written >= sizeof(window->disassembly) - used) {
+            return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+        }
+        ++instruction_count;
+        byte_count += consumed;
+        if (cursor + consumed > 0xffffu) break;
+        cursor += consumed;
+    }
+    window->disassembly_length = byte_count;
+    window->disassembly_instruction_count = instruction_count;
+    return instruction_count == 0u ? WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR
+                                   : WZ_DEBUGGER_WINDOW_OK;
+}
+
 static bool monitor_parse_register(const char* token, size_t length,
                                    wz_debugger_register_t* reg)
 {
@@ -163,7 +214,6 @@ static bool monitor_parse_register(const char* token, size_t length,
 static wz_debugger_window_result_t refresh_view(wz_debugger_window_t* window)
 {
     wz_result_t result;
-    size_t consumed = 0u;
     size_t memory_length;
 
     if (window == 0 || !window->open || window->machine == 0) {
@@ -179,13 +229,10 @@ static wz_debugger_window_result_t refresh_view(wz_debugger_window_t* window)
         wz_debugger_read_memory_block(window->machine, window->memory_address,
                                        window->memory, memory_length) !=
             WZ_RESULT_OK ||
-        wz_debugger_disassemble(window->machine, window->memory_address,
-                                window->disassembly,
-                                sizeof(window->disassembly), &consumed) != WZ_RESULT_OK) {
+        refresh_disassembly(window) != WZ_DEBUGGER_WINDOW_OK) {
         return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
     }
     window->memory_length = memory_length;
-    window->disassembly_length = consumed;
     window->breakpoint_address = window->machine->debugger_breakpoint_address;
     window->breakpoint_active = wz_debugger_breakpoint_active(window->machine);
     window->breakpoint_hit = wz_debugger_breakpoint_hit(window->machine);
@@ -231,6 +278,8 @@ void wz_debugger_window_close(wz_debugger_window_t* window)
     window->machine = 0;
     window->memory_length = 0u;
     window->disassembly_length = 0u;
+    window->disassembly_instruction_count = 0u;
+    window->disassembly_range_active = false;
 }
 
 bool wz_debugger_window_is_open(const wz_debugger_window_t* window)
@@ -273,6 +322,7 @@ wz_debugger_window_result_t wz_debugger_window_select_memory(
         return WZ_DEBUGGER_WINDOW_NOT_OPEN;
     }
     window->memory_address = address;
+    window->disassembly_range_active = false;
     return refresh_view(window);
 }
 
@@ -310,6 +360,7 @@ wz_debugger_window_result_t wz_debugger_window_copy_memory(
         return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
     }
     window->memory_address = destination_address;
+    window->disassembly_range_active = false;
     return refresh_view(window);
 }
 
@@ -392,6 +443,27 @@ wz_debugger_window_result_t wz_debugger_window_dispatch_monitor_command(
         monitor_parse_hex(tokens[3], lengths[3], &value)) {
         return wz_debugger_window_set_register(window, reg, value);
     }
+    if (token_count >= 1u && token_count <= 3u &&
+        monitor_token_equal(tokens[0], lengths[0], "D")) {
+        wz_word_t start;
+        wz_word_t end = 0xffffu;
+        if (!wz_debugger_window_is_open(window)) {
+            return WZ_DEBUGGER_WINDOW_NOT_OPEN;
+        }
+        start = window->memory_address;
+        if (token_count >= 2u &&
+            !monitor_parse_hex(tokens[1], lengths[1], &start)) {
+            return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
+        }
+        if (token_count == 3u &&
+            (!monitor_parse_hex(tokens[2], lengths[2], &end) || end < start)) {
+            return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
+        }
+        window->memory_address = start;
+        window->disassembly_range_end = end;
+        window->disassembly_range_active = true;
+        return refresh_view(window);
+    }
     if (token_count >= 2u && token_count <= 18u &&
         monitor_token_equal(tokens[0], lengths[0], "M")) {
         wz_word_t address;
@@ -433,6 +505,7 @@ wz_debugger_window_result_t wz_debugger_window_dispatch_monitor_command(
             return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
         }
         window->memory_address = (wz_word_t)(address + byte_count);
+        window->disassembly_range_active = false;
         return refresh_view(window);
     }
     if (token_count == 4u &&
@@ -479,6 +552,7 @@ wz_debugger_window_result_t wz_debugger_window_dispatch_monitor_command(
         }
         window->memory_address =
             (wz_word_t)(window->memory_address + byte_count);
+        window->disassembly_range_active = false;
         return refresh_view(window);
     }
     if (token_count == 4u &&
@@ -539,6 +613,7 @@ wz_debugger_window_result_t wz_debugger_window_dispatch_monitor_command(
         }
         window->memory_address =
             (wz_word_t)(window->memory_address + byte_count);
+        window->disassembly_range_active = false;
         return refresh_view(window);
     }
     if (token_count == 1u &&
