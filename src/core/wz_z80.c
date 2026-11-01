@@ -16,6 +16,7 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include "core/wz_z80.h"
 
 #include "core/wz_bus.h"
+#include "core/wz_debugger.h"
 #include "core/wz_machine.h"
 #include "core/wz_machine_internal.h"
 
@@ -2298,10 +2299,7 @@ static wz_result_t wz_z80_step_impl(wz_machine_t* machine,
         return WZ_RESULT_INVALID_STATE;
     }
 
-    if (machine->debugger_breakpoint_active != 0u &&
-        machine->cpu.program_counter == machine->debugger_breakpoint_address &&
-        wz_machine_debugger_mapping_key(machine, machine->cpu.program_counter) ==
-            machine->debugger_breakpoint_mapping) {
+    if (wz_debugger_breakpoint_matches_pc(machine)) {
         wz_trace_event_t breakpoint_event = {0};
         machine->debugger_breakpoint_hit = 1u;
         breakpoint_event.kind = WZ_TRACE_DEVELOPER_MARKER;

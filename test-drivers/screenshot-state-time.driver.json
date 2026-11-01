@@ -25,7 +25,7 @@
     },
     {
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
-      "sha256": "a0986d7e67cbaa3ea6f338d519ec3f0cba6531244ca6cd1304768de46a2c2b74"
+      "sha256": "15c720287aeac172020ad8983fc98f3120cff3c65ae1c2253ab5cde89c094c44"
     },
     {
       "path": "src/app/wz_host_output.c",
@@ -53,7 +53,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "b5460bda3f82e284a281299f0ed4185800fb56e993163198f594a602b0bf7764"
+      "sha256": "4636c172e9b0336d5a23cc812be395a41a6bfc4164576f9283266e77202a905c"
     },
     {
       "path": "src/app/wz_telnet_negotiation.c",

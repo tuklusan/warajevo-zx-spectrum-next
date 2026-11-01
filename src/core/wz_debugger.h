@@ -146,6 +146,7 @@ wz_result_t wz_debugger_set_breakpoint(wz_machine_t* machine,
 wz_result_t wz_debugger_clear_breakpoint(wz_machine_t* machine);
 bool wz_debugger_breakpoint_active(const wz_machine_t* machine);
 bool wz_debugger_breakpoint_hit(const wz_machine_t* machine);
+bool wz_debugger_breakpoint_matches_pc(const wz_machine_t* machine);
 void wz_debugger_clear_breakpoint_hit(wz_machine_t* machine);
 wz_result_t wz_debugger_step(wz_machine_t* machine, size_t* executed);
 wz_result_t wz_debugger_continue(wz_machine_t* machine,

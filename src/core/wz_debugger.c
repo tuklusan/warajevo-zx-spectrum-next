@@ -725,6 +725,14 @@ bool wz_debugger_breakpoint_hit(const wz_machine_t* machine)
     return machine != 0 && machine->debugger_breakpoint_hit != 0u;
 }
 
+bool wz_debugger_breakpoint_matches_pc(const wz_machine_t* machine)
+{
+    return machine != 0 && machine->debugger_breakpoint_active != 0u &&
+        machine->cpu.program_counter == machine->debugger_breakpoint_address &&
+        wz_machine_debugger_mapping_key(machine, machine->cpu.program_counter) ==
+            machine->debugger_breakpoint_mapping;
+}
+
 void wz_debugger_clear_breakpoint_hit(wz_machine_t* machine)
 {
     if (machine != 0) {

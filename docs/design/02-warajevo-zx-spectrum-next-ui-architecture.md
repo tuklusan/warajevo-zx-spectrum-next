@@ -1551,6 +1551,13 @@ writable, and either range that would wrap past `FFFF` is rejected before any
 write. Overlapping copies preserve their original source bytes. The destination
 becomes the selected memory-editor address after success.
 
+The local monitor also accepts paused-only `E` as an execution-resume request.
+It resumes the existing CPU state from the selected PC through the application's
+normal machine-resume path; dispatch itself does not edit registers or machine
+time. The production frame runner must stop before executing a mapped
+breakpoint instruction, return the application to paused state, and refresh the
+open debugger view with the stop state.
+
 Initial presentation should support the required monitor/debugger workflows
 when the core subsystem reaches Phase 11.
 

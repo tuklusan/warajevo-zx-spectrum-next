@@ -28,7 +28,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "b5460bda3f82e284a281299f0ed4185800fb56e993163198f594a602b0bf7764"
+      "sha256": "4636c172e9b0336d5a23cc812be395a41a6bfc4164576f9283266e77202a905c"
     },
     {
       "path": "src/core/wz_bus.c",
@@ -44,7 +44,7 @@
     },
     {
       "path": "src/core/wz_runner.c",
-      "sha256": "22c6511dbbcd3ef2721dcdeba5d435f9f3a35c30f701f7264a04962fb71ba144"
+      "sha256": "f5892db3ca9afdb1e77a624eb03096cefcf02da3cc261e7c7ad4693c98e18b11"
     },
     {
       "path": "src/core/wz_state.c",
@@ -56,7 +56,7 @@
     },
     {
       "path": "src/core/wz_z80.c",
-      "sha256": "0e0dbb4c8fb07b7f0d4c0ac5da2c1622d9d84d93b8b0818cc3a68f5c96c83790"
+      "sha256": "ce74c8276c08b3f323f92d09cd966f53aa8c2d31850a2ad76758f1d4e513f916"
     },
     {
       "path": "src/core/wz_zxnet.c",

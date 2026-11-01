@@ -3168,6 +3168,10 @@ static wz_result_t wz_host_debugger_monitor_command(const void* context,
     dispatched = wz_debugger_window_dispatch_monitor_command(
         &session->debugger_window, (const char*)arguments.data,
         arguments.size);
+    if (dispatched == WZ_DEBUGGER_WINDOW_RESUME_REQUESTED) {
+        return wz_host_command_resume(context,
+            (wz_command_arguments_t){NULL, 0u}, result);
+    }
     if (dispatched != WZ_DEBUGGER_WINDOW_OK) {
         result->reason = dispatched == WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT
             ? "invalid-monitor-command"
@@ -6211,8 +6215,16 @@ static void wz_host_ui_draw_debugger_window(struct nk_context* context,
     if (!window->paused) nk_widget_disable_end(context);
     nk_layout_row_dynamic(context, 20.0f, 1);
     nk_label(context,
-        "Monitor: B <address>|CLEAR, R SETREG <register> <hex>, U, ! <IFF|-1> [IM], K <first> <last> <byte>, M <address> [bytes...], P <byte...>, W <word...>, Q",
-             NK_TEXT_LEFT);
+        "Monitor: B <address>|CLEAR; C <source> <destination> <length>; D [start [end]]; E resume",
+        NK_TEXT_LEFT);
+    nk_layout_row_dynamic(context, 20.0f, 1);
+    nk_label(context,
+        "R SETREG <register> <hex>; U; ! <IFF|-1> [IM]; K <first> <last> <byte>",
+        NK_TEXT_LEFT);
+    nk_layout_row_dynamic(context, 20.0f, 1);
+    nk_label(context,
+        "M <address> [bytes...]; P <byte...>; W <word...>; Q",
+        NK_TEXT_LEFT);
     nk_layout_row_dynamic(context, 24.0f, 2);
     if (session->debugger_monitor_command_length < 0) {
         session->debugger_monitor_command_length = 0;
@@ -8112,10 +8124,20 @@ static void wz_host_frame(void)
                 wz_host_audio_output_enabled(wz_host_session.speed,
                     wz_host_session.ui_window.layout.audio_output_enabled) &&
                 wz_sokol_audio_valid(&wz_host_session.audio);
-            if (wz_host_machine_frame_execute(
-                    &wz_host_session.runner, frame_ticks, capture_audio,
-                    wz_host_audio_frame_output, &wz_host_session) !=
-                WZ_RESULT_OK) {
+            wz_result_t frame_result = wz_host_machine_frame_execute(
+                &wz_host_session.runner, frame_ticks, capture_audio,
+                wz_host_audio_frame_output, &wz_host_session);
+            if (frame_result == WZ_RESULT_BREAKPOINT_HIT) {
+                wz_host_session.ui_window.layout.paused = true;
+                wz_host_session.ui_window.layout.audio_muted = true;
+                if (wz_debugger_window_is_open(
+                        &wz_host_session.debugger_window)) {
+                    (void)wz_debugger_window_pause_at_breakpoint(
+                        &wz_host_session.debugger_window);
+                }
+                break;
+            }
+            if (frame_result != WZ_RESULT_OK) {
                 return;
             }
             {
@@ -8131,7 +8153,8 @@ static void wz_host_frame(void)
             &wz_host_session.telnet_key_presses,
             &wz_host_session.input_arbiter,
             wz_host_session.machine.master_tick);
-        if (wz_host_session.pacing_initialized) {
+        if (wz_host_session.pacing_initialized &&
+            !wz_host_session.ui_window.layout.paused) {
             if (!wz_host_pacing_wait(
                     &wz_host_session.pacing, wz_host_now_nanoseconds(),
                     wz_host_session.machine.master_tick,

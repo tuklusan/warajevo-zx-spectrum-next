@@ -308,6 +308,22 @@ wz_debugger_window_result_t wz_debugger_window_set_paused(
     return WZ_DEBUGGER_WINDOW_OK;
 }
 
+wz_debugger_window_result_t wz_debugger_window_pause_at_breakpoint(
+    wz_debugger_window_t* window)
+{
+    if (!wz_debugger_window_is_open(window)) {
+        return WZ_DEBUGGER_WINDOW_NOT_OPEN;
+    }
+    if (!wz_debugger_breakpoint_hit(window->machine)) {
+        return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+    }
+    if (wz_debugger_window_set_paused(window, true) !=
+        WZ_DEBUGGER_WINDOW_OK) {
+        return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+    }
+    return wz_debugger_window_refresh(window);
+}
+
 wz_debugger_window_result_t wz_debugger_window_refresh(
     wz_debugger_window_t* window)
 {
@@ -627,6 +643,14 @@ wz_debugger_window_result_t wz_debugger_window_dispatch_monitor_command(
         }
         wz_debugger_window_close(window);
         return WZ_DEBUGGER_WINDOW_OK;
+    }
+    if (token_count == 1u &&
+        monitor_token_equal(tokens[0], lengths[0], "E")) {
+        if (!wz_debugger_window_is_open(window)) {
+            return WZ_DEBUGGER_WINDOW_NOT_OPEN;
+        }
+        if (!window->paused) return WZ_DEBUGGER_WINDOW_NOT_PAUSED;
+        return WZ_DEBUGGER_WINDOW_RESUME_REQUESTED;
     }
     if (token_count == 2u &&
         monitor_token_equal(tokens[0], lengths[0], "B")) {

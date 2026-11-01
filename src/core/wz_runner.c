@@ -8,6 +8,7 @@
 
 #include "core/wz_runner.h"
 
+#include "core/wz_debugger.h"
 #include "core/wz_z80.h"
 #include "core/wz_machine_internal.h"
 
@@ -62,6 +63,15 @@ wz_result_t wz_headless_runner_execute(wz_headless_runner_t* runner,
         wz_machine_update_interrupt_line(runner->machine);
         wz_result_t step_result;
         bool interrupt_accepted = false;
+        if (runner->machine->interface1_pending_io.active == 0u &&
+            wz_debugger_breakpoint_matches_pc(runner->machine)) {
+            step_result = wz_z80_step(runner->machine);
+            if (step_result != WZ_RESULT_OK) return step_result;
+            if (wz_debugger_breakpoint_hit(runner->machine)) {
+                return WZ_RESULT_BREAKPOINT_HIT;
+            }
+            return WZ_RESULT_INVALID_STATE;
+        }
         if (runner->machine->interface1_pending_io.active == 0u &&
             wz_machine_maskable_interrupt_line_low(runner->machine)) {
             step_result = wz_z80_sample_maskable_interrupt(runner->machine);

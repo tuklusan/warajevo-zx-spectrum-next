@@ -29,6 +29,7 @@ typedef enum {
     WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT,
     WZ_DEBUGGER_WINDOW_NOT_OPEN,
     WZ_DEBUGGER_WINDOW_NOT_PAUSED,
+    WZ_DEBUGGER_WINDOW_RESUME_REQUESTED,
     WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR
 } wz_debugger_window_result_t;
 
@@ -64,6 +65,8 @@ bool wz_debugger_window_is_paused(const wz_debugger_window_t* window);
 wz_debugger_window_result_t wz_debugger_window_set_paused(
     wz_debugger_window_t* window,
     bool paused);
+wz_debugger_window_result_t wz_debugger_window_pause_at_breakpoint(
+    wz_debugger_window_t* window);
 wz_debugger_window_result_t wz_debugger_window_refresh(
     wz_debugger_window_t* window);
 wz_debugger_window_result_t wz_debugger_window_select_memory(
