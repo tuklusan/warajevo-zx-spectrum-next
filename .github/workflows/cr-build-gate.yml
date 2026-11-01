@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
     inputs:
       evidence_run_id:
-        description: Reuse a completed native run's retained runner evidence
+        description: Reuse a completed main-branch native run's runner evidence
         required: false
         type: string
       evidence_commit:
@@ -184,6 +184,7 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Validate proof source selection
+        id: source-selection
         env:
           EVIDENCE_COMMIT: ${{ inputs.evidence_commit }}
           EVIDENCE_RUN_ID: ${{ inputs.evidence_run_id }}
@@ -195,20 +196,63 @@ jobs:
               -H "Authorization: Bearer $GITHUB_TOKEN" \
               "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/actions/runs/$EVIDENCE_RUN_ID" \
               > "$RUNNER_TEMP/evidence-run.json"
+            curl --fail --silent --show-error \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer $GITHUB_TOKEN" \
+              "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/actions/runs/$EVIDENCE_RUN_ID/jobs?per_page=100" \
+              > "$RUNNER_TEMP/evidence-jobs.json"
+            curl --fail --silent --show-error \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer $GITHUB_TOKEN" \
+              "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/actions/runs/$EVIDENCE_RUN_ID/artifacts?per_page=100" \
+              > "$RUNNER_TEMP/evidence-artifacts.json"
             python - <<'PY'
           import json, os
           from pathlib import Path
-          run = json.loads(Path(os.environ["RUNNER_TEMP"], "evidence-run.json").read_text())
+          root = Path(os.environ["RUNNER_TEMP"])
+          run = json.loads((root / "evidence-run.json").read_text())
           if (run.get("status") != "completed" or
                   run.get("head_branch") != "main" or
                   run.get("head_sha") != os.environ["EVIDENCE_COMMIT"] or
-                  run.get("event") != "workflow_dispatch"):
-              raise SystemExit("evidence run must be a completed main-branch dispatch at the stated commit")
+                  run.get("event") not in ("push", "workflow_dispatch")):
+              raise SystemExit("evidence run must be a completed main-branch native run at the stated commit")
+          jobs = json.loads((root / "evidence-jobs.json").read_text())
+          expected_jobs = {
+              "Full build / Windows x64", "Full build / Linux x64",
+              "Full build / Linux ARM64", "Full build / macOS ARM64",
+              "Full build / macOS Intel",
+          }
+          observed_jobs = {
+              job.get("name"): job for job in jobs.get("jobs", [])
+              if job.get("name") in expected_jobs
+          }
+          if (jobs.get("total_count") != len(jobs.get("jobs", [])) or
+                  set(observed_jobs) != expected_jobs or
+                  any(job.get("status") != "completed" or
+                      job.get("conclusion") != "success"
+                      for job in observed_jobs.values())):
+              raise SystemExit("evidence run lacks five successful native build jobs")
+          artifacts = json.loads((root / "evidence-artifacts.json").read_text())
+          expected_artifacts = {
+              "runner-evidence-windows-x64", "runner-evidence-linux-x64",
+              "runner-evidence-linux-arm64", "runner-evidence-macos-arm64",
+              "runner-evidence-macos-x64",
+          }
+          available_artifacts = {
+              artifact.get("name") for artifact in artifacts.get("artifacts", [])
+              if not artifact.get("expired")
+          }
+          if (artifacts.get("total_count") != len(artifacts.get("artifacts", [])) or
+                  not expected_artifacts.issubset(available_artifacts)):
+              raise SystemExit("evidence run lacks unexpired runner evidence for all five targets")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+              output.write(f"source_event={run['event']}\n")
           PY
             exit 0
           fi
           if [[ -z "$EVIDENCE_COMMIT" && -z "$EVIDENCE_RUN_ID" && \
                 "${{ needs.clean-build.result }}" == "success" ]]; then
+            echo "source_event=$GITHUB_EVENT_NAME" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           echo "Both evidence_run_id and evidence_commit are required for proof-only mode." >&2
@@ -227,30 +271,47 @@ jobs:
         env:
           EVIDENCE_COMMIT: ${{ inputs.evidence_commit }}
           EVIDENCE_RUN_ID: ${{ inputs.evidence_run_id }}
+          SOURCE_EVENT: ${{ steps.source-selection.outputs.source_event }}
         run: |
           source_commit="${EVIDENCE_COMMIT:-$GITHUB_SHA}"
           source_run_id="${EVIDENCE_RUN_ID:-$GITHUB_RUN_ID}"
           python ci/test/interface1-wait/write-proof.py \
             --commit "$source_commit" --driver-commit "$GITHUB_SHA" \
             --run-id "$source_run_id" \
-            --branch "$GITHUB_REF_NAME" --event "$GITHUB_EVENT_NAME" \
+            --branch "$GITHUB_REF_NAME" --event "$SOURCE_EVENT" \
             --input-dir hosted-inputs
           python ci/test/performance/write-proof.py \
             --commit "$source_commit" --driver-commit "$GITHUB_SHA" \
             --run-id "$source_run_id" \
-            --branch "$GITHUB_REF_NAME" --event "$GITHUB_EVENT_NAME" \
+            --branch "$GITHUB_REF_NAME" --event "$SOURCE_EVENT" \
             --input-dir hosted-inputs
-          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
+          if [[ "$SOURCE_EVENT" == "workflow_dispatch" ]]; then
             python ci/test/ay-timing/write-proof.py \
               --commit "$source_commit" --driver-commit "$GITHUB_SHA" \
               --run-id "$source_run_id" \
-              --branch "$GITHUB_REF_NAME" --event "$GITHUB_EVENT_NAME" \
+              --branch "$GITHUB_REF_NAME" --event "$SOURCE_EVENT" \
               --input-dir hosted-inputs
             python ci/test/screenshot-state-time/write-proof.py \
               --commit "$source_commit" --driver-commit "$GITHUB_SHA" \
               --run-id "$source_run_id" \
-              --branch "$GITHUB_REF_NAME" --event "$GITHUB_EVENT_NAME" \
+              --branch "$GITHUB_REF_NAME" --event "$SOURCE_EVENT" \
               --input-dir hosted-inputs
+          fi
+
+      - name: Verify generated proof records
+        env:
+          SOURCE_EVENT: ${{ steps.source-selection.outputs.source_event }}
+        shell: bash
+        run: |
+          test -s test-results/interface1-wait.json
+          test -s test-results/phase16-performance-current.json
+          test -s test-results/debugger-monitor-exit-contract.json
+          test -s test-results/debugger-monitor-find-contract.json
+          test -s test-results/debugger-monitor-step-contract.json
+          compgen -G 'test-results/performance-current/*.json' > /dev/null
+          if [[ "$SOURCE_EVENT" == "workflow_dispatch" ]]; then
+            test -s test-results/ay-timing-contract.json
+            test -s test-results/screenshot-state-time.json
           fi
 
       - name: Upload temporary proof records
@@ -276,11 +337,20 @@ jobs:
           path: |
             test-results/interface1-wait.json
             test-results/phase16-performance-current.json
-            test-results/ay-timing-contract.json
-            test-results/screenshot-state-time.json
             test-results/debugger-monitor-exit-contract.json
             test-results/debugger-monitor-find-contract.json
             test-results/debugger-monitor-step-contract.json
             test-results/performance-current/*.json
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Upload dispatch-only timing and screenshot records
+        if: github.event_name == 'workflow_dispatch' && steps.source-selection.outputs.source_event == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase16-dispatch-only-evidence-${{ github.run_id }}
+          path: |
+            test-results/ay-timing-contract.json
+            test-results/screenshot-state-time.json
           if-no-files-found: error
           retention-days: 1

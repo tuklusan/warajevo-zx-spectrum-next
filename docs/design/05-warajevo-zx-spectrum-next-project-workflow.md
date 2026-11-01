@@ -190,6 +190,12 @@ workstation.
 Required CI checks apply to the exact commit pushed to `main`; there is no merge
 or PR stage.
 
+When a native build passed but proof generation needs repair, a manual
+proof-only dispatch may reuse that completed main-branch run. The workflow
+accepts it only when all five native jobs succeeded and each runner-evidence
+artifact is still available; generated records retain the source run's event
+and commit. This avoids repeating the five native builds for proof-only fixes.
+
 ## 7. ROM and difficult-media validation
 
 The emulator requires an approved ROM on the runner. Development and test

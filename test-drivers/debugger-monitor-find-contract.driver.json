@@ -12,7 +12,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "ded9fca933f037704f50024d54ad8b6812c749334df1d877f962b6c194bf140e"
+      "sha256": "f1ec2d5611a6dee87a87e900b012a8cb3ee5c5b26bc1aa29c6240dc0dbec12ff"
     },
     {
       "path": "ci/test/debugger-monitor-find-contract.c",
@@ -24,7 +24,7 @@
     },
     {
       "path": "ci/test/performance/write-proof.py",
-      "sha256": "3dd0c29977e0d2de789eab5d53219893cb757cc4aa2a926fb472f19bab8cc132"
+      "sha256": "aba19b4aa3cd1c3ad1560da159300cc8647dbc6e264a1aa120dbbfe04b5f248a"
     },
     {
       "path": "src/app/wz_debugger_window.c",
@@ -40,7 +40,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "36b44bc8961a3e8e6cba68cf7f2b76afe41ed5ef3e4cfe42a5d4ffbb38a4e6be"
+      "sha256": "a251f517b859b010c8c2467695633c82c857b0755bde264000a18feb4d5f76eb"
     },
     {
       "path": "src/core/wz_debugger.c",
