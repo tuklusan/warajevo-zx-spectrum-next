@@ -9,106 +9,81 @@ SANYALnet Labs." See LICENSE for full terms.
 
 #include "app/wz_debugger_window.h"
 #include "app/wz_host_machine_frame.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 static unsigned assertions;
+static wz_debugger_window_result_t command(wz_debugger_window_t *w,
+                                            const char *s)
+{
+    return wz_debugger_window_dispatch_monitor_command(w, s, strlen(s));
+}
 
-#define CHECK(expression) do { \
+#define CHECK(x) do { \
     ++assertions; \
-    if (!(expression)) { \
-        fprintf(stderr, "debugger-monitor-exit-contract failed at %s:%d: %s\n", \
-                __FILE__, __LINE__, #expression); \
-        goto cleanup; \
-    } \
+    if (!(x)) { fprintf(stderr, "exit contract %d: %s\n", __LINE__, #x); \
+        goto done; } \
 } while (0)
 
 int main(void)
 {
-    wz_machine_t* machine = (wz_machine_t*)calloc(1u, sizeof(*machine));
-    wz_debugger_window_t window;
-    wz_headless_runner_t runner;
-    wz_z80_state_t before_resume;
-    wz_master_tick_t before_tick;
-    bool machine_initialized = false;
+    wz_machine_t *m = calloc(1u, sizeof(*m));
+    wz_debugger_window_t w;
+    wz_headless_runner_t r;
+    wz_z80_state_t cpu;
+    wz_master_tick_t tick;
+    bool initialized = false;
     int status = 1;
 
-    wz_debugger_window_init(&window);
-    if (machine == NULL ||
-        wz_machine_init(machine, wz_machine_profile_48k_pal()) != WZ_RESULT_OK) {
-        free(machine);
-        return 1;
-    }
-    machine_initialized = true;
-    machine->cpu.program_counter = 0x8000u;
-    wz_machine_memory_write(machine, 0x8000u, 0x00u);
-    wz_machine_memory_write(machine, 0x8001u, 0x76u);
-    CHECK(wz_debugger_window_open(&window, machine, true) ==
-          WZ_DEBUGGER_WINDOW_OK);
-    CHECK(wz_debugger_window_dispatch_monitor_command(&window,
-          "E EXTRA", 7u) == WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT);
-    CHECK(wz_debugger_window_dispatch_monitor_command(&window,
-          "R SETREG PC 8000", 16u) == WZ_DEBUGGER_WINDOW_OK);
-    CHECK(wz_debugger_window_dispatch_monitor_command(&window,
-          "B 8001", 6u) == WZ_DEBUGGER_WINDOW_OK);
-    CHECK(window.snapshot.cpu.program_counter == 0x8000u &&
-          window.breakpoint_active && window.breakpoint_address == 0x8001u);
-    before_resume = machine->cpu;
-    before_tick = machine->master_tick;
-
-    CHECK(wz_debugger_window_dispatch_monitor_command(&window,
-          " e ", 3u) == WZ_DEBUGGER_WINDOW_RESUME_REQUESTED);
-    CHECK(wz_debugger_window_is_open(&window) && window.paused &&
-          machine->debugger_access_mode == WZ_DEBUGGER_PAUSED_MUTATION);
-    CHECK(memcmp(&machine->cpu, &before_resume, sizeof(before_resume)) == 0 &&
-          machine->master_tick == before_tick);
-    CHECK(wz_headless_runner_init(&runner, machine, NULL) == WZ_RESULT_OK);
-
-    CHECK(wz_debugger_window_set_paused(&window, false) ==
-          WZ_DEBUGGER_WINDOW_OK);
-    CHECK(!window.paused &&
-          machine->debugger_access_mode == WZ_DEBUGGER_READ_ONLY);
-    CHECK(wz_host_machine_frame_execute(&runner, 256u, false, NULL, NULL) ==
+    wz_debugger_window_init(&w);
+    if (m == NULL || wz_machine_init(m, wz_machine_profile_48k_pal()) !=
+            WZ_RESULT_OK) { free(m); return 1; }
+    initialized = true;
+    m->cpu.program_counter = 0x8000u;
+    wz_machine_memory_write(m, 0x8000u, 0x00u);
+    wz_machine_memory_write(m, 0x8001u, 0x76u);
+    CHECK(wz_debugger_window_open(&w, m, true) == WZ_DEBUGGER_WINDOW_OK);
+    CHECK(command(&w, "E EXTRA") == WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT);
+    CHECK(command(&w, "R SETREG PC 8000") == WZ_DEBUGGER_WINDOW_OK);
+    CHECK(command(&w, "B 8001") == WZ_DEBUGGER_WINDOW_OK);
+    CHECK(w.snapshot.cpu.program_counter == 0x8000u && w.breakpoint_active &&
+          w.breakpoint_address == 0x8001u);
+    cpu = m->cpu; tick = m->master_tick;
+    CHECK(command(&w, " e ") == WZ_DEBUGGER_WINDOW_RESUME_REQUESTED);
+    CHECK(wz_debugger_window_is_open(&w) && wz_debugger_window_is_paused(&w) &&
+          m->debugger_access_mode == WZ_DEBUGGER_PAUSED_MUTATION);
+    CHECK(memcmp(&m->cpu, &cpu, sizeof(cpu)) == 0 && m->master_tick == tick);
+    CHECK(wz_headless_runner_init(&r, m, NULL) == WZ_RESULT_OK);
+    CHECK(wz_debugger_window_set_paused(&w, false) == WZ_DEBUGGER_WINDOW_OK);
+    CHECK(!w.paused && m->debugger_access_mode == WZ_DEBUGGER_READ_ONLY);
+    CHECK(wz_host_machine_frame_execute(&r, 256u, false, NULL, NULL) ==
           WZ_RESULT_BREAKPOINT_HIT);
-    CHECK(machine->cpu.program_counter == 0x8001u &&
-          machine->master_tick > before_tick &&
-          wz_debugger_breakpoint_active(machine) &&
-          wz_debugger_breakpoint_hit(machine));
-    CHECK(wz_machine_memory_read(machine, 0x8000u) == 0x00u &&
-          wz_machine_memory_read(machine, 0x8001u) == 0x76u);
-    CHECK(wz_debugger_window_is_open(&window) && !window.paused);
-
-    before_tick = machine->master_tick;
-    CHECK(wz_debugger_window_pause_at_breakpoint(&window) ==
-          WZ_DEBUGGER_WINDOW_OK);
-    CHECK(window.paused && window.snapshot.cpu.program_counter == 0x8001u &&
-          window.breakpoint_hit && window.breakpoint_active);
-    CHECK(machine->master_tick == before_tick);
-    CHECK(wz_debugger_window_dispatch_monitor_command(&window,
-          "E EXTRA", 7u) == WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT);
-    CHECK(wz_debugger_window_dispatch_monitor_command(&window,
-          "E", 1u) == WZ_DEBUGGER_WINDOW_RESUME_REQUESTED);
-    CHECK(machine->cpu.program_counter == 0x8001u &&
-          machine->debugger_breakpoint_hit != 0u);
-
-    CHECK(wz_debugger_window_set_paused(&window, false) ==
-          WZ_DEBUGGER_WINDOW_OK);
-    CHECK(wz_debugger_window_dispatch_monitor_command(&window,
-          "E", 1u) == WZ_DEBUGGER_WINDOW_NOT_PAUSED);
-    wz_debugger_window_close(&window);
-    CHECK(wz_debugger_window_dispatch_monitor_command(&window,
-          "E", 1u) == WZ_DEBUGGER_WINDOW_NOT_OPEN);
-
+    CHECK(m->cpu.program_counter == 0x8001u && m->master_tick > tick &&
+          wz_debugger_breakpoint_active(m) && wz_debugger_breakpoint_hit(m));
+    CHECK(wz_machine_memory_read(m, 0x8000u) == 0x00u &&
+          wz_machine_memory_read(m, 0x8001u) == 0x76u);
+    CHECK(wz_debugger_window_is_open(&w) &&
+          !wz_debugger_window_is_paused(&w));
+    tick = m->master_tick;
+    CHECK(wz_debugger_window_pause_at_breakpoint(&w) == WZ_DEBUGGER_WINDOW_OK);
+    CHECK(w.paused && w.snapshot.cpu.program_counter == 0x8001u &&
+          w.breakpoint_hit && w.breakpoint_active);
+    CHECK(m->master_tick == tick);
+    CHECK(command(&w, "E EXTRA") == WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT);
+    CHECK(command(&w, "E") == WZ_DEBUGGER_WINDOW_RESUME_REQUESTED);
+    CHECK(m->cpu.program_counter == 0x8001u && m->debugger_breakpoint_hit);
+    CHECK(wz_debugger_window_set_paused(&w, false) == WZ_DEBUGGER_WINDOW_OK);
+    CHECK(command(&w, "E") == WZ_DEBUGGER_WINDOW_NOT_PAUSED);
+    wz_debugger_window_close(&w);
+    CHECK(command(&w, "E") == WZ_DEBUGGER_WINDOW_NOT_OPEN);
     status = 0;
-cleanup:
-    wz_debugger_window_close(&window);
-    if (machine_initialized) wz_machine_destroy(machine);
-    free(machine);
-    if (status == 0) {
+done:
+    wz_debugger_window_close(&w);
+    if (initialized) wz_machine_destroy(m);
+    free(m);
+    if (status == 0)
         printf("debugger-monitor-exit-contract assertions=%u status=pass\n",
                assertions);
-    }
     return status;
 }

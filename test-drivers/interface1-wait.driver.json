@@ -11,6 +11,10 @@
   ],
   "fixtures": [
     {
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "2785f3e2d8f72be85a2bbec007066307c9179966a30f7c5faabbb854bbca18f7"
+    },
+    {
       "path": "ci/test/interface1-wait/interface1-wait-contract.c",
       "sha256": "c8da19d4a522971b49ebc58a8bee784625596e42a4f7e6742d34ba030ecaba23"
     },
@@ -19,12 +23,12 @@
       "sha256": "1178a8d429b21769d8393c2d0ff1f908263f8ca60922ee401878b64a5c57e887"
     },
     {
-      "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "1a24084f2117fbf746e296b4f8376c54d9321efa710f60528fa70a8da7771904"
-    },
-    {
       "path": "ci/test/performance/write-runner-evidence.py",
       "sha256": "5efe8c7f2b9f108ee0f5a38d5a6be05dc97cf4715ede82b3e2ee7ef9e9b44bb7"
+    },
+    {
+      "path": "docs/design/interface1-microdrive-zxnet.md",
+      "sha256": "a275dfd1cc380031eb01347219fcdc6a273d9fa962e8c5503d502b4ec37dd706"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
@@ -65,10 +69,6 @@
     {
       "path": "src/core/wz_zxnet.h",
       "sha256": "3f8e58593ca15fc173531d1174b19c4bea95fd8123bf1855b34148d79b73d495"
-    },
-    {
-      "path": "docs/design/interface1-microdrive-zxnet.md",
-      "sha256": "a275dfd1cc380031eb01347219fcdc6a273d9fa962e8c5503d502b4ec37dd706"
     }
   ]
 }

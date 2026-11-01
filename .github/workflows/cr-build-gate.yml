@@ -146,7 +146,6 @@ jobs:
             "ci/test/performance/baselines/${{ matrix.performance_baseline }}.json"
 
       - name: Write hosted runner evidence
-        if: github.event_name == 'workflow_dispatch'
         shell: bash
         run: |
           python ci/test/performance/write-runner-evidence.py \
@@ -163,7 +162,6 @@ jobs:
             "dist/runner-evidence/build-${{ matrix.performance_baseline }}.log"
 
       - name: Upload temporary runner evidence
-        if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v4
         with:
           name: runner-evidence-${{ matrix.performance_baseline }}
@@ -174,9 +172,11 @@ jobs:
   write-hosted-proof:
     name: Generate hosted test evidence
     if: >-
-      always() && github.event_name == 'workflow_dispatch' &&
-      (inputs.evidence_run_id != '' || inputs.evidence_commit != '' ||
-       needs.clean-build.result == 'success')
+      always() && github.ref == 'refs/heads/main' &&
+      ((github.event_name == 'push' && needs.clean-build.result == 'success') ||
+       (github.event_name == 'workflow_dispatch' &&
+        (inputs.evidence_run_id != '' || inputs.evidence_commit != '' ||
+         needs.clean-build.result == 'success')))
     needs: clean-build
     runs-on: ubuntu-24.04
     steps:
@@ -236,21 +236,38 @@ jobs:
             --branch "$GITHUB_REF_NAME" --event "$GITHUB_EVENT_NAME" \
             --input-dir hosted-inputs
           python ci/test/performance/write-proof.py \
-            --commit "$source_commit" --run-id "$source_run_id" \
-            --branch "$GITHUB_REF_NAME" --event "$GITHUB_EVENT_NAME" \
-            --input-dir hosted-inputs
-          python ci/test/ay-timing/write-proof.py \
             --commit "$source_commit" --driver-commit "$GITHUB_SHA" \
             --run-id "$source_run_id" \
             --branch "$GITHUB_REF_NAME" --event "$GITHUB_EVENT_NAME" \
             --input-dir hosted-inputs
-          python ci/test/screenshot-state-time/write-proof.py \
-            --commit "$source_commit" --driver-commit "$GITHUB_SHA" \
-            --run-id "$source_run_id" \
-            --branch "$GITHUB_REF_NAME" --event "$GITHUB_EVENT_NAME" \
-            --input-dir hosted-inputs
+          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
+            python ci/test/ay-timing/write-proof.py \
+              --commit "$source_commit" --driver-commit "$GITHUB_SHA" \
+              --run-id "$source_run_id" \
+              --branch "$GITHUB_REF_NAME" --event "$GITHUB_EVENT_NAME" \
+              --input-dir hosted-inputs
+            python ci/test/screenshot-state-time/write-proof.py \
+              --commit "$source_commit" --driver-commit "$GITHUB_SHA" \
+              --run-id "$source_run_id" \
+              --branch "$GITHUB_REF_NAME" --event "$GITHUB_EVENT_NAME" \
+              --input-dir hosted-inputs
+          fi
 
       - name: Upload temporary proof records
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase16-wait-evidence-${{ github.run_id }}
+          path: |
+            test-results/interface1-wait.json
+            test-results/phase16-performance-current.json
+            test-results/debugger-monitor-exit-contract.json
+            test-results/performance-current/*.json
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Upload temporary proof records for dispatch
+        if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v4
         with:
           name: phase16-wait-evidence-${{ github.run_id }}
@@ -259,6 +276,7 @@ jobs:
             test-results/phase16-performance-current.json
             test-results/ay-timing-contract.json
             test-results/screenshot-state-time.json
+            test-results/debugger-monitor-exit-contract.json
             test-results/performance-current/*.json
           if-no-files-found: error
           retention-days: 1

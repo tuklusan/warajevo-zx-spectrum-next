@@ -12,15 +12,19 @@
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "1a24084f2117fbf746e296b4f8376c54d9321efa710f60528fa70a8da7771904"
+      "sha256": "2785f3e2d8f72be85a2bbec007066307c9179966a30f7c5faabbb854bbca18f7"
     },
     {
       "path": "ci/test/debugger-monitor-exit-contract.c",
-      "sha256": "e9a75351106bb4fdc894ab3bba03959e211fb9b47d13af21002b67160dee3106"
+      "sha256": "a65c42fbed58ecc1f1d69a3319da8a336531c9b71ab7a5df608af7221edbc691"
     },
     {
       "path": "ci/test/debugger-monitor-exit-contract.md",
       "sha256": "aa0ab4fde32b16a909795bad7f30bc92588f74e1138cfe064f7ef5cc5eb0fef2"
+    },
+    {
+      "path": "ci/test/performance/write-proof.py",
+      "sha256": "7384fb740d1dc8e4b08ffb8b6264244dddefb276b06f818d25232391c22c6fee"
     },
     {
       "path": "src/app/wz_command_registry.c",

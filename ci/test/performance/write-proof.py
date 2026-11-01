@@ -26,6 +26,8 @@ PLATFORMS = (
     ("macOS Intel", "macos-x64", "macOS-macos-x64", "X64"),
 )
 WAIT_MARKER = "PASS Interface 1 WAIT pending-cycle resume (75 checks)"
+EXIT_MARKER = re.compile(
+    r"debugger-monitor-exit-contract assertions=(\d+) status=pass")
 MAX_SLOWDOWN = 0.40
 
 
@@ -59,6 +61,7 @@ def compare(current: dict, baseline: dict) -> list[dict]:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--commit", required=True)
+    parser.add_argument("--driver-commit")
     parser.add_argument("--run-id", required=True, type=int)
     parser.add_argument("--branch", required=True)
     parser.add_argument("--event", required=True)
@@ -66,6 +69,9 @@ def main() -> None:
     args = parser.parse_args()
     if re.fullmatch(r"[0-9a-f]{40}", args.commit) is None:
         raise SystemExit("commit must be a full lowercase Git SHA")
+    driver_commit = args.driver_commit or args.commit
+    if re.fullmatch(r"[0-9a-f]{40}", driver_commit) is None:
+        raise SystemExit("driver commit must be a full lowercase Git SHA")
 
     driver = json.loads(DRIVER.read_text(encoding="utf-8"))
     if driver.get("testId") != "phase16-performance-baseline":
@@ -89,6 +95,7 @@ def main() -> None:
         raise SystemExit("hosted runner evidence directory is missing or outside the repository")
 
     results = []
+    exit_results = []
     raw_dir = ROOT / "test-results/performance-current"
     raw_dir.mkdir(parents=True, exist_ok=True)
     max_slowdown = 0.0
@@ -112,6 +119,9 @@ def main() -> None:
         elif ctest_count != runner_ctest_count:
             raise SystemExit("native runners completed different CTest counts")
         ctest_record = f"{runner_ctest_count}/{runner_ctest_count} passed"
+        exit_match = EXIT_MARKER.search(ctest)
+        if exit_match is None or int(exit_match.group(1)) != 24:
+            raise SystemExit(f"monitor E contract evidence missing: {platform}")
         if (runner_record.get("status") != "pass" or
                 runner_record.get("commit") != args.commit or
                 runner_record.get("jobName") != job_name or
@@ -147,6 +157,11 @@ def main() -> None:
             "timestamp": record["timestamp"], "jobName": job_name,
             "metricCount": len(record["metrics"]), "status": "pass",
         })
+        exit_results.append({
+            "runner": platform, "jobName": job_name,
+            "assertions": int(exit_match.group(1)), "ctest": ctest_record,
+            "status": "pass",
+        })
 
     wait_proof_path = ROOT / "test-results/interface1-wait.json"
     wait_proof = json.loads(wait_proof_path.read_text(encoding="utf-8"))
@@ -173,6 +188,39 @@ def main() -> None:
     }
     (ROOT / "test-results/phase16-performance-current.json").write_text(
         json.dumps(proof, indent=2) + "\n", encoding="utf-8")
+
+    exit_driver = json.loads(
+        (ROOT / "test-drivers/debugger-monitor-exit-contract.driver.json")
+        .read_text(encoding="utf-8"))
+    if (exit_driver.get("testId") != "debugger-monitor-exit-contract" or
+            exit_driver.get("requiredAssertions") != 24 or
+            exit_driver.get("runnerMatrix") != [item[0] for item in PLATFORMS]):
+        raise SystemExit("unexpected monitor E driver")
+    exit_fixtures = []
+    for fixture in exit_driver.get("fixtures", []):
+        path = fixture["path"]
+        source = (ROOT / path).resolve()
+        if ROOT not in source.parents or not source.is_file():
+            raise SystemExit(f"unsafe or missing monitor E fixture: {path}")
+        digest = hashlib.sha256(source.read_bytes()).hexdigest()
+        if digest != fixture["sha256"]:
+            raise SystemExit(f"monitor E fixture hash mismatch: {path}")
+        exit_fixtures.append({"path": path, "sha256": digest})
+    exit_proof = {
+        "commit": args.commit, "sourceCommit": args.commit,
+        "driverCommit": driver_commit,
+        "testId": exit_driver["testId"], "status": "pass",
+        "workflowRun": proof["workflowRun"], "runId": args.run_id,
+        "workflowEvent": args.event, "branch": args.branch,
+        "timestamp": proof["timestamp"], "fixtures": exit_fixtures,
+        "build": {"configuration": "Release", "sokolHost": "ON"},
+        "assertionsPerTarget": 24, "runnerResults": exit_results,
+        "summary": {"nativeTargets": len(exit_results),
+                    "assertions": sum(item["assertions"] for item in exit_results)},
+        "sourceReview": wait_proof["sourceReview"],
+    }
+    (ROOT / "test-results/debugger-monitor-exit-contract.json").write_text(
+        json.dumps(exit_proof, indent=2) + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":

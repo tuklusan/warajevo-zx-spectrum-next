@@ -13,7 +13,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "1a24084f2117fbf746e296b4f8376c54d9321efa710f60528fa70a8da7771904"
+      "sha256": "2785f3e2d8f72be85a2bbec007066307c9179966a30f7c5faabbb854bbca18f7"
     },
     {
       "path": "ci/test/screenshot-state-time/screenshot-state-time.c",
@@ -52,12 +52,12 @@
       "sha256": "a525163fd16b5113b8166293055c88f46ebf53a373bb24d04254aafc395b7e82"
     },
     {
-      "path": "src/cmake/CMakeLists.txt",
-      "sha256": "4636c172e9b0336d5a23cc812be395a41a6bfc4164576f9283266e77202a905c"
-    },
-    {
       "path": "src/app/wz_telnet_negotiation.c",
       "sha256": "215a0ad15361f7c4698851b0c4cb9be44782cf01388ce3137bb99702996cffcb"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "4636c172e9b0336d5a23cc812be395a41a6bfc4164576f9283266e77202a905c"
     },
     {
       "path": "src/core/wz_machine.c",
