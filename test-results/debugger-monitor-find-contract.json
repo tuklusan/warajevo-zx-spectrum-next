@@ -1,18 +1,18 @@
 {
-  "commit": "20897a6ce3536b8930ad0e9ab4350f64842e3679",
-  "sourceCommit": "20897a6ce3536b8930ad0e9ab4350f64842e3679",
-  "driverCommit": "8179ea8fc134df499f3ad27965f2ad2da840be57",
+  "commit": "0610684030136ffcbe495976c73e1af9178a989d",
+  "sourceCommit": "0610684030136ffcbe495976c73e1af9178a989d",
+  "driverCommit": "a96840a074ee87eac799235593227acb056d0fe9",
   "testId": "debugger-monitor-find-contract",
   "status": "pass",
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/41332671595",
-  "runId": 41332671595,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/41338882855",
+  "runId": 41338882855,
   "workflowEvent": "push",
   "branch": "main",
-  "timestamp": "2026-11-01T17:50:38+00:00",
+  "timestamp": "2026-11-01T18:59:15+00:00",
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "f1ec2d5611a6dee87a87e900b012a8cb3ee5c5b26bc1aa29c6240dc0dbec12ff"
+      "sha256": "ebc10f2c4e7d5a5e7d65e22ec9d4ff2839e5fe8e44275524e6a3c6072cd68415"
     },
     {
       "path": "ci/test/debugger-monitor-find-contract.c",
@@ -28,7 +28,7 @@
     },
     {
       "path": "src/app/wz_debugger_window.c",
-      "sha256": "2d9235d5804e09dad472e9e2d102eb3cf11a03139a829310b8966afcbf749b36"
+      "sha256": "1cf2325826f1cac3e6c02ae116cadbee71429b2023b42b4fbb369965e24eadab"
     },
     {
       "path": "src/app/wz_debugger_window.h",
@@ -40,19 +40,19 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "a251f517b859b010c8c2467695633c82c857b0755bde264000a18feb4d5f76eb"
+      "sha256": "2a5bea36fb9e35e72602f8e7c637397cce166c646dc28853a3fa09841d638939"
     },
     {
       "path": "src/core/wz_debugger.c",
-      "sha256": "3e19e11d3bc93421713dae83cd5f926eb394a4e02fbe788c34922bdace768341"
+      "sha256": "b402fce901b096e10f7f7a4c2eda4987eeb3f60523f6593aa529aac5b79a7d20"
     },
     {
       "path": "src/core/wz_debugger.h",
-      "sha256": "a1c31d6e211fb7b2fad4653b04fecfbee8d3f2e3c665b7c4c95234028b74670a"
+      "sha256": "121f173a4ac8d477e0c7b7aaa7d04c4ad87b13ca18e6154b845079b31be00d95"
     },
     {
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
-      "sha256": "2ed4dce89095b2e0e542d941542535566edd7aaf9fbae1a36dc87645690ea22b"
+      "sha256": "49a4310cc810054103dfbf50e894b2309b4a29cc610cf11a9fd5d7f2c140e496"
     }
   ],
   "build": {
@@ -65,35 +65,35 @@
       "runner": "Windows x64",
       "jobName": "Full build / Windows x64",
       "assertions": 15,
-      "ctest": "42/42 passed",
+      "ctest": "43/43 passed",
       "status": "pass"
     },
     {
       "runner": "Linux x64",
       "jobName": "Full build / Linux x64",
       "assertions": 15,
-      "ctest": "42/42 passed",
+      "ctest": "43/43 passed",
       "status": "pass"
     },
     {
       "runner": "Linux ARM64",
       "jobName": "Full build / Linux ARM64",
       "assertions": 15,
-      "ctest": "42/42 passed",
+      "ctest": "43/43 passed",
       "status": "pass"
     },
     {
       "runner": "macOS ARM64",
       "jobName": "Full build / macOS ARM64",
       "assertions": 15,
-      "ctest": "42/42 passed",
+      "ctest": "43/43 passed",
       "status": "pass"
     },
     {
       "runner": "macOS Intel",
       "jobName": "Full build / macOS Intel",
       "assertions": 15,
-      "ctest": "42/42 passed",
+      "ctest": "43/43 passed",
       "status": "pass"
     }
   ],
