@@ -263,6 +263,7 @@ jobs:
             test-results/phase16-performance-current.json
             test-results/debugger-monitor-exit-contract.json
             test-results/debugger-monitor-find-contract.json
+            test-results/debugger-monitor-step-contract.json
             test-results/performance-current/*.json
           if-no-files-found: error
           retention-days: 1
@@ -279,6 +280,7 @@ jobs:
             test-results/screenshot-state-time.json
             test-results/debugger-monitor-exit-contract.json
             test-results/debugger-monitor-find-contract.json
+            test-results/debugger-monitor-step-contract.json
             test-results/performance-current/*.json
           if-no-files-found: error
           retention-days: 1

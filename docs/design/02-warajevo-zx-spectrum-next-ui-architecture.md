@@ -1558,6 +1558,14 @@ time. The production frame runner must stop before executing a mapped
 breakpoint instruction, return the application to paused state, and refresh the
 open debugger view with the stop state.
 
+The local monitor accepts paused-only `I` to execute exactly one Z80 instruction
+through the shared debugger step API. `I <end>` resumes through the normal frame
+runner with a temporary, mapping-aware stop at the end address; the instruction
+at that address is not executed. The user's persistent breakpoint remains
+unchanged. An earlier persistent breakpoint or a manual pause cancels the
+temporary stop; a target stop selects that address and refreshes the debugger.
+Frame execution retains normal interrupt sampling and timing.
+
 The read-only `F <start> <end> <pattern...>` monitor command searches the
 inclusive logical-address range without wrapping. Pattern tokens of one or two
 hex digits add one byte; three or four digits add the little-endian bytes of a

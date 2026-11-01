@@ -135,6 +135,9 @@ typedef struct wz_machine {
     wz_byte_t debugger_breakpoint_hit;
     wz_byte_t debugger_breakpoint_mapping;
     wz_word_t debugger_breakpoint_address;
+    wz_byte_t debugger_step_target_active;
+    wz_byte_t debugger_step_target_mapping;
+    wz_word_t debugger_step_target_address;
     wz_z80_state_t debugger_undo_cpu;
     wz_byte_t debugger_undo_valid;
     wz_byte_t memory[65536u];

@@ -725,12 +725,23 @@ bool wz_debugger_breakpoint_hit(const wz_machine_t* machine)
     return machine != 0 && machine->debugger_breakpoint_hit != 0u;
 }
 
+static bool wz_debugger_step_target_matches_pc(const wz_machine_t* machine)
+{
+    return machine != 0 && machine->debugger_step_target_active != 0u &&
+        machine->cpu.program_counter == machine->debugger_step_target_address &&
+        wz_machine_debugger_mapping_key(machine, machine->cpu.program_counter) ==
+            machine->debugger_step_target_mapping;
+}
+
 bool wz_debugger_breakpoint_matches_pc(const wz_machine_t* machine)
 {
-    return machine != 0 && machine->debugger_breakpoint_active != 0u &&
-        machine->cpu.program_counter == machine->debugger_breakpoint_address &&
-        wz_machine_debugger_mapping_key(machine, machine->cpu.program_counter) ==
-            machine->debugger_breakpoint_mapping;
+    return machine != 0 &&
+        ((machine->debugger_breakpoint_active != 0u &&
+          machine->cpu.program_counter == machine->debugger_breakpoint_address &&
+          wz_machine_debugger_mapping_key(machine,
+              machine->cpu.program_counter) ==
+                  machine->debugger_breakpoint_mapping) ||
+         wz_debugger_step_target_matches_pc(machine));
 }
 
 void wz_debugger_clear_breakpoint_hit(wz_machine_t* machine)

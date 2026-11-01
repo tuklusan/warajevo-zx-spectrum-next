@@ -266,6 +266,9 @@ wz_result_t wz_machine_init(wz_machine_t* machine,
     machine->debugger_breakpoint_hit = 0u;
     machine->debugger_breakpoint_mapping = 0xffu;
     machine->debugger_breakpoint_address = 0u;
+    machine->debugger_step_target_active = 0u;
+    machine->debugger_step_target_mapping = 0xffu;
+    machine->debugger_step_target_address = 0u;
     machine->has_48k_rom = 0u;
     machine->has_128k_rom = 0u;
     memset(machine->rom_128k, 0, sizeof(machine->rom_128k));

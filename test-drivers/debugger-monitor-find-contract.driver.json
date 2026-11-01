@@ -12,7 +12,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "6613b78f76dece53141a909ae8c98d3d46ac1a1dc51acdb203524597b793cf3d"
+      "sha256": "ded9fca933f037704f50024d54ad8b6812c749334df1d877f962b6c194bf140e"
     },
     {
       "path": "ci/test/debugger-monitor-find-contract.c",
@@ -24,11 +24,11 @@
     },
     {
       "path": "ci/test/performance/write-proof.py",
-      "sha256": "51bce1d0dbf14de17eb01b58c814ef243b1ff08d59f5e4dd120c0b74cb677492"
+      "sha256": "3dd0c29977e0d2de789eab5d53219893cb757cc4aa2a926fb472f19bab8cc132"
     },
     {
       "path": "src/app/wz_debugger_window.c",
-      "sha256": "cfdaf72bb4c1a64bb94febfc1e8306689dc8c2970ff2f02595fc0b51af8ac3b5"
+      "sha256": "2d9235d5804e09dad472e9e2d102eb3cf11a03139a829310b8966afcbf749b36"
     },
     {
       "path": "src/app/wz_debugger_window.h",
@@ -40,11 +40,11 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "890bf3b9568800432f43df7aef29ec2284c25fcaa8241a088394d11ce20e4f35"
+      "sha256": "36b44bc8961a3e8e6cba68cf7f2b76afe41ed5ef3e4cfe42a5d4ffbb38a4e6be"
     },
     {
       "path": "src/core/wz_debugger.c",
-      "sha256": "79e8d3e44194063db6fa37615d12e753aae27f0fdb5554777c6494c77422e5de"
+      "sha256": "3e19e11d3bc93421713dae83cd5f926eb394a4e02fbe788c34922bdace768341"
     },
     {
       "path": "src/core/wz_debugger.h",
@@ -52,7 +52,7 @@
     },
     {
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
-      "sha256": "6f443f6d8f7908a3440c5e50643f2868ac786cfa903befde60c6941a5b72ea57"
+      "sha256": "2ed4dce89095b2e0e542d941542535566edd7aaf9fbae1a36dc87645690ea22b"
     }
   ]
 }

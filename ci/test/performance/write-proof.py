@@ -30,6 +30,8 @@ EXIT_MARKER = re.compile(
     r"debugger-monitor-exit-contract assertions=(\d+) status=pass")
 FIND_MARKER = re.compile(
     r"debugger-monitor-find-contract assertions=(\d+) status=pass")
+STEP_MARKER = re.compile(
+    r"debugger-monitor-step-contract assertions=(\d+) status=pass")
 MAX_SLOWDOWN = 0.40
 
 
@@ -99,6 +101,7 @@ def main() -> None:
     results = []
     exit_results = []
     find_results = []
+    step_results = []
     raw_dir = ROOT / "test-results/performance-current"
     raw_dir.mkdir(parents=True, exist_ok=True)
     max_slowdown = 0.0
@@ -128,6 +131,9 @@ def main() -> None:
         find_match = FIND_MARKER.search(ctest)
         if find_match is None or int(find_match.group(1)) != 15:
             raise SystemExit(f"monitor F contract evidence missing: {platform}")
+        step_match = STEP_MARKER.search(ctest)
+        if step_match is None or int(step_match.group(1)) != 51:
+            raise SystemExit(f"monitor I contract evidence missing: {platform}")
         if (runner_record.get("status") != "pass" or
                 runner_record.get("commit") != args.commit or
                 runner_record.get("jobName") != job_name or
@@ -171,6 +177,11 @@ def main() -> None:
         find_results.append({
             "runner": platform, "jobName": job_name,
             "assertions": int(find_match.group(1)), "ctest": ctest_record,
+            "status": "pass",
+        })
+        step_results.append({
+            "runner": platform, "jobName": job_name,
+            "assertions": int(step_match.group(1)), "ctest": ctest_record,
             "status": "pass",
         })
 
@@ -266,6 +277,40 @@ def main() -> None:
     }
     (ROOT / "test-results/debugger-monitor-find-contract.json").write_text(
         json.dumps(find_proof, indent=2) + "\n", encoding="utf-8")
+
+    step_driver = json.loads(
+        (ROOT / "test-drivers/debugger-monitor-step-contract.driver.json")
+        .read_text(encoding="utf-8"))
+    if (step_driver.get("testId") != "debugger-monitor-step-contract" or
+            step_driver.get("requiredAssertions") != 51 or
+            step_driver.get("runnerMatrix") != [item[0] for item in PLATFORMS]):
+        raise SystemExit("unexpected monitor I driver")
+    step_fixtures = []
+    for fixture in step_driver.get("fixtures", []):
+        path = fixture["path"]
+        source = (ROOT / path).resolve()
+        if ROOT not in source.parents or not source.is_file():
+            raise SystemExit(f"unsafe or missing monitor I fixture: {path}")
+        digest = hashlib.sha256(source.read_bytes()).hexdigest()
+        if digest != fixture["sha256"]:
+            raise SystemExit(f"monitor I fixture hash mismatch: {path}")
+        step_fixtures.append({"path": path, "sha256": digest})
+    step_proof = {
+        "commit": args.commit, "sourceCommit": args.commit,
+        "driverCommit": driver_commit,
+        "testId": step_driver["testId"], "status": "pass",
+        "workflowRun": proof["workflowRun"], "runId": args.run_id,
+        "workflowEvent": args.event, "branch": args.branch,
+        "timestamp": proof["timestamp"], "fixtures": step_fixtures,
+        "build": {"configuration": "Release", "sokolHost": "ON"},
+        "assertionsPerTarget": 51, "runnerResults": step_results,
+        "summary": {"nativeTargets": len(step_results),
+                    "assertions": sum(item["assertions"] for item in step_results)},
+        "sourceReview": wait_proof["sourceReview"],
+        "githubCleanupPolicy": "Temporary runner/proof artifacts and the workflow run are deleted after evidence is copied into the repository; this workflow creates no caches.",
+    }
+    (ROOT / "test-results/debugger-monitor-step-contract.json").write_text(
+        json.dumps(step_proof, indent=2) + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":

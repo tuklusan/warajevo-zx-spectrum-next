@@ -12,6 +12,10 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include <stdio.h>
 #include <string.h>
 
+static wz_debugger_window_result_t monitor_step_to(
+    wz_debugger_window_t* window,
+    wz_word_t address);
+
 typedef struct {
     const char* name;
     wz_debugger_register_t reg;
@@ -239,6 +243,32 @@ static wz_debugger_window_result_t refresh_view(wz_debugger_window_t* window)
     return WZ_DEBUGGER_WINDOW_OK;
 }
 
+static bool monitor_step_target_matches_pc(const wz_machine_t* machine)
+{
+    return machine != NULL && machine->debugger_step_target_active != 0u &&
+        machine->cpu.program_counter == machine->debugger_step_target_address &&
+        wz_machine_debugger_mapping_key(machine, machine->cpu.program_counter) ==
+            machine->debugger_step_target_mapping;
+}
+
+static void clear_monitor_step_target(wz_debugger_window_t* window,
+                                      bool target_hit)
+{
+    bool permanent_breakpoint_matches;
+    if (window == NULL || window->machine == NULL ||
+        window->machine->debugger_step_target_active == 0u) {
+        return;
+    }
+    window->machine->debugger_step_target_active = 0u;
+    window->machine->debugger_step_target_mapping = 0xffu;
+    window->machine->debugger_step_target_address = 0u;
+    permanent_breakpoint_matches =
+        wz_debugger_breakpoint_matches_pc(window->machine);
+    if (!target_hit && !permanent_breakpoint_matches) {
+        wz_debugger_clear_breakpoint_hit(window->machine);
+    }
+}
+
 void wz_debugger_window_init(wz_debugger_window_t* window)
 {
     if (window != 0) {
@@ -273,6 +303,7 @@ void wz_debugger_window_close(wz_debugger_window_t* window)
     if (window == 0) {
         return;
     }
+    clear_monitor_step_target(window, false);
     window->open = false;
     window->paused = false;
     window->machine = 0;
@@ -305,17 +336,30 @@ wz_debugger_window_result_t wz_debugger_window_set_paused(
         return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
     }
     window->paused = paused;
+    if (paused) {
+        clear_monitor_step_target(window, false);
+    } else {
+        window->breakpoint_hit = false;
+        wz_debugger_clear_breakpoint_hit(window->machine);
+    }
     return WZ_DEBUGGER_WINDOW_OK;
 }
 
 wz_debugger_window_result_t wz_debugger_window_pause_at_breakpoint(
     wz_debugger_window_t* window)
 {
+    bool step_target_hit;
     if (!wz_debugger_window_is_open(window)) {
         return WZ_DEBUGGER_WINDOW_NOT_OPEN;
     }
     if (!wz_debugger_breakpoint_hit(window->machine)) {
         return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+    }
+    step_target_hit = monitor_step_target_matches_pc(window->machine);
+    clear_monitor_step_target(window, step_target_hit);
+    if (step_target_hit) {
+        window->memory_address = window->machine->cpu.program_counter;
+        window->disassembly_range_active = false;
     }
     if (wz_debugger_window_set_paused(window, true) !=
         WZ_DEBUGGER_WINDOW_OK) {
@@ -407,6 +451,7 @@ wz_debugger_window_result_t wz_debugger_window_set_breakpoint(
     if (!window->paused) {
         return WZ_DEBUGGER_WINDOW_NOT_PAUSED;
     }
+    window->breakpoint_hit = false;
     if (wz_debugger_set_breakpoint(window->machine, address) != WZ_RESULT_OK) {
         return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
     }
@@ -422,6 +467,7 @@ wz_debugger_window_result_t wz_debugger_window_clear_breakpoint(
     if (!window->paused) {
         return WZ_DEBUGGER_WINDOW_NOT_PAUSED;
     }
+    window->breakpoint_hit = false;
     if (wz_debugger_clear_breakpoint(window->machine) != WZ_RESULT_OK) {
         return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
     }
@@ -700,6 +746,21 @@ wz_debugger_window_result_t wz_debugger_window_dispatch_monitor_command(
         if (!window->paused) return WZ_DEBUGGER_WINDOW_NOT_PAUSED;
         return WZ_DEBUGGER_WINDOW_RESUME_REQUESTED;
     }
+    if (token_count >= 1u && token_count <= 2u &&
+        monitor_token_equal(tokens[0], lengths[0], "I")) {
+        wz_word_t end;
+        if (!wz_debugger_window_is_open(window)) {
+            return WZ_DEBUGGER_WINDOW_NOT_OPEN;
+        }
+        if (!window->paused) return WZ_DEBUGGER_WINDOW_NOT_PAUSED;
+        if (token_count == 1u) {
+            return wz_debugger_window_step(window);
+        }
+        if (!monitor_parse_hex(tokens[1], lengths[1], &end)) {
+            return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
+        }
+        return monitor_step_to(window, end);
+    }
     if (token_count == 2u &&
         monitor_token_equal(tokens[0], lengths[0], "B")) {
         wz_word_t address;
@@ -777,6 +838,8 @@ wz_debugger_window_result_t wz_debugger_window_step(
     if (!window->paused) {
         return WZ_DEBUGGER_WINDOW_NOT_PAUSED;
     }
+    window->breakpoint_hit = false;
+    wz_debugger_clear_breakpoint_hit(window->machine);
     {
         wz_result_t result = wz_debugger_step(window->machine, &window->executed);
         if (result != WZ_RESULT_OK && result != WZ_RESULT_BREAKPOINT_HIT) {
@@ -784,6 +847,30 @@ wz_debugger_window_result_t wz_debugger_window_step(
         }
     }
     return refresh_view(window);
+}
+
+static wz_debugger_window_result_t monitor_step_to(
+    wz_debugger_window_t* window,
+    wz_word_t address)
+{
+    if (!wz_debugger_window_is_open(window)) {
+        return WZ_DEBUGGER_WINDOW_NOT_OPEN;
+    }
+    if (!window->paused) {
+        return WZ_DEBUGGER_WINDOW_NOT_PAUSED;
+    }
+    if (window->machine->debugger_step_target_active != 0u ||
+        window->machine->debugger_access_mode !=
+            WZ_DEBUGGER_PAUSED_MUTATION) {
+        return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+    }
+    window->machine->debugger_step_target_address = address;
+    window->machine->debugger_step_target_mapping =
+        wz_machine_debugger_mapping_key(window->machine, address);
+    window->machine->debugger_step_target_active = 1u;
+    window->breakpoint_hit = false;
+    wz_debugger_clear_breakpoint_hit(window->machine);
+    return WZ_DEBUGGER_WINDOW_RESUME_REQUESTED;
 }
 
 wz_debugger_window_result_t wz_debugger_window_continue(
@@ -796,6 +883,8 @@ wz_debugger_window_result_t wz_debugger_window_continue(
     if (!window->paused || max_instructions == 0u) {
         return WZ_DEBUGGER_WINDOW_NOT_PAUSED;
     }
+    window->breakpoint_hit = false;
+    wz_debugger_clear_breakpoint_hit(window->machine);
     {
         wz_result_t result = wz_debugger_continue(window->machine,
             max_instructions, &window->executed);

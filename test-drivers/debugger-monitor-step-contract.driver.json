@@ -1,0 +1,74 @@
+{
+  "testId": "debugger-monitor-step-contract",
+  "command": "Source-push full Release/Sokol build and integrated CTest; I steps one instruction and I <end> resumes to a temporary mapping-aware stop while preserving normal interrupt and breakpoint behavior.",
+  "requiredAssertions": 51,
+  "runnerMatrix": [
+    "Windows x64",
+    "Linux x64",
+    "Linux ARM64",
+    "macOS ARM64",
+    "macOS Intel"
+  ],
+  "fixtures": [
+    {
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "ded9fca933f037704f50024d54ad8b6812c749334df1d877f962b6c194bf140e"
+    },
+    {
+      "path": "ci/test/performance/driver.json",
+      "sha256": "58661f51b68bff91eafe92207c900a19c11ac1fcafe3da38406f563337112f22"
+    },
+    {
+      "path": "ci/test/debugger-monitor-step-contract.c",
+      "sha256": "0f6e6a86b74d794b1aabdcb4c02f36ef37c5d6783dbc223d0ba6321a74dc6c85"
+    },
+    {
+      "path": "ci/test/debugger-monitor-step-contract.md",
+      "sha256": "fa88b37a1ed36928a50950e2c2f4a32f419d1e822937e704a84d14bf38c12633"
+    },
+    {
+      "path": "ci/test/performance/write-proof.py",
+      "sha256": "3dd0c29977e0d2de789eab5d53219893cb757cc4aa2a926fb472f19bab8cc132"
+    },
+    {
+      "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
+      "sha256": "2ed4dce89095b2e0e542d941542535566edd7aaf9fbae1a36dc87645690ea22b"
+    },
+    {
+      "path": "src/app/wz_debugger_window.c",
+      "sha256": "2d9235d5804e09dad472e9e2d102eb3cf11a03139a829310b8966afcbf749b36"
+    },
+    {
+      "path": "src/app/wz_debugger_window.h",
+      "sha256": "52e98f69570242bf9ebad4845c2020397dbadec911147329aa5c5401e028e58b"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "36b44bc8961a3e8e6cba68cf7f2b76afe41ed5ef3e4cfe42a5d4ffbb38a4e6be"
+    },
+    {
+      "path": "src/core/wz_debugger.c",
+      "sha256": "3e19e11d3bc93421713dae83cd5f926eb394a4e02fbe788c34922bdace768341"
+    },
+    {
+      "path": "src/core/wz_debugger.h",
+      "sha256": "a1c31d6e211fb7b2fad4653b04fecfbee8d3f2e3c665b7c4c95234028b74670a"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "14b370ac404420d6c64e92c852a8803067dfd1d29d2e03d0e9d593446ca653c9"
+    },
+    {
+      "path": "src/core/wz_machine.h",
+      "sha256": "1ef677db258aab20af26375bd1afc45042c295d76189fc322a3b656c63dfe81f"
+    },
+    {
+      "path": "test-drivers/debugger-monitor-exit-contract.driver.json",
+      "sha256": "cf5367c7aa91f808d37980e346b9ba95c8c759e88b0dcb458f37d13f7a364d95"
+    },
+    {
+      "path": "test-drivers/debugger-monitor-find-contract.driver.json",
+      "sha256": "09e2a1d9ca9165bacd326c5d21355957bfe88c3670d7ab1e15cb805257c63967"
+    }
+  ]
+}

@@ -27,7 +27,7 @@
     },
     {
       "path": "ci/test/performance/write-proof.py",
-      "sha256": "51bce1d0dbf14de17eb01b58c814ef243b1ff08d59f5e4dd120c0b74cb677492"
+      "sha256": "3dd0c29977e0d2de789eab5d53219893cb757cc4aa2a926fb472f19bab8cc132"
     },
     {
       "path": "ci/test/performance/write-runner-evidence.py",
