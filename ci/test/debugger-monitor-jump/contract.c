@@ -119,6 +119,18 @@ static int default_call_step_over(void)
           WZ_DEBUGGER_WINDOW_OK);
     CHECK(wz_host_machine_frame_execute(&runner, 256u, false, NULL, NULL) ==
           WZ_RESULT_BREAKPOINT_HIT);
+    if (machine->cpu.program_counter != 0x8003u ||
+        machine->cpu.stack_pointer != 0x9000u || machine->cpu.main.a != 1u ||
+        machine->master_tick != tick + 31u) {
+        fprintf(stderr, "monitor jump result: pc=%04X sp=%04X a=%02X tick=%llu expected_tick=%llu target=%04X active=%u\n",
+                (unsigned)machine->cpu.program_counter,
+                (unsigned)machine->cpu.stack_pointer,
+                (unsigned)machine->cpu.main.a,
+                (unsigned long long)machine->master_tick,
+                (unsigned long long)(tick + 31u),
+                (unsigned)machine->debugger_step_target_address,
+                (unsigned)machine->debugger_step_target_active);
+    }
     CHECK(machine->cpu.program_counter == 0x8003u &&
           machine->cpu.stack_pointer == 0x9000u && machine->cpu.main.a == 1u &&
           machine->master_tick == tick + 31u);

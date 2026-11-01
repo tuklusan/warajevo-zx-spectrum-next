@@ -15,6 +15,11 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 static bool valid_range(wz_word_t address, size_t length);
 
+static wz_word_t address_with_offset(wz_word_t address, size_t offset)
+{
+    return (wz_word_t)(address + (wz_word_t)offset);
+}
+
 static wz_result_t format_hex(char* output, size_t capacity,
                               const char* format, unsigned value)
 {
@@ -167,7 +172,7 @@ wz_result_t wz_debugger_instruction_length(const wz_machine_t* machine,
         if (prefix_count == 65536u) return WZ_RESULT_UNSUPPORTED_OPERATION;
         ++prefix_count;
         opcode = wz_machine_memory_read(
-            machine, (wz_word_t)((size_t)address + prefix_count));
+            machine, address_with_offset(address, prefix_count));
     }
 
     if (opcode == 0xcbu) {
@@ -176,7 +181,8 @@ wz_result_t wz_debugger_instruction_length(const wz_machine_t* machine,
     }
     if (opcode == 0xedu) {
         unsigned extended = wz_machine_memory_read(
-            machine, (wz_word_t)((size_t)address + prefix_count + 1u));
+            machine, address_with_offset(
+                address_with_offset(address, prefix_count), 1u));
         *length = prefix_count +
             (((extended & 0xc7u) == 0x43u) ? 4u : 2u);
         return WZ_RESULT_OK;
@@ -221,7 +227,7 @@ wz_result_t wz_debugger_disassemble(const wz_machine_t* machine,
     }
     for (size_t i = 0u; i < sizeof(bytes); ++i) {
         bytes[i] = wz_machine_memory_read(
-            machine, (wz_word_t)((size_t)address + i));
+            machine, address_with_offset(address, i));
     }
     op = bytes[0];
     if (op == 0xcbu) return disassembly_result_at(machine, address,
