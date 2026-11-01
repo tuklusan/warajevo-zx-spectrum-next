@@ -1,17 +1,17 @@
 {
   "testId": "interface1-wait",
   "status": "pass",
-  "commit": "bf60530767b4e8554a73779681f6d926e2499b76",
-  "runId": 41310407325,
+  "commit": "7688ca9660e32db6d3df4648df6b329518771b11",
+  "runId": 41318019667,
   "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
-  "timestamp": "2026-11-01T13:26:13+00:00",
+  "timestamp": "2026-11-01T14:50:37+00:00",
   "caseCount": 375,
   "caseCountPerRunner": 75,
   "observedOutput": "PASS Interface 1 WAIT pending-cycle resume (75 checks)",
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/41310407325",
-  "workflowEvent": "workflow_dispatch",
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/41318019667",
+  "workflowEvent": "push",
   "branch": "main",
-  "fixtureMetadataCommit": "19709b2996ad979e2ffa6dfe53a8fcfd27e4ded6",
+  "fixtureMetadataCommit": "7688ca9660e32db6d3df4648df6b329518771b11",
   "nativeBuildConfiguration": "Release; WZSN_BUILD_SOKOL_HOST=ON",
   "ctest": "all integrated CTests passed on each native runner",
   "runnerResults": [
@@ -48,6 +48,10 @@
   ],
   "fixtures": [
     {
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "2785f3e2d8f72be85a2bbec007066307c9179966a30f7c5faabbb854bbca18f7"
+    },
+    {
       "path": "ci/test/interface1-wait/interface1-wait-contract.c",
       "sha256": "c8da19d4a522971b49ebc58a8bee784625596e42a4f7e6742d34ba030ecaba23"
     },
@@ -56,16 +60,16 @@
       "sha256": "1178a8d429b21769d8393c2d0ff1f908263f8ca60922ee401878b64a5c57e887"
     },
     {
-      "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "1a24084f2117fbf746e296b4f8376c54d9321efa710f60528fa70a8da7771904"
-    },
-    {
       "path": "ci/test/performance/write-runner-evidence.py",
       "sha256": "5efe8c7f2b9f108ee0f5a38d5a6be05dc97cf4715ede82b3e2ee7ef9e9b44bb7"
     },
     {
+      "path": "docs/design/interface1-microdrive-zxnet.md",
+      "sha256": "a275dfd1cc380031eb01347219fcdc6a273d9fa962e8c5503d502b4ec37dd706"
+    },
+    {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "b5460bda3f82e284a281299f0ed4185800fb56e993163198f594a602b0bf7764"
+      "sha256": "4636c172e9b0336d5a23cc812be395a41a6bfc4164576f9283266e77202a905c"
     },
     {
       "path": "src/core/wz_bus.c",
@@ -81,7 +85,7 @@
     },
     {
       "path": "src/core/wz_runner.c",
-      "sha256": "22c6511dbbcd3ef2721dcdeba5d435f9f3a35c30f701f7264a04962fb71ba144"
+      "sha256": "f5892db3ca9afdb1e77a624eb03096cefcf02da3cc261e7c7ad4693c98e18b11"
     },
     {
       "path": "src/core/wz_state.c",
@@ -93,7 +97,7 @@
     },
     {
       "path": "src/core/wz_z80.c",
-      "sha256": "0e0dbb4c8fb07b7f0d4c0ac5da2c1622d9d84d93b8b0818cc3a68f5c96c83790"
+      "sha256": "ce74c8276c08b3f323f92d09cd966f53aa8c2d31850a2ad76758f1d4e513f916"
     },
     {
       "path": "src/core/wz_zxnet.c",
@@ -102,10 +106,6 @@
     {
       "path": "src/core/wz_zxnet.h",
       "sha256": "3f8e58593ca15fc173531d1174b19c4bea95fd8123bf1855b34148d79b73d495"
-    },
-    {
-      "path": "docs/design/interface1-microdrive-zxnet.md",
-      "sha256": "a275dfd1cc380031eb01347219fcdc6a273d9fa962e8c5503d502b4ec37dd706"
     }
   ],
   "sourceReview": {
