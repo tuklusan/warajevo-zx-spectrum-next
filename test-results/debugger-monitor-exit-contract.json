@@ -1,18 +1,18 @@
 {
-  "commit": "7688ca9660e32db6d3df4648df6b329518771b11",
-  "sourceCommit": "7688ca9660e32db6d3df4648df6b329518771b11",
-  "driverCommit": "7688ca9660e32db6d3df4648df6b329518771b11",
+  "commit": "9cd3e7d4e0ae08082f8edf8f28e8a21cc73b0683",
+  "sourceCommit": "9cd3e7d4e0ae08082f8edf8f28e8a21cc73b0683",
+  "driverCommit": "9cd3e7d4e0ae08082f8edf8f28e8a21cc73b0683",
   "testId": "debugger-monitor-exit-contract",
   "status": "pass",
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/41318019667",
-  "runId": 41318019667,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/41320915462",
+  "runId": 41320915462,
   "workflowEvent": "push",
   "branch": "main",
-  "timestamp": "2026-11-01T14:50:37+00:00",
+  "timestamp": "2026-11-01T10:24:46-05:00",
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "2785f3e2d8f72be85a2bbec007066307c9179966a30f7c5faabbb854bbca18f7"
+      "sha256": "6613b78f76dece53141a909ae8c98d3d46ac1a1dc51acdb203524597b793cf3d"
     },
     {
       "path": "ci/test/debugger-monitor-exit-contract.c",
@@ -24,7 +24,7 @@
     },
     {
       "path": "ci/test/performance/write-proof.py",
-      "sha256": "7384fb740d1dc8e4b08ffb8b6264244dddefb276b06f818d25232391c22c6fee"
+      "sha256": "51bce1d0dbf14de17eb01b58c814ef243b1ff08d59f5e4dd120c0b74cb677492"
     },
     {
       "path": "src/app/wz_command_registry.c",
@@ -36,11 +36,11 @@
     },
     {
       "path": "src/app/wz_debugger_window.c",
-      "sha256": "8e9a472e9c49b60b08e4c0476fdd3ca7df7cab528ed126bcb2a5b6c638f47ddd"
+      "sha256": "cfdaf72bb4c1a64bb94febfc1e8306689dc8c2970ff2f02595fc0b51af8ac3b5"
     },
     {
       "path": "src/app/wz_debugger_window.h",
-      "sha256": "09bfa21782c191eb26257e3857013de317c851956f93565c7f02093742f0ea56"
+      "sha256": "52e98f69570242bf9ebad4845c2020397dbadec911147329aa5c5401e028e58b"
     },
     {
       "path": "src/app/wz_host_machine_frame.c",
@@ -52,11 +52,11 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "13e0b582c5a663866558cfc86f340b92637ea2e0306f2aedc1c78b309e6c9c5b"
+      "sha256": "db94d1b51a5fe5e5d0fc54fe2eb6cd5e1a95595d2aa171949389f4cc8d80d3bb"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "4636c172e9b0336d5a23cc812be395a41a6bfc4164576f9283266e77202a905c"
+      "sha256": "890bf3b9568800432f43df7aef29ec2284c25fcaa8241a088394d11ce20e4f35"
     },
     {
       "path": "src/core/wz_debugger.c",
@@ -109,35 +109,35 @@
       "runner": "Windows x64",
       "jobName": "Full build / Windows x64",
       "assertions": 24,
-      "ctest": "40/40 passed",
+      "ctest": "41/41 passed",
       "status": "pass"
     },
     {
       "runner": "Linux x64",
       "jobName": "Full build / Linux x64",
       "assertions": 24,
-      "ctest": "40/40 passed",
+      "ctest": "41/41 passed",
       "status": "pass"
     },
     {
       "runner": "Linux ARM64",
       "jobName": "Full build / Linux ARM64",
       "assertions": 24,
-      "ctest": "40/40 passed",
+      "ctest": "41/41 passed",
       "status": "pass"
     },
     {
       "runner": "macOS ARM64",
       "jobName": "Full build / macOS ARM64",
       "assertions": 24,
-      "ctest": "40/40 passed",
+      "ctest": "41/41 passed",
       "status": "pass"
     },
     {
       "runner": "macOS Intel",
       "jobName": "Full build / macOS Intel",
       "assertions": 24,
-      "ctest": "40/40 passed",
+      "ctest": "41/41 passed",
       "status": "pass"
     }
   ],
@@ -148,24 +148,21 @@
   "sourceReview": {
     "status": "passed; findings adjudicated",
     "tool": "Gito 4.5.0",
-    "packetPolicy": "one changed source file per packet; at most 1,000 source-context tokens per file",
+    "packetCount": 5,
+    "filesPerPacket": 1,
+    "maxSourceContextTokens": 1000,
+    "reviewedFiles": [
+      "ci/test/debugger-monitor-find-contract.c",
+      "ci/test/performance/write-proof.py",
+      "src/app/wz_debugger_window.c",
+      "src/app/wz_debugger_window.h",
+      "src/app/wz_sokol_main.c"
+    ],
     "findings": [
       {
-        "title": "Potential double-free of machine pointer",
-        "file": "ci/test/debugger-monitor-exit-contract.c",
-        "disposition": "Non-actionable: wz_machine_destroy frees internal machine allocations, not the caller-owned struct; free(m) releases that allocation."
-      },
-      {
-        "title": "exit_match may be unbound",
-        "file": "ci/test/performance/write-proof.py",
-        "disposition": "False positive: exit_match is assigned unconditionally for each runner before validation; failure exits before any append can access it."
-      },
-      {
-        "title": "Breakpoint fallback result may be unreachable",
-        "file": "src/core/wz_runner.c",
-        "disposition": "Non-actionable: wz_z80_step rechecks the identical PC-and-mapping predicate without intervening mutation, records the hit, and returns success; INVALID_STATE is defensive."
+        "title": "Buffer overflow in pattern/mask arrays",
+        "disposition": "False positive: the guard pattern_length > sizeof(pattern) - width is equivalent to requiring pattern_length + width <= 30. At length 28 and width 2 it writes valid indices 28 and 29; length 29 is rejected before either write."
       }
     ]
-  },
-  "githubCleanupPolicy": "Temporary runner/proof artifacts and the workflow run are deleted after evidence is copied into the repository; this workflow creates no caches."
+  }
 }

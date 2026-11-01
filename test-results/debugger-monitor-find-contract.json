@@ -1,0 +1,125 @@
+{
+  "commit": "9cd3e7d4e0ae08082f8edf8f28e8a21cc73b0683",
+  "sourceCommit": "9cd3e7d4e0ae08082f8edf8f28e8a21cc73b0683",
+  "driverCommit": "9cd3e7d4e0ae08082f8edf8f28e8a21cc73b0683",
+  "testId": "debugger-monitor-find-contract",
+  "status": "pass",
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/41320915462",
+  "runId": 41320915462,
+  "workflowEvent": "push",
+  "branch": "main",
+  "timestamp": "2026-11-01T10:24:46-05:00",
+  "fixtures": [
+    {
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "6613b78f76dece53141a909ae8c98d3d46ac1a1dc51acdb203524597b793cf3d"
+    },
+    {
+      "path": "ci/test/debugger-monitor-find-contract.c",
+      "sha256": "a5c4ae8b66df003e2fd61b6e08f98f01f0e093f21aaf9c154de5eb8e828548fe"
+    },
+    {
+      "path": "ci/test/debugger-monitor-find-contract.md",
+      "sha256": "9d384a1a649b6e8d35f306ca32918d5964317f3162839f1677ec6fbc7682101d"
+    },
+    {
+      "path": "ci/test/performance/write-proof.py",
+      "sha256": "51bce1d0dbf14de17eb01b58c814ef243b1ff08d59f5e4dd120c0b74cb677492"
+    },
+    {
+      "path": "src/app/wz_debugger_window.c",
+      "sha256": "cfdaf72bb4c1a64bb94febfc1e8306689dc8c2970ff2f02595fc0b51af8ac3b5"
+    },
+    {
+      "path": "src/app/wz_debugger_window.h",
+      "sha256": "52e98f69570242bf9ebad4845c2020397dbadec911147329aa5c5401e028e58b"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "db94d1b51a5fe5e5d0fc54fe2eb6cd5e1a95595d2aa171949389f4cc8d80d3bb"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "890bf3b9568800432f43df7aef29ec2284c25fcaa8241a088394d11ce20e4f35"
+    },
+    {
+      "path": "src/core/wz_debugger.c",
+      "sha256": "79e8d3e44194063db6fa37615d12e753aae27f0fdb5554777c6494c77422e5de"
+    },
+    {
+      "path": "src/core/wz_debugger.h",
+      "sha256": "a1c31d6e211fb7b2fad4653b04fecfbee8d3f2e3c665b7c4c95234028b74670a"
+    },
+    {
+      "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
+      "sha256": "6f443f6d8f7908a3440c5e50643f2868ac786cfa903befde60c6941a5b72ea57"
+    }
+  ],
+  "build": {
+    "configuration": "Release",
+    "sokolHost": "ON"
+  },
+  "assertionsPerTarget": 15,
+  "runnerResults": [
+    {
+      "runner": "Windows x64",
+      "jobName": "Full build / Windows x64",
+      "assertions": 15,
+      "ctest": "41/41 passed",
+      "status": "pass"
+    },
+    {
+      "runner": "Linux x64",
+      "jobName": "Full build / Linux x64",
+      "assertions": 15,
+      "ctest": "41/41 passed",
+      "status": "pass"
+    },
+    {
+      "runner": "Linux ARM64",
+      "jobName": "Full build / Linux ARM64",
+      "assertions": 15,
+      "ctest": "41/41 passed",
+      "status": "pass"
+    },
+    {
+      "runner": "macOS ARM64",
+      "jobName": "Full build / macOS ARM64",
+      "assertions": 15,
+      "ctest": "41/41 passed",
+      "status": "pass"
+    },
+    {
+      "runner": "macOS Intel",
+      "jobName": "Full build / macOS Intel",
+      "assertions": 15,
+      "ctest": "41/41 passed",
+      "status": "pass"
+    }
+  ],
+  "summary": {
+    "nativeTargets": 5,
+    "assertions": 75
+  },
+  "githubCleanupPolicy": "Temporary runner/proof artifacts and the workflow run are deleted after evidence is copied into the repository; this workflow creates no caches.",
+  "sourceReview": {
+    "status": "passed; findings adjudicated",
+    "tool": "Gito 4.5.0",
+    "packetCount": 5,
+    "filesPerPacket": 1,
+    "maxSourceContextTokens": 1000,
+    "reviewedFiles": [
+      "ci/test/debugger-monitor-find-contract.c",
+      "ci/test/performance/write-proof.py",
+      "src/app/wz_debugger_window.c",
+      "src/app/wz_debugger_window.h",
+      "src/app/wz_sokol_main.c"
+    ],
+    "findings": [
+      {
+        "title": "Buffer overflow in pattern/mask arrays",
+        "disposition": "False positive: the guard pattern_length > sizeof(pattern) - width is equivalent to requiring pattern_length + width <= 30. At length 28 and width 2 it writes valid indices 28 and 29; length 29 is rejected before either write."
+      }
+    ]
+  }
+}
