@@ -1575,6 +1575,15 @@ temporary mapping-aware stop, preserve persistent breakpoints, and return the
 open debugger to a refreshed paused state; manual pause or an earlier persistent
 breakpoint cancels the temporary stop.
 
+The read-only `T [start [end [page-rows]]]` monitor command lists memory as
+eight hexadecimal bytes with an ASCII column. `start` defaults to the selected
+memory address; `end` is inclusive. Each invocation displays at most 24 rows.
+An omitted, zero, or `-1` page size selects 24 rows; otherwise the page size is
+1 through 24 rows. The final row is clipped at `end` or `FFFF`. The listing
+uses the active logical mapping, leaves CPU, memory, and emulated time
+unchanged, and remains available while the machine runs. The next page can be
+requested by starting at the first address not shown.
+
 The read-only `F <start> <end> <pattern...>` monitor command searches the
 inclusive logical-address range without wrapping. Pattern tokens of one or two
 hex digits add one byte; three or four digits add the little-endian bytes of a

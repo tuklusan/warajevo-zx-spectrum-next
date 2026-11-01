@@ -200,6 +200,94 @@ static wz_debugger_window_result_t refresh_disassembly(
                                    : WZ_DEBUGGER_WINDOW_OK;
 }
 
+static wz_debugger_window_result_t refresh_tabulation(
+    wz_debugger_window_t* window)
+{
+    size_t cursor = (size_t)window->memory_address;
+    size_t row_count = 0u;
+    size_t byte_count = 0u;
+    const size_t page_rows = window->tabulation_page_rows == 0u
+        ? WZ_DEBUGGER_WINDOW_DISASSEMBLY_LINES
+        : window->tabulation_page_rows;
+
+    window->disassembly[0] = '\0';
+    window->disassembly_length = 0u;
+    window->disassembly_instruction_count = 0u;
+    while (row_count < page_rows &&
+           row_count < WZ_DEBUGGER_WINDOW_DISASSEMBLY_LINES &&
+           cursor <= (size_t)window->disassembly_range_end) {
+        wz_byte_t bytes[WZ_DEBUGGER_WINDOW_TABULATE_BYTES_PER_ROW];
+        size_t row_bytes = (size_t)window->disassembly_range_end - cursor + 1u;
+        size_t used = strlen(window->disassembly);
+        int written;
+
+        if (row_bytes > WZ_DEBUGGER_WINDOW_TABULATE_BYTES_PER_ROW) {
+            row_bytes = WZ_DEBUGGER_WINDOW_TABULATE_BYTES_PER_ROW;
+        }
+        if (row_bytes > (size_t)0x10000u - cursor) {
+            row_bytes = (size_t)0x10000u - cursor;
+        }
+        if (row_bytes == 0u ||
+            wz_debugger_read_memory_block(window->machine,
+                (wz_word_t)cursor, bytes, row_bytes) != WZ_RESULT_OK ||
+            used >= sizeof(window->disassembly)) {
+            return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+        }
+
+        written = snprintf(window->disassembly + used,
+                           sizeof(window->disassembly) - used,
+                           "%04X:", (unsigned)cursor);
+        if (written < 0 ||
+            (size_t)written >= sizeof(window->disassembly) - used) {
+            return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+        }
+        used += (size_t)written;
+        for (size_t index = 0u; index < row_bytes; ++index) {
+            written = snprintf(window->disassembly + used,
+                               sizeof(window->disassembly) - used,
+                               " %02X", (unsigned)bytes[index]);
+            if (written < 0 ||
+                (size_t)written >= sizeof(window->disassembly) - used) {
+                return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+            }
+            used += (size_t)written;
+        }
+        written = snprintf(window->disassembly + used,
+                           sizeof(window->disassembly) - used, "  |");
+        if (written < 0 ||
+            (size_t)written >= sizeof(window->disassembly) - used) {
+            return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+        }
+        used += (size_t)written;
+        for (size_t index = 0u; index < row_bytes; ++index) {
+            const unsigned char character = (unsigned char)(bytes[index] & 0x7fu);
+            if (used + 2u >= sizeof(window->disassembly)) {
+                return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+            }
+            window->disassembly[used++] =
+                character < 0x20u || character == 0x7fu
+                    ? '.' : (char)character;
+        }
+        if (used + 2u >= sizeof(window->disassembly)) {
+            return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+        }
+        window->disassembly[used++] = '|';
+        window->disassembly[used++] = '\n';
+        window->disassembly[used] = '\0';
+        ++row_count;
+        byte_count += row_bytes;
+        if (row_bytes < WZ_DEBUGGER_WINDOW_TABULATE_BYTES_PER_ROW ||
+            cursor + row_bytes > 0xffffu) {
+            break;
+        }
+        cursor += WZ_DEBUGGER_WINDOW_TABULATE_BYTES_PER_ROW;
+    }
+    window->disassembly_length = byte_count;
+    window->disassembly_instruction_count = row_count;
+    return row_count == 0u ? WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR
+                           : WZ_DEBUGGER_WINDOW_OK;
+}
+
 static bool monitor_parse_register(const char* token, size_t length,
                                    wz_debugger_register_t* reg)
 {
@@ -233,7 +321,9 @@ static wz_debugger_window_result_t refresh_view(wz_debugger_window_t* window)
         wz_debugger_read_memory_block(window->machine, window->memory_address,
                                        window->memory, memory_length) !=
             WZ_RESULT_OK ||
-        refresh_disassembly(window) != WZ_DEBUGGER_WINDOW_OK) {
+        (window->tabulation_active && window->disassembly_range_active
+            ? refresh_tabulation(window) : refresh_disassembly(window)) !=
+            WZ_DEBUGGER_WINDOW_OK) {
         return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
     }
     window->memory_length = memory_length;
@@ -311,6 +401,7 @@ void wz_debugger_window_close(wz_debugger_window_t* window)
     window->disassembly_length = 0u;
     window->disassembly_instruction_count = 0u;
     window->disassembly_range_active = false;
+    window->tabulation_active = false;
 }
 
 bool wz_debugger_window_is_open(const wz_debugger_window_t* window)
@@ -524,6 +615,41 @@ wz_debugger_window_result_t wz_debugger_window_dispatch_monitor_command(
         window->memory_address = start;
         window->disassembly_range_end = end;
         window->disassembly_range_active = true;
+        window->tabulation_active = false;
+        return refresh_view(window);
+    }
+    if (token_count >= 1u && token_count <= 4u &&
+        monitor_token_equal(tokens[0], lengths[0], "T")) {
+        wz_word_t start = window->memory_address;
+        wz_word_t end = 0xffffu;
+        size_t page_rows = WZ_DEBUGGER_WINDOW_DISASSEMBLY_LINES;
+        if (!wz_debugger_window_is_open(window)) {
+            return WZ_DEBUGGER_WINDOW_NOT_OPEN;
+        }
+        if (token_count >= 2u &&
+            !monitor_parse_hex(tokens[1], lengths[1], &start)) {
+            return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
+        }
+        if (token_count >= 3u &&
+            (!monitor_parse_hex(tokens[2], lengths[2], &end) || end < start)) {
+            return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
+        }
+        if (token_count == 4u &&
+            !(lengths[3] == 2u && tokens[3][0] == '-' &&
+              tokens[3][1] == '1')) {
+            if (!monitor_parse_length(tokens[3], lengths[3], &page_rows) ||
+                page_rows > WZ_DEBUGGER_WINDOW_DISASSEMBLY_LINES) {
+                return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
+            }
+            if (page_rows == 0u) {
+                page_rows = WZ_DEBUGGER_WINDOW_DISASSEMBLY_LINES;
+            }
+        }
+        window->memory_address = start;
+        window->disassembly_range_end = end;
+        window->disassembly_range_active = true;
+        window->tabulation_active = true;
+        window->tabulation_page_rows = page_rows;
         return refresh_view(window);
     }
     if (token_count >= 4u && token_count <= 18u &&

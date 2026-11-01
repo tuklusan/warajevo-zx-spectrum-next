@@ -290,6 +290,11 @@ jobs:
             --run-id "$source_run_id" \
             --branch "$GITHUB_REF_NAME" --event "$SOURCE_EVENT" \
             --input-dir hosted-inputs
+          python ci/test/debugger-monitor-tabulate/write-proof.py \
+            --commit "$source_commit" --driver-commit "$GITHUB_SHA" \
+            --run-id "$source_run_id" \
+            --branch "$GITHUB_REF_NAME" --event "$SOURCE_EVENT" \
+            --input-dir hosted-inputs
           if [[ "$SOURCE_EVENT" == "workflow_dispatch" ]]; then
             python ci/test/ay-timing/write-proof.py \
               --commit "$source_commit" --driver-commit "$GITHUB_SHA" \
@@ -314,6 +319,7 @@ jobs:
           test -s test-results/debugger-monitor-find-contract.json
           test -s test-results/debugger-monitor-step-contract.json
           test -s test-results/debugger-monitor-jump-contract.json
+          test -s test-results/debugger-monitor-tabulate-contract.json
           compgen -G 'test-results/performance-current/*.json' > /dev/null
           if [[ "$SOURCE_EVENT" == "workflow_dispatch" ]]; then
             test -s test-results/ay-timing-contract.json
@@ -332,6 +338,7 @@ jobs:
             test-results/debugger-monitor-find-contract.json
             test-results/debugger-monitor-step-contract.json
             test-results/debugger-monitor-jump-contract.json
+            test-results/debugger-monitor-tabulate-contract.json
             test-results/performance-current/*.json
           if-no-files-found: error
           retention-days: 1
@@ -348,6 +355,7 @@ jobs:
             test-results/debugger-monitor-find-contract.json
             test-results/debugger-monitor-step-contract.json
             test-results/debugger-monitor-jump-contract.json
+            test-results/debugger-monitor-tabulate-contract.json
             test-results/performance-current/*.json
           if-no-files-found: error
           retention-days: 1

@@ -3145,10 +3145,6 @@ static bool wz_host_debugger_monitor_available(const void* context,
         if (reason != NULL) *reason = "debugger-window-closed";
         return false;
     }
-    if (!wz_debugger_window_is_paused(&session->debugger_window)) {
-        if (reason != NULL) *reason = "machine-not-paused";
-        return false;
-    }
     if (reason != NULL) *reason = NULL;
     return true;
 }
@@ -6043,7 +6039,7 @@ static void wz_host_ui_draw_debugger_window(struct nk_context* context,
         (unsigned)paging->paging_value, (unsigned)paging->screen_bank,
         (unsigned)paging->rom_bank, (unsigned)paging->paging_locked);
     nk_label(context, line, NK_TEXT_LEFT);
-    (void)snprintf(line, sizeof(line), "Disassembly at %04X:",
+    (void)snprintf(line, sizeof(line), "Debugger output at %04X:",
         window->memory_address);
     nk_label(context, line, NK_TEXT_LEFT);
     nk_label_wrap(context, wz_debugger_window_disassembly(window));
@@ -6223,6 +6219,10 @@ static void wz_host_ui_draw_debugger_window(struct nk_context* context,
         NK_TEXT_LEFT);
     nk_layout_row_dynamic(context, 20.0f, 1);
     nk_label(context,
+        "T [start [end [page-rows]]] (read-only, 8 bytes per row)",
+        NK_TEXT_LEFT);
+    nk_layout_row_dynamic(context, 20.0f, 1);
+    nk_label(context,
         "R SETREG <register> <hex>; U; ! <IFF|-1> [IM]; K <first> <last> <byte>",
         NK_TEXT_LEFT);
     nk_layout_row_dynamic(context, 20.0f, 1);
@@ -6245,7 +6245,6 @@ static void wz_host_ui_draw_debugger_window(struct nk_context* context,
         &session->debugger_monitor_command_length,
         (int)sizeof(session->debugger_monitor_command_text) - 1,
         nk_filter_ascii);
-    if (!window->paused) nk_widget_disable_begin(context);
     if (nk_button_label(context, "Run monitor command")) {
         wz_command_result_t result;
         wz_command_arguments_t arguments = {
@@ -6267,7 +6266,6 @@ static void wz_host_ui_draw_debugger_window(struct nk_context* context,
                     result.reason);
         }
     }
-    if (!window->paused) nk_widget_disable_end(context);
     nk_layout_row_dynamic(context, 20.0f, 1);
     nk_label(context, session->debugger_register_status, NK_TEXT_LEFT);
     nk_layout_row_dynamic(context, 24.0f, 1);
