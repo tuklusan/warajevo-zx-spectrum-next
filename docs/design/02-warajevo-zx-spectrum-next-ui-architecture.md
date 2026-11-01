@@ -1558,6 +1558,13 @@ time. The production frame runner must stop before executing a mapped
 breakpoint instruction, return the application to paused state, and refresh the
 open debugger view with the stop state.
 
+The read-only `F <start> <end> <pattern...>` monitor command searches the
+inclusive logical-address range without wrapping. Pattern tokens of one or two
+hex digits add one byte; three or four digits add the little-endian bytes of a
+word; `-1` adds one wildcard byte. The first match becomes the selected memory
+address. A pattern that cannot fit in the range or has no match reports
+not-found without changing the selection or machine state.
+
 Initial presentation should support the required monitor/debugger workflows
 when the core subsystem reaches Phase 11.
 

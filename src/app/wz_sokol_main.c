@@ -3172,6 +3172,10 @@ static wz_result_t wz_host_debugger_monitor_command(const void* context,
         return wz_host_command_resume(context,
             (wz_command_arguments_t){NULL, 0u}, result);
     }
+    if (dispatched == WZ_DEBUGGER_WINDOW_NOT_FOUND) {
+        result->reason = "monitor-pattern-not-found";
+        return WZ_RESULT_NOT_FOUND;
+    }
     if (dispatched != WZ_DEBUGGER_WINDOW_OK) {
         result->reason = dispatched == WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT
             ? "invalid-monitor-command"

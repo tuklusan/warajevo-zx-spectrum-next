@@ -28,6 +28,8 @@ PLATFORMS = (
 WAIT_MARKER = "PASS Interface 1 WAIT pending-cycle resume (75 checks)"
 EXIT_MARKER = re.compile(
     r"debugger-monitor-exit-contract assertions=(\d+) status=pass")
+FIND_MARKER = re.compile(
+    r"debugger-monitor-find-contract assertions=(\d+) status=pass")
 MAX_SLOWDOWN = 0.40
 
 
@@ -96,6 +98,7 @@ def main() -> None:
 
     results = []
     exit_results = []
+    find_results = []
     raw_dir = ROOT / "test-results/performance-current"
     raw_dir.mkdir(parents=True, exist_ok=True)
     max_slowdown = 0.0
@@ -122,6 +125,9 @@ def main() -> None:
         exit_match = EXIT_MARKER.search(ctest)
         if exit_match is None or int(exit_match.group(1)) != 24:
             raise SystemExit(f"monitor E contract evidence missing: {platform}")
+        find_match = FIND_MARKER.search(ctest)
+        if find_match is None or int(find_match.group(1)) != 15:
+            raise SystemExit(f"monitor F contract evidence missing: {platform}")
         if (runner_record.get("status") != "pass" or
                 runner_record.get("commit") != args.commit or
                 runner_record.get("jobName") != job_name or
@@ -160,6 +166,11 @@ def main() -> None:
         exit_results.append({
             "runner": platform, "jobName": job_name,
             "assertions": int(exit_match.group(1)), "ctest": ctest_record,
+            "status": "pass",
+        })
+        find_results.append({
+            "runner": platform, "jobName": job_name,
+            "assertions": int(find_match.group(1)), "ctest": ctest_record,
             "status": "pass",
         })
 
@@ -221,6 +232,40 @@ def main() -> None:
     }
     (ROOT / "test-results/debugger-monitor-exit-contract.json").write_text(
         json.dumps(exit_proof, indent=2) + "\n", encoding="utf-8")
+
+    find_driver = json.loads(
+        (ROOT / "test-drivers/debugger-monitor-find-contract.driver.json")
+        .read_text(encoding="utf-8"))
+    if (find_driver.get("testId") != "debugger-monitor-find-contract" or
+            find_driver.get("requiredAssertions") != 15 or
+            find_driver.get("runnerMatrix") != [item[0] for item in PLATFORMS]):
+        raise SystemExit("unexpected monitor F driver")
+    find_fixtures = []
+    for fixture in find_driver.get("fixtures", []):
+        path = fixture["path"]
+        source = (ROOT / path).resolve()
+        if ROOT not in source.parents or not source.is_file():
+            raise SystemExit(f"unsafe or missing monitor F fixture: {path}")
+        digest = hashlib.sha256(source.read_bytes()).hexdigest()
+        if digest != fixture["sha256"]:
+            raise SystemExit(f"monitor F fixture hash mismatch: {path}")
+        find_fixtures.append({"path": path, "sha256": digest})
+    find_proof = {
+        "commit": args.commit, "sourceCommit": args.commit,
+        "driverCommit": driver_commit,
+        "testId": find_driver["testId"], "status": "pass",
+        "workflowRun": proof["workflowRun"], "runId": args.run_id,
+        "workflowEvent": args.event, "branch": args.branch,
+        "timestamp": proof["timestamp"], "fixtures": find_fixtures,
+        "build": {"configuration": "Release", "sokolHost": "ON"},
+        "assertionsPerTarget": 15, "runnerResults": find_results,
+        "summary": {"nativeTargets": len(find_results),
+                    "assertions": sum(item["assertions"] for item in find_results)},
+        "sourceReview": wait_proof["sourceReview"],
+        "githubCleanupPolicy": "Temporary runner/proof artifacts and the workflow run are deleted after evidence is copied into the repository; this workflow creates no caches.",
+    }
+    (ROOT / "test-results/debugger-monitor-find-contract.json").write_text(
+        json.dumps(find_proof, indent=2) + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":

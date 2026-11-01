@@ -12,7 +12,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "2785f3e2d8f72be85a2bbec007066307c9179966a30f7c5faabbb854bbca18f7"
+      "sha256": "6613b78f76dece53141a909ae8c98d3d46ac1a1dc51acdb203524597b793cf3d"
     },
     {
       "path": "ci/test/debugger-monitor-exit-contract.c",
@@ -24,7 +24,7 @@
     },
     {
       "path": "ci/test/performance/write-proof.py",
-      "sha256": "7384fb740d1dc8e4b08ffb8b6264244dddefb276b06f818d25232391c22c6fee"
+      "sha256": "51bce1d0dbf14de17eb01b58c814ef243b1ff08d59f5e4dd120c0b74cb677492"
     },
     {
       "path": "src/app/wz_command_registry.c",
@@ -36,11 +36,11 @@
     },
     {
       "path": "src/app/wz_debugger_window.c",
-      "sha256": "8e9a472e9c49b60b08e4c0476fdd3ca7df7cab528ed126bcb2a5b6c638f47ddd"
+      "sha256": "cfdaf72bb4c1a64bb94febfc1e8306689dc8c2970ff2f02595fc0b51af8ac3b5"
     },
     {
       "path": "src/app/wz_debugger_window.h",
-      "sha256": "09bfa21782c191eb26257e3857013de317c851956f93565c7f02093742f0ea56"
+      "sha256": "52e98f69570242bf9ebad4845c2020397dbadec911147329aa5c5401e028e58b"
     },
     {
       "path": "src/app/wz_host_machine_frame.c",
@@ -52,11 +52,11 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "13e0b582c5a663866558cfc86f340b92637ea2e0306f2aedc1c78b309e6c9c5b"
+      "sha256": "db94d1b51a5fe5e5d0fc54fe2eb6cd5e1a95595d2aa171949389f4cc8d80d3bb"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "4636c172e9b0336d5a23cc812be395a41a6bfc4164576f9283266e77202a905c"
+      "sha256": "890bf3b9568800432f43df7aef29ec2284c25fcaa8241a088394d11ce20e4f35"
     },
     {
       "path": "src/core/wz_debugger.c",

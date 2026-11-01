@@ -480,6 +480,54 @@ wz_debugger_window_result_t wz_debugger_window_dispatch_monitor_command(
         window->disassembly_range_active = true;
         return refresh_view(window);
     }
+    if (token_count >= 4u && token_count <= 18u &&
+        monitor_token_equal(tokens[0], lengths[0], "F")) {
+        wz_word_t start;
+        wz_word_t end;
+        wz_word_t found = 0u;
+        wz_byte_t pattern[30];
+        wz_byte_t mask[30];
+        size_t pattern_length = 0u;
+        wz_result_t result;
+        if (!monitor_parse_hex(tokens[1], lengths[1], &start) ||
+            !monitor_parse_hex(tokens[2], lengths[2], &end) || end < start) {
+            return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
+        }
+        for (size_t index = 3u; index < token_count; ++index) {
+            const bool wildcard = lengths[index] == 2u &&
+                tokens[index][0] == '-' && tokens[index][1] == '1';
+            wz_word_t parsed = 0u;
+            size_t width = wildcard || lengths[index] <= 2u ? 1u : 2u;
+            if (!wildcard && !monitor_parse_hex(tokens[index], lengths[index],
+                                                &parsed)) {
+                return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
+            }
+            if (pattern_length > sizeof(pattern) - width) {
+                return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
+            }
+            pattern[pattern_length] = (wz_byte_t)parsed;
+            mask[pattern_length] = wildcard ? 0u : 0xffu;
+            ++pattern_length;
+            if (width == 2u) {
+                pattern[pattern_length] = (wz_byte_t)(parsed >> 8u);
+                mask[pattern_length] = 0xffu;
+                ++pattern_length;
+            }
+        }
+        if (!wz_debugger_window_is_open(window)) {
+            return WZ_DEBUGGER_WINDOW_NOT_OPEN;
+        }
+        result = wz_debugger_find_memory_pattern(window->machine, start,
+            (size_t)end - (size_t)start + 1u, pattern, mask, pattern_length,
+            &found);
+        if (result == WZ_RESULT_NOT_FOUND) {
+            return WZ_DEBUGGER_WINDOW_NOT_FOUND;
+        }
+        if (result != WZ_RESULT_OK) {
+            return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+        }
+        return wz_debugger_window_select_memory(window, found);
+    }
     if (token_count >= 2u && token_count <= 18u &&
         monitor_token_equal(tokens[0], lengths[0], "M")) {
         wz_word_t address;
