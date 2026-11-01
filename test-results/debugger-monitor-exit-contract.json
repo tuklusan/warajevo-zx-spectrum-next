@@ -1,18 +1,18 @@
 {
-  "commit": "9cd3e7d4e0ae08082f8edf8f28e8a21cc73b0683",
-  "sourceCommit": "9cd3e7d4e0ae08082f8edf8f28e8a21cc73b0683",
-  "driverCommit": "9cd3e7d4e0ae08082f8edf8f28e8a21cc73b0683",
+  "commit": "20897a6ce3536b8930ad0e9ab4350f64842e3679",
+  "sourceCommit": "20897a6ce3536b8930ad0e9ab4350f64842e3679",
+  "driverCommit": "8179ea8fc134df499f3ad27965f2ad2da840be57",
   "testId": "debugger-monitor-exit-contract",
   "status": "pass",
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/41320915462",
-  "runId": 41320915462,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/41332671595",
+  "runId": 41332671595,
   "workflowEvent": "push",
   "branch": "main",
-  "timestamp": "2026-11-01T10:24:46-05:00",
+  "timestamp": "2026-11-01T17:50:38+00:00",
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "6613b78f76dece53141a909ae8c98d3d46ac1a1dc51acdb203524597b793cf3d"
+      "sha256": "f1ec2d5611a6dee87a87e900b012a8cb3ee5c5b26bc1aa29c6240dc0dbec12ff"
     },
     {
       "path": "ci/test/debugger-monitor-exit-contract.c",
@@ -24,7 +24,7 @@
     },
     {
       "path": "ci/test/performance/write-proof.py",
-      "sha256": "51bce1d0dbf14de17eb01b58c814ef243b1ff08d59f5e4dd120c0b74cb677492"
+      "sha256": "aba19b4aa3cd1c3ad1560da159300cc8647dbc6e264a1aa120dbbfe04b5f248a"
     },
     {
       "path": "src/app/wz_command_registry.c",
@@ -36,7 +36,7 @@
     },
     {
       "path": "src/app/wz_debugger_window.c",
-      "sha256": "cfdaf72bb4c1a64bb94febfc1e8306689dc8c2970ff2f02595fc0b51af8ac3b5"
+      "sha256": "2d9235d5804e09dad472e9e2d102eb3cf11a03139a829310b8966afcbf749b36"
     },
     {
       "path": "src/app/wz_debugger_window.h",
@@ -56,11 +56,11 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "890bf3b9568800432f43df7aef29ec2284c25fcaa8241a088394d11ce20e4f35"
+      "sha256": "a251f517b859b010c8c2467695633c82c857b0755bde264000a18feb4d5f76eb"
     },
     {
       "path": "src/core/wz_debugger.c",
-      "sha256": "79e8d3e44194063db6fa37615d12e753aae27f0fdb5554777c6494c77422e5de"
+      "sha256": "3e19e11d3bc93421713dae83cd5f926eb394a4e02fbe788c34922bdace768341"
     },
     {
       "path": "src/core/wz_debugger.h",
@@ -68,11 +68,11 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "35e1849d37d62d6b98ee49ca9dcdfd38e165ac3d59984fab312e10c42fbf593f"
+      "sha256": "ff6a802eb986e29bbdbaef1c3a046ab39bb57742dd01d2d1e2e7b8a135e30b0d"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "a1694d4cd24d110ac399ceb5f9a715b71af9af62d8cb99d642791c4c0ad887df"
+      "sha256": "1ef677db258aab20af26375bd1afc45042c295d76189fc322a3b656c63dfe81f"
     },
     {
       "path": "src/core/wz_machine_internal.h",
@@ -109,35 +109,35 @@
       "runner": "Windows x64",
       "jobName": "Full build / Windows x64",
       "assertions": 24,
-      "ctest": "41/41 passed",
+      "ctest": "42/42 passed",
       "status": "pass"
     },
     {
       "runner": "Linux x64",
       "jobName": "Full build / Linux x64",
       "assertions": 24,
-      "ctest": "41/41 passed",
+      "ctest": "42/42 passed",
       "status": "pass"
     },
     {
       "runner": "Linux ARM64",
       "jobName": "Full build / Linux ARM64",
       "assertions": 24,
-      "ctest": "41/41 passed",
+      "ctest": "42/42 passed",
       "status": "pass"
     },
     {
       "runner": "macOS ARM64",
       "jobName": "Full build / macOS ARM64",
       "assertions": 24,
-      "ctest": "41/41 passed",
+      "ctest": "42/42 passed",
       "status": "pass"
     },
     {
       "runner": "macOS Intel",
       "jobName": "Full build / macOS Intel",
       "assertions": 24,
-      "ctest": "41/41 passed",
+      "ctest": "42/42 passed",
       "status": "pass"
     }
   ],
@@ -148,20 +148,38 @@
   "sourceReview": {
     "status": "passed; findings adjudicated",
     "tool": "Gito 4.5.0",
-    "packetCount": 5,
-    "filesPerPacket": 1,
-    "maxSourceContextTokens": 1000,
-    "reviewedFiles": [
-      "ci/test/debugger-monitor-find-contract.c",
-      "ci/test/performance/write-proof.py",
-      "src/app/wz_debugger_window.c",
-      "src/app/wz_debugger_window.h",
-      "src/app/wz_sokol_main.c"
-    ],
     "findings": [
       {
-        "title": "Buffer overflow in pattern/mask arrays",
-        "disposition": "False positive: the guard pattern_length > sizeof(pattern) - width is equivalent to requiring pattern_length + width <= 30. At length 28 and width 2 it writes valid indices 28 and 29; length 29 is rejected before either write."
+        "title": "Potential use-after-free in test cleanup",
+        "disposition": "Non-actionable: wz_machine_destroy releases and nulls owned allocations without freeing the static machine object; repeated cleanup and reinitialization are safe."
+      },
+      {
+        "title": "Fixture path validation",
+        "disposition": "Non-actionable: Python str.startswith accepts a tuple of prefixes; all allowed roots end in a slash, and absolute paths, parent components, and unsupported characters are rejected."
+      },
+      {
+        "title": "Pending I/O without CPU continuation",
+        "disposition": "Non-actionable: CPU I/O installs its continuation before the bus call. A direct bus API caller receives PENDING before the device cycle commits and remains responsible for retrying its request."
+      },
+      {
+        "title": "Runner progress while pending",
+        "disposition": "Non-actionable: the runner loop starts only below its target; a pending cycle advances to that target, and the elapsed-tick guard rejects zero-progress cases."
+      },
+      {
+        "title": "Version 8 deserialization",
+        "disposition": "Non-actionable: extension version 8 remains supported with a zeroed pending continuation; the new ten-byte field is read only for version 9."
+      },
+      {
+        "title": "Clearing pending I/O with memset",
+        "disposition": "Non-actionable: the pending-I/O record contains only scalar fields and zero maps to its NONE/inactive state."
+      },
+      {
+        "title": "Clock setup in the raster contract",
+        "disposition": "Addressed: the fixture uses the internal master-tick advancement helper, which also synchronizes ZX Net time when tracing is enabled; follow-up review found no issue."
+      },
+      {
+        "title": "Incorrect logic for calculating largest slowdown",
+        "disposition": "False positive: deltas are stored as percentage points; negating a negative delta reports the slowdown as a positive percentage. The 40% gate is checked against the unrounded ratio before this summary calculation."
       }
     ]
   }
