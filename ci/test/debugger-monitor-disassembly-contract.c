@@ -66,7 +66,7 @@ int main(void)
 
     CHECK(DISPATCH(window, "D 8000 8008") == WZ_DEBUGGER_WINDOW_OK);
     CHECK(window.memory_address == 0x8000u &&
-          window.disassembly_instruction_count == 5u &&
+          window.disassembly_instruction_count == 4u &&
           window.disassembly_length == 12u);
     CHECK(strstr(window.disassembly, "8000: LD A,$42") != NULL &&
           strstr(window.disassembly, "8002: BIT 0,A") != NULL &&

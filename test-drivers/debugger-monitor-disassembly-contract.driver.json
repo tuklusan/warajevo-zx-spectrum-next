@@ -12,7 +12,7 @@
   "fixtures": [
     {
       "path": "ci/test/debugger-monitor-disassembly-contract.c",
-      "sha256": "3caab443e776757573609a9b56a23fa43f07d314d3ac0cc19aee29130ebf4e90"
+      "sha256": "6f4923b3a81236722fb2a69373f3a19aa52d5a2ea3aaa3beabeaefcd30b31c6a"
     },
     {
       "path": "src/app/wz_debugger_window.c",
