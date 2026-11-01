@@ -769,11 +769,10 @@ wz_debugger_window_result_t wz_debugger_window_dispatch_monitor_command(
         }
         if (!window->paused) return WZ_DEBUGGER_WINDOW_NOT_PAUSED;
         if (token_count == 1u) {
-            char instruction[WZ_DEBUGGER_WINDOW_DISASSEMBLY_CAPACITY];
             size_t instruction_length = 0u;
             wz_word_t pc = window->machine->cpu.program_counter;
-            if (wz_debugger_disassemble(window->machine, pc, instruction,
-                    sizeof(instruction), &instruction_length) != WZ_RESULT_OK ||
+            if (wz_debugger_instruction_length(window->machine, pc,
+                    &instruction_length) != WZ_RESULT_OK ||
                 instruction_length == 0u) {
                 return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
             }

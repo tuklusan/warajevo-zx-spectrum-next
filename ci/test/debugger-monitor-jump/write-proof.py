@@ -81,7 +81,7 @@ def main() -> None:
     driver = json.loads(git_blob(driver_commit, DRIVER_PATH))
     expected_matrix = [item[0] for item in PLATFORMS]
     if (driver.get("testId") != "debugger-monitor-jump-contract" or
-            driver.get("requiredAssertions") != 52 or
+            driver.get("requiredAssertions") != 63 or
             driver.get("runnerMatrix") != expected_matrix):
         raise SystemExit("unexpected monitor J driver")
     fixtures = []

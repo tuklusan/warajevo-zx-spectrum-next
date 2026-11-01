@@ -32,12 +32,51 @@ static wz_debugger_window_result_t command(wz_debugger_window_t* window,
     } \
 } while (0)
 
+static int instruction_length_matrix(wz_machine_t* machine)
+{
+    static const struct {
+        wz_word_t address;
+        wz_byte_t bytes[5];
+        size_t length;
+    } cases[] = {
+        {0x8200u, {0x01u, 0x34u, 0x12u}, 3u},
+        {0x8210u, {0x20u, 0xfeu}, 2u},
+        {0x8220u, {0xccu, 0x34u, 0x12u}, 3u},
+        {0x8230u, {0xdbu, 0xfeu}, 2u},
+        {0x8240u, {0xedu, 0x4bu, 0x34u, 0x12u}, 4u},
+        {0x8250u, {0xddu, 0x21u, 0x34u, 0x12u}, 4u},
+        {0x8260u, {0xfdu, 0x46u, 0x05u}, 3u},
+        {0x8270u, {0xddu, 0x36u, 0x05u, 0x42u}, 4u},
+        {0x8280u, {0xddu, 0xcbu, 0x05u, 0x46u}, 4u},
+        {0x8290u, {0xddu, 0xfdu, 0x21u, 0x34u, 0x12u}, 5u}
+    };
+
+    for (size_t i = 0u; i < sizeof(cases) / sizeof(cases[0]); ++i) {
+        size_t actual = 0u;
+        for (size_t j = 0u; j < cases[i].length; ++j) {
+            wz_machine_memory_write(machine,
+                (wz_word_t)((size_t)cases[i].address + j), cases[i].bytes[j]);
+        }
+        ++assertions;
+        if (wz_debugger_instruction_length(machine, cases[i].address,
+                &actual) != WZ_RESULT_OK || actual != cases[i].length) {
+            fprintf(stderr, "monitor jump length contract %d: case %u expected %u got %u\n",
+                    __LINE__, (unsigned)i, (unsigned)cases[i].length,
+                    (unsigned)actual);
+            return 1;
+        }
+    }
+    return 0;
+}
+
 static int default_call_step_over(void)
 {
     wz_machine_t* machine = (wz_machine_t*)calloc(1u, sizeof(*machine));
     wz_debugger_window_t window;
     wz_headless_runner_t runner;
     wz_master_tick_t tick;
+    size_t disassembled_length = 0u;
+    char instruction[WZ_DEBUGGER_WINDOW_DISASSEMBLY_CAPACITY];
     bool initialized = false;
     int status = 1;
 
@@ -55,6 +94,11 @@ static int default_call_step_over(void)
     wz_machine_memory_write(machine, 0x8004u, 0x42u);
     wz_machine_memory_write(machine, 0x8100u, 0x3cu);
     wz_machine_memory_write(machine, 0x8101u, 0xc9u);
+
+    CHECK(wz_debugger_disassemble(machine, 0x8000u, instruction,
+              sizeof(instruction), &disassembled_length) == WZ_RESULT_OK &&
+          disassembled_length == 3u);
+    if (instruction_length_matrix(machine) != 0) goto done;
 
     CHECK(wz_debugger_window_open(&window, machine, true) ==
           WZ_DEBUGGER_WINDOW_OK);

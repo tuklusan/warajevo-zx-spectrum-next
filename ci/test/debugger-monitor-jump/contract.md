@@ -17,8 +17,10 @@ dispatch, preserve persistent breakpoints, and refresh the open debugger when
 paused. Manual pause or an earlier persistent breakpoint cancels the temporary
 stop.
 
-The 52-assertion CTest contract covers call/return stepping, exact PC/register/
-stack/tick state, explicit targets, address wrap, 48K/128K mapping identity,
-breakpoint preservation, cancellation, pause gating, and malformed commands.
+The 63-assertion CTest contract covers instruction lengths across base, ED,
+IX/IY, indexed-memory, indexed-CB, and repeated-prefix forms; call/return
+stepping; exact PC/register/stack/tick state; explicit targets; address wrap;
+48K/128K mapping identity; breakpoint preservation; cancellation; pause gating;
+and malformed commands.
 The required hosted gate is the full Release/Sokol build and integrated CTest on
 Windows x64, Linux x64/ARM64, and macOS ARM64/Intel.

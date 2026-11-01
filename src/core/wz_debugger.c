@@ -139,6 +139,74 @@ static wz_result_t disassemble_indexed(const wz_byte_t* bytes, char* output,
     return WZ_RESULT_UNSUPPORTED_OPERATION;
 }
 
+static size_t base_instruction_length(unsigned opcode)
+{
+    if ((opcode & 0xcfu) == 0x01u || opcode == 0x22u || opcode == 0x2au ||
+        opcode == 0x32u || opcode == 0x3au || opcode == 0xc3u ||
+        opcode == 0xcdu || (opcode & 0xc7u) == 0xc2u ||
+        (opcode & 0xc7u) == 0xc4u) {
+        return 3u;
+    }
+    if ((opcode & 0xc7u) == 0x06u || opcode == 0x10u || opcode == 0x18u ||
+        (opcode & 0xe7u) == 0x20u || opcode == 0xd3u || opcode == 0xdbu) {
+        return 2u;
+    }
+    return 1u;
+}
+
+wz_result_t wz_debugger_instruction_length(const wz_machine_t* machine,
+                                           wz_word_t address,
+                                           size_t* length)
+{
+    size_t prefix_count = 0u;
+    unsigned opcode;
+    if (machine == 0 || length == 0) return WZ_RESULT_INVALID_ARGUMENT;
+
+    opcode = wz_machine_memory_read(machine, address);
+    while (opcode == 0xddu || opcode == 0xfdu) {
+        if (prefix_count == 65536u) return WZ_RESULT_UNSUPPORTED_OPERATION;
+        ++prefix_count;
+        opcode = wz_machine_memory_read(
+            machine, (wz_word_t)((size_t)address + prefix_count));
+    }
+
+    if (opcode == 0xcbu) {
+        *length = prefix_count == 0u ? 2u : prefix_count + 3u;
+        return WZ_RESULT_OK;
+    }
+    if (opcode == 0xedu) {
+        unsigned extended = wz_machine_memory_read(
+            machine, (wz_word_t)((size_t)address + prefix_count + 1u));
+        *length = prefix_count +
+            (((extended & 0xc7u) == 0x43u) ? 4u : 2u);
+        return WZ_RESULT_OK;
+    }
+
+    {
+        size_t length_without_prefix = base_instruction_length(opcode);
+        bool indexed_memory =
+            ((opcode >= 0x40u && opcode <= 0x7fu && opcode != 0x76u) &&
+             (((opcode >> 3u) & 7u) == 6u || (opcode & 7u) == 6u)) ||
+            (opcode >= 0x80u && opcode <= 0xbfu && (opcode & 7u) == 6u) ||
+            opcode == 0x34u || opcode == 0x35u || opcode == 0x36u;
+        *length = prefix_count + length_without_prefix +
+                  ((prefix_count != 0u && indexed_memory) ? 1u : 0u);
+    }
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t disassembly_result_at(const wz_machine_t* machine,
+                                         wz_word_t address,
+                                         wz_result_t result,
+                                         size_t* consumed)
+{
+    size_t length;
+    if (result != WZ_RESULT_OK) return result;
+    result = wz_debugger_instruction_length(machine, address, &length);
+    if (result == WZ_RESULT_OK) *consumed = length;
+    return result;
+}
+
 wz_result_t wz_debugger_disassemble(const wz_machine_t* machine,
                                     wz_word_t address,
                                     char* output,
@@ -156,19 +224,25 @@ wz_result_t wz_debugger_disassemble(const wz_machine_t* machine,
             machine, (wz_word_t)((size_t)address + i));
     }
     op = bytes[0];
-    if (op == 0xcbu) return disassemble_cb(bytes, output, capacity, consumed);
-    if (op == 0xedu) return disassemble_ed(bytes, output, capacity, consumed);
-    if (op == 0xddu) return disassemble_indexed(bytes, output, capacity, consumed, "IX");
-    if (op == 0xfdu) return disassemble_indexed(bytes, output, capacity, consumed, "IY");
+    if (op == 0xcbu) return disassembly_result_at(machine, address,
+        disassemble_cb(bytes, output, capacity, consumed), consumed);
+    if (op == 0xedu) return disassembly_result_at(machine, address,
+        disassemble_ed(bytes, output, capacity, consumed), consumed);
+    if (op == 0xddu) return disassembly_result_at(machine, address,
+        disassemble_indexed(bytes, output, capacity, consumed, "IX"), consumed);
+    if (op == 0xfdu) return disassembly_result_at(machine, address,
+        disassemble_indexed(bytes, output, capacity, consumed, "IY"), consumed);
     if (op == 0x00u) (void)snprintf(text, sizeof(text), "NOP");
     else if (op == 0x76u) (void)snprintf(text, sizeof(text), "HALT");
     else if ((op & 0xc7u) == 0x06u) {
         (void)snprintf(text, sizeof(text), "LD %s,$%02X", register_name((op >> 3u) & 7u), bytes[1]);
-        return disassembly_result(output, capacity, consumed, 2u, text);
+        return disassembly_result_at(machine, address,
+            disassembly_result(output, capacity, consumed, 2u, text), consumed);
     } else if ((op & 0xc7u) == 0x01u) {
         unsigned word = (unsigned)bytes[1] | ((unsigned)bytes[2] << 8u);
         (void)snprintf(text, sizeof(text), "LD %s,$%04X", pair_name((op >> 4u) & 3u), word);
-        return disassembly_result(output, capacity, consumed, 3u, text);
+        return disassembly_result_at(machine, address,
+            disassembly_result(output, capacity, consumed, 3u, text), consumed);
     } else if ((op & 0xc0u) == 0x40u) {
         (void)snprintf(text, sizeof(text), "LD %s,%s", register_name((op >> 3u) & 7u), register_name(op & 7u));
     } else if ((op & 0xc0u) == 0x80u) {
@@ -177,16 +251,19 @@ wz_result_t wz_debugger_disassemble(const wz_machine_t* machine,
     } else if (op == 0xc3u) {
         unsigned word = (unsigned)bytes[1] | ((unsigned)bytes[2] << 8u);
         (void)snprintf(text, sizeof(text), "JP $%04X", word);
-        return disassembly_result(output, capacity, consumed, 3u, text);
+        return disassembly_result_at(machine, address,
+            disassembly_result(output, capacity, consumed, 3u, text), consumed);
     } else if (op == 0x18u) {
         (void)snprintf(text, sizeof(text), "JR %+d", (int)(int8_t)bytes[1]);
-        return disassembly_result(output, capacity, consumed, 2u, text);
+        return disassembly_result_at(machine, address,
+            disassembly_result(output, capacity, consumed, 2u, text), consumed);
     } else if (op == 0xc9u) (void)snprintf(text, sizeof(text), "RET");
     else if (op == 0xafu) (void)snprintf(text, sizeof(text), "XOR A");
     else {
         (void)snprintf(text, sizeof(text), "DB $%02X", op);
     }
-    return disassembly_result(output, capacity, consumed, 1u, text);
+    return disassembly_result_at(machine, address,
+        disassembly_result(output, capacity, consumed, 1u, text), consumed);
 }
 
 static bool valid_range(wz_word_t address, size_t length)
