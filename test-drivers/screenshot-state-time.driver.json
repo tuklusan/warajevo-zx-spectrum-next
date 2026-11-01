@@ -25,7 +25,7 @@
     },
     {
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
-      "sha256": "710afb7f1c76dbb1521e4d6f5d0aec6624b762da6715a3a5399409a8a15bb1be"
+      "sha256": "a0986d7e67cbaa3ea6f338d519ec3f0cba6531244ca6cd1304768de46a2c2b74"
     },
     {
       "path": "src/app/wz_host_output.c",
