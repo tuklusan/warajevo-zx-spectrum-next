@@ -761,6 +761,28 @@ wz_debugger_window_result_t wz_debugger_window_dispatch_monitor_command(
         }
         return monitor_step_to(window, end);
     }
+    if (token_count >= 1u && token_count <= 2u &&
+        monitor_token_equal(tokens[0], lengths[0], "J")) {
+        wz_word_t end;
+        if (!wz_debugger_window_is_open(window)) {
+            return WZ_DEBUGGER_WINDOW_NOT_OPEN;
+        }
+        if (!window->paused) return WZ_DEBUGGER_WINDOW_NOT_PAUSED;
+        if (token_count == 1u) {
+            char instruction[WZ_DEBUGGER_WINDOW_DISASSEMBLY_CAPACITY];
+            size_t instruction_length = 0u;
+            wz_word_t pc = window->machine->cpu.program_counter;
+            if (wz_debugger_disassemble(window->machine, pc, instruction,
+                    sizeof(instruction), &instruction_length) != WZ_RESULT_OK ||
+                instruction_length == 0u) {
+                return WZ_DEBUGGER_WINDOW_DEBUGGER_ERROR;
+            }
+            end = (wz_word_t)((size_t)pc + instruction_length);
+        } else if (!monitor_parse_hex(tokens[1], lengths[1], &end)) {
+            return WZ_DEBUGGER_WINDOW_INVALID_ARGUMENT;
+        }
+        return monitor_step_to(window, end);
+    }
     if (token_count == 2u &&
         monitor_token_equal(tokens[0], lengths[0], "B")) {
         wz_word_t address;

@@ -1566,6 +1566,15 @@ unchanged. An earlier persistent breakpoint or a manual pause cancels the
 temporary stop; a target stop selects that address and refreshes the debugger.
 Frame execution retains normal interrupt sampling and timing.
 
+The local monitor accepts paused-only `J [end]` as step-over execution. With no
+address, it decodes the instruction at the current PC and resumes through the
+normal frame runner until that instruction's next sequential address is reached;
+this runs through a called routine before stopping at its return address. With
+an address, it stops before the selected logical address. Both forms use a
+temporary mapping-aware stop, preserve persistent breakpoints, and return the
+open debugger to a refreshed paused state; manual pause or an earlier persistent
+breakpoint cancels the temporary stop.
+
 The read-only `F <start> <end> <pattern...>` monitor command searches the
 inclusive logical-address range without wrapping. Pattern tokens of one or two
 hex digits add one byte; three or four digits add the little-endian bytes of a
