@@ -20,3 +20,5 @@ and machine time.
 The source-push workflow builds the full Release/Sokol application and runs the
 contract through CTest on all five native targets. The matching driver manifest
 pins the contract source and production build inputs.
+
+The latest hosted result is [debugger-monitor-disassembly-contract.json](../../test-results/debugger-monitor-disassembly-contract.json).

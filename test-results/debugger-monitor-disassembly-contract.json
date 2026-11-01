@@ -1,0 +1,112 @@
+{
+  "testId": "debugger-monitor-disassembly-contract",
+  "status": "pass",
+  "commit": "bf60530767b4e8554a73779681f6d926e2499b76",
+  "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
+  "timestamp": "2026-11-01T13:26:13+00:00",
+  "workflowRun": 41310207452,
+  "workflowAttempt": 1,
+  "workflowUrl": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/41310207452",
+  "artifactEvidenceRun": 41310407325,
+  "artifactEvidenceAttempt": 2,
+  "artifactEvidenceUrl": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/41310407325/attempts/2",
+  "artifactEvidenceRunNote": "All five native jobs passed; the separate proof-generation job failed on stale fixture pins and was rerun successfully after pin refresh.",
+  "proofRun": 41311230252,
+  "proofUrl": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/41311230252",
+  "build": "Release with WZSN_BUILD_SOKOL_HOST=ON passed on all five native targets",
+  "ctest": "39/39 per target",
+  "assertions": 21,
+  "targets": [
+    {
+      "name": "Linux ARM64",
+      "runner": "Linux-ubuntu-24.04-arm",
+      "status": "pass",
+      "ctest": "39/39 passed",
+      "assertions": 21,
+      "phase16": "pass"
+    },
+    {
+      "name": "Linux x64",
+      "runner": "Linux-ubuntu-24.04",
+      "status": "pass",
+      "ctest": "39/39 passed",
+      "assertions": 21,
+      "phase16": "pass"
+    },
+    {
+      "name": "macOS ARM64",
+      "runner": "macOS-macos-arm64",
+      "status": "pass",
+      "ctest": "39/39 passed",
+      "assertions": 21,
+      "phase16": "pass"
+    },
+    {
+      "name": "macOS Intel",
+      "runner": "macOS-macos-x64",
+      "status": "pass",
+      "ctest": "39/39 passed",
+      "assertions": 21,
+      "phase16": "pass"
+    },
+    {
+      "name": "Windows x64",
+      "runner": "Windows-windows-x64",
+      "status": "pass",
+      "ctest": "39/39 passed",
+      "assertions": 21,
+      "phase16": "pass"
+    }
+  ],
+  "phase16Proof": "phase16-performance-current.json",
+  "phase16Summary": {
+    "fingerprintChecks": 30,
+    "throughputChecks": 30,
+    "largestSlowdownPercent": 25.2
+  },
+  "sourceReview": {
+    "status": "passed; findings adjudicated",
+    "tool": "Gito 4.5.0",
+    "packetPolicy": "one changed source file per packet; at most 1,000 source-context tokens per file",
+    "findings": [
+      {
+        "title": "Potential Buffer Overflow in Disassembly Loop",
+        "file": "src/app/wz_debugger_window.c",
+        "disposition": "Non-actionable: range rendering starts with a NUL byte; each snprintf result is checked for truncation. Decoder text is at most 63 bytes, so 24 lines of at most 70 bytes occupy 1,680 of the 2,048-byte buffer."
+      },
+      {
+        "title": "Removal of memory range validation leads to potential out-of-bounds read",
+        "file": "src/core/wz_debugger.c",
+        "disposition": "Non-actionable: every 16-bit logical address is readable in the Spectrum 64-KiB map; each decoder fetch narrows to wz_word_t, providing the specified wrap at FFFF."
+      }
+    ]
+  },
+  "driver": "test-drivers/debugger-monitor-disassembly-contract.driver.json",
+  "contract": "ci/test/debugger-monitor-disassembly-contract.md",
+  "fixtures": [
+    {
+      "path": "ci/test/debugger-monitor-disassembly-contract.c",
+      "sha256": "6f4923b3a81236722fb2a69373f3a19aa52d5a2ea3aaa3beabeaefcd30b31c6a"
+    },
+    {
+      "path": "src/app/wz_debugger_window.c",
+      "sha256": "d4e9b527189d65b6cd254661ce2863df1d404af303bcd1b1f7dde370e5928b34"
+    },
+    {
+      "path": "src/app/wz_debugger_window.h",
+      "sha256": "f4edc542117d3d02f114c6f80c22e37cee1c70805fc39b6f483b1a1554073199"
+    },
+    {
+      "path": "src/core/wz_debugger.c",
+      "sha256": "c7043e05f29aa1be7fb05776fe2f5072a16f33dabf80bd877b0922ddc6f7ec65"
+    },
+    {
+      "path": "src/core/wz_debugger.h",
+      "sha256": "4c01627af6f9c1efcf32567b405d2b81b407fdf41fccc6c18782dcda81960d22"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "b5460bda3f82e284a281299f0ed4185800fb56e993163198f594a602b0bf7764"
+    }
+  ]
+}
