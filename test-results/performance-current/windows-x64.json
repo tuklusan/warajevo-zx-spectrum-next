@@ -1,10 +1,10 @@
 {
   "schema": 1,
   "status": "pass",
-  "commit": "e610fb92835461e96f0757d4756f8e6e75fbfd4a",
+  "commit": "38e9c3b52e4de677a3bdc6c3d3dfe579a2e2bcd6",
   "runner": "Windows-windows-x64",
   "architecture": "X64",
-  "timestamp": "2026-11-03T22:30:45Z",
+  "timestamp": "2026-11-03T23:51:53Z",
   "compiler": "MSVC 19.51.36260.0",
   "metrics": [
     {
@@ -19,16 +19,16 @@
       "name": "raster_generation",
       "unit": "frames",
       "operations": "384",
-      "median_cpu_seconds": 0.022,
-      "operations_per_second": 17454.545,
+      "median_cpu_seconds": 0.024,
+      "operations_per_second": 16000.0,
       "fingerprint": "d3d8bb78938b5fb1"
     },
     {
       "name": "audio_mixing",
       "unit": "samples",
       "operations": "2000000",
-      "median_cpu_seconds": 0.046,
-      "operations_per_second": 43478260.87,
+      "median_cpu_seconds": 0.047,
+      "operations_per_second": 42553191.489,
       "fingerprint": "56e7cab2bab26d0d"
     },
     {

@@ -7,7 +7,7 @@ SANYALnet Labs." See LICENSE for full terms. -->
 
 # Final release-readiness audit
 
-Tasks 454–460 and the latest monitor-contract follow-up (Tasks 491–492) have
+Tasks 454–460 and the latest monitor/trace follow-up (Tasks 491–493) have
 been audited against the current tracked workflows, source,
 test ledger, and acceptance inventories. Tasks 454 and 456–459 are closed;
 Tasks 455 and the Task-460 acceptance gate remain open. Task 456 delivery is
@@ -17,6 +17,10 @@ criteria. Current monitor source `e4c98a637b128a966674c011106ac4e66f2cf522`
 passed the five-target native build/test run `41737885149` with 39 interrupt
 delivery assertions per target; the registry metadata correction remains pinned
 at source `1f4f887efc9f77d082adab6d47b1a52b137ed513` in run `41733348457`.
+The trace backend now freezes on first write/ordering/header failure; the exact
+current five-target build/test/performance run is `41742264260` at source
+`38e9c3b52e4de677a3bdc6c3d3dfe579a2e2bcd6`, with refreshed Phase-16 and
+monitor proof records under `test-results/`.
 Product builds, emulator tests, media runs, screenshots, and proof generation
 belong on hosted runners under Workflow 05.
 
