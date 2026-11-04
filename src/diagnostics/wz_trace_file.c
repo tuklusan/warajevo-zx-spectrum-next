@@ -217,7 +217,6 @@ static void trace_fail(wz_trace_file_t* t)
     if (t == NULL) return;
     t->failed = true;
     t->frozen = true;
-    if (t->file != NULL) (void)write_header(t);
 }
 
 wz_result_t wz_trace_file_create(wz_trace_file_t* t,const char* path,wz_qword_t sid,wz_dword_t profile,wz_qword_t rom,wz_dword_t mask)
