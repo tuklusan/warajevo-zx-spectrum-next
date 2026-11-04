@@ -1,6 +1,6 @@
 {
   "testId": "debugger-monitor-interrupt-contract",
-  "requiredAssertions": 36,
+  "requiredAssertions": 39,
   "runnerMatrix": [
     "Windows x64",
     "Linux x64",
@@ -11,11 +11,11 @@
   "fixtures": [
     {
       "path": "ci/test/debugger-monitor-interrupt-contract.c",
-      "sha256": "da4296b5aeb942a29049601f3f1ec5d3ffd77d1e38c85817cf4a6b41b8c0e3bf"
+      "sha256": "9626723ddbb0f7fb4d4d300726a9637e064f01615803eb943feb2a0780bdcad9"
     },
     {
       "path": "ci/test/debugger-monitor-interrupt-contract.md",
-      "sha256": "7103eb8cd415a50c7107df8b8339a531c32600db3ffc853d298aa0a8104c4b1e"
+      "sha256": "82365e1045b0c80ee9f2de941b145b22ed3d1e1d83c19f00147a0aa1850e0bb4"
     },
     {
       "path": "src/app/wz_debugger_window.c",

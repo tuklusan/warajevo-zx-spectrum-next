@@ -13,6 +13,19 @@
 
 static unsigned checks;
 
+typedef struct {
+    unsigned sample;
+    unsigned accept;
+} trace_capture_t;
+
+static void record_trace(const wz_trace_event_t* event, void* context)
+{
+    trace_capture_t* capture = (trace_capture_t*)context;
+    if (event->kind != WZ_TRACE_INTERRUPT) return;
+    if (event->value == WZ_TRACE_INTERRUPT_MASKABLE_SAMPLE) ++capture->sample;
+    if (event->value == WZ_TRACE_INTERRUPT_MASKABLE_ACCEPT) ++capture->accept;
+}
+
 #define CHECK(expression) do { \
     ++checks; \
     if (!(expression)) { \
@@ -30,11 +43,15 @@ static int run_mode(wz_z80_interrupt_mode_t mode, wz_word_t expected_pc,
     bool initialized = false;
     int status = 1;
     char command[16];
+    trace_capture_t trace_capture = {0};
+    wz_trace_sink_t trace_sink;
 
     wz_debugger_window_init(&window);
     CHECK(wz_machine_init(&machine, wz_machine_profile_48k_pal()) ==
           WZ_RESULT_OK);
     initialized = true;
+    wz_trace_sink_init(&trace_sink, record_trace, &trace_capture);
+    wz_machine_set_timing_trace(&machine, &trace_sink);
     CHECK(wz_debugger_window_open(&window, &machine, true) ==
           WZ_DEBUGGER_WINDOW_OK);
     machine.cpu.program_counter = 0x8000u;
@@ -61,6 +78,7 @@ static int run_mode(wz_z80_interrupt_mode_t mode, wz_word_t expected_pc,
     CHECK(machine.cpu.stack_pointer == 0xfffdu);
     CHECK(machine.cpu.iff1 == 0u && machine.cpu.iff2 == 0u);
     CHECK(machine.master_tick == expected_ticks);
+    CHECK(trace_capture.sample == 1u && trace_capture.accept == 1u);
 
     wz_debugger_window_close(&window);
     wz_machine_destroy(&machine);
