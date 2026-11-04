@@ -12,9 +12,9 @@ test ledger, and acceptance inventories. Tasks 454 and 456–459 are closed;
 Tasks 455 and the Task-460 acceptance gate remain open. Task 456 delivery is
 intentionally unsigned because the project has no Microsoft or Apple signing
 authority. Wider release readiness remains gated on the other applicable
-criteria. Current source `e610fb92835461e96f0757d4756f8e6e75fbfd4a` passed the
-five-target native build/test run `41731191218` and the 130-assertion UI
-registry inventory `41731767617`; those proof records are tracked for the
+criteria. Current source `1f4f887efc9f77d082adab6d47b1a52b137ed513` passed the
+five-target native build/test run `41731191218` at its tested source and the
+130-assertion UI registry inventory `41733348457`; those proof records are tracked for the
 monitor metadata correction.
 Product builds, emulator tests, media runs, screenshots, and proof generation
 belong on hosted runners under Workflow 05.

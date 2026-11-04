@@ -1,25 +1,64 @@
 {
   "testId": "ui-menu-registry-inventory",
   "status": "pass",
-  "commit": "e610fb92835461e96f0757d4756f8e6e75fbfd4a",
-  "runId": 41731767617,
+  "commit": "1f4f887efc9f77d082adab6d47b1a52b137ed513",
+  "runId": 41733348457,
   "runner": "Linux",
   "architecture": "X64",
-  "timestamp": "2026-11-04T07:38:26Z",
+  "timestamp": "2026-11-03T22:45:20+00:00",
   "fixtures": [
-    {"path": ".github/workflows/ui-menu-registry-inventory.yml", "sha256": "ee1c58268364aa30ce2773a5d4e4c9ee4d1af57d19b01a87c425d28566598fce"},
-    {"path": "ci/test/ui-menu-registry-inventory.py", "sha256": "896bf91765fb2bd8395ce15e97972a1a63eb2530db4f14ce62a06e4a8943b15c"},
-    {"path": "ci/test/ui-menu-registry-inventory/README.md", "sha256": "b959d1dd24f552e230d40903d6e7fb44d9a0814ad970c17fcc24edf5fce454c7"},
-    {"path": "ci/test/live-telnet-acceptance.py", "sha256": "01d9f9bd1e3f61f33e5852722750c26dba4ae6fbb9a7444a92966e031bb31923"},
-    {"path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md", "sha256": "1ac299f0c90f76d94f33d9b72efc4a07ca0ca75ff363906190219c03883b00d7"},
-    {"path": "roms/48.rom", "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"},
-    {"path": "src/app/wz_sokol_main.c", "sha256": "9a5965ce1bea93bcc4ffb5d51a1eeacfa2a99bdc5558b079b9f12995cdd2a250"},
-    {"path": "src/app/wz_compatibility_tools.c", "sha256": "a76dfb6a03bcbdd6272795e0d8ff9e694692cf14a7db034514083c87e971d3f3"},
-    {"path": "src/app/wz_compatibility_tools.h", "sha256": "eb4b120cf05c63425678b94c2fcef83fca15ee463f21eabb16804f81b499e289"},
-    {"path": "src/app/wz_command_registry.c", "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"},
-    {"path": "src/app/wz_command_registry.h", "sha256": "54cc2e949ff026fa183b0aa30cac9ebad8b431c97b80d966ef0ac1ff35a06087"},
-    {"path": "src/app/wz_telnet_keyboard_command.c", "sha256": "74daf16ed99440541ff5e7a43fb7bf30dd958c42d6a32d6d2466ab987e2f4240"},
-    {"path": "src/app/wz_telnet_keyboard_command.h", "sha256": "a525163fd16b5113b8166293055c88f46ebf53a373bb24d04254aafc395b7e82"}
+    {
+      "path": ".github/workflows/ui-menu-registry-inventory.yml",
+      "sha256": "ee1c58268364aa30ce2773a5d4e4c9ee4d1af57d19b01a87c425d28566598fce"
+    },
+    {
+      "path": "ci/test/ui-menu-registry-inventory.py",
+      "sha256": "896bf91765fb2bd8395ce15e97972a1a63eb2530db4f14ce62a06e4a8943b15c"
+    },
+    {
+      "path": "ci/test/ui-menu-registry-inventory/README.md",
+      "sha256": "b959d1dd24f552e230d40903d6e7fb44d9a0814ad970c17fcc24edf5fce454c7"
+    },
+    {
+      "path": "ci/test/live-telnet-acceptance.py",
+      "sha256": "01d9f9bd1e3f61f33e5852722750c26dba4ae6fbb9a7444a92966e031bb31923"
+    },
+    {
+      "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
+      "sha256": "1ac299f0c90f76d94f33d9b72efc4a07ca0ca75ff363906190219c03883b00d7"
+    },
+    {
+      "path": "roms/48.rom",
+      "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "9a5965ce1bea93bcc4ffb5d51a1eeacfa2a99bdc5558b079b9f12995cdd2a250"
+    },
+    {
+      "path": "src/app/wz_compatibility_tools.c",
+      "sha256": "a76dfb6a03bcbdd6272795e0d8ff9e694692cf14a7db034514083c87e971d3f3"
+    },
+    {
+      "path": "src/app/wz_compatibility_tools.h",
+      "sha256": "eb4b120cf05c63425678b94c2fcef83fca15ee463f21eabb16804f81b499e289"
+    },
+    {
+      "path": "src/app/wz_command_registry.c",
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
+    },
+    {
+      "path": "src/app/wz_command_registry.h",
+      "sha256": "54cc2e949ff026fa183b0aa30cac9ebad8b431c97b80d966ef0ac1ff35a06087"
+    },
+    {
+      "path": "src/app/wz_telnet_keyboard_command.c",
+      "sha256": "74daf16ed99440541ff5e7a43fb7bf30dd958c42d6a32d6d2466ab987e2f4240"
+    },
+    {
+      "path": "src/app/wz_telnet_keyboard_command.h",
+      "sha256": "a525163fd16b5113b8166293055c88f46ebf53a373bb24d04254aafc395b7e82"
+    }
   ],
   "assertions": 130,
   "topLevelMenuIds": [
