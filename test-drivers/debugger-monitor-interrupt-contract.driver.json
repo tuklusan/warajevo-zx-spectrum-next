@@ -1,0 +1,29 @@
+{
+  "testId": "debugger-monitor-interrupt-contract",
+  "requiredAssertions": 33,
+  "runnerMatrix": [
+    "Windows x64",
+    "Linux x64",
+    "Linux ARM64",
+    "macOS ARM64",
+    "macOS Intel"
+  ],
+  "fixtures": [
+    {
+      "path": "ci/test/debugger-monitor-interrupt-contract.c",
+      "sha256": "da4296b5aeb942a29049601f3f1ec5d3ffd77d1e38c85817cf4a6b41b8c0e3bf"
+    },
+    {
+      "path": "ci/test/debugger-monitor-interrupt-contract.md",
+      "sha256": "7103eb8cd415a50c7107df8b8339a531c32600db3ffc853d298aa0a8104c4b1e"
+    },
+    {
+      "path": "src/app/wz_debugger_window.c",
+      "sha256": "1b02a1015f1fd2a3b8f220242eb9fa2a7985711eb7b128921042b554f17960"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "5798ef98ca22cd54c255b6300d83a8ccdfe4f4e97199dea7a5d61cadc2a8d4bd"
+    }
+  ]
+}
