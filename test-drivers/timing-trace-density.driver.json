@@ -35,10 +35,6 @@
     {
       "path": "ci/test/timing-trace-density/write-proof.py",
       "sha256": "f1f5edb0f87dfcdf5c2d93341809f99a14c27015716688026b5381efaccda238"
-    },
-    {
-      "path": "tests/timing-trace-density.md",
-      "sha256": "013348417389a82152f760ac7022a76dbf7aaecf497060da576425689c75b930"
     }
   ]
 }
