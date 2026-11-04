@@ -1,0 +1,49 @@
+{
+  "testId": "timing-trace-density",
+  "status": "pass",
+  "commit": "90fd4c133f8fae8fbfd54581b637cd3b792378b6",
+  "runId": 41745197212,
+  "runner": "GitHub Actions Linux x64",
+  "timestamp": "2026-11-04T09:20:21+00:00",
+  "requestedFrames": 8,
+  "frameTicks": 139776,
+  "eventsPerCpuTState": 1,
+  "syntheticRecords": 559105,
+  "recoveredRecords": 559105,
+  "retainedFrameSpan": 8,
+  "fileBytes": 16777216,
+  "fixtures": [
+    {
+      "path": "ci/test/timing-trace-density/README.md",
+      "sha256": "7c06641b3313935d1a210afab65741bb26e770dec567cbced1dc80aa405c3f0c"
+    },
+    {
+      "path": "ci/test/timing-trace-density/timing-trace-density.c",
+      "sha256": "c3eea6a97c64924a145f04daf2d07ef9d7fb5dedac09b4126bde340089cb49d5"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "1a8dc6f3530d0928a2459e1a8f0810559df54626d762d2bb279f6128fd798554"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.c",
+      "sha256": "0a17569b2a786d875a0e8d7bee420903b4f877708b580932e2ada333091e30a3"
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.h",
+      "sha256": "fc2f50a1f31e002a2190bfd82bb675fd8329327306209eb3d22afa02d3083e39"
+    },
+    {
+      "path": "src/core/wz_machine_profile.c",
+      "sha256": "912a458de8d9a9d2d89bb57cac896e819d8ce82297a4e2ac707c90be1d4450b5"
+    },
+    {
+      "path": "src/core/wz_machine_profile.h",
+      "sha256": "1b246ec8245bf68400b0f9c5a1e69438264d8c671f23d656d82c87a032c4c700"
+    },
+    {
+      "path": "ci/test/timing-trace-density/write-proof.py",
+      "sha256": "f1f5edb0f87dfcdf5c2d93341809f99a14c27015716688026b5381efaccda238"
+    }
+  ]
+}

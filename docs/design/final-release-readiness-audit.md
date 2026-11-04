@@ -7,7 +7,7 @@ SANYALnet Labs." See LICENSE for full terms. -->
 
 # Final release-readiness audit
 
-Tasks 454–460 and the latest monitor/trace follow-up (Tasks 491–493) have
+Tasks 454–460 and the latest monitor/trace follow-up (Tasks 491–494) have
 been audited against the current tracked workflows, source,
 test ledger, and acceptance inventories. Tasks 454 and 456–459 are closed;
 Tasks 455 and the Task-460 acceptance gate remain open. Task 456 delivery is

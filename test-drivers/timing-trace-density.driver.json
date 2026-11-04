@@ -14,19 +14,19 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "6164bf40e649c1f5cd73899cb17db78d0a2d9f3484e99980feaf5cb21e864902"
+      "sha256": "1a8dc6f3530d0928a2459e1a8f0810559df54626d762d2bb279f6128fd798554"
     },
     {
       "path": "src/diagnostics/wz_trace_file.c",
-      "sha256": "0a3c5e694596d96b12f10dfbd3261d341a600a781bdb1166ac2cee068bcdbe02"
+      "sha256": "0a17569b2a786d875a0e8d7bee420903b4f877708b580932e2ada333091e30a3"
     },
     {
       "path": "src/diagnostics/wz_trace_file.h",
-      "sha256": ""
+      "sha256": "fc2f50a1f31e002a2190bfd82bb675fd8329327306209eb3d22afa02d3083e39"
     },
     {
       "path": "src/core/wz_machine_profile.c",
-      "sha256": ""
+      "sha256": "912a458de8d9a9d2d89bb57cac896e819d8ce82297a4e2ac707c90be1d4450b5"
     },
     {
       "path": "src/core/wz_machine_profile.h",
