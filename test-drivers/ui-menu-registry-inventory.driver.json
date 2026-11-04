@@ -10,7 +10,7 @@
     {"path": "ci/test/live-telnet-acceptance.py", "sha256": "01d9f9bd1e3f61f33e5852722750c26dba4ae6fbb9a7444a92966e031bb31923"},
     {"path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md", "sha256": "1ac299f0c90f76d94f33d9b72efc4a07ca0ca75ff363906190219c03883b00d7"},
     {"path": "roms/48.rom", "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"},
-    {"path": "src/app/wz_sokol_main.c", "sha256": "d96b924e0eed48ee89cf4e1eabb84bbfd5d601390e2e7bfc1c470f18dd4cf3d5"},
+    {"path": "src/app/wz_sokol_main.c", "sha256": "9a5965ce1bea93bcc4ffb5d51a1eeacfa2a99bdc5558b079b9f12995cdd2a250"},
     {"path": "src/app/wz_compatibility_tools.c", "sha256": "a76dfb6a03bcbdd6272795e0d8ff9e694692cf14a7db034514083c87e971d3f3"},
     {"path": "src/app/wz_compatibility_tools.h", "sha256": "eb4b120cf05c63425678b94c2fcef83fca15ee463f21eabb16804f81b499e289"},
     {"path": "src/app/wz_command_registry.c", "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"},
