@@ -212,6 +212,14 @@ static bool write_header(wz_trace_file_t* t)
     return fseek(t->file,0,SEEK_SET)==0 && fwrite(h,1u,sizeof(h),t->file)==sizeof(h) && fflush(t->file)==0;
 }
 
+static void trace_fail(wz_trace_file_t* t)
+{
+    if (t == NULL) return;
+    t->failed = true;
+    t->frozen = true;
+    if (t->file != NULL) (void)write_header(t);
+}
+
 wz_result_t wz_trace_file_create(wz_trace_file_t* t,const char* path,wz_qword_t sid,wz_dword_t profile,wz_qword_t rom,wz_dword_t mask)
 {
     int fd;
@@ -254,9 +262,9 @@ void wz_trace_file_emit(const wz_trace_event_t* e,void* context)
     if(!t||!t->file||!e||t->frozen||t->failed)return;
     if ((unsigned)e->kind >= 32u || (t->event_mask & (UINT32_C(1) << (unsigned)e->kind)) == 0u) return;
     if (e->master_tick < t->last_master_tick ||
-        e->master_tick - t->last_master_tick > UINT32_MAX) { t->failed=true; return; }
+        e->master_tick - t->last_master_tick > UINT32_MAX) { trace_fail(t); return; }
     if (t->record_count != 0u && e->sequence <= t->last_sequence) {
-        t->failed = true;
+        trace_fail(t);
         return;
     }
     tick_delta = (wz_dword_t)(e->master_tick - t->last_master_tick);
@@ -271,7 +279,7 @@ void wz_trace_file_emit(const wz_trace_event_t* e,void* context)
         if (e->kind == WZ_TRACE_CPU_BUS) {
             if ((unsigned)e->bus_source > (unsigned)WZ_BUS_SOURCE_PRINTER ||
                 e->auxiliary > 31u) {
-                t->failed = true;
+                trace_fail(t);
                 return;
             }
             r[17] = (wz_byte_t)(((wz_byte_t)e->bus_source << 5u) |
@@ -283,7 +291,7 @@ void wz_trace_file_emit(const wz_trace_event_t* e,void* context)
     }
     put32(r+WZ_TRACE_COMMIT_OFFSET,WZ_TRACE_COMMIT);
     if(fseek(t->file,(long)(WZ_TRACE_HEADER_SIZE+t->next_slot*WZ_TRACE_RECORD_SIZE),SEEK_SET)!=0||
-       fwrite(r,1u,sizeof(r),t->file)!=sizeof(r)){t->failed=true;return;}
+       fwrite(r,1u,sizeof(r),t->file)!=sizeof(r)){trace_fail(t);return;}
     if (t->record_count == 0u) t->first_sequence = e->sequence;
     t->last_sequence=e->sequence;t->last_master_tick=e->master_tick;t->next_slot++;
     if(t->next_slot==slots){t->next_slot=0u;t->generation++;}
@@ -296,15 +304,15 @@ void wz_trace_file_emit(const wz_trace_event_t* e,void* context)
             get32(oldest + WZ_TRACE_COMMIT_OFFSET) != WZ_TRACE_COMMIT ||
             !sequence_before_with_low(e->sequence, get32(oldest + 4u),
                                       &t->first_sequence)) {
-            t->failed = true;
+            trace_fail(t);
             return;
         }
     }
-    if(!write_header(t)){t->failed=true;return;}
+    if(!write_header(t)){trace_fail(t);return;}
     if(t->append_emit)t->append_emit(e,t->append_context);
 }
 
-wz_result_t wz_trace_file_freeze(wz_trace_file_t* t){if(!t||!t->file)return WZ_RESULT_INVALID_ARGUMENT;t->frozen=true;return write_header(t)?WZ_RESULT_OK:WZ_RESULT_TRACE_FAILURE;}
+wz_result_t wz_trace_file_freeze(wz_trace_file_t* t){if(!t||!t->file)return WZ_RESULT_INVALID_ARGUMENT;t->frozen=true;if(!write_header(t)){t->failed=true;return WZ_RESULT_TRACE_FAILURE;}return WZ_RESULT_OK;}
 void wz_trace_file_close(wz_trace_file_t* t){if(t&&t->file){fclose(t->file);t->file=0;}}
 
 wz_result_t wz_trace_file_read_metadata(const char* path,
