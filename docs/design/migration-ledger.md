@@ -174,19 +174,19 @@ inventory and records intended disposition, not implementation acceptance.
 The standalone [debugger core contract](../../tests/debugger-core-contract.md)
 directly verifies a subset of shared inspection, disassembly, memory editing,
 CPU undo, stepping, breakpoints, and 128K paging behavior on five native
-targets, including byte-exact and masked wildcard sequence search. It does not
-complete the per-row regression strategies above; mapped copy uses logical
-banked reads/writes and preserves overlap semantics while linear 48K copy keeps
-the `memmove` path.
-monitor/debugger migration remains open pending detailed source-level semantics
-review, full direct acceptance proof, and any required design decisions.
+targets, including byte-exact and masked wildcard sequence search. All
+REQUIRED monitor rows now have a named production-path contract or integrated
+five-target proof, including interrupt delivery for `!`; mapped copy uses
+logical banked reads/writes and preserves overlap semantics while linear 48K
+copy keeps the `memmove` path. Remaining migration work is limited to the
+source-level provenance/license-clearance inventory and the explicitly
+REPLACE/LATER/DROP rows below.
 
 ## Explicit gaps
 
-- Detailed monitor/debugger routine-level records and direct regression proof
-  remain incomplete beyond this command-dispatch inventory; routine-level
-  coverage also remains open for other migrated Z80, ULA, media, peripheral,
-  machine, and host/UI areas.
+- Detailed routine-level records remain incomplete beyond the REQUIRED monitor
+  command set covered above; routine-level coverage also remains open for
+  other migrated Z80, ULA, media, peripheral, machine, and host/UI areas.
 - Every source file containing third-party material must be individually
   excluded or cleared before any reuse. The preserved source includes files
   with Borland and TurboPower notices as well as a converter naming a separate
