@@ -3717,7 +3717,7 @@ static bool wz_host_register_commands(void)
         },
         {
             WZ_DEBUGGER_WINDOW_MONITOR_COMMAND_ID, "Monitor command",
-            "Dispatch a local R SETREG command while the machine is paused",
+            "Dispatch local monitor commands; edits require the machine to be paused",
             "none", "COMMAND", "wz-command-result",
             "wz_host_debugger_monitor_command", "debugger-command-line", NULL,
             WZ_COMMAND_LOCAL_ONLY, wz_host_debugger_monitor_available,

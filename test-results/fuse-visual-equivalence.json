@@ -1,9 +1,9 @@
 {
   "schema": 1,
   "status": "pass",
-  "projectCommit": "b69c7c77c15bc47bdbff9141aa178231be0768b9",
-  "workflowRunId": 39521621895,
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39521621895",
+  "projectCommit": "8c8e13f9c570a0463c199ffebf1c2e374b6f4ae0",
+  "workflowRunId": 41678476678,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/41678476678",
   "fuseRevision": "7edc2418ce11837d9ede799f7e0445440beead1d",
   "romSha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42",
   "reference": {
@@ -32,8 +32,8 @@
     "windows-x64": {
       "status": "pass",
       "runner": "Windows-X64",
-      "artifact": "fuse-visual-equivalence-windows-x64-b69c7c77c15bc47bdbff9141aa178231be0768b9",
-      "applicationSha256": "0384f52ecda891f76a7b5b0439fdd356a2281cfd7ebc1f7aa66931dbd0ea066a",
+      "artifact": "fuse-visual-equivalence-windows-x64-8c8e13f9c570a0463c199ffebf1c2e374b6f4ae0",
+      "applicationSha256": "72bdf0d96d4c80bfe336ce061b327dba242319d02666668e0af0d29cac526738",
       "captureSha256": "2c791d54f7e92c84d24150419b2a83d3dd18fb4f9c9ecb3611e86037b57b68dc",
       "normalizedSha256": "0651359a146523079e090cb8e7331776b42ca8c920e81330bcbcce2bd0e5f03e",
       "mismatchedPixels": 526,
@@ -44,13 +44,13 @@
         "normalized": "test-results/fuse-visual-equivalence/application-windows-x64-normalized.png",
         "difference": "test-results/fuse-visual-equivalence/difference-windows-x64.png"
       },
-      "captureRunId": 39521621895
+      "captureRunId": 41678476678
     },
     "macos-x64": {
       "status": "pass",
       "runner": "macOS-X64",
-      "artifact": "fuse-visual-equivalence-macos-x64-b69c7c77c15bc47bdbff9141aa178231be0768b9",
-      "applicationSha256": "840f7c215c7b83ba9fc8d9ed3aad7138a612a5eebe7c04d40ae042b747dcf3df",
+      "artifact": "fuse-visual-equivalence-macos-x64-8c8e13f9c570a0463c199ffebf1c2e374b6f4ae0",
+      "applicationSha256": "2e5d2fd82635e9da32556b66b82a7c2d551098310286a7d1697a637af4391293",
       "captureSha256": "26adbf33765354ef0061f32372558de8338be334cd71e6c40165e58470d46028",
       "normalizedSha256": "fb40969d8687844dc1d5c795b1bf12b2cac47718b8928a7dcc4650a7010474a0",
       "mismatchedPixels": 526,
@@ -61,15 +61,15 @@
         "normalized": "test-results/fuse-visual-equivalence/application-macos-x64-normalized.png",
         "difference": "test-results/fuse-visual-equivalence/difference-macos-x64.png"
       },
-      "captureRunId": 39521621895
+      "captureRunId": 41678476678
     },
     "macos-arm64": {
       "status": "pass",
       "runner": "macOS-ARM64",
-      "artifact": "fuse-visual-equivalence-macos-arm64-b69c7c77c15bc47bdbff9141aa178231be0768b9",
-      "applicationSha256": "caeb38c5dcf55dc15fa5097873bbb022f1702a8951209bc26d3762881664306d",
-      "captureSha256": "528d86a315efa63a9098ee47996b4a0f37515e1c63113e3101d4ff72d6168bc4",
-      "normalizedSha256": "d2a7c4c012810b4e7df624a9b4493a4718a37485893a54b3b064dbae5b5396fa",
+      "artifact": "fuse-visual-equivalence-macos-arm64-8c8e13f9c570a0463c199ffebf1c2e374b6f4ae0",
+      "applicationSha256": "867cdd9c0c61a127b069a3e86ba9081621b48b32e66cc8c0c42f65d32b823d32",
+      "captureSha256": "ce7886712db35bf7bc0711d36cdae2116eccf9690ae69b013c36f7ed38f272bb",
+      "normalizedSha256": "e7cfa6543d09e8602a6b14d62126307702b8a772677e2864b4eeac9bbc240d19",
       "mismatchedPixels": 526,
       "mismatchPercent": 0.376316,
       "meanAbsoluteChannelError": 0.722735,
@@ -78,12 +78,12 @@
         "normalized": "test-results/fuse-visual-equivalence/application-macos-arm64-normalized.png",
         "difference": "test-results/fuse-visual-equivalence/difference-macos-arm64.png"
       },
-      "captureRunId": 39521621895
+      "captureRunId": 41678476678
     }
   },
   "capturesVisuallyInspected": true,
-  "comparisonRunId": 39395319918,
-  "comparisonRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/39395319918",
-  "comparisonCommit": "88fed6a1b248337d7e907a45196c1f4957bd9f69",
+  "comparisonRunId": 41678476678,
+  "comparisonRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/41678476678",
+  "comparisonCommit": "8c8e13f9c570a0463c199ffebf1c2e374b6f4ae0",
   "buildConfiguration": "Release; WZSN_BUILD_SOKOL_HOST=ON"
 }
