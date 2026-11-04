@@ -1,6 +1,6 @@
 {
   "testId": "debugger-monitor-interrupt-contract",
-  "requiredAssertions": 33,
+  "requiredAssertions": 36,
   "runnerMatrix": [
     "Windows x64",
     "Linux x64",
