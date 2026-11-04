@@ -68,7 +68,7 @@
     },
     {
       "path": "test-drivers/debugger-monitor-find-contract.driver.json",
-      "sha256": "54e6a77cdcd9765b82cd11d9599da93210a34ea815f341a1f8c0633bbd03299b"
+      "sha256": "54e6a77cdcd9765b82cd11d9599da93210a34ea815f341a1f8c0633bbd03299a"
     }
   ]
 }
