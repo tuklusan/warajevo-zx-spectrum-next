@@ -12,7 +12,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "ebc10f2c4e7d5a5e7d65e22ec9d4ff2839e5fe8e44275524e6a3c6072cd68415"
+      "sha256": "b7a8084fea2825d440817e18924c951a8f35c97d204b6221451452b84b55bc40"
     },
     {
       "path": "ci/test/interface1-wait/interface1-wait-contract.c",
@@ -32,7 +32,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "2a5bea36fb9e35e72602f8e7c637397cce166c646dc28853a3fa09841d638939"
+      "sha256": "5501922ad21224486afb010369eee97720dcbea413eac1c87d6c5e9b2a854c7b"
     },
     {
       "path": "src/core/wz_bus.c",

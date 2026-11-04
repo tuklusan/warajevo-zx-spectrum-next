@@ -12,7 +12,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "ebc10f2c4e7d5a5e7d65e22ec9d4ff2839e5fe8e44275524e6a3c6072cd68415"
+      "sha256": "b7a8084fea2825d440817e18924c951a8f35c97d204b6221451452b84b55bc40"
     },
     {
       "path": "ci/test/performance/driver.json",
@@ -32,19 +32,19 @@
     },
     {
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
-      "sha256": "49a4310cc810054103dfbf50e894b2309b4a29cc610cf11a9fd5d7f2c140e496"
+      "sha256": "1ac299f0c90f76d94f33d9b72efc4a07ca0ca75ff363906190219c03883b00d7"
     },
     {
       "path": "src/app/wz_debugger_window.c",
-      "sha256": "1cf2325826f1cac3e6c02ae116cadbee71429b2023b42b4fbb369965e24eadab"
+      "sha256": "3325ba79564fa5a04f3c395efbc4b1ea7791c4d7972a4e89120e9f7d304b01d7"
     },
     {
       "path": "src/app/wz_debugger_window.h",
-      "sha256": "52e98f69570242bf9ebad4845c2020397dbadec911147329aa5c5401e028e58b"
+      "sha256": "c78e580a20ec1c2cf870921b9e75011033f51e921f699415dd33c2be386e6370"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "2a5bea36fb9e35e72602f8e7c637397cce166c646dc28853a3fa09841d638939"
+      "sha256": "5501922ad21224486afb010369eee97720dcbea413eac1c87d6c5e9b2a854c7b"
     },
     {
       "path": "src/core/wz_debugger.c",
@@ -64,11 +64,11 @@
     },
     {
       "path": "test-drivers/debugger-monitor-exit-contract.driver.json",
-      "sha256": "b2159ccc0122abfbba08c371bba90e30435d42fb71ecdff98de1f4f6dc757c4f"
+      "sha256": "1806b842895702523eec6558f4024ccf1240b80e44e7c7f2f243ea3946b9571f"
     },
     {
       "path": "test-drivers/debugger-monitor-find-contract.driver.json",
-      "sha256": "4ebb593f18f9f8fec4c8e677808df30a991bfc70d8e21cae2df39a8f3c74b302"
+      "sha256": "695f639aa4e9419fc015c2b5c2eb074bbc364ff5fa4dba8972b57cb13c1928f0"
     }
   ]
 }
