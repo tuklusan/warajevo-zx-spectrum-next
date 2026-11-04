@@ -1,13 +1,13 @@
 {
   "testId": "ay-timing-contract",
   "status": "pass",
-  "commit": "bf60530767b4e8554a73779681f6d926e2499b76",
-  "runId": 41310407325,
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/41310407325",
+  "commit": "5fcb0ed3876e03039c15d7854e12b35494055ddd",
+  "runId": 41671355233,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/41671355233",
   "workflowEvent": "workflow_dispatch",
   "branch": "main",
-  "fixtureMetadataCommit": "19709b2996ad979e2ffa6dfe53a8fcfd27e4ded6",
-  "timestamp": "2026-11-01T13:26:13+00:00",
+  "fixtureMetadataCommit": "2db97cc97eb4e9584e5ca4d2d9644ad504cde291",
+  "timestamp": "2026-11-03T16:36:49+00:00",
   "assertionsPerRunner": 67,
   "totalAssertions": 335,
   "observedOutput": "AY timing contract passed (67 assertions)",
@@ -20,7 +20,7 @@
       "architecture": "X64",
       "status": "pass",
       "assertions": 67,
-      "ctest": "39/39"
+      "ctest": "44/44"
     },
     {
       "name": "Linux x64",
@@ -29,7 +29,7 @@
       "architecture": "X64",
       "status": "pass",
       "assertions": 67,
-      "ctest": "39/39"
+      "ctest": "44/44"
     },
     {
       "name": "Linux ARM64",
@@ -38,7 +38,7 @@
       "architecture": "ARM64",
       "status": "pass",
       "assertions": 67,
-      "ctest": "39/39"
+      "ctest": "44/44"
     },
     {
       "name": "macOS ARM64",
@@ -47,7 +47,7 @@
       "architecture": "ARM64",
       "status": "pass",
       "assertions": 67,
-      "ctest": "39/39"
+      "ctest": "44/44"
     },
     {
       "name": "macOS Intel",
@@ -56,25 +56,21 @@
       "architecture": "X64",
       "status": "pass",
       "assertions": 67,
-      "ctest": "39/39"
+      "ctest": "44/44"
     }
   ],
   "fixtures": [
+    {
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "b7a8084fea2825d440817e18924c951a8f35c97d204b6221451452b84b55bc40"
+    },
     {
       "path": "ci/test/ay-timing/ay-timing-contract.c",
       "sha256": "3e4b244534ec6b83a23a7ef11cf34766082850b87b1d4658abd550eaf7028bb8"
     },
     {
-      "path": "src/cmake/CMakeLists.txt",
-      "sha256": "b5460bda3f82e284a281299f0ed4185800fb56e993163198f594a602b0bf7764"
-    },
-    {
-      "path": "src/core/audio/wz_ay.c",
-      "sha256": "ddb27e2d878c5e9a0ca803e5198e04468c97f9c95a4dd9ac33d7324033c5ae39"
-    },
-    {
-      "path": "src/core/audio/wz_ay.h",
-      "sha256": "5cff8be704c4f33e8cbb54ea09c9b5ed4ac2f2b39fc4f9fc92f4dedf6b920da3"
+      "path": "ci/test/ay-timing/write-proof.py",
+      "sha256": "499365feb74266bb0f02fd48d1898886fc6700cc7bfb9c5c7197b4279a8158ac"
     },
     {
       "path": "docs/design/01-warajevo-zx-spectrum-next-architecture.md",
@@ -85,12 +81,16 @@
       "sha256": "a8078c758fa9df7ae39faa75fa49a66b9d94150c8e0be34687c7b64a42ea255d"
     },
     {
-      "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "1a24084f2117fbf746e296b4f8376c54d9321efa710f60528fa70a8da7771904"
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "5501922ad21224486afb010369eee97720dcbea413eac1c87d6c5e9b2a854c7b"
     },
     {
-      "path": "ci/test/ay-timing/write-proof.py",
-      "sha256": "499365feb74266bb0f02fd48d1898886fc6700cc7bfb9c5c7197b4279a8158ac"
+      "path": "src/core/audio/wz_ay.c",
+      "sha256": "ddb27e2d878c5e9a0ca803e5198e04468c97f9c95a4dd9ac33d7324033c5ae39"
+    },
+    {
+      "path": "src/core/audio/wz_ay.h",
+      "sha256": "5cff8be704c4f33e8cbb54ea09c9b5ed4ac2f2b39fc4f9fc92f4dedf6b920da3"
     }
   ],
   "reference": "General Instrument AY-3-8910/AY-3-8912 Programmable Sound Generator Data Manual, tone/noise/envelope clock dividers and envelope shape table: https://www.westfloridacomponents.com/mm5/graphics/ds10/AY-3-8912.pdf",
