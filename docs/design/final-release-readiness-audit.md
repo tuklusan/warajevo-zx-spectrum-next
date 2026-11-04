@@ -7,15 +7,16 @@ SANYALnet Labs." See LICENSE for full terms. -->
 
 # Final release-readiness audit
 
-Tasks 454–460 have been audited against the current tracked workflows, source,
+Tasks 454–460 and the latest monitor-contract follow-up (Tasks 491–492) have
+been audited against the current tracked workflows, source,
 test ledger, and acceptance inventories. Tasks 454 and 456–459 are closed;
 Tasks 455 and the Task-460 acceptance gate remain open. Task 456 delivery is
 intentionally unsigned because the project has no Microsoft or Apple signing
 authority. Wider release readiness remains gated on the other applicable
-criteria. Current source `1f4f887efc9f77d082adab6d47b1a52b137ed513` passed the
-five-target native build/test run `41731191218` at its tested source and the
-130-assertion UI registry inventory `41733348457`; those proof records are tracked for the
-monitor metadata correction.
+criteria. Current monitor source `e4c98a637b128a966674c011106ac4e66f2cf522`
+passed the five-target native build/test run `41737885149` with 39 interrupt
+delivery assertions per target; the registry metadata correction remains pinned
+at source `1f4f887efc9f77d082adab6d47b1a52b137ed513` in run `41733348457`.
 Product builds, emulator tests, media runs, screenshots, and proof generation
 belong on hosted runners under Workflow 05.
 
