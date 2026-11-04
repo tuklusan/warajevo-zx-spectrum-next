@@ -135,7 +135,7 @@ jobs:
           cmake --build "$build_dir" --config Debug \
             --target wz_sokol_host --parallel 2
           xvfb-run -a python3 ci/test/debug-trace-startup.py \
-            --executable "$build_dir/wz_sokol_host" \
+            --executable "$build_dir/Warajevo-ZX-Spectrum-Next" \
             --output "$build_dir/evidence" \
             | tee "$build_dir/debug-trace-startup.json"
 
