@@ -1,0 +1,27 @@
+{
+  "testId": "debug-trace-startup",
+  "command": "cmake -S src/cmake -B dist/debug-trace-startup -DCMAKE_BUILD_TYPE=Debug -DWZSN_BUILD_SOKOL_HOST=ON && cmake --build dist/debug-trace-startup --config Debug --target wz_sokol_host --parallel 2 && xvfb-run -a python3 ci/test/debug-trace-startup.py --executable dist/debug-trace-startup/wz_sokol_host --output dist/debug-trace-startup/evidence",
+  "runner": "GitHub Actions Ubuntu 24.04 x86-64",
+  "fixtures": [
+    {
+      "path": "ci/test/debug-trace-startup.py",
+      "sha256": ""
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": ""
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.c",
+      "sha256": ""
+    },
+    {
+      "path": "src/diagnostics/wz_trace_file.h",
+      "sha256": ""
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": ""
+    }
+  ]
+}

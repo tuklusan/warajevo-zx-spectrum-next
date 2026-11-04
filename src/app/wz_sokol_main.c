@@ -351,11 +351,14 @@ static wz_qword_t wz_host_now_nanoseconds(void)
 }
 
 #ifndef NDEBUG
+static unsigned wz_host_trace_test_frames_remaining;
+
 static void wz_host_timing_trace_start(wz_host_session_t* session)
 {
     char path[1024];
     wz_qword_t session_id = wz_host_now_nanoseconds();
     unsigned long process_id;
+    const char* test_frames;
     int path_length;
     wz_result_t result;
 
@@ -396,6 +399,14 @@ static void wz_host_timing_trace_start(wz_host_session_t* session)
                        &session->timing_trace_file);
     wz_machine_set_timing_trace(&session->machine, &session->timing_trace_sink);
     session->timing_trace_initialized = true;
+    test_frames = getenv("WZSN_TRACE_TEST_FRAMES");
+    if (test_frames != NULL && test_frames[0] != '\0') {
+        char* end = NULL;
+        unsigned long frames = strtoul(test_frames, &end, 10);
+        if (end != test_frames && *end == '\0' && frames > 0u && frames <= 1000u) {
+            wz_host_trace_test_frames_remaining = (unsigned)frames;
+        }
+    }
     (void)fprintf(stderr, "WZSN timing trace: %s\n", path);
 }
 
@@ -8168,6 +8179,15 @@ static void wz_host_frame(void)
         }
     }
     wz_host_render_raster();
+#ifndef NDEBUG
+    if (wz_host_trace_test_frames_remaining != 0u) {
+        --wz_host_trace_test_frames_remaining;
+        if (wz_host_trace_test_frames_remaining == 0u &&
+            wz_application_request_quit(&wz_host_session.lifecycle) == WZ_RESULT_OK) {
+            sapp_request_quit();
+        }
+    }
+#endif
     wz_ui_window_sync_remote_control(&wz_host_session.ui_window,
                                      &wz_host_session.control_port,
                                      &wz_host_session.telnet_client);

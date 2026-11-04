@@ -96,6 +96,7 @@ jobs:
             libxcursor-dev \
             libxi-dev \
             libx11-dev \
+            xvfb \
             pkg-config
 
       - name: Clean CMake configure and build
@@ -122,6 +123,21 @@ jobs:
             --target wz_microdrive_transition_fuzz --parallel 2
           ctest --test-dir "$build_dir" -C Debug \
             -R '^wz_microdrive_transition_fuzz$' --output-on-failure --verbose
+
+      - name: Debug Sokol trace startup and shutdown
+        if: runner.os == 'Linux' && matrix.name == 'Linux x64'
+        shell: bash
+        run: |
+          set -o pipefail
+          build_dir="dist/debug-trace-${{ matrix.label }}"
+          cmake -S src/cmake -B "$build_dir" -DCMAKE_BUILD_TYPE=Debug \
+            -DWZSN_BUILD_SOKOL_HOST=ON
+          cmake --build "$build_dir" --config Debug \
+            --target wz_sokol_host --parallel 2
+          xvfb-run -a python3 ci/test/debug-trace-startup.py \
+            --executable "$build_dir/wz_sokol_host" \
+            --output "$build_dir/evidence" \
+            | tee "$build_dir/debug-trace-startup.json"
 
       - name: Phase-16 correctness and performance regression
         shell: bash
@@ -160,6 +176,10 @@ jobs:
             --output-dir "dist/runner-evidence"
           cp "dist/cr-gate-${{ matrix.label }}/build.log" \
             "dist/runner-evidence/build-${{ matrix.performance_baseline }}.log"
+          if [[ "${{ matrix.name }}" == "Linux x64" ]]; then
+            cp "dist/debug-trace-${{ matrix.label }}/debug-trace-startup.json" \
+              "dist/runner-evidence/debug-trace-startup.json"
+          fi
 
       - name: Upload temporary runner evidence
         uses: actions/upload-artifact@v4
