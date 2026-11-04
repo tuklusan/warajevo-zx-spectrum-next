@@ -30,7 +30,7 @@
     },
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "1a24084f2117fbf746e296b4f8376c54d9321efa710f60528fa70a8da7771904"
+      "sha256": "4efbf618008a99b234175da955f6976b2811140bc2c6d74cf6c2ee80e50f41a4"
     }
   ]
 }

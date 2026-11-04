@@ -13,7 +13,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "b7a8084fea2825d440817e18924c951a8f35c97d204b6221451452b84b55bc40"
+      "sha256": "4efbf618008a99b234175da955f6976b2811140bc2c6d74cf6c2ee80e50f41a4"
     },
     {
       "path": "ci/test/ay-timing/ay-timing-contract.c",

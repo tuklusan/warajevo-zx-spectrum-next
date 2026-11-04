@@ -5,23 +5,23 @@
   "fixtures": [
     {
       "path": "ci/test/debug-trace-startup.py",
-      "sha256": ""
+      "sha256": "bc7c11291971ff658ef35bcab78c08946690909163d998860aee5f90cc86f0db"
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": ""
+      "sha256": "53d0db555ba13438ea8a94148faf6fe470919615d2167426077baef237039589"
     },
     {
       "path": "src/diagnostics/wz_trace_file.c",
-      "sha256": ""
+      "sha256": "0a17569b2a786d875a0e8d7bee420903b4f877708b580932e2ada333091e30a3"
     },
     {
       "path": "src/diagnostics/wz_trace_file.h",
-      "sha256": ""
+      "sha256": "fc2f50a1f31e002a2190bfd82bb675fd8329327306209eb3d22afa02d3083e39"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": ""
+      "sha256": "1a8dc6f3530d0928a2459e1a8f0810559df54626d762d2bb279f6128fd798554"
     }
   ]
 }

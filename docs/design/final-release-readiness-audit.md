@@ -7,7 +7,7 @@ SANYALnet Labs." See LICENSE for full terms. -->
 
 # Final release-readiness audit
 
-Tasks 454–460 and the latest monitor/trace follow-up (Tasks 491–494) have
+Tasks 454–460 and the latest monitor/trace follow-up (Tasks 491–495) have
 been audited against the current tracked workflows, source,
 test ledger, and acceptance inventories. Tasks 454 and 456–459 are closed;
 Tasks 455 and the Task-460 acceptance gate remain open. Task 456 delivery is
@@ -20,7 +20,10 @@ at source `1f4f887efc9f77d082adab6d47b1a52b137ed513` in run `41733348457`.
 The trace backend now freezes on first write/ordering/header failure; the exact
 current five-target build/test/performance run is `41742264260` at source
 `38e9c3b52e4de677a3bdc6c3d3dfe579a2e2bcd6`, with refreshed Phase-16 and
-monitor proof records under `test-results/`.
+monitor proof records under `test-results/`. Debug Sokol startup/shutdown
+evidence passed on Linux x64 in run `41749531429` at source
+`e9ca443bf486a428b429b4257e87e67cdd85aec3`; the fixed-size frozen trace and
+positive record count are pinned in `test-results/debug-trace-startup.json`.
 Product builds, emulator tests, media runs, screenshots, and proof generation
 belong on hosted runners under Workflow 05.
 
