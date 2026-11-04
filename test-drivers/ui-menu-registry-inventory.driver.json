@@ -5,7 +5,7 @@
   "runnerMatrix": ["ubuntu-24.04"],
   "fixtures": [
     {"path": ".github/workflows/ui-menu-registry-inventory.yml", "sha256": "ee1c58268364aa30ce2773a5d4e4c9ee4d1af57d19b01a87c425d28566598fce"},
-    {"path": "ci/test/ui-menu-registry-inventory.py", "sha256": "548c8d867b069bf828a63b0c6592fdb06d10c965ff8a5023716869499b92ab87"},
+    {"path": "ci/test/ui-menu-registry-inventory.py", "sha256": "896bf91765fb2bd8395ce15e97972a1a63eb2530db4f14ce62a06e4a8943b15c"},
     {"path": "ci/test/ui-menu-registry-inventory/README.md", "sha256": "b959d1dd24f552e230d40903d6e7fb44d9a0814ad970c17fcc24edf5fce454c7"},
     {"path": "ci/test/live-telnet-acceptance.py", "sha256": "01d9f9bd1e3f61f33e5852722750c26dba4ae6fbb9a7444a92966e031bb31923"},
     {"path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md", "sha256": "1ac299f0c90f76d94f33d9b72efc4a07ca0ca75ff363906190219c03883b00d7"},

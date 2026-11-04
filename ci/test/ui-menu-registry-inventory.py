@@ -8,6 +8,7 @@
 """Compare the production MENU TREE with the canonical UI ID inventory."""
 
 import argparse
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -15,6 +16,24 @@ import re
 import runpy
 import subprocess
 import tempfile
+from datetime import datetime, timezone
+
+
+FIXTURE_PATHS = (
+    ".github/workflows/ui-menu-registry-inventory.yml",
+    "ci/test/ui-menu-registry-inventory.py",
+    "ci/test/ui-menu-registry-inventory/README.md",
+    "ci/test/live-telnet-acceptance.py",
+    "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
+    "roms/48.rom",
+    "src/app/wz_sokol_main.c",
+    "src/app/wz_compatibility_tools.c",
+    "src/app/wz_compatibility_tools.h",
+    "src/app/wz_command_registry.c",
+    "src/app/wz_command_registry.h",
+    "src/app/wz_telnet_keyboard_command.c",
+    "src/app/wz_telnet_keyboard_command.h",
+)
 
 
 helpers = runpy.run_path(str(Path(__file__).with_name(
@@ -154,6 +173,16 @@ def main():
                 if missing_actions:
                     raise RuntimeError(
                         f"required command IDs are absent: {missing_actions}")
+                fixtures = []
+                repository_root = Path(__file__).resolve().parents[2]
+                for fixture_path in FIXTURE_PATHS:
+                    fixture = (repository_root / fixture_path).resolve()
+                    if repository_root not in fixture.parents or not fixture.is_file():
+                        raise RuntimeError(f"fixture is unavailable: {fixture_path}")
+                    fixtures.append({
+                        "path": fixture_path,
+                        "sha256": hashlib.sha256(fixture.read_bytes()).hexdigest(),
+                    })
                 args.proof.write_text(json.dumps({
                     "testId": "ui-menu-registry-inventory",
                     "status": "pass",
@@ -161,6 +190,8 @@ def main():
                     "runId": int(os.environ.get("GITHUB_RUN_ID", "0")),
                     "runner": os.environ.get("RUNNER_OS", ""),
                     "architecture": os.environ.get("RUNNER_ARCH", ""),
+                    "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                    "fixtures": fixtures,
                     "assertions": assertions,
                     "topLevelMenuIds": roots,
                     "requiredSection71Ids": required_ids,
