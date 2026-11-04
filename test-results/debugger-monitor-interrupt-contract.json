@@ -1,0 +1,28 @@
+{
+  "testId": "debugger-monitor-interrupt-contract",
+  "status": "pass",
+  "commit": "e4c98a637b128a966674c011106ac4e66f2cf522",
+  "sourceCommit": "e4c98a637b128a966674c011106ac4e66f2cf522",
+  "driverCommit": "a95cb251553d56c378a7cc0594871ef02c24c09c",
+  "runner": "GitHub Actions native matrix",
+  "timestamp": "2026-11-03T23:18:00Z",
+  "runId": 41737885149,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/41737885149",
+  "workflowEvent": "push",
+  "branch": "main",
+  "assertions": 39,
+  "ctest": "45/45 per target",
+  "targets": [
+    {"name": "Windows x64", "status": "pass", "ctest": "45/45", "assertions": 39},
+    {"name": "Linux x64", "status": "pass", "ctest": "45/45", "assertions": 39},
+    {"name": "Linux ARM64", "status": "pass", "ctest": "45/45", "assertions": 39},
+    {"name": "macOS ARM64", "status": "pass", "ctest": "45/45", "assertions": 39},
+    {"name": "macOS Intel", "status": "pass", "ctest": "45/45", "assertions": 39}
+  ],
+  "fixtures": [
+    {"path": "ci/test/debugger-monitor-interrupt-contract.c", "sha256": "9626723ddbb0f7fb4d4d300726a9637e064f01615803eb943feb2a0780bdcad9"},
+    {"path": "ci/test/debugger-monitor-interrupt-contract.md", "sha256": "82365e1045b0c80ee9f2de941b145b22ed3d1e1d83c19f00147a0aa1850e0bb4"},
+    {"path": "src/app/wz_debugger_window.c", "sha256": "3325ba79564fa5a04f3c395efbc4b1ea7791c4d7972a4e89120e9f7d304b01d7"},
+    {"path": "src/cmake/CMakeLists.txt", "sha256": "5798ef98ca22cd54c255b6300d83a8ccdfe4f4e97199dea7a5d61cadc2a8d4bd"}
+  ]
+}
