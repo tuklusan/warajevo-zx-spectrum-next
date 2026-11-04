@@ -359,6 +359,16 @@ set_target_properties(wz_timing_trace_bus_context PROPERTIES
     C_STANDARD_REQUIRED ON
     C_EXTENSIONS OFF)
 
+add_executable(
+    wz_timing_trace_density
+    ${WZSN_REPO_ROOT}/ci/test/timing-trace-density/timing-trace-density.c)
+target_include_directories(wz_timing_trace_density PRIVATE "${WZSN_SOURCE_ROOT}")
+target_link_libraries(wz_timing_trace_density PRIVATE wz_diagnostics wz_warnings)
+set_target_properties(wz_timing_trace_density PROPERTIES
+    C_STANDARD 11
+    C_STANDARD_REQUIRED ON
+    C_EXTENSIONS OFF)
+
 if(UNIX)
     add_executable(
         wz_private_media_playback
@@ -1065,6 +1075,14 @@ add_test(NAME wz_timing_trace_bus_context
 set_tests_properties(wz_timing_trace_bus_context PROPERTIES
     PASS_REGULAR_EXPRESSION
         "PASS timing trace reconstructs interrupt, CPU, bus, ULA, and border timing")
+set(WZSN_TRACE_DENSITY_OUTPUT "${WZSN_ULA_128K_TRACE_OUTPUT}/timing-trace-density")
+file(MAKE_DIRECTORY "${WZSN_TRACE_DENSITY_OUTPUT}")
+add_test(NAME wz_timing_trace_density
+    COMMAND wz_timing_trace_density
+        "${WZSN_TRACE_DENSITY_OUTPUT}/synthetic-density.wztrace")
+set_tests_properties(wz_timing_trace_density PROPERTIES
+    PASS_REGULAR_EXPRESSION
+        "\"status\":\"pass\".*\"retainedFrameSpan\":8")
 if(UNIX)
     add_test(NAME wz_private_media_playback
         COMMAND wz_private_media_playback "${WZSN_REPO_ROOT}/test-media")
