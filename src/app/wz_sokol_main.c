@@ -7774,11 +7774,7 @@ static void wz_host_session_init(void)
             .width = WZ_RASTER_CANONICAL_WIDTH,
             .height = WZ_RASTER_CANONICAL_HEIGHT,
             .usage = {.immutable = false, .dynamic_update = true},
-            .pixel_format = SG_PIXELFORMAT_RGBA8,
-            .data.mip_levels[0] = {
-                .ptr = wz_host_session.raster_rgba,
-                .size = sizeof(wz_host_session.raster_rgba)
-            }
+            .pixel_format = SG_PIXELFORMAT_RGBA8
         });
         wz_host_session.raster_view = sg_make_view(&(sg_view_desc){
             .texture = {.image = wz_host_session.raster_image}
