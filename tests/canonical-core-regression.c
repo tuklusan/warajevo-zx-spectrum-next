@@ -17,6 +17,7 @@
 #include "core/wz_machine.h"
 #include "core/wz_raster.h"
 #include "core/wz_runner.h"
+#include "core/wz_scheduler.h"
 #include "core/wz_state.h"
 #include "canonical-fingerprints.h"
 
@@ -29,6 +30,69 @@ typedef struct {
     const char* name;
     uint64_t value;
 } fingerprint_t;
+
+typedef struct {
+    unsigned order[8];
+    size_t count;
+} scheduler_capture_t;
+
+typedef struct {
+    scheduler_capture_t* capture;
+    unsigned mark;
+} scheduler_event_context_t;
+
+static void capture_scheduler_event(void* context)
+{
+    scheduler_event_context_t* event = (scheduler_event_context_t*)context;
+    if (event != NULL && event->capture != NULL &&
+        event->capture->count < sizeof(event->capture->order) /
+            sizeof(event->capture->order[0])) {
+        event->capture->order[event->capture->count] = event->mark;
+        ++event->capture->count;
+    }
+}
+
+static bool verify_scheduler_same_tick_order(void)
+{
+    wz_scheduler_t scheduler;
+    scheduler_capture_t capture = {{0u}, 0u};
+    scheduler_event_context_t events[] = {
+        {&capture, 1u}, {&capture, 2u}, {&capture, 3u},
+        {&capture, 4u}, {&capture, 5u}, {&capture, 6u},
+        {&capture, 7u}
+    };
+
+    wz_scheduler_init(&scheduler);
+    if (wz_scheduler_schedule(&scheduler, 20u, WZ_EVENT_EXTERNAL,
+                              capture_scheduler_event, &events[0]) != WZ_RESULT_OK ||
+        wz_scheduler_schedule(&scheduler, 20u, WZ_EVENT_BUS,
+                              capture_scheduler_event, &events[1]) != WZ_RESULT_OK ||
+        wz_scheduler_schedule(&scheduler, 20u, WZ_EVENT_ULA,
+                              capture_scheduler_event, &events[2]) != WZ_RESULT_OK ||
+        wz_scheduler_schedule(&scheduler, 20u, WZ_EVENT_CPU,
+                              capture_scheduler_event, &events[3]) != WZ_RESULT_OK ||
+        wz_scheduler_schedule(&scheduler, 20u, WZ_EVENT_CPU,
+                              capture_scheduler_event, &events[5]) != WZ_RESULT_OK ||
+        wz_scheduler_schedule(&scheduler, 20u, WZ_EVENT_CPU,
+                              capture_scheduler_event, &events[6]) != WZ_RESULT_OK ||
+        wz_scheduler_schedule(&scheduler, 19u, WZ_EVENT_EXTERNAL,
+                              capture_scheduler_event, &events[4]) != WZ_RESULT_OK) {
+        return false;
+    }
+    while (scheduler.count != 0u) {
+        if (wz_scheduler_dispatch_next(&scheduler) != WZ_RESULT_OK) {
+            return false;
+        }
+    }
+    if (capture.count != 7u || capture.order[0] != 5u ||
+        capture.order[1] != 4u || capture.order[2] != 6u ||
+        capture.order[3] != 7u || capture.order[4] != 3u ||
+        capture.order[5] != 2u || capture.order[6] != 1u) {
+        return false;
+    }
+    puts("PASS scheduler_same_tick_priority_and_sequence");
+    return true;
+}
 
 static uint64_t hash_bytes(const void* data, size_t length)
 {
@@ -964,7 +1028,8 @@ int main(void)
     };
     bool success;
 
-    success = verify_ula_fetch_schedule() &&
+    success = verify_scheduler_same_tick_order() &&
+        verify_ula_fetch_schedule() &&
         verify_raster_write_fetch_order() &&
         verify_flash_bright_semantics() &&
         verify_timestamped_audio_and_ay_clock() &&

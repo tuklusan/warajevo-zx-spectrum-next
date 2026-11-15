@@ -67,9 +67,23 @@ contract and behavior are described in the technical references and
 
 For events sharing a master tick, Architecture #1 Section 10.4 requires an
 explicit profile ordering rule and forbids C statement order from choosing
-visibility. A profile-specific, evidence-backed event-order table is not yet
-recorded. This remains an open Phase-0/acceptance item; source inspection and
-general raster tests do not close it.
+visibility. The following named rules are frozen for the supported PAL
+profiles. They describe machine visibility; trace `sequence` is only the
+causal record tie-breaker and never substitutes for a visibility rule.
+
+| Rule | Same-tick ordering/visibility | Evidence |
+|---|---|---|
+| `WZ-SAME-TICK-BUS-CONTENTION` | Resolve the bus request and all contention waits against the requested master tick; each wait advances the one shared master timeline before the next phase. | `contention-contract` and `master-time` proofs |
+| `WZ-SAME-TICK-MEMORY-ULA` | A CPU memory write at a ULA-fetch tick updates mapped memory before the inclusive fetch at that tick; the fetch observes the new byte. | `raster_write_fetch_order`, `ula-full-frame-trace`, and `ula-128k-trace` proofs |
+| `WZ-SAME-TICK-PORT-FE` | A decoded port-FE write commits border, beeper, and MIC state at the write's master tick. Unchanged output values do not create an edge. | canonical raster-effects regression and `timing-trace-mic` proof |
+| `WZ-SAME-TICK-ULA-FETCH` | The scheduled ULA bitmap/attribute fetch owns its profile-defined slot. A fetch at the same tick as a CPU write uses the preceding memory-visibility rule. | `ula-full-frame-trace` and `ula-128k-trace` proofs |
+| `WZ-SAME-TICK-INTERRUPT` | The profile-timed interrupt line edge is applied at its master tick; the CPU samples it at the documented instruction boundary, then performs acknowledge/entry bus cycles only when acceptance rules permit. | interrupt-mode, interrupt-priority, and timing-trace bus-context proofs |
+| `WZ-SAME-TICK-SCHEDULER` | Synthetic equal-tick events dispatch by frozen priority `CPU < ULA < BUS < EXTERNAL`, with insertion sequence breaking equal-priority ties. | `scheduler_same_tick_priority_and_sequence` in the canonical core regression |
+
+These rules are implementation contracts, not claims of independent physical
+hardware capture. The canonical regression, contention, ULA full-frame, MIC,
+interrupt, and trace-dump suites provide the repeatable software evidence for
+the visibility and record-order guarantees.
 
 The current proof set includes the canonical core regression, master-time
 contract, contention contract, and Fuse visual comparison. The latter is a
