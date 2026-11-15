@@ -95,6 +95,22 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "app/wz_input_focus.h"
 #include "app/wz_input_projection.h"
 #include "app/wz_ui_keyboard_menu.h"
+
+bool wz_input_event_set_local_key(
+    const wz_keyboard_mapping_t* keyboard_mapping,
+    wz_kempston_mapping_t* kempston_mapping,
+    wz_kempston_t* kempston,
+    wz_input_arbiter_t* arbiter,
+    unsigned char* host_key_down,
+    uint16_t* spectrum_key_refcount,
+    unsigned host_key,
+    bool pressed);
+bool wz_input_event_release_local_keys(
+    wz_kempston_mapping_t* kempston_mapping,
+    wz_kempston_t* kempston,
+    wz_input_arbiter_t* arbiter,
+    unsigned char* host_key_down,
+    uint16_t* spectrum_key_refcount);
 #include "app/wz_keyboard_mapping.h"
 #include "app/wz_kempston_mapping.h"
 #include "app/wz_sokol_audio.h"
@@ -7967,74 +7983,27 @@ static void wz_host_cleanup(void)
     wz_host_session_shutdown();
 }
 
-static bool wz_host_keycode_to_spectrum_key(sapp_keycode key_code,
-                                             size_t* physical_key)
-{
-    wz_keyboard_key_t key;
-    if (physical_key == NULL || key_code <= 0 ||
-        !wz_keyboard_mapping_resolve(&wz_host_session.keyboard_mapping,
-                                    (unsigned)key_code, &key)) {
-        return false;
-    }
-    *physical_key = (size_t)key;
-    return true;
-}
-
 static bool wz_host_set_local_key(sapp_keycode key_code, bool pressed)
 {
-    size_t physical_key = 0u;
-    unsigned host_key;
-    bool keyboard_mapped;
-    bool joystick_mapped;
-    if (key_code <= 0 ||
-        (unsigned)key_code >= WZ_KEYBOARD_MAPPING_HOST_KEY_LIMIT) {
-        return false;
-    }
-    host_key = (unsigned)key_code;
-    keyboard_mapped = wz_host_keycode_to_spectrum_key(key_code,
-                                                       &physical_key);
-    if (keyboard_mapped && physical_key >= WZ_KEYBOARD_MATRIX_KEY_COUNT) {
-        keyboard_mapped = false;
-    }
-    if (wz_host_session.local_host_key_down[host_key] ==
-        (unsigned char)(pressed ? 1u : 0u)) {
-        return keyboard_mapped ||
-            wz_kempston_mapping_apply(&wz_host_session.kempston_mapping,
-                &wz_host_session.machine.kempston, host_key, pressed);
-    }
-    if (keyboard_mapped) {
-        if (pressed) {
-            ++wz_host_session.local_spectrum_key_refcount[physical_key];
-        } else if (wz_host_session.local_spectrum_key_refcount[physical_key] >
-                   0u) {
-            --wz_host_session.local_spectrum_key_refcount[physical_key];
-        }
-        (void)wz_input_arbiter_set(&wz_host_session.input_arbiter,
-            WZ_INPUT_SOURCE_LOCAL, physical_key,
-            wz_host_session.local_spectrum_key_refcount[physical_key] > 0u);
-    }
-    wz_host_session.local_host_key_down[host_key] = pressed ? 1u : 0u;
-    joystick_mapped = wz_kempston_mapping_apply(
+    if (key_code <= 0) return false;
+    return wz_input_event_set_local_key(
+        &wz_host_session.keyboard_mapping,
         &wz_host_session.kempston_mapping,
-        &wz_host_session.machine.kempston, host_key, pressed);
-    return keyboard_mapped || joystick_mapped;
+        &wz_host_session.machine.kempston,
+        &wz_host_session.input_arbiter,
+        wz_host_session.local_host_key_down,
+        wz_host_session.local_spectrum_key_refcount,
+        (unsigned)key_code, pressed);
 }
 
 static void wz_host_release_local_keys(void)
 {
-    for (unsigned host_key = 0u;
-         host_key < WZ_KEYBOARD_MAPPING_HOST_KEY_LIMIT; ++host_key) {
-        if (wz_host_session.local_host_key_down[host_key] != 0u) {
-            (void)wz_kempston_mapping_apply(
-                &wz_host_session.kempston_mapping,
-                &wz_host_session.machine.kempston, host_key, false);
-        }
-        wz_host_session.local_host_key_down[host_key] = 0u;
-    }
-    memset(wz_host_session.local_spectrum_key_refcount, 0,
-        sizeof(wz_host_session.local_spectrum_key_refcount));
-    (void)wz_input_arbiter_release_source(&wz_host_session.input_arbiter,
-                                         WZ_INPUT_SOURCE_LOCAL);
+    (void)wz_input_event_release_local_keys(
+        &wz_host_session.kempston_mapping,
+        &wz_host_session.machine.kempston,
+        &wz_host_session.input_arbiter,
+        wz_host_session.local_host_key_down,
+        wz_host_session.local_spectrum_key_refcount);
 }
 
 static void wz_host_input_focus_from_mouse(const sapp_event* event)
