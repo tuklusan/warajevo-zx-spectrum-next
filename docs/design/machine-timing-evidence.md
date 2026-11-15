@@ -85,6 +85,11 @@ hardware capture. The canonical regression, contention, ULA full-frame, MIC,
 interrupt, and trace-dump suites provide the repeatable software evidence for
 the visibility and record-order guarantees.
 
+The complete Phase-4A smoke-case expected outputs are frozen in
+[timing-smoke-expected-output](timing-smoke-expected-output.md). That manifest
+binds each named case to its source fixture, expected marker/invariant, and
+tracked proof while retaining the software-only scope of this evidence.
+
 The current proof set includes the canonical core regression, master-time
 contract, contention contract, and Fuse visual comparison. The latter is a
 software reference for the visible 48K screen only. It does not certify analog
