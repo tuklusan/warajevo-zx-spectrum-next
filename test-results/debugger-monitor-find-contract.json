@@ -1,18 +1,18 @@
 {
-  "commit": "38e9c3b52e4de677a3bdc6c3d3dfe579a2e2bcd6",
-  "sourceCommit": "38e9c3b52e4de677a3bdc6c3d3dfe579a2e2bcd6",
-  "driverCommit": "38e9c3b52e4de677a3bdc6c3d3dfe579a2e2bcd6",
+  "commit": "195383b6dd50894ccea5f5d1f06052306331b9d1",
+  "sourceCommit": "195383b6dd50894ccea5f5d1f06052306331b9d1",
+  "driverCommit": "62e08480e6ff18ad18e4043a012718af36b1d64c",
   "testId": "debugger-monitor-find-contract",
   "status": "pass",
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/41742264260",
-  "runId": 41742264260,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/43721457153",
+  "runId": 43721457153,
   "workflowEvent": "push",
   "branch": "main",
-  "timestamp": "2026-11-03T23:52:34+00:00",
+  "timestamp": "2026-11-15T14:12:44+00:00",
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "b7a8084fea2825d440817e18924c951a8f35c97d204b6221451452b84b55bc40"
+      "sha256": "4efbf618008a99b234175da955f6976b2811140bc2c6d74cf6c2ee80e50f41a4"
     },
     {
       "path": "ci/test/debugger-monitor-find-contract.c",
@@ -36,11 +36,11 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "9a5965ce1bea93bcc4ffb5d51a1eeacfa2a99bdc5558b079b9f12995cdd2a250"
+      "sha256": "53d0db555ba13438ea8a94148faf6fe470919615d2167426077baef237039589"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "5798ef98ca22cd54c255b6300d83a8ccdfe4f4e97199dea7a5d61cadc2a8d4bd"
+      "sha256": "1a8dc6f3530d0928a2459e1a8f0810559df54626d762d2bb279f6128fd798554"
     },
     {
       "path": "src/core/wz_debugger.c",
@@ -65,35 +65,35 @@
       "runner": "Windows x64",
       "jobName": "Full build / Windows x64",
       "assertions": 15,
-      "ctest": "45/45 passed",
+      "ctest": "46/46 passed",
       "status": "pass"
     },
     {
       "runner": "Linux x64",
       "jobName": "Full build / Linux x64",
       "assertions": 15,
-      "ctest": "45/45 passed",
+      "ctest": "46/46 passed",
       "status": "pass"
     },
     {
       "runner": "Linux ARM64",
       "jobName": "Full build / Linux ARM64",
       "assertions": 15,
-      "ctest": "45/45 passed",
+      "ctest": "46/46 passed",
       "status": "pass"
     },
     {
       "runner": "macOS ARM64",
       "jobName": "Full build / macOS ARM64",
       "assertions": 15,
-      "ctest": "45/45 passed",
+      "ctest": "46/46 passed",
       "status": "pass"
     },
     {
       "runner": "macOS Intel",
       "jobName": "Full build / macOS Intel",
       "assertions": 15,
-      "ctest": "45/45 passed",
+      "ctest": "46/46 passed",
       "status": "pass"
     }
   ],
