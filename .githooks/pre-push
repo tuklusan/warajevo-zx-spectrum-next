@@ -194,7 +194,10 @@ review_outgoing_source() {
         review_pids[$review_count]=$!
         review_logs[$review_count]=$review_log
         review_count=$((review_count + 1))
-        if [ "$review_count" -eq 2 ]; then
+        # Keep each packet isolated.  Concurrent model requests make the
+        # mandatory review gate race the provider and can turn a valid review
+        # into a false 20-minute stall.
+        if [ "$review_count" -eq 1 ]; then
             review_finish_batch
             [ "$review_status" -eq 0 ] || break
         fi
