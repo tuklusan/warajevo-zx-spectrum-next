@@ -711,6 +711,19 @@ target_link_libraries(wz_printer_core_contract PRIVATE wz_core wz_warnings)
 add_test(NAME wz_printer_core_contract COMMAND wz_printer_core_contract)
 
 add_executable(
+    wz_input_event_contract
+    ${WZSN_REPO_ROOT}/ci/test/input-event-contract.c
+    ${WZSN_SOURCE_ROOT}/app/wz_input_event.c
+    ${WZSN_SOURCE_ROOT}/app/wz_input_arbiter.c
+    ${WZSN_SOURCE_ROOT}/app/wz_input_projection.c
+    ${WZSN_SOURCE_ROOT}/app/wz_keyboard_mapping.c
+    ${WZSN_SOURCE_ROOT}/app/wz_kempston_mapping.c)
+target_include_directories(wz_input_event_contract PRIVATE
+    "${WZSN_SOURCE_ROOT}")
+target_link_libraries(wz_input_event_contract PRIVATE wz_core wz_warnings)
+add_test(NAME wz_input_event_contract COMMAND wz_input_event_contract)
+
+add_executable(
     wz_debugger_core_contract
     ${WZSN_REPO_ROOT}/ci/test/debugger-core-contract.c)
 target_link_libraries(wz_debugger_core_contract PRIVATE wz_core wz_warnings)
