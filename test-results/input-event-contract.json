@@ -1,0 +1,31 @@
+{
+  "testId": "input-event-contract",
+  "status": "pass",
+  "commit": "81b96c2866b5afb57e6249f0051036e4e3a87e48",
+  "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
+  "timestamp": "2026-11-16T18:48:23Z",
+  "workflowRun": 43917799219,
+  "caseCount": 1,
+  "nativeTargets": [
+    "Windows x64",
+    "Linux x64",
+    "Linux ARM64",
+    "macOS ARM64",
+    "macOS Intel"
+  ],
+  "ctestPerTarget": "47/47 passed",
+  "fixtures": [
+    {
+      "path": "ci/test/input-event-contract.c",
+      "sha256": "c7d00c81b34252f3c8a6fc45ca51d533f545cdb7659e978161070d351e487efd"
+    },
+    {
+      "path": "src/app/wz_input_event.c",
+      "sha256": "8ff514ce8135b7cdcea6666572f3cbf0c2cb3f4daff73aaf85b434200b70980e"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "a6a9e2993f4b187e2341cc341f54ffe005b4b829d3276230384258b77b3dc686"
+    }
+  ]
+}
