@@ -13,7 +13,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "73038c6e18965555c0290c75851bd365095bc84402afe8654e6849e864e9fae6"
+      "sha256": "a38c03a4a2a3b6400ee4d80ed7a126db7079b740bf7d862588d42f38fe208576"
     },
     {
       "path": "ci/test/ay-timing/ay-timing-contract.c",
@@ -21,7 +21,7 @@
     },
     {
       "path": "ci/test/ay-timing/write-proof.py",
-      "sha256": "fd1646a5cc45e0f409050bc8cff60b343a5d13b7cd190e38cb864d2e4ef4aba2"
+      "sha256": "499365feb74266bb0f02fd48d1898886fc6700cc7bfb9c5c7197b4279a8158ac"
     },
     {
       "path": "docs/design/01-warajevo-zx-spectrum-next-architecture.md",
@@ -33,7 +33,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "f74b54ebcacb1ee06a2c22752b5c18bab7c4c333708e12d92a8403d05e060722"
+      "sha256": "069ac1ad6a3bc6a48825cac18af00e9a4953c71781f919b2ec84cafadc188f90"
     },
     {
       "path": "src/core/audio/wz_ay.c",

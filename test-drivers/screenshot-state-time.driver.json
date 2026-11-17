@@ -13,7 +13,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "73038c6e18965555c0290c75851bd365095bc84402afe8654e6849e864e9fae6"
+      "sha256": "a38c03a4a2a3b6400ee4d80ed7a126db7079b740bf7d862588d42f38fe208576"
     },
     {
       "path": "ci/test/screenshot-state-time/screenshot-state-time.c",
@@ -21,7 +21,7 @@
     },
     {
       "path": "ci/test/screenshot-state-time/write-proof.py",
-      "sha256": "613d34597cf9cd412b54cadc76f74f369d01d9751fbc0cb1bf2819d97209e697"
+      "sha256": "39ad2c70c38bea2c68650a9bd50c428bcb48cd94f3b68bf84a4043244e7afabb"
     },
     {
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
@@ -29,7 +29,7 @@
     },
     {
       "path": "src/app/wz_host_output.c",
-      "sha256": "423a559f3d07b01c8b8ecf9d2e5f128fe3d94dd248b0be25ea5493b2d33d2b9c"
+      "sha256": "57ac1582e7769cbb66c6a3fb3a641a6f14de2878814c7ac4dc31ed8a7e21a6d3"
     },
     {
       "path": "src/app/wz_host_output.h",
@@ -57,11 +57,11 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "f74b54ebcacb1ee06a2c22752b5c18bab7c4c333708e12d92a8403d05e060722"
+      "sha256": "069ac1ad6a3bc6a48825cac18af00e9a4953c71781f919b2ec84cafadc188f90"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "14b370ac404420d6c64e92c852a8803067dfd1d29d2e03d0e9d593446ca653c9"
+      "sha256": "ff6a802eb986e29bbdbaef1c3a046ab39bb57742dd01d2d1e2e7b8a135e30b0d"
     },
     {
       "path": "src/core/wz_machine.h",
@@ -77,7 +77,7 @@
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "73d8f3dd18ebc659c287a4910224fbf602d3b21803f91259db3aa54bbbb858d5"
+      "sha256": "746e8e1254e1748a7946f5e5e25a03b25e12f8428f00c26e6ce2b4508c172c58"
     },
     {
       "path": "src/core/wz_state.h",
