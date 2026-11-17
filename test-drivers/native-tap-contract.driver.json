@@ -1,0 +1,18 @@
+{
+  "testId": "native-tap-contract",
+  "command": "cmake -S ci/test/native-tap-contract -B dist/native-tap-contract -DCMAKE_BUILD_TYPE=Release && cmake --build dist/native-tap-contract --config Release --parallel 2 && ctest --test-dir dist/native-tap-contract -C Release -R '^wz_native_tap_contract$' --output-on-failure",
+  "fixtures": [
+    {
+      "path": "ci/test/native-tap-contract.c"
+    },
+    {
+      "path": "src/core/wz_tape.c"
+    },
+    {
+      "path": "src/core/wz_tape.h"
+    },
+    {
+      "path": "ci/test/native-tap-contract/CMakeLists.txt"
+    }
+  ]
+}
