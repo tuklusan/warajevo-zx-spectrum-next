@@ -4,7 +4,7 @@
   "fixtures": [
     {
       "path": "ci/test/native-tap-contract.c",
-      "sha256": "55513f70de7dbd034fc97745d646935db791b4e55bfa9188d0ed0e8c5b365bff"
+      "sha256": "e877b74e2a05e50a9e92a4cb0c63611a6aef8eedb8da2e86cb691e03af069742"
     },
     {
       "path": "src/core/wz_tape.c",
