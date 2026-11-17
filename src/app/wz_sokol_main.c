@@ -6786,10 +6786,33 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
                 if (operation == NULL) continue;
                 nk_layout_row_dynamic(context, 22.0f, 2);
                 nk_label(context, operation->label, NK_TEXT_LEFT);
-                nk_label(context, operation->available ? "Available" :
-                    (operation->unavailable_reason == NULL ?
-                        "Unavailable" : operation->unavailable_reason),
-                    NK_TEXT_LEFT);
+                if (operation->kind ==
+                        WZ_TAPE_MANAGER_MAINTENANCE_EFFICIENCY &&
+                    operation->available) {
+                    wz_tape_manager_native_efficiency_t efficiency;
+                    if (wz_tape_manager_native_efficiency(
+                            wz_host_session.native_tape_records,
+                            wz_host_session.native_tape_record_count,
+                            &efficiency) == WZ_RESULT_OK &&
+                        efficiency.logical_bytes != 0u) {
+                        double percent =
+                            ((double)efficiency.stored_bytes * 100.0) /
+                            (double)efficiency.logical_bytes;
+                        (void)snprintf(line, sizeof(line),
+                            "%llu / %llu bytes (%.2f%%)",
+                            (unsigned long long)efficiency.stored_bytes,
+                            (unsigned long long)efficiency.logical_bytes,
+                            percent);
+                        nk_label(context, line, NK_TEXT_LEFT);
+                    } else {
+                        nk_label(context, "Unavailable", NK_TEXT_LEFT);
+                    }
+                } else {
+                    nk_label(context, operation->available ? "Available" :
+                        (operation->unavailable_reason == NULL ?
+                            "Unavailable" : operation->unavailable_reason),
+                        NK_TEXT_LEFT);
+                }
             }
         } else if (strcmp(wz_host_session.tape_format, "TAP") == 0) {
             bool can_edit = !machine->tape_state.motor_on;

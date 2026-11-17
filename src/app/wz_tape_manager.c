@@ -383,9 +383,69 @@ wz_tape_manager_maintenance_at(wz_tape_manager_format_t format, size_t index)
     operation = &maintenance_operations[index];
     if (format != WZ_TAPE_MANAGER_FORMAT_NATIVE_TAP) return operation;
     native_operation = *operation;
-    native_operation.available = false;
-    native_operation.unavailable_reason = "native-maintenance-not-implemented";
+    native_operation.available = operation->kind ==
+        WZ_TAPE_MANAGER_MAINTENANCE_EFFICIENCY;
+    native_operation.unavailable_reason = native_operation.available ? 0 :
+        "native-maintenance-not-implemented";
     return &native_operation;
+}
+
+wz_result_t wz_tape_manager_native_efficiency(
+    const wz_native_tap_record_t* records, size_t record_count,
+    wz_tape_manager_native_efficiency_t* output)
+{
+    size_t logical_bytes = 12u;
+    size_t stored_bytes = 12u;
+
+    if (records == 0 || record_count == 0u || output == 0) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    for (size_t index = 0u; index < record_count; ++index) {
+        const wz_native_tap_record_t* record = &records[index];
+        size_t header_size;
+        size_t logical_record_bytes;
+        size_t stored_record_bytes;
+        if (record->payload == 0 && record->payload_length != 0u) {
+            return WZ_RESULT_INVALID_ARGUMENT;
+        }
+        if (record->record_type < 4u) {
+            if (record->stored_length < 2u ||
+                (size_t)record->stored_length - 2u != record->payload_length) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            if (record->payload_length > SIZE_MAX - 12u) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            header_size = 12u;
+            logical_record_bytes = header_size + record->payload_length;
+        } else if (record->record_type == 4u || record->record_type == 5u) {
+            if (record->stored_length !=
+                    (record->record_type == 4u ? 65534u : 65535u) ||
+                record->decompressed_length == 0u) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            header_size = 17u;
+            if ((size_t)record->decompressed_length > SIZE_MAX - 12u) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            logical_record_bytes = 12u + record->decompressed_length;
+        } else {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        if (record->payload_length > SIZE_MAX - header_size) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        stored_record_bytes = header_size + record->payload_length;
+        if (logical_record_bytes > SIZE_MAX - logical_bytes ||
+            stored_record_bytes > SIZE_MAX - stored_bytes) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        logical_bytes += logical_record_bytes;
+        stored_bytes += stored_record_bytes;
+    }
+    output->logical_bytes = logical_bytes;
+    output->stored_bytes = stored_bytes;
+    return WZ_RESULT_OK;
 }
 
 static const char* format_name(wz_tape_manager_format_t format)

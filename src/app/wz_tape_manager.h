@@ -74,6 +74,11 @@ typedef struct {
     const char* unavailable_reason;
 } wz_tape_manager_maintenance_operation_t;
 
+typedef struct {
+    size_t logical_bytes;
+    size_t stored_bytes;
+} wz_tape_manager_native_efficiency_t;
+
 wz_result_t wz_tape_manager_view_init(
     wz_tape_manager_view_t* view,
     const char* source_identity,
@@ -137,6 +142,9 @@ wz_result_t wz_tape_manager_transaction_commit(
 size_t wz_tape_manager_maintenance_count(void);
 const wz_tape_manager_maintenance_operation_t*
 wz_tape_manager_maintenance_at(wz_tape_manager_format_t format, size_t index);
+wz_result_t wz_tape_manager_native_efficiency(
+    const wz_native_tap_record_t* records, size_t record_count,
+    wz_tape_manager_native_efficiency_t* output);
 
 wz_result_t wz_tape_manager_export_report(
     const wz_tape_manager_view_t* view,
