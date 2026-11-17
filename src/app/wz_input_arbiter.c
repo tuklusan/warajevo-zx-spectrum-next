@@ -23,6 +23,10 @@ void wz_input_arbiter_init(wz_input_arbiter_t* arbiter)
             arbiter->owned[source][key] = 0u;
         }
     }
+    wz_input_trace_init(&arbiter->input_trace, arbiter->input_trace_entries,
+                        sizeof(arbiter->input_trace_entries) /
+                        sizeof(arbiter->input_trace_entries[0]));
+    wz_input_trace_state_init(&arbiter->input_trace_state);
 }
 
 bool wz_input_arbiter_set(wz_input_arbiter_t* arbiter,
@@ -69,4 +73,36 @@ bool wz_input_arbiter_release_source(wz_input_arbiter_t* arbiter,
         arbiter->owned[source][key] = 0u;
     }
     return true;
+}
+
+bool wz_input_arbiter_record_effective(wz_input_arbiter_t* arbiter,
+                                       size_t key,
+                                       bool pressed,
+                                       wz_master_tick_t master_tick)
+{
+    if (arbiter == 0 || key >= WZ_INPUT_TRACE_KEY_COUNT) {
+        return false;
+    }
+    if (arbiter->input_trace.entries == 0) {
+        return false;
+    }
+    if (arbiter->input_trace.count >= arbiter->input_trace.capacity) {
+        return false;
+    }
+    if (arbiter->input_trace.count != 0u &&
+        master_tick < arbiter->input_trace.entries[
+            arbiter->input_trace.count - 1u].master_tick) {
+        arbiter->input_trace.count = 0u;
+        arbiter->input_trace.next_sequence = 0u;
+        wz_input_trace_state_init(&arbiter->input_trace_state);
+    }
+    return wz_input_trace_record_effective(
+        &arbiter->input_trace, &arbiter->input_trace_state,
+        (unsigned char)key, pressed, master_tick);
+}
+
+const wz_input_trace_t* wz_input_arbiter_trace(
+    const wz_input_arbiter_t* arbiter)
+{
+    return arbiter == 0 ? 0 : &arbiter->input_trace;
 }

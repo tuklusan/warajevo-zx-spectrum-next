@@ -17,7 +17,7 @@ SANYALnet Labs." See LICENSE for full terms.
 
 /* Resolve host-source ownership, then project normalized matrix levels into
  * the machine. No source identity crosses this app-to-core boundary. */
-bool wz_input_projection_apply_keyboard(const wz_input_arbiter_t* arbiter,
+bool wz_input_projection_apply_keyboard(wz_input_arbiter_t* arbiter,
                                        wz_machine_t* machine);
 
 #endif

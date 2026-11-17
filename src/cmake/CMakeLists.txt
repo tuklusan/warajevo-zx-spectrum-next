@@ -1275,6 +1275,7 @@ if(WZSN_BUILD_SOKOL_HOST)
     endif()
     target_sources(wz_sokol_host PRIVATE
         ${WZSN_SOURCE_ROOT}/app/wz_host_output_utf8.c
+        ${WZSN_SOURCE_ROOT}/app/wz_input_replay.c
         ${WZSN_SOURCE_ROOT}/app/wz_printer_manager.c
         ${WZSN_SOURCE_ROOT}/app/wz_printer_export.c
         ${WZSN_SOURCE_ROOT}/app/wz_printer_commands.c

@@ -11,8 +11,9 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 
 #include <stdbool.h>
 #include <stddef.h>
-
 #include "core/wz_types.h"
+
+#define WZ_INPUT_TRACE_KEY_COUNT 40u
 
 typedef struct {
     unsigned char key;
@@ -28,6 +29,10 @@ typedef struct {
     wz_qword_t next_sequence;
 } wz_input_trace_t;
 
+typedef struct {
+    unsigned char key_down[WZ_INPUT_TRACE_KEY_COUNT];
+} wz_input_trace_state_t;
+
 typedef bool (*wz_input_trace_sink_t)(
     const wz_normalized_input_transition_t* transition,
     void* context);
@@ -36,10 +41,18 @@ void wz_input_trace_init(wz_input_trace_t* trace,
                          wz_normalized_input_transition_t* entries,
                          size_t capacity);
 
+void wz_input_trace_state_init(wz_input_trace_state_t* state);
+
 bool wz_input_trace_record(wz_input_trace_t* trace,
                            unsigned char key,
                            bool pressed,
                            wz_master_tick_t master_tick);
+
+bool wz_input_trace_record_effective(wz_input_trace_t* trace,
+                                     wz_input_trace_state_t* state,
+                                     unsigned char key,
+                                     bool pressed,
+                                     wz_master_tick_t master_tick);
 
 bool wz_input_trace_replay(const wz_input_trace_t* trace,
                            wz_input_trace_sink_t sink,
