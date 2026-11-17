@@ -12,7 +12,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "a38c03a4a2a3b6400ee4d80ed7a126db7079b740bf7d862588d42f38fe208576"
+      "sha256": "73038c6e18965555c0290c75851bd365095bc84402afe8654e6849e864e9fae6"
     },
     {
       "path": "ci/test/debugger-monitor-find-contract.c",
@@ -24,7 +24,7 @@
     },
     {
       "path": "ci/test/performance/write-proof.py",
-      "sha256": "aba19b4aa3cd1c3ad1560da159300cc8647dbc6e264a1aa120dbbfe04b5f248a"
+      "sha256": "3dd0c29977e0d2de789eab5d53219893cb757cc4aa2a926fb472f19bab8cc132"
     },
     {
       "path": "src/app/wz_debugger_window.c",
@@ -36,11 +36,11 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-        "sha256": "dfe60bf040f771dc1121820b3b7c865b489cfcd9de14c68f97417413df1f005a"
+      "sha256": "dfe60bf040f771dc1121820b3b7c865b489cfcd9de14c68f97417413df1f005a"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "069ac1ad6a3bc6a48825cac18af00e9a4953c71781f919b2ec84cafadc188f90"
+      "sha256": "f74b54ebcacb1ee06a2c22752b5c18bab7c4c333708e12d92a8403d05e060722"
     },
     {
       "path": "src/core/wz_debugger.c",

@@ -12,7 +12,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "a38c03a4a2a3b6400ee4d80ed7a126db7079b740bf7d862588d42f38fe208576"
+      "sha256": "73038c6e18965555c0290c75851bd365095bc84402afe8654e6849e864e9fae6"
     },
     {
       "path": "ci/test/debugger-monitor-tabulate/contract.c",
@@ -48,7 +48,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "069ac1ad6a3bc6a48825cac18af00e9a4953c71781f919b2ec84cafadc188f90"
+      "sha256": "f74b54ebcacb1ee06a2c22752b5c18bab7c4c333708e12d92a8403d05e060722"
     },
     {
       "path": "src/core/wz_debugger.c",
