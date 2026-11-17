@@ -127,8 +127,6 @@ static bool conversion_case(void)
     wz_byte_t standard[32];
     size_t native_length = 0u;
     size_t standard_length = 0u;
-    size_t block_count = 0u;
-    wz_tap_block_t blocks[RECORDS];
     bool ok = false;
 
     if (wz_tape_write_native_tap(records, 2u, NULL, 0u, &native_length) !=
@@ -145,13 +143,10 @@ static bool conversion_case(void)
         wz_tape_native_to_standard_tap(native, native_length, standard,
                                        sizeof(standard), &standard_length) !=
             WZ_RESULT_OK ||
-        wz_tape_parse_standard_tap(standard, standard_length, 1u, NULL, 0u,
-                                   &block_count) != WZ_RESULT_BUFFER_TOO_SMALL ||
-        block_count != 2u ||
-        wz_tape_parse_standard_tap(standard, standard_length, 1u, blocks,
-                                   RECORDS, &block_count) != WZ_RESULT_OK ||
-        blocks[0].length != 4u || blocks[0].data[0] != 0x00u ||
-        blocks[1].length != 4u || blocks[1].data[0] != 0xffu) {
+        standard[0] != 5u || standard[1] != 0u || standard[2] != 0x00u ||
+        memcmp(&standard[3], payload_a, sizeof(payload_a)) != 0 ||
+        standard[7] != 5u || standard[8] != 0u || standard[9] != 0xffu ||
+        memcmp(&standard[10], payload_b, sizeof(payload_b)) != 0) {
         goto cleanup;
     }
     free(native);
