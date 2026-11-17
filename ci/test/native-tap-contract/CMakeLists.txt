@@ -10,24 +10,16 @@ project(WZNativeTapContract LANGUAGES C)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_C_EXTENSIONS OFF)
-
-find_package(ZLIB REQUIRED)
 set(REPO_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../..")
+
+add_subdirectory("${REPO_ROOT}/src/cmake" "${CMAKE_BINARY_DIR}/project")
 
 add_executable(
     wz_native_tap_contract
-    "${REPO_ROOT}/ci/test/native-tap-contract.c"
-    "${REPO_ROOT}/src/core/wz_tape.c")
+    "${REPO_ROOT}/ci/test/native-tap-contract.c")
 target_include_directories(wz_native_tap_contract PRIVATE
     "${REPO_ROOT}/src")
-target_link_libraries(wz_native_tap_contract PRIVATE ZLIB::ZLIB)
-if(MSVC)
-    target_compile_options(wz_native_tap_contract PRIVATE /W4 /WX)
-else()
-    target_compile_options(wz_native_tap_contract PRIVATE
-        -Wall -Wextra -Wpedantic)
-endif()
+target_link_libraries(wz_native_tap_contract PRIVATE wz_core wz_warnings)
 
 enable_testing()
 add_test(NAME wz_native_tap_contract COMMAND wz_native_tap_contract)
