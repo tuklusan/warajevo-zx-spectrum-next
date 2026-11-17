@@ -1,0 +1,22 @@
+{
+  "testId": "snapshot-historical-contract",
+  "command": "ctest --test-dir dist/cr-gate -R '^wz_snapshot_historical_contract$' --output-on-failure",
+  "fixtures": [
+    {
+      "path": "ci/test/snapshot-historical-contract.c",
+      "sha256": "fc9a0a6936fc64805484d0c79729a6ae17319b17d6f90e429fa69c15d2043128"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "069ac1ad6a3bc6a48825cac18af00e9a4953c71781f919b2ec84cafadc188f90"
+    },
+    {
+      "path": "src/core/wz_state.c",
+      "sha256": "746e8e1254e1748a7946f5e5e25a03b25e12f8428f00c26e6ce2b4508c172c58"
+    },
+    {
+      "path": "src/core/wz_state.h",
+      "sha256": "46ec8063cc5976b743d53a23b64c34c84583878c9793434d3622c8f8a38f9aa3"
+    }
+  ]
+}

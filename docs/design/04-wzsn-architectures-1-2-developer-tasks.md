@@ -233,8 +233,8 @@ Debug application startup/shutdown now attaches, freezes, and closes a per-proce
 171. [P8][Core §§25.1] Implement SNA 48K loading according to the frozen byte-level semantics.
 172. [P8][Core §§25.1] Implement SNA 48K saving with exact defined state representation.
 173. [P8][Core §§25.1] Implement SNA 128K loading/saving scaffolding so the parser can represent paging state, with full behavior validated after Phase 9.
-174. [P8][Core §§25.1] Implement Z80 v1-class loading.
-175. [P8][Core §§25.1] Implement Z80 v2-class loading and the canonical initial v2-class writer.
+174. [P8][Core §§25.1][COMPLETE for Z80 v1 48K scope] Implement Z80 v1-class loading. Hosted five-target proof `43971972176` at source `5294c5b4cad55d0981858a98611bb735612505d1` covers uncompressed and ED-ED compressed 48K images; proof: [snapshot-historical-contract.json](../../test-results/snapshot-historical-contract.json).
+175. [P8][Core §§25.1][COMPLETE for initial Z80 v2 48K scope] Implement Z80 v2-class loading and the canonical initial v2-class writer. The same hosted proof round-trips the canonical v2 writer through portable state on Windows x64, Linux x64/ARM64, and macOS ARM64/Intel; v2 128K and unsupported variants remain governed by the frozen media matrix.
 176. [P8][Core §§25.1][COMPLETE] Z80 v3-class loading supports 48K through the temporary snapshot path and base 128K through a transactional live-machine candidate. Hardware mode 4 loads page IDs 3–10, paging and AY state; raw/RLE page decoding, unsupported modes, incomplete pages, and atomic failure are covered by current-source regression run `39351689443`. Other hardware modes remain controlled-unsupported; v3 is not the default writer.
 177. [P8][Core §§25.2] Implement atomic snapshot commit: validate structure/ranges/model/state first, then replace live machine in one controlled step.
 178. [P8][Core §§24.1,25] Serialize/validate `networking_mode` in WZSN-native state so illegal Interface-1/Ear+Mic combinations cannot exist.
