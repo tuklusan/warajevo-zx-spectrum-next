@@ -340,6 +340,10 @@ static wz_result_t wz_tape_native_record_header(const wz_byte_t* data,
     }
     record->payload = &data[offset + *header_size];
     if (*header_size == 17u) {
+        if (record->decompressed_length == 0u ||
+            record->compressed_length == 0u) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
         if (next == UINT32_MAX) {
             record->payload_length = length - offset - *header_size;
         } else {
@@ -347,6 +351,9 @@ static wz_result_t wz_tape_native_record_header(const wz_byte_t* data,
                 return WZ_RESULT_PARSE_ERROR;
             }
             record->payload_length = next - offset - *header_size;
+        }
+        if ((size_t)record->compressed_length != record->payload_length) {
+            return WZ_RESULT_PARSE_ERROR;
         }
     } else {
         record->payload_length = (size_t)stored_length - 2u;
