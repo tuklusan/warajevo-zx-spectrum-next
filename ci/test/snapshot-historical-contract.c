@@ -61,10 +61,15 @@ static bool load_into_machine(const wz_byte_t* image, size_t length,
                               wz_machine_t* machine)
 {
     wz_snapshot_state_t snapshot;
-    if (loader(&snapshot, image, length) != WZ_RESULT_OK ||
-        wz_state_deserialize_machine(machine, wz_snapshot_state_data(&snapshot),
-                                     wz_snapshot_state_length(&snapshot)) !=
-            WZ_RESULT_OK) {
+    wz_result_t result = loader(&snapshot, image, length);
+    if (result != WZ_RESULT_OK) {
+        fprintf(stderr, "snapshot loader failed: %d\\n", (int)result);
+        return false;
+    }
+    result = wz_state_deserialize_machine(machine, wz_snapshot_state_data(&snapshot),
+                                          wz_snapshot_state_length(&snapshot));
+    if (result != WZ_RESULT_OK) {
+        fprintf(stderr, "snapshot deserialize failed: %d\\n", (int)result);
         return false;
     }
     return true;
