@@ -1,14 +1,14 @@
 {
-  "commit": "a33d0370fe991b34a0075b05ffdd359f02afad91",
-  "sourceCommit": "a33d0370fe991b34a0075b05ffdd359f02afad91",
-  "driverCommit": "422a1aee36149ae998fab5e0bc0898488af7f134",
+  "commit": "ddfa0b7c67c9405627b46685a5654d936f66ff58",
+  "sourceCommit": "ddfa0b7c67c9405627b46685a5654d936f66ff58",
+  "driverCommit": "ddfa0b7c67c9405627b46685a5654d936f66ff58",
   "testId": "debugger-monitor-exit-contract",
   "status": "pass",
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/44073710348",
-  "runId": 44073710348,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/44076744138",
+  "runId": 44076744138,
   "workflowEvent": "push",
   "branch": "main",
-  "timestamp": "2026-11-17T11:32:00+00:00",
+  "timestamp": "2026-11-17T11:47:29+00:00",
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",

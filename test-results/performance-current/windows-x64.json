@@ -1,34 +1,34 @@
 {
   "schema": 1,
   "status": "pass",
-  "commit": "d04e7fa9f0cbe8796882f8842754828a8da2989e",
+  "commit": "ddfa0b7c67c9405627b46685a5654d936f66ff58",
   "runner": "Windows-windows-x64",
   "architecture": "X64",
-  "timestamp": "2026-11-17T10:56:10Z",
+  "timestamp": "2026-11-17T11:46:59Z",
   "compiler": "MSVC 19.51.36260.0",
   "metrics": [
     {
       "name": "cpu_execution",
       "unit": "instructions",
       "operations": "250005",
-      "median_cpu_seconds": 0.022,
-      "operations_per_second": 11363863.636,
+      "median_cpu_seconds": 0.02,
+      "operations_per_second": 12500250.0,
       "fingerprint": "52af84e53ed19a63"
     },
     {
       "name": "raster_generation",
       "unit": "frames",
       "operations": "384",
-      "median_cpu_seconds": 0.022,
-      "operations_per_second": 17454.545,
+      "median_cpu_seconds": 0.023,
+      "operations_per_second": 16695.652,
       "fingerprint": "d3d8bb78938b5fb1"
     },
     {
       "name": "audio_mixing",
       "unit": "samples",
       "operations": "2000000",
-      "median_cpu_seconds": 0.046,
-      "operations_per_second": 43478260.87,
+      "median_cpu_seconds": 0.047,
+      "operations_per_second": 42553191.489,
       "fingerprint": "56e7cab2bab26d0d"
     },
     {
@@ -51,8 +51,8 @@
       "name": "ui_presentation",
       "unit": "frames",
       "operations": "512",
-      "median_cpu_seconds": 0.028,
-      "operations_per_second": 18285.714,
+      "median_cpu_seconds": 0.031,
+      "operations_per_second": 16516.129,
       "fingerprint": "6b9c6deb0ca3fbc9"
     }
   ]
