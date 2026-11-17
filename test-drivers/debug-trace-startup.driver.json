@@ -9,7 +9,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "14ceefff4cd929c82499a814b6ded21d6ddd5d3e16a06b3a69c45e4903a45242"
+      "sha256": "4bf0abbe3db6f02a0f39791217a85c9b1c4b98065cda3f83f0679557c177a7dc"
     },
     {
       "path": "src/diagnostics/wz_trace_file.c",
