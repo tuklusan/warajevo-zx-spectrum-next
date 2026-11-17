@@ -7,6 +7,8 @@ SANYALnet Labs." See LICENSE for full terms. -->
 
 # Legacy feature disposition audit
 
+All 20 `REQUIRED` monitor/printer dispositions now have production implementation records and hosted regression evidence. The feature-level audit remains conservative where broader legacy-helper behavior, hardware correlation, or third-party/license clearance is outside the current proof scope.
+
 Task 452 audit is complete. Section 2.5 contains 32 explicit dispositions: 20 REQUIRED and 12 deferred/replaced/non-initial. Every REQUIRED row is mapped to its phase implementation area or source and current proof gap. 13 have limited runner evidence; 7 lack criterion-level pinned proof. Source presence alone is not acceptance evidence. The four-runner model-switch regression verifies 128K fixed and paged RAM behavior plus normalized Kempston input and direct port reads (run `36563713245`; [proof](../../test-results/model-switch.json)).
 
 All deferred/replaced/non-initial rows remain scoped as stated in Section 2.5 and are not promoted into initial release blockers. Historical UI replacements are reconciled separately under task 453. Architecture-#3 implementation remains out of scope.

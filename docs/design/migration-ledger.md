@@ -116,6 +116,8 @@ not a license grant or source-derivation clearance.
 
 ### Built-in monitor/debugger — command-dispatch inventory
 
+Implementation/evidence closure: every row marked `REQUIRED` in this inventory now has a production implementation record and hosted regression proof. Remaining gaps are limited to broader legacy-helper coverage and third-party/license clearance; deferred, replaced, and dropped rows remain out of the initial scope.
+
 Source identity: Warajevo 2.50 import from commit
 `94f69bd8f4acb6c0c320ae34f9b1c3ee29bc5545`; source file
 `reference/original-warajevo/source/src/spectrum-kernel/SPECMON.ASM`, Git blob
