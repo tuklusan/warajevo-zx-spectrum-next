@@ -108,6 +108,13 @@ jobs:
             | tee "dist/cr-gate-${{ matrix.label }}/build.log"
           ctest --test-dir dist/cr-gate-${{ matrix.label }} -C Release --output-on-failure --verbose \
             | tee dist/cr-gate-${{ matrix.label }}/ctest.log
+          tap_build_dir="dist/native-tap-contract-${{ matrix.label }}"
+          cmake -S ci/test/native-tap-contract -B "$tap_build_dir" \
+            -DCMAKE_BUILD_TYPE=Release
+          cmake --build "$tap_build_dir" --config Release --parallel 2
+          ctest --test-dir "$tap_build_dir" -C Release \
+            -R '^wz_native_tap_contract$' --output-on-failure --verbose \
+            | tee "dist/cr-gate-${{ matrix.label }}/native-tap-contract.log"
 
       - name: Sanitized MDR image and transition fuzz
         if: runner.os != 'Windows'
