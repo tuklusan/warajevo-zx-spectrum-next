@@ -421,7 +421,9 @@ wz_result_t wz_tape_manager_native_efficiency(
         } else if (record->record_type == 4u || record->record_type == 5u) {
             if (record->stored_length !=
                     (record->record_type == 4u ? 65534u : 65535u) ||
-                record->decompressed_length == 0u) {
+                record->decompressed_length == 0u ||
+                record->compressed_length == 0u ||
+                (size_t)record->compressed_length != record->payload_length) {
                 return WZ_RESULT_PARSE_ERROR;
             }
             header_size = 17u;
