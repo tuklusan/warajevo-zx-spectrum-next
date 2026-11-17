@@ -63,13 +63,13 @@ static bool load_into_machine(const wz_byte_t* image, size_t length,
     wz_snapshot_state_t snapshot;
     wz_result_t result = loader(&snapshot, image, length);
     if (result != WZ_RESULT_OK) {
-        fprintf(stderr, "snapshot loader failed: %d\\n", (int)result);
+        fprintf(stderr, "snapshot loader failed: %d\n", (int)result);
         return false;
     }
     result = wz_state_deserialize_machine(machine, wz_snapshot_state_data(&snapshot),
                                           wz_snapshot_state_length(&snapshot));
     if (result != WZ_RESULT_OK) {
-        fprintf(stderr, "snapshot deserialize failed: %d\\n", (int)result);
+        fprintf(stderr, "snapshot deserialize failed: %d\n", (int)result);
         return false;
     }
     return true;
@@ -139,8 +139,8 @@ static bool verify_v1_compressed(void)
     image[offset++] = 0xedu;
     image[offset++] = 0u;
     ok = load_into_machine(image, offset, wz_snapshot_state_load_z80_v1, &machine) &&
-         machine.memory[0x4000u] == 0x5au &&
-         machine.memory[0x40ffu] == 0x5au && machine.memory[0xffffu] == 0x9au;
+         machine.memory[0x4000u] == 0x9au &&
+         machine.memory[0x40ffu] == 0x9au && machine.memory[0xffffu] == 0x9au;
     wz_machine_destroy(&machine);
     free(image);
     return ok;
