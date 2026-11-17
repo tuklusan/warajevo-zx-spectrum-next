@@ -1322,34 +1322,47 @@ static bool wz_host_replace_native_tape(
     size_t record_count)
 {
     wz_byte_t* image = NULL;
+    wz_byte_t* previous_image = NULL;
     size_t image_length = 0u;
+    size_t previous_length;
+    bool success = false;
 
     if (session == NULL || strcmp(session->tape_format, "NATIVE") != 0 ||
         session->tape_source_path[0] == '\0' ||
         records == NULL || record_count == 0u ||
-        session->machine.tape_state.motor_on) {
+        session->machine.tape_state.motor_on ||
+        session->tape_image_data == NULL || session->tape_image_length == 0u) {
         return false;
     }
+    previous_length = session->tape_image_length;
+    previous_image = (wz_byte_t*)malloc(previous_length);
+    if (previous_image == NULL) return false;
+    memcpy(previous_image, session->tape_image_data, previous_length);
     if (wz_tape_write_native_tap(records, record_count, NULL, 0u,
             &image_length) != WZ_RESULT_BUFFER_TOO_SMALL ||
         image_length == 0u) {
-        return false;
+        goto cleanup;
     }
     image = (wz_byte_t*)malloc(image_length);
     if (image == NULL ||
         wz_tape_write_native_tap(records, record_count, image, image_length,
                                  &image_length) != WZ_RESULT_OK) {
-        free(image);
-        return false;
+        goto cleanup;
     }
     if (!wz_host_output_write_atomic_utf8(session->tape_source_path,
-                                          image, image_length) ||
-        !wz_host_load_external_tape(session, session->tape_source_path)) {
-        free(image);
-        return false;
+                                          image, image_length)) {
+        goto cleanup;
     }
+    if (!wz_host_load_external_tape(session, session->tape_source_path)) {
+        (void)wz_host_output_write_atomic_utf8(session->tape_source_path,
+                                               previous_image, previous_length);
+        goto cleanup;
+    }
+    success = true;
+cleanup:
     free(image);
-    return true;
+    free(previous_image);
+    return success;
 }
 
 static bool wz_host_linearize_native_tape(wz_host_session_t* session)
