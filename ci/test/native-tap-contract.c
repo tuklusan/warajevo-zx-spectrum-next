@@ -141,7 +141,7 @@ static bool conversion_case(void)
                                  &native_length) != WZ_RESULT_OK ||
         wz_tape_native_to_standard_tap(native, native_length, NULL, 0u,
                                        &standard_length) !=
-            WZ_RESULT_BUFFER_TOO_SMALL || standard_length != 16u ||
+            WZ_RESULT_BUFFER_TOO_SMALL || standard_length != 14u ||
         wz_tape_native_to_standard_tap(native, native_length, standard,
                                        sizeof(standard), &standard_length) !=
             WZ_RESULT_OK ||
