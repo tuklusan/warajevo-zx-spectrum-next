@@ -7,6 +7,7 @@
   "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/43971972176",
   "workflowEvent": "push",
   "branch": "main",
+  "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
   "timestamp": "2026-11-16T22:41:00+00:00",
   "caseCount": 3,
   "caseCountPerRunner": 3,
