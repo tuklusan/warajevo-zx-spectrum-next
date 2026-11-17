@@ -132,7 +132,7 @@ bool wz_input_arbiter_record_effective(wz_input_arbiter_t* arbiter,
     if (arbiter->input_trace.entries == 0) {
         return false;
     }
-    if (arbiter->input_trace.count >= arbiter->input_trace.capacity) {
+    if (arbiter->input_trace.count > arbiter->input_trace.capacity) {
         return false;
     }
     if (arbiter->input_trace.count != 0u &&
@@ -141,6 +141,9 @@ bool wz_input_arbiter_record_effective(wz_input_arbiter_t* arbiter,
         arbiter->input_trace.count = 0u;
         arbiter->input_trace.next_sequence = 0u;
         wz_input_arbiter_trace_state_clear(&arbiter->input_trace_state);
+    }
+    if (arbiter->input_trace.count >= arbiter->input_trace.capacity) {
+        return false;
     }
     return wz_input_arbiter_trace_record(
         &arbiter->input_trace, &arbiter->input_trace_state,
