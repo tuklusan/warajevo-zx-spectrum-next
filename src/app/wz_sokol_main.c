@@ -219,6 +219,8 @@ typedef struct {
     size_t tape_image_length;
     wz_tap_block_t* tape_blocks;
     size_t tape_block_count;
+    wz_native_tap_record_t* native_tape_records;
+    size_t native_tape_record_count;
     wz_tzx_block_t* tzx_blocks;
     size_t tzx_block_count;
     wz_tape_manager_transaction_t tape_edit_transaction;
@@ -1174,9 +1176,11 @@ static bool wz_host_load_external_tape(wz_host_session_t* session,
     size_t segment_count = 0u;
     wz_tape_segment_t* segments = NULL;
     wz_tap_block_t* tap_blocks = NULL;
+    wz_native_tap_record_t* native_records = NULL;
     wz_tzx_block_t* blocks = NULL;
     size_t block_count = 0u;
     size_t tap_block_count = 0u;
+    size_t native_record_count = 0u;
     const wz_machine_profile_t* profile;
     wz_result_t parsed = WZ_RESULT_INVALID_STATE;
     bool native_input = false;
@@ -1187,6 +1191,20 @@ static bool wz_host_load_external_tape(wz_host_session_t* session,
     if (wz_host_extension_is(path, ".tap")) {
         native_input = wz_tape_is_native_tap(data, length);
         if (native_input) {
+            parsed = wz_tape_parse_native_tap(data, length, NULL, 0u,
+                                              &native_record_count);
+            if (parsed != WZ_RESULT_BUFFER_TOO_SMALL ||
+                native_record_count == 0u ||
+                native_record_count > SIZE_MAX / sizeof(*native_records)) {
+                goto cleanup;
+            }
+            native_records = (wz_native_tap_record_t*)malloc(
+                native_record_count * sizeof(*native_records));
+            if (native_records == NULL ||
+                wz_tape_parse_native_tap(data, length, native_records,
+                    native_record_count, &native_record_count) != WZ_RESULT_OK) {
+                goto cleanup;
+            }
             parsed = wz_tape_native_to_standard_tap(data, length, NULL, 0u,
                                                     &playback_length);
             if (parsed == WZ_RESULT_BUFFER_TOO_SMALL && playback_length != 0u) {
@@ -1264,15 +1282,19 @@ static bool wz_host_load_external_tape(wz_host_session_t* session,
         wz_host_tape_manager_selection_clear(session);
         free(session->tape_image_data);
         free(session->tape_blocks);
+        free(session->native_tape_records);
         free(session->tzx_blocks);
         session->tape_image_data = data;
         session->tape_image_length = length;
         session->tape_blocks = tap_blocks;
         session->tape_block_count = tap_block_count;
+        session->native_tape_records = native_records;
+        session->native_tape_record_count = native_record_count;
         session->tzx_blocks = blocks;
         session->tzx_block_count = block_count;
         data = NULL;
         tap_blocks = NULL;
+        native_records = NULL;
         blocks = NULL;
         (void)snprintf(session->tape_source_path,
                        sizeof(session->tape_source_path), "%s", path);
@@ -1288,6 +1310,7 @@ static bool wz_host_load_external_tape(wz_host_session_t* session,
 cleanup:
     free(blocks);
     free(tap_blocks);
+    free(native_records);
     free(segments);
     if (playback_data != data) free(playback_data);
     free(data);
@@ -1822,6 +1845,9 @@ static void wz_host_tape_media_release(void* context)
     free(session->tape_blocks);
     session->tape_blocks = NULL;
     session->tape_block_count = 0u;
+    free(session->native_tape_records);
+    session->native_tape_records = NULL;
+    session->native_tape_record_count = 0u;
     free(session->tzx_blocks);
     session->tzx_blocks = NULL;
     session->tzx_block_count = 0u;
@@ -6520,6 +6546,8 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
             wz_host_session.tape_blocks;
         block_count = tap_edit != NULL ? tap_edit->count :
             wz_host_session.tape_block_count;
+    } else if (strcmp(wz_host_session.tape_format, "NATIVE") == 0) {
+        block_count = wz_host_session.native_tape_record_count;
     } else if (strcmp(wz_host_session.tape_format, "TZX") == 0) {
         block_count = wz_host_session.tzx_block_count;
     } else {
@@ -6638,6 +6666,22 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
                             block->length - 1u : 0u),
                         (unsigned long long)(block->length + 3u));
                 }
+            } else if (strcmp(wz_host_session.tape_format, "NATIVE") == 0) {
+                const wz_native_tap_record_t* record =
+                    &wz_host_session.native_tape_records[index];
+                const char* type = record->record_type < 4u ?
+                    "uncompressed" : record->record_type == 4u ?
+                        "sample" : "compressed";
+                size_t logical_length = record->decompressed_length != 0u ?
+                    record->decompressed_length : record->payload_length;
+                (void)snprintf(line, sizeof(line),
+                    "%sRecord %llu | type %u (%s) | flag %02X | logical %llu / stored %llu bytes",
+                    index == selected ? "> " : "  ",
+                    (unsigned long long)(index + 1u),
+                    (unsigned int)record->record_type, type,
+                    (unsigned int)record->flag,
+                    (unsigned long long)logical_length,
+                    (unsigned long long)record->stored_length);
             } else {
                 const wz_tzx_block_t* block = &wz_host_session.tzx_blocks[index];
                 const char* disposition = block->disposition == WZ_TZX_SUPPORTED ?
@@ -6729,7 +6773,25 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
                 wz_host_session.tape_edit_data_block = SIZE_MAX;
             }
         }
-        if (strcmp(wz_host_session.tape_format, "TAP") == 0) {
+        if (strcmp(wz_host_session.tape_format, "NATIVE") == 0) {
+            nk_layout_row_dynamic(context, 20.0f, 1);
+            nk_label(context, "Advanced Warajevo Tape (read-only)",
+                     NK_TEXT_LEFT);
+            for (size_t operation_index = 0u;
+                 operation_index < wz_tape_manager_maintenance_count();
+                 ++operation_index) {
+                const wz_tape_manager_maintenance_operation_t* operation =
+                    wz_tape_manager_maintenance_at(
+                        WZ_TAPE_MANAGER_FORMAT_NATIVE_TAP, operation_index);
+                if (operation == NULL) continue;
+                nk_layout_row_dynamic(context, 22.0f, 2);
+                nk_label(context, operation->label, NK_TEXT_LEFT);
+                nk_label(context, operation->available ? "Available" :
+                    (operation->unavailable_reason == NULL ?
+                        "Unavailable" : operation->unavailable_reason),
+                    NK_TEXT_LEFT);
+            }
+        } else if (strcmp(wz_host_session.tape_format, "TAP") == 0) {
             bool can_edit = !machine->tape_state.motor_on;
             bool has_edits = tap_edit != NULL;
             nk_layout_row_dynamic(context, 20.0f, 1);
@@ -7955,6 +8017,9 @@ static void wz_host_session_shutdown(void)
     wz_host_session.tape_image_length = 0u;
     free(wz_host_session.tape_blocks);
     wz_host_session.tape_blocks = NULL;
+    free(wz_host_session.native_tape_records);
+    wz_host_session.native_tape_records = NULL;
+    wz_host_session.native_tape_record_count = 0u;
     free(wz_host_session.tzx_blocks);
     wz_host_session.tzx_blocks = NULL;
     for (size_t slot = 0u; slot < WZ_UI_MICRODRIVE_COUNT; ++slot) {

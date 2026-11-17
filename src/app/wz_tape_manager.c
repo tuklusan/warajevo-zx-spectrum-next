@@ -383,8 +383,8 @@ wz_tape_manager_maintenance_at(wz_tape_manager_format_t format, size_t index)
     operation = &maintenance_operations[index];
     if (format != WZ_TAPE_MANAGER_FORMAT_NATIVE_TAP) return operation;
     native_operation = *operation;
-    native_operation.available = true;
-    native_operation.unavailable_reason = 0;
+    native_operation.available = false;
+    native_operation.unavailable_reason = "native-maintenance-not-implemented";
     return &native_operation;
 }
 
