@@ -131,39 +131,46 @@ static bool conversion_case(void)
     wz_tap_block_t blocks[RECORDS];
     bool ok = false;
 
-    CHECK(wz_tape_write_native_tap(records, 2u, NULL, 0u, &native_length) ==
-          WZ_RESULT_BUFFER_TOO_SMALL && native_length != 0u);
+    if (wz_tape_write_native_tap(records, 2u, NULL, 0u, &native_length) !=
+            WZ_RESULT_BUFFER_TOO_SMALL || native_length == 0u) {
+        goto cleanup;
+    }
     native = (wz_byte_t*)malloc(native_length);
-    CHECK(native != NULL &&
-          wz_tape_write_native_tap(records, 2u, native, native_length,
-                                   &native_length) == WZ_RESULT_OK);
-    CHECK(wz_tape_native_to_standard_tap(native, native_length, NULL, 0u,
-                                         &standard_length) ==
-          WZ_RESULT_BUFFER_TOO_SMALL && standard_length == 16u);
-    CHECK(wz_tape_native_to_standard_tap(native, native_length, standard,
-                                         sizeof(standard), &standard_length) ==
-          WZ_RESULT_OK);
-    CHECK(wz_tape_parse_standard_tap(standard, standard_length, 1u, NULL, 0u,
-                                     &block_count) == WZ_RESULT_BUFFER_TOO_SMALL &&
-          block_count == 2u);
-    CHECK(wz_tape_parse_standard_tap(standard, standard_length, 1u, blocks,
-                                     RECORDS,
-                                     &block_count) == WZ_RESULT_OK &&
-          blocks[0].length == 4u && blocks[0].data[0] == 0x00u &&
-          blocks[1].length == 4u && blocks[1].data[0] == 0xffu);
+    if (native == NULL ||
+        wz_tape_write_native_tap(records, 2u, native, native_length,
+                                 &native_length) != WZ_RESULT_OK ||
+        wz_tape_native_to_standard_tap(native, native_length, NULL, 0u,
+                                       &standard_length) !=
+            WZ_RESULT_BUFFER_TOO_SMALL || standard_length != 16u ||
+        wz_tape_native_to_standard_tap(native, native_length, standard,
+                                       sizeof(standard), &standard_length) !=
+            WZ_RESULT_OK ||
+        wz_tape_parse_standard_tap(standard, standard_length, 1u, NULL, 0u,
+                                   &block_count) != WZ_RESULT_BUFFER_TOO_SMALL ||
+        block_count != 2u ||
+        wz_tape_parse_standard_tap(standard, standard_length, 1u, blocks,
+                                   RECORDS, &block_count) != WZ_RESULT_OK ||
+        blocks[0].length != 4u || blocks[0].data[0] != 0x00u ||
+        blocks[1].length != 4u || blocks[1].data[0] != 0xffu) {
+        goto cleanup;
+    }
     free(native);
     native = NULL;
     records_init(extended);
-    CHECK(wz_tape_write_native_tap(extended, RECORDS, NULL, 0u,
-                                   &native_length) == WZ_RESULT_BUFFER_TOO_SMALL &&
-          native_length != 0u);
+    if (wz_tape_write_native_tap(extended, RECORDS, NULL, 0u,
+                                 &native_length) != WZ_RESULT_BUFFER_TOO_SMALL ||
+        native_length == 0u) {
+        goto cleanup;
+    }
     native = (wz_byte_t*)malloc(native_length);
-    CHECK(native != NULL &&
-          wz_tape_write_native_tap(extended, RECORDS, native, native_length,
-                                   &native_length) == WZ_RESULT_OK);
-    CHECK(wz_tape_native_to_standard_tap(native, native_length, NULL, 0u,
-                                         &standard_length) ==
-          WZ_RESULT_UNSUPPORTED_OPERATION);
+    if (native == NULL ||
+        wz_tape_write_native_tap(extended, RECORDS, native, native_length,
+                                 &native_length) != WZ_RESULT_OK ||
+        wz_tape_native_to_standard_tap(native, native_length, NULL, 0u,
+                                       &standard_length) !=
+            WZ_RESULT_UNSUPPORTED_OPERATION) {
+        goto cleanup;
+    }
     ok = true;
 cleanup:
     free(native);

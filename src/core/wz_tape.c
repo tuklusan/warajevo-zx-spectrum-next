@@ -482,7 +482,11 @@ wz_result_t wz_tape_native_to_standard_tap(const wz_byte_t* data,
         required += 2u + block_length;
     }
     *output_length = required;
-    if (output == NULL || capacity < required) {
+    if (output == NULL) {
+        result = WZ_RESULT_BUFFER_TOO_SMALL;
+        goto cleanup;
+    }
+    if (capacity < required) {
         result = WZ_RESULT_BUFFER_TOO_SMALL;
         goto cleanup;
     }
