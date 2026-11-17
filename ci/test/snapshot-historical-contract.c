@@ -90,13 +90,23 @@ static bool verify_v1_uncompressed(void)
         image[V1_HEADER + index] = (wz_byte_t)(index % 251u + 1u);
     }
     ok = load_into_machine(image, V1_HEADER + V1_MEMORY,
-                           wz_snapshot_state_load_z80_v1, &machine) &&
-         machine.cpu.program_counter == 0x8123u &&
-         machine.cpu.stack_pointer == 0x9abcu && machine.cpu.ix == 0x1357u &&
-         machine.cpu.iy == 0x2468u && machine.cpu.interrupt_mode == 2u &&
-         machine.border_color == 5u && machine.memory[0x4000u] == 1u &&
-         machine.memory[0xffffu] ==
-             (wz_byte_t)(((V1_MEMORY - 1u) % 251u) + 1u);
+                           wz_snapshot_state_load_z80_v1, &machine);
+    if (ok && (machine.cpu.program_counter != 0x8123u ||
+               machine.cpu.stack_pointer != 0x9abcu ||
+               machine.cpu.ix != 0x1357u || machine.cpu.iy != 0x2468u ||
+               machine.cpu.interrupt_mode != 2u || machine.border_color != 5u ||
+               machine.memory[0x4000u] != 1u ||
+               machine.memory[0xffffu] !=
+                   (wz_byte_t)(((V1_MEMORY - 1u) % 251u) + 1u))) {
+        fprintf(stderr,
+                "v1 fields pc=%04x sp=%04x ix=%04x iy=%04x im=%u border=%u "
+                "mem0=%02x memlast=%02x\\n",
+                machine.cpu.program_counter, machine.cpu.stack_pointer,
+                machine.cpu.ix, machine.cpu.iy, machine.cpu.interrupt_mode,
+                machine.border_color, machine.memory[0x4000u],
+                machine.memory[0xffffu]);
+        ok = false;
+    }
     wz_machine_destroy(&machine);
     free(image);
     return ok;
