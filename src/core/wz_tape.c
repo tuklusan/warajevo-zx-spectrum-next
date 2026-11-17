@@ -434,6 +434,72 @@ wz_result_t wz_tape_write_native_tap(const wz_native_tap_record_t* records,
     return WZ_RESULT_OK;
 }
 
+wz_result_t wz_tape_native_to_standard_tap(const wz_byte_t* data,
+                                           size_t length,
+                                           wz_byte_t* output,
+                                           size_t capacity,
+                                           size_t* output_length)
+{
+    wz_native_tap_record_t* records = NULL;
+    size_t record_count = 0u;
+    size_t required = 0u;
+    size_t offset = 0u;
+    wz_result_t result;
+
+    if (output_length == NULL || data == NULL || length == 0u) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    result = wz_tape_parse_native_tap(data, length, NULL, 0u, &record_count);
+    if (result != WZ_RESULT_BUFFER_TOO_SMALL || record_count == 0u ||
+        record_count > SIZE_MAX / sizeof(*records)) {
+        return result == WZ_RESULT_BUFFER_TOO_SMALL ? WZ_RESULT_PARSE_ERROR :
+            result;
+    }
+    records = (wz_native_tap_record_t*)malloc(
+        record_count * sizeof(*records));
+    if (records == NULL) return WZ_RESULT_OUT_OF_MEMORY;
+    result = wz_tape_parse_native_tap(data, length, records, record_count,
+                                       &record_count);
+    if (result != WZ_RESULT_OK) goto cleanup;
+    for (size_t index = 0u; index < record_count; ++index) {
+        const wz_native_tap_record_t* record = &records[index];
+        size_t block_length;
+        if (record->record_type >= 4u) {
+            result = WZ_RESULT_UNSUPPORTED_OPERATION;
+            goto cleanup;
+        }
+        if (record->payload_length < 2u ||
+            record->payload_length > UINT16_MAX - 1u ||
+            record->payload == NULL) {
+            result = WZ_RESULT_PARSE_ERROR;
+            goto cleanup;
+        }
+        block_length = record->payload_length + 1u;
+        if (required > SIZE_MAX - 2u - block_length) {
+            result = WZ_RESULT_PARSE_ERROR;
+            goto cleanup;
+        }
+        required += 2u + block_length;
+    }
+    *output_length = required;
+    if (output == NULL || capacity < required) {
+        result = WZ_RESULT_BUFFER_TOO_SMALL;
+        goto cleanup;
+    }
+    for (size_t index = 0u; index < record_count; ++index) {
+        const wz_native_tap_record_t* record = &records[index];
+        const size_t block_length = record->payload_length + 1u;
+        wz_write_le16(output + offset, (wz_word_t)block_length);
+        output[offset + 2u] = record->flag;
+        memcpy(output + offset + 3u, record->payload, record->payload_length);
+        offset += 2u + block_length;
+    }
+    result = WZ_RESULT_OK;
+cleanup:
+    free(records);
+    return result;
+}
+
 static wz_dword_t wz_tzx_read_le24(const wz_byte_t* bytes)
 {
     return (wz_dword_t)bytes[0] | ((wz_dword_t)bytes[1] << 8u) |

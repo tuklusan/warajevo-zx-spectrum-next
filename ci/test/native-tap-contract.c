@@ -113,12 +113,56 @@ cleanup:
     return ok;
 }
 
+static bool conversion_case(void)
+{
+    static const wz_byte_t payload_a[] = {0x00u, 0x11u, 0x22u, 0x33u};
+    static const wz_byte_t payload_b[] = {0xffu, 0xaau, 0x55u, 0xffu};
+    wz_native_tap_record_t records[2] = {
+        {.record_type = 0u, .stored_length = 6u, .flag = 0x00u,
+         .payload = payload_a, .payload_length = sizeof(payload_a)},
+        {.record_type = 3u, .stored_length = 6u, .flag = 0xffu,
+         .payload = payload_b, .payload_length = sizeof(payload_b)}};
+    wz_native_tap_record_t extended[RECORDS];
+    wz_byte_t native[128];
+    wz_byte_t standard[32];
+    size_t native_length = 0u;
+    size_t standard_length = 0u;
+    size_t block_count = 0u;
+    wz_tap_block_t blocks[2];
+    bool ok = false;
+
+    CHECK(wz_tape_write_native_tap(records, 2u, native, sizeof(native),
+                                   &native_length) == WZ_RESULT_OK);
+    CHECK(wz_tape_native_to_standard_tap(native, native_length, NULL, 0u,
+                                         &standard_length) ==
+          WZ_RESULT_BUFFER_TOO_SMALL && standard_length == 16u);
+    CHECK(wz_tape_native_to_standard_tap(native, native_length, standard,
+                                         sizeof(standard), &standard_length) ==
+          WZ_RESULT_OK);
+    CHECK(wz_tape_parse_standard_tap(standard, standard_length, 1u, NULL, 0u,
+                                     &block_count) == WZ_RESULT_BUFFER_TOO_SMALL &&
+          block_count == 2u);
+    CHECK(wz_tape_parse_standard_tap(standard, standard_length, 1u, blocks, 2u,
+                                     &block_count) == WZ_RESULT_OK &&
+          blocks[0].length == 4u && blocks[0].data[0] == 0x00u &&
+          blocks[1].length == 4u && blocks[1].data[0] == 0xffu);
+    records_init(extended);
+    CHECK(wz_tape_write_native_tap(extended, RECORDS, native, sizeof(native),
+                                   &native_length) == WZ_RESULT_OK);
+    CHECK(wz_tape_native_to_standard_tap(native, native_length, standard,
+                                         sizeof(standard), &standard_length) ==
+          WZ_RESULT_UNSUPPORTED_OPERATION);
+    ok = true;
+cleanup:
+    return ok;
+}
+
 int main(void)
 {
-    if (!round_trip() || !rejection()) {
+    if (!round_trip() || !rejection() || !conversion_case()) {
         fputs("FAIL native TAP compatibility contract\n", stderr);
         return EXIT_FAILURE;
     }
-    puts("native-tap-contract cases=2 status=pass");
+    puts("native-tap-contract cases=3 status=pass");
     return EXIT_SUCCESS;
 }
