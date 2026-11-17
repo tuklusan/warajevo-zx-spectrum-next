@@ -622,13 +622,6 @@ target_include_directories(wz_snapshot_state_editor_tests PRIVATE "${WZSN_SOURCE
 add_test(NAME wz_snapshot_state_editor_tests COMMAND wz_snapshot_state_editor_tests)
 
 add_executable(
-    wz_snapshot_historical_contract
-    ${WZSN_REPO_ROOT}/ci/test/snapshot-historical-contract.c)
-target_link_libraries(wz_snapshot_historical_contract PRIVATE wz_core wz_warnings)
-target_include_directories(wz_snapshot_historical_contract PRIVATE "${WZSN_SOURCE_ROOT}")
-add_test(NAME wz_snapshot_historical_contract COMMAND wz_snapshot_historical_contract)
-
-add_executable(
     wz_screenshot_service_tests
     ${WZSN_TEST_ROOT}/wz_screenshot_service_tests.c
     ${WZSN_SOURCE_ROOT}/app/wz_screenshot_service.c)
@@ -709,6 +702,13 @@ target_include_directories(wz_host_output_tests PRIVATE "${WZSN_SOURCE_ROOT}")
 add_test(NAME wz_host_output_tests COMMAND wz_host_output_tests)
 
 endif()
+
+add_executable(
+    wz_snapshot_historical_contract
+    ${WZSN_REPO_ROOT}/ci/test/snapshot-historical-contract.c)
+target_link_libraries(wz_snapshot_historical_contract PRIVATE wz_core wz_warnings)
+target_include_directories(wz_snapshot_historical_contract PRIVATE "${WZSN_SOURCE_ROOT}")
+add_test(NAME wz_snapshot_historical_contract COMMAND wz_snapshot_historical_contract)
 
 enable_testing()
 add_executable(
