@@ -1168,7 +1168,9 @@ static bool wz_host_load_external_tape(wz_host_session_t* session,
                                        const char* path)
 {
     wz_byte_t* data = NULL;
+    wz_byte_t* playback_data = NULL;
     size_t length = 0u;
+    size_t playback_length = 0u;
     size_t segment_count = 0u;
     wz_tape_segment_t* segments = NULL;
     wz_tap_block_t* tap_blocks = NULL;
@@ -1177,23 +1179,46 @@ static bool wz_host_load_external_tape(wz_host_session_t* session,
     size_t tap_block_count = 0u;
     const wz_machine_profile_t* profile;
     wz_result_t parsed = WZ_RESULT_INVALID_STATE;
+    bool native_input = false;
     bool loaded = false;
     if (session == NULL || !wz_host_read_file(path, &data, &length)) return false;
     profile = session->machine.profile;
     if (profile == NULL || profile->master_hz_den == 0u) goto cleanup;
     if (wz_host_extension_is(path, ".tap")) {
-        parsed = wz_tape_parse_standard_tap(data, length,
-            profile->master_ticks_per_cpu_tstate, NULL, 0u, &segment_count);
-        if (parsed == WZ_RESULT_BUFFER_TOO_SMALL && segment_count != 0u &&
-            segment_count <= SIZE_MAX / sizeof(*segments)) {
-            segments = (wz_tape_segment_t*)malloc(segment_count * sizeof(*segments));
-            if (segments != NULL) parsed = wz_tape_parse_standard_tap(
-                data, length, profile->master_ticks_per_cpu_tstate, segments,
-                segment_count, &segment_count);
+        native_input = wz_tape_is_native_tap(data, length);
+        if (native_input) {
+            parsed = wz_tape_native_to_standard_tap(data, length, NULL, 0u,
+                                                    &playback_length);
+            if (parsed == WZ_RESULT_BUFFER_TOO_SMALL && playback_length != 0u) {
+                playback_data = (wz_byte_t*)malloc(playback_length);
+                if (playback_data != NULL) {
+                    parsed = wz_tape_native_to_standard_tap(
+                        data, length, playback_data, playback_length,
+                        &playback_length);
+                }
+            }
+        } else {
+            playback_data = data;
+            playback_length = length;
         }
-        if (parsed == WZ_RESULT_OK) {
-            parsed = wz_host_index_standard_tap(data, length, &tap_blocks,
-                                                &tap_block_count);
+        if (playback_data != NULL && playback_length != 0u) {
+            parsed = wz_tape_parse_standard_tap(playback_data, playback_length,
+                profile->master_ticks_per_cpu_tstate, NULL, 0u,
+                &segment_count);
+            if (parsed == WZ_RESULT_BUFFER_TOO_SMALL && segment_count != 0u &&
+                segment_count <= SIZE_MAX / sizeof(*segments)) {
+                segments = (wz_tape_segment_t*)malloc(
+                    segment_count * sizeof(*segments));
+                if (segments != NULL) parsed = wz_tape_parse_standard_tap(
+                    playback_data, playback_length,
+                    profile->master_ticks_per_cpu_tstate, segments,
+                    segment_count, &segment_count);
+            }
+            if (parsed == WZ_RESULT_OK) {
+                parsed = wz_host_index_standard_tap(
+                    playback_data, playback_length, &tap_blocks,
+                    &tap_block_count);
+            }
         }
     } else if (wz_host_extension_is(path, ".tzx")) {
         parsed = wz_tape_parse_tzx(data, length, NULL, 0u, &block_count);
@@ -1245,7 +1270,8 @@ static bool wz_host_load_external_tape(wz_host_session_t* session,
         (void)snprintf(session->tape_source_path,
                        sizeof(session->tape_source_path), "%s", path);
         (void)snprintf(session->tape_format, sizeof(session->tape_format),
-            "%s", wz_host_extension_is(path, ".tap") ? "TAP" :
+            "%s", native_input ? "NATIVE" :
+            wz_host_extension_is(path, ".tap") ? "TAP" :
             wz_host_extension_is(path, ".tzx") ? "TZX" : "WAV");
         session->tape_manager_selected_segment = 0u;
         session->tape_manager_selected_block = 0u;
@@ -1256,6 +1282,7 @@ cleanup:
     free(blocks);
     free(tap_blocks);
     free(segments);
+    if (playback_data != data) free(playback_data);
     free(data);
     return loaded;
 }
