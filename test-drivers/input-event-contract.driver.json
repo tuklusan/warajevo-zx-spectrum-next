@@ -4,7 +4,7 @@
   "fixtures": [
     {
       "path": "ci/test/input-event-contract.c",
-      "sha256": "24e8b96cf2637d02565ac0a4af6cdd34a9b5ddda48ed1de9d9e103381bfc86f4"
+      "sha256": "c7d00c81b34252f3c8a6fc45ca51d533f545cdb7659e978161070d351e487efd"
     },
     {
       "path": "src/app/wz_input_event.c",

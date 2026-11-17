@@ -118,7 +118,7 @@ int main(void)
     /* A mapped host key reaches Kempston independently of the matrix. */
     REQUIRE(wz_input_event_set_local_key(
         &mapping, &joystick_mapping, &kempston, &arbiter,
-        host_key_down, refcounts, 100u, true));
+        host_key_down, refcounts, 103u, true));
     REQUIRE((wz_kempston_read(&kempston, WZ_KEMPSTON_PORT) & 0x01u) != 0u);
     REQUIRE(wz_input_event_release_local_keys(
         &joystick_mapping, &kempston, &arbiter,
