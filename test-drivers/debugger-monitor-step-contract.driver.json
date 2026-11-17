@@ -64,11 +64,11 @@
     },
     {
       "path": "test-drivers/debugger-monitor-exit-contract.driver.json",
-        "sha256": "9f8ffbc416568847cfc9efb2e7b6a0891a2fbb571c73f18782df7eb6fa9d46b9"
+          "sha256": "987d1a3ffad2c8a9e50012c6b1a12296c22cd3567e22ac47dfbe008909a6e8fc"
     },
     {
       "path": "test-drivers/debugger-monitor-find-contract.driver.json",
-        "sha256": "ad7e444256b5668e25a34a676ad803cf1012d3cd1c53187a8e7253df3a7f5175"
+          "sha256": "7ddbc20b46ef781233bc3022c7c2fb0463796311957b4b95882f79e35248fe31"
     }
   ]
 }
