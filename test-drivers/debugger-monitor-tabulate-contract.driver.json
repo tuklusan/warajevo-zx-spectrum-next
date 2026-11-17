@@ -12,7 +12,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "73038c6e18965555c0290c75851bd365095bc84402afe8654e6849e864e9fae6"
+      "sha256": "a38c03a4a2a3b6400ee4d80ed7a126db7079b740bf7d862588d42f38fe208576"
     },
     {
       "path": "ci/test/debugger-monitor-tabulate/contract.c",
