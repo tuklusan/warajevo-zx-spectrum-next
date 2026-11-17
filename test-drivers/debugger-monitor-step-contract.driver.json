@@ -16,7 +16,7 @@
     },
     {
       "path": "ci/test/performance/driver.json",
-      "sha256": "49d190278b7b1292aa1f1a4fb4183abb644543649fc6f5fc29556e436e1beff8"
+      "sha256": "58648d319dc118cb70ee5f4337525f9528121c10421d6dd727a3d5a520c7dd83"
     },
     {
       "path": "ci/test/debugger-monitor-step-contract.c",
