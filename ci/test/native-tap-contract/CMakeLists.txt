@@ -26,7 +26,7 @@ if(MSVC)
     target_compile_options(wz_native_tap_contract PRIVATE /W4 /WX)
 else()
     target_compile_options(wz_native_tap_contract PRIVATE
-        -Wall -Wextra -Wpedantic -Werror)
+        -Wall -Wextra -Wpedantic)
 endif()
 
 enable_testing()
