@@ -12,7 +12,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "4efbf618008a99b234175da955f6976b2811140bc2c6d74cf6c2ee80e50f41a4"
+      "sha256": "0b81349e7070a3fa9cdbe23b4a0fdba3e53b2ab75bf32af1df217e337223fd75"
     },
     {
       "path": "ci/test/interface1-wait/interface1-wait-contract.c",
@@ -32,7 +32,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "a6a9e2993f4b187e2341cc341f54ffe005b4b829d3276230384258b77b3dc686"
+      "sha256": "f74b54ebcacb1ee06a2c22752b5c18bab7c4c333708e12d92a8403d05e060722"
     },
     {
       "path": "src/core/wz_bus.c",
@@ -40,7 +40,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "ff6a802eb986e29bbdbaef1c3a046ab39bb57742dd01d2d1e2e7b8a135e30b0d"
+      "sha256": "14b370ac404420d6c64e92c852a8803067dfd1d29d2e03d0e9d593446ca653c9"
     },
     {
       "path": "src/core/wz_machine.h",
@@ -52,7 +52,7 @@
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "93479ac03c344c429455d8627096147fb4da4a2b94c5204d8223d7e7b11fc983"
+      "sha256": "73d8f3dd18ebc659c287a4910224fbf602d3b21803f91259db3aa54bbbb858d5"
     },
     {
       "path": "src/core/wz_types.h",
