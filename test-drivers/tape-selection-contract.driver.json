@@ -12,7 +12,7 @@
     },
     {
       "path": "src/app/wz_tape_manager.c",
-      "sha256": "7a08c91c117233f94182465b75ea98964dab4f97a5e9560f3cdc58d67a79a076"
+      "sha256": "d1a891fb4ffe72809eddfa5b64b280ad90ad2b8a696652a39082fb198678aa5c"
     },
     {
       "path": "src/app/wz_tape_manager.h",
@@ -20,7 +20,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "4bf0abbe3db6f02a0f39791217a85c9b1c4b98065cda3f83f0679557c177a7dc"
+      "sha256": "dfe60bf040f771dc1121820b3b7c865b489cfcd9de14c68f97417413df1f005a"
     },
     {
       "path": "src/cmake/CMakeLists.txt",

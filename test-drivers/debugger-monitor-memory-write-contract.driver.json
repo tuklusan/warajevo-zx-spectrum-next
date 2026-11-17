@@ -20,7 +20,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "4bf0abbe3db6f02a0f39791217a85c9b1c4b98065cda3f83f0679557c177a7dc"
+      "sha256": "dfe60bf040f771dc1121820b3b7c865b489cfcd9de14c68f97417413df1f005a"
     },
     {
       "path": "src/core/wz_debugger.c",
