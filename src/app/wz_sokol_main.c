@@ -1317,6 +1317,42 @@ cleanup:
     return loaded;
 }
 
+static bool wz_host_linearize_native_tape(wz_host_session_t* session)
+{
+    wz_byte_t* image = NULL;
+    size_t image_length = 0u;
+
+    if (session == NULL || strcmp(session->tape_format, "NATIVE") != 0 ||
+        session->tape_source_path[0] == '\0' ||
+        session->native_tape_records == NULL ||
+        session->native_tape_record_count == 0u ||
+        session->machine.tape_state.motor_on) {
+        return false;
+    }
+    if (wz_tape_write_native_tap(session->native_tape_records,
+            session->native_tape_record_count, NULL, 0u,
+            &image_length) != WZ_RESULT_BUFFER_TOO_SMALL ||
+        image_length == 0u) {
+        return false;
+    }
+    image = (wz_byte_t*)malloc(image_length);
+    if (image == NULL ||
+        wz_tape_write_native_tap(session->native_tape_records,
+            session->native_tape_record_count, image, image_length,
+            &image_length) != WZ_RESULT_OK) {
+        free(image);
+        return false;
+    }
+    if (!wz_host_output_write_atomic_utf8(session->tape_source_path,
+                                          image, image_length) ||
+        !wz_host_load_external_tape(session, session->tape_source_path)) {
+        free(image);
+        return false;
+    }
+    free(image);
+    return true;
+}
+
 static bool wz_host_load_external_snapshot(wz_host_session_t* session,
                                            const char* path)
 {
@@ -6775,7 +6811,7 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
         }
         if (strcmp(wz_host_session.tape_format, "NATIVE") == 0) {
             nk_layout_row_dynamic(context, 20.0f, 1);
-            nk_label(context, "Advanced Warajevo Tape (read-only)",
+            nk_label(context, "Advanced Warajevo Tape",
                      NK_TEXT_LEFT);
             for (size_t operation_index = 0u;
                  operation_index < wz_tape_manager_maintenance_count();
@@ -6787,6 +6823,24 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
                 nk_layout_row_dynamic(context, 22.0f, 2);
                 nk_label(context, operation->label, NK_TEXT_LEFT);
                 if (operation->kind ==
+                        WZ_TAPE_MANAGER_MAINTENANCE_LINEARIZE &&
+                    operation->available) {
+                    if (wz_host_session.machine.tape_state.motor_on)
+                        nk_widget_disable_begin(context);
+                    if (nk_button_label(context, "Linearize")) {
+                        if (wz_host_linearize_native_tape(&wz_host_session)) {
+                            (void)snprintf(wz_host_session.file_notification,
+                                sizeof(wz_host_session.file_notification),
+                                "Native tape linearized");
+                        } else {
+                            (void)snprintf(wz_host_session.file_notification,
+                                sizeof(wz_host_session.file_notification),
+                                "Native tape linearization failed");
+                        }
+                    }
+                    if (wz_host_session.machine.tape_state.motor_on)
+                        nk_widget_disable_end(context);
+                } else if (operation->kind ==
                         WZ_TAPE_MANAGER_MAINTENANCE_EFFICIENCY &&
                     operation->available) {
                     wz_tape_manager_native_efficiency_t efficiency;
@@ -6813,6 +6867,11 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
                             "Unavailable" : operation->unavailable_reason),
                         NK_TEXT_LEFT);
                 }
+            }
+            if (wz_host_session.machine.tape_state.motor_on) {
+                nk_layout_row_dynamic(context, 20.0f, 1);
+                nk_label(context, "Stop playback to linearize the native tape",
+                         NK_TEXT_LEFT);
             }
         } else if (strcmp(wz_host_session.tape_format, "TAP") == 0) {
             bool can_edit = !machine->tape_state.motor_on;

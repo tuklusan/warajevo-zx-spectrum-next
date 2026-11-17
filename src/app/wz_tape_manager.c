@@ -384,7 +384,8 @@ wz_tape_manager_maintenance_at(wz_tape_manager_format_t format, size_t index)
     if (format != WZ_TAPE_MANAGER_FORMAT_NATIVE_TAP) return operation;
     native_operation = *operation;
     native_operation.available = operation->kind ==
-        WZ_TAPE_MANAGER_MAINTENANCE_EFFICIENCY;
+        WZ_TAPE_MANAGER_MAINTENANCE_EFFICIENCY ||
+        operation->kind == WZ_TAPE_MANAGER_MAINTENANCE_LINEARIZE;
     native_operation.unavailable_reason = native_operation.available ? 0 :
         "native-maintenance-not-implemented";
     return &native_operation;
