@@ -37,7 +37,7 @@ static void set_v1_header(wz_byte_t* data)
     put_le16(data + 8u, 0x9abcu);
     data[10] = 0x33u;
     data[11] = 0x44u;
-    data[12] = 0x03u | (5u << 1u);
+    data[12] = 0x01u | (5u << 1u);
     data[13] = 0x66u;
     data[14] = 0x77u;
     data[15] = 0x88u;

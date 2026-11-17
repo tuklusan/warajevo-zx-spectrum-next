@@ -590,6 +590,11 @@ static wz_result_t wz_state_deserialize_machine_in_place(
     if ((machine->ula_output & 0xe0u) != 0u) {
         return WZ_RESULT_INVALID_STATE;
     }
+    machine->border_color = (wz_byte_t)(machine->ula_output & 0x07u);
+    machine->border_event_base_color = machine->border_color;
+    machine->border_event_base_tick = 0u;
+    machine->border_event_count = 0u;
+    machine->border_event_start = 0u;
     for (size_t index = 0u; index < sizeof(ula_output_tick); ++index) {
         ula_output_tick |= (wz_qword_t)data[62u + index] << (index * 8u);
     }
