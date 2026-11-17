@@ -1,14 +1,14 @@
 {
   "testId": "debugger-monitor-tabulate-contract",
   "status": "pass",
-  "commit": "2c8f84b97214edba952cbde1476d01423e282b53",
-  "sourceCommit": "2c8f84b97214edba952cbde1476d01423e282b53",
-  "driverCommit": "6a4008934b769e36039a1893b2060a7d0edfe55d",
-  "runId": 44065121223,
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/44065121223",
+  "commit": "d04e7fa9f0cbe8796882f8842754828a8da2989e",
+  "sourceCommit": "d04e7fa9f0cbe8796882f8842754828a8da2989e",
+  "driverCommit": "a2fa533a4d42baa5a8cf266bec381ece558de2cc",
+  "runId": 44069032854,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/44069032854",
   "workflowEvent": "push",
   "branch": "main",
-  "timestamp": "2026-11-17T10:35:36+00:00",
+  "timestamp": "2026-11-17T11:08:46+00:00",
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
@@ -44,7 +44,7 @@
     },
     {
       "path": "src/app/wz_sokol_main.c",
-      "sha256": "4bf0abbe3db6f02a0f39791217a85c9b1c4b98065cda3f83f0679557c177a7dc"
+      "sha256": "dfe60bf040f771dc1121820b3b7c865b489cfcd9de14c68f97417413df1f005a"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
