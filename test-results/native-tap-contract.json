@@ -1,14 +1,14 @@
 {
   "testId": "native-tap-contract",
   "status": "pass",
-  "commit": "0666bd1a1d220c8fc83ba718b8abab6fa77ba01e",
-  "driverCommit": "cb0da5183f1d008d5a205032cfb420dad394ba7e",
+  "commit": "06a546145110dc43c40e4cd87e4907b472afe5c8",
+  "driverCommit": "06a546145110dc43c40e4cd87e4907b472afe5c8",
   "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
-  "timestamp": "2026-11-17T01:26:44Z",
-  "workflowRun": 43993717917,
-  "proofRun": 43995587257,
+  "timestamp": "2026-11-17T09:43:31Z",
+  "workflowRun": 44057710617,
+  "proofRun": 44057710617,
   "workflowEvent": "push",
-  "assertionsPerRunner": 2,
+  "assertionsPerRunner": 3,
   "nativeTargets": [
     "Windows x64",
     "Linux x64",
@@ -16,23 +16,24 @@
     "macOS ARM64",
     "macOS Intel"
   ],
-  "observedOutput": "native-tap-contract cases=2 status=pass",
+  "observedOutput": "native-tap-contract cases=3 status=pass",
   "assertions": [
     "four supported native record classes round-trip through the production writer and parser",
-    "malformed links, lengths, and unknown record types are rejected without partial output"
+    "malformed links, lengths, and unknown record types are rejected without partial output",
+    "uncompressed record types 0–3 convert to standard TAP blocks while extended records remain unsupported"
   ],
   "fixtures": [
     {
       "path": "ci/test/native-tap-contract.c",
-      "sha256": "5375f6c4f57bb6e0806a23ea8e55f6b925706844f2915f0f25f8fe3d4cf094d2"
+      "sha256": "2a384d8a5a2dac212adaf5d16b0c9499430a7a3b93cb4780a49086d0b070cf99"
     },
     {
       "path": "src/core/wz_tape.c",
-      "sha256": "8116a9692f0ba19729ed51a41feb019ff1fa866bf8ed1e5ad0ef0db672b32a57"
+      "sha256": "53723576704a67b2f3a9ad83c82803b6f0d7edf2aff2a9a49760f0ed84240e47"
     },
     {
       "path": "src/core/wz_tape.h",
-      "sha256": "d483f3f99bcfa26590bf259114193d2314dd2af2720316bf66021462f5c31fd6"
+      "sha256": "cab084ec2fc67a8ad8be1434a527bc5830f759f331de4156c75bb7456662aed3"
     },
     {
       "path": "ci/test/native-tap-contract/CMakeLists.txt",
