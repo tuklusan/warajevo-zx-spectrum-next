@@ -1220,9 +1220,11 @@ static bool wz_host_load_external_tape(wz_host_session_t* session,
                     segment_count, &segment_count);
             }
             if (parsed == WZ_RESULT_OK) {
-                parsed = wz_host_index_standard_tap(
-                    playback_data, playback_length, &tap_blocks,
-                    &tap_block_count);
+                if (!native_input) {
+                    parsed = wz_host_index_standard_tap(
+                        playback_data, playback_length, &tap_blocks,
+                        &tap_block_count);
+                }
             }
         }
     } else if (wz_host_extension_is(path, ".tzx")) {
