@@ -100,7 +100,7 @@ static bool verify_v1_uncompressed(void)
                    (wz_byte_t)(((V1_MEMORY - 1u) % 251u) + 1u))) {
         fprintf(stderr,
                 "v1 fields pc=%04x sp=%04x ix=%04x iy=%04x im=%u border=%u "
-                "mem0=%02x memlast=%02x\\n",
+                "mem0=%02x memlast=%02x\n",
                 machine.cpu.program_counter, machine.cpu.stack_pointer,
                 machine.cpu.ix, machine.cpu.iy, machine.cpu.interrupt_mode,
                 machine.border_color, machine.memory[0x4000u],
