@@ -44,7 +44,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "a6a9e2993f4b187e2341cc341f54ffe005b4b829d3276230384258b77b3dc686"
+      "sha256": "069ac1ad6a3bc6a48825cac18af00e9a4953c71781f919b2ec84cafadc188f90"
     },
     {
       "path": "src/core/wz_debugger.c",
