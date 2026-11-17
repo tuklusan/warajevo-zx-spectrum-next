@@ -475,7 +475,7 @@ wz_result_t wz_tape_native_to_standard_tap(const wz_byte_t* data,
             goto cleanup;
         }
         block_length = record->payload_length + 1u;
-        if (required > SIZE_MAX - 2u - block_length) {
+        if (SIZE_MAX - required < 2u + block_length) {
             result = WZ_RESULT_PARSE_ERROR;
             goto cleanup;
         }

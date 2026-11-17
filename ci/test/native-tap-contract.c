@@ -123,7 +123,7 @@ static bool conversion_case(void)
         {.record_type = 3u, .stored_length = 6u, .flag = 0xffu,
          .payload = payload_b, .payload_length = sizeof(payload_b)}};
     wz_native_tap_record_t extended[RECORDS];
-    wz_byte_t native[128];
+    wz_byte_t* native = NULL;
     wz_byte_t standard[32];
     size_t native_length = 0u;
     size_t standard_length = 0u;
@@ -131,7 +131,11 @@ static bool conversion_case(void)
     wz_tap_block_t blocks[RECORDS];
     bool ok = false;
 
-    CHECK(wz_tape_write_native_tap(records, 2u, native, sizeof(native),
+    CHECK(wz_tape_write_native_tap(records, 2u, NULL, 0u, &native_length) ==
+          WZ_RESULT_BUFFER_TOO_SMALL && native_length != 0u);
+    native = (wz_byte_t*)malloc(native_length);
+    CHECK(native != NULL &&
+          wz_tape_write_native_tap(records, 2u, native, native_length,
                                    &native_length) == WZ_RESULT_OK);
     CHECK(wz_tape_native_to_standard_tap(native, native_length, NULL, 0u,
                                          &standard_length) ==
@@ -147,14 +151,22 @@ static bool conversion_case(void)
                                      &block_count) == WZ_RESULT_OK &&
           blocks[0].length == 4u && blocks[0].data[0] == 0x00u &&
           blocks[1].length == 4u && blocks[1].data[0] == 0xffu);
+    free(native);
+    native = NULL;
     records_init(extended);
-    CHECK(wz_tape_write_native_tap(extended, RECORDS, native, sizeof(native),
+    CHECK(wz_tape_write_native_tap(extended, RECORDS, NULL, 0u,
+                                   &native_length) == WZ_RESULT_BUFFER_TOO_SMALL &&
+          native_length != 0u);
+    native = (wz_byte_t*)malloc(native_length);
+    CHECK(native != NULL &&
+          wz_tape_write_native_tap(extended, RECORDS, native, native_length,
                                    &native_length) == WZ_RESULT_OK);
     CHECK(wz_tape_native_to_standard_tap(native, native_length, standard,
                                          sizeof(standard), &standard_length) ==
           WZ_RESULT_UNSUPPORTED_OPERATION);
     ok = true;
 cleanup:
+    free(native);
     return ok;
 }
 
