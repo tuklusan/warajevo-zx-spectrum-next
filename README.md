@@ -3,6 +3,11 @@
 This project is under active development. Product implementation, runner
 support, emulator execution, and test coverage are being developed in stages.
 
+Warajevo ZX Spectrum Next is the sister project of
+[`ZX-UX Unix for the 48K ZX Spectrum`](https://github.com/tuklusan/ZX-UX-The-ZX-Spectrum-48K-Unix-Project).
+The long-term goal is for ZX-UX Unix to run on Warajevo ZX Spectrum Next as
+well as it does in the Fuse emulator and on a real 48K Spectrum.
+
 All development work must follow
 [`docs/design/05-warajevo-zx-spectrum-next-project-workflow.md`](docs/design/05-warajevo-zx-spectrum-next-project-workflow.md).
 That workflow defines the canonical architecture scope, directory layout,

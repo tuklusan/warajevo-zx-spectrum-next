@@ -82,15 +82,16 @@ static bool verify_v1_uncompressed(void)
     }
     set_v1_header(image);
     for (size_t index = 0u; index < V1_MEMORY; ++index) {
-        image[V1_HEADER + index] = (wz_byte_t)(index * 13u + 7u);
+        image[V1_HEADER + index] = (wz_byte_t)(index % 251u + 1u);
     }
     ok = load_into_machine(image, V1_HEADER + V1_MEMORY,
                            wz_snapshot_state_load_z80_v1, &machine) &&
          machine.cpu.program_counter == 0x8123u &&
          machine.cpu.stack_pointer == 0x9abcu && machine.cpu.ix == 0x1357u &&
          machine.cpu.iy == 0x2468u && machine.cpu.interrupt_mode == 2u &&
-         machine.border_color == 5u && machine.memory[0x4000u] == 7u &&
-         machine.memory[0xffffu] == (wz_byte_t)((V1_MEMORY - 1u) * 13u + 7u);
+         machine.border_color == 5u && machine.memory[0x4000u] == 1u &&
+         machine.memory[0xffffu] ==
+             (wz_byte_t)(((V1_MEMORY - 1u) % 251u) + 1u);
     wz_machine_destroy(&machine);
     free(image);
     return ok;
