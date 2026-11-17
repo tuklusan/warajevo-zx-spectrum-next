@@ -95,6 +95,8 @@ SANYALnet Labs." See LICENSE for full terms. */
 #include "app/wz_input_focus.h"
 #include "app/wz_input_projection.h"
 #include "app/wz_ui_keyboard_menu.h"
+#include "app/wz_keyboard_mapping.h"
+#include "app/wz_kempston_mapping.h"
 
 bool wz_input_event_set_local_key(
     const wz_keyboard_mapping_t* keyboard_mapping,
@@ -111,8 +113,6 @@ bool wz_input_event_release_local_keys(
     wz_input_arbiter_t* arbiter,
     unsigned char* host_key_down,
     uint16_t* spectrum_key_refcount);
-#include "app/wz_keyboard_mapping.h"
-#include "app/wz_kempston_mapping.h"
 #include "app/wz_sokol_audio.h"
 #include "app/wz_host_pacing.h"
 #include "app/wz_host_machine_frame.h"
