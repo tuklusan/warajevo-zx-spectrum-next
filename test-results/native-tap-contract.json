@@ -1,0 +1,42 @@
+{
+  "testId": "native-tap-contract",
+  "status": "pass",
+  "commit": "0666bd1a1d220c8fc83ba718b8abab6fa77ba01e",
+  "driverCommit": "cb0da5183f1d008d5a205032cfb420dad394ba7e",
+  "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
+  "timestamp": "2026-11-17T01:26:44Z",
+  "workflowRun": 43993717917,
+  "proofRun": 43995587257,
+  "workflowEvent": "push",
+  "assertionsPerRunner": 2,
+  "nativeTargets": [
+    "Windows x64",
+    "Linux x64",
+    "Linux ARM64",
+    "macOS ARM64",
+    "macOS Intel"
+  ],
+  "observedOutput": "native-tap-contract cases=2 status=pass",
+  "assertions": [
+    "four supported native record classes round-trip through the production writer and parser",
+    "malformed links, lengths, and unknown record types are rejected without partial output"
+  ],
+  "fixtures": [
+    {
+      "path": "ci/test/native-tap-contract.c",
+      "sha256": "5375f6c4f57bb6e0806a23ea8e55f6b925706844f2915f0f25f8fe3d4cf094d2"
+    },
+    {
+      "path": "src/core/wz_tape.c",
+      "sha256": "8116a9692f0ba19729ed51a41feb019ff1fa866bf8ed1e5ad0ef0db672b32a57"
+    },
+    {
+      "path": "src/core/wz_tape.h",
+      "sha256": "d483f3f99bcfa26590bf259114193d2314dd2af2720316bf66021462f5c31fd6"
+    },
+    {
+      "path": "ci/test/native-tap-contract/CMakeLists.txt",
+      "sha256": "b19ff80419d8a94e9970b64224f1673fa7bad0a3c492b42cdb299c0c96cb211a"
+    }
+  ]
+}

@@ -3,16 +3,20 @@
   "command": "cmake -S ci/test/native-tap-contract -B dist/native-tap-contract -DCMAKE_BUILD_TYPE=Release && cmake --build dist/native-tap-contract --config Release --parallel 2 && ctest --test-dir dist/native-tap-contract -C Release -R '^wz_native_tap_contract$' --output-on-failure",
   "fixtures": [
     {
-      "path": "ci/test/native-tap-contract.c"
+      "path": "ci/test/native-tap-contract.c",
+      "sha256": "5375f6c4f57bb6e0806a23ea8e55f6b925706844f2915f0f25f8fe3d4cf094d2"
     },
     {
-      "path": "src/core/wz_tape.c"
+      "path": "src/core/wz_tape.c",
+      "sha256": "8116a9692f0ba19729ed51a41feb019ff1fa866bf8ed1e5ad0ef0db672b32a57"
     },
     {
-      "path": "src/core/wz_tape.h"
+      "path": "src/core/wz_tape.h",
+      "sha256": "d483f3f99bcfa26590bf259114193d2314dd2af2720316bf66021462f5c31fd6"
     },
     {
-      "path": "ci/test/native-tap-contract/CMakeLists.txt"
+      "path": "ci/test/native-tap-contract/CMakeLists.txt",
+      "sha256": "b19ff80419d8a94e9970b64224f1673fa7bad0a3c492b42cdb299c0c96cb211a"
     }
   ]
 }
