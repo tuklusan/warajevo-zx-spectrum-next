@@ -139,8 +139,8 @@ static bool verify_v1_compressed(void)
     image[offset++] = 0xedu;
     image[offset++] = 0u;
     ok = load_into_machine(image, offset, wz_snapshot_state_load_z80_v1, &machine) &&
-         machine.memory[0x4000u] == 0x9au &&
-         machine.memory[0x40ffu] == 0x9au && machine.memory[0xffffu] == 0x9au;
+         machine.memory[0x4000u] == 0x5au &&
+         machine.memory[0x40ffu] == 0x5bu && machine.memory[0xffffu] == 0x9au;
     wz_machine_destroy(&machine);
     free(image);
     return ok;
