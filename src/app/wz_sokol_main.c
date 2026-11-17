@@ -1317,29 +1317,28 @@ cleanup:
     return loaded;
 }
 
-static bool wz_host_linearize_native_tape(wz_host_session_t* session)
+static bool wz_host_replace_native_tape(
+    wz_host_session_t* session, const wz_native_tap_record_t* records,
+    size_t record_count)
 {
     wz_byte_t* image = NULL;
     size_t image_length = 0u;
 
     if (session == NULL || strcmp(session->tape_format, "NATIVE") != 0 ||
         session->tape_source_path[0] == '\0' ||
-        session->native_tape_records == NULL ||
-        session->native_tape_record_count == 0u ||
+        records == NULL || record_count == 0u ||
         session->machine.tape_state.motor_on) {
         return false;
     }
-    if (wz_tape_write_native_tap(session->native_tape_records,
-            session->native_tape_record_count, NULL, 0u,
+    if (wz_tape_write_native_tap(records, record_count, NULL, 0u,
             &image_length) != WZ_RESULT_BUFFER_TOO_SMALL ||
         image_length == 0u) {
         return false;
     }
     image = (wz_byte_t*)malloc(image_length);
     if (image == NULL ||
-        wz_tape_write_native_tap(session->native_tape_records,
-            session->native_tape_record_count, image, image_length,
-            &image_length) != WZ_RESULT_OK) {
+        wz_tape_write_native_tap(records, record_count, image, image_length,
+                                 &image_length) != WZ_RESULT_OK) {
         free(image);
         return false;
     }
@@ -1351,6 +1350,39 @@ static bool wz_host_linearize_native_tape(wz_host_session_t* session)
     }
     free(image);
     return true;
+}
+
+static bool wz_host_linearize_native_tape(wz_host_session_t* session)
+{
+    if (session == NULL) return false;
+    return wz_host_replace_native_tape(session, session->native_tape_records,
+                                       session->native_tape_record_count);
+}
+
+static bool wz_host_exclude_native_tape(wz_host_session_t* session)
+{
+    wz_native_tap_record_t* records = NULL;
+    size_t selected;
+    size_t output_index = 0u;
+    bool success;
+
+    if (session == NULL || session->native_tape_records == NULL ||
+        session->native_tape_record_count < 2u ||
+        session->tape_manager_selected_block >=
+            session->native_tape_record_count) {
+        return false;
+    }
+    records = (wz_native_tap_record_t*)malloc(
+        (session->native_tape_record_count - 1u) * sizeof(*records));
+    if (records == NULL) return false;
+    selected = session->tape_manager_selected_block;
+    for (size_t index = 0u; index < session->native_tape_record_count; ++index) {
+        if (index == selected) continue;
+        records[output_index++] = session->native_tape_records[index];
+    }
+    success = wz_host_replace_native_tape(session, records, output_index);
+    free(records);
+    return success;
 }
 
 static bool wz_host_load_external_snapshot(wz_host_session_t* session,
@@ -6823,6 +6855,24 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
                 nk_layout_row_dynamic(context, 22.0f, 2);
                 nk_label(context, operation->label, NK_TEXT_LEFT);
                 if (operation->kind ==
+                        WZ_TAPE_MANAGER_MAINTENANCE_EXCLUDE &&
+                    operation->available) {
+                    if (wz_host_session.machine.tape_state.motor_on)
+                        nk_widget_disable_begin(context);
+                    if (nk_button_label(context, "Exclude")) {
+                        if (wz_host_exclude_native_tape(&wz_host_session)) {
+                            (void)snprintf(wz_host_session.file_notification,
+                                sizeof(wz_host_session.file_notification),
+                                "Native tape block excluded");
+                        } else {
+                            (void)snprintf(wz_host_session.file_notification,
+                                sizeof(wz_host_session.file_notification),
+                                "Native tape exclusion failed");
+                        }
+                    }
+                    if (wz_host_session.machine.tape_state.motor_on)
+                        nk_widget_disable_end(context);
+                } else if (operation->kind ==
                         WZ_TAPE_MANAGER_MAINTENANCE_LINEARIZE &&
                     operation->available) {
                     if (wz_host_session.machine.tape_state.motor_on)
@@ -6870,7 +6920,7 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
             }
             if (wz_host_session.machine.tape_state.motor_on) {
                 nk_layout_row_dynamic(context, 20.0f, 1);
-                nk_label(context, "Stop playback to linearize the native tape",
+                nk_label(context, "Stop playback to maintain the native tape",
                          NK_TEXT_LEFT);
             }
         } else if (strcmp(wz_host_session.tape_format, "TAP") == 0) {
