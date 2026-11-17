@@ -1195,6 +1195,11 @@ static bool wz_host_load_external_tape(wz_host_session_t* session,
                     parsed = wz_tape_native_to_standard_tap(
                         data, length, playback_data, playback_length,
                         &playback_length);
+                    if (parsed != WZ_RESULT_OK) {
+                        free(playback_data);
+                        playback_data = NULL;
+                        playback_length = 0u;
+                    }
                 }
             }
         } else {
