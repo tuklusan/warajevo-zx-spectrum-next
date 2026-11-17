@@ -8,23 +8,23 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "6ecb569fc851d5010af88e02409f878600c65e3bc9cc8c02bc7ceb21ad94c46c"
+      "sha256": "a6a9e2993f4b187e2341cc341f54ffe005b4b829d3276230384258b77b3dc686"
     },
     {
       "path": "src/core/wz_microdrive.c",
-      "sha256": "4de612e163208d566988a3f4bf18cb0206f9e45a5cabe7bce8f1bb00a4727d06"
+      "sha256": "7a768c785d4ec9ecdc7d23347261dab3da6b8d5662fd6813e6483fc3246b4e1b"
     },
     {
       "path": "src/core/wz_microdrive.h",
-      "sha256": "9843858b28b09b4f6a3315edf1db32613752907d66111335cd6b3ff4088972f9"
+      "sha256": "eb2ac0ef1ead6d2038bb66688606d8ccf4590ff8a60a8e7e8990d47aa4e44098"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "e7440ef90ecd7d41ea1a26e2a54f1bd06e9d636dd8ff2c5b39aff14e6f9ff355"
+      "sha256": "ff6a802eb986e29bbdbaef1c3a046ab39bb57742dd01d2d1e2e7b8a135e30b0d"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "337b6cd7e8e8751bb7eb8fde7f679f9f342639273ac8e7a213383a2c8a122cb2"
+      "sha256": "1ef677db258aab20af26375bd1afc45042c295d76189fc322a3b656c63dfe81f"
     },
     {
       "path": "src/core/wz_machine_internal.h",
@@ -32,7 +32,7 @@
     },
     {
       "path": "src/core/wz_bus.c",
-      "sha256": "e8d5f372fc226f673f00cc92969c6d3758fff167a3a8b6463641189e2b77677d"
+      "sha256": "be2e57a38f32ec45e9975a3249e5c89dedd6343e4061c4355b072a0cac0e43d7"
     },
     {
       "path": "src/core/wz_bus.h",

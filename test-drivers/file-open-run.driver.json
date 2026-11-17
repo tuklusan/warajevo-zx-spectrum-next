@@ -8,7 +8,7 @@
   "fixtures": [
     {
       "path": "ci/test/file-open-run/write-proof.py",
-      "sha256": "5938d60b7022d46278aa0e837f19943d47bb631b8296f52ca92d763d113b642c"
+      "sha256": "1aa5b7ce907e78e11e0f8950fda0c42bcc6bf600ecc36d85f38b1ff00787285a"
     },
     {
       "path": "ci/test/file-open-run/wz_file_open_run_tests.c",
@@ -24,7 +24,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "6ecb569fc851d5010af88e02409f878600c65e3bc9cc8c02bc7ceb21ad94c46c"
+      "sha256": "a6a9e2993f4b187e2341cc341f54ffe005b4b829d3276230384258b77b3dc686"
     }
   ]
 }

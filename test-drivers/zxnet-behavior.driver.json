@@ -36,11 +36,11 @@
     },
     {
       "path": "src/core/wz_types.h",
-      "sha256": "b989adaa74e4ac0ec7e753da23a3fd16a3c02561744cca893fcd66f7c077c409"
+      "sha256": "aa77ae7cf238009aa43f0a5554da281f4d36851c797a879000f3797cdb4280ee"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "6ecb569fc851d5010af88e02409f878600c65e3bc9cc8c02bc7ceb21ad94c46c"
+      "sha256": "a6a9e2993f4b187e2341cc341f54ffe005b4b829d3276230384258b77b3dc686"
     }
   ]
 }

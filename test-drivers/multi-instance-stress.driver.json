@@ -24,7 +24,7 @@
     },
     {
       "path": "ci/test/multi-instance/write-proof.py",
-      "sha256": "6f5e989abac1380a7c1ecb974f72d516b1966e236ee39e94e391f75669d39267"
+      "sha256": "ddc4aaf68dbd965aa36903a88300118fad931e058ab5bfe14ac1c4841633ccdd"
     },
     {
       "path": "src/app/wz_command_registry.c",
@@ -92,7 +92,7 @@
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.c",
-      "sha256": "f9bc61d019c440e04102ea7a2c5af4146f812b9b16cd257d1bc244733b2da0d4"
+      "sha256": "74daf16ed99440541ff5e7a43fb7bf30dd958c42d6a32d6d2466ab987e2f4240"
     },
     {
       "path": "src/app/wz_telnet_keyboard_command.h",

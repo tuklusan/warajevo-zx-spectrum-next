@@ -31,19 +31,19 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "6ecb569fc851d5010af88e02409f878600c65e3bc9cc8c02bc7ceb21ad94c46c"
+      "sha256": "a6a9e2993f4b187e2341cc341f54ffe005b4b829d3276230384258b77b3dc686"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "8b30e3febd1756b28d478cdbbc826e7651cef04db71fb14241dd2a2f581973e9"
+      "sha256": "ff6a802eb986e29bbdbaef1c3a046ab39bb57742dd01d2d1e2e7b8a135e30b0d"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "e7078ec7aca25b1a0b168fd050fd81506e98f0002433144acb8af38878637864"
+      "sha256": "1ef677db258aab20af26375bd1afc45042c295d76189fc322a3b656c63dfe81f"
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "a14842db3e5b28ff63f729e61611e62ede5bd06abf028cb2ed6180c4aa3ad341"
+      "sha256": "93479ac03c344c429455d8627096147fb4da4a2b94c5204d8223d7e7b11fc983"
     },
     {
       "path": "src/core/wz_state.h",
@@ -51,15 +51,15 @@
     },
     {
       "path": "src/core/wz_trace.h",
-      "sha256": "855d1bd77211a7c3c8e875f3590e5c14fba504a5ca887ed0131a21a16d3b39b1"
+      "sha256": "3c4b63a79f9094517eae4ae09bb5a98f06bc5e5af991d5cd7b08f5a80b1d5d6b"
     },
     {
       "path": "src/core/wz_z80.c",
-      "sha256": "fa32e1faa87785cfbb128966541e1066c7eafadba76c01f10fa6703e2fc8095a"
+      "sha256": "ce74c8276c08b3f323f92d09cd966f53aa8c2d31850a2ad76758f1d4e513f916"
     },
     {
       "path": "src/diagnostics/wz_trace_file.c",
-      "sha256": "aee458f31b0d9528d602d18a45fcc60ae5e54757e2aa4f6da6669228d96cd84b"
+      "sha256": "0a17569b2a786d875a0e8d7bee420903b4f877708b580932e2ada333091e30a3"
     },
     {
       "path": "src/diagnostics/wz_trace_file.h",

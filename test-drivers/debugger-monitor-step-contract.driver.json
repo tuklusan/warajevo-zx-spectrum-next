@@ -44,7 +44,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "6ecb569fc851d5010af88e02409f878600c65e3bc9cc8c02bc7ceb21ad94c46c"
+      "sha256": "a6a9e2993f4b187e2341cc341f54ffe005b4b829d3276230384258b77b3dc686"
     },
     {
       "path": "src/core/wz_debugger.c",
@@ -64,11 +64,11 @@
     },
     {
       "path": "test-drivers/debugger-monitor-exit-contract.driver.json",
-      "sha256": "0858a669c25ea54a37c8d94bc5029019243a2c1c524f0b7c3e0b037e23065539"
+      "sha256": "7772b53ec9e8444d8bcc806a1b5f02f63fcb2986ae2939d6be663b73d24ed499"
     },
     {
       "path": "test-drivers/debugger-monitor-find-contract.driver.json",
-      "sha256": "ff71a9f44a50b71627d5ce5ce0b1c99dfdc7c497cb018a0134cca4acf37349f2"
+      "sha256": "b12adbea553937314e8059960d935948597de854509306e413d07ef76293c2f5"
     }
   ]
 }

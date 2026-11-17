@@ -8,15 +8,15 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "6ecb569fc851d5010af88e02409f878600c65e3bc9cc8c02bc7ceb21ad94c46c"
+      "sha256": "a6a9e2993f4b187e2341cc341f54ffe005b4b829d3276230384258b77b3dc686"
     },
     {
       "path": "src/core/wz_debugger.c",
-      "sha256": "3475f4cb3acc84a58843a16205661068b86479d19c522602a34ee21b4aeb70fd"
+      "sha256": "b402fce901b096e10f7f7a4c2eda4987eeb3f60523f6593aa529aac5b79a7d20"
     },
     {
       "path": "src/core/wz_debugger.h",
-      "sha256": "03450f85a4b5d043cab29384623f27b207e44847d72b88158e3e7bd841324472"
+      "sha256": "121f173a4ac8d477e0c7b7aaa7d04c4ad87b13ca18e6154b845079b31be00d95"
     }
   ]
 }

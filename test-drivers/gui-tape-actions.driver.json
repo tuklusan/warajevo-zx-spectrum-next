@@ -22,7 +22,7 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "6c8aaea15cdd323d0f9a7c28d12e254e2145cbdabf07849f05892dc3807758f0"
+      "sha256": "d447b0200f1d4f0d03c5a2d5e7a6055dcb71e4cf684e6ae58b113999cd7ad799"
     },
     {
       "path": "src/app/wz_tape_loading_commands.c",
@@ -30,7 +30,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "3de492c7022baaef1a348f2fa64d019cdef7a414e0195bbf5113f82eef804013"
+      "sha256": "ff6a802eb986e29bbdbaef1c3a046ab39bb57742dd01d2d1e2e7b8a135e30b0d"
     },
     {
       "path": "roms/48.rom",

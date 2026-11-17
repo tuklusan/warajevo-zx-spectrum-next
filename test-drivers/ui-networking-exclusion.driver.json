@@ -16,7 +16,7 @@
     },
     {
       "path": "ci/test/ui-networking-exclusion/write-proof.py",
-      "sha256": "77c56b91a52935861a9fc791d460980b625f95fe55122dad7de8c8757cfd5538"
+      "sha256": "4d62e598bf1573ca463d46a84129678a5f73a5fbdefa927185db180dc51d940d"
     },
     {
       "path": "src/app/wz_command_registry.c",
@@ -36,7 +36,7 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "6c8aaea15cdd323d0f9a7c28d12e254e2145cbdabf07849f05892dc3807758f0"
+      "sha256": "d447b0200f1d4f0d03c5a2d5e7a6055dcb71e4cf684e6ae58b113999cd7ad799"
     },
     {
       "path": "src/app/wz_ui_layout.h",
@@ -44,11 +44,11 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "8b30e3febd1756b28d478cdbbc826e7651cef04db71fb14241dd2a2f581973e9"
+      "sha256": "ff6a802eb986e29bbdbaef1c3a046ab39bb57742dd01d2d1e2e7b8a135e30b0d"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "e7078ec7aca25b1a0b168fd050fd81506e98f0002433144acb8af38878637864"
+      "sha256": "1ef677db258aab20af26375bd1afc45042c295d76189fc322a3b656c63dfe81f"
     }
   ]
 }

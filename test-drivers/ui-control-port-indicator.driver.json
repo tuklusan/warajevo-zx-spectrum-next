@@ -16,11 +16,11 @@
     },
     {
       "path": "ci/test/ui-control-port-indicator/write-proof.py",
-      "sha256": "ecaff193747161bb6a57df1368118c3125f8ce17eb6f84fc91460601a18b2203"
+      "sha256": "3a18086e616b2e7d1542252c6d4eb5cd3235aba03c59c874c86b1f4c34241a7b"
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "6c8aaea15cdd323d0f9a7c28d12e254e2145cbdabf07849f05892dc3807758f0"
+      "sha256": "d447b0200f1d4f0d03c5a2d5e7a6055dcb71e4cf684e6ae58b113999cd7ad799"
     },
     {
       "path": "src/app/wz_ui_layout.h",

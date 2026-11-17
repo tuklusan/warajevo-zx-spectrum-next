@@ -30,7 +30,7 @@
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "e7078ec7aca25b1a0b168fd050fd81506e98f0002433144acb8af38878637864"
+      "sha256": "1ef677db258aab20af26375bd1afc45042c295d76189fc322a3b656c63dfe81f"
     },
     {
       "path": "src/core/wz_tape.c",

@@ -16,7 +16,7 @@
     },
     {
       "path": "ci/test/ui-control-port-state/write-proof.py",
-      "sha256": "cfe7ebe239b175bbcfd80c30f8aec9a9237592d44c3d4a0d0b8097e1c0dee266"
+      "sha256": "8c2c1aa1f162238b584bd5e3bed86fae56e377037971acbc8a2c893b2e00b956"
     },
     {
       "path": "src/app/wz_host_config.c",
@@ -28,7 +28,7 @@
     },
     {
       "path": "src/app/wz_ui_layout.c",
-      "sha256": "6c8aaea15cdd323d0f9a7c28d12e254e2145cbdabf07849f05892dc3807758f0"
+      "sha256": "d447b0200f1d4f0d03c5a2d5e7a6055dcb71e4cf684e6ae58b113999cd7ad799"
     },
     {
       "path": "src/app/wz_ui_layout.h",

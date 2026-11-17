@@ -12,7 +12,7 @@
     },
     {
       "path": "ci/test/snapshot-inspector/write-proof.py",
-      "sha256": "3086d505a7c10016c8cc446a6f5e44def0f24ec4ed8d64e8d01b98a207545a14"
+      "sha256": "69e12865064b27123a8e050dfa297ff0a7196026dbbf851433502fe38c0c8f84"
     },
     {
       "path": "src/app/wz_snapshot_inspector.c",
@@ -24,15 +24,15 @@
     },
     {
       "path": "src/core/wz_debugger.c",
-      "sha256": "d3c93f73ed001493467c613554bdd142728bdc5c4b0f1f5cdc24068dcebe795a"
+      "sha256": "b402fce901b096e10f7f7a4c2eda4987eeb3f60523f6593aa529aac5b79a7d20"
     },
     {
       "path": "src/core/wz_debugger.h",
-      "sha256": "9c14eda410b6b50fdad279fc6076a385da5ff26b160c54fbf957c1e8c31041a1"
+      "sha256": "121f173a4ac8d477e0c7b7aaa7d04c4ad87b13ca18e6154b845079b31be00d95"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "6ecb569fc851d5010af88e02409f878600c65e3bc9cc8c02bc7ceb21ad94c46c"
+      "sha256": "a6a9e2993f4b187e2341cc341f54ffe005b4b829d3276230384258b77b3dc686"
     },
     {
       "path": "ci/test/snapshot-inspector/snapshot-inspector-contract.c",

@@ -29,11 +29,11 @@
     },
     {
       "path": "docs/design/machine-timing-evidence.md",
-      "sha256": "a8078c758fa9df7ae39faa75fa49a66b9d94150c8e0be34687c7b64a42ea255d"
+      "sha256": "fda660f68384648525ff4cfd6e217280c041ad786584b33873bd20b86dab736c"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "6ecb569fc851d5010af88e02409f878600c65e3bc9cc8c02bc7ceb21ad94c46c"
+      "sha256": "a6a9e2993f4b187e2341cc341f54ffe005b4b829d3276230384258b77b3dc686"
     },
     {
       "path": "src/core/audio/wz_ay.c",

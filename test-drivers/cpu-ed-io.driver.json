@@ -22,7 +22,7 @@
       "path": "tests/cpu-ed-io.md"
     },
     {
-      "sha256": "721ddc6d42da1662c686bbc31b2ac7f2bb4499e7f23e56f4c75fc9a2545fb8dc",
+      "sha256": "be2e57a38f32ec45e9975a3249e5c89dedd6343e4061c4355b072a0cac0e43d7",
       "path": "src/core/wz_bus.c"
     },
     {
@@ -30,7 +30,7 @@
       "path": "src/core/wz_bus.h"
     },
     {
-      "sha256": "fa32e1faa87785cfbb128966541e1066c7eafadba76c01f10fa6703e2fc8095a",
+      "sha256": "ce74c8276c08b3f323f92d09cd966f53aa8c2d31850a2ad76758f1d4e513f916",
       "path": "src/core/wz_z80.c"
     },
     {
@@ -38,11 +38,11 @@
       "path": "src/core/wz_z80.h"
     },
     {
-      "sha256": "8b30e3febd1756b28d478cdbbc826e7651cef04db71fb14241dd2a2f581973e9",
+      "sha256": "ff6a802eb986e29bbdbaef1c3a046ab39bb57742dd01d2d1e2e7b8a135e30b0d",
       "path": "src/core/wz_machine.c"
     },
     {
-      "sha256": "e7078ec7aca25b1a0b168fd050fd81506e98f0002433144acb8af38878637864",
+      "sha256": "1ef677db258aab20af26375bd1afc45042c295d76189fc322a3b656c63dfe81f",
       "path": "src/core/wz_machine.h"
     },
     {

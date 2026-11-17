@@ -19,7 +19,7 @@
     },
     {
       "path": "ci/test/file-open-run-path/write-proof.py",
-      "sha256": "37296470e59bf256b71b662a09746c6e6ad6f4e2702fdd9c5246a1cbc3514016"
+      "sha256": "ae1b281a3aa7b169e768e02a0b5c70ea739bef5a08e3d653723f4dd44e844232"
     },
     {
       "path": "src/app/wz_file_open_run.c",

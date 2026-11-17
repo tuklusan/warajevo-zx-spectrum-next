@@ -27,23 +27,23 @@
     },
     {
       "path": "src/core/wz_bus.c",
-      "sha256": "721ddc6d42da1662c686bbc31b2ac7f2bb4499e7f23e56f4c75fc9a2545fb8dc"
+      "sha256": "be2e57a38f32ec45e9975a3249e5c89dedd6343e4061c4355b072a0cac0e43d7"
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "8b30e3febd1756b28d478cdbbc826e7651cef04db71fb14241dd2a2f581973e9"
+      "sha256": "ff6a802eb986e29bbdbaef1c3a046ab39bb57742dd01d2d1e2e7b8a135e30b0d"
     },
     {
       "path": "src/core/wz_machine_internal.h",
-      "sha256": "77f348ef6c5aeb91ef8c9254fe1794e868f38d54021a513d1a7de50e3dc571ec"
+      "sha256": "356576730ce7cd7a7f6ccfed49543f19968893056e4d60bfa3427f0d0595cd46"
     },
     {
       "path": "src/diagnostics/wz_trace_dump_main.c",
-      "sha256": "c80277e741bd9c1d8013525b9202fac034353a86ef197e16341a9785704d1322"
+      "sha256": "7f477bad5c8d6e6b410d5871e37989b67498e61b46cbf10aec480ed743fd39b6"
     },
     {
       "path": "src/diagnostics/wz_trace_file.c",
-      "sha256": "aee458f31b0d9528d602d18a45fcc60ae5e54757e2aa4f6da6669228d96cd84b"
+      "sha256": "0a17569b2a786d875a0e8d7bee420903b4f877708b580932e2ada333091e30a3"
     },
     {
       "path": "src/core/wz_machine_profile.c",
@@ -55,7 +55,7 @@
     },
     {
       "path": "src/core/wz_trace.h",
-      "sha256": "855d1bd77211a7c3c8e875f3590e5c14fba504a5ca887ed0131a21a16d3b39b1"
+      "sha256": "3c4b63a79f9094517eae4ae09bb5a98f06bc5e5af991d5cd7b08f5a80b1d5d6b"
     },
     {
       "path": "src/diagnostics/wz_trace_file.h",

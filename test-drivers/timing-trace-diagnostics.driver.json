@@ -35,11 +35,11 @@
     },
     {
       "path": "src/diagnostics/wz_trace_dump_main.c",
-      "sha256": "c80277e741bd9c1d8013525b9202fac034353a86ef197e16341a9785704d1322"
+      "sha256": "7f477bad5c8d6e6b410d5871e37989b67498e61b46cbf10aec480ed743fd39b6"
     },
     {
       "path": "src/diagnostics/wz_trace_file.c",
-      "sha256": "aee458f31b0d9528d602d18a45fcc60ae5e54757e2aa4f6da6669228d96cd84b"
+      "sha256": "0a17569b2a786d875a0e8d7bee420903b4f877708b580932e2ada333091e30a3"
     },
     {
       "path": "src/diagnostics/wz_trace_file.h",
@@ -47,7 +47,7 @@
     },
     {
       "path": "src/core/wz_bus.c",
-      "sha256": "721ddc6d42da1662c686bbc31b2ac7f2bb4499e7f23e56f4c75fc9a2545fb8dc"
+      "sha256": "be2e57a38f32ec45e9975a3249e5c89dedd6343e4061c4355b072a0cac0e43d7"
     },
     {
       "path": "src/core/wz_bus.h",
@@ -55,11 +55,11 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "8b30e3febd1756b28d478cdbbc826e7651cef04db71fb14241dd2a2f581973e9"
+      "sha256": "ff6a802eb986e29bbdbaef1c3a046ab39bb57742dd01d2d1e2e7b8a135e30b0d"
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "e7078ec7aca25b1a0b168fd050fd81506e98f0002433144acb8af38878637864"
+      "sha256": "1ef677db258aab20af26375bd1afc45042c295d76189fc322a3b656c63dfe81f"
     },
     {
       "path": "src/core/wz_machine_profile.c",
@@ -71,7 +71,7 @@
     },
     {
       "path": "src/core/wz_types.h",
-      "sha256": "b989adaa74e4ac0ec7e753da23a3fd16a3c02561744cca893fcd66f7c077c409"
+      "sha256": "aa77ae7cf238009aa43f0a5554da281f4d36851c797a879000f3797cdb4280ee"
     },
     {
       "path": "src/core/wz_z80.h",
@@ -79,7 +79,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "6ecb569fc851d5010af88e02409f878600c65e3bc9cc8c02bc7ceb21ad94c46c"
+      "sha256": "a6a9e2993f4b187e2341cc341f54ffe005b4b829d3276230384258b77b3dc686"
     }
   ]
 }

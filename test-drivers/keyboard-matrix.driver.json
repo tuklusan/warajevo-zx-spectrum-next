@@ -16,7 +16,7 @@
     },
     {
       "path": "ci/test/keyboard-matrix/write-proof.py",
-      "sha256": "2c06ade729d76b5ffa0de55253b3538be1191d11fb585703e795d5917acba0b2"
+      "sha256": "a6ed58031ae714fee73490deffea0d48a66067fb6db455f8b16754facf063d40"
     },
     {
       "path": "src/core/wz_keyboard_matrix.c",

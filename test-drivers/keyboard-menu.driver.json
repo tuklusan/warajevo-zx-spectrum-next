@@ -26,7 +26,7 @@
       "path": "design/ui-phase-12-decisions.md"
     },
     {
-      "sha256": "dc47afb96f2c0566788d59ef74a691c33a8943e1c4e199c96c74d07739e68b31",
+      "sha256": "1ac299f0c90f76d94f33d9b72efc4a07ca0ca75ff363906190219c03883b00d7",
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md"
     },
     {
@@ -50,7 +50,7 @@
       "path": "src/app/wz_input_focus.h"
     },
     {
-      "sha256": "7ff8453ab148a2b460e0d3f904b099a930d242be124908ab7f995b663fd4e6e0",
+      "sha256": "14ceefff4cd929c82499a814b6ded21d6ddd5d3e16a06b3a69c45e4903a45242",
       "path": "src/app/wz_sokol_main.c"
     },
     {
@@ -62,7 +62,7 @@
       "path": "src/app/wz_ui_keyboard_menu.h"
     },
     {
-      "sha256": "3ab0ea61c455a5ea7806796c4586129c0777da37492ec0eb14490fdbfa53566d",
+      "sha256": "a6a9e2993f4b187e2341cc341f54ffe005b4b829d3276230384258b77b3dc686",
       "path": "src/cmake/CMakeLists.txt"
     }
   ],

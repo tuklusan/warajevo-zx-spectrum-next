@@ -2,24 +2,77 @@
   "testId": "ui-menu-action-ids",
   "command": "Dispatch .github/workflows/ui-menu-action-ids.yml on main; the workflow builds the Release/Sokol production host, then runs ci/test/ui-menu-action-ids.py under Xvfb against roms/48.rom.",
   "requiredCases": 27,
-  "runnerMatrix": ["ubuntu-24.04"],
+  "runnerMatrix": [
+    "ubuntu-24.04"
+  ],
   "fixtures": [
-    {"path": ".github/workflows/ui-menu-action-ids.yml", "sha256": "9e3fd0a0ecbe399046daebc02b78880eb3b3088da7fcff0853ad567288e93bd0"},
-    {"path": "ci/test/ui-menu-action-ids.py", "sha256": "86e02438fc61f1852119520126a4526104f848684a2c4c576f0ddde40aac95bc"},
-    {"path": "ci/test/ui-menu-action-ids/README.md", "sha256": "1fc4cca01a7a70d4f50cc9c9aa44315081bcc58e122e016ec72fc05aafc635c5"},
-    {"path": "roms/48.rom", "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"},
-    {"path": "src/app/wz_command_registry.c", "sha256": "707bd4c4c9d0e12db0135ef857d3c7de8a5d6e7d717d790d09f3080bb90c9607"},
-    {"path": "src/app/wz_command_registry.h", "sha256": "4b8530859e953c5876d41792f6221a00a7facc14658c05f28076cda926c9bf04"},
-    {"path": "src/app/wz_host_thread.c", "sha256": "bd46ced2af90907b222a43fcaef3bfe8943b6ca32fd4831fbaca82483ec264c5"},
-    {"path": "src/app/wz_host_thread.h", "sha256": "2fa71a370c5b0597e25f8e4ecbc8457e7e9b2d3b62cd48af2eb6111053283805"},
-    {"path": "src/app/wz_sokol_main.c", "sha256": "14ceefff4cd929c82499a814b6ded21d6ddd5d3e16a06b3a69c45e4903a45242"},
-    {"path": "src/app/wz_speed_policy.c", "sha256": "cb9d2d0befc0becaa81558d794a257f399c4a46e1c1a0bdb19c4893d8f547183"},
-    {"path": "src/app/wz_speed_policy.h", "sha256": "0895e0cac0254cb95d4b2347d911f0fdddfd0bab414d37e5dd4052cfc9eaa2df"},
-    {"path": "src/app/wz_telnet_keyboard_command.c", "sha256": "f9bc61d019c440e04102ea7a2c5af4146f812b9b16cd257d1bc244733b2da0d4"},
-    {"path": "src/app/wz_telnet_keyboard_command.h", "sha256": "a525163fd16b5113b8166293055c88f46ebf53a373bb24d04254aafc395b7e82"},
-    {"path": "src/app/wz_ui_layout.c", "sha256": "6c5de7b5b6a20cad20643b1f9007629846bccc0bb49bf7412cad9464ae9be062"},
-    {"path": "src/app/wz_ui_layout.h", "sha256": "0ef859ac915722f0ea2e2e6d66b8cda00c78577ad14029966c98ebb324abd8ac"},
-    {"path": "src/core/wz_machine.c", "sha256": "67b293875d0206c38195d212bdd73a1195babc4b03ed5fdf39934b2874f48f5e"},
-    {"path": "src/core/wz_machine_profile.c", "sha256": "912a458de8d9a9d2d89bb57cac896e819d8ce82297a4e2ac707c90be1d4450b5"}
+    {
+      "path": ".github/workflows/ui-menu-action-ids.yml",
+      "sha256": "9e3fd0a0ecbe399046daebc02b78880eb3b3088da7fcff0853ad567288e93bd0"
+    },
+    {
+      "path": "ci/test/ui-menu-action-ids.py",
+      "sha256": "86e02438fc61f1852119520126a4526104f848684a2c4c576f0ddde40aac95bc"
+    },
+    {
+      "path": "ci/test/ui-menu-action-ids/README.md",
+      "sha256": "1fc4cca01a7a70d4f50cc9c9aa44315081bcc58e122e016ec72fc05aafc635c5"
+    },
+    {
+      "path": "roms/48.rom",
+      "sha256": "d55daa439b673b0e3f5897f99ac37ecb45f974d1862b4dadb85dec34af99cb42"
+    },
+    {
+      "path": "src/app/wz_command_registry.c",
+      "sha256": "46f4e18e906786d42cf6a11f340ca2876b564ae831024c7135709cae713703b5"
+    },
+    {
+      "path": "src/app/wz_command_registry.h",
+      "sha256": "54cc2e949ff026fa183b0aa30cac9ebad8b431c97b80d966ef0ac1ff35a06087"
+    },
+    {
+      "path": "src/app/wz_host_thread.c",
+      "sha256": "6f8cbe0e171adfe7b9f42d9517e31d72f7917048339ff8941d5bccadfa305151"
+    },
+    {
+      "path": "src/app/wz_host_thread.h",
+      "sha256": "bd4e189a40c8f9ad31f014dc12afc3c67b7a4bd5580df262b0cf92db8fbe8471"
+    },
+    {
+      "path": "src/app/wz_sokol_main.c",
+      "sha256": "14ceefff4cd929c82499a814b6ded21d6ddd5d3e16a06b3a69c45e4903a45242"
+    },
+    {
+      "path": "src/app/wz_speed_policy.c",
+      "sha256": "cb9d2d0befc0becaa81558d794a257f399c4a46e1c1a0bdb19c4893d8f547183"
+    },
+    {
+      "path": "src/app/wz_speed_policy.h",
+      "sha256": "0895e0cac0254cb95d4b2347d911f0fdddfd0bab414d37e5dd4052cfc9eaa2df"
+    },
+    {
+      "path": "src/app/wz_telnet_keyboard_command.c",
+      "sha256": "74daf16ed99440541ff5e7a43fb7bf30dd958c42d6a32d6d2466ab987e2f4240"
+    },
+    {
+      "path": "src/app/wz_telnet_keyboard_command.h",
+      "sha256": "a525163fd16b5113b8166293055c88f46ebf53a373bb24d04254aafc395b7e82"
+    },
+    {
+      "path": "src/app/wz_ui_layout.c",
+      "sha256": "d447b0200f1d4f0d03c5a2d5e7a6055dcb71e4cf684e6ae58b113999cd7ad799"
+    },
+    {
+      "path": "src/app/wz_ui_layout.h",
+      "sha256": "30d784d2ff43fe237251e559cd8bc35d0d51b85c9e80953ba8f9cf6e2052ea7b"
+    },
+    {
+      "path": "src/core/wz_machine.c",
+      "sha256": "ff6a802eb986e29bbdbaef1c3a046ab39bb57742dd01d2d1e2e7b8a135e30b0d"
+    },
+    {
+      "path": "src/core/wz_machine_profile.c",
+      "sha256": "912a458de8d9a9d2d89bb57cac896e819d8ce82297a4e2ac707c90be1d4450b5"
+    }
   ]
 }

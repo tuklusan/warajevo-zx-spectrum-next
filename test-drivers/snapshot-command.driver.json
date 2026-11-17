@@ -16,7 +16,7 @@
     },
     {
       "path": "ci/test/snapshot-command/write-proof.py",
-      "sha256": "d6c4847a35ee51840f2e13345868b9077042ad7d344d9a617af61efdbf5f1957"
+      "sha256": "3ef859a80b599bf0b5e9ec81cecc95be2056f46e2872b6e3a2b2d080a925c80c"
     },
     {
       "path": "src/app/wz_file_dialog.h",
@@ -52,7 +52,7 @@
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "a14842db3e5b28ff63f729e61611e62ede5bd06abf028cb2ed6180c4aa3ad341"
+      "sha256": "93479ac03c344c429455d8627096147fb4da4a2b94c5204d8223d7e7b11fc983"
     },
     {
       "path": "src/core/wz_state.h",

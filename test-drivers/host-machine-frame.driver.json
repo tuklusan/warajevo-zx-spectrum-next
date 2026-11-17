@@ -12,7 +12,7 @@
     },
     {
       "path": "ci/test/host-frame-audio/write-proof.py",
-      "sha256": "deffb77aad9ad707abdbb1b22cc8a34d801c318bca7faf2f2cff624a90448c42"
+      "sha256": "34b34cf9bedb856e716d091ff33a9cda5fc6e2d18cdd1d23bac8ed01c320e4bc"
     },
     {
       "path": "ci/test/audio-delivery/sokol_audio_stub/sokol_audio.h",
@@ -80,15 +80,15 @@
     },
     {
       "path": "src/core/wz_machine.h",
-      "sha256": "e7078ec7aca25b1a0b168fd050fd81506e98f0002433144acb8af38878637864"
+      "sha256": "1ef677db258aab20af26375bd1afc45042c295d76189fc322a3b656c63dfe81f"
     },
     {
       "path": "src/core/wz_runner.c",
-      "sha256": "ded90228d1227ef361170e1bc95d2b98365fa380136fd5269733b6119d8c7b90"
+      "sha256": "f5892db3ca9afdb1e77a624eb03096cefcf02da3cc261e7c7ad4693c98e18b11"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "6ecb569fc851d5010af88e02409f878600c65e3bc9cc8c02bc7ceb21ad94c46c"
+      "sha256": "a6a9e2993f4b187e2341cc341f54ffe005b4b829d3276230384258b77b3dc686"
     }
   ]
 }

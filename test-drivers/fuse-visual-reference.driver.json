@@ -20,7 +20,7 @@
     },
     {
       "path": "ci/test/fuse-visual-equivalence/capture-candidate.py",
-      "sha256": "ab2d53bd060ec8bb004d4cec1420669683617d2b46abf4637d9046e52b438d05"
+      "sha256": "81fa87164a54b5ea636b9ae925b289a51a03d2ac6f342f6eb93fcc06ed8a9d1c"
     },
     {
       "path": "ci/test/fuse-visual-equivalence/compare.py",

@@ -20,7 +20,7 @@
     },
     {
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
-      "sha256": "dc47afb96f2c0566788d59ef74a691c33a8943e1c4e199c96c74d07739e68b31"
+      "sha256": "1ac299f0c90f76d94f33d9b72efc4a07ca0ca75ff363906190219c03883b00d7"
     },
     {
       "path": "src/app/wz_sokol_main.c",
@@ -28,15 +28,15 @@
     },
     {
       "path": "src/app/wz_debugger_window.c",
-      "sha256": "fa03c9e48f5f894b8f0899f50bd6330ce924246f04fc10fa972131b62d9aa3a8"
+      "sha256": "3325ba79564fa5a04f3c395efbc4b1ea7791c4d7972a4e89120e9f7d304b01d7"
     },
     {
       "path": "src/app/wz_debugger_window.h",
-      "sha256": "e8adfe2fdf7c168d1fe6f1bba2880074d78c790a1d48e2acb4332e5ac6ef611c"
+      "sha256": "c78e580a20ec1c2cf870921b9e75011033f51e921f699415dd33c2be386e6370"
     },
     {
       "path": "src/core/wz_debugger.c",
-      "sha256": "3475f4cb3acc84a58843a16205661068b86479d19c522602a34ee21b4aeb70fd"
+      "sha256": "b402fce901b096e10f7f7a4c2eda4987eeb3f60523f6593aa529aac5b79a7d20"
     },
     {
       "path": "roms/48.rom",

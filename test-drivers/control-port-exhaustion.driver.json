@@ -16,7 +16,7 @@
     },
     {
       "path": "ci/test/control-port-exhaustion/write-proof.py",
-      "sha256": "bda4e403ebcf83ded70330007bd2650ed5633776bb46477da5240dd8af9fc7be"
+      "sha256": "b3b5f60b638cd0e2f79ca65cf454c17edd33726b984f299397f8cd8f84892af2"
     },
     {
       "path": "src/app/wz_control_port.c",

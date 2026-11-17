@@ -12,7 +12,7 @@
     },
     {
       "path": "ci/test/host-pacing/write-proof.py",
-      "sha256": "268a7acabf2ac852475cafcc9c1e475d8f1f41d4b3620e88709a04d439331c69"
+      "sha256": "5e1470215985b88d9cffb43818be22a7f5ddab3fdbbe9e9712b1788664a7348c"
     },
     {
       "path": "src/app/wz_host_pacing.c",
@@ -32,7 +32,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "6ecb569fc851d5010af88e02409f878600c65e3bc9cc8c02bc7ceb21ad94c46c"
+      "sha256": "a6a9e2993f4b187e2341cc341f54ffe005b4b829d3276230384258b77b3dc686"
     }
   ]
 }
