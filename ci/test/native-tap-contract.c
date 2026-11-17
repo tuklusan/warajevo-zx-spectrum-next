@@ -128,7 +128,7 @@ static bool conversion_case(void)
     size_t native_length = 0u;
     size_t standard_length = 0u;
     size_t block_count = 0u;
-    wz_tap_block_t blocks[2];
+    wz_tap_block_t blocks[RECORDS];
     bool ok = false;
 
     CHECK(wz_tape_write_native_tap(records, 2u, native, sizeof(native),
@@ -142,7 +142,8 @@ static bool conversion_case(void)
     CHECK(wz_tape_parse_standard_tap(standard, standard_length, 1u, NULL, 0u,
                                      &block_count) == WZ_RESULT_BUFFER_TOO_SMALL &&
           block_count == 2u);
-    CHECK(wz_tape_parse_standard_tap(standard, standard_length, 1u, blocks, 2u,
+    CHECK(wz_tape_parse_standard_tap(standard, standard_length, 1u, blocks,
+                                     RECORDS,
                                      &block_count) == WZ_RESULT_OK &&
           blocks[0].length == 4u && blocks[0].data[0] == 0x00u &&
           blocks[1].length == 4u && blocks[1].data[0] == 0xffu);
