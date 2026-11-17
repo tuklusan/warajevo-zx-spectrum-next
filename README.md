@@ -27,3 +27,10 @@ Windows may request firewall permission when the application starts. Allow
 access only on networks where remote control is intended; local emulation
 continues if inbound access is denied. The active Control Port and listener
 state are shown in the application's remote-control status panel.
+
+## AI Disclosure
+
+This adaptation of **Warajevo**—including is being developed through iterative human-AI collaboration.
+
+The original Warajevo architecture and emulation heritage belong to its creators, Željko Jurić and Samir Ribić; the Warajevo ZX Spectrum Next-specific porting code, tooling, and prose in this repository were drafted by AI under human direction, then reviewed, debugged, and tested on ZX Spectrum hardware and emulators (such as Fuse/CSpect/ZEsarUX) by the maintainer.
+
