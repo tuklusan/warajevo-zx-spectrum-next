@@ -6857,7 +6857,10 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
                 if (operation->kind ==
                         WZ_TAPE_MANAGER_MAINTENANCE_EXCLUDE &&
                     operation->available) {
-                    if (wz_host_session.machine.tape_state.motor_on)
+                    bool can_exclude =
+                        wz_host_session.native_tape_record_count >= 2u &&
+                        !wz_host_session.machine.tape_state.motor_on;
+                    if (!can_exclude)
                         nk_widget_disable_begin(context);
                     if (nk_button_label(context, "Exclude")) {
                         if (wz_host_exclude_native_tape(&wz_host_session)) {
@@ -6870,7 +6873,7 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
                                 "Native tape exclusion failed");
                         }
                     }
-                    if (wz_host_session.machine.tape_state.motor_on)
+                    if (!can_exclude)
                         nk_widget_disable_end(context);
                 } else if (operation->kind ==
                         WZ_TAPE_MANAGER_MAINTENANCE_LINEARIZE &&
