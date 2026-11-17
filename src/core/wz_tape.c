@@ -330,6 +330,9 @@ static wz_result_t wz_tape_native_record_header(const wz_byte_t* data,
             return WZ_RESULT_PARSE_ERROR;
         }
         record->record_type = data[offset + 11u];
+        if (record->record_type > 3u) {
+            return WZ_RESULT_PARSE_ERROR;
+        }
         *header_size = 12u;
     }
     if (stored_length < 2u && *header_size == 12u) {
