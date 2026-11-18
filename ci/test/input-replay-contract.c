@@ -179,7 +179,7 @@ static int exercise_projection_equivalence(void)
     REQUIRE(wz_input_arbiter_record_effective(
         &reset_arbiter, WZ_KEY_A, true, 200u));
     REQUIRE(wz_input_arbiter_record_effective(
-        &reset_arbiter, WZ_KEY_A, false, 0u));
+        &reset_arbiter, WZ_KEY_A, true, 0u));
     REQUIRE(wz_input_arbiter_trace(&reset_arbiter)->count == 1u);
     REQUIRE(wz_input_arbiter_trace(&reset_arbiter)->entries[0].sequence == 0u);
     REQUIRE(wz_input_arbiter_trace(&reset_arbiter)->entries[0].master_tick == 0u);
