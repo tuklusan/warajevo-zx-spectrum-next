@@ -37,7 +37,7 @@
     },
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "a38c03a4a2a3b6400ee4d80ed7a126db7079b740bf7d862588d42f38fe208576"
+      "sha256": "e75a95c20ed70a8b28e345c37ef6bd65565bc0b12f0d131268d340561c23fcb9"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
