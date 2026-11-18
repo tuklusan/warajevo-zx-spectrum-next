@@ -3,23 +3,6 @@ set -eu
 
 BANNED=$(for encoded in Q2xhdWRl Q29kZXg= QW50aHJvcGl4 T3BlbkFJ Q2hhdEdQVA== U1BEWC1MaWNlbnNlLUlkZW50aWZpZXI= U1BEWA==; do printf '%s\n' "$encoded" | base64 -d; printf '\n'; done | paste -sd '|' -)
 
-check_banned_content() {
-    oldrev=$1
-    newrev=$2
-    [ "$newrev" = "0000000000000000000000000000000000000000" ] && return 0
-    [ "$oldrev" = "0000000000000000000000000000000000000000" ] && oldrev=$(git rev-parse "$newrev^" 2>/dev/null || true)
-    [ -n "$oldrev" ] || return 0
-
-    git diff --diff-filter=ACMR --name-only "$oldrev" "$newrev" | while IFS= read -r file; do
-        contents=$(git show "$newrev:$file" 2>/dev/null || true)
-        if matches=$(printf '%s\n' "$contents" | grep -n -i -E "$BANNED"); then
-            printf '%s\n' "Push rejected: banned word or phrase found in $file:" >&2
-            printf '%s\n' "$matches" >&2
-            exit 1
-        fi
-    done
-}
-
 check_pathnames() {
     newrev=$1
     [ "$newrev" = "0000000000000000000000000000000000000000" ] && return 0
@@ -34,6 +17,34 @@ check_pathnames() {
         printf '%s\n' "Push rejected: Python is required to validate repository pathnames." >&2
         return 1
     fi
+}
+
+check_banned_commit_content() {
+    commit=$1
+    while IFS= read -r -d '' file; do
+        contents=$(git show "$commit:$file" 2>/dev/null || true)
+        if matches=$(printf '%s\n' "$contents" | grep -n -i -E "$BANNED"); then
+            printf '%s\n' "Push rejected: banned word or phrase found in commit $commit, file $file:" >&2
+            printf '%s\n' "$matches" >&2
+            return 1
+        fi
+    done < <(git diff-tree --root -r -M --no-commit-id --name-only -z "$commit")
+}
+
+check_pushed_history() {
+    oldrev=$1
+    newrev=$2
+    [ "$newrev" = "0000000000000000000000000000000000000000" ] && return 0
+    if [ "$oldrev" = "0000000000000000000000000000000000000000" ]; then
+        range=$newrev
+    else
+        range="$oldrev..$newrev"
+    fi
+    while IFS= read -r commit; do
+        [ -n "$commit" ] || continue
+        check_pathnames "$commit" >/dev/null || return 1
+        check_banned_commit_content "$commit" || return 1
+    done < <(git rev-list --reverse "$range")
 }
 
 check_license_headers() {
@@ -247,8 +258,7 @@ while read -r local_ref local_sha remote_ref remote_sha; do
         printf '%s\n' "Push rejected: this project accepts direct branch pushes to main only." >&2
         failed=1
     fi
-    check_pathnames "$local_sha" || failed=1
-    check_banned_content "$remote_sha" "$local_sha" || failed=1
+    check_pushed_history "$remote_sha" "$local_sha" || failed=1
     check_license_headers "$remote_sha" "$local_sha" || failed=1
     check_range "$remote_sha" "$local_sha" || failed=1
     if [ "$failed" -eq 0 ]; then

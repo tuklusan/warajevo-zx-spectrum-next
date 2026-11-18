@@ -98,7 +98,10 @@ The checkout uses `core.hooksPath=.githooks`; new checkouts must enable that
 setting. `.githooks/pre-commit` rejects commits outside local `main` and staged
 indexes containing forbidden pathnames. `.githooks/pre-push` is the sole local
 push-validation entrypoint and independently validates the complete
-prospective tree and direct local-`main` to remote-`main` update.
+prospective tree, every commit in the outgoing history range, and the direct
+local-`main` to remote-`main` update. This history walk checks changed
+pathnames and file contents at each outgoing commit, preventing a transient
+noncompliant pathname or content snapshot from entering the public history.
 
 The gate runs test-ledger validation, banned-term validation, license-header
 validation, local AI source review, and Git LFS validation. Banned matching is
