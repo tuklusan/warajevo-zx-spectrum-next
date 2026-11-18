@@ -34,11 +34,11 @@
     },
     {
       "path": "src/core/wz_tape.c",
-      "sha256": "20c4523214f828d5129cbde2fb2c0d077ed15dae0daa923d019d1934b0c33d0b"
+      "sha256": "b2e274b5044051e1ed6a8396638ebbea2cc4a4953ad111eef741c46faf240076"
     },
     {
       "path": "src/core/wz_tape.h",
-      "sha256": "d483f3f99bcfa26590bf259114193d2314dd2af2720316bf66021462f5c31fd6"
+      "sha256": "4dc6424e78ce8e1614b5e827f0eab7b6bf0f20da344babcecf28418c82b7d3c2"
     }
   ]
 }
