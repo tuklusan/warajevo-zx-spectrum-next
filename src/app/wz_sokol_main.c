@@ -1372,6 +1372,74 @@ static bool wz_host_linearize_native_tape(wz_host_session_t* session)
                                        session->native_tape_record_count);
 }
 
+static bool wz_host_decompress_native_tape(wz_host_session_t* session)
+{
+    wz_native_tap_record_t* records = NULL;
+    wz_byte_t* decoded = NULL;
+    size_t decoded_length = 0u;
+    size_t decoded_offset = 0u;
+    bool compressed = false;
+    bool success = false;
+
+    if (session == NULL || strcmp(session->tape_format, "NATIVE") != 0 ||
+        session->native_tape_records == NULL ||
+        session->native_tape_record_count == 0u ||
+        session->machine.tape_state.motor_on ||
+        session->native_tape_record_count > SIZE_MAX / sizeof(*records)) {
+        return false;
+    }
+    for (size_t index = 0u; index < session->native_tape_record_count; ++index) {
+        const wz_native_tap_record_t* record =
+            &session->native_tape_records[index];
+        if (record->record_type == 4u || record->record_type > 5u) return false;
+        if (record->record_type == 5u) {
+            compressed = true;
+            if (record->decompressed_length > UINT16_MAX - 2u ||
+                decoded_length > SIZE_MAX - record->decompressed_length) {
+                return false;
+            }
+            decoded_length += record->decompressed_length;
+        }
+    }
+    if (!compressed || decoded_length == 0u) return false;
+    records = (wz_native_tap_record_t*)malloc(
+        session->native_tape_record_count * sizeof(*records));
+    decoded = (wz_byte_t*)malloc(decoded_length);
+    if (records == NULL || decoded == NULL) goto cleanup;
+    for (size_t index = 0u; index < session->native_tape_record_count; ++index) {
+        const wz_native_tap_record_t* source =
+            &session->native_tape_records[index];
+        records[index] = *source;
+        if (source->record_type == 5u) {
+            size_t output_length = 0u;
+            if (decoded_offset > decoded_length ||
+                decoded_length - decoded_offset < source->decompressed_length ||
+                wz_tape_native_decompress_record(source,
+                    decoded + decoded_offset,
+                    decoded_length - decoded_offset, &output_length) !=
+                    WZ_RESULT_OK ||
+                output_length != source->decompressed_length) {
+                goto cleanup;
+            }
+            records[index].record_type = 0u;
+            records[index].stored_length =
+                (wz_word_t)(output_length + 2u);
+            records[index].decompressed_length = 0u;
+            records[index].compressed_length = 0u;
+            records[index].signed_length = 0u;
+            records[index].payload = decoded + decoded_offset;
+            records[index].payload_length = output_length;
+            decoded_offset += output_length;
+        }
+    }
+    success = wz_host_replace_native_tape(session, records,
+                                           session->native_tape_record_count);
+cleanup:
+    free(records);
+    free(decoded);
+    return success;
+}
+
 static bool wz_host_exclude_native_tape(wz_host_session_t* session)
 {
     wz_native_tap_record_t* records = NULL;
@@ -6905,6 +6973,35 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
                         }
                     }
                     if (wz_host_session.machine.tape_state.motor_on)
+                        nk_widget_disable_end(context);
+                } else if (operation->kind ==
+                        WZ_TAPE_MANAGER_MAINTENANCE_DECOMPRESS &&
+                    operation->available) {
+                    bool can_decompress =
+                        !wz_host_session.machine.tape_state.motor_on &&
+                        wz_host_session.native_tape_records != NULL;
+                    for (size_t record_index = 0u;
+                         can_decompress && record_index <
+                             wz_host_session.native_tape_record_count;
+                         ++record_index) {
+                        const wz_byte_t type = wz_host_session.native_tape_records[
+                            record_index].record_type;
+                        if (type == 4u) can_decompress = false;
+                    }
+                    if (!can_decompress)
+                        nk_widget_disable_begin(context);
+                    if (nk_button_label(context, "Decompress")) {
+                        if (wz_host_decompress_native_tape(&wz_host_session)) {
+                            (void)snprintf(wz_host_session.file_notification,
+                                sizeof(wz_host_session.file_notification),
+                                "Native tape decompressed");
+                        } else {
+                            (void)snprintf(wz_host_session.file_notification,
+                                sizeof(wz_host_session.file_notification),
+                                "Native tape decompression failed");
+                        }
+                    }
+                    if (!can_decompress)
                         nk_widget_disable_end(context);
                 } else if (operation->kind ==
                         WZ_TAPE_MANAGER_MAINTENANCE_EFFICIENCY &&

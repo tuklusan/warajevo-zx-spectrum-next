@@ -27,6 +27,10 @@ static bool convert(const wz_native_tap_record_t* record,
     CHECK(native_length <= sizeof(native));
     CHECK(wz_tape_write_native_tap(record, 1u, native, sizeof(native),
                                    &native_length) == WZ_RESULT_OK);
+    CHECK(wz_tape_native_decompress_record(record, standard + 3u,
+                                           capacity - 3u, &standard_length) ==
+          WZ_RESULT_OK && standard_length == expected_length - 3u &&
+          memcmp(standard + 3u, expected_payload, standard_length) == 0);
     CHECK(wz_tape_native_to_standard_tap(native, native_length, NULL, 0u,
                                          &standard_length) ==
           WZ_RESULT_BUFFER_TOO_SMALL && standard_length == expected_length);
@@ -90,6 +94,9 @@ static bool malformed_case(void)
     wz_byte_t standard[8];
     size_t native_length = 0u;
     size_t standard_length = 0u;
+    CHECK(wz_tape_native_decompress_record(&record, NULL, sizeof(standard),
+                                           &standard_length) ==
+          WZ_RESULT_PARSE_ERROR && standard_length == 0u);
     CHECK(wz_tape_write_native_tap(&record, 1u, native, sizeof(native),
                                    &native_length) == WZ_RESULT_OK);
     native[27u] = 3u;

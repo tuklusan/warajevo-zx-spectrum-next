@@ -386,7 +386,8 @@ wz_tape_manager_maintenance_at(wz_tape_manager_format_t format, size_t index)
     native_operation.available = operation->kind ==
         WZ_TAPE_MANAGER_MAINTENANCE_EFFICIENCY ||
         operation->kind == WZ_TAPE_MANAGER_MAINTENANCE_EXCLUDE ||
-        operation->kind == WZ_TAPE_MANAGER_MAINTENANCE_LINEARIZE;
+        operation->kind == WZ_TAPE_MANAGER_MAINTENANCE_LINEARIZE ||
+        operation->kind == WZ_TAPE_MANAGER_MAINTENANCE_DECOMPRESS;
     native_operation.unavailable_reason = native_operation.available ? 0 :
         "native-maintenance-not-implemented";
     return &native_operation;
@@ -425,7 +426,9 @@ wz_result_t wz_tape_manager_native_efficiency(
                     (record->record_type == 4u ? 65534u : 65535u) ||
                 record->decompressed_length == 0u ||
                 record->compressed_length == 0u ||
-                (size_t)record->compressed_length != record->payload_length) {
+                (size_t)record->compressed_length != record->payload_length ||
+                (record->record_type == 5u &&
+                 (size_t)record->signed_length >= record->payload_length)) {
                 return WZ_RESULT_PARSE_ERROR;
             }
             header_size = 17u;

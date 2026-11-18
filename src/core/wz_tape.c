@@ -525,14 +525,15 @@ static bool wz_native_tap_decode_distance_high(
     return true;
 }
 
-static wz_result_t wz_tape_native_decompress(
+wz_result_t wz_tape_native_decompress_record(
     const wz_native_tap_record_t* record, wz_byte_t* output,
     size_t capacity, size_t* output_length)
 {
     wz_native_tap_bit_reader_t reader;
     size_t produced = 0u;
 
-    if (record == NULL || output_length == NULL || record->record_type != 5u ||
+    if (record == NULL || output == NULL || output_length == NULL ||
+        record->record_type != 5u ||
         record->payload == NULL || record->payload_length == 0u ||
         record->compressed_length != record->payload_length ||
         record->decompressed_length == 0u ||
@@ -716,7 +717,7 @@ wz_result_t wz_tape_native_to_standard_tap(const wz_byte_t* data,
         wz_write_le16(output + offset, (wz_word_t)block_length);
         output[offset + 2u] = record->flag;
         if (record->record_type == 5u) {
-            result = wz_tape_native_decompress(record, output + offset + 3u,
+            result = wz_tape_native_decompress_record(record, output + offset + 3u,
                                                block_length - 1u, &payload_length);
             if (result != WZ_RESULT_OK || payload_length != block_length - 1u) {
                 result = WZ_RESULT_PARSE_ERROR;
