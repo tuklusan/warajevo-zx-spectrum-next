@@ -17,8 +17,8 @@ behavior is implemented or promoted by this reconciliation.
 | UI Architecture §20 | Legacy category | Reconciliation | Remaining implementation/evidence work |
 |---|---|---|---|
 | 20.1 | TapeFiles > Tapes | Insert/Eject quick actions, Tape Manager, report export, and dropped print paths are individually dispositioned. | Verify all retained actions use the shared command and media paths; retained media operations lack criterion-level proof. |
-| 20.2 | TapeFiles > Blocks | Retained block operations map to Tape Manager; the native-only exclusion operation maps to Compatibility Tools. | Verify format-specific availability, destructive-operation behavior, and block edits with pinned tests. |
-| 20.3 | TapeFiles > Implode | Native tape compression/linearization and efficiency operations map to Compatibility Tools. | These conversion/maintenance destinations lack implementation and acceptance evidence. |
+| 20.2 | TapeFiles > Blocks | Retained block operations map to Tape Manager, including native-only Exclude. | Verify format-specific availability, destructive-operation behavior, and block edits with pinned tests; native Exclude implementation and rollback evidence are current, while direct GUI interaction remains open. |
+| 20.3 | TapeFiles > Implode | Native tape compression, linearization, decompression, and efficiency map to Tape Manager; selected-record compression remains a future Compatibility Tools refinement. | Native Implode/Decompress/Linearize and efficiency analysis are implemented for applicable native TAP records with five-target evidence; direct GUI interaction and selected-record compression remain open. |
 | 20.4 | TapeFiles > Communications > RS232 | Legacy PC-to-Spectrum bridge and DOS helpers are explicitly dropped; authentic Interface 1 serial behavior remains a separate machine concern. | No legacy host bridge work is required for the initial UI. Any future hardware bridge needs a separately approved architecture. |
 | 20.5 | TapeFiles > Communications > Cassette | Live physical capture is explicitly deferred; DOS calibration is dropped. | No initial destination; future capture requires its own feature design and acceptance. |
 | 20.6 | TapeFiles > Convert > source-language/text conversions | Each listed language/text conversion is assigned to Compatibility Tools. | Conversion inventory has no implementation or conversion-fixture proof. |
@@ -57,13 +57,13 @@ This crosswalk has 174 rows, one for every legacy item/conversion/facility liste
 | 20.2 TapeFiles > Blocks | Delete | Media-manager function | RETAIN; Tasks 306–310 |
 | 20.2 TapeFiles > Blocks | Add | Media-manager function | RETAIN; Tasks 306–310 |
 | 20.2 TapeFiles > Blocks | Edit | Media-manager function | RETAIN; Tasks 306–310 |
-| 20.2 TapeFiles > Blocks | Exclude | Compatibility utility | LATER; Tasks 306–310 |
+| 20.2 TapeFiles > Blocks | Exclude | Tape Manager native maintenance | RETAIN; Tasks 305, 307, and 505 |
 | 20.2 TapeFiles > Blocks | Change Position | Media-manager function | DROP; Tasks 306–310 |
-| 20.3 TapeFiles > Implode | Compress > All blocks | Compatibility utility | LATER; Tasks 307 and 324 |
-| 20.3 TapeFiles > Implode | Compress > Linearize only | Compatibility utility | LATER; Tasks 307 and 324 |
-| 20.3 TapeFiles > Implode | Compress > Compress Selected | Compatibility utility | LATER; Tasks 307 and 324 |
-| 20.3 TapeFiles > Implode | Decompress | Compatibility utility | LATER; Tasks 307 and 324 |
-| 20.3 TapeFiles > Implode | Efficiency | Compatibility utility | LATER; Tasks 307 and 324 |
+| 20.3 TapeFiles > Implode | Compress > All blocks | Tape Manager native Implode | RETAIN; Task 511; direct GUI interaction remains open |
+| 20.3 TapeFiles > Implode | Compress > Linearize only | Tape Manager native Linearize | RETAIN; Task 504; direct GUI interaction remains open |
+| 20.3 TapeFiles > Implode | Compress > Compress Selected | Compatibility utility refinement | LATER; selected-record compression is not in the current native maintenance scope |
+| 20.3 TapeFiles > Implode | Decompress | Tape Manager native Decompress | RETAIN; Task 510; direct GUI interaction remains open |
+| 20.3 TapeFiles > Implode | Efficiency | Tape Manager native efficiency analysis | RETAIN; Task 307; direct GUI interaction remains open |
 | 20.4 TapeFiles > Communications > RS232 | Send to Spectrum | Dropped legacy host function | DROP; Task 310 |
 | 20.4 TapeFiles > Communications > RS232 | Receive from Spectrum | Dropped legacy host function | DROP; Task 310 |
 | 20.4 TapeFiles > Communications > RS232 | Send communication program | Dropped legacy host function | DROP; Task 310 |

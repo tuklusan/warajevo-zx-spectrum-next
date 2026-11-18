@@ -15,5 +15,5 @@ short-distance run, and rejection of malformed signed lengths.
 The exact-source five-target Release/Sokol run `44254470964` passed all four
 cases on Windows x64, Linux x64, Linux ARM64, macOS ARM64, and macOS Intel.
 Each target reports `native-tap-decompression-contract cases=4 status=pass`.
-Sampled type-4 records and native maintenance decompression remain outside
-this contract.
+Sampled type-4 records remain outside this contract; production maintenance
+decompression is covered by the Tape Manager and the hosted proof records.
