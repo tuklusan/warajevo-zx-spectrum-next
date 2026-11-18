@@ -1440,6 +1440,77 @@ cleanup:
     return success;
 }
 
+static bool wz_host_implode_native_tape(wz_host_session_t* session)
+{
+    wz_native_tap_record_t* records = NULL;
+    wz_byte_t** compressed_payloads = NULL;
+    bool changed = false;
+    bool success = false;
+
+    if (session == NULL || strcmp(session->tape_format, "NATIVE") != 0 ||
+        session->native_tape_records == NULL ||
+        session->native_tape_record_count == 0u ||
+        session->machine.tape_state.motor_on ||
+        session->native_tape_record_count > SIZE_MAX / sizeof(*records) ||
+        session->native_tape_record_count > SIZE_MAX / sizeof(*compressed_payloads)) {
+        return false;
+    }
+    records = (wz_native_tap_record_t*)malloc(
+        session->native_tape_record_count * sizeof(*records));
+    compressed_payloads = (wz_byte_t**)calloc(
+        session->native_tape_record_count, sizeof(*compressed_payloads));
+    if (records == NULL || compressed_payloads == NULL) goto cleanup;
+    for (size_t index = 0u; index < session->native_tape_record_count; ++index) {
+        const wz_native_tap_record_t* source =
+            &session->native_tape_records[index];
+        records[index] = *source;
+        if (source->record_type == 4u || source->record_type > 5u) goto cleanup;
+        if (source->record_type < 4u) {
+            size_t compressed_length = 0u;
+            wz_word_t signed_length = 0u;
+            if (source->payload == NULL || source->payload_length == 0u ||
+                source->payload_length > UINT16_MAX ||
+                wz_tape_native_compress_payload(source->payload,
+                    source->payload_length, NULL, 0u, &compressed_length,
+                    &signed_length) != WZ_RESULT_BUFFER_TOO_SMALL ||
+                compressed_length > UINT16_MAX ||
+                compressed_length + 5u >= source->payload_length) {
+                continue;
+            }
+            compressed_payloads[index] = (wz_byte_t*)malloc(compressed_length);
+            if (compressed_payloads[index] == NULL ||
+                wz_tape_native_compress_payload(source->payload,
+                    source->payload_length, compressed_payloads[index],
+                    compressed_length, &compressed_length, &signed_length) !=
+                    WZ_RESULT_OK) {
+                goto cleanup;
+            }
+            records[index].record_type = 5u;
+            records[index].stored_length = 65535u;
+            records[index].decompressed_length =
+                (wz_word_t)source->payload_length;
+            records[index].compressed_length = (wz_word_t)compressed_length;
+            records[index].signed_length = signed_length;
+            records[index].payload = compressed_payloads[index];
+            records[index].payload_length = compressed_length;
+            changed = true;
+        }
+    }
+    if (!changed) goto cleanup;
+    success = wz_host_replace_native_tape(session, records,
+                                          session->native_tape_record_count);
+cleanup:
+    if (compressed_payloads != NULL) {
+        for (size_t index = 0u; index < session->native_tape_record_count;
+             ++index) {
+            free(compressed_payloads[index]);
+        }
+    }
+    free(compressed_payloads);
+    free(records);
+    return success;
+}
+
 static bool wz_host_exclude_native_tape(wz_host_session_t* session)
 {
     wz_native_tap_record_t* records = NULL;
@@ -6973,6 +7044,38 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
                         }
                     }
                     if (wz_host_session.machine.tape_state.motor_on)
+                        nk_widget_disable_end(context);
+                } else if (operation->kind ==
+                        WZ_TAPE_MANAGER_MAINTENANCE_IMPLODE &&
+                    operation->available) {
+                    bool can_implode =
+                        !wz_host_session.machine.tape_state.motor_on &&
+                        wz_host_session.native_tape_records != NULL;
+                    bool has_uncompressed = false;
+                    for (size_t record_index = 0u;
+                         can_implode && record_index <
+                             wz_host_session.native_tape_record_count;
+                         ++record_index) {
+                        const wz_byte_t type = wz_host_session.native_tape_records[
+                            record_index].record_type;
+                        if (type == 4u || type > 5u) can_implode = false;
+                        if (type < 4u) has_uncompressed = true;
+                    }
+                    can_implode = can_implode && has_uncompressed;
+                    if (!can_implode)
+                        nk_widget_disable_begin(context);
+                    if (nk_button_label(context, "Implode")) {
+                        if (wz_host_implode_native_tape(&wz_host_session)) {
+                            (void)snprintf(wz_host_session.file_notification,
+                                sizeof(wz_host_session.file_notification),
+                                "Native tape compressed");
+                        } else {
+                            (void)snprintf(wz_host_session.file_notification,
+                                sizeof(wz_host_session.file_notification),
+                                "Native tape compression failed");
+                        }
+                    }
+                    if (!can_implode)
                         nk_widget_disable_end(context);
                 } else if (operation->kind ==
                         WZ_TAPE_MANAGER_MAINTENANCE_DECOMPRESS &&

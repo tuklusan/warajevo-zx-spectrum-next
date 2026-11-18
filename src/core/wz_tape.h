@@ -116,6 +116,10 @@ wz_result_t wz_tape_native_to_standard_tap(const wz_byte_t* data,
 wz_result_t wz_tape_native_decompress_record(
     const wz_native_tap_record_t* record, wz_byte_t* output,
     size_t capacity, size_t* output_length);
+/* Encode one uncompressed native payload as a type-5 payload. */
+wz_result_t wz_tape_native_compress_payload(
+    const wz_byte_t* input, size_t input_length, wz_byte_t* output,
+    size_t capacity, size_t* output_length, wz_word_t* signed_length);
 wz_result_t wz_tape_parse_tzx(const wz_byte_t* data,
                               size_t length,
                               wz_tzx_block_t* blocks,

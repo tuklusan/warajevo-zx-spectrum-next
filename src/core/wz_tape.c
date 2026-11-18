@@ -650,6 +650,230 @@ wz_result_t wz_tape_native_decompress_record(
     return WZ_RESULT_OK;
 }
 
+typedef struct {
+    wz_byte_t* data;
+    size_t size;
+    size_t capacity;
+} wz_native_tap_byte_vector_t;
+
+static bool wz_native_tap_vector_append(
+    wz_native_tap_byte_vector_t* vector, wz_byte_t value)
+{
+    size_t next_capacity;
+    wz_byte_t* replacement;
+
+    if (vector == NULL) return false;
+    if (vector->size == vector->capacity) {
+        next_capacity = vector->capacity == 0u ? 32u : vector->capacity * 2u;
+        if (next_capacity < vector->capacity) return false;
+        replacement = (wz_byte_t*)realloc(vector->data, next_capacity);
+        if (replacement == NULL) return false;
+        vector->data = replacement;
+        vector->capacity = next_capacity;
+    }
+    vector->data[vector->size++] = value;
+    return true;
+}
+
+static bool wz_native_tap_signal_bit(
+    wz_native_tap_byte_vector_t* signal, size_t* bit_count, unsigned bit)
+{
+    size_t byte_index;
+
+    if (signal == NULL || bit_count == NULL || bit > 1u) return false;
+    byte_index = *bit_count / 8u;
+    if (byte_index == signal->size &&
+        !wz_native_tap_vector_append(signal, 0u)) {
+        return false;
+    }
+    if (bit != 0u) {
+        signal->data[byte_index] = (wz_byte_t)(signal->data[byte_index] |
+            (wz_byte_t)(0x80u >> (*bit_count % 8u)));
+    }
+    ++*bit_count;
+    return true;
+}
+
+static bool wz_native_tap_distance_high(
+    wz_native_tap_byte_vector_t* signal, size_t* bit_count, unsigned high)
+{
+    if (high == 0u) {
+        return wz_native_tap_signal_bit(signal, bit_count, 1u);
+    }
+    if (high == 1u || high == 2u) {
+        return wz_native_tap_signal_bit(signal, bit_count, 0u) &&
+            wz_native_tap_signal_bit(signal, bit_count, 0u) &&
+            wz_native_tap_signal_bit(signal, bit_count, 0u) &&
+            wz_native_tap_signal_bit(signal, bit_count, high - 1u);
+    }
+    if (high <= 6u) {
+        unsigned suffix = high - 3u;
+        return wz_native_tap_signal_bit(signal, bit_count, 0u) &&
+            wz_native_tap_signal_bit(signal, bit_count, 0u) &&
+            wz_native_tap_signal_bit(signal, bit_count, 1u) &&
+            wz_native_tap_signal_bit(signal, bit_count, (suffix >> 1u) & 1u) &&
+            wz_native_tap_signal_bit(signal, bit_count, suffix & 1u);
+    }
+    if (high <= 22u) {
+        unsigned suffix = high - 7u;
+        if (!wz_native_tap_signal_bit(signal, bit_count, 0u) ||
+            !wz_native_tap_signal_bit(signal, bit_count, 1u)) {
+            return false;
+        }
+        for (int shift = 3; shift >= 0; --shift) {
+            if (!wz_native_tap_signal_bit(signal, bit_count,
+                                          (suffix >> (unsigned)shift) & 1u)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
+static bool wz_native_tap_match_length(
+    const wz_byte_t* input, size_t input_length, size_t position,
+    size_t source, size_t* length)
+{
+    size_t distance;
+    size_t maximum;
+    size_t matched = 0u;
+
+    if (input == NULL || length == NULL || source >= position ||
+        position >= input_length) return false;
+    distance = position - source + 1u;
+    if (distance < 2u || distance > 5887u) return false;
+    maximum = input_length - position;
+    if (maximum > 265u) maximum = 265u;
+    while (matched < maximum &&
+           input[position + matched] ==
+               input[source + (matched % (distance - 1u))]) {
+        ++matched;
+    }
+    *length = matched;
+    return true;
+}
+
+wz_result_t wz_tape_native_compress_payload(
+    const wz_byte_t* input, size_t input_length, wz_byte_t* output,
+    size_t capacity, size_t* output_length, wz_word_t* signed_length)
+{
+    wz_native_tap_byte_vector_t signal = {0};
+    wz_native_tap_byte_vector_t literals = {0};
+    size_t bit_count = 0u;
+    size_t position = 0u;
+    size_t required;
+    wz_result_t result = WZ_RESULT_PARSE_ERROR;
+
+    if (output_length == NULL || signed_length == NULL || input == NULL ||
+        input_length == 0u || input_length > UINT16_MAX) {
+        if (output_length != NULL) *output_length = 0u;
+        if (signed_length != NULL) *signed_length = 0u;
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    while (position < input_length) {
+        size_t best_source = 0u;
+        size_t best_length = 0u;
+        size_t first_source = position > 5886u ? position - 5886u : 0u;
+        size_t source = position == 0u ? 0u : position - 1u;
+
+        for (; position != 0u;) {
+            size_t match_length = 0u;
+            if (source < first_source) break;
+            if (wz_native_tap_match_length(input, input_length, position,
+                                           source, &match_length) &&
+                match_length > best_length) {
+                best_length = match_length;
+                best_source = source;
+                if (best_length == 265u) break;
+            }
+            if (source == first_source) break;
+            --source;
+        }
+        {
+            size_t distance = best_length != 0u ?
+                position - best_source + 1u : 0u;
+            bool use_match = best_length >= 3u ||
+                (best_length == 2u && distance <= 255u);
+            if (!use_match) {
+                if (!wz_native_tap_signal_bit(&signal, &bit_count, 0u) ||
+                    !wz_native_tap_vector_append(&literals, input[position])) {
+                    goto cleanup;
+                }
+                ++position;
+                continue;
+            }
+            if (!wz_native_tap_signal_bit(&signal, &bit_count, 1u)) {
+                goto cleanup;
+            }
+            if (best_length == 2u) {
+                if (!wz_native_tap_signal_bit(&signal, &bit_count, 0u) ||
+                    !wz_native_tap_signal_bit(&signal, &bit_count, 1u) ||
+                    !wz_native_tap_signal_bit(&signal, &bit_count, 0u) ||
+                    !wz_native_tap_vector_append(&literals,
+                        (wz_byte_t)distance)) {
+                    goto cleanup;
+                }
+            } else {
+                if (best_length == 3u) {
+                    if (!wz_native_tap_signal_bit(&signal, &bit_count, 0u) ||
+                        !wz_native_tap_signal_bit(&signal, &bit_count, 0u)) {
+                        goto cleanup;
+                    }
+                } else if (best_length == 4u || best_length == 5u) {
+                    if (!wz_native_tap_signal_bit(&signal, &bit_count, 1u) ||
+                        !wz_native_tap_signal_bit(&signal, &bit_count, 0u) ||
+                        !wz_native_tap_signal_bit(&signal, &bit_count,
+                                                  best_length == 5u ? 1u : 0u)) {
+                        goto cleanup;
+                    }
+                } else if (best_length <= 9u) {
+                    unsigned suffix = (unsigned)best_length - 6u;
+                    if (!wz_native_tap_signal_bit(&signal, &bit_count, 1u) ||
+                        !wz_native_tap_signal_bit(&signal, &bit_count, 1u) ||
+                        !wz_native_tap_signal_bit(&signal, &bit_count,
+                                                  best_length <= 7u ? 0u : 1u) ||
+                        !wz_native_tap_signal_bit(&signal, &bit_count,
+                                                  suffix & 1u)) {
+                        goto cleanup;
+                    }
+                } else {
+                    if (!wz_native_tap_signal_bit(&signal, &bit_count, 0u) ||
+                        !wz_native_tap_signal_bit(&signal, &bit_count, 1u) ||
+                        !wz_native_tap_signal_bit(&signal, &bit_count, 1u) ||
+                        !wz_native_tap_vector_append(&literals,
+                            (wz_byte_t)(best_length - 10u))) {
+                        goto cleanup;
+                    }
+                }
+                if (!wz_native_tap_vector_append(&literals,
+                        (wz_byte_t)distance) ||
+                    !wz_native_tap_distance_high(&signal, &bit_count,
+                                                 (unsigned)(distance / 256u))) {
+                    goto cleanup;
+                }
+            }
+            position += best_length;
+        }
+    }
+    required = signal.size;
+    if (required > SIZE_MAX - literals.size) goto cleanup;
+    required += literals.size;
+    *output_length = required;
+    *signed_length = (wz_word_t)(signal.size - 1u);
+    if (output == NULL || capacity < required) {
+        result = WZ_RESULT_BUFFER_TOO_SMALL;
+        goto cleanup;
+    }
+    memcpy(output, signal.data, signal.size);
+    memcpy(output + signal.size, literals.data, literals.size);
+    result = WZ_RESULT_OK;
+cleanup:
+    free(signal.data);
+    free(literals.data);
+    return result;
+}
+
 wz_result_t wz_tape_native_to_standard_tap(const wz_byte_t* data,
                                            size_t length,
                                            wz_byte_t* output,
