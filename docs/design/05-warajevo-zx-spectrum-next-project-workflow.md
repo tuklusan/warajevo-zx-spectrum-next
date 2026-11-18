@@ -103,10 +103,10 @@ prospective tree and direct local-`main` to remote-`main` update.
 The gate runs test-ledger validation, banned-term validation, license-header
 validation, local AI source review, and Git LFS validation. Banned matching is
 case-insensitive. Source review is mandatory whenever a pushed change contains
-source files covered by the reviewer. The hook reviews each changed source file
-in its own packet, with up to 1,000 tokens of source context per file. Up to two
-independent packets run concurrently under one 20-minute wall-clock limit for
-the complete review. It saves reviewer output
+source files covered by the reviewer. The hook reviews exactly one changed
+source file per packet, with up to 1,000 tokens of source context per file, and
+processes packets sequentially under one 20-minute wall-clock limit for the
+complete review. It saves reviewer output
 under the local, untracked `scratch/temp/` directory, and on timeout records
 `STALL`, elapsed time, and the diagnostic log path there. A completed review permits
 the gate to continue; review findings remain advisory and require developer
