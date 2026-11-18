@@ -52,7 +52,7 @@
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "93479ac03c344c429455d8627096147fb4da4a2b94c5204d8223d7e7b11fc983"
+      "sha256": "746e8e1254e1748a7946f5e5e25a03b25e12f8428f00c26e6ce2b4508c172c58"
     },
     {
       "path": "src/core/wz_state.h",

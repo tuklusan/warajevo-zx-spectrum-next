@@ -24,11 +24,11 @@
     },
     {
       "path": "src/app/wz_input_arbiter.c",
-      "sha256": "52bc39d6c9d5326e76d695f4f4a725f410e02cb9852a48a5f13b266ce2523bcb"
+      "sha256": "7a5b668b1fef289ed3e18ca18775d535351ae9c385f0ed74dc1618f8cc13a703"
     },
     {
       "path": "src/app/wz_input_arbiter.h",
-      "sha256": "d16b682056e7bf3864c46083407eaca716956ae137e23ab83d51190afc1dffcd"
+      "sha256": "118a5c1bb18c6397ecae3e754388d5eddae218127406dd62fb094aa8c7494d37"
     },
     {
       "path": "src/app/wz_input_focus.c",

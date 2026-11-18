@@ -40,11 +40,11 @@
     },
     {
       "path": "src/core/wz_state.c",
-      "sha256": "93479ac03c344c429455d8627096147fb4da4a2b94c5204d8223d7e7b11fc983"
+      "sha256": "746e8e1254e1748a7946f5e5e25a03b25e12f8428f00c26e6ce2b4508c172c58"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "39655cb93e353ca41a4c9f9c3925a2736fb27ca2c89c6497dc078c6f5c8a069f"
+      "sha256": "e72bfd821914a634de24a6ae7232e6e57cd36141d5c50f48ad10fb3e0163ec1e"
     },
     {
       "path": "docs/design/interface1-microdrive-zxnet.md",
@@ -52,7 +52,7 @@
     },
     {
       "path": "docs/design/04-wzsn-architectures-1-2-developer-tasks.md",
-      "sha256": "16238649631950928a2733fd898e20009a4b4097d510cf713acceef3978be8dd"
+      "sha256": "20b3b12e91edf146dba5dcb20f122663805fa97ec706484d60dd7467469a83f6"
     }
   ]
 }

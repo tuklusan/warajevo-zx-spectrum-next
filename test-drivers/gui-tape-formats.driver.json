@@ -36,7 +36,7 @@
       "path": "src/core/wz_tape.c"
     },
     {
-      "sha256": "d1a891fb4ffe72809eddfa5b64b280ad90ad2b8a696652a39082fb198678aa5c",
+      "sha256": "7b84aef2b7012d99866842eba6c83ba8db2593632c086024930b2288ea510c0f",
       "path": "src/app/wz_tape_manager.c"
     },
     {
