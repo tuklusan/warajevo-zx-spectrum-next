@@ -291,7 +291,10 @@ Layout rules:
    passed. Neither may be used as a miscellaneous scratch area.
 8. Generated build output, caches, runner manifests, and temporary traces must
    remain untracked. Runner-produced binaries belong under `dist/`; local
-   workstations must not produce them.
+   workstations must not produce them. Local review packets and transient
+   tooling output belong under the repository `scratch/temp/` directory or the
+   configured non-system temporary location (`D:\Temp` on the maintained
+   workstation); do not create build or temporary output on the system drive.
 9. Root-level files are reserved for project-wide policy, licensing, and
    overview metadata. New operational scripts do not belong at the root.
 10. Architecture `03-*` material remains outside the active implementation
