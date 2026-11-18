@@ -97,6 +97,7 @@ static bool rejection(void)
         wz_native_tap_record_t parsed[RECORDS];
         CHECK(wz_tape_parse_native_tap(image, length, parsed, RECORDS, &count) ==
               WZ_RESULT_OK && count == RECORDS);
+        CHECK(parsed[3].offset <= length && length - parsed[3].offset >= 16u);
         image[parsed[3].offset + 15u] = 1u;
         CHECK(wz_tape_parse_native_tap(image, length, NULL, 0u, &count) ==
               WZ_RESULT_PARSE_ERROR);
