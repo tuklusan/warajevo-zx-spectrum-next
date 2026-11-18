@@ -70,9 +70,10 @@ results, workflow edits, and administrative records alone start no hosted
 runner. A manual dispatch of this same workflow is used when needed. Pull-request
 triggers are prohibited. Do not add branch protection
 that requires a pull request or prevents authorized direct updates to `main`.
-The exact current-source five-target run `44296473164` passed the native build,
-CTest, desktop Fuse gate, and Phase-16 checks; its processed proof records are
-tracked under `test-results/` and the temporary run and artifacts were deleted.
+The tracked native-gate records cover the last product-source proof; subsequent
+source-only path-policy adjustments were revalidated by a five-target native
+run with CTest, desktop Fuse, and Phase-16 success, then its temporary run and
+artifacts were deleted under the retention rule above.
 
 The pre-commit hook checks every pathname in the complete staged index,
 including directory components, for forbidden terms case-insensitively before
