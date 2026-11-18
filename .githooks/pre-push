@@ -63,9 +63,11 @@ check_license_headers() {
         esac
         contents=$(git show "$newrev:$file" 2>/dev/null || true)
         previous=$(git show "$oldrev:$file" 2>/dev/null || true)
-        if printf '%s\n' "$previous" | grep -Fq 'New original material is licensed under GNU GPL v2 or later'; then
-            printf '%s\n' "$contents" | grep -Fq 'New original material is licensed under GNU GPL v2 or later' || {
-                printf '%s\n' "Push rejected: existing GPL license header changed in $file" >&2
+        if printf '%s\n' "$previous" | grep -Fq 'New original material is licensed under GNU GPL v2 or later' ||
+           printf '%s\n' "$previous" | grep -Fq 'This file is governed by the SANYALnet Labs Non-Commercial License'; then
+            printf '%s\n' "$contents" | grep -Fq 'New original material is licensed under GNU GPL v2 or later' ||
+            printf '%s\n' "$contents" | grep -Fq 'This file is licensed under the GNU General Public License, version 2 or later.' || {
+                printf '%s\n' "Push rejected: existing license header changed in $file" >&2
                 exit 1
             }
         else
