@@ -32,7 +32,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "3e2ed0dacf709c30a915db199b5fca5427c83f90b65e8c0e3a37d8d18051ecf6"
+      "sha256": "63c423df99da5d897d7ea547502fc8ccd42c5c48b0a4172cb6377d9c43f02801"
     },
     {
       "path": "src/core/wz_bus.c",
