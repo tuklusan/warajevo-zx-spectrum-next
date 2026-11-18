@@ -558,10 +558,6 @@ static wz_result_t wz_tape_native_decompress(
         {
             size_t run_length;
             bool short_distance;
-            if (!wz_native_tap_next_bit(&reader, &bit)) {
-                *output_length = 0u;
-                return WZ_RESULT_PARSE_ERROR;
-            }
             if (bit == 0u) {
                 if (!wz_native_tap_next_bit(&reader, &bit)) {
                     *output_length = 0u;
