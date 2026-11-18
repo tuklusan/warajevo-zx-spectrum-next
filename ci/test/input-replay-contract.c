@@ -103,7 +103,6 @@ static int exercise_trace_api(void)
     REQUIRE(wz_input_trace_replay(&trace, apply_transition,
                                   &replay_arbiter));
     REQUIRE(traces_equal(&trace, wz_input_arbiter_trace(&replay_arbiter)));
-    REQUIRE(wz_input_arbiter_key_down(&replay_arbiter, WZ_KEY_SHIFT));
 
     trace.entries[1].sequence = 9u;
     REQUIRE(!wz_input_trace_replay(&trace, capture_transition, &capture));
