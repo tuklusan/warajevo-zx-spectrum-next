@@ -296,6 +296,8 @@ Layout rules:
    tooling output belong under the repository `scratch/temp/` directory or the
    configured non-system temporary location (`D:\Temp` on the maintained
    workstation); do not create build or temporary output on the system drive.
+   The maintained workstation also routes TEMP, TMP, NUGET_PACKAGES, and
+   PIP_CACHE_DIR to D:\\Temp; local tools must preserve those settings.
 9. Root-level files are reserved for project-wide policy, licensing, and
    overview metadata. New operational scripts do not belong at the root.
 10. Architecture `03-*` material remains outside the active implementation
