@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 set -eu
 
 BANNED=$(for encoded in Q2xhdWRl Q29kZXg= QW50aHJvcGl4 T3BlbkFJ Q2hhdEdQVA== U1BEWC1MaWNlbnNlLUlkZW50aWZpZXI= U1BEWA==; do printf '%s\n' "$encoded" | base64 -d; printf '\n'; done | paste -sd '|' -)
