@@ -1,17 +1,17 @@
 {
   "testId": "interface1-wait",
   "status": "pass",
-  "commit": "51a032bc87281de52fc2111fa4dc0caa3bd7dc48",
-  "runId": 44270211398,
+  "commit": "c1c4ca40cc77d3ea94c89cbee8206a7179c220b6",
+  "runId": 44283824757,
   "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
-  "timestamp": "2026-11-18T09:08:20+00:00",
+  "timestamp": "2026-11-18T10:27:18+00:00",
   "caseCount": 375,
   "caseCountPerRunner": 75,
   "observedOutput": "PASS Interface 1 WAIT pending-cycle resume (75 checks)",
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/44270211398",
-  "workflowEvent": "push",
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/44283824757",
+  "workflowEvent": "workflow_dispatch",
   "branch": "main",
-  "fixtureMetadataCommit": "6cfc6060b0ad49b1f1ffca22f005821485d6dca7",
+  "fixtureMetadataCommit": "c1c4ca40cc77d3ea94c89cbee8206a7179c220b6",
   "nativeBuildConfiguration": "Release; WZSN_BUILD_SOKOL_HOST=ON",
   "ctest": "all integrated CTests passed on each native runner",
   "runnerResults": [
@@ -69,7 +69,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "63c423df99da5d897d7ea547502fc8ccd42c5c48b0a4172cb6377d9c43f02801"
+      "sha256": "e72bfd821914a634de24a6ae7232e6e57cd36141d5c50f48ad10fb3e0163ec1e"
     },
     {
       "path": "src/core/wz_bus.c",
