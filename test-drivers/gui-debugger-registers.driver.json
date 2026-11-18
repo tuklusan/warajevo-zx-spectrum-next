@@ -8,7 +8,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269"
+      "sha256": "11b076d03d10c44c6602c37995ee5dda697511b7de56f441e1872ff31e75d554"
     },
     {
       "path": "ci/test/gui-debugger-registers.py",

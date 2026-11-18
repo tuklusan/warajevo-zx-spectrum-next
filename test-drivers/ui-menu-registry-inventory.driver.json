@@ -4,7 +4,7 @@
   "requiredCases": 130,
   "runnerMatrix": ["ubuntu-24.04"],
   "fixtures": [
-    {"path": ".github/workflows/cr-build-gate.yml", "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269"},
+    {"path": ".github/workflows/cr-build-gate.yml", "sha256": "11b076d03d10c44c6602c37995ee5dda697511b7de56f441e1872ff31e75d554"},
     {"path": "ci/test/ui-menu-registry-inventory.py", "sha256": "896bf91765fb2bd8395ce15e97972a1a63eb2530db4f14ce62a06e4a8943b15c"},
     {"path": "ci/test/ui-menu-registry-inventory/README.md", "sha256": "b959d1dd24f552e230d40903d6e7fb44d9a0814ad970c17fcc24edf5fce454c7"},
     {"path": "ci/test/live-telnet-acceptance.py", "sha256": "01d9f9bd1e3f61f33e5852722750c26dba4ae6fbb9a7444a92966e031bb31923"},
