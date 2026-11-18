@@ -93,6 +93,16 @@ static bool rejection(void)
     image = (wz_byte_t*)malloc(length);
     CHECK(image != NULL && wz_tape_write_native_tap(records, RECORDS, image,
           length, &length) == WZ_RESULT_OK);
+    {
+        wz_native_tap_record_t parsed[RECORDS];
+        CHECK(wz_tape_parse_native_tap(image, length, parsed, RECORDS, &count) ==
+              WZ_RESULT_OK && count == RECORDS);
+        image[parsed[3].offset + 15u] = 1u;
+        CHECK(wz_tape_parse_native_tap(image, length, NULL, 0u, &count) ==
+              WZ_RESULT_PARSE_ERROR);
+        CHECK(wz_tape_write_native_tap(records, RECORDS, image, length,
+              &length) == WZ_RESULT_OK);
+    }
     image[23u] = 6u;
     CHECK(wz_tape_parse_native_tap(image, length, NULL, 0u, &count) ==
           WZ_RESULT_PARSE_ERROR);

@@ -352,7 +352,9 @@ static wz_result_t wz_tape_native_record_header(const wz_byte_t* data,
             }
             record->payload_length = next - offset - *header_size;
         }
-        if ((size_t)record->compressed_length != record->payload_length) {
+        if ((size_t)record->compressed_length != record->payload_length ||
+            (record->record_type == 5u &&
+             (size_t)record->signed_length >= record->payload_length)) {
             return WZ_RESULT_PARSE_ERROR;
         }
     } else {
