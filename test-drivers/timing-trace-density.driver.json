@@ -13,7 +13,8 @@
       "sha256": "c3eea6a97c64924a145f04daf2d07ef9d7fb5dedac09b4126bde340089cb49d5"
     },
     {
-      $139655cb93e353ca41a4c9f9c3925a2736fb27ca2c89c6497dc078c6f5c8a069f"
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "a6a9e2993f4b187e2341cc341f54ffe005b4b829d3276230384258b77b3dc686"
     },
     {
       "path": "src/diagnostics/wz_trace_file.c",

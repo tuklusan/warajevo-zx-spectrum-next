@@ -39,7 +39,8 @@
       "sha256": "7f477bad5c8d6e6b410d5871e37989b67498e61b46cbf10aec480ed743fd39b6"
     },
     {
-      $139655cb93e353ca41a4c9f9c3925a2736fb27ca2c89c6497dc078c6f5c8a069f"
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "a6a9e2993f4b187e2341cc341f54ffe005b4b829d3276230384258b77b3dc686"
     }
   ]
 }
