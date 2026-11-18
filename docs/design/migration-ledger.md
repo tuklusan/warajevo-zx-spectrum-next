@@ -1,7 +1,5 @@
 <!-- Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
-This file is governed by the SANYALnet Labs Non-Commercial License in the
-root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
-for AI/ML model training are prohibited unless separately authorized.
+This file is licensed under the GNU General Public License, version 2 or later.
 Attribution is required: "Based on original work by Supratim Sanyal of
 SANYALnet Labs." See LICENSE for full terms. -->
 
@@ -20,7 +18,7 @@ the preserved source.
 | Imported location | `reference/original-warajevo/source/src/` |
 | Import policy | Read-only reference; excluded from all product build targets. |
 | Upstream license classification | The official Warajevo source page says the available source is 2.50 and the project was released under GPL in February 2006. Per-file headers and third-party notices still take precedence where present. |
-| Project license compatibility | Unresolved repository-wide: the root `LICENSE` is a custom non-commercial license, while several source headers state GPL-2.0-or-later. No compatibility conclusion is implied by a routine row. |
+| Project license compatibility | Resolved: the root `LICENSE` is the GNU General Public License, version 2 or later (GPL-2.0-or-later), matching the migrated source headers. Third-party and upstream notices remain separately applicable. |
 
 Authority: [official source and license notice](https://worldofspectrum.net/warajevo/Download.html), [official revision history](https://worldofspectrum.net/warajevo/Revision.html). The official history says 2.52 was identical to 2.51 except for the license/source publication, and the official download page says a complete 2.51 source tree was not available.
 
@@ -44,7 +42,7 @@ uncertain source or license defaults to `RESEARCH` or `EXCLUDE`.
 | Source routine | `reference/original-warajevo/source/src/spectrum-kernel/Z80.ASM`, label `NOP_`, lines 5207–5211. Its `RF 4` macro accounts for the legacy cycle accumulator and program-counter advance before instruction dispatch. |
 | Original purpose | Execute the Z80 no-operation instruction and continue decoding at the following byte. |
 | Original copyright/notice | The source file header names Zeljko Juric and Samir Ribic. The official source page classifies the published source as GPL; this row does not clear reuse of other file contents. |
-| New material license | `src/core/wz_z80.c` carries a GPL-2.0-or-later source header. Repository-wide compatibility with the root `LICENSE` remains unresolved. |
+| New material license | `src/core/wz_z80.c` carries a GPL-2.0-or-later source header, matching the root `LICENSE`. |
 | Migration type / clearance | `REIMPLEMENT`: the C branch operates on the portable CPU state and advances explicit master ticks; the x86 `RF` macro and register mapping were not translated. Clearance is limited to this routine's standard Z80 behavior and does not authorize copying other assembly. |
 | Inputs | Fetched opcode, current program counter, CPU refresh register, and machine master time. |
 | Outputs | Program counter advances one byte; refresh state advances through the shared instruction-entry path; master time advances eight half-T-state ticks (four Z80 T-states). |
@@ -65,7 +63,7 @@ uncertain source or license defaults to `RESEARCH` or `EXCLUDE`.
 | Source routines | `reference/original-warajevo/source/src/spectrum-kernel/MDRIVE.ASM`: `MDV_IN`, `MDV_OUT`, `ZXI1_CTRL`, `NEXT`, `FLUSH`, and `INCSEC`. |
 | Original purpose | Transfer Interface 1 Microdrive bytes from/to the selected cartridge, advancing from its 15-byte header to its 528-byte record block and then to the next sector. `FLUSH` skips each 12-byte synchronization preamble when copying into the stored 543-byte image sector. |
 | Original copyright/notice | The source file header names Zeljko Juric and Samir Ribic. The official source page classifies the published source as GPL; this record does not clear reuse of source text. |
-| New material license | `src/core/wz_microdrive.h` retains the project's existing source license. Repository-wide compatibility with the root `LICENSE` remains unresolved. |
+| New material license | `src/core/wz_microdrive.h` retains the project's GPL-2.0-or-later source license, matching the root `LICENSE`. |
 | Migration type / clearance | `REIMPLEMENT`: only observable sector layout and stream ordering are represented in portable C; no assembly or source expression was copied. Clearance is limited to these behaviors and does not authorize translating other routines. |
 | Inputs | Mounted MDR image bytes, selected motor, current sector and byte offset, and Interface 1 data-port reads. |
 | Outputs | The stored 15-byte header followed by the 528-byte record block; after the block, position advances to the next sector and wraps at cartridge length. |
@@ -110,9 +108,10 @@ independently callable routines. Their behavior is covered by the `Z_OUT_FAR`
 regression strategy above. Existing printer settings evidence validates mode
 selection only; the additional core contract supplies direct software proof
 for the tested port/status/pixel/flush behavior. Legacy BIOS/LPT parity and
-physical timing is outside Architectures #1/#2 scope. Per-file copyright/license
-compatibility remains unresolved, so this is an inventory and disposition only,
-not a license grant or source-derivation clearance.
+physical timing is outside Architectures #1/#2 scope. Third-party and upstream
+copyright/license clearance remains a separate provenance question. This is
+an inventory and disposition only, not a license grant or source-derivation
+clearance.
 
 ### Built-in monitor/debugger — command-dispatch inventory
 
@@ -193,9 +192,10 @@ REPLACE/LATER/DROP rows below.
   excluded or cleared before any reuse. The preserved source includes files
   with Borland and TurboPower notices as well as a converter naming a separate
   author.
-- Repository-wide license compatibility and missing/legacy notice references
-  require owner-level resolution before any claim that the complete project is
-  cleared for distribution.
+- Project-license compatibility and legacy notice references are resolved by
+  the GPL-2.0-or-later root license and aligned headers. Third-party/upstream
+  material still requires per-file exclusion or provenance clearance before a
+  claim that the complete project is cleared for distribution.
 - No entry may be upgraded to `TRANSLATE` based only on matching behavior or
   on the upstream repository's top-level GPL statement.
 

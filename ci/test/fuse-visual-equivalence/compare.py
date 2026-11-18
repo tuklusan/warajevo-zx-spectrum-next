@@ -1,10 +1,7 @@
 #!/usr/bin/env python3
 # Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
-# Proprietary rights reserved except as expressly licensed herein.
 #
-# This file is governed by the SANYALnet Labs Non-Commercial License in the
-# root LICENSE file. Commercial Use and use for AI/ML model training are
-# prohibited unless separately authorized. Attribution is required. See
+# This file is licensed under the GNU General Public License, version 2 or later.
 # LICENSE for full terms.
 """Compare normalized application and Fuse Spectrum-display PNG captures."""
 

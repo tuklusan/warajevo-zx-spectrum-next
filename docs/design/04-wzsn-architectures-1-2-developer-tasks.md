@@ -1,8 +1,6 @@
 <!--
 Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
-This file is governed by the SANYALnet Labs Non-Commercial License in the
-root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
-for AI/ML model training are prohibited unless separately authorized.
+This file is licensed under the GNU General Public License, version 2 or later.
 Attribution is required: "Based on original work by Supratim Sanyal of
 SANYALnet Labs." See LICENSE for full terms, warranty disclaimer, termination,
 patent, trademark, and governing-law provisions.
@@ -34,7 +32,7 @@ Architecture #3 (`zx48-mic-ear-router-network-architecture.md`) is explicitly ou
 001. [P0][Core §§2,4,33,48,49] Create the canonical repository directory skeleton (`src`, `tests`, `design`, `third_party`, `reference`, `cmake/toolchains`) without placeholder runtime dependencies — done when CMake configures an empty project cleanly on Windows and Linux.
 002. [P0][Core §§3,33] Set the project language baseline to ISO C11 and enable high-warning developer builds — done when one trivial C target compiles as C11 under GCC, Clang, MSVC, and clang-cl where available.
 003. [P0][Core §§7,33,35] Add common compiler-warning and sanitizer options without introducing compiler-specific behavior into the core — done when debug/sanitizer configurations configure and build on at least GCC and Clang.
-004. [P0][Core §§48,54] Add the current `LICENSE.txt`, `NOTICE.md`, and the two canonical architecture documents to the repository root/design tree — done when a clean checkout contains the required legal/design authorities.
+004. [P0][Core §§48,54] Add the current `LICENSE`, `NOTICE.md`, and the two canonical architecture documents to the repository root/design tree — done when a clean checkout contains the required legal/design authorities.
 005. [P0][Core §§2.1,41,48] Import the preserved Warajevo 2.50 source as read-only reference material under `reference/original-warajevo/` or an equivalent immutable reference mechanism — done when the exact upstream commit/source identity is recorded and build code cannot accidentally compile it into WZSN.
 006. [P0][Core §§2.1.1,41,48][COMPLETE] Create the [migration ledger](migration-ledger.md) with the required provenance, license, clearance, behavior, C destination, and regression fields. The Warajevo Z80 `NOP_` reimplementation is fully represented as the sample record; the complete migration inventory remains open under Task 452/Core criterion 57.
 007. [P0][Core §§2.1.1,41,48] Classify every legacy source file that may be referenced during initial implementation as migrate/reimplement/research-only/excluded — done when no Phase-1 or Phase-2 source file lacks a disposition.

@@ -1,8 +1,6 @@
 /*
 Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
-This file is governed by the SANYALnet Labs Non-Commercial License in the
-root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
-for AI/ML model training are prohibited unless separately authorized.
+This file is licensed under the GNU General Public License, version 2 or later.
 Attribution is required: "Based on original work by Supratim Sanyal of
 SANYALnet Labs." See LICENSE for full terms, warranty disclaimer, termination,
 patent, trademark, and governing-law provisions.
@@ -11,9 +9,9 @@ patent, trademark, and governing-law provisions.
 /*
 Warajevo ZX Spectrum Next
 Copyright (c) 2026 Supratim Sanyal, SANYALnet Labs, for new original project material.
-New original material is licensed under GNU GPL v2 or later (GPL-2.0-or-later), as stated in LICENSE.txt.
+New original material is licensed under GNU GPL v2 or later (GPL-2.0-or-later), as stated in LICENSE.
 Upstream Warajevo and third-party material retain their applicable copyrights and licenses.
-See LICENSE.txt and NOTICE.md for complete terms and provenance.
+See LICENSE and NOTICE.md for complete terms and provenance.
 */
 
 #include "app/wz_telnet_key_press.h"

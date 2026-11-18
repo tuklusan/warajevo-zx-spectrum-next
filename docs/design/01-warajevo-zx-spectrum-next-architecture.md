@@ -1,7 +1,5 @@
 <!-- Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.
-This file is governed by the SANYALnet Labs Non-Commercial License in the
-root LICENSE file. Non-Commercial use is permitted; Commercial Use and use
-for AI/ML model training are prohibited unless separately authorized.
+This file is licensed under the GNU General Public License, version 2 or later.
 Attribution is required: "Based on original work by Supratim Sanyal of
 SANYALnet Labs." See LICENSE for full terms. -->
 
@@ -270,7 +268,7 @@ may appear in the emulation core.
 ```text
 Warajevo-ZX-Spectrum-Next/
 |
-+-- LICENSE.txt
++-- LICENSE
 +-- NOTICE.md
 +-- CMakeLists.txt
 |
@@ -3386,7 +3384,7 @@ For every original Warajevo routine migrated:
 - preserve required attribution/license notices in the new source and release
   materials.
 
-The top-level `LICENSE.txt` and `NOTICE.md` are part of the repository
+The top-level `LICENSE` and `NOTICE.md` are part of the repository
 architecture and must remain consistent with migration records and bundled
 third-party material.
 
@@ -4008,7 +4006,7 @@ Test baseline:
     claiming full difficult-media/hardware-hack compatibility
 
 Provenance baseline:
-    LICENSE.txt and NOTICE.md are top-level architecture files
+    LICENSE and NOTICE.md are top-level architecture files
     every migrated routine requires license/provenance classification and
     derivation clearance
 ```
