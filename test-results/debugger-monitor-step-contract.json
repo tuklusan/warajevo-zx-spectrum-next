@@ -1,18 +1,18 @@
 {
-  "commit": "c1c4ca40cc77d3ea94c89cbee8206a7179c220b6",
-  "sourceCommit": "c1c4ca40cc77d3ea94c89cbee8206a7179c220b6",
-  "driverCommit": "c1c4ca40cc77d3ea94c89cbee8206a7179c220b6",
+  "commit": "bcc821e5bebcc84acf4c31bcdde98b76dd051ab6",
+  "sourceCommit": "bcc821e5bebcc84acf4c31bcdde98b76dd051ab6",
+  "driverCommit": "bd7711a34d94167b7cd64d2ce041e8881a9602b0",
   "testId": "debugger-monitor-step-contract",
   "status": "pass",
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/44283824757",
-  "runId": 44283824757,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/44289559036",
+  "runId": 44289559036,
   "workflowEvent": "workflow_dispatch",
   "branch": "main",
-  "timestamp": "2026-11-18T10:27:18+00:00",
+  "timestamp": "2026-11-18T11:03:43+00:00",
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "7f26adf1539dd63dde9331829af6fb5570ef0b72879bebaeddc8c83d3e57af20"
+      "sha256": "11b076d03d10c44c6602c37995ee5dda697511b7de56f441e1872ff31e75d554"
     },
     {
       "path": "ci/test/performance/driver.json",
@@ -64,11 +64,11 @@
     },
     {
       "path": "test-drivers/debugger-monitor-exit-contract.driver.json",
-      "sha256": "91691c2009aae81b0eb1267dd272426fc4b067a9f7836f26d32316507c2d3b61"
+      "sha256": "af119936397a0b894ecfe254675d4828423e8239e1c5ed87d3769bbd1a3ef67f"
     },
     {
       "path": "test-drivers/debugger-monitor-find-contract.driver.json",
-      "sha256": "d6e010b01a1c25000fd730e264293d32e82a3f6676d91ea0fae4647e60ef6fdc"
+      "sha256": "29e9421dca5923993d7558fac6d0247764c0c5f9291d62457ef3ee4b5d49ba50"
     }
   ],
   "build": {

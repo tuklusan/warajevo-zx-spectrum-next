@@ -1,10 +1,10 @@
 {
   "schema": 1,
   "status": "pass",
-  "commit": "c1c4ca40cc77d3ea94c89cbee8206a7179c220b6",
+  "commit": "bcc821e5bebcc84acf4c31bcdde98b76dd051ab6",
   "runner": "Windows-windows-x64",
   "architecture": "X64",
-  "timestamp": "2026-11-18T10:19:31Z",
+  "timestamp": "2026-11-18T10:56:16Z",
   "compiler": "MSVC 19.51.36260.0",
   "metrics": [
     {
@@ -51,8 +51,8 @@
       "name": "ui_presentation",
       "unit": "frames",
       "operations": "512",
-      "median_cpu_seconds": 0.027,
-      "operations_per_second": 18962.963,
+      "median_cpu_seconds": 0.026,
+      "operations_per_second": 19692.308,
       "fingerprint": "6b9c6deb0ca3fbc9"
     }
   ]

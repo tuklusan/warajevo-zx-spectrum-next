@@ -1,34 +1,34 @@
 {
   "schema": 1,
   "status": "pass",
-  "commit": "c1c4ca40cc77d3ea94c89cbee8206a7179c220b6",
+  "commit": "bcc821e5bebcc84acf4c31bcdde98b76dd051ab6",
   "runner": "Linux-ubuntu-24.04-arm",
   "architecture": "ARM64",
-  "timestamp": "2026-11-18T10:18:06Z",
+  "timestamp": "2026-11-18T10:54:41Z",
   "compiler": "GNU 13.3.0",
   "metrics": [
     {
       "name": "cpu_execution",
       "unit": "instructions",
       "operations": "250005",
-      "median_cpu_seconds": 0.010984,
-      "operations_per_second": 22760833.94,
+      "median_cpu_seconds": 0.010997,
+      "operations_per_second": 22733927.435,
       "fingerprint": "52af84e53ed19a63"
     },
     {
       "name": "raster_generation",
       "unit": "frames",
       "operations": "384",
-      "median_cpu_seconds": 0.026803,
-      "operations_per_second": 14326.754,
+      "median_cpu_seconds": 0.026814,
+      "operations_per_second": 14320.877,
       "fingerprint": "d3d8bb78938b5fb1"
     },
     {
       "name": "audio_mixing",
       "unit": "samples",
       "operations": "2000000",
-      "median_cpu_seconds": 0.026128,
-      "operations_per_second": 76546233.925,
+      "median_cpu_seconds": 0.026099,
+      "operations_per_second": 76631288.555,
       "fingerprint": "56e7cab2bab26d0d"
     },
     {
@@ -43,16 +43,16 @@
       "name": "snapshot_serialization",
       "unit": "snapshots",
       "operations": "8192",
-      "median_cpu_seconds": 0.013949,
-      "operations_per_second": 587282.242,
+      "median_cpu_seconds": 0.013892,
+      "operations_per_second": 589691.909,
       "fingerprint": "5bda2a39ca868954"
     },
     {
       "name": "ui_presentation",
       "unit": "frames",
       "operations": "512",
-      "median_cpu_seconds": 0.023298,
-      "operations_per_second": 21976.135,
+      "median_cpu_seconds": 0.023056,
+      "operations_per_second": 22206.801,
       "fingerprint": "6b9c6deb0ca3fbc9"
     }
   ]
