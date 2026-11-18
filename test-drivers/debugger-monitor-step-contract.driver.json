@@ -12,11 +12,11 @@
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "7f26adf1539dd63dde9331829af6fb5570ef0b72879bebaeddc8c83d3e57af20"
+      "sha256": "446e248d2754cf94ce0f32e526cc61eab6461d49ad607a7765d1be95c3464582"
     },
     {
       "path": "ci/test/performance/driver.json",
-      "sha256": "58648d319dc118cb70ee5f4337525f9528121c10421d6dd727a3d5a520c7dd83"
+      "sha256": "49d190278b7b1292aa1f1a4fb4183abb644543649fc6f5fc29556e436e1beff8"
     },
     {
       "path": "ci/test/debugger-monitor-step-contract.c",
@@ -24,11 +24,11 @@
     },
     {
       "path": "ci/test/debugger-monitor-step-contract.md",
-      "sha256": "bc538b89f627011766c246cbfa3344a77fb81aed363382518e0740d48a72d694"
+      "sha256": "fa88b37a1ed36928a50950e2c2f4a32f419d1e822937e704a84d14bf38c12633"
     },
     {
       "path": "ci/test/performance/write-proof.py",
-      "sha256": "aba19b4aa3cd1c3ad1560da159300cc8647dbc6e264a1aa120dbbfe04b5f248a"
+      "sha256": "3dd0c29977e0d2de789eab5d53219893cb757cc4aa2a926fb472f19bab8cc132"
     },
     {
       "path": "docs/design/02-warajevo-zx-spectrum-next-ui-architecture.md",
@@ -44,7 +44,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "39655cb93e353ca41a4c9f9c3925a2736fb27ca2c89c6497dc078c6f5c8a069f"
+      "sha256": "b7425debc64e80e4a7c88e15f79dc285f7c79a9c15610f57236c79c03563617b"
     },
     {
       "path": "src/core/wz_debugger.c",
@@ -56,7 +56,7 @@
     },
     {
       "path": "src/core/wz_machine.c",
-      "sha256": "ff6a802eb986e29bbdbaef1c3a046ab39bb57742dd01d2d1e2e7b8a135e30b0d"
+      "sha256": "14b370ac404420d6c64e92c852a8803067dfd1d29d2e03d0e9d593446ca653c9"
     },
     {
       "path": "src/core/wz_machine.h",
@@ -64,11 +64,11 @@
     },
     {
       "path": "test-drivers/debugger-monitor-exit-contract.driver.json",
-      "sha256": "78d9cf0f51ebcdf564baf843f1f6bdda6474bfc4ea89ad9dbc6091309045df15"
+      "sha256": "d679ad21eb32df183f01b15ef6ffc38e66864b052234d54ede2c12b422d3612b"
     },
     {
       "path": "test-drivers/debugger-monitor-find-contract.driver.json",
-      "sha256": "78e64956c86c5814e4d524e278f9446960d69404f73fa2c8169d372fbf0e9546"
+      "sha256": "a373f4de5312306431d97b80e2fbdc10d8d8faa93ff13240444ff5fa43d4eb28"
     }
   ]
 }

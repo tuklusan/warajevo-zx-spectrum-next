@@ -19,7 +19,7 @@
     },
     {
       "path": "src/app/wz_input_arbiter.c",
-      "sha256": "7a5b668b1fef289ed3e18ca18775d535351ae9c385f0ed74dc1618f8cc13a703"
+      "sha256": "a8d8a067dc11fd1515063bae451f833c5d0a9d2b022330001772def5d53c74aa"
     },
     {
       "path": "src/app/wz_input_arbiter.h",
@@ -43,7 +43,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "39655cb93e353ca41a4c9f9c3925a2736fb27ca2c89c6497dc078c6f5c8a069f"
+      "sha256": "b7425debc64e80e4a7c88e15f79dc285f7c79a9c15610f57236c79c03563617b"
     }
   ]
 }
