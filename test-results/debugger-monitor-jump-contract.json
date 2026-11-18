@@ -1,14 +1,14 @@
 {
   "testId": "debugger-monitor-jump-contract",
   "status": "pass",
-  "commit": "0d38f64f6ecc72c470ec3cf6e85b3e189e51c76e",
-  "sourceCommit": "0d38f64f6ecc72c470ec3cf6e85b3e189e51c76e",
-  "driverCommit": "0d38f64f6ecc72c470ec3cf6e85b3e189e51c76e",
-  "runId": 44254470964,
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/44254470964",
-  "workflowEvent": "workflow_dispatch",
+  "commit": "b9199c42909477b79080e26775eb6e356101d036",
+  "sourceCommit": "b9199c42909477b79080e26775eb6e356101d036",
+  "driverCommit": "b9199c42909477b79080e26775eb6e356101d036",
+  "runId": 44258902804,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/44258902804",
+  "workflowEvent": "push",
   "branch": "main",
-  "timestamp": "2026-11-18T07:00:45+00:00",
+  "timestamp": "2026-11-18T07:37:14+00:00",
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
