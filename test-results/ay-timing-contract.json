@@ -1,13 +1,13 @@
 {
   "testId": "ay-timing-contract",
   "status": "pass",
-  "commit": "5fcb0ed3876e03039c15d7854e12b35494055ddd",
-  "runId": 41671355233,
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/41671355233",
+  "commit": "0d38f64f6ecc72c470ec3cf6e85b3e189e51c76e",
+  "runId": 44254470964,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/44254470964",
   "workflowEvent": "workflow_dispatch",
   "branch": "main",
-  "fixtureMetadataCommit": "2db97cc97eb4e9584e5ca4d2d9644ad504cde291",
-  "timestamp": "2026-11-03T16:36:49+00:00",
+  "fixtureMetadataCommit": "0d38f64f6ecc72c470ec3cf6e85b3e189e51c76e",
+  "timestamp": "2026-11-18T07:00:46+00:00",
   "assertionsPerRunner": 67,
   "totalAssertions": 335,
   "observedOutput": "AY timing contract passed (67 assertions)",
@@ -20,7 +20,7 @@
       "architecture": "X64",
       "status": "pass",
       "assertions": 67,
-      "ctest": "44/44"
+      "ctest": "49/49"
     },
     {
       "name": "Linux x64",
@@ -29,7 +29,7 @@
       "architecture": "X64",
       "status": "pass",
       "assertions": 67,
-      "ctest": "44/44"
+      "ctest": "49/49"
     },
     {
       "name": "Linux ARM64",
@@ -38,7 +38,7 @@
       "architecture": "ARM64",
       "status": "pass",
       "assertions": 67,
-      "ctest": "44/44"
+      "ctest": "49/49"
     },
     {
       "name": "macOS ARM64",
@@ -47,7 +47,7 @@
       "architecture": "ARM64",
       "status": "pass",
       "assertions": 67,
-      "ctest": "44/44"
+      "ctest": "49/49"
     },
     {
       "name": "macOS Intel",
@@ -56,13 +56,13 @@
       "architecture": "X64",
       "status": "pass",
       "assertions": 67,
-      "ctest": "44/44"
+      "ctest": "49/49"
     }
   ],
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "b7a8084fea2825d440817e18924c951a8f35c97d204b6221451452b84b55bc40"
+      "sha256": "7f26adf1539dd63dde9331829af6fb5570ef0b72879bebaeddc8c83d3e57af20"
     },
     {
       "path": "ci/test/ay-timing/ay-timing-contract.c",
@@ -78,11 +78,11 @@
     },
     {
       "path": "docs/design/machine-timing-evidence.md",
-      "sha256": "a8078c758fa9df7ae39faa75fa49a66b9d94150c8e0be34687c7b64a42ea255d"
+      "sha256": "fda660f68384648525ff4cfd6e217280c041ad786584b33873bd20b86dab736c"
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "5501922ad21224486afb010369eee97720dcbea413eac1c87d6c5e9b2a854c7b"
+      "sha256": "39655cb93e353ca41a4c9f9c3925a2736fb27ca2c89c6497dc078c6f5c8a069f"
     },
     {
       "path": "src/core/audio/wz_ay.c",

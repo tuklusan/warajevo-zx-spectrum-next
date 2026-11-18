@@ -1,0 +1,44 @@
+{
+  "testId": "native-tap-decompression-contract",
+  "status": "pass",
+  "commit": "0d38f64f6ecc72c470ec3cf6e85b3e189e51c76e",
+  "driverCommit": "0d38f64f6ecc72c470ec3cf6e85b3e189e51c76e",
+  "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
+  "workflowRun": 44254470964,
+  "workflowEvent": "workflow_dispatch",
+  "assertionsPerRunner": 4,
+  "nativeTargets": [
+    "Windows x64",
+    "Linux x64",
+    "Linux ARM64",
+    "macOS ARM64",
+    "macOS Intel"
+  ],
+  "observedOutput": "native-tap-decompression-contract cases=4 status=pass",
+  "assertions": [
+    "literal-only type-5 streams convert to standard TAP blocks",
+    "long-match type-5 streams decode the original distance coding",
+    "short-distance type-5 runs decode through the compressed stream",
+    "malformed signed lengths are rejected without partial output"
+  ],
+  "integratedCTest": "49/49 passed on each native target",
+  "fixtures": [
+    {
+      "path": "ci/test/native-tap-decompression-contract.c",
+      "sha256": "beb546eb4a08d5825b11bae16d010e863031541326cb56ffd9d8a9c020151920"
+    },
+    {
+      "path": "ci/test/native-tap-decompression-contract/CMakeLists.txt",
+      "sha256": "e0c603876dab4d5f4ac18263cc77c9eab2bb6c626616cbcd0123cf5c712e9f8c"
+    },
+    {
+      "path": "src/core/wz_tape.c",
+      "sha256": "81aafd95e8a65c203eb4770b4a29d136c282973bbedcdde7bb6bca9b637e3a8c"
+    },
+    {
+      "path": "src/core/wz_tape.h",
+      "sha256": "b289794a2c68d0d487a48d0a138dc1b0d58e51348e795b55e1f9268aabb8cbcf"
+    }
+  ],
+  "scope": "Type-5 compressed native TAP playback is implemented; type-4 sampled records, native maintenance operations, and Compatibility Tools remain out of this contract."
+}
