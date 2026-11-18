@@ -89,6 +89,7 @@ bool wz_input_trace_replay(const wz_input_trace_t* trace,
     for (index = 0u; index < trace->count; ++index) {
         const wz_normalized_input_transition_t* entry = &trace->entries[index];
         if (entry->sequence != (wz_qword_t)index ||
+            entry->key >= WZ_INPUT_TRACE_KEY_COUNT ||
             (index != 0u && entry->master_tick < previous_tick) ||
             entry->pressed > 1u || !sink(entry, context)) {
             return false;

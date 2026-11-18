@@ -731,6 +731,20 @@ target_link_libraries(wz_input_event_contract PRIVATE wz_core wz_warnings)
 add_test(NAME wz_input_event_contract COMMAND wz_input_event_contract)
 
 add_executable(
+    wz_input_replay_contract
+    ${WZSN_REPO_ROOT}/ci/test/input-replay-contract.c
+    ${WZSN_SOURCE_ROOT}/app/wz_input_arbiter.c
+    ${WZSN_SOURCE_ROOT}/app/wz_input_projection.c
+    ${WZSN_SOURCE_ROOT}/app/wz_input_replay.c)
+target_include_directories(wz_input_replay_contract PRIVATE
+    "${WZSN_SOURCE_ROOT}")
+target_link_libraries(wz_input_replay_contract PRIVATE wz_core wz_warnings)
+add_test(NAME wz_input_replay_contract COMMAND wz_input_replay_contract)
+set_tests_properties(wz_input_replay_contract PROPERTIES
+    PASS_REGULAR_EXPRESSION
+        "PASS normalized input trace records effective matrix transitions and replays headlessly")
+
+add_executable(
     wz_debugger_core_contract
     ${WZSN_REPO_ROOT}/ci/test/debugger-core-contract.c)
 target_link_libraries(wz_debugger_core_contract PRIVATE wz_core wz_warnings)
