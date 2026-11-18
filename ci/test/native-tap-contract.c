@@ -40,7 +40,7 @@ static void records_init(wz_native_tap_record_t records[RECORDS])
         .payload = payload4, .payload_length = 2u};
     records[3] = (wz_native_tap_record_t){.record_type = 5u,
         .stored_length = 65535u, .decompressed_length = 1u,
-        .compressed_length = 1u, .signed_length = 0x4321u,
+        .compressed_length = 1u, .signed_length = 0u,
         .payload = payload5, .payload_length = 1u};
 }
 
@@ -105,6 +105,18 @@ static bool rejection(void)
     CHECK(wz_tape_parse_native_tap(image, length, NULL, 0u, &count) ==
           WZ_RESULT_PARSE_ERROR);
     records[0].stored_length = 5u;
+    CHECK(wz_tape_write_native_tap(records, RECORDS, image, length, &length) ==
+          WZ_RESULT_PARSE_ERROR);
+    records_init(records);
+    records[3].compressed_length = 2u;
+    CHECK(wz_tape_write_native_tap(records, RECORDS, image, length, &length) ==
+          WZ_RESULT_PARSE_ERROR);
+    records_init(records);
+    records[3].decompressed_length = 0u;
+    CHECK(wz_tape_write_native_tap(records, RECORDS, image, length, &length) ==
+          WZ_RESULT_PARSE_ERROR);
+    records_init(records);
+    records[3].signed_length = 1u;
     CHECK(wz_tape_write_native_tap(records, RECORDS, image, length, &length) ==
           WZ_RESULT_PARSE_ERROR);
     ok = true;

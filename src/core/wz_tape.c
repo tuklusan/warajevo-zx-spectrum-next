@@ -394,6 +394,13 @@ wz_result_t wz_tape_write_native_tap(const wz_native_tap_record_t* records,
             if (record->stored_length != (record->record_type == 4u ? 65534u : 65535u)) {
                 return WZ_RESULT_PARSE_ERROR;
             }
+            if (record->decompressed_length == 0u ||
+                record->compressed_length == 0u ||
+                (size_t)record->compressed_length != record->payload_length ||
+                (record->record_type == 5u &&
+                 (size_t)record->signed_length >= record->payload_length)) {
+                return WZ_RESULT_PARSE_ERROR;
+            }
             header_size = 17u;
         } else {
             return WZ_RESULT_PARSE_ERROR;
