@@ -19,7 +19,7 @@ from pathlib import Path, PurePosixPath
 
 ROOT = Path(__file__).resolve().parents[3]
 DRIVER_PATH = "test-drivers/input-replay-contract.driver.json"
-FIXTURE_ROOTS = ("ci/test/", "src/app/", "src/cmake/")
+FIXTURE_ROOTS = ("ci/test/", "src/app/", "src/cmake/", "test-drivers/")
 PLATFORMS = (
     ("Windows x64", "windows-x64", "Windows-windows-x64", "X64"),
     ("Linux x64", "linux-x64", "Linux-ubuntu-24.04", "X64"),

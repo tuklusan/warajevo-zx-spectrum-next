@@ -15,7 +15,7 @@
     },
     {
       "path": "ci/test/input-replay/write-proof.py",
-      "sha256": "0e7c32d1d7a0928ee2a888529b96776a9b7c03aa241415f1eb5789c7db96fec9"
+      "sha256": "4e1282024506dee8108def395cba09f8b8a822fca5e18616032bb3b69d598af8"
     },
     {
       "path": "src/app/wz_input_arbiter.c",
