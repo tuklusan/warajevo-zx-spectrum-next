@@ -73,7 +73,7 @@ static bool wz_host_media_lock_path(const char* path, char* output,
         hash ^= (unsigned char)canonical[index];
         hash *= UINT64_C(1099511628211);
     }
-    written = snprintf(output, capacity, "%s%s/wzsn-media-claim-%016llx.lock",
+    written = snprintf(output, capacity, "%s%swzsn-media-claim-%016llx.lock",
         temporary, wz_host_media_temp_separator(temporary),
         (unsigned long long)hash);
     return written > 0 && (size_t)written < capacity;
@@ -118,7 +118,7 @@ static bool wz_host_media_identity_lock_path(const char* path, char* output,
     identity *= UINT64_C(1099511628211);
     identity ^= (uint64_t)info.st_ino;
     written = snprintf(output, capacity,
-        "%s%s/wzsn-media-identity-%016llx.lock", temporary,
+        "%s%swzsn-media-identity-%016llx.lock", temporary,
         wz_host_media_temp_separator(temporary),
         (unsigned long long)identity);
 #endif
