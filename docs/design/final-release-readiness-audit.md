@@ -29,7 +29,9 @@ belong on hosted runners under Workflow 05. The current main source
 `4d98444930a2064f4e090bdcacfbb3bf1f4299d9` was revalidated by five-target
 native run `44309033866` (macOS Intel rerun attempt 2), including CTest, Fuse
 visual equivalence, and Phase-16; transient workflow evidence was deleted
-after processing.
+after processing. The corrected current source `c33c129de3e2f244ca3d256479bbfec1a29a88bc`
+also passed the five-target native gate in run `44314754160`; its run,
+generated proof run, artifacts, and caches were deleted after processing.
 
 | Task | Audit finding | Required closure evidence |
 |---:|---|---|
