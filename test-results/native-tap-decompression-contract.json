@@ -1,5 +1,7 @@
 {
   "testId": "native-tap-decompression-contract",
+  "driver": "test-drivers/native-tap-decompression-contract.driver.json",
+  "contract": "tests/native-tap-decompression-contract.md",
   "status": "pass",
   "commit": "0d38f64f6ecc72c470ec3cf6e85b3e189e51c76e",
   "driverCommit": "0d38f64f6ecc72c470ec3cf6e85b3e189e51c76e",

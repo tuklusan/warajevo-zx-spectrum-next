@@ -1,0 +1,30 @@
+{
+  "testId": "native-tap-decompression-contract",
+  "command": "cmake -S ci/test/native-tap-decompression-contract -B dist/native-tap-decompression-contract -DCMAKE_BUILD_TYPE=Release && cmake --build dist/native-tap-decompression-contract --config Release --parallel 2 && ctest --test-dir dist/native-tap-decompression-contract -C Release -R '^wz_native_tap_decompression_contract$' --output-on-failure",
+  "runnerMatrix": [
+    "Windows x64",
+    "Linux x64",
+    "Linux ARM64",
+    "macOS ARM64",
+    "macOS Intel"
+  ],
+  "requiredCases": 4,
+  "fixtures": [
+    {
+      "path": "ci/test/native-tap-decompression-contract.c",
+      "sha256": "beb546eb4a08d5825b11bae16d010e863031541326cb56ffd9d8a9c020151920"
+    },
+    {
+      "path": "ci/test/native-tap-decompression-contract/CMakeLists.txt",
+      "sha256": "e0c603876dab4d5f4ac18263cc77c9eab2bb6c626616cbcd0123cf5c712e9f8c"
+    },
+    {
+      "path": "src/core/wz_tape.c",
+      "sha256": "81aafd95e8a65c203eb4770b4a29d136c282973bbedcdde7bb6bca9b637e3a8c"
+    },
+    {
+      "path": "src/core/wz_tape.h",
+      "sha256": "b289794a2c68d0d487a48d0a138dc1b0d58e51348e795b55e1f9268aabb8cbcf"
+    }
+  ]
+}
