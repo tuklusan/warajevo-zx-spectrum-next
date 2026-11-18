@@ -23,8 +23,7 @@
       "sha256": "d04f964e8a2b27c24440c1bd35cafba2dc9acbe58e461ad9608a8e3dda0ac147"
     },
     {
-      "path": "src/cmake/CMakeLists.txt",
-      "sha256": "a6a9e2993f4b187e2341cc341f54ffe005b4b829d3276230384258b77b3dc686"
+      $139655cb93e353ca41a4c9f9c3925a2736fb27ca2c89c6497dc078c6f5c8a069f"
     },
     {
       "path": "src/core/wz_machine.c",
