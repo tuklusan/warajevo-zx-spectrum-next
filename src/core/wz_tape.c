@@ -441,6 +441,209 @@ wz_result_t wz_tape_write_native_tap(const wz_native_tap_record_t* records,
     return WZ_RESULT_OK;
 }
 
+typedef struct {
+    const wz_byte_t* data;
+    size_t length;
+    size_t signal_length;
+    size_t signal_index;
+    unsigned signal_bit;
+    size_t literal_index;
+} wz_native_tap_bit_reader_t;
+
+static bool wz_native_tap_next_bit(wz_native_tap_bit_reader_t* reader,
+                                   unsigned* bit)
+{
+    wz_byte_t value;
+    if (reader == NULL || bit == NULL ||
+        reader->signal_index >= reader->signal_length ||
+        reader->signal_index >= reader->length)
+        return false;
+    value = reader->data[reader->signal_index];
+    *bit = (unsigned)((value >> (7u - reader->signal_bit)) & 1u);
+    ++reader->signal_bit;
+    if (reader->signal_bit == 8u) {
+        reader->signal_bit = 0u;
+        ++reader->signal_index;
+    }
+    return true;
+}
+
+static bool wz_native_tap_next_literal(wz_native_tap_bit_reader_t* reader,
+                                       wz_byte_t* value)
+{
+    if (reader == NULL || value == NULL || reader->literal_index >= reader->length)
+        return false;
+    *value = reader->data[reader->literal_index++];
+    return true;
+}
+
+static bool wz_native_tap_decode_distance_high(
+    wz_native_tap_bit_reader_t* reader, unsigned* high)
+{
+    unsigned bit;
+    if (!wz_native_tap_next_bit(reader, &bit)) return false;
+    if (bit != 0u) {
+        *high = 0u;
+        return true;
+    }
+    if (!wz_native_tap_next_bit(reader, &bit)) return false;
+    if (bit != 0u) {
+        unsigned value = 7u;
+        for (int shift = 3; shift >= 0; --shift) {
+            if (!wz_native_tap_next_bit(reader, &bit)) return false;
+            value += bit << shift;
+        }
+        *high = value;
+        return true;
+    }
+    if (!wz_native_tap_next_bit(reader, &bit)) return false;
+    if (bit == 0u) {
+        if (!wz_native_tap_next_bit(reader, &bit)) return false;
+        if (bit == 0u) *high = 1u;
+        else *high = 2u;
+        return true;
+    }
+    if (!wz_native_tap_next_bit(reader, &bit)) return false;
+    if (bit == 0u) {
+        if (!wz_native_tap_next_bit(reader, &bit)) return false;
+        if (bit == 0u) *high = 3u;
+        else *high = 4u;
+        return true;
+    }
+    if (!wz_native_tap_next_bit(reader, &bit)) return false;
+    if (bit == 0u) *high = 5u;
+    else *high = 6u;
+    return true;
+}
+
+static wz_result_t wz_tape_native_decompress(
+    const wz_native_tap_record_t* record, wz_byte_t* output,
+    size_t capacity, size_t* output_length)
+{
+    wz_native_tap_bit_reader_t reader;
+    size_t produced = 0u;
+
+    if (record == NULL || output_length == NULL || record->record_type != 5u ||
+        record->payload == NULL || record->payload_length == 0u ||
+        record->compressed_length != record->payload_length ||
+        record->decompressed_length == 0u ||
+        (size_t)record->decompressed_length > capacity ||
+        (size_t)record->signed_length >= record->payload_length) {
+        if (output_length != NULL) *output_length = 0u;
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    reader.data = record->payload;
+    reader.length = record->payload_length;
+    reader.signal_length = (size_t)record->signed_length + 1u;
+    reader.signal_index = 0u;
+    reader.signal_bit = 0u;
+    reader.literal_index = (size_t)record->signed_length + 1u;
+    while (produced < record->decompressed_length) {
+        unsigned bit;
+        if (!wz_native_tap_next_bit(&reader, &bit)) {
+            *output_length = 0u;
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        if (bit == 0u) {
+            if (!wz_native_tap_next_literal(&reader, &output[produced++])) {
+                *output_length = 0u;
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            continue;
+        }
+        if (!wz_native_tap_next_bit(&reader, &bit)) {
+            *output_length = 0u;
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        {
+            size_t run_length;
+            bool short_distance;
+            if (!wz_native_tap_next_bit(&reader, &bit)) {
+                *output_length = 0u;
+                return WZ_RESULT_PARSE_ERROR;
+            }
+            if (bit == 0u) {
+                if (!wz_native_tap_next_bit(&reader, &bit)) {
+                    *output_length = 0u;
+                    return WZ_RESULT_PARSE_ERROR;
+                }
+                if (bit == 0u) {
+                    run_length = 3u; /* 00 */
+                } else {
+                    if (!wz_native_tap_next_bit(&reader, &bit)) {
+                        *output_length = 0u;
+                        return WZ_RESULT_PARSE_ERROR;
+                    }
+                    if (bit == 0u) {
+                        run_length = 2u; /* 010 */
+                    } else {
+                        wz_byte_t run_byte;
+                        if (!wz_native_tap_next_literal(&reader, &run_byte)) {
+                            *output_length = 0u;
+                            return WZ_RESULT_PARSE_ERROR;
+                        }
+                        run_length = (size_t)run_byte + 10u; /* 011 */
+                    }
+                }
+            } else {
+                if (!wz_native_tap_next_bit(&reader, &bit)) {
+                    *output_length = 0u;
+                    return WZ_RESULT_PARSE_ERROR;
+                }
+                if (bit == 0u) {
+                    if (!wz_native_tap_next_bit(&reader, &bit)) {
+                        *output_length = 0u;
+                        return WZ_RESULT_PARSE_ERROR;
+                    }
+                    run_length = bit == 0u ? 4u : 5u; /* 100/101 */
+                } else {
+                    if (!wz_native_tap_next_bit(&reader, &bit)) {
+                        *output_length = 0u;
+                        return WZ_RESULT_PARSE_ERROR;
+                    }
+                    if (bit == 0u) {
+                        if (!wz_native_tap_next_bit(&reader, &bit)) {
+                            *output_length = 0u;
+                            return WZ_RESULT_PARSE_ERROR;
+                        }
+                        run_length = bit == 0u ? 6u : 7u; /* 1100/1101 */
+                    } else {
+                        if (!wz_native_tap_next_bit(&reader, &bit)) {
+                            *output_length = 0u;
+                            return WZ_RESULT_PARSE_ERROR;
+                        }
+                        run_length = bit == 0u ? 8u : 9u; /* 1110/1111 */
+                    }
+                }
+            }
+            short_distance = run_length == 2u;
+            {
+                unsigned high = 0u;
+                wz_byte_t distance_low;
+                size_t distance;
+                if (!wz_native_tap_next_literal(&reader, &distance_low) ||
+                    (!short_distance &&
+                     !wz_native_tap_decode_distance_high(&reader, &high))) {
+                    *output_length = 0u;
+                    return WZ_RESULT_PARSE_ERROR;
+                }
+                distance = (size_t)high * 256u + distance_low;
+                if (distance == 0u || distance > produced + 1u ||
+                    run_length > (size_t)record->decompressed_length - produced) {
+                    *output_length = 0u;
+                    return WZ_RESULT_PARSE_ERROR;
+                }
+                for (size_t i = 0u; i < run_length; ++i) {
+                    size_t source = produced - distance + 1u;
+                    output[produced++] = output[source];
+                }
+            }
+        }
+    }
+    *output_length = produced;
+    return WZ_RESULT_OK;
+}
+
 wz_result_t wz_tape_native_to_standard_tap(const wz_byte_t* data,
                                            size_t length,
                                            wz_byte_t* output,
@@ -471,17 +674,20 @@ wz_result_t wz_tape_native_to_standard_tap(const wz_byte_t* data,
     for (size_t index = 0u; index < record_count; ++index) {
         const wz_native_tap_record_t* record = &records[index];
         size_t block_length;
-        if (record->record_type >= 4u) {
+        if (record->record_type == 4u) {
             result = WZ_RESULT_UNSUPPORTED_OPERATION;
             goto cleanup;
         }
-        if (record->payload_length < 2u ||
-            record->payload_length > UINT16_MAX - 1u ||
+        if ((record->record_type == 5u ? record->decompressed_length :
+             record->payload_length) < 2u ||
+            (record->record_type == 5u ? record->decompressed_length :
+             record->payload_length) > UINT16_MAX - 1u ||
             record->payload == NULL) {
             result = WZ_RESULT_PARSE_ERROR;
             goto cleanup;
         }
-        block_length = record->payload_length + 1u;
+        block_length = (record->record_type == 5u ?
+            (size_t)record->decompressed_length : record->payload_length) + 1u;
         if (SIZE_MAX - required < 2u + block_length) {
             result = WZ_RESULT_PARSE_ERROR;
             goto cleanup;
@@ -499,10 +705,21 @@ wz_result_t wz_tape_native_to_standard_tap(const wz_byte_t* data,
     }
     for (size_t index = 0u; index < record_count; ++index) {
         const wz_native_tap_record_t* record = &records[index];
-        const size_t block_length = record->payload_length + 1u;
+        size_t payload_length = record->payload_length;
+        const size_t block_length = (record->record_type == 5u ?
+            (size_t)record->decompressed_length : payload_length) + 1u;
         wz_write_le16(output + offset, (wz_word_t)block_length);
         output[offset + 2u] = record->flag;
-        memcpy(output + offset + 3u, record->payload, record->payload_length);
+        if (record->record_type == 5u) {
+            result = wz_tape_native_decompress(record, output + offset + 3u,
+                                               block_length - 1u, &payload_length);
+            if (result != WZ_RESULT_OK || payload_length != block_length - 1u) {
+                result = WZ_RESULT_PARSE_ERROR;
+                goto cleanup;
+            }
+        } else {
+            memcpy(output + offset + 3u, record->payload, payload_length);
+        }
         offset += 2u + block_length;
     }
     result = WZ_RESULT_OK;

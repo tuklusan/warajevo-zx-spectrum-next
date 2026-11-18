@@ -106,7 +106,7 @@ wz_result_t wz_tape_write_native_tap(const wz_native_tap_record_t* records,
                                      wz_byte_t* output,
                                      size_t capacity,
                                      size_t* length);
-/* Convert uncompressed native records to standard TAP blocks for playback. */
+/* Convert native type-0–5 records to standard TAP blocks for playback. */
 wz_result_t wz_tape_native_to_standard_tap(const wz_byte_t* data,
                                            size_t length,
                                            wz_byte_t* output,
