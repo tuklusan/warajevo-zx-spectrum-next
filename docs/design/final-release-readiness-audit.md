@@ -28,7 +28,9 @@ Product builds, emulator tests, media runs, screenshots, and proof generation
 belong on hosted runners under Workflow 05. The current main source
 `c33c129de3e2f244ca3d256479bbfec1a29a88bc` passed the five-target native gate
 in run `44314754160`, including CTest, Fuse visual equivalence, and Phase-16;
-its run, generated proof run, artifacts, and caches were deleted after
+the aggregate gate record is pinned in
+[current-source-native-gate.json](../../test-results/current-source-native-gate.json).
+Its run, generated proof run, artifacts, and caches were deleted after
 processing.
 
 | Task | Audit finding | Required closure evidence |

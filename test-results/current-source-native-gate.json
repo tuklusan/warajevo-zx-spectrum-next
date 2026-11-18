@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "status": "pass",
+  "sourceCommit": "c33c129de3e2f244ca3d256479bbfec1a29a88bc",
+  "workflowRunId": 44314754160,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/44314754160",
+  "workflowEvent": "push",
+  "branch": "main",
+  "nativeTargets": [
+    "Windows x64",
+    "Linux x64",
+    "Linux ARM64",
+    "macOS ARM64",
+    "macOS Intel"
+  ],
+  "checks": {
+    "releaseBuild": "pass",
+    "sokolHost": "enabled",
+    "ctest": "pass",
+    "fuseVisualEquivalence": "pass",
+    "phase16": "pass",
+    "mandatoryReview": "pass"
+  },
+  "retention": {
+    "workflowRunDeleted": true,
+    "artifactsDeleted": true,
+    "cachesDeleted": true
+  },
+  "notes": "Aggregate current-source gate record; transient runner evidence was inspected before deletion."
+}
