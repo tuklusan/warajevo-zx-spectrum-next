@@ -104,9 +104,20 @@ cleanup:
 
 int main(void)
 {
-    if (!literal_case() || !match_case() || !short_distance_case() ||
-        !malformed_case()) {
-        fputs("FAIL native TAP decompression contract\n", stderr);
+    if (!literal_case()) {
+        fputs("FAIL native TAP decompression literal case\n", stderr);
+        return EXIT_FAILURE;
+    }
+    if (!match_case()) {
+        fputs("FAIL native TAP decompression match case\n", stderr);
+        return EXIT_FAILURE;
+    }
+    if (!short_distance_case()) {
+        fputs("FAIL native TAP decompression short-distance case\n", stderr);
+        return EXIT_FAILURE;
+    }
+    if (!malformed_case()) {
+        fputs("FAIL native TAP decompression malformed case\n", stderr);
         return EXIT_FAILURE;
     }
     puts("native-tap-decompression-contract cases=4 status=pass");
