@@ -35,7 +35,7 @@ MARKER = (
 
 def git_blob(commit: str, path: str) -> bytes:
     relative = PurePosixPath(path)
-    if (not path.startswith(FIXTURE_ROOTS) or
+    if (not any(path.startswith(root) for root in FIXTURE_ROOTS) or
             re.fullmatch(r"[A-Za-z0-9._/-]+", path) is None or
             relative.is_absolute() or ".." in relative.parts):
         raise SystemExit(f"unsafe fixture path: {path}")
