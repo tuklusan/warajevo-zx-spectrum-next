@@ -1,13 +1,13 @@
 {
-  "commit": "8f7deefa5d1527800b404169db1802469880e158",
-  "sourceCommit": "8f7deefa5d1527800b404169db1802469880e158",
+  "commit": "51a032bc87281de52fc2111fa4dc0caa3bd7dc48",
+  "sourceCommit": "51a032bc87281de52fc2111fa4dc0caa3bd7dc48",
   "testId": "phase16-performance-baseline",
   "status": "pass",
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/44264437973",
-  "runId": 44264437973,
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/44270211398",
+  "runId": 44270211398,
   "workflowEvent": "push",
   "branch": "main",
-  "timestamp": "2026-11-18T08:22:24+00:00",
+  "timestamp": "2026-11-18T09:08:20+00:00",
   "fixtures": [
     {
       "path": "ci/test/performance/README.md",
@@ -60,20 +60,20 @@
       "comparison": {
         "gate": "all fingerprints match; no throughput regression exceeded 40%",
         "status": "pass",
-        "largestSlowdownPercent": 10.7,
+        "largestSlowdownPercent": 11.8,
         "baseline": "ci/test/performance/baselines/windows-x64.json",
         "metricDeltasPercent": [
           {
             "metric": "cpu_execution",
-            "deltaPercent": -6.2
+            "deltaPercent": -11.8
           },
           {
             "metric": "raster_generation",
-            "deltaPercent": 35.3
+            "deltaPercent": 27.8
           },
           {
             "metric": "audio_mixing",
-            "deltaPercent": 27.8
+            "deltaPercent": 24.3
           },
           {
             "metric": "tape_playback",
@@ -85,13 +85,13 @@
           },
           {
             "metric": "ui_presentation",
-            "deltaPercent": -10.7
+            "deltaPercent": 8.7
           }
         ]
       },
-      "ctest": "49/49 passed",
+      "ctest": "50/50 passed",
       "runner": "Windows-windows-x64",
-      "timestamp": "2026-11-18T08:10:59Z",
+      "timestamp": "2026-11-18T08:51:22Z",
       "jobName": "Full build / Windows x64",
       "metricCount": 6,
       "status": "pass"
@@ -106,33 +106,33 @@
         "metricDeltasPercent": [
           {
             "metric": "cpu_execution",
-            "deltaPercent": 34.6
+            "deltaPercent": 44.6
           },
           {
             "metric": "raster_generation",
-            "deltaPercent": 138.7
+            "deltaPercent": 150.2
           },
           {
             "metric": "audio_mixing",
-            "deltaPercent": 89.4
+            "deltaPercent": 90.8
           },
           {
             "metric": "tape_playback",
-            "deltaPercent": 37.2
+            "deltaPercent": 36.4
           },
           {
             "metric": "snapshot_serialization",
-            "deltaPercent": 13.3
+            "deltaPercent": 15.4
           },
           {
             "metric": "ui_presentation",
-            "deltaPercent": 20.4
+            "deltaPercent": 20.7
           }
         ]
       },
-      "ctest": "49/49 passed",
+      "ctest": "50/50 passed",
       "runner": "Linux-ubuntu-24.04",
-      "timestamp": "2026-11-18T08:13:01Z",
+      "timestamp": "2026-11-18T08:53:43Z",
       "jobName": "Full build / Linux x64",
       "metricCount": 6,
       "status": "pass"
@@ -142,38 +142,38 @@
       "comparison": {
         "gate": "all fingerprints match; no throughput regression exceeded 40%",
         "status": "pass",
-        "largestSlowdownPercent": 11.7,
+        "largestSlowdownPercent": 13.3,
         "baseline": "ci/test/performance/baselines/linux-arm64.json",
         "metricDeltasPercent": [
           {
             "metric": "cpu_execution",
-            "deltaPercent": -11.7
+            "deltaPercent": -13.3
           },
           {
             "metric": "raster_generation",
-            "deltaPercent": -0.2
+            "deltaPercent": -0.1
           },
           {
             "metric": "audio_mixing",
-            "deltaPercent": 1.9
+            "deltaPercent": 1.8
           },
           {
             "metric": "tape_playback",
-            "deltaPercent": -1.0
+            "deltaPercent": -0.0
           },
           {
             "metric": "snapshot_serialization",
-            "deltaPercent": -9.1
+            "deltaPercent": -9.0
           },
           {
             "metric": "ui_presentation",
-            "deltaPercent": -1.6
+            "deltaPercent": 0.2
           }
         ]
       },
-      "ctest": "49/49 passed",
+      "ctest": "50/50 passed",
       "runner": "Linux-ubuntu-24.04-arm",
-      "timestamp": "2026-11-18T08:10:27Z",
+      "timestamp": "2026-11-18T08:50:38Z",
       "jobName": "Full build / Linux ARM64",
       "metricCount": 6,
       "status": "pass"
@@ -183,38 +183,38 @@
       "comparison": {
         "gate": "all fingerprints match; no throughput regression exceeded 40%",
         "status": "pass",
-        "largestSlowdownPercent": 39.9,
+        "largestSlowdownPercent": 23.6,
         "baseline": "ci/test/performance/baselines/macos-arm64.json",
         "metricDeltasPercent": [
           {
             "metric": "cpu_execution",
-            "deltaPercent": -39.9
+            "deltaPercent": -23.6
           },
           {
             "metric": "raster_generation",
-            "deltaPercent": -25.0
+            "deltaPercent": -5.7
           },
           {
             "metric": "audio_mixing",
-            "deltaPercent": -25.0
+            "deltaPercent": 12.4
           },
           {
             "metric": "tape_playback",
-            "deltaPercent": -24.4
+            "deltaPercent": -2.0
           },
           {
             "metric": "snapshot_serialization",
-            "deltaPercent": -28.4
+            "deltaPercent": -22.3
           },
           {
             "metric": "ui_presentation",
-            "deltaPercent": 4.1
+            "deltaPercent": 12.2
           }
         ]
       },
-      "ctest": "49/49 passed",
+      "ctest": "50/50 passed",
       "runner": "macOS-macos-arm64",
-      "timestamp": "2026-11-18T08:10:23Z",
+      "timestamp": "2026-11-18T08:50:16Z",
       "jobName": "Full build / macOS ARM64",
       "metricCount": 6,
       "status": "pass"
@@ -224,38 +224,38 @@
       "comparison": {
         "gate": "all fingerprints match; no throughput regression exceeded 40%",
         "status": "pass",
-        "largestSlowdownPercent": 33.9,
+        "largestSlowdownPercent": 23.0,
         "baseline": "ci/test/performance/baselines/macos-x64.json",
         "metricDeltasPercent": [
           {
             "metric": "cpu_execution",
-            "deltaPercent": -33.9
+            "deltaPercent": -23.0
           },
           {
             "metric": "raster_generation",
-            "deltaPercent": 24.4
+            "deltaPercent": 13.3
           },
           {
             "metric": "audio_mixing",
-            "deltaPercent": 6.9
+            "deltaPercent": 30.1
           },
           {
             "metric": "tape_playback",
-            "deltaPercent": 58.2
+            "deltaPercent": 53.9
           },
           {
             "metric": "snapshot_serialization",
-            "deltaPercent": 55.4
+            "deltaPercent": 2.0
           },
           {
             "metric": "ui_presentation",
-            "deltaPercent": 5.1
+            "deltaPercent": -5.8
           }
         ]
       },
-      "ctest": "49/49 passed",
+      "ctest": "50/50 passed",
       "runner": "macOS-macos-x64",
-      "timestamp": "2026-11-18T08:11:30Z",
+      "timestamp": "2026-11-18T08:51:40Z",
       "jobName": "Full build / macOS Intel",
       "metricCount": 6,
       "status": "pass"
@@ -263,10 +263,10 @@
   ],
   "summary": {
     "nativeTargets": 5,
-    "ctestPerTarget": "49/49 passed",
+    "ctestPerTarget": "50/50 passed",
     "fingerprintChecks": 30,
     "throughputChecks": 30,
-    "largestSlowdownPercent": 39.9
+    "largestSlowdownPercent": 23.6
   },
   "sourceReview": {
     "status": "passed; findings adjudicated",

@@ -1,11 +1,11 @@
 {
   "testId": "input-replay-contract",
   "status": "pass",
-  "commit": "8f7deefa5d1527800b404169db1802469880e158",
-  "driverCommit": "15134bab61352afb4160de925faae34e0fd8dc95",
-  "runId": 44264437973,
+  "commit": "51a032bc87281de52fc2111fa4dc0caa3bd7dc48",
+  "driverCommit": "6cfc6060b0ad49b1f1ffca22f005821485d6dca7",
+  "runId": 44270211398,
   "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
-  "timestamp": "2026-11-18T08:22:24+00:00",
+  "timestamp": "2026-11-18T09:08:21+00:00",
   "caseCount": 1,
   "nativeTargets": [
     "Windows x64",
@@ -15,7 +15,7 @@
     "macOS Intel"
   ],
   "observedOutput": "PASS normalized input trace records effective matrix transitions and replays headlessly",
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/44264437973",
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/44270211398",
   "workflowEvent": "push",
   "branch": "main",
   "fixtures": [
@@ -53,7 +53,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "39655cb93e353ca41a4c9f9c3925a2736fb27ca2c89c6497dc078c6f5c8a069f"
+      "sha256": "63c423df99da5d897d7ea547502fc8ccd42c5c48b0a4172cb6377d9c43f02801"
     }
   ],
   "runnerResults": [
@@ -61,35 +61,35 @@
       "runner": "Windows x64",
       "jobName": "Full build / Windows x64",
       "architecture": "X64",
-      "ctest": "49/49 passed",
+      "ctest": "50/50 passed",
       "status": "pass"
     },
     {
       "runner": "Linux x64",
       "jobName": "Full build / Linux x64",
       "architecture": "X64",
-      "ctest": "49/49 passed",
+      "ctest": "50/50 passed",
       "status": "pass"
     },
     {
       "runner": "Linux ARM64",
       "jobName": "Full build / Linux ARM64",
       "architecture": "ARM64",
-      "ctest": "49/49 passed",
+      "ctest": "50/50 passed",
       "status": "pass"
     },
     {
       "runner": "macOS ARM64",
       "jobName": "Full build / macOS ARM64",
       "architecture": "ARM64",
-      "ctest": "49/49 passed",
+      "ctest": "50/50 passed",
       "status": "pass"
     },
     {
       "runner": "macOS Intel",
       "jobName": "Full build / macOS Intel",
       "architecture": "X64",
-      "ctest": "49/49 passed",
+      "ctest": "50/50 passed",
       "status": "pass"
     }
   ],
