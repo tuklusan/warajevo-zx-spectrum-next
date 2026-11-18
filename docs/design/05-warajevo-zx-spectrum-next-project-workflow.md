@@ -107,9 +107,8 @@ source files covered by the reviewer. The hook reviews each changed source file
 in its own packet, with up to 1,000 tokens of source context per file. Up to two
 independent packets run concurrently under one 20-minute wall-clock limit for
 the complete review. It saves reviewer output
-under Git metadata, and on timeout records `STALL`, elapsed time, and the
-diagnostic log path in
-`wzsn-source-review-stall.log` under Git metadata. A completed review permits
+under the local, untracked `scratch/temp/` directory, and on timeout records
+`STALL`, elapsed time, and the diagnostic log path there. A completed review permits
 the gate to continue; review findings remain advisory and require developer
 adjudication. A processing warning that skipped any source file rejects the
 push. `STALL` is a failed gate, never a review pass. Missing

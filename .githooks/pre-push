@@ -158,7 +158,7 @@ review_outgoing_source() {
     review_started=$(date +%s)
     review_index=0
     review_count=0
-    review_root=$(git rev-parse --git-path "wzsn-source-reviews-$newrev")
+    review_root="$(git rev-parse --show-toplevel)/scratch/temp/source-reviews-$newrev"
     mkdir -p "$review_root"
     review_pids=()
     review_logs=()
@@ -174,7 +174,7 @@ review_outgoing_source() {
             break
         fi
 
-        review_log=$(git rev-parse --git-path "wzsn-source-review-$newrev-$review_index.log")
+        review_log="$review_root/$review_index.log"
         review_output="$review_root/$review_index"
         mkdir -p "$review_output"
         printf 'Reviewing %s (packet %s)...\n' "$file" "$review_index" >&2
@@ -208,7 +208,7 @@ review_outgoing_source() {
 
     review_elapsed=$(($(date +%s) - review_started))
     if [ "$review_status" -eq 124 ] && [ "$review_elapsed" -ge 1200 ]; then
-        stall_log=$(git rev-parse --git-path wzsn-source-review-stall.log)
+        stall_log="$(git rev-parse --show-toplevel)/scratch/temp/source-review-stall.log"
         printf 'STALL elapsed=%ss limit=1200s diagnostics=%s\n' \
             "$review_elapsed" "${review_failed_log:-$review_root}" | tee -a "$stall_log" >&2
     fi
