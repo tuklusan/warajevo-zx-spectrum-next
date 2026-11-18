@@ -3,12 +3,12 @@
   "driver": "test-drivers/native-tap-decompression-contract.driver.json",
   "contract": "tests/native-tap-decompression-contract.md",
   "status": "pass",
-  "commit": "0d38f64f6ecc72c470ec3cf6e85b3e189e51c76e",
-  "driverCommit": "0d38f64f6ecc72c470ec3cf6e85b3e189e51c76e",
+  "commit": "8f7deefa5d1527800b404169db1802469880e158",
+  "driverCommit": "0545372695126b34773c91885d1132666ebdb9e4",
   "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
-  "timestamp": "2026-11-18T07:00:46+00:00",
-  "workflowRun": 44254470964,
-  "workflowEvent": "workflow_dispatch",
+  "timestamp": "2026-11-18T08:22:24+00:00",
+  "workflowRun": 44264437973,
+  "workflowEvent": "push",
   "assertionsPerRunner": 4,
   "nativeTargets": [
     "Windows x64",
@@ -28,7 +28,7 @@
   "fixtures": [
     {
       "path": "ci/test/native-tap-decompression-contract.c",
-      "sha256": "beb546eb4a08d5825b11bae16d010e863031541326cb56ffd9d8a9c020151920"
+      "sha256": "3e7ed9dd2c4fdfd48faff8f02d5e3da63baf2dd6d35ad73a9402e3312dacffcd"
     },
     {
       "path": "ci/test/native-tap-decompression-contract/CMakeLists.txt",
@@ -36,11 +36,11 @@
     },
     {
       "path": "src/core/wz_tape.c",
-      "sha256": "81aafd95e8a65c203eb4770b4a29d136c282973bbedcdde7bb6bca9b637e3a8c"
+      "sha256": "604fb85fb5527ad9d022985e570e7318c2bbe081378eb3a68dd919ff7666da8d"
     },
     {
       "path": "src/core/wz_tape.h",
-      "sha256": "b289794a2c68d0d487a48d0a138dc1b0d58e51348e795b55e1f9268aabb8cbcf"
+      "sha256": "b2afd12de212c7f674600f288ce56539995d36b74b04d087db684f72920354dd"
     }
   ],
   "scope": "Type-5 compressed native TAP playback is implemented; type-4 sampled records, native maintenance operations, and Compatibility Tools remain out of this contract."
