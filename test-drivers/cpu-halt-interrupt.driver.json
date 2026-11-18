@@ -6,8 +6,8 @@
   ],
   "fixtures": [
     {
-      "sha256": "0eff4334b05a404aa5abc62dc2bcd8d171b186f1d8cdae58fd66b56651cdcfbd",
-      "path": ".github/workflows/cpu-halt-interrupt.yml"
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269",
+      "path": ".github/workflows/cr-build-gate.yml"
     },
     {
       "sha256": "678a991206a5e9f4f11fee1dfb22b68f2ccc4e96b91dee72a7d852b2154f8fbb",

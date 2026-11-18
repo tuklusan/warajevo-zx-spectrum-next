@@ -6,8 +6,8 @@
   ],
   "fixtures": [
     {
-      "sha256": "f08c6f32b304fd610ba1dc68ee89e34b2767d6c6fa263a7fb7133620c7b938ea",
-      "path": ".github/workflows/cpu-decode-prefix.yml"
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269",
+      "path": ".github/workflows/cr-build-gate.yml"
     },
     {
       "sha256": "dbcbb05d37f3c31e697a181eb94634b1d87fb07131daa4fa9fa12abc45eb0447",

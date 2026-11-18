@@ -13,4 +13,4 @@ hide/show behavior, the shared Display Settings handler, and continued machine
 execution. It captures screenshots for inspection and terminates the emulator
 after the run. Product compilation and execution stay on the hosted runner.
 
-Dispatch `.github/workflows/ui-view-menu-actions.yml` on `main`.
+Dispatch `.github/workflows/cr-build-gate.yml` on `main`.

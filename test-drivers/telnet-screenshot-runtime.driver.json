@@ -1,14 +1,14 @@
 {
   "testId": "telnet-screenshot-runtime",
-  "command": "Dispatch .github/workflows/telnet-screenshot-runtime.yml on main; it builds the Release/Sokol production host and exercises the Control Port screenshot alias under Xvfb.",
+  "command": "Dispatch .github/workflows/cr-build-gate.yml on main; it builds the Release/Sokol production host and exercises the Control Port screenshot alias under Xvfb.",
   "requiredCases": 9,
   "runnerMatrix": [
     "ubuntu-24.04"
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/telnet-screenshot-runtime.yml",
-      "sha256": "b106741e9afb62143e4e06859d6c2c990481a4c1a4c3ba73d8503c444fbcc39a"
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269"
     },
     {
       "path": "ci/test/telnet-screenshot-runtime.py",

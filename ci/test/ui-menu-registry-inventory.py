@@ -20,7 +20,7 @@ from datetime import datetime, timezone
 
 
 FIXTURE_PATHS = (
-    ".github/workflows/ui-menu-registry-inventory.yml",
+    ".github/workflows/cr-build-gate.yml",
     "ci/test/ui-menu-registry-inventory.py",
     "ci/test/ui-menu-registry-inventory/README.md",
     "ci/test/live-telnet-acceptance.py",

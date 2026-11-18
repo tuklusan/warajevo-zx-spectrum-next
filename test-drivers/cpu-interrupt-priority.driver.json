@@ -8,8 +8,8 @@
   "expectedOutput": "PASS NMI priority, rejected maskable sample, RETN restore, and pending IRQ acceptance",
   "fixtures": [
     {
-      "path": ".github/workflows/cpu-interrupt-priority.yml",
-      "sha256": "34d99bba2e5a39239653a0b1abb2014f5a9fe70c0c416830195e06afb8d29ae0"
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269"
     },
     {
       "path": "ci/test/cpu-interrupt-priority/CMakeLists.txt",

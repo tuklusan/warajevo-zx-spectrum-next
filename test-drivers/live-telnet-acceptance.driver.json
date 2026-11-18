@@ -1,6 +1,6 @@
 {
   "testId": "production-live-telnet-acceptance",
-  "command": "Dispatch .github/workflows/live-telnet-acceptance.yml on main; each hosted platform builds and runs the production desktop host against the real IPv4 Control Port.",
+  "command": "Dispatch .github/workflows/cr-build-gate.yml on main; each hosted platform builds and runs the production desktop host against the real IPv4 Control Port.",
   "requiredCases": 17,
   "runnerMatrix": [
     "windows-2025",
@@ -10,8 +10,8 @@
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/live-telnet-acceptance.yml",
-      "sha256": "476237476fa39dd1982c329645f5a26df9bfca4dd634414b1b22be1a304813de"
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269"
     },
     {
       "path": "ci/test/live-telnet-acceptance.py",

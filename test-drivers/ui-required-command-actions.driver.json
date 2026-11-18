@@ -1,14 +1,14 @@
 {
   "testId": "ui-required-command-actions",
-  "command": "Dispatch .github/workflows/ui-required-command-actions.yml on main; the workflow builds the Release/Sokol production host and runs ci/test/ui-required-command-actions.py under Xvfb against roms/48.rom.",
+  "command": "Dispatch .github/workflows/cr-build-gate.yml on main; the workflow builds the Release/Sokol production host and runs ci/test/ui-required-command-actions.py under Xvfb against roms/48.rom.",
   "requiredCases": 21,
   "runnerMatrix": [
     "ubuntu-24.04"
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/ui-required-command-actions.yml",
-      "sha256": "8c320ace217c4a49df44ecd54edbd67469963c2e7138746dfa638742646615ff"
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269"
     },
     {
       "path": "ci/test/ui-required-command-actions.py",

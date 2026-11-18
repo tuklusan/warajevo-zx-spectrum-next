@@ -6,8 +6,8 @@
   ],
   "fixtures": [
     {
-      "sha256": "9e763aa4acc43087ca70c6bb3dfc87d9973e4a59fd8f9dd8b2a2cd8cae0e8b9a",
-      "path": ".github/workflows/cpu-indexed-load.yml"
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269",
+      "path": ".github/workflows/cr-build-gate.yml"
     },
     {
       "sha256": "b2b465bf6ea9b54581ceea54ee6fb83fb465f8b7df8533af2a7181437b1ef2d6",

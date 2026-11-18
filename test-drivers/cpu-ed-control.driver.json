@@ -6,8 +6,8 @@
   ],
   "fixtures": [
     {
-      "sha256": "42b375db56cc8976f1ae821a44a81aa03ccee5a9686713e765f28dfb88550950",
-      "path": ".github/workflows/cpu-ed-control.yml"
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269",
+      "path": ".github/workflows/cr-build-gate.yml"
     },
     {
       "sha256": "eb2b4f7e187d87dd0dd945b962c2e2029e0a6eddb6bae3848ec7b66c86a2bd36",

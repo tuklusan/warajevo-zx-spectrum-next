@@ -6,8 +6,8 @@
   ],
   "fixtures": [
     {
-      "sha256": "0cd687914c1038aa76ad64775c11259a5941d38f9dcb0932223477d4eae566a9",
-      "path": ".github/workflows/cpu-interrupt-modes.yml"
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269",
+      "path": ".github/workflows/cr-build-gate.yml"
     },
     {
       "sha256": "7f96be2fc9925fe2c7c666ebdf5010eb278c00d6c0fb54cd3caa6197d0eb6b5c",

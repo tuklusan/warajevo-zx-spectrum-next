@@ -123,6 +123,37 @@ jobs:
             -R '^wz_native_tap_decompression_contract$' --output-on-failure --verbose \
             | tee "dist/cr-gate-${{ matrix.label }}/native-tap-decompression-contract.log"
 
+      - name: Fuse visual equivalence delivery gate
+        if: matrix.name == 'Windows x64' || matrix.name == 'macOS ARM64' || matrix.name == 'macOS Intel'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check Pillow
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          proof = json.loads(Path("test-results/fuse-visual-equivalence.json").read_text())
+          reference = Path(proof["reference"]["evidenceFile"])
+          rom = Path("roms/48.rom")
+          if hashlib.sha256(reference.read_bytes()).hexdigest() != proof["reference"]["sha256"]:
+              raise SystemExit("pinned Fuse reference hash changed")
+          if hashlib.sha256(rom.read_bytes()).hexdigest() != proof["romSha256"]:
+              raise SystemExit("certified ROM hash changed")
+          PY
+          build_dir="dist/cr-gate-${{ matrix.label }}"
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            binary="$build_dir/Release/Warajevo-ZX-Spectrum-Next.exe"
+          else
+            binary="$build_dir/Warajevo-ZX-Spectrum-Next"
+          fi
+          output="dist/fuse-visual/${{ matrix.label }}"
+          python ci/test/fuse-visual-equivalence/capture-candidate.py \
+            "$binary" roms/48.rom "$output"
+          python ci/test/fuse-visual-equivalence/compare.py \
+            --reference test-results/fuse-visual-equivalence/reference-fuse.png \
+            --candidate "$output/application.png" \
+            --output "$output/comparison.json"
+
       - name: Sanitized MDR image and transition fuzz
         if: runner.os != 'Windows'
         shell: bash
@@ -190,6 +221,11 @@ jobs:
             --output-dir "dist/runner-evidence"
           cp "dist/cr-gate-${{ matrix.label }}/build.log" \
             "dist/runner-evidence/build-${{ matrix.performance_baseline }}.log"
+          if [[ "${{ matrix.name }}" != "Linux x64" && \
+                "${{ matrix.name }}" != "Linux ARM64" ]]; then
+            cp -R "dist/fuse-visual/${{ matrix.label }}" \
+              "dist/runner-evidence/fuse-visual-${{ matrix.performance_baseline }}"
+          fi
           if [[ "${{ matrix.name }}" == "Linux x64" ]]; then
             cp "dist/debug-trace-${{ matrix.label }}/debug-trace-startup.json" \
               "dist/runner-evidence/debug-trace-startup.json"

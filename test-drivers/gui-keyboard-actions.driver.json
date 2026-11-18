@@ -1,14 +1,14 @@
 {
   "testId": "gui-keyboard-actions",
-  "command": "Dispatch .github/workflows/gui-keyboard-actions.yml on main. Build the production Release/Sokol GUI under Xvfb, navigate its keyboard command menu using F1, arrows, Enter, and Escape, and verify model, all seven speed choices, pause/resume, reset, and cancellation through Control Port status.",
+  "command": "Dispatch .github/workflows/cr-build-gate.yml on main. Build the production Release/Sokol GUI under Xvfb, navigate its keyboard command menu using F1, arrows, Enter, and Escape, and verify model, all seven speed choices, pause/resume, reset, and cancellation through Control Port status.",
   "requiredCases": 15,
   "runnerMatrix": [
     "ubuntu-24.04"
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/gui-keyboard-actions.yml",
-      "sha256": "1740b032aea1f761503f6df18ffad65967e075c5365f6851a160a94ed817eaba"
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269"
     },
     {
       "path": "ci/test/gui-keyboard-actions.py",

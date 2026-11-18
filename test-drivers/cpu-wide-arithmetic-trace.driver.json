@@ -6,8 +6,8 @@
   ],
   "fixtures": [
     {
-      "sha256": "dc6e71a64e0ed0b884fb274261e535bbba64eb9d7312c63559effa4d3f4ef402",
-      "path": ".github/workflows/cpu-wide-arithmetic-trace.yml"
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269",
+      "path": ".github/workflows/cr-build-gate.yml"
     },
     {
       "sha256": "07a841a6663210f3175a7e0b291da8dc5cbf625354f91781f384c92e5a5fb3c4",

@@ -6,8 +6,8 @@
   ],
   "fixtures": [
     {
-      "sha256": "5fa2eb864e4ef5beee3dad7dea524b27ffe1ab63d4396a5e760b669c5b34cd16",
-      "path": ".github/workflows/cpu-wide-flags.yml"
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269",
+      "path": ".github/workflows/cr-build-gate.yml"
     },
     {
       "sha256": "fc1f667df685894e0aad1aefb1f51ea77903389fefd12c53bd973e8858de7cba",

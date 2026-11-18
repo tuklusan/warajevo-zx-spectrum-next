@@ -6,8 +6,8 @@
   ],
   "fixtures": [
     {
-      "sha256": "f7da7426f5024bff65a011220268fcacdc329eab2af4513554c7d86ff8ba9072",
-      "path": ".github/workflows/cpu-fetch-write.yml"
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269",
+      "path": ".github/workflows/cr-build-gate.yml"
     },
     {
       "sha256": "95db2404131e82665c12ed309f71a6b451a7ecad425b69177aa8d6a415d74311",

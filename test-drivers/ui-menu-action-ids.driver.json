@@ -1,14 +1,14 @@
 {
   "testId": "ui-menu-action-ids",
-  "command": "Dispatch .github/workflows/ui-menu-action-ids.yml on main; the workflow builds the Release/Sokol production host, then runs ci/test/ui-menu-action-ids.py under Xvfb against roms/48.rom.",
+  "command": "Dispatch .github/workflows/cr-build-gate.yml on main; the workflow builds the Release/Sokol production host, then runs ci/test/ui-menu-action-ids.py under Xvfb against roms/48.rom.",
   "requiredCases": 27,
   "runnerMatrix": [
     "ubuntu-24.04"
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/ui-menu-action-ids.yml",
-      "sha256": "9e3fd0a0ecbe399046daebc02b78880eb3b3088da7fcff0853ad567288e93bd0"
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269"
     },
     {
       "path": "ci/test/ui-menu-action-ids.py",

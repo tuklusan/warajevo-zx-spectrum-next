@@ -1,8 +1,8 @@
 {
   "fixtures": [
     {
-      "path": ".github/workflows/gui-tape-actions.yml",
-      "sha256": "d9aa03010e21cf71e64831f6325208db05ac77dde8095a6372364464ce448d3f"
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269"
     },
     {
       "path": "ci/test/gui-tape-actions.py",

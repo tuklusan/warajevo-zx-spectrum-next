@@ -6,8 +6,8 @@
   ],
   "fixtures": [
     {
-      "sha256": "cbd40104502f1a3a4d31e5a0f96e3e7f646dcb41dd7b0a8276fb9603866b1fe7",
-      "path": ".github/workflows/cpu-bit-set-reset.yml"
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269",
+      "path": ".github/workflows/cr-build-gate.yml"
     },
     {
       "sha256": "12f682e5993d1db90c1fd20ebe79bdc8067b5577b8f47e6ef26dac5ca553b037",

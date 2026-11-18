@@ -15,5 +15,5 @@ x64 run `39553041351` passed 10 assertions at commit
 inspected; their SHA-256 hashes and runner metadata are pinned in
 [`ui-view-menu-actions.json`](../test-results/ui-view-menu-actions.json).
 
-Dispatch `.github/workflows/ui-view-menu-actions.yml` on `main`. The workflow
-builds and runs the Release/Sokol production application on `ubuntu-24.04`.
+Dispatch `.github/workflows/cr-build-gate.yml` on `main`; the retained workflow
+is the single hosted build and test entry point.

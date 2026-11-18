@@ -6,8 +6,8 @@
   ],
   "fixtures": [
     {
-      "sha256": "b23cf8101bd8d260705f19c9bed0b18ae0ef53d392c7108a2b7946176e0ffaa6",
-      "path": ".github/workflows/cpu-cb-bit-alias-trace.yml"
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269",
+      "path": ".github/workflows/cr-build-gate.yml"
     },
     {
       "sha256": "b784ad4cf62cf9bf299f46b99ba1400474a54d5208f690ea962d6e82248917db",

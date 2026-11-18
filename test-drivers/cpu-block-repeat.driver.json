@@ -6,8 +6,8 @@
   ],
   "fixtures": [
     {
-      "sha256": "4f98137ff4ba129f2aee7dd1f1586de4bc336ec65f08d3d7c81c5082bf0e0d4d",
-      "path": ".github/workflows/cpu-block-repeat.yml"
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269",
+      "path": ".github/workflows/cr-build-gate.yml"
     },
     {
       "sha256": "60837e67208e2963917fb1530d58150b06dd92f833b98732230cd9aec3384ef5",

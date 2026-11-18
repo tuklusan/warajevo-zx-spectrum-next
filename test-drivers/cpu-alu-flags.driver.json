@@ -6,8 +6,8 @@
   ],
   "fixtures": [
     {
-      "sha256": "a1f17323a794120e46a4ea11c5b86a048a100a6eb7583eb8e562f03158b6230a",
-      "path": ".github/workflows/cpu-alu-flags.yml"
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269",
+      "path": ".github/workflows/cr-build-gate.yml"
     },
     {
       "sha256": "35e3549cf862d14c45563932d8dd275fa5acb2424957a4e2e166a19ecc80bc5e",

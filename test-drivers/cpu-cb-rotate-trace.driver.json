@@ -6,8 +6,8 @@
   ],
   "fixtures": [
     {
-      "sha256": "27847e7f7a38ff9be235c85574ca89b24a3fe690e193dd1a4628762211f67849",
-      "path": ".github/workflows/cpu-cb-rotate-trace.yml"
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269",
+      "path": ".github/workflows/cr-build-gate.yml"
     },
     {
       "sha256": "455f98fc5345f74aebc72adb43382ea408682da206b23ebb65942ed4ba87eacd",

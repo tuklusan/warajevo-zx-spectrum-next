@@ -7,8 +7,8 @@
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/gui-tape-mode.yml",
-      "sha256": "affdd24701513e36fbd121c16649b34dc6fffeb5ab97789ad2dfa6d6519852dd"
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269"
     },
     {
       "path": "ci/test/gui-tape-mode.py",

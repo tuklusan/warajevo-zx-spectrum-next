@@ -4,8 +4,8 @@
   "testId": "gui-tape-formats",
   "fixtures": [
     {
-      "sha256": "f0e6d2702e4586451c85df61e86ee0c40c279d662979b975e3aadf64997c2df0",
-      "path": ".github/workflows/gui-tape-formats.yml"
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269",
+      "path": ".github/workflows/cr-build-gate.yml"
     },
     {
       "sha256": "43b53dd4bc01858195c35fe880bf0526b92818be366f6352b7f9ef540a40a5aa",

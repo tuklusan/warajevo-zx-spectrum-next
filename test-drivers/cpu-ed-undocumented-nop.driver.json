@@ -6,8 +6,8 @@
   ],
   "fixtures": [
     {
-      "sha256": "f7b451db5efa8f95bec95ee2571dbb52167cf09bb3562a6733770def53562ea9",
-      "path": ".github/workflows/cpu-ed-undocumented-nop.yml"
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269",
+      "path": ".github/workflows/cr-build-gate.yml"
     },
     {
       "sha256": "1e01f8ebcf0148173c1ac2c6e6974bf9770fb86b35bff5483e1268d8c93b0ce0",

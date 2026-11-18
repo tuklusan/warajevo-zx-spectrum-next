@@ -3,8 +3,8 @@
   "testId": "cpu-branch-trace",
   "fixtures": [
     {
-      "sha256": "ca10980636287ea2f21f73bc7df4f5e19afc3b77d4698a128c6d7498b0cd04c8",
-      "path": ".github/workflows/cpu-branch-trace.yml"
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269",
+      "path": ".github/workflows/cr-build-gate.yml"
     },
     {
       "sha256": "7cd27cd0ba2ccbf08a5e0f1a26ea692a35df1d3466f634a436fffa070ef711f7",

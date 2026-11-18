@@ -16,4 +16,5 @@ Telnet settings surface. The screenshot was inspected; its SHA-256 and fixture
 hashes are pinned in
 [`ui-required-command-actions.json`](../test-results/ui-required-command-actions.json).
 
-Dispatch `.github/workflows/ui-required-command-actions.yml` on `main`.
+Dispatch `.github/workflows/cr-build-gate.yml` on `main`; the retained workflow
+is the single hosted build and test entry point.

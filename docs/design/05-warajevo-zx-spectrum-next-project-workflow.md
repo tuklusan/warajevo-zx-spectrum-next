@@ -49,24 +49,26 @@ workflows have finished and all required proof has been downloaded before
 purging them.
 
 The Fuse visual-equivalence delivery gate is mandatory before declaring a
-release candidate. Dispatch `.github/workflows/fuse-visual-equivalence.yml` on
-`main`; it compares the full production display against the pinned Fuse screen
-on Windows x64, macOS Intel, and macOS ARM64 using the committed mismatch and
-mean-channel-error limits. Pin its per-runner metrics and hashes in
-`test-results/fuse-visual-equivalence.json`, inspect the captures, then delete
-the completed run and its artifacts under the retention rule above.
+release candidate. The single `cr-build-gate.yml` workflow compares the full
+production display against the pinned Fuse screen on Windows x64, macOS Intel,
+and macOS ARM64 using the committed mismatch and mean-channel-error limits.
+Its per-runner captures and metrics are temporary runner evidence; inspect them
+when a delivery gate is being certified, then delete the completed run and its
+artifacts under the retention rule above. The tracked
+`test-results/fuse-visual-equivalence.json` record remains the pinned reference
+and threshold authority.
 
 Every project commit is made directly on local `main`, and every push updates
 remote `main`; no other branch or pull request is used. Exactly one GitHub
-workflow runs on source pushes: `cr-build-gate.yml`, filtered to production
+workflow is retained: `cr-build-gate.yml`. It runs on source pushes, filtered to production
 `.c`, `.h`, and `.m` files under `src/`, build definitions under `src/cmake/`,
 and compiled test sources/build definitions under `ci/test/` and `tests/`. It
 clean-builds the application and runs the integrated CTest suite on Windows
 x64, Linux x64/ARM64, and macOS x64/ARM64. The GUI host is enabled so each
 runner builds the full application. Documentation, test descriptions, traces,
 results, workflow edits, and administrative records alone start no hosted
-runner. Workflows retained in the repository are manually dispatched on `main`
-when needed. Pull-request triggers are prohibited. Do not add branch protection
+runner. A manual dispatch of this same workflow is used when needed. Pull-request
+triggers are prohibited. Do not add branch protection
 that requires a pull request or prevents authorized direct updates to `main`.
 
 The pre-commit hook checks every pathname in the complete staged index,
@@ -184,8 +186,8 @@ new manifest record. No local installation substitutes for runner bootstrap.
 `cr-build-gate.yml` is the source-push build and test check before a change
 record is closed. It enables `WZSN_BUILD_SOKOL_HOST`, then performs a clean
 Release build and CTest on all five supported OS/architecture targets. The
-build and all execution happen on hosted runners, not on the developer
-workstation.
+same workflow enforces the desktop Fuse visual-equivalence gate. The build and
+all execution happen on hosted runners, not on the developer workstation.
 
 Required CI checks apply to the exact commit pushed to `main`; there is no merge
 or PR stage.
@@ -236,13 +238,10 @@ alone do not satisfy this gate.
 The CPU, bus, ULA, raster, ROM-loader, and tape timing contract is in
 `reference/t-state-description.md`.
 
-The runner-facing DIZZY4K proof is manually dispatched by
-`.github/workflows/dizzy4k-demo.yml`. It builds the GUI target, starts the
-application on the runner, connects through the control port, inserts
-`test-media/DIZZY4K.TAP`, resumes execution, waits for the demo interval, and
-requests a Spectrum-display PNG through the screenshot command. The process is
-terminated by the harness after capture; screenshots remain untracked runner
-output and are not committed to the repository.
+No separate demo, GUI, Fuse, Telnet, CPU, or media workflow is retained. Any
+required hosted check belongs in `cr-build-gate.yml` and must be source-triggered
+only when it exercises a newly built binary, or manually dispatched on `main`
+for an evidence recheck.
 
 ## 8. Directory structure and layout rules
 

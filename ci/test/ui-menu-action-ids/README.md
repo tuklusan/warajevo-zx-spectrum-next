@@ -14,6 +14,6 @@ through `DO` and verifies the selected model or speed in `STATUS`. The GUI
 model and speed selectors dispatch the same fixed action IDs. The shared
 parameterized commands remain the operation handlers.
 
-Run `.github/workflows/ui-menu-action-ids.yml` on `main`. Build, GUI startup,
+Run `.github/workflows/cr-build-gate.yml` on `main`. Build, GUI startup,
 and application execution occur on an Ubuntu hosted runner. The workflow's
 proof artifact is processed and deleted immediately after retrieval.

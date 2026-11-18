@@ -6,8 +6,8 @@
   ],
   "fixtures": [
     {
-      "sha256": "a99cd2ea37dd2188948948349469db4fc859d5e45f213bbda1895fdf7e9db6ea",
-      "path": ".github/workflows/cpu-index-half-arithmetic.yml"
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269",
+      "path": ".github/workflows/cr-build-gate.yml"
     },
     {
       "sha256": "0eafb1075261c622f7c92f5071c9fc13778ea35b616b02b46cf2f9adec3e5885",

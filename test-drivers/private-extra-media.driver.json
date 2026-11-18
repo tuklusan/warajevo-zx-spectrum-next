@@ -1,14 +1,14 @@
 {
   "testId": "private-extra-media",
-  "command": "Temporarily set WZSN_TEMP_PRIVATE_MEDIA_BASE64 as a repository Actions secret, then dispatch .github/workflows/private-extra-media.yml on main. The hosted runner decodes one private TAP into a temporary directory, runs the existing private-media-playback core regression, records aggregate counts only, and deletes the temporary directory. Remove the secret after the run.",
+  "command": "Temporarily set WZSN_TEMP_PRIVATE_MEDIA_BASE64 as a repository Actions secret, then dispatch .github/workflows/cr-build-gate.yml on main. The hosted runner decodes one private TAP into a temporary directory, runs the existing private-media-playback core regression, records aggregate counts only, and deletes the temporary directory. Remove the secret after the run.",
   "requiredMediaFiles": 1,
   "runnerMatrix": [
     "ubuntu-24.04"
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/private-extra-media.yml",
-      "sha256": "afe2aca236260e2937987efc74946c6177c7818fd39107929fe45dac283b6dc5"
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269"
     },
     {
       "path": "ci/test/private-extra-media/write-proof.py",

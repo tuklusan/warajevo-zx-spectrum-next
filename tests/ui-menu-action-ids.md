@@ -14,6 +14,6 @@ exactly once in `MENU TREE` with remote-safe metadata. It invokes all nine IDs
 and checks the returned selection and resulting `STATUS` value (27 assertions).
 The process is terminated by the harness even after a failure.
 
-Run `.github/workflows/ui-menu-action-ids.yml` by manual dispatch on `main`.
-Product build and execution occur on `ubuntu-24.04`. The driver pins the test
+Run `.github/workflows/cr-build-gate.yml` by manual dispatch on `main`.
+Product build and execution occur on the retained native matrix. The driver pins the test
 script, workflow, ROM, and production command implementation sources.

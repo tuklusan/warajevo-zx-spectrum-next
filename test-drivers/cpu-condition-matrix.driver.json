@@ -6,8 +6,8 @@
   ],
   "fixtures": [
     {
-      "sha256": "47d27ff2e9147b738086f388bf2c27ccb004b7ef821f52c486b2bfd5cfbdc28b",
-      "path": ".github/workflows/cpu-condition-matrix.yml"
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269",
+      "path": ".github/workflows/cr-build-gate.yml"
     },
     {
       "sha256": "a185b7fbcc36d8fe9e7ce8e80b90d36815e28fd24a9326f95eaa4f6940c9f5ba",

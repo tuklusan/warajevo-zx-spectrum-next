@@ -7,8 +7,8 @@
   "command": "dist/cpu-owned-acceptance/wz_cpu_owned_acceptance",
   "fixtures": [
     {
-      "path": ".github/workflows/cpu-owned-acceptance.yml",
-      "sha256": "70b0ac9cec2ff1d6eea1fe987c2bf4a4023cddf862b2bcdbf146712215cabf92"
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269"
     },
     {
       "path": "ci/test/cpu-owned-acceptance/CMakeLists.txt",

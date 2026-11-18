@@ -1,14 +1,14 @@
 {
   "testId": "gui-menu-groups",
-  "command": "Dispatch .github/workflows/gui-menu-groups.yml on main. The workflow builds and launches the Release/Sokol host under Xvfb, OCR-checks the canonical hierarchical menus and Microdrive drive actions, and verifies 128K and 400% menu actions through STATUS.",
+  "command": "Dispatch .github/workflows/cr-build-gate.yml on main. The workflow builds and launches the Release/Sokol host under Xvfb, OCR-checks the canonical hierarchical menus and Microdrive drive actions, and verifies 128K and 400% menu actions through STATUS.",
   "requiredCases": 15,
   "runnerMatrix": [
     "ubuntu-24.04"
   ],
   "fixtures": [
     {
-      "path": ".github/workflows/gui-menu-groups.yml",
-      "sha256": "85d85cfb801ac31df949f16b842cefb32d9c72fd19ba44c9d4fc50829092e1a1"
+      "path": ".github/workflows/cr-build-gate.yml",
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269"
     },
     {
       "path": "ci/test/gui-menu-groups.py",

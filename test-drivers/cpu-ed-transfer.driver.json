@@ -6,8 +6,8 @@
   ],
   "fixtures": [
     {
-      "sha256": "f4db1e61bf6c502c69c9c12ab53e9f30ca81be25e20d8829cc25ac00ec86d9e5",
-      "path": ".github/workflows/cpu-ed-transfer.yml"
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269",
+      "path": ".github/workflows/cr-build-gate.yml"
     },
     {
       "sha256": "b85919e9ad6fff95d9a99c7fee7ee559894b1490ae64eca5d2fa745cfde5ba8a",

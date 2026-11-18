@@ -6,8 +6,8 @@
   ],
   "fixtures": [
     {
-      "sha256": "fb5d3c847228ae4d771223fe53b3cb836cb32bbcf18adb382bdf7f5191cdf009",
-      "path": ".github/workflows/cpu-primary-increment.yml"
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269",
+      "path": ".github/workflows/cr-build-gate.yml"
     },
     {
       "sha256": "aa0dddb155e7cd1c53dc88199919e24967eb469c354cd9698d0e59d131d2769f",

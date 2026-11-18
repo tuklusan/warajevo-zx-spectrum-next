@@ -6,8 +6,8 @@
   ],
   "fixtures": [
     {
-      "sha256": "86b7adf324c6c0e4d7ddb9970505039534edfceac3ce22f51384d956a5dd556e",
-      "path": ".github/workflows/cpu-special-trace.yml"
+      "sha256": "3ccd71b5c57665e2f022df4b12dcca903198f0138274f8704ee431756322f269",
+      "path": ".github/workflows/cr-build-gate.yml"
     },
     {
       "sha256": "a8d7452eee3dd1f4aecfb4cd7ba5896a245c60d5edcd34863a557610e79480fe",
