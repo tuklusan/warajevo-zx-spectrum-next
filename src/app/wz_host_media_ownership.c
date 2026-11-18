@@ -27,6 +27,14 @@ See LICENSE.txt and NOTICE.md for complete terms and provenance.
 #include <unistd.h>
 #endif
 
+#if !defined(_WIN32)
+static const char* wz_host_media_temp_directory(void)
+{
+    const char* directory = getenv("TMPDIR");
+    return directory != NULL && directory[0] != '\0' ? directory : "/tmp";
+}
+#endif
+
 static bool wz_host_media_lock_path(const char* path, char* output,
                                     size_t capacity)
 {
@@ -49,13 +57,16 @@ static bool wz_host_media_lock_path(const char* path, char* output,
     return written > 0 && (size_t)written < capacity;
 #else
     char canonical[4096];
+    const char* temporary;
     const char* resolved = realpath(path, canonical);
     if (resolved == NULL) return false;
+    temporary = wz_host_media_temp_directory();
     for (index = 0u; canonical[index] != '\0'; ++index) {
         hash ^= (unsigned char)canonical[index];
         hash *= UINT64_C(1099511628211);
     }
-    written = snprintf(output, capacity, "/tmp/wzsn-media-claim-%016llx.lock",
+    written = snprintf(output, capacity, "%s%s/wzsn-media-claim-%016llx.lock",
+        temporary, temporary[strlen(temporary) - 1u] == '/' ? "" : "/",
         (unsigned long long)hash);
     return written > 0 && (size_t)written < capacity;
 #endif
@@ -92,12 +103,15 @@ static bool wz_host_media_identity_lock_path(const char* path, char* output,
     }
 #else
     struct stat info;
+    const char* temporary;
     if (stat(path, &info) != 0) return false;
+    temporary = wz_host_media_temp_directory();
     identity ^= (uint64_t)info.st_dev;
     identity *= UINT64_C(1099511628211);
     identity ^= (uint64_t)info.st_ino;
     written = snprintf(output, capacity,
-        "/tmp/wzsn-media-identity-%016llx.lock",
+        "%s%s/wzsn-media-identity-%016llx.lock", temporary,
+        temporary[strlen(temporary) - 1u] == '/' ? "" : "/",
         (unsigned long long)identity);
 #endif
     return written > 0 && (size_t)written < capacity;
