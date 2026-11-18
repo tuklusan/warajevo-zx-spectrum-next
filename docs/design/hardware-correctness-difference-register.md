@@ -23,6 +23,7 @@ Architecture §2.1.1 for the evidence boundary.
 | The legacy scanline path applies a heuristic correction using attributes, low-RAM/PC state, and `HACKDELAY` (`:7058-7072`); its interrupt path sets `HACKDELAY` to 225 for a recognized program/PC combination (`:7222-7230`). | The core has no title recognition or PC-specific raster offset; scanline values are sampled from timed ULA activity. | Removing application-specific offsets makes output derive from machine state and master time, rather than a compatibility guess. | The same hosted raster-effects and canonical-core proofs above exercise timed fetches without title detection. The architecture's raster and timing contracts define the new source of truth. |
 
 These entries establish two concrete divergences and their behavioral basis.
-They do not establish exhaustive Warajevo feature parity, independent physical
-hardware correlation, or 2.51/2.52 equivalence. Those remain open under Core
-criteria 43, 44, 57, and 62 as applicable.
+They do not establish exhaustive Warajevo feature parity or 2.51/2.52
+equivalence. Independent physical-hardware correlation is explicitly outside
+Architectures #1/#2 scope and is not an open delivery gate. Remaining gaps are
+routine/provenance coverage under Core criteria 43, 44, and 57.

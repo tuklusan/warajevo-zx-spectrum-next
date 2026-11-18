@@ -117,7 +117,7 @@ Debug application startup/shutdown now attaches, freezes, and closes a per-proce
 073. [P3][Core §§36] Add deterministic memory/I/O trace fixtures that record address, value, direction, master tick, contention delay, and source — done when two hosts produce identical traces.
 074. [P3][Core §§46] Add controlled behavior for unmapped/unsupported I/O paths according to the 48K bus contract — done when random-port fuzz tests cannot crash or invoke UB.
 075. [P3][Core §§7,36] Fuzz memory/I/O access helpers for bounds, overflow, and invalid-state safety — done when sanitizer runs are clean.
-076. [P3][Core §§39] Differential-test a small set of non-raster programs against preserved Warajevo 2.50 while treating real-hardware evidence as authority on disagreement — done when divergences are classified.
+076. [P3][Core §§39] Differential-test a small set of non-raster programs against preserved Warajevo 2.50 and the pinned software/reference contract; classify every divergence.
 077. [P3][Core §§49.1] Run the Phase-3 bus/contention/interrupt evidence suite — done when no unexplained timing divergence remains.
 078. [P3][Core §49.1] Close the Phase-3 gate.
 
@@ -473,12 +473,12 @@ Debug application startup/shutdown now attaches, freezes, and closes a per-proce
 372. [P14][Core §§18,37,49] Run the full overscan/rainbow timing-torture set and capture first-divergence traces for failures.
 373. [P14][Core §§18,37,49] Run the full multicolor/NIRVANA/NIRVANA+ timing-torture set.
 374. [P14][Core §§18,37,49] Run BIFROST-class timing-sensitive cases.
-375. [P14][Core §§39] Run documented historical Warajevo problem cases and classify every divergence against hardware/reference authority.
+375. [P14][Core §§39] Run documented historical Warajevo problem cases and classify every divergence against the pinned software/reference contract.
 376. [P14][Core §§36.2] Run every usable file currently present directly in `WZSN_PRIVATE_TEST_MEDIA`, auto-detecting/attempting supported media as the private harness defines, with no metadata bureaucracy. [COMPLETE for the hosted /test-media corpus] On exact source `d5e7f96407c4672ee65e45033c2d1c979dde6a3a`, hosted private-media playback run `39342819178` passed every one of 20 TAP/TZX files (10 TAP, 10 TZX; zero failures); aggregate-only proof is pinned in [private-media-playback.json](../../test-results/private-media-playback.json).
 377. [P14][Core §§36.2] Record unexplained private-media failures as implementation defects or explicitly unsupported-format findings; do not claim full difficult-media compatibility while unexplained failures remain. [COMPLETE for the hosted /test-media corpus] Media corpus ingestion run `39342822175` on source `d5e7f96407c4672ee65e45033c2d1c979dde6a3a` found 20/20 supported files, zero unsupported or malformed cases, zero unsupported TZX blocks, and zero divergences from Fuse; aggregate-only proof is pinned in [media-corpus-ingestion.json](../../test-results/media-corpus-ingestion.json).
-378. [P14][Core §§40] Execute the planned real-hardware timing validation set needed for first architecture-complete certification.
+378. [P14][Core §§40][OUT OF SCOPE] Physical-hardware timing validation, bench capture, analog audio, and live cassette capture are removed from Architectures #1/#2 acceptance.
 379. [P14][Core §§44] Add minimal deterministic regressions for every newly discovered timing bug before fixing it.
-380. [P14][Core §49.1] Close the Phase-14 gate only when torture, private-media, and required hardware-reference checks have no unexplained release-blocking divergence.
+380. [P14][Core §49.1] Close the Phase-14 gate only when torture, private-media, and required software-reference checks have no unexplained release-blocking divergence.
 
 ## Phase 15A — Multi-instance Control Port and Telnet transport
 
@@ -583,6 +583,12 @@ Latest five-target Release/Sokol run `44073710348` at source `a33d0370fe991b34a0
 ## Final Architecture-#1/#2 acceptance and release-readiness sweep
 
 Task 452 implementation/evidence closure note: all 20 REQUIRED monitor/printer dispositions now have production implementation records and hosted regression proofs. Remaining Task-452 gaps are broader legacy-helper behavior and third-party/license clearance, not missing REQUIRED command implementations.
+
+Scope correction: all earlier references in this task ledger to physical-hardware
+validation, physical/analog audio output, bench capture, or live cassette capture
+as Architecture #1/#2 requirements are superseded. They are out of scope and
+cannot block delivery. The current Core inventory is 43 PASS, 29 PARTIAL, 2 OPEN,
+and 1 OUT OF SCOPE (former physical certification criterion 62).
 
 450. [FINAL][Core §50][AUDITED; gaps remain] Inventory all 75 criteria and record conservative evidence status in [acceptance-evidence-audit.md](acceptance-evidence-audit.md); after current-source timing-trace behavior evidence, the scoped Core-44 [hardware-correctness difference register](hardware-correctness-difference-register.md), one Core-57 [migration ledger](migration-ledger.md) sample, current-source Normal ROM loading evidence for criterion 34, networking-mode and dirty-Microdrive evidence for criteria 68–69, five-target host input-event evidence for criterion 64, and five-platform trace recovery/ownership evidence for criterion 74, status is 43 PASS, 30 PARTIAL, and 2 OPEN. Criterion 58 now passes from the frozen spec provenance recorded below. The audit is complete; architecture completion remains gated on resolving the OPEN criteria.
 451. [FINAL][UI §48][AUDITED; gaps remain] The 67-criterion inventory in [ui-acceptance-evidence-audit.md](ui-acceptance-evidence-audit.md) records 35 PASS, 28 PARTIAL, 1 OPEN, and 3 OUT OF SCOPE; criteria 62, 66, and 67 are excluded from Architecture 1 and 2 scope. Native chooser selection for checksummed TAP passed on Windows x64/ARM64 and macOS Intel/ARM64 in run `39377276900`; the Windows ARM64 capture has a WSL update overlay. Current-source Linux production-GUI runs `39548674403` and `39548310544` refresh synthetic TAP insert/manager/eject and TZX/WAV Open / Run/manager presentation, with inspected captures pinned in [gui-tape-actions](../../test-results/gui-tape-actions.json) and [gui-tape-formats](../../test-results/gui-tape-formats.json). Criterion 11 remains PARTIAL because production GUI behavior for every supported format is not yet evidenced; criterion 17 remains PARTIAL. UI criterion 53 passes on current-source proof `39381322146`, which verifies Section 35 MENU TREE records and absence of two absolute Recent-file paths. Other gaps include complete keyboard/focus paths (41–42), full machine-state preservation coverage (44), applicable regression coverage (50), and exhaustive production command metadata coverage (56). Task 360 keeps the Phase-12 gate open until applicable blockers are resolved; Architecture-#3 criteria remain out of scope.

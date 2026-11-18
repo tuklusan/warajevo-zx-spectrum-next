@@ -30,7 +30,9 @@ design/zx48-mic-ear-router-network-architecture.md
 That document owns the Ear+Mic resident stack, router protocol, physical/virtual
 MIC/EAR behavior, and Architecture-#3 acceptance. This UI document owns only
 the WZSN presentation/command surface used to select or control that downstream
-feature.
+feature. Architectures #1 and #2 do not require physical devices, analog audio,
+host audio-device output, or physical cassette capture; their UI evidence is
+software-only and deterministic.
 
 ---
 
@@ -1267,12 +1269,12 @@ future real-hardware bridge would require its own architecture.
 
 | Legacy item | WZSN destination | Initial disposition |
 |---|---|---|
-| Receive from cassette | Dropped legacy host function initially | Live physical capture is LATER |
-| Sample from cassette | Dropped legacy host function initially | Live physical capture is LATER |
+| Receive from cassette | Dropped legacy host function initially | Live physical capture is out of scope for Architectures #1/#2 |
+| Sample from cassette | Dropped legacy host function initially | Live physical capture is out of scope for Architectures #1/#2 |
 | Advanced setup | Dropped legacy host function initially | Old DOS timing/device calibration not reproduced |
 
-If live physical capture is later implemented, it becomes a new dedicated Tape
-Capture workflow rather than resurrecting the old DOS dialog.
+If live physical capture is ever reconsidered, it requires a separate architecture
+and acceptance contract rather than resurrecting the old DOS dialog.
 
 ### 20.6 TapeFiles > Convert > source-language/text conversions
 
@@ -2089,7 +2091,9 @@ that bounded host audio buffering discarded samples. `AUDIO=MUTED_DEGRADED`
 indicates both that sample loss occurred and that audio is currently muted by
 speed policy. Degradation remains visible for the session so the user can
 identify incomplete delivery. More detailed mute/error reasons may appear in
-optional trailing fields.
+optional trailing fields. These states describe deterministic PCM delivery and
+backpressure only; physical host-audio-device output is not an acceptance
+requirement.
 
 Optional status fields exposed by the initial unauthenticated protocol must not
 contain arbitrary absolute host media paths. Mounted-media status may expose
@@ -3163,7 +3167,7 @@ The initial UI architecture does not require:
 - reproducing the historical Warajevo database application;
 - exposing every preservation converter in the first executable milestone;
 - Timex/DCK UI before Timex support exists;
-- live physical cassette-capture UI before that feature is promoted from LATER;
+- live physical cassette-capture UI (outside Architectures #1/#2 scope);
 - mobile/touch-specific layout;
 - WebAssembly/browser UI;
 - a plugin marketplace;

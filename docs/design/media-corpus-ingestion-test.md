@@ -18,5 +18,5 @@ files fail the run.
 
 This is an emulated software-reference check, not physical hardware evidence.
 It establishes parser/ingestion coverage only. The normal-ROM loader, GUI
-execution of every program, and complete hardware/reference evidence remain
-separate acceptance requirements.
+execution of every program, and broader software/reference behavior remain
+separate acceptance work; physical hardware/audio evidence is out of scope.

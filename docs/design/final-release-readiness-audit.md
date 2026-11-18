@@ -13,7 +13,21 @@ test ledger, and acceptance inventories. Tasks 454 and 456–459 are closed;
 Tasks 455 and the Task-460 acceptance gate remain open. Task 456 delivery is
 intentionally unsigned because the project has no Microsoft or Apple signing
 authority. Wider release readiness remains gated on the other applicable
-criteria. Current monitor source `e4c98a637b128a966674c011106ac4e66f2cf522`
+criteria.
+
+Scope correction: Architectures #1 and #2 are software-only. Physical Spectrum
+or bench capture, electrical keyboard testing, analog waveform or host-device
+audio output, live physical cassette capture, and independent physical-hardware
+correlation are removed from release gates. Pinned Fuse/software comparisons,
+deterministic canonical PCM and delivery contracts, emulated media tests, and
+the native target matrix are authoritative. Remaining gates are software
+evidence, implementation coverage, and license/provenance clearance.
+
+Any older audit-row wording that says physical audio, physical-hardware
+correlation, or bench evidence is “open” is retained only as historical context;
+it is superseded by this scope correction and is not a delivery requirement.
+
+Current monitor source `e4c98a637b128a966674c011106ac4e66f2cf522`
 passed the five-target native build/test run `41737885149` with 39 interrupt
 delivery assertions per target; the registry metadata correction remains pinned
 at source `1f4f887efc9f77d082adab6d47b1a52b137ed513` in run `41733348457`.

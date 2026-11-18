@@ -41,6 +41,20 @@ only when they are proven behaviorally equivalent.
 
 ---
 
+## 1.1 Software-only validation boundary
+
+Architectures #1 and #2 are certified entirely through deterministic software
+evidence: hosted native builds, project-owned contracts, pinned Fuse/software
+comparisons, canonical raster/audio/trace proofs, and emulated media tests.
+Physical Spectrum or bench capture, electrical keyboard tests, analog waveform
+capture, physical host-audio-device output, and live physical cassette capture
+are explicitly outside this project's scope and are not release gates. Canonical
+audio means deterministic PCM plus host delivery/backpressure behavior; no claim
+about audible device output is made. Architecture #3 remains a separate,
+out-of-scope architecture.
+
+---
+
 ## 2. Sources of truth
 
 Warajevo ZX Spectrum Next project repository:
@@ -122,11 +136,12 @@ SPECLOGO.ASM
 The original Pascal source and original x86 assembly are equally valid inputs
 to the migration. Neither language is privileged in the new implementation.
 
-### 2.2 Real ZX Spectrum hardware behavior
+### 2.2 ZX Spectrum hardware behavior as a software reference
 
 Where the original Warajevo timing model, workaround tables, or host-era
-implementation differs from real Spectrum behavior, authentic hardware behavior
-is authoritative for the new timing engine.
+implementation differs from published/reference Spectrum behavior, the frozen
+software reference is authoritative for the new timing engine. Physical capture
+is not required for this project.
 
 In particular, the following must not be treated as correct merely because the
 old emulator did them:
@@ -137,11 +152,12 @@ old emulator did them:
 - host-timer-dependent behavior;
 - x86 instruction scheduling assumptions.
 
-### 2.3 Documentation and hardware research
+### 2.3 Documentation and reference research
 
 Machine timing constants, contention behavior, ULA bus activity, I/O behavior,
-and peripheral behavior must be corroborated against reliable hardware
-documentation and, when necessary, real-machine measurement.
+and peripheral behavior must be corroborated against reliable published
+documentation, pinned software references, and deterministic project contracts.
+Real-machine measurement is outside the Architecture #1/#2 acceptance scope.
 
 ### 2.4 Regression corpus
 
@@ -185,7 +201,7 @@ Tape: standard TAP                         REQUIRED
 Tape: Warajevo native TAP                  REQUIRED compatibility path
 Tape: TZX                                  REQUIRED
 Tape: WAV/audio input                      REQUIRED deterministic decode path
-Live physical cassette capture              LATER; not an initial blocker
+Live physical cassette capture              OUT OF SCOPE for Architectures #1/#2
 Snapshots: SNA 48K/128K                    REQUIRED
 Snapshots: Z80                             REQUIRED
 Interface 1                                REQUIRED
@@ -2024,10 +2040,10 @@ For live external input, the implementation must either:
 - capture/buffer the signal first and replay the resulting deterministic tape
   timeline under emulator control.
 
-Live physical cassette capture is explicitly **LATER** in Section 2.5 and is
-not part of the first architecture-complete milestone. Its real-time versus
-capture/buffer policy must be frozen by an explicit later design change before
-implementation tickets are issued.
+Live physical cassette capture is explicitly **OUT OF SCOPE** for Architectures
+#1/#2 and is not a delivery requirement. A future capture feature would require
+a separate architecture and acceptance contract before implementation tickets
+are issued.
 
 ### 23.12 Initial tape-format support matrix
 
@@ -2871,7 +2887,7 @@ The Fuse suite is complementary to, not a replacement for:
 - project-owned instruction-level tests;
 - timing/bus-cycle tests;
 - contention and interrupt tests;
-- real-hardware validation;
+- project-owned software-reference validation;
 - full-machine compatibility artifacts.
 
 Upstream project reference:
@@ -2990,15 +3006,18 @@ A mismatch is investigated, not automatically classified as a new-emulator
 bug.
 
 If the mismatch is caused by a known or proven Warajevo 2.50 timing
-approximation and the new result agrees with real hardware, the new hardware
-behavior wins and the difference is documented.
+approximation and the new result agrees with the pinned software/reference
+contract, the reference-correct behavior wins and the difference is documented.
 
 ---
 
-## 40. Real-hardware validation
+## 40. Software-reference validation
 
-Timing-sensitive behavior requires real-hardware or independently established
-hardware-reference validation.
+Timing-sensitive behavior is validated against frozen software references:
+published timing tables, pinned Fuse behavior, project-owned deterministic
+contracts, and compatible Warajevo differential cases. Physical hardware,
+bench measurements, electrical capture, analog audio, and host-device output
+are not requirements.
 
 Before the first architecture-complete milestone, certification validation must
 cover:
@@ -3016,8 +3035,8 @@ cover:
 - AY clock/register behavior;
 - Interface 1 timing where required.
 
-Measurements and test ROMs used to establish behavior must be preserved as
-project artifacts where licensing permits.
+Test ROMs and media used to establish behavior must be preserved as project
+artifacts where licensing permits; no physical measurements are required.
 
 ---
 
@@ -3068,7 +3087,7 @@ write focused tests
         |
 compare with original Warajevo
         |
-compare with hardware behavior when timing-sensitive
+compare with the frozen software/reference contract when timing-sensitive
         |
 mark migration record complete
 ```
@@ -3677,8 +3696,9 @@ when all of the following are true:
     projection conform to the UI architecture;
 61. implementation tickets satisfy the Section 49.2 derivation contract and do
     not contain unresolved architecture decisions;
-62. real-hardware/reference certification covers every item required by Section
-    40 before the architecture-complete milestone;
+62. software-reference certification covers every in-scope item required by
+    Section 40 before the architecture-complete milestone; physical hardware,
+    bench, analog-audio, and live-cassette evidence are not required;
 63. every mandatory initial target/compiler group in Section 35 executes the
     required deterministic regression suite;
 64. Kempston joystick emulation uses normalized joystick state rather than

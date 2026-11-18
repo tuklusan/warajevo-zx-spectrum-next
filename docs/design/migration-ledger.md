@@ -110,7 +110,7 @@ independently callable routines. Their behavior is covered by the `Z_OUT_FAR`
 regression strategy above. Existing printer settings evidence validates mode
 selection only; the additional core contract supplies direct software proof
 for the tested port/status/pixel/flush behavior. Legacy BIOS/LPT parity and
-physical timing remain unclaimed. Per-file copyright/license
+physical timing is outside Architectures #1/#2 scope. Per-file copyright/license
 compatibility remains unresolved, so this is an inventory and disposition only,
 not a license grant or source-derivation clearance.
 

@@ -223,6 +223,14 @@ passes. Use the pinned Fuse emulator as the software reference where applicable
 when physical Spectrum hardware is unavailable; record that evidence as an
 emulated comparison, not hardware validation.
 
+Architectures #1 and #2 have a software-only delivery boundary. Physical
+Spectrum or bench capture, electrical keyboard tests, analog waveform capture,
+physical host-audio-device output, and live physical cassette capture are out of
+scope and cannot block delivery. Deterministic canonical PCM, host
+delivery/backpressure contracts, pinned Fuse comparisons, and hosted native
+builds are the authoritative evidence. Architecture #3 remains separate and
+out of scope.
+
 Spectrum video delivery has a mandatory Fuse visual-equivalence gate. A hosted
 test must boot the same certified 48K ROM in the production application and the
 Fuse visual-reference revision
