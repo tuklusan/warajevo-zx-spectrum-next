@@ -120,6 +120,12 @@ wz_result_t wz_tape_native_decompress_record(
 wz_result_t wz_tape_native_compress_payload(
     const wz_byte_t* input, size_t input_length, wz_byte_t* output,
     size_t capacity, size_t* output_length, wz_word_t* signed_length);
+/* Expand native type-0–5 records, including packed type-4 samples, into
+ * canonical master-tick tape segments. */
+wz_result_t wz_tape_native_to_segments(
+    const wz_byte_t* data, size_t length, wz_dword_t master_ticks_per_tstate,
+    wz_dword_t master_ticks_per_second, wz_tape_segment_t* segments,
+    size_t capacity, size_t* count);
 wz_result_t wz_tape_parse_tzx(const wz_byte_t* data,
                               size_t length,
                               wz_tzx_block_t* blocks,

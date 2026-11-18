@@ -717,6 +717,13 @@ target_link_libraries(wz_native_tap_compression_contract PRIVATE wz_core wz_warn
 add_test(NAME wz_native_tap_compression_contract
     COMMAND wz_native_tap_compression_contract)
 
+add_executable(
+    wz_native_tap_sample_contract
+    ${WZSN_REPO_ROOT}/ci/test/native-tap-sample-contract.c)
+target_link_libraries(wz_native_tap_sample_contract PRIVATE wz_core wz_warnings)
+add_test(NAME wz_native_tap_sample_contract
+    COMMAND wz_native_tap_sample_contract)
+
 enable_testing()
 add_executable(
     wz_printer_core_contract

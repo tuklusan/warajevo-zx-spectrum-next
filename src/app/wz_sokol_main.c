@@ -1205,18 +1205,23 @@ static bool wz_host_load_external_tape(wz_host_session_t* session,
                     native_record_count, &native_record_count) != WZ_RESULT_OK) {
                 goto cleanup;
             }
-            parsed = wz_tape_native_to_standard_tap(data, length, NULL, 0u,
-                                                    &playback_length);
-            if (parsed == WZ_RESULT_BUFFER_TOO_SMALL && playback_length != 0u) {
-                playback_data = (wz_byte_t*)malloc(playback_length);
-                if (playback_data != NULL) {
-                    parsed = wz_tape_native_to_standard_tap(
-                        data, length, playback_data, playback_length,
-                        &playback_length);
-                    if (parsed != WZ_RESULT_OK) {
-                        free(playback_data);
-                        playback_data = NULL;
-                        playback_length = 0u;
+            {
+                wz_qword_t master_hz = profile->master_hz_num /
+                    profile->master_hz_den;
+                if (master_hz == 0u || master_hz > UINT32_MAX) goto cleanup;
+                parsed = wz_tape_native_to_segments(
+                    data, length, profile->master_ticks_per_cpu_tstate,
+                    (wz_dword_t)master_hz, NULL, 0u, &segment_count);
+                if (parsed == WZ_RESULT_BUFFER_TOO_SMALL && segment_count != 0u &&
+                    segment_count <= SIZE_MAX / sizeof(*segments)) {
+                    segments = (wz_tape_segment_t*)malloc(
+                        segment_count * sizeof(*segments));
+                    if (segments != NULL) {
+                        parsed = wz_tape_native_to_segments(
+                            data, length,
+                            profile->master_ticks_per_cpu_tstate,
+                            (wz_dword_t)master_hz, segments, segment_count,
+                            &segment_count);
                     }
                 }
             }

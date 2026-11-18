@@ -874,6 +874,231 @@ cleanup:
     return result;
 }
 
+static wz_result_t wz_tape_native_sample_rate(wz_byte_t status,
+                                               wz_dword_t* rate)
+{
+    if (rate == NULL || (status & 0xe0u) != 0u) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    switch ((status >> 3u) & 3u) {
+    case 0u: *rate = 15000u; break;
+    case 1u: *rate = 22050u; break;
+    case 2u: *rate = 30303u; break;
+    default: *rate = 44100u; break;
+    }
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_tape_native_append_sample_record(
+    const wz_native_tap_record_t* record, wz_dword_t master_ticks_per_second,
+    wz_tape_segment_t* segments, size_t capacity, size_t* index)
+{
+    const wz_byte_t* samples;
+    wz_byte_t* decoded = NULL;
+    wz_native_tap_record_t compressed;
+    wz_dword_t sample_rate;
+    size_t logical_bytes;
+    size_t used_bits;
+    size_t bit_count;
+    wz_result_t result;
+
+    if (record == NULL || index == NULL || record->record_type != 4u ||
+        record->payload == NULL || record->payload_length == 0u ||
+        record->decompressed_length == 0u ||
+        record->compressed_length == 0u ||
+        record->compressed_length != record->payload_length ||
+        wz_tape_native_sample_rate(record->flag, &sample_rate) != WZ_RESULT_OK ||
+        master_ticks_per_second == 0u) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    logical_bytes = record->decompressed_length;
+    used_bits = (size_t)(record->flag & 7u) + 1u;
+    if (logical_bytes > (SIZE_MAX - used_bits) / 8u + 1u) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    bit_count = (logical_bytes - 1u) * 8u + used_bits;
+    samples = record->payload;
+    if (record->compressed_length != record->decompressed_length) {
+        decoded = (wz_byte_t*)malloc(logical_bytes);
+        if (decoded == NULL) return WZ_RESULT_OUT_OF_MEMORY;
+        compressed = *record;
+        compressed.record_type = 5u;
+        result = wz_tape_native_decompress_record(&compressed, decoded,
+                                                  logical_bytes, &logical_bytes);
+        if (result != WZ_RESULT_OK || logical_bytes != record->decompressed_length) {
+            free(decoded);
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        samples = decoded;
+    } else if (record->payload_length != logical_bytes) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    if (segments == NULL) {
+        if (*index > SIZE_MAX - bit_count) {
+            free(decoded);
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        *index += bit_count;
+        free(decoded);
+        return WZ_RESULT_OK;
+    }
+    if (*index > capacity || bit_count > capacity - *index) {
+        free(decoded);
+        return WZ_RESULT_BUFFER_TOO_SMALL;
+    }
+    for (size_t bit_index = 0u; bit_index < bit_count; ++bit_index) {
+        uint64_t start_numerator;
+        uint64_t end_numerator;
+        uint64_t start_tick;
+        uint64_t end_tick;
+        size_t byte_index = bit_index / 8u;
+        unsigned bit = (unsigned)(7u - (bit_index & 7u));
+        start_numerator = (uint64_t)bit_index * master_ticks_per_second;
+        end_numerator = (uint64_t)(bit_index + 1u) * master_ticks_per_second;
+        start_tick = start_numerator / sample_rate;
+        end_tick = end_numerator / sample_rate;
+        if (end_tick <= start_tick) {
+            free(decoded);
+            return WZ_RESULT_PARSE_ERROR;
+        }
+        segments[*index].duration = (wz_master_tick_t)(end_tick - start_tick);
+        segments[*index].ear_level = (wz_byte_t)((samples[byte_index] >> bit) & 1u);
+        segments[*index].motor_stop_after = 0u;
+        ++*index;
+    }
+    free(decoded);
+    return WZ_RESULT_OK;
+}
+
+static wz_result_t wz_tape_native_record_standard_bytes(
+    const wz_native_tap_record_t* record, wz_byte_t** output,
+    size_t* output_length)
+{
+    wz_byte_t* bytes;
+    size_t payload_length;
+    wz_result_t result;
+
+    if (record == NULL || output == NULL || output_length == NULL ||
+        record->record_type > 5u || record->record_type == 4u ||
+        record->payload == NULL || record->payload_length == 0u) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    payload_length = record->record_type == 5u ?
+        record->decompressed_length : record->payload_length;
+    if (payload_length < 2u || payload_length > UINT16_MAX - 2u) {
+        return WZ_RESULT_PARSE_ERROR;
+    }
+    bytes = (wz_byte_t*)malloc(payload_length + 3u);
+    if (bytes == NULL) return WZ_RESULT_OUT_OF_MEMORY;
+    wz_write_le16(bytes, (wz_word_t)(payload_length + 1u));
+    bytes[2u] = record->flag;
+    if (record->record_type == 5u) {
+        size_t decoded_length = 0u;
+        result = wz_tape_native_decompress_record(record, bytes + 3u,
+                                                  payload_length,
+                                                  &decoded_length);
+        if (result != WZ_RESULT_OK || decoded_length != payload_length) {
+            free(bytes);
+            return WZ_RESULT_PARSE_ERROR;
+        }
+    } else {
+        memcpy(bytes + 3u, record->payload, payload_length);
+    }
+    *output = bytes;
+    *output_length = payload_length + 3u;
+    return WZ_RESULT_OK;
+}
+
+wz_result_t wz_tape_native_to_segments(
+    const wz_byte_t* data, size_t length, wz_dword_t master_ticks_per_tstate,
+    wz_dword_t master_ticks_per_second, wz_tape_segment_t* segments,
+    size_t capacity, size_t* count)
+{
+    wz_native_tap_record_t* records = NULL;
+    size_t record_count = 0u;
+    size_t required = 0u;
+    wz_result_t result;
+
+    if (data == NULL || length == 0u || count == NULL ||
+        master_ticks_per_tstate == 0u || master_ticks_per_second == 0u) {
+        return WZ_RESULT_INVALID_ARGUMENT;
+    }
+    result = wz_tape_parse_native_tap(data, length, NULL, 0u, &record_count);
+    if (result != WZ_RESULT_BUFFER_TOO_SMALL || record_count == 0u ||
+        record_count > SIZE_MAX / sizeof(*records)) {
+        return result == WZ_RESULT_BUFFER_TOO_SMALL ? WZ_RESULT_PARSE_ERROR : result;
+    }
+    records = (wz_native_tap_record_t*)malloc(record_count * sizeof(*records));
+    if (records == NULL) return WZ_RESULT_OUT_OF_MEMORY;
+    result = wz_tape_parse_native_tap(data, length, records, record_count,
+                                       &record_count);
+    if (result != WZ_RESULT_OK) goto cleanup;
+    for (size_t index = 0u; index < record_count; ++index) {
+        size_t local_count = 0u;
+        if (records[index].record_type == 4u) {
+            result = wz_tape_native_append_sample_record(&records[index],
+                master_ticks_per_second, NULL, 0u, &local_count);
+            if (result != WZ_RESULT_OK || local_count > SIZE_MAX - required) {
+                result = WZ_RESULT_PARSE_ERROR;
+                goto cleanup;
+            }
+            required += local_count;
+        } else {
+            wz_byte_t* standard = NULL;
+            size_t standard_length = 0u;
+            result = wz_tape_native_record_standard_bytes(&records[index],
+                                                          &standard,
+                                                          &standard_length);
+            if (result != WZ_RESULT_OK) goto cleanup;
+            result = wz_tape_parse_standard_tap(standard, standard_length,
+                master_ticks_per_tstate, NULL, 0u, &local_count);
+            free(standard);
+            if (result != WZ_RESULT_BUFFER_TOO_SMALL ||
+                local_count > SIZE_MAX - required) {
+                result = WZ_RESULT_PARSE_ERROR;
+                goto cleanup;
+            }
+            required += local_count;
+        }
+    }
+    *count = required;
+    if (segments == NULL || capacity < required) {
+        result = WZ_RESULT_BUFFER_TOO_SMALL;
+        goto cleanup;
+    }
+    {
+        size_t offset = 0u;
+        for (size_t index = 0u; index < record_count; ++index) {
+            if (records[index].record_type == 4u) {
+                result = wz_tape_native_append_sample_record(&records[index],
+                    master_ticks_per_second, segments, capacity, &offset);
+            } else {
+                wz_byte_t* standard = NULL;
+                size_t standard_length = 0u;
+                size_t local_count = 0u;
+                result = wz_tape_native_record_standard_bytes(&records[index],
+                    &standard, &standard_length);
+                if (result == WZ_RESULT_OK) {
+                    result = wz_tape_parse_standard_tap(standard,
+                        standard_length, master_ticks_per_tstate,
+                        segments + offset, capacity - offset, &local_count);
+                    if (result == WZ_RESULT_OK) offset += local_count;
+                }
+                free(standard);
+            }
+            if (result != WZ_RESULT_OK) goto cleanup;
+        }
+        if (offset != required) {
+            result = WZ_RESULT_PARSE_ERROR;
+            goto cleanup;
+        }
+    }
+    result = WZ_RESULT_OK;
+cleanup:
+    free(records);
+    return result;
+}
+
 wz_result_t wz_tape_native_to_standard_tap(const wz_byte_t* data,
                                            size_t length,
                                            wz_byte_t* output,
