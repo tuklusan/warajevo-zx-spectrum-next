@@ -6980,6 +6980,7 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
                     bool can_decompress =
                         !wz_host_session.machine.tape_state.motor_on &&
                         wz_host_session.native_tape_records != NULL;
+                    bool has_compressed = false;
                     for (size_t record_index = 0u;
                          can_decompress && record_index <
                              wz_host_session.native_tape_record_count;
@@ -6987,7 +6988,9 @@ static void wz_host_ui_draw_tape_manager(struct nk_context* context,
                         const wz_byte_t type = wz_host_session.native_tape_records[
                             record_index].record_type;
                         if (type == 4u) can_decompress = false;
+                        if (type == 5u) has_compressed = true;
                     }
+                    can_decompress = can_decompress && has_compressed;
                     if (!can_decompress)
                         nk_widget_disable_begin(context);
                     if (nk_button_label(context, "Decompress")) {

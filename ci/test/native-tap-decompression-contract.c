@@ -94,7 +94,7 @@ static bool malformed_case(void)
     wz_byte_t standard[8];
     size_t native_length = 0u;
     size_t standard_length = 0u;
-    CHECK(wz_tape_native_decompress_record(&record, NULL, sizeof(standard),
+    CHECK(wz_tape_native_decompress_record(&record, NULL, 0u,
                                            &standard_length) ==
           WZ_RESULT_PARSE_ERROR && standard_length == 0u);
     CHECK(wz_tape_write_native_tap(&record, 1u, native, sizeof(native),
