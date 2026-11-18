@@ -33,6 +33,14 @@ static const char* wz_host_media_temp_directory(void)
     const char* directory = getenv("TMPDIR");
     return directory != NULL && directory[0] != '\0' ? directory : "/tmp";
 }
+
+static const char* wz_host_media_temp_separator(const char* directory)
+{
+    size_t length;
+    if (directory == NULL) return "/";
+    length = strlen(directory);
+    return length > 0u && directory[length - 1u] == '/' ? "" : "/";
+}
 #endif
 
 static bool wz_host_media_lock_path(const char* path, char* output,
@@ -66,7 +74,7 @@ static bool wz_host_media_lock_path(const char* path, char* output,
         hash *= UINT64_C(1099511628211);
     }
     written = snprintf(output, capacity, "%s%s/wzsn-media-claim-%016llx.lock",
-        temporary, temporary[strlen(temporary) - 1u] == '/' ? "" : "/",
+        temporary, wz_host_media_temp_separator(temporary),
         (unsigned long long)hash);
     return written > 0 && (size_t)written < capacity;
 #endif
@@ -111,7 +119,7 @@ static bool wz_host_media_identity_lock_path(const char* path, char* output,
     identity ^= (uint64_t)info.st_ino;
     written = snprintf(output, capacity,
         "%s%s/wzsn-media-identity-%016llx.lock", temporary,
-        temporary[strlen(temporary) - 1u] == '/' ? "" : "/",
+        wz_host_media_temp_separator(temporary),
         (unsigned long long)identity);
 #endif
     return written > 0 && (size_t)written < capacity;
