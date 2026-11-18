@@ -271,7 +271,7 @@ if [ "$failed" -ne 0 ]; then
 fi
 
 # Preserve Git LFS enforcement already used by this repository.
-if command -v git-lfs >/dev/null 2>&1; then
+if git lfs version >/dev/null 2>&1; then
     git lfs pre-push "$@"
 else
     printf '%s\n' "Push rejected: Git LFS is required but 'git-lfs' was not found on PATH." >&2
