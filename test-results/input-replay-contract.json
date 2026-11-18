@@ -1,0 +1,97 @@
+{
+  "testId": "input-replay-contract",
+  "status": "pass",
+  "commit": "daf37e918fef4c6352edbbd70dd7d60fef96ed47",
+  "driverCommit": "fa54f28c138e3d4dc035f010ef1357c8519c629d",
+  "runId": 44241871114,
+  "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
+  "timestamp": "2026-11-18T05:27:34+00:00",
+  "caseCount": 1,
+  "nativeTargets": [
+    "Windows x64",
+    "Linux x64",
+    "Linux ARM64",
+    "macOS ARM64",
+    "macOS Intel"
+  ],
+  "observedOutput": "PASS normalized input trace records effective matrix transitions and replays headlessly",
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/44241871114",
+  "workflowEvent": "push",
+  "branch": "main",
+  "fixtures": [
+    {
+      "path": "ci/test/input-replay-contract.c",
+      "sha256": "fa60ec622fc6c4d37a25e56bc19baf67bd2b87b5844c1b483fc6c676c95699aa"
+    },
+    {
+      "path": "ci/test/input-replay/write-proof.py",
+      "sha256": "bae1ffe5133dd3c93057d39d754cf4943dda715cf2b8c4d6c69a1660169569e3"
+    },
+    {
+      "path": "src/app/wz_input_arbiter.c",
+      "sha256": "7a5b668b1fef289ed3e18ca18775d535351ae9c385f0ed74dc1618f8cc13a703"
+    },
+    {
+      "path": "src/app/wz_input_arbiter.h",
+      "sha256": "118a5c1bb18c6397ecae3e754388d5eddae218127406dd62fb094aa8c7494d37"
+    },
+    {
+      "path": "src/app/wz_input_projection.c",
+      "sha256": "9dd8a033527371f095e68cd8fd335a9f5846b3afb3c6429b0ddb8a5c6059f90a"
+    },
+    {
+      "path": "src/app/wz_input_projection.h",
+      "sha256": "48a424eb4cb66fc2f2ec45cd9c229f0f7d723f740974f1de5591f7c44c07ec5e"
+    },
+    {
+      "path": "src/app/wz_input_replay.c",
+      "sha256": "ac910dcfd495928556e1961a1aeb40225b6951910cd1e8efe9f30d3e6c7cfcd6"
+    },
+    {
+      "path": "src/app/wz_input_replay.h",
+      "sha256": "0a95a0dbad5e8c5d8951e64ab5b79db624d41d1635921f57d38e95db80b2cffb"
+    },
+    {
+      "path": "src/cmake/CMakeLists.txt",
+      "sha256": "39655cb93e353ca41a4c9f9c3925a2736fb27ca2c89c6497dc078c6f5c8a069f"
+    }
+  ],
+  "runnerResults": [
+    {
+      "runner": "Windows x64",
+      "jobName": "Full build / Windows x64",
+      "architecture": "X64",
+      "ctest": "49/49 passed",
+      "status": "pass"
+    },
+    {
+      "runner": "Linux x64",
+      "jobName": "Full build / Linux x64",
+      "architecture": "X64",
+      "ctest": "49/49 passed",
+      "status": "pass"
+    },
+    {
+      "runner": "Linux ARM64",
+      "jobName": "Full build / Linux ARM64",
+      "architecture": "ARM64",
+      "ctest": "49/49 passed",
+      "status": "pass"
+    },
+    {
+      "runner": "macOS ARM64",
+      "jobName": "Full build / macOS ARM64",
+      "architecture": "ARM64",
+      "ctest": "49/49 passed",
+      "status": "pass"
+    },
+    {
+      "runner": "macOS Intel",
+      "jobName": "Full build / macOS Intel",
+      "architecture": "X64",
+      "ctest": "49/49 passed",
+      "status": "pass"
+    }
+  ],
+  "scope": "Effective normalized key transitions and headless replay; no physical hardware claim."
+}
