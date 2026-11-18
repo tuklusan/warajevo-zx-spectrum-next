@@ -4,15 +4,15 @@
   "fixtures": [
     {
       "path": "ci/test/native-tap-contract.c",
-      "sha256": "80623beee87ad991d18ee8248b72f7fb3dacb8f9ea008ad95f86b5c73b686cbd"
+      "sha256": "86b2b015ae4d278b8f4c34bb7c3a7947e3981c17af5be21f004e4cbfc9981882"
     },
     {
       "path": "src/core/wz_tape.c",
-      "sha256": "e7cfab87534cec7d0dc0c14544e76318c94fee255e84efcd07b3185ddaf68bba"
+      "sha256": "604fb85fb5527ad9d022985e570e7318c2bbe081378eb3a68dd919ff7666da8d"
     },
     {
       "path": "src/core/wz_tape.h",
-      "sha256": "7604eb34c644a7baf3e23bbe2c5d17bea91f7f1e6af7a9784222796449e37803"
+      "sha256": "b2afd12de212c7f674600f288ce56539995d36b74b04d087db684f72920354dd"
     },
     {
       "path": "ci/test/native-tap-contract/CMakeLists.txt",

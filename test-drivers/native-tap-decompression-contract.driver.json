@@ -12,7 +12,7 @@
   "fixtures": [
     {
       "path": "ci/test/native-tap-decompression-contract.c",
-      "sha256": "beb546eb4a08d5825b11bae16d010e863031541326cb56ffd9d8a9c020151920"
+      "sha256": "3e7ed9dd2c4fdfd48faff8f02d5e3da63baf2dd6d35ad73a9402e3312dacffcd"
     },
     {
       "path": "ci/test/native-tap-decompression-contract/CMakeLists.txt",
@@ -20,11 +20,11 @@
     },
     {
       "path": "src/core/wz_tape.c",
-      "sha256": "81aafd95e8a65c203eb4770b4a29d136c282973bbedcdde7bb6bca9b637e3a8c"
+      "sha256": "604fb85fb5527ad9d022985e570e7318c2bbe081378eb3a68dd919ff7666da8d"
     },
     {
       "path": "src/core/wz_tape.h",
-      "sha256": "b289794a2c68d0d487a48d0a138dc1b0d58e51348e795b55e1f9268aabb8cbcf"
+      "sha256": "b2afd12de212c7f674600f288ce56539995d36b74b04d087db684f72920354dd"
     }
   ]
 }
