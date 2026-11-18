@@ -25,7 +25,11 @@ evidence passed on Linux x64 in run `41749531429` at source
 `e9ca443bf486a428b429b4257e87e67cdd85aec3`; the fixed-size frozen trace and
 positive record count are pinned in `test-results/debug-trace-startup.json`.
 Product builds, emulator tests, media runs, screenshots, and proof generation
-belong on hosted runners under Workflow 05.
+belong on hosted runners under Workflow 05. The current main source
+`4d98444930a2064f4e090bdcacfbb3bf1f4299d9` was revalidated by five-target
+native run `44309033866` (macOS Intel rerun attempt 2), including CTest, Fuse
+visual equivalence, and Phase-16; transient workflow evidence was deleted
+after processing.
 
 | Task | Audit finding | Required closure evidence |
 |---:|---|---|
