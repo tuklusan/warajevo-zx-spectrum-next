@@ -57,12 +57,23 @@ static bool apply_transition(
 static bool traces_equal(const wz_input_trace_t* left,
                          const wz_input_trace_t* right)
 {
+    size_t index;
     if (left == 0 || right == 0 || left->count != right->count) {
         return false;
     }
-    return left->count == 0u ||
-        memcmp(left->entries, right->entries,
-               left->count * sizeof(left->entries[0])) == 0;
+    for (index = 0u; index < left->count; ++index) {
+        const wz_normalized_input_transition_t* left_entry =
+            &left->entries[index];
+        const wz_normalized_input_transition_t* right_entry =
+            &right->entries[index];
+        if (left_entry->key != right_entry->key ||
+            left_entry->pressed != right_entry->pressed ||
+            left_entry->master_tick != right_entry->master_tick ||
+            left_entry->sequence != right_entry->sequence) {
+            return false;
+        }
+    }
+    return true;
 }
 
 static int exercise_trace_api(void)
