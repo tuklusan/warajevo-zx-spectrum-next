@@ -10,6 +10,7 @@
 #include "app/wz_input_projection.h"
 #include "app/wz_input_replay.h"
 #include "core/wz_machine.h"
+#include "core/wz_keyboard_matrix.h"
 
 #include <stdbool.h>
 #include <stdio.h>
