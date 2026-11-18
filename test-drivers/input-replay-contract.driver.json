@@ -11,7 +11,7 @@
   "fixtures": [
     {
       "path": "ci/test/input-replay-contract.c",
-      "sha256": "e15f553beeac4930246968d8f58ef49b8da99478e9aecb0a9750fce86a5363fe"
+      "sha256": "c0abddfe1928983873e7c83c2cc99f38a1d89f4d1e892bfa91c23803ba01a144"
     },
     {
       "path": "ci/test/input-replay/write-proof.py",

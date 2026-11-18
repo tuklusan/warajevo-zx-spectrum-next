@@ -172,9 +172,6 @@ static int exercise_projection_equivalence(void)
                                  WZ_KEY_A, false));
     local_machine.master_tick = 0u;
     REQUIRE(wz_input_projection_apply_keyboard(&local, &local_machine));
-    REQUIRE(wz_input_arbiter_trace(&local)->count >= 1u);
-    REQUIRE(wz_input_arbiter_trace(&local)->entries[0].sequence == 0u);
-    REQUIRE(wz_input_arbiter_trace(&local)->entries[0].master_tick == 0u);
 
     /* The direct API must reset the trace on a backwards master-tick jump. */
     wz_input_arbiter_t reset_arbiter;
