@@ -8,7 +8,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "069ac1ad6a3bc6a48825cac18af00e9a4953c71781f919b2ec84cafadc188f90"
+      "sha256": "c0c3d079329d99c6aee399f166ab9d21b6b6001e79f5fe621acc3d3d59b6012f"
     },
     {
       "path": "src/core/wz_state.c",
