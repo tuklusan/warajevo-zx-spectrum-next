@@ -1,17 +1,17 @@
 {
   "testId": "interface1-wait",
   "status": "pass",
-  "commit": "631fd3dff0bc030e7f1647d7d05e644159084e54",
-  "runId": 44093688213,
+  "commit": "94287b08a4ec7e65b463a2c0e319bfa093634edc",
+  "runId": 44245384969,
   "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
-  "timestamp": "2026-11-17T13:48:01+00:00",
+  "timestamp": "2026-11-18T05:41:23+00:00",
   "caseCount": 375,
   "caseCountPerRunner": 75,
   "observedOutput": "PASS Interface 1 WAIT pending-cycle resume (75 checks)",
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/44093688213",
-  "workflowEvent": "push",
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/44245384969",
+  "workflowEvent": "workflow_dispatch",
   "branch": "main",
-  "fixtureMetadataCommit": "d1ba123eb203f8e7972359dc72620d87f5b034ca",
+  "fixtureMetadataCommit": "94287b08a4ec7e65b463a2c0e319bfa093634edc",
   "nativeBuildConfiguration": "Release; WZSN_BUILD_SOKOL_HOST=ON",
   "ctest": "all integrated CTests passed on each native runner",
   "runnerResults": [
@@ -49,7 +49,7 @@
   "fixtures": [
     {
       "path": ".github/workflows/cr-build-gate.yml",
-      "sha256": "a38c03a4a2a3b6400ee4d80ed7a126db7079b740bf7d862588d42f38fe208576"
+      "sha256": "e75a95c20ed70a8b28e345c37ef6bd65565bc0b12f0d131268d340561c23fcb9"
     },
     {
       "path": "ci/test/interface1-wait/interface1-wait-contract.c",
@@ -69,7 +69,7 @@
     },
     {
       "path": "src/cmake/CMakeLists.txt",
-      "sha256": "069ac1ad6a3bc6a48825cac18af00e9a4953c71781f919b2ec84cafadc188f90"
+      "sha256": "39655cb93e353ca41a4c9f9c3925a2736fb27ca2c89c6497dc078c6f5c8a069f"
     },
     {
       "path": "src/core/wz_bus.c",

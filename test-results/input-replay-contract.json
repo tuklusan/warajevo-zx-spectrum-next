@@ -1,11 +1,11 @@
 {
   "testId": "input-replay-contract",
   "status": "pass",
-  "commit": "daf37e918fef4c6352edbbd70dd7d60fef96ed47",
-  "driverCommit": "fa54f28c138e3d4dc035f010ef1357c8519c629d",
-  "runId": 44241871114,
+  "commit": "94287b08a4ec7e65b463a2c0e319bfa093634edc",
+  "driverCommit": "94287b08a4ec7e65b463a2c0e319bfa093634edc",
+  "runId": 44245384969,
   "runner": "Windows x64; Linux x64; Linux ARM64; macOS ARM64; macOS Intel",
-  "timestamp": "2026-11-18T05:27:34+00:00",
+  "timestamp": "2026-11-18T05:41:23+00:00",
   "caseCount": 1,
   "nativeTargets": [
     "Windows x64",
@@ -15,8 +15,8 @@
     "macOS Intel"
   ],
   "observedOutput": "PASS normalized input trace records effective matrix transitions and replays headlessly",
-  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/44241871114",
-  "workflowEvent": "push",
+  "workflowRun": "https://github.com/tuklusan/warajevo-zx-spectrum-next/actions/runs/44245384969",
+  "workflowEvent": "workflow_dispatch",
   "branch": "main",
   "fixtures": [
     {
