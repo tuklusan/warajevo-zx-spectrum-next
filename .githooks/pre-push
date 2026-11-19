@@ -266,6 +266,7 @@ check_range() {
     fi
 }
 
+push_input=$(cat)
 failed=0
 bash .githooks/validate-test-ledger.sh || failed=1
 while read -r local_ref local_sha remote_ref remote_sha; do
@@ -280,7 +281,9 @@ while read -r local_ref local_sha remote_ref remote_sha; do
     if [ "$failed" -eq 0 ]; then
         review_outgoing_source "$remote_sha" "$local_sha" || failed=1
     fi
-done
+done <<EOF
+$push_input
+EOF
 
 if [ "$failed" -ne 0 ]; then
     exit 1
@@ -288,7 +291,7 @@ fi
 
 # Preserve Git LFS enforcement already used by this repository.
 if git lfs version >/dev/null 2>&1; then
-    git lfs pre-push "$@"
+    [ -n "$push_input" ] && printf '%s\n' "$push_input" | git lfs pre-push "$@"
 else
     printf '%s\n' "Push rejected: Git LFS is required but 'git-lfs' was not found on PATH." >&2
     exit 2
