@@ -116,9 +116,9 @@ review_outgoing_source() {
                     line ~ /root LICENSE file\. Non-Commercial use is permitted/ ||
                     line ~ /for AI\/ML model training are prohibited/ ||
                     line ~ /New original material is licensed under GNU GPL v2 or later/ ||
-                    line ~ /See LICENSE and NOTICE\\.md for complete terms and provenance\\./ ||
-                    line ~ /root LICENSE file\\. Commercial Use and use for AI\/ML model training are/ ||
-                    line ~ /prohibited unless separately authorized\\. Attribution is required\\. See/ ||
+                    line ~ /See LICENSE and NOTICE\.md for complete terms and provenance\./ ||
+                    line ~ /root LICENSE file\. Commercial Use and use for AI\/ML model training are/ ||
+                    line ~ /prohibited unless separately authorized\. Attribution is required\. See/ ||
                     line ~ /This file is licensed under the GNU General Public License, version 2 or later\./ ||
                     line ~ /Proprietary rights reserved except as expressly licensed herein\./ ||
                     line ~ /LICENSE\.txt/) next
