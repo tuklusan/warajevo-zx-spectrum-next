@@ -266,7 +266,8 @@ check_range() {
     fi
 }
 
-push_input=$(cat)
+push_input=
+IFS= read -r push_input || true
 failed=0
 bash .githooks/validate-test-ledger.sh || failed=1
 while read -r local_ref local_sha remote_ref remote_sha; do
