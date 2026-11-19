@@ -116,6 +116,28 @@ review_outgoing_source() {
         return 0
     fi
 
+    # Header-only license migrations do not alter executable source and do not
+    # need an LLM review packet. Any other source diff remains mandatory.
+    if ! git diff --unified=0 "$oldrev" "$newrev" -- \
+        '*.c' '*.h' '*.py' '*.asm' '*.s' '*.z80' |
+        awk '
+            /^\+\+\+|^---/ { next }
+            /^[+-]/ {
+                line = substr($0, 2)
+                if (line ~ /This file is governed by the SANYALnet Labs Non-Commercial License/ ||
+                    line ~ /root LICENSE file\. Non-Commercial use is permitted/ ||
+                    line ~ /for AI\/ML model training are prohibited/ ||
+                    line ~ /This file is licensed under the GNU General Public License, version 2 or later\./ ||
+                    line ~ /Proprietary rights reserved except as expressly licensed herein\./ ||
+                    line ~ /LICENSE\.txt/) next
+                found = 1
+                exit
+            }
+            END { exit(found ? 0 : 1) }
+        '; then
+        return 0
+    fi
+
     if command -v gito >/dev/null 2>&1; then
         gito_runner='gito'
     elif command -v py >/dev/null 2>&1; then
