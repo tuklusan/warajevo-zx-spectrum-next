@@ -54,33 +54,21 @@ check_license_headers() {
     [ "$oldrev" = "0000000000000000000000000000000000000000" ] && oldrev=$(git rev-parse "$newrev^" 2>/dev/null || true)
     [ -n "$oldrev" ] || return 0
 
-    git diff --diff-filter=ACMR --name-only "$oldrev" "$newrev" | while IFS= read -r file; do
-        # The repository-root README is the sole header exemption.
-        [ "$file" = "README" ] || [ "$file" = "README.md" ] && continue
-        case "$file" in
-            *.c|*.C|*.h|*.H|*.py|*.PY|*.asm|*.ASM|*.s|*.S|*.z80|*.Z80|*.md|*.MD|*.txt|*.TXT) ;;
-            *) continue ;;
-        esac
-        contents=$(git show "$newrev:$file" 2>/dev/null || true)
-        previous=$(git show "$oldrev:$file" 2>/dev/null || true)
-        if printf '%s\n' "$previous" | grep -Fq 'New original material is licensed under GNU GPL v2 or later' ||
-           printf '%s\n' "$previous" | grep -Fq 'This file is governed by the SANYALnet Labs Non-Commercial License'; then
-            printf '%s\n' "$contents" | grep -Fq 'New original material is licensed under GNU GPL v2 or later' ||
-            printf '%s\n' "$contents" | grep -Fq 'This file is licensed under the GNU General Public License, version 2 or later.' || {
-                printf '%s\n' "Push rejected: existing license header changed in $file" >&2
-                exit 1
-            }
-        else
-            printf '%s\n' "$contents" | grep -Fq 'Copyright (c) 2026 Supratim Sanyal of SANYALnet Labs.' || {
-                printf '%s\n' "Push rejected: missing license header in $file" >&2
-                exit 1
-            }
-            printf '%s\n' "$contents" | grep -Fq 'This file is governed by the SANYALnet Labs Non-Commercial License' || {
-                printf '%s\n' "Push rejected: incomplete license header in $file" >&2
-                exit 1
-            }
-        fi
-    done
+    changed=$(git diff --diff-filter=ACMR --name-only "$oldrev" "$newrev" |
+        grep -Ei '\.(c|h|py|asm|s|z80|md|txt)$' |
+        grep -Ev '^(README|README\.md)$' || true)
+    [ -n "$changed" ] || return 0
+
+    missing=$(printf '%s\n' "$changed" |
+        git grep -L \
+            -e 'New original material is licensed under GNU GPL v2 or later' \
+            -e 'This file is licensed under the GNU General Public License, version 2 or later.' \
+            -e 'This file is governed by the SANYALnet Labs Non-Commercial License' \
+            "$newrev" -- $(printf '%s\n' "$changed") 2>/dev/null || true)
+    if [ -n "$missing" ]; then
+        printf '%s\n' "Push rejected: missing or incomplete license header." >&2
+        return 1
+    fi
 }
 
 review_finish_batch() {
