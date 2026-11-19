@@ -106,7 +106,7 @@ review_outgoing_source() {
 
     # Header-only license migrations do not alter executable source and do not
     # need an LLM review packet. Any other source diff remains mandatory.
-    if ! git diff --unified=0 "$oldrev" "$newrev" -- \
+    if ! git diff --ignore-space-at-eol --ignore-blank-lines --unified=0 "$oldrev" "$newrev" -- \
         '*.c' '*.h' '*.py' '*.asm' '*.s' '*.z80' |
         awk '
             /^\+\+\+|^---/ { next }
@@ -115,6 +115,10 @@ review_outgoing_source() {
                 if (line ~ /This file is governed by the SANYALnet Labs Non-Commercial License/ ||
                     line ~ /root LICENSE file\. Non-Commercial use is permitted/ ||
                     line ~ /for AI\/ML model training are prohibited/ ||
+                    line ~ /New original material is licensed under GNU GPL v2 or later/ ||
+                    line ~ /See LICENSE and NOTICE\\.md for complete terms and provenance\\./ ||
+                    line ~ /root LICENSE file\\. Commercial Use and use for AI\/ML model training are/ ||
+                    line ~ /prohibited unless separately authorized\\. Attribution is required\\. See/ ||
                     line ~ /This file is licensed under the GNU General Public License, version 2 or later\./ ||
                     line ~ /Proprietary rights reserved except as expressly licensed herein\./ ||
                     line ~ /LICENSE\.txt/) next
