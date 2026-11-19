@@ -63,7 +63,6 @@ check_license_headers() {
         git grep -L \
             -e 'New original material is licensed under GNU GPL v2 or later' \
             -e 'This file is licensed under the GNU General Public License, version 2 or later.' \
-            -e 'This file is governed by the SANYALnet Labs Non-Commercial License' \
             "$newrev" -- $(printf '%s\n' "$changed") 2>/dev/null || true)
     if [ -n "$missing" ]; then
         printf '%s\n' "Push rejected: missing or incomplete license header." >&2
@@ -112,15 +111,9 @@ review_outgoing_source() {
             /^\+\+\+|^---/ { next }
             /^[+-]/ {
                 line = substr($0, 2)
-                if (line ~ /This file is governed by the SANYALnet Labs Non-Commercial License/ ||
-                    line ~ /root LICENSE file\. Non-Commercial use is permitted/ ||
-                    line ~ /for AI\/ML model training are prohibited/ ||
-                    line ~ /New original material is licensed under GNU GPL v2 or later/ ||
+                if (line ~ /New original material is licensed under GNU GPL v2 or later/ ||
                     line ~ /See LICENSE and NOTICE\.md for complete terms and provenance\./ ||
-                    line ~ /root LICENSE file\. Commercial Use and use for AI\/ML model training are/ ||
-                    line ~ /prohibited unless separately authorized\. Attribution is required\. See/ ||
                     line ~ /This file is licensed under the GNU General Public License, version 2 or later\./ ||
-                    line ~ /Proprietary rights reserved except as expressly licensed herein\./ ||
                     line ~ /LICENSE\.txt/) next
                 found = 1
                 exit
